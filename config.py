@@ -40,11 +40,15 @@ class Config:
     JOBS_PER_PAGE = 20
     SCHEDULE_HORIZON_DAYS = 30
     MAX_OPTIMIZATION_TIME = 300  # seconds
+    
+    @staticmethod
+    def init_app(app):
+        pass
 
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'postgresql://username:password@localhost/sentia_dev'
+        'sqlite:///sentia_dev.db'
     SESSION_COOKIE_SECURE = False
 
 class TestConfig(Config):

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sentia Manufacturing{% endblock %}
+
+{% block content %}
+<h1>Manufacturing Dashboard</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 2rem 0;">
+    <div class="card">
+        <h3>Active Jobs</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: #3498db;">0</p>
+    </div>
+    <div class="card">
+        <h3>Pending Jobs</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: #f39c12;">0</p>
+    </div>
+    <div class="card">
+        <h3>Completed Today</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: #27ae60;">0</p>
+    </div>
+    <div class="card">
+        <h3>Resource Utilization</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: #9b59b6;">0%</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Recent Jobs</h2>
+    <p>No jobs to display</p>
+</div>
+{% endblock %}

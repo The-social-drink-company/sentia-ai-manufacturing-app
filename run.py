@@ -1,11 +1,12 @@
 import os
 from app import create_app, db
-from app.models import User, Job, Schedule, Resource
+from config import config
 
-app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+app = create_app(config[os.getenv('FLASK_CONFIG') or 'default'])
 
 @app.shell_context_processor
 def make_shell_context():
+    from app.models import User, Job, Schedule, Resource
     return dict(db=db, User=User, Job=Job, Schedule=Schedule, Resource=Resource)
 
 @app.cli.command()

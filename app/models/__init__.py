@@ -2,5 +2,20 @@ from app.models.job import Job
 from app.models.schedule import Schedule
 from app.models.resource import Resource
 from app.models.user import User
+from app.models.audit_log import AuditLog
+from app.models.product import Product
+from app.models.market import Market
+from app.models.sales_channel import SalesChannel
+from app.models.historical_sales import HistoricalSales
+from app.models.forecast import Forecast
+from app.models.inventory_level import InventoryLevel
+from app.models.working_capital import WorkingCapital
+from app.models.system_settings import SystemSettings
+from app.models.data_import import DataImport, ImportError, ImportLog, ImportTemplate
 
-__all__ = ['Job', 'Schedule', 'Resource', 'User']
+__all__ = [
+    'Job', 'Schedule', 'Resource', 'User', 'AuditLog',
+    'Product', 'Market', 'SalesChannel', 'HistoricalSales',
+    'Forecast', 'InventoryLevel', 'WorkingCapital', 'SystemSettings',
+    'DataImport', 'ImportError', 'ImportLog', 'ImportTemplate'
+]

@@ -1,0 +1,642 @@
+{% extends "base.html" %}
+
+{% block title %}Data Import Dashboard{% endblock %}
+
+{% block head %}
+<style>
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value.total { color: #6c757d; }
+.stat-value.successful { color: #28a745; }
+.stat-value.failed { color: #dc3545; }
+.stat-value.success-rate { color: #007bff; }
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.stat-subtitle {
+    font-size: 0.75rem;
+    color: #8e9aaf;
+}
+
+.quick-actions {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.action-btn:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.action-btn.primary {
+    background: #007bff;
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background: #0056b3;
+    color: white;
+}
+
+.action-btn.secondary {
+    background: #f8f9fa;
+    color: #495057;
+    border-color: #dee2e6;
+}
+
+.action-btn.secondary:hover {
+    background: #e9ecef;
+    color: #495057;
+    border-color: #adb5bd;
+}
+
+.recent-imports {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.recent-imports-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+}
+
+.recent-imports-title {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #495057;
+}
+
+.import-list {
+    padding: 0;
+}
+
+.import-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f1f3f4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.import-item:last-child {
+    border-bottom: none;
+}
+
+.import-item:hover {
+    background-color: #f8f9fa;
+}
+
+.import-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.import-name {
+    font-weight: 500;
+    color: #495057;
+    margin: 0;
+}
+
+.import-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.import-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.import-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.import-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending { background: #fff3cd; color: #856404; }
+.status-processing { 
+    background: #cce5ff; 
+    color: #004085; 
+    animation: pulse 2s infinite;
+}
+.status-validating { background: #e2e3e5; color: #383d41; }
+.status-completed { background: #d4edda; color: #155724; }
+.status-failed { background: #f8d7da; color: #721c24; }
+.status-cancelled { background: #f8f9fa; color: #6c757d; }
+
+.import-progress {
+    width: 100px;
+    height: 4px;
+    background: #e9ecef;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.import-progress-bar {
+    height: 100%;
+    background: #007bff;
+    transition: width 0.3s ease;
+}
+
+.import-progress-bar.completed { background: #28a745; }
+.import-progress-bar.failed { background: #dc3545; }
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: #6c757d;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.empty-state-subtitle {
+    margin-bottom: 1.5rem;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.progress-ring {
+    width: 40px;
+    height: 40px;
+    margin-right: 0.5rem;
+}
+
+.progress-ring-circle {
+    stroke: #007bff;
+    stroke-width: 3;
+    fill: transparent;
+    stroke-dasharray: 113;
+    stroke-dashoffset: 113;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .import-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .import-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">Data Import Dashboard</h1>
+                    <p class="text-muted mb-0">Manage and monitor your data imports</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-secondary" id="refreshBtn">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-value total">{{ stats.total }}</div>
+            <div class="stat-label">Total Imports</div>
+            <div class="stat-subtitle">All time</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value successful">{{ stats.successful }}</div>
+            <div class="stat-label">Successful</div>
+            <div class="stat-subtitle">Completed without errors</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value failed">{{ stats.failed }}</div>
+            <div class="stat-label">Failed</div>
+            <div class="stat-subtitle">Requires attention</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value success-rate">{{ "%.1f"|format(stats.success_rate) }}%</div>
+            <div class="stat-label">Success Rate</div>
+            <div class="stat-subtitle">Overall performance</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h5 class="mb-3"><i class="fas fa-bolt"></i> Quick Actions</h5>
+        <div class="action-buttons">
+            <a href="{{ url_for('data_import.upload') }}" class="action-btn primary">
+                <i class="fas fa-upload"></i>
+                <span>New Import</span>
+            </a>
+            <a href="{{ url_for('data_import.templates') }}" class="action-btn secondary">
+                <i class="fas fa-download"></i>
+                <span>Download Templates</span>
+            </a>
+            <a href="{{ url_for('data_import.history') }}" class="action-btn secondary">
+                <i class="fas fa-history"></i>
+                <span>View All Imports</span>
+            </a>
+            <a href="#" class="action-btn secondary" id="scheduleImportBtn">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Schedule Import</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Imports -->
+    <div class="recent-imports">
+        <div class="recent-imports-header">
+            <h5 class="recent-imports-title">Recent Imports</h5>
+            <a href="{{ url_for('data_import.history') }}" class="btn btn-sm btn-outline-primary">
+                View All
+            </a>
+        </div>
+        <div class="import-list">
+            {% if recent_imports %}
+                {% for import in recent_imports %}
+                <div class="import-item">
+                    <div class="import-info">
+                        <div class="import-name">{{ import.import_name }}</div>
+                        <div class="import-details">
+                            <div class="import-detail">
+                                <i class="fas fa-file"></i>
+                                <span>{{ import.original_filename }}</span>
+                            </div>
+                            <div class="import-detail">
+                                <i class="fas fa-tag"></i>
+                                <span>{{ import.import_type.value|title }}</span>
+                            </div>
+                            <div class="import-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ import.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </div>
+                            {% if import.total_rows %}
+                            <div class="import-detail">
+                                <i class="fas fa-list-ol"></i>
+                                <span>{{ import.total_rows }} rows</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="import-actions">
+                        {% if import.status.value == 'processing' or import.status.value == 'validating' %}
+                        <div class="import-progress">
+                            <div class="import-progress-bar" style="width: {{ import.progress_percentage }}%"></div>
+                        </div>
+                        <small class="text-muted">{{ import.progress_percentage }}%</small>
+                        {% endif %}
+                        
+                        <span class="import-status status-{{ import.status.value }}">
+                            {{ import.status.value|title }}
+                        </span>
+                        
+                        <div class="btn-group btn-group-sm">
+                            {% if import.status.value in ['processing', 'validating'] %}
+                            <a href="{{ url_for('data_import.progress', import_id=import.id) }}" 
+                               class="btn btn-outline-primary" title="View Progress">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('data_import.details', import_id=import.id) }}" 
+                               class="btn btn-outline-info" title="View Details">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                            {% endif %}
+                            
+                            {% if import.status.value == 'failed' %}
+                            <button class="btn btn-outline-success" title="Retry Import" 
+                                    onclick="retryImport('{{ import.id }}')">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            {% endif %}
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" 
+                                        data-bs-toggle="dropdown" title="More Actions">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('data_import.details', import_id=import.id) }}">
+                                            <i class="fas fa-info-circle"></i> View Details
+                                        </a>
+                                    </li>
+                                    {% if import.status.value == 'completed' %}
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="exportResults('{{ import.id }}')">
+                                            <i class="fas fa-download"></i> Export Results
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#" 
+                                           onclick="deleteImport('{{ import.id }}')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h6 class="empty-state-title">No imports yet</h6>
+                    <p class="empty-state-subtitle">Start by creating your first data import</p>
+                    <a href="{{ url_for('data_import.upload') }}" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Import Data
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Schedule Import Modal -->
+<div class="modal fade" id="scheduleImportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Schedule Import</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Scheduled imports are coming soon! This feature will allow you to:</p>
+                <ul>
+                    <li>Schedule recurring data imports</li>
+                    <li>Set up automated data validation</li>
+                    <li>Configure email notifications</li>
+                    <li>Monitor import performance over time</li>
+                </ul>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    This feature is currently in development and will be available in a future release.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+class DashboardManager {
+    constructor() {
+        this.initEventListeners();
+        this.startAutoRefresh();
+    }
+    
+    initEventListeners() {
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            this.refreshDashboard();
+        });
+        
+        // Schedule import button
+        document.getElementById('scheduleImportBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('scheduleImportModal'));
+            modal.show();
+        });
+    }
+    
+    async refreshDashboard() {
+        const refreshBtn = document.getElementById('refreshBtn');
+        const originalText = refreshBtn.innerHTML;
+        
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        refreshBtn.disabled = true;
+        
+        try {
+            // Reload the page to get fresh data
+            window.location.reload();
+        } finally {
+            refreshBtn.innerHTML = originalText;
+            refreshBtn.disabled = false;
+        }
+    }
+    
+    startAutoRefresh() {
+        // Auto-refresh every 30 seconds if there are processing imports
+        const processingImports = document.querySelectorAll('.status-processing, .status-validating');
+        
+        if (processingImports.length > 0) {
+            setInterval(() => {
+                this.refreshProcessingStatus();
+            }, 30000); // 30 seconds
+        }
+    }
+    
+    async refreshProcessingStatus() {
+        // Update status for processing imports only
+        const processingItems = document.querySelectorAll('.import-item');
+        
+        for (const item of processingItems) {
+            const statusElement = item.querySelector('.import-status');
+            if (statusElement && (statusElement.classList.contains('status-processing') || 
+                                statusElement.classList.contains('status-validating'))) {
+                // This would typically make an API call to get updated status
+                // For now, we'll just continue the pulse animation
+            }
+        }
+    }
+}
+
+// Global functions for dropdown actions
+async function retryImport(importId) {
+    if (!confirm('Are you sure you want to retry this import? This will create a new import process.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/data-import/api/progress/${importId}/retry`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name="csrf_token"]')?.value || ''
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.new_import_id) {
+            window.location.href = `/data-import/progress/${data.new_import_id}`;
+        } else {
+            alert('Failed to retry import: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error retrying import:', error);
+        alert('Error retrying import: ' + error.message);
+    }
+}
+
+async function exportResults(importId) {
+    try {
+        const response = await fetch(`/data-import/api/${importId}/export`, {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `import_results_${importId}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } else {
+            alert('Failed to export results');
+        }
+    } catch (error) {
+        console.error('Error exporting results:', error);
+        alert('Error exporting results: ' + error.message);
+    }
+}
+
+async function deleteImport(importId) {
+    if (!confirm('Are you sure you want to delete this import? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/data-import/api/${importId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name="csrf_token"]')?.value || ''
+            }
+        });
+        
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Failed to delete import');
+        }
+    } catch (error) {
+        console.error('Error deleting import:', error);
+        alert('Error deleting import: ' + error.message);
+    }
+}
+
+// Initialize dashboard
+const dashboardManager = new DashboardManager();
+</script>
+{% endblock %}

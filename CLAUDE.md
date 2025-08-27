@@ -6,13 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Core Commands
 - `python run.py` - Start development server on localhost:5000
-- `flask db init` - Initialize database
-- `flask db migrate -m "message"` - Create database migration
-- `flask db upgrade` - Apply database migrations
+- `python -m flask db init` - Initialize database
+- `python -m flask db migrate -m "message"` - Create database migration
+- `python -m flask db upgrade` - Apply database migrations
 - `pytest` - Run all tests
 - `pytest --cov=app tests/` - Run tests with coverage
-- `flask init-db` - Initialize database (custom CLI command)
-- `flask test` - Run unit tests via custom CLI command
+- `python -m flask init-db` - Initialize database (custom CLI command)
+- `python -m flask test-db` - Test database connection and show info
+- `python -m flask list-users` - List all users in the system
+- `python -m flask create-admin` - Create an admin user interactively
+
+**Important**: Always use `python -m flask [command]` instead of `flask [command]` to ensure proper module resolution and environment compatibility.
 
 ### Environment Setup
 1. Create virtual environment: `python -m venv venv`

@@ -23,3 +23,19 @@ def dashboard():
 @log_user_activity('schedule_access')
 def schedule():
     return render_template('schedule.html')
+
+@bp.route('/forecasting')
+@login_required
+@require_permission('forecasting')
+@log_user_activity('forecasting_access')
+def forecasting_dashboard():
+    """Advanced demand forecasting dashboard."""
+    return render_template('forecasting/dashboard.html')
+
+@bp.route('/stock-optimization')
+@login_required
+@require_permission('inventory')
+@log_user_activity('stock_optimization_access')
+def stock_optimization():
+    """Stock level optimization dashboard."""
+    return render_template('stock_optimization.html')

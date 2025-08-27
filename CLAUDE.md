@@ -120,3 +120,62 @@ Usage guidance:
 ## Placeholder app
 
 The program placeholder_app.js has been created to test the integration between GitHub and Railway. It will be replaced later with a GUI app.
+
+## Character Encoding and Text Guidelines
+
+### Unicode and Character Encoding
+**CRITICAL**: Always use ASCII-compatible characters in code, especially in:
+- Print statements and console output
+- Error messages and logging
+- Comments and docstrings  
+- Test output and assertions
+
+**AVOID** non-ASCII Unicode characters that can cause encoding issues:
+- ❌ Emoji symbols (✅ ❌ 🎉 ⚠️ etc.)
+- ❌ Unicode checkmarks and crosses (✓ ✗)
+- ❌ Special punctuation (• → ← ↑ ↓)
+- ❌ Mathematical symbols (≥ ≤ ≠ ≈)
+- ❌ Currency symbols beyond $ (€ £ ¥)
+
+**USE** ASCII alternatives instead:
+- ✅ → "PASS:" or "SUCCESS:"
+- ❌ → "FAIL:" or "ERROR:"
+- 🎉 → "SUCCESS!" or "COMPLETED!"
+- ⚠️ → "WARNING:" or "CAUTION:"
+- ✓ → "OK" or "PASS"
+- ✗ → "FAIL" or "ERROR"  
+- • → "-" or "*"
+- → → "-->" or "=>"
+
+### Examples of Safe vs Unsafe Code:
+
+**UNSAFE** (will cause UnicodeEncodeError):
+```python
+print("✅ Test passed!")
+print("❌ Test failed!")
+print("🎉 All done!")
+```
+
+**SAFE** (ASCII-compatible):
+```python
+print("PASS: Test passed!")
+print("FAIL: Test failed!")  
+print("SUCCESS: All done!")
+```
+
+### Exception: Web Templates and JSON
+Unicode characters ARE acceptable in:
+- HTML templates (properly encoded)
+- JSON responses (UTF-8 encoded)
+- Database content (properly handled by ORM)
+- Frontend JavaScript and CSS
+
+**Rationale**: This prevents `UnicodeEncodeError: 'charmap' codec can't encode character` errors that occur when the Windows console or terminal cannot display Unicode characters, especially in automated testing and CI/CD environments.
+
+## Important Instruction Reminders
+
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless they're absolutely necessary for achieving your goal
+- ALWAYS prefer editing an existing file to creating a new one
+- NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User
+- NEVER add Unicode characters in print statements, error messages, or console output - use ASCII alternatives only

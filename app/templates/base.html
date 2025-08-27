@@ -29,6 +29,12 @@
                                     Schedule
                                 </a>
                             {% endif %}
+                            {% if current_user.has_permission('forecasting') %}
+                                <a href="{{ url_for('main.forecasting_dashboard') }}" 
+                                   class="text-indigo-100 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                                    Forecasting
+                                </a>
+                            {% endif %}
                             {% if current_user.has_permission('inventory') %}
                                 <a href="#" class="text-indigo-100 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                                     Inventory

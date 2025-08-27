@@ -171,3 +171,6 @@ secrets/
 # Large folders in context
 context/api-documentation/
 context/claude-code-docs
+
+# temp-tests
+temp-tests/

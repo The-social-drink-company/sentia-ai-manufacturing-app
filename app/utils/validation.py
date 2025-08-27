@@ -74,7 +74,7 @@ class BaseValidator:
     
     def validate(self, value: Any, row_data: Dict = None, row_number: int = None) -> ValidationResult:
         """Main validation method - override in subclasses"""
-        result = ValidationResult()
+        result = ValidationResult(is_valid=True)
         
         # Check required field
         if self.required and (value is None or value == ''):

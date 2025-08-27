@@ -9,7 +9,8 @@ import uuid
 
 from app import db
 from app.models.data_import import DataImport, ImportError, ImportLog, ImportTemplate, ImportStatus, ImportType, FileType
-from app.utils.import_processor import ImportProcessor, FileUploadHandler
+# Lazy import to avoid openpyxl/numpy compatibility issues in tests
+# from app.utils.import_processor import ImportProcessor, FileUploadHandler
 from app.utils.security import require_permission, log_user_activity
 from app.utils.validation import create_product_validator, create_sales_validator
 
@@ -80,6 +81,7 @@ def upload():
             }), 400
         
         # Initialize file handler
+        from app.utils.import_processor import FileUploadHandler
         upload_folder = os.path.join(current_app.instance_path, 'uploads')
         file_handler = FileUploadHandler(upload_folder)
         
@@ -349,6 +351,7 @@ def _validate_file_data(file_path: str, file_type: FileType, import_type: str) -
     """Validate data in uploaded file"""
     try:
         # Initialize file handler and load data
+        from app.utils.import_processor import FileUploadHandler
         upload_folder = os.path.join(current_app.instance_path, 'uploads')
         file_handler = FileUploadHandler(upload_folder)
         
@@ -419,6 +422,7 @@ def _start_background_import(import_id: str):
     def process_import():
         try:
             with current_app.app_context():
+                from app.utils.import_processor import ImportProcessor
                 processor = ImportProcessor(import_id)
                 processor.process_import()
         except Exception as e:

@@ -40,16 +40,25 @@ cd sentia-manufacturing-dashboard
 
 ### 2. Create virtual environment
 ```bash
+# Windows (uses a short, external path to avoid long-path issues):
+py -3.13 -m venv C:\Users\DanielKenny\venvs\sentia
+# or:
+python -m venv C:\Users\DanielKenny\venvs\sentia
+
+# Mac/Linux (project-local venv):
 python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Mac/Linux:
-source venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 3. Activate and install dependencies
 ```bash
-pip install -r requirements.txt
+# Windows:
+C:\Users\DanielKenny\venvs\sentia\Scripts\activate
+python -m pip install -r requirements.txt
+
+# Mac/Linux:
+source venv/bin/activate
+python -m pip install -r requirements.txt
+```
 ```
 
 ### 4. Configure environment variables
@@ -95,6 +104,36 @@ All branches auto-deploy to respective Railway environments with corresponding N
 - Job tracking and monitoring
 - Performance analytics dashboard
 - Multi-user support with role-based access
+
+## Database
+
+- Uses PostgreSQL in production (Neon), SQLite by default in local development.
+- Configure via `.env`:
+  - `DATABASE_URL` (production), `DEV_DATABASE_URL` (local), `TEST_DATABASE_URL` (CI/tests)
+- Manage schema with Flask-Migrate:
+  - Initialize once: `flask db init`
+  - Create migration: `flask db migrate -m "<message>"`
+  - Apply: `flask db upgrade`
+- Branch deployments auto-point to environment-specific databases.
+
+## User Management
+
+- Roles: admin, manager, operator, viewer (least-privilege by default).
+- Sign-in: username or email + password; optional "Remember me" keeps you signed in longer.
+- Security: account locks after multiple failed attempts; passwords must be strong; periodic password change enforced.
+- Self-service: change password, request password reset if you forget it.
+- Admins only: create users, set roles, activate/deactivate accounts, unlock locked accounts, and view users in the User Management page.
+
+## Data Import
+
+- Upload CSV/XLSX files for supported types (e.g., products, historical_sales).
+- Go to Data Import, choose an import type, and select one or more files.
+- Choose Validate to preview and check data without importing, or Import to run a background job.
+- Built-in validation highlights errors, warnings, duplicates, and can auto-correct selected issues.
+- Track progress in real time; open the import to see logs, errors, and summaries.
+- Download ready-made templates from the Templates tab to format your data correctly.
+- View all past imports, filter by status/type, and drill into details from History.
+- Requires the data_import permission (managers and admins typically have access).
 
 ## Development Workflow
 

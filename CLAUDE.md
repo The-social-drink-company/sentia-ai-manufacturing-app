@@ -19,9 +19,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Important**: Always use `python -m flask [command]` instead of `flask [command]` to ensure proper module resolution and environment compatibility.
 
 ### Environment Setup
-1. Create virtual environment: `python -m venv venv`
-2. Activate: `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Mac/Linux)
-3. Install dependencies: `pip install -r requirements.txt`
+1. Create virtual environment:
+   - Windows: `py -3.13 -m venv C:\Users\DanielKenny\venvs\sentia` (or `python -m venv C:\Users\DanielKenny\venvs\sentia`)
+   - Mac/Linux: `python -m venv venv`
+2. Activate:
+   - Windows: `C:\Users\DanielKenny\venvs\sentia\Scripts\activate`
+   - Mac/Linux: `source venv/bin/activate`
+3. Install dependencies: `python -m pip install -r requirements.txt`
 4. Copy environment template: `cp .env.template .env` and configure
 
 ## Architecture Overview

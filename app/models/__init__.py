@@ -12,10 +12,22 @@ from app.models.inventory_level import InventoryLevel
 from app.models.working_capital import WorkingCapital
 from app.models.system_settings import SystemSettings
 from app.models.data_import import DataImport, ImportError, ImportLog, ImportTemplate
+from app.models.api_integration import (
+    ApiCredential, ApiIntegration, IntegrationSyncLog, WebhookEvent, 
+    IntegrationHealth, IntegrationProvider, IntegrationType, IntegrationStatus
+)
+from app.models.admin_models import (
+    SystemAlert, SystemMetric, SecurityEvent, MaintenanceWindow, BackupRecord,
+    AlertType, AlertStatus
+)
 
 __all__ = [
     'Job', 'Schedule', 'Resource', 'User', 'AuditLog',
     'Product', 'Market', 'SalesChannel', 'HistoricalSales',
     'Forecast', 'InventoryLevel', 'WorkingCapital', 'SystemSettings',
-    'DataImport', 'ImportError', 'ImportLog', 'ImportTemplate'
+    'DataImport', 'ImportError', 'ImportLog', 'ImportTemplate',
+    'ApiCredential', 'ApiIntegration', 'IntegrationSyncLog', 'WebhookEvent',
+    'IntegrationHealth', 'IntegrationProvider', 'IntegrationType', 'IntegrationStatus',
+    'SystemAlert', 'SystemMetric', 'SecurityEvent', 'MaintenanceWindow', 'BackupRecord',
+    'AlertType', 'AlertStatus'
 ]

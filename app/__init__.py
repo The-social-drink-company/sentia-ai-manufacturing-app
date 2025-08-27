@@ -33,17 +33,23 @@ def create_app(config_class=Config):
     from app.models import (
         User, Product, Market, SalesChannel, HistoricalSales,
         Forecast, InventoryLevel, WorkingCapital, SystemSettings,
-        Job, Schedule, Resource, DataImport, ImportError, ImportLog, ImportTemplate
+        Job, Schedule, Resource, DataImport, ImportError, ImportLog, ImportTemplate,
+        ApiCredential, ApiIntegration, IntegrationSyncLog, WebhookEvent, IntegrationHealth,
+        SystemAlert, SystemMetric, SecurityEvent, MaintenanceWindow, BackupRecord
     )
     
-    from app.routes import main, api, auth, data_import
+    from app.routes import main, api, auth, data_import, api_integrations, admin
     app.register_blueprint(main.bp)
     app.register_blueprint(api.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(data_import.bp)
+    app.register_blueprint(api_integrations.bp)
+    app.register_blueprint(admin.bp)
     
     # Register CLI commands
     from app import cli
+    from app.cli_integrations import register_cli_commands
     cli.init_app(app)
+    register_cli_commands(app)
     
     return app

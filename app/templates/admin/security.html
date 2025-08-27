@@ -1,0 +1,558 @@
+{% extends "base.html" %}
+
+{% block title %}Security Monitoring{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-shield-alt"></i> Security Monitoring</h1>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary" onclick="refreshSecurityData()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                    <button type="button" class="btn btn-outline-warning" onclick="exportSecurityReport()">
+                        <i class="fas fa-download"></i> Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Statistics -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Events Today</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ security_stats.total_today }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">High Risk Events</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ security_stats.high_risk }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Blocked Events</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ security_stats.blocked }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-ban fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Unique IPs Today</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ security_stats.unique_ips_today }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-globe fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Security Events Chart -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Security Events Timeline</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="securityEventsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Level Distribution -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Risk Level Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="riskDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="event_type" class="form-label">Event Type</label>
+                    <select class="form-select" id="event_type" name="event_type">
+                        <option value="all" {{ 'selected' if event_type == 'all' }}>All Types</option>
+                        <option value="login_failed" {{ 'selected' if event_type == 'login_failed' }}>Failed Login</option>
+                        <option value="permission_denied" {{ 'selected' if event_type == 'permission_denied' }}>Permission Denied</option>
+                        <option value="suspicious_activity" {{ 'selected' if event_type == 'suspicious_activity' }}>Suspicious Activity</option>
+                        <option value="brute_force" {{ 'selected' if event_type == 'brute_force' }}>Brute Force</option>
+                        <option value="data_breach_attempt" {{ 'selected' if event_type == 'data_breach_attempt' }}>Data Breach Attempt</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="risk_level" class="form-label">Risk Level</label>
+                    <select class="form-select" id="risk_level" name="risk_level">
+                        <option value="all" {{ 'selected' if risk_level == 'all' }}>All Levels</option>
+                        <option value="1" {{ 'selected' if risk_level == '1' }}>Low</option>
+                        <option value="2" {{ 'selected' if risk_level == '2' }}>Medium</option>
+                        <option value="3" {{ 'selected' if risk_level == '3' }}>High</option>
+                        <option value="4" {{ 'selected' if risk_level == '4' }}>Critical</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="time_range" class="form-label">Time Range</label>
+                    <select class="form-select" id="time_range" name="time_range">
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d">Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Security Events Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Security Events</h6>
+        </div>
+        <div class="card-body">
+            {% if events.items %}
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Event Type</th>
+                            <th>Description</th>
+                            <th>IP Address</th>
+                            <th>User</th>
+                            <th>Risk Level</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events.items %}
+                        <tr class="{{ 'table-danger' if event.risk_level >= 4 else 'table-warning' if event.risk_level >= 3 else '' }}">
+                            <td>
+                                <small>{{ event.occurred_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                            </td>
+                            <td>
+                                <span class="badge badge-secondary">{{ event.event_type }}</span>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 200px;" title="{{ event.description or 'N/A' }}">
+                                    {{ event.description or 'N/A' }}
+                                </div>
+                            </td>
+                            <td>
+                                <code>{{ event.ip_address or 'N/A' }}</code>
+                                {% if event.ip_address %}
+                                <button type="button" class="btn btn-link btn-sm p-0 ms-1" 
+                                        onclick="lookupIP('{{ event.ip_address }}')" title="Lookup IP">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if event.user %}
+                                    <a href="#" onclick="viewUser({{ event.user.id }})">{{ event.user.username }}</a>
+                                {% else %}
+                                    <span class="text-muted">Anonymous</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if event.risk_level == 1 %}
+                                    <span class="badge badge-success">Low</span>
+                                {% elif event.risk_level == 2 %}
+                                    <span class="badge badge-info">Medium</span>
+                                {% elif event.risk_level == 3 %}
+                                    <span class="badge badge-warning">High</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Critical</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if event.blocked %}
+                                    <span class="badge badge-danger">Blocked</span>
+                                {% else %}
+                                    <span class="badge badge-success">Allowed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-info" 
+                                            onclick="viewEventDetails({{ event.id }})" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if event.ip_address and not event.blocked %}
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="blockIP('{{ event.ip_address }}')" title="Block IP">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    {% endif %}
+                                    {% if event.risk_level >= 3 %}
+                                        <button type="button" class="btn btn-outline-warning" 
+                                                onclick="escalateEvent({{ event.id }})" title="Escalate">
+                                            <i class="fas fa-arrow-up"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if events.pages > 1 %}
+            <nav aria-label="Security events pagination">
+                <ul class="pagination justify-content-center">
+                    {% if events.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.security_monitoring', page=events.prev_num, event_type=event_type, risk_level=risk_level) }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in events.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != events.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.security_monitoring', page=page_num, event_type=event_type, risk_level=risk_level) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if events.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.security_monitoring', page=events.next_num, event_type=event_type, risk_level=risk_level) }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center">
+                <p class="text-muted">No security events found matching your criteria.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Event Details Modal -->
+<div class="modal fade" id="eventDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Security Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="eventDetailsContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="blockEventIP">Block IP</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- IP Lookup Modal -->
+<div class="modal fade" id="ipLookupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">IP Address Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="ipLookupContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Security Events Timeline Chart
+const timelineCtx = document.getElementById('securityEventsChart').getContext('2d');
+const securityEventsChart = new Chart(timelineCtx, {
+    type: 'line',
+    data: {
+        labels: [], // Will be populated with time labels
+        datasets: [{
+            label: 'Security Events',
+            data: [],
+            borderColor: 'rgb(220, 53, 69)',
+            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+            tension: 0.3
+        }, {
+            label: 'High Risk Events',
+            data: [],
+            borderColor: 'rgb(255, 193, 7)',
+            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+            tension: 0.3
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Risk Distribution Pie Chart
+const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+const riskDistributionChart = new Chart(riskCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Low', 'Medium', 'High', 'Critical'],
+        datasets: [{
+            data: [40, 30, 20, 10], // Sample data - would be populated from backend
+            backgroundColor: [
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(23, 162, 184, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(220, 53, 69, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+function refreshSecurityData() {
+    // Refresh the current page with updated data
+    location.reload();
+}
+
+function exportSecurityReport() {
+    // Generate and download security report
+    const params = new URLSearchParams(window.location.search);
+    const exportUrl = '/admin/security/export?' + params.toString();
+    window.open(exportUrl, '_blank');
+}
+
+function viewEventDetails(eventId) {
+    // Fetch and display detailed event information
+    fetch(`/admin/security/events/${eventId}`)
+        .then(response => response.json())
+        .then(data => {
+            const content = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Event Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>ID:</strong></td><td>${data.id}</td></tr>
+                            <tr><td><strong>Type:</strong></td><td>${data.event_type}</td></tr>
+                            <tr><td><strong>Time:</strong></td><td>${data.occurred_at}</td></tr>
+                            <tr><td><strong>Risk Level:</strong></td><td>${getRiskBadge(data.risk_level)}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Network Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>IP Address:</strong></td><td><code>${data.ip_address || 'N/A'}</code></td></tr>
+                            <tr><td><strong>User Agent:</strong></td><td class="text-truncate">${data.user_agent || 'N/A'}</td></tr>
+                            <tr><td><strong>Blocked:</strong></td><td>${data.blocked ? 'Yes' : 'No'}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Description</h6>
+                        <p>${data.description || 'No additional details available'}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('eventDetailsContent').innerHTML = content;
+            
+            // Set up block IP button
+            const blockBtn = document.getElementById('blockEventIP');
+            if (data.ip_address && !data.blocked) {
+                blockBtn.style.display = 'block';
+                blockBtn.onclick = () => blockIP(data.ip_address);
+            } else {
+                blockBtn.style.display = 'none';
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error fetching event details:', error);
+            alert('Failed to load event details');
+        });
+}
+
+function lookupIP(ipAddress) {
+    const modal = new bootstrap.Modal(document.getElementById('ipLookupModal'));
+    modal.show();
+    
+    // Mock IP lookup - in production, you'd call a real IP geolocation service
+    setTimeout(() => {
+        const content = `
+            <h6>IP Address: <code>${ipAddress}</code></h6>
+            <table class="table table-sm">
+                <tr><td><strong>Country:</strong></td><td>Example Country</td></tr>
+                <tr><td><strong>Region:</strong></td><td>Example Region</td></tr>
+                <tr><td><strong>City:</strong></td><td>Example City</td></tr>
+                <tr><td><strong>ISP:</strong></td><td>Example ISP</td></tr>
+                <tr><td><strong>Organization:</strong></td><td>Example Org</td></tr>
+            </table>
+            <p class="text-muted small">Note: This is mock data. Integrate with a real IP geolocation service.</p>
+        `;
+        
+        document.getElementById('ipLookupContent').innerHTML = content;
+    }, 1000);
+}
+
+function blockIP(ipAddress) {
+    if (confirm(`Are you sure you want to block IP address ${ipAddress}?`)) {
+        fetch('/admin/security/block-ip', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ip_address: ipAddress})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('IP address blocked successfully');
+                location.reload();
+            } else {
+                alert('Failed to block IP address: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Failed to block IP address');
+        });
+    }
+}
+
+function escalateEvent(eventId) {
+    if (confirm('Escalate this security event to administrators?')) {
+        fetch(`/admin/security/events/${eventId}/escalate`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Event escalated successfully');
+            } else {
+                alert('Failed to escalate event: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Failed to escalate event');
+        });
+    }
+}
+
+function viewUser(userId) {
+    // Navigate to user details in user management
+    window.open(`/admin/users?user_id=${userId}`, '_blank');
+}
+
+function getRiskBadge(riskLevel) {
+    const badges = {
+        1: '<span class="badge badge-success">Low</span>',
+        2: '<span class="badge badge-info">Medium</span>',
+        3: '<span class="badge badge-warning">High</span>',
+        4: '<span class="badge badge-danger">Critical</span>'
+    };
+    return badges[riskLevel] || '<span class="badge badge-secondary">Unknown</span>';
+}
+
+// Auto-refresh security data every 30 seconds
+setInterval(refreshSecurityData, 30000);
+</script>
+{% endblock %}

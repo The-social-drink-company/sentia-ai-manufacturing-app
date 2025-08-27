@@ -2,30 +2,449 @@
 
 {% block title %}Dashboard - Sentia Manufacturing{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/advanced-features.css') }}">
+<style>
+.card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-success { background: #10b981; }
+.toast-error { background: #ef4444; }
+.toast-warning { background: #f59e0b; }
+.toast-info { background: #06b6d4; }
+
+.widget-card.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.widget-card.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #6366f1;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.widget-card.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    background: white;
+    border-radius: 0;
+}
+
+body.widget-fullscreen {
+    overflow: hidden;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<h1>Manufacturing Dashboard</h1>
+<div class="dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Manufacturing Dashboard</h1>
+        <div class="dashboard-actions">
+            <label class="btn btn-secondary" data-tooltip="Automatically refresh data every 30 seconds">
+                <input type="checkbox" id="auto-refresh-toggle" checked style="margin-right: 0.5rem;">
+                Auto Refresh
+            </label>
+            <button class="btn btn-secondary" onclick="window.sentiaDashboard?.refreshAllWidgets()" data-tooltip="Refresh all dashboard data (Ctrl+R)">
+                <span>🔄</span> Refresh
+            </button>
+            <button class="btn btn-primary" onclick="showImportWizard()" data-tooltip="Import your own data files">
+                <span>📊</span> Import Data
+            </button>
+        </div>
+    </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 2rem 0;">
-    <div class="card">
-        <h3>Active Jobs</h3>
-        <p style="font-size: 2rem; font-weight: bold; color: #3498db;">0</p>
+    <!-- Dashboard Filters -->
+    <div class="dashboard-filters">
+        <div class="filter-group">
+            <label class="filter-label">Time Range</label>
+            <select id="time-range-select" class="filter-select dashboard-filter" name="timeRange">
+                <option value="1d">Last 24 Hours</option>
+                <option value="7d" selected>Last 7 Days</option>
+                <option value="30d">Last 30 Days</option>
+                <option value="90d">Last 90 Days</option>
+                <option value="1y">Last Year</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Region</label>
+            <select class="filter-select dashboard-filter" name="region">
+                <option value="all">All Regions</option>
+                <option value="uk">United Kingdom</option>
+                <option value="eu">European Union</option>
+                <option value="usa">United States</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Product</label>
+            <select class="filter-select dashboard-filter" name="product">
+                <option value="all">All Products</option>
+                <option value="gaba-red">GABA Red</option>
+                <option value="gaba-black">GABA Black</option>
+                <option value="gaba-gold">GABA Gold</option>
+            </select>
+        </div>
     </div>
-    <div class="card">
-        <h3>Pending Jobs</h3>
-        <p style="font-size: 2rem; font-weight: bold; color: #f39c12;">0</p>
+
+    <!-- Alert Container -->
+    <div id="alert-container" class="mb-4"></div>
+
+    <!-- KPI Dashboard Grid -->
+    <div class="dashboard-grid">
+        <!-- Active Jobs Widget -->
+        <div class="widget-card kpi-widget" id="active-jobs-widget" data-context-menu="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">Active Jobs</h3>
+                <div class="widget-actions">
+                    <button class="widget-action widget-refresh" data-tooltip="Refresh widget data">
+                        🔄
+                    </button>
+                    <button class="widget-action widget-export" data-tooltip="Export data to CSV">
+                        📊
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="kpi-value" id="kpi-active-jobs">0</div>
+                <div class="kpi-label">Currently Processing</div>
+                <div class="kpi-change positive">+5.2%</div>
+            </div>
+        </div>
+
+        <!-- Pending Jobs Widget -->
+        <div class="widget-card kpi-widget" id="pending-jobs-widget" data-context-menu="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">Pending Jobs</h3>
+                <div class="widget-actions">
+                    <button class="widget-action widget-refresh" data-tooltip="Refresh widget data">
+                        🔄
+                    </button>
+                    <button class="widget-action widget-export" data-tooltip="Export data to CSV">
+                        📊
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="kpi-value" id="kpi-pending-jobs">0</div>
+                <div class="kpi-label">Awaiting Processing</div>
+                <div class="kpi-change negative">-2.1%</div>
+            </div>
+        </div>
+
+        <!-- Completed Today Widget -->
+        <div class="widget-card kpi-widget" id="completed-jobs-widget" data-context-menu="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">Completed Today</h3>
+                <div class="widget-actions">
+                    <button class="widget-action widget-refresh" data-tooltip="Refresh widget data">
+                        🔄
+                    </button>
+                    <button class="widget-action widget-export" data-tooltip="Export data to CSV">
+                        📊
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="kpi-value" id="kpi-completed-jobs">0</div>
+                <div class="kpi-label">Jobs Finished</div>
+                <div class="kpi-change positive">+8.7%</div>
+            </div>
+        </div>
+
+        <!-- Resource Utilization Widget -->
+        <div class="widget-card kpi-widget" id="utilization-widget" data-context-menu="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">Resource Utilization</h3>
+                <div class="widget-actions">
+                    <button class="widget-action widget-refresh" data-tooltip="Refresh widget data">
+                        🔄
+                    </button>
+                    <button class="widget-action widget-export" data-tooltip="Export data to CSV">
+                        📊
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="kpi-value" id="kpi-utilization">0%</div>
+                <div class="kpi-label">Average Capacity</div>
+                <div class="kpi-change neutral">+0.0%</div>
+                <div class="progress-bar" style="margin-top: 1rem;">
+                    <div class="progress-fill" style="width: 0%" id="utilization-progress"></div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card">
-        <h3>Completed Today</h3>
-        <p style="font-size: 2rem; font-weight: bold; color: #27ae60;">0</p>
+
+    <!-- Chart Widgets Row -->
+    <div class="widget-row">
+        <!-- Demand Forecast Chart -->
+        <div class="widget-card chart-widget" id="forecast-widget" data-context-menu="chart">
+            <div class="widget-header">
+                <h3 class="widget-title">📈 Demand Forecast</h3>
+                <div class="widget-actions">
+                    <button class="widget-action widget-refresh" data-tooltip="Refresh chart data">
+                        🔄
+                    </button>
+                    <button class="widget-action widget-export" data-tooltip="Export chart as image">
+                        📊
+                    </button>
+                    <button class="widget-action widget-fullscreen" data-tooltip="View in fullscreen (F11)">
+                        ⛶
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="chart-container">
+                    <canvas id="demand-forecast-chart" data-context-menu="chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Levels Chart -->
+        <div class="widget-card chart-widget" id="stock-widget" data-context-menu="chart">
+            <div class="widget-header">
+                <h3 class="widget-title">📦 Stock Levels</h3>
+                <div class="widget-actions">
+                    <button class="widget-action widget-refresh" data-tooltip="Refresh chart data">
+                        🔄
+                    </button>
+                    <button class="widget-action widget-export" data-tooltip="Export chart as image">
+                        📊
+                    </button>
+                    <button class="widget-action widget-fullscreen" data-tooltip="View in fullscreen (F11)">
+                        ⛶
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="chart-container">
+                    <canvas id="stock-levels-chart" data-context-menu="chart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card">
-        <h3>Resource Utilization</h3>
-        <p style="font-size: 2rem; font-weight: bold; color: #9b59b6;">0%</p>
+
+    <!-- Second Chart Row -->
+    <div class="widget-row">
+        <!-- Working Capital Chart -->
+        <div class="widget-card chart-widget" id="capital-widget" data-context-menu="chart">
+            <div class="widget-header">
+                <h3 class="widget-title">💰 Working Capital</h3>
+                <div class="widget-actions">
+                    <button class="widget-action widget-refresh" data-tooltip="Refresh chart data">
+                        🔄
+                    </button>
+                    <button class="widget-action widget-export" data-tooltip="Export chart as image">
+                        📊
+                    </button>
+                    <button class="widget-action widget-fullscreen" data-tooltip="View in fullscreen (F11)">
+                        ⛶
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="chart-container">
+                    <canvas id="working-capital-chart" data-context-menu="chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Capacity Utilization Chart -->
+        <div class="widget-card chart-widget" id="capacity-widget" data-context-menu="chart">
+            <div class="widget-header">
+                <h3 class="widget-title">🏭 Production Capacity</h3>
+                <div class="widget-actions">
+                    <button class="widget-action widget-refresh" data-tooltip="Refresh chart data">
+                        🔄
+                    </button>
+                    <button class="widget-action widget-export" data-tooltip="Export chart as image">
+                        📊
+                    </button>
+                    <button class="widget-action widget-fullscreen" data-tooltip="View in fullscreen (F11)">
+                        ⛶
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="chart-container">
+                    <canvas id="capacity-utilization-chart" data-context-menu="chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Widget -->
+    <div class="widget-card" id="recent-jobs-widget" data-context-menu="widget">
+        <div class="widget-header">
+            <h3 class="widget-title">📋 Recent Jobs</h3>
+            <div class="widget-actions">
+                <button class="widget-action widget-refresh" data-tooltip="Refresh jobs data">
+                    🔄
+                </button>
+                <button class="widget-action widget-export" data-tooltip="Export to Excel">
+                    📊
+                </button>
+            </div>
+        </div>
+        <div class="widget-body">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Job ID</th>
+                            <th>Product</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Started</th>
+                            <th>Est. Completion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>JOB-001</td>
+                            <td>GABA Red</td>
+                            <td><span class="status-indicator success"><span class="status-dot"></span>In Progress</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill success" style="width: 65%"></div>
+                                </div>
+                                65%
+                            </td>
+                            <td>2024-01-15 09:30</td>
+                            <td>2024-01-15 14:00</td>
+                        </tr>
+                        <tr>
+                            <td>JOB-002</td>
+                            <td>GABA Black</td>
+                            <td><span class="status-indicator warning"><span class="status-dot"></span>Pending</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill warning" style="width: 0%"></div>
+                                </div>
+                                0%
+                            </td>
+                            <td>-</td>
+                            <td>2024-01-15 16:00</td>
+                        </tr>
+                        <tr>
+                            <td>JOB-003</td>
+                            <td>GABA Gold</td>
+                            <td><span class="status-indicator success"><span class="status-dot"></span>Completed</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill success" style="width: 100%"></div>
+                                </div>
+                                100%
+                            </td>
+                            <td>2024-01-15 06:00</td>
+                            <td>2024-01-15 10:30</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="card">
-    <h2>Recent Jobs</h2>
-    <p>No jobs to display</p>
+<!-- Import Wizard Modal (placeholder) -->
+<div id="import-wizard-modal" style="display: none;">
+    <!-- Import wizard will be implemented in next task -->
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/import-wizard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard-customization.js') }}"></script>
+<script src="{{ url_for('static', filename='js/advanced-features.js') }}"></script>
+
+<script>
+// Add some sample data updates for demonstration
+setInterval(() => {
+    if (window.sentiaDashboard) {
+        // Simulate live data updates
+        const activeJobs = Math.floor(Math.random() * 20) + 5;
+        const pendingJobs = Math.floor(Math.random() * 15) + 2;
+        const completedJobs = Math.floor(Math.random() * 50) + 20;
+        const utilization = Math.floor(Math.random() * 30) + 70;
+        
+        document.getElementById('kpi-active-jobs').textContent = activeJobs;
+        document.getElementById('kpi-pending-jobs').textContent = pendingJobs;
+        document.getElementById('kpi-completed-jobs').textContent = completedJobs;
+        document.getElementById('kpi-utilization').textContent = utilization + '%';
+        document.getElementById('utilization-progress').style.width = utilization + '%';
+    }
+}, 5000);
+
+// Demo notifications
+setTimeout(() => {
+    if (window.advancedFeatures) {
+        window.advancedFeatures.addNotification({
+            type: 'success',
+            message: 'Dashboard loaded successfully',
+            description: 'All widgets are ready and data is being updated',
+            timeout: 5000
+        });
+        
+        // Add some sample notifications
+        setTimeout(() => {
+            window.advancedFeatures.addNotification({
+                type: 'warning',
+                message: 'Stock level alert',
+                description: 'GABA Red inventory is below reorder point'
+            });
+        }, 10000);
+    }
+}, 2000);
+</script>
 {% endblock %}

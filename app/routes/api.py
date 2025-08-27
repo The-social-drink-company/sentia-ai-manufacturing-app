@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, current_app
 from flask_login import login_required, current_user
-from datetime import date, datetime
-import uuid
+from datetime import date, datetime, timedelta
+import uuid, random
 from app import db
 from app.models.forecast import Forecast
 from app.models.product import Product
@@ -37,6 +37,255 @@ def get_schedule():
 def optimize_schedule():
     data = request.get_json()
     return jsonify({'status': 'success', 'message': 'Schedule optimization initiated'})
+
+# === DASHBOARD ENDPOINTS ===
+
+@bp.route('/dashboard/kpis', methods=['GET'])
+@login_required
+def get_dashboard_kpis():
+    """Get KPI data for dashboard widgets."""
+    try:
+        time_range = request.args.get('timeRange', '7d')
+        region = request.args.get('region', 'all')
+        product = request.args.get('product', 'all')
+        
+        # Mock KPI data - in real implementation, query from database
+        kpi_data = {
+            'active_jobs': {
+                'current': random.randint(5, 25),
+                'change': round(random.uniform(-10, 15), 1)
+            },
+            'pending_jobs': {
+                'current': random.randint(2, 18),
+                'change': round(random.uniform(-5, 8), 1)
+            },
+            'completed_jobs': {
+                'current': random.randint(20, 70),
+                'change': round(random.uniform(-3, 12), 1)
+            },
+            'utilization': {
+                'current': random.randint(70, 95),
+                'change': round(random.uniform(-2, 5), 1)
+            }
+        }
+        
+        return jsonify(kpi_data)
+        
+    except Exception as e:
+        current_app.logger.error(f"Error fetching KPI data: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@bp.route('/dashboard/forecast', methods=['GET'])
+@login_required
+def get_dashboard_forecast():
+    """Get demand forecast data for chart."""
+    try:
+        time_range = request.args.get('timeRange', '7d')
+        region = request.args.get('region', 'all')
+        product = request.args.get('product', 'all')
+        
+        # Generate mock forecast data based on time range
+        days = {'1d': 1, '7d': 7, '30d': 30, '90d': 90, '1y': 365}.get(time_range, 7)
+        
+        labels = []
+        actual_data = []
+        forecast_data = []
+        
+        base_date = datetime.now() - timedelta(days=days)
+        base_demand = 100
+        
+        for i in range(days):
+            current_date = base_date + timedelta(days=i)
+            labels.append(current_date.strftime('%Y-%m-%d'))
+            
+            # Simulate seasonal patterns and random variation
+            seasonal_factor = 1 + 0.2 * (i % 7 - 3) / 7  # Weekly pattern
+            trend_factor = 1 + 0.001 * i  # Slight upward trend
+            noise = random.uniform(0.8, 1.2)
+            
+            actual = int(base_demand * seasonal_factor * trend_factor * noise)
+            forecast = int(actual * random.uniform(0.95, 1.05))  # Forecast close to actual
+            
+            actual_data.append(actual)
+            forecast_data.append(forecast)
+        
+        return jsonify({
+            'labels': labels,
+            'actual': actual_data,
+            'forecast': forecast_data
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error fetching forecast data: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@bp.route('/dashboard/stock-levels', methods=['GET'])
+@login_required
+def get_dashboard_stock_levels():
+    """Get stock level data for chart."""
+    try:
+        region = request.args.get('region', 'all')
+        product_filter = request.args.get('product', 'all')
+        
+        products = ['GABA Red', 'GABA Black', 'GABA Gold']
+        current_stock = []
+        reorder_points = []
+        safety_stock = []
+        
+        for product in products:
+            if product_filter != 'all' and product_filter not in product.lower():
+                continue
+                
+            current = random.randint(50, 500)
+            reorder = int(current * 0.3)
+            safety = int(reorder * 0.5)
+            
+            current_stock.append(current)
+            reorder_points.append(reorder)
+            safety_stock.append(safety)
+        
+        return jsonify({
+            'products': products,
+            'current': current_stock,
+            'reorderPoint': reorder_points,
+            'safetyStock': safety_stock
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error fetching stock data: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@bp.route('/dashboard/working-capital', methods=['GET'])
+@login_required
+def get_dashboard_working_capital():
+    """Get working capital breakdown data."""
+    try:
+        region = request.args.get('region', 'all')
+        
+        # Mock working capital data
+        total_capital = 1000000
+        
+        inventory = random.randint(250000, 450000)
+        receivables = random.randint(150000, 350000)
+        cash = random.randint(100000, 200000)
+        payables = total_capital - inventory - receivables - cash
+        
+        return jsonify({
+            'inventory': inventory,
+            'receivables': receivables,
+            'cash': cash,
+            'payables': abs(payables)  # Ensure positive value
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error fetching working capital data: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@bp.route('/dashboard/capacity', methods=['GET'])
+@login_required
+def get_dashboard_capacity():
+    """Get production capacity utilization data."""
+    try:
+        time_range = request.args.get('timeRange', '7d')
+        
+        resources = ['Production Line 1', 'Production Line 2', 'Packaging', 'Quality Control', 'Warehouse']
+        utilization = []
+        
+        for resource in resources:
+            # Simulate different utilization levels for different resources
+            if 'Production' in resource:
+                util = random.randint(75, 95)
+            elif resource == 'Packaging':
+                util = random.randint(60, 85)
+            elif resource == 'Quality Control':
+                util = random.randint(70, 90)
+            else:
+                util = random.randint(50, 80)
+            
+            utilization.append(util)
+        
+        return jsonify({
+            'resources': resources,
+            'utilization': utilization
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error fetching capacity data: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@bp.route('/dashboard/alerts', methods=['GET'])
+@login_required
+def get_dashboard_alerts():
+    """Get current alerts and notifications."""
+    try:
+        alerts = []
+        
+        # Generate some mock alerts
+        alert_types = [
+            {'type': 'warning', 'message': 'GABA Red stock level below reorder point'},
+            {'type': 'info', 'message': 'Production Line 2 scheduled maintenance in 2 days'},
+            {'type': 'success', 'message': 'Weekly production target exceeded by 8%'},
+            {'type': 'error', 'message': 'Quality check failed for batch GB-2024-001'}
+        ]
+        
+        # Randomly select 1-3 alerts
+        num_alerts = random.randint(1, 3)
+        selected_alerts = random.sample(alert_types, num_alerts)
+        
+        for alert in selected_alerts:
+            alerts.append({
+                'id': str(uuid.uuid4()),
+                'type': alert['type'],
+                'message': alert['message'],
+                'timestamp': datetime.now().isoformat(),
+                'read': False
+            })
+        
+        return jsonify({'alerts': alerts})
+        
+    except Exception as e:
+        current_app.logger.error(f"Error fetching alerts: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@bp.route('/dashboard/recent-jobs', methods=['GET'])
+@login_required
+def get_recent_jobs():
+    """Get recent manufacturing jobs."""
+    try:
+        limit = int(request.args.get('limit', 10))
+        
+        jobs = []
+        products = ['GABA Red', 'GABA Black', 'GABA Gold']
+        statuses = ['In Progress', 'Pending', 'Completed', 'On Hold']
+        
+        for i in range(limit):
+            job_id = f"JOB-{random.randint(1000, 9999)}"
+            product = random.choice(products)
+            status = random.choice(statuses)
+            progress = random.randint(0, 100) if status != 'Completed' else 100
+            
+            if status == 'Pending':
+                progress = 0
+            elif status == 'Completed':
+                progress = 100
+            
+            started = datetime.now() - timedelta(hours=random.randint(1, 48))
+            estimated_completion = started + timedelta(hours=random.randint(4, 12))
+            
+            jobs.append({
+                'id': job_id,
+                'product': product,
+                'status': status,
+                'progress': progress,
+                'started': started.strftime('%Y-%m-%d %H:%M') if status != 'Pending' else None,
+                'estimated_completion': estimated_completion.strftime('%Y-%m-%d %H:%M')
+            })
+        
+        return jsonify({'jobs': jobs})
+        
+    except Exception as e:
+        current_app.logger.error(f"Error fetching recent jobs: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 # === FORECASTING ENDPOINTS ===
 

@@ -18,12 +18,17 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     CORS(app)
     
-    # Initialize Flask-Login
+    # Initialize Flask-Login (keep for backward compatibility during transition)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
     login_manager.login_message_category = 'info'
     login_manager.session_protection = 'strong'
+    
+    # Initialize Clerk Authentication
+    from app.auth import ClerkAuth
+    clerk_auth = ClerkAuth()
+    clerk_auth.init_app(app)
     
     @login_manager.user_loader
     def load_user(user_id):
@@ -32,17 +37,18 @@ def create_app(config_class=Config):
     
     # Import models so Flask-Migrate can detect them
     from app.models import (
-        User, Product, Market, SalesChannel, HistoricalSales,
+        User, ClerkUser, Product, Market, SalesChannel, HistoricalSales,
         Forecast, InventoryLevel, WorkingCapital, SystemSettings,
         Job, Schedule, Resource, DataImport, ImportError, ImportLog, ImportTemplate,
         ApiCredential, ApiIntegration, IntegrationSyncLog, WebhookEvent, IntegrationHealth,
         SystemAlert, SystemMetric, SecurityEvent, MaintenanceWindow, BackupRecord
     )
     
-    from app.routes import main, api, auth, data_import, api_integrations, admin
+    from app.routes import main, api, auth, data_import, api_integrations, admin, clerk_auth
     app.register_blueprint(main.bp)
     app.register_blueprint(api.bp)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(clerk_auth.bp)
     app.register_blueprint(data_import.bp)
     app.register_blueprint(api_integrations.bp)
     app.register_blueprint(admin.bp)

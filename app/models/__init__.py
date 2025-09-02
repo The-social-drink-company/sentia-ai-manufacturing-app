@@ -2,6 +2,7 @@ from app.models.job import Job
 from app.models.schedule import Schedule
 from app.models.resource import Resource
 from app.models.user import User
+from app.models.clerk_user import ClerkUser
 from app.models.audit_log import AuditLog
 from app.models.product import Product
 from app.models.market import Market
@@ -22,7 +23,7 @@ from app.models.admin_models import (
 )
 
 __all__ = [
-    'Job', 'Schedule', 'Resource', 'User', 'AuditLog',
+    'Job', 'Schedule', 'Resource', 'User', 'ClerkUser', 'AuditLog',
     'Product', 'Market', 'SalesChannel', 'HistoricalSales',
     'Forecast', 'InventoryLevel', 'WorkingCapital', 'SystemSettings',
     'DataImport', 'ImportError', 'ImportLog', 'ImportTemplate',

@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import Enum as PyEnum
 from app import db
 from sqlalchemy import Enum, Text, Integer, Float, Boolean, DateTime, String, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 
@@ -40,7 +41,7 @@ class SystemAlert(db.Model):
     dismissed_at = db.Column(DateTime)
     
     # Relations
-    created_by_id = db.Column(db.Integer, ForeignKey('user.id'))
+    created_by_id = db.Column(UUID(as_uuid=True), ForeignKey('users.id'))
     created_by = relationship("User", backref="created_alerts")
     
     def mark_read(self):
@@ -111,7 +112,7 @@ class SecurityEvent(db.Model):
     occurred_at = db.Column(DateTime, default=datetime.utcnow, index=True)
     
     # Relations
-    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=True)
+    user_id = db.Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=True)
     user = relationship("User", backref="security_events")
     
     def to_dict(self):
@@ -147,7 +148,7 @@ class MaintenanceWindow(db.Model):
     
     # Metadata
     created_at = db.Column(DateTime, default=datetime.utcnow)
-    created_by_id = db.Column(db.Integer, ForeignKey('user.id'))
+    created_by_id = db.Column(UUID(as_uuid=True), ForeignKey('users.id'))
     created_by = relationship("User", backref="maintenance_windows")
     
     def activate(self):
@@ -196,7 +197,7 @@ class BackupRecord(db.Model):
     duration_seconds = db.Column(Integer)
     
     # Metadata
-    created_by_id = db.Column(db.Integer, ForeignKey('user.id'))
+    created_by_id = db.Column(UUID(as_uuid=True), ForeignKey('users.id'))
     created_by = relationship("User", backref="backup_records")
     
     def complete_backup(self, file_path=None, file_size_mb=None):

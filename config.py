@@ -41,6 +41,10 @@ class Config:
     SCHEDULE_HORIZON_DAYS = 30
     MAX_OPTIMIZATION_TIME = 300  # seconds
     
+    # Clerk authentication settings
+    CLERK_SECRET_KEY = os.environ.get('CLERK_SECRET_KEY')
+    CLERK_PUBLISHABLE_KEY = os.environ.get('CLERK_PUBLISHABLE_KEY')
+    
     @staticmethod
     def init_app(app):
         pass

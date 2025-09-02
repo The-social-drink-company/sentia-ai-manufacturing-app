@@ -1,0 +1,497 @@
+/**
+ * Sentia Help Widget Styles
+ * Contextual help system styling
+ */
+
+/* Help Button */
+.sentia-help-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    transition: transform 0.2s ease;
+}
+
+.sentia-help-button:hover {
+    transform: scale(1.1);
+}
+
+.sentia-help-button .btn {
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+.sentia-help-button .btn:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Help Menu */
+.sentia-help-menu {
+    position: fixed;
+    z-index: 10000;
+    animation: slideInUp 0.3s ease;
+}
+
+.sentia-help-menu-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    min-width: 250px;
+    overflow: hidden;
+}
+
+.sentia-help-menu-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content-space-between;
+    align-items: center;
+}
+
+.sentia-help-menu-header h6 {
+    margin: 0;
+    color: #495057;
+}
+
+.sentia-help-menu-body {
+    padding: 8px 0;
+}
+
+.sentia-help-menu-item {
+    display: block;
+    padding: 12px 20px;
+    color: #495057;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.sentia-help-menu-item:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.sentia-help-menu-item i {
+    width: 20px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.sentia-help-menu-divider {
+    height: 1px;
+    background: #e9ecef;
+    margin: 8px 0;
+}
+
+/* Tooltips */
+.sentia-tooltip {
+    position: absolute;
+    z-index: 10001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    max-width: 300px;
+}
+
+.sentia-tooltip-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sentia-tooltip-content {
+    background: #333;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.sentia-tooltip-title {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+}
+
+.sentia-tooltip-body {
+    margin-bottom: 8px;
+}
+
+.sentia-tooltip-actions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sentia-tooltip-actions .btn {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 2px 8px;
+    font-size: 12px;
+}
+
+.sentia-tooltip-actions .btn:hover {
+    color: white;
+}
+
+/* Tooltip Arrow */
+.sentia-tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.sentia-tooltip-top .sentia-tooltip-arrow {
+    bottom: -6px;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px 6px 0 6px;
+    border-color: #333 transparent transparent transparent;
+}
+
+.sentia-tooltip-bottom .sentia-tooltip-arrow {
+    top: -6px;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 0 6px 6px 6px;
+    border-color: transparent transparent #333 transparent;
+}
+
+.sentia-tooltip-left .sentia-tooltip-arrow {
+    right: -6px;
+    top: 50%;
+    margin-top: -6px;
+    border-width: 6px 0 6px 6px;
+    border-color: transparent transparent transparent #333;
+}
+
+.sentia-tooltip-right .sentia-tooltip-arrow {
+    left: -6px;
+    top: 50%;
+    margin-top: -6px;
+    border-width: 6px 6px 6px 0;
+    border-color: transparent #333 transparent transparent;
+}
+
+/* Feedback Modal Enhancements */
+.rating-stars {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating-stars input[type="radio"] {
+    display: none;
+}
+
+.rating-stars label {
+    cursor: pointer;
+    font-size: 20px;
+    color: #ddd;
+    padding: 0 2px;
+    transition: color 0.2s ease;
+}
+
+.rating-stars label:hover,
+.rating-stars label:hover ~ label,
+.rating-stars input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+
+/* Notifications */
+.sentia-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10002;
+    min-width: 300px;
+    animation: slideInRight 0.3s ease;
+}
+
+/* Help Data Attributes Styling */
+[data-help] {
+    position: relative;
+    cursor: help;
+}
+
+[data-help]:after {
+    content: '?';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+[data-help]:hover:after {
+    opacity: 1;
+}
+
+/* Help Highlight Effect */
+.sentia-help-highlight {
+    position: relative;
+    animation: helpGlow 2s ease-in-out;
+}
+
+@keyframes helpGlow {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: 0 0 20px rgba(13, 110, 253, 0.5); }
+}
+
+/* Tutorial Mode Styling */
+.sentia-tutorial-mode {
+    position: relative;
+}
+
+.sentia-tutorial-mode::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 2px solid #0d6efd;
+    border-radius: 4px;
+    animation: tutorialPulse 2s infinite;
+}
+
+@keyframes tutorialPulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Context Menu */
+.sentia-context-menu {
+    position: fixed;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10003;
+    min-width: 160px;
+}
+
+.sentia-context-menu-item {
+    display: block;
+    padding: 8px 16px;
+    color: #495057;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.sentia-context-menu-item:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.sentia-context-menu-divider {
+    height: 1px;
+    background: #e9ecef;
+    margin: 4px 0;
+}
+
+/* Progressive Disclosure */
+.sentia-expandable {
+    cursor: pointer;
+}
+
+.sentia-expandable .sentia-expand-icon {
+    transition: transform 0.2s ease;
+}
+
+.sentia-expandable.expanded .sentia-expand-icon {
+    transform: rotate(90deg);
+}
+
+.sentia-expandable-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.sentia-expandable.expanded .sentia-expandable-content {
+    max-height: 500px;
+}
+
+/* Search Highlighting */
+.sentia-search-highlight {
+    background-color: #fff3cd;
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+/* Accessibility Enhancements */
+.sentia-tooltip:focus-within {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sentia-skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #0d6efd;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    transition: top 0.2s ease;
+}
+
+.sentia-skip-link:focus {
+    top: 6px;
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sentia-help-button {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .sentia-help-button .btn {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .sentia-help-menu-content {
+        min-width: 200px;
+    }
+    
+    .sentia-tooltip {
+        max-width: 250px;
+    }
+    
+    .sentia-notification {
+        left: 15px;
+        right: 15px;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .sentia-tooltip {
+        max-width: 200px;
+        font-size: 13px;
+    }
+    
+    .sentia-help-menu-content {
+        min-width: 180px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .sentia-help-button,
+    .sentia-help-menu,
+    .sentia-tooltip,
+    .sentia-notification {
+        display: none !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .sentia-tooltip-content {
+        background: #000;
+        border: 2px solid #fff;
+    }
+    
+    .sentia-help-menu-content {
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .sentia-tooltip,
+    .sentia-help-button,
+    .sentia-notification,
+    .sentia-expandable-content {
+        transition: none;
+    }
+    
+    .sentia-help-highlight,
+    .sentia-tutorial-mode::before {
+        animation: none;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .sentia-help-menu-content {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .sentia-help-menu-header {
+        background: #4a5568;
+        border-color: #718096;
+    }
+    
+    .sentia-help-menu-item {
+        color: #e2e8f0;
+    }
+    
+    .sentia-help-menu-item:hover {
+        background-color: #4a5568;
+        color: #63b3ed;
+    }
+    
+    .sentia-context-menu {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .sentia-context-menu-item {
+        color: #e2e8f0;
+    }
+    
+    .sentia-context-menu-item:hover {
+        background-color: #4a5568;
+        color: #63b3ed;
+    }
+}

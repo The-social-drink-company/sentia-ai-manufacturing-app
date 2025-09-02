@@ -1,5 +1,5 @@
-from flask import Blueprint, jsonify, request, current_app
-from flask_login import login_required, current_user
+from flask import Blueprint, jsonify, request, current_app, g
+from app.auth.clerk_jwt_auth import require_clerk_auth, get_current_clerk_user_id
 from datetime import date, datetime, timedelta
 import uuid, random
 from app import db
@@ -60,6 +60,16 @@ def health_check():
         'message': 'API is running'
     })
 
+@bp.route('/dashboard')
+def get_dashboard_data():
+    """Main dashboard endpoint for React frontend."""
+    return jsonify({
+        'status': 'success',
+        'message': 'Sentia Manufacturing Dashboard API',
+        'version': '1.0.0',
+        'timestamp': datetime.utcnow().isoformat()
+    })
+
 @bp.route('/jobs', methods=['GET'])
 def get_jobs():
     return jsonify({'jobs': []})
@@ -76,7 +86,6 @@ def optimize_schedule():
 # === DASHBOARD ENDPOINTS ===
 
 @bp.route('/dashboard/kpis', methods=['GET'])
-@login_required
 def get_dashboard_kpis():
     """Get KPI data for dashboard widgets."""
     try:
@@ -111,7 +120,7 @@ def get_dashboard_kpis():
         return jsonify({'error': 'Internal server error'}), 500
 
 @bp.route('/dashboard/forecast', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_dashboard_forecast():
     """Get demand forecast data for chart."""
     try:
@@ -155,7 +164,7 @@ def get_dashboard_forecast():
         return jsonify({'error': 'Internal server error'}), 500
 
 @bp.route('/dashboard/stock-levels', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_dashboard_stock_levels():
     """Get stock level data for chart."""
     try:
@@ -191,7 +200,7 @@ def get_dashboard_stock_levels():
         return jsonify({'error': 'Internal server error'}), 500
 
 @bp.route('/dashboard/working-capital', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_dashboard_working_capital():
     """Get working capital breakdown data."""
     try:
@@ -217,7 +226,7 @@ def get_dashboard_working_capital():
         return jsonify({'error': 'Internal server error'}), 500
 
 @bp.route('/dashboard/capacity', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_dashboard_capacity():
     """Get production capacity utilization data."""
     try:
@@ -249,7 +258,7 @@ def get_dashboard_capacity():
         return jsonify({'error': 'Internal server error'}), 500
 
 @bp.route('/dashboard/alerts', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_dashboard_alerts():
     """Get current alerts and notifications."""
     try:
@@ -283,7 +292,7 @@ def get_dashboard_alerts():
         return jsonify({'error': 'Internal server error'}), 500
 
 @bp.route('/dashboard/recent-jobs', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_recent_jobs():
     """Get recent manufacturing jobs."""
     try:
@@ -325,7 +334,7 @@ def get_recent_jobs():
 # === FORECASTING ENDPOINTS ===
 
 @bp.route('/forecast/generate', methods=['POST'])
-@login_required
+@require_clerk_auth
 def generate_forecast():
     """Generate a comprehensive demand forecast."""
     try:
@@ -367,7 +376,7 @@ def generate_forecast():
             apply_seasonal=apply_seasonal,
             external_factors=external_factors,
             save_to_db=save_to_db,
-            created_by=str(current_user.id)
+            created_by=str(get_current_clerk_user_id())
         )
         
         if 'error' in result:
@@ -387,7 +396,7 @@ def generate_forecast():
         }), 500
 
 @bp.route('/forecast/<forecast_id>', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_forecast(forecast_id):
     """Get a specific forecast by ID."""
     try:
@@ -408,7 +417,7 @@ def get_forecast(forecast_id):
         }), 500
 
 @bp.route('/forecasts', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_forecasts():
     """Get forecasts with optional filtering."""
     try:
@@ -447,7 +456,7 @@ def get_forecasts():
         }), 500
 
 @bp.route('/forecast/validate/<forecast_id>', methods=['POST'])
-@login_required
+@require_clerk_auth
 def validate_forecast(forecast_id):
     """Validate forecast accuracy against actual results."""
     try:
@@ -471,7 +480,7 @@ def validate_forecast(forecast_id):
         }), 500
 
 @bp.route('/forecast/compare-models', methods=['POST'])
-@login_required
+@require_clerk_auth
 def compare_forecast_models():
     """Compare performance of different forecasting models."""
     try:
@@ -508,7 +517,7 @@ def compare_forecast_models():
         }), 500
 
 @bp.route('/forecast/recommendations', methods=['POST'])
-@login_required 
+@require_clerk_auth 
 def get_forecast_recommendations():
     """Get personalized forecast recommendations."""
     try:
@@ -541,7 +550,7 @@ def get_forecast_recommendations():
         }), 500
 
 @bp.route('/forecast/optimize-parameters', methods=['POST'])
-@login_required
+@require_clerk_auth
 def optimize_forecast_parameters():
     """Optimize forecast parameters through systematic testing."""
     try:
@@ -574,7 +583,7 @@ def optimize_forecast_parameters():
         }), 500
 
 @bp.route('/forecast/performance/<product_id>/<sales_channel_id>', methods=['GET'])
-@login_required
+@require_clerk_auth
 def track_forecast_performance(product_id, sales_channel_id):
     """Track ongoing forecast performance."""
     try:
@@ -599,7 +608,7 @@ def track_forecast_performance(product_id, sales_channel_id):
         }), 500
 
 @bp.route('/forecast/<forecast_id>/approve', methods=['POST'])
-@login_required
+@require_clerk_auth
 def approve_forecast(forecast_id):
     """Approve a forecast for use in planning."""
     try:
@@ -607,7 +616,7 @@ def approve_forecast(forecast_id):
         if not forecast:
             return jsonify({'error': 'Forecast not found', 'status': 'error'}), 404
         
-        forecast.approve_forecast(current_user.id)
+        forecast.approve_forecast(get_current_clerk_user_id())
         
         return jsonify({
             'status': 'success',
@@ -623,7 +632,7 @@ def approve_forecast(forecast_id):
         }), 500
 
 @bp.route('/forecast/<forecast_id>/supersede', methods=['POST'])
-@login_required
+@require_clerk_auth
 def supersede_forecast(forecast_id):
     """Supersede a forecast with a new one."""
     try:
@@ -657,7 +666,7 @@ def supersede_forecast(forecast_id):
         }), 500
 
 @bp.route('/forecast/bulk-generate', methods=['POST'])
-@login_required
+@require_clerk_auth
 def bulk_generate_forecasts():
     """Generate forecasts for multiple product-channel combinations."""
     try:
@@ -698,7 +707,7 @@ def bulk_generate_forecasts():
                     apply_seasonal=apply_seasonal,
                     external_factors=external_factors,
                     save_to_db=True,
-                    created_by=str(current_user.id)
+                    created_by=str(get_current_clerk_user_id())
                 )
                 
                 results.append({
@@ -734,7 +743,7 @@ def bulk_generate_forecasts():
 # === STOCK OPTIMIZATION ENDPOINTS ===
 
 @bp.route('/stock-optimization/optimize', methods=['POST'])
-@login_required
+@require_clerk_auth
 def optimize_stock_levels():
     """Optimize stock levels for products with constraints."""
     try:
@@ -810,7 +819,7 @@ def optimize_stock_levels():
         }), 500
 
 @bp.route('/stock-optimization/abc-analysis', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_abc_analysis():
     """Perform ABC analysis for inventory prioritization."""
     try:
@@ -833,7 +842,7 @@ def get_abc_analysis():
         }), 500
 
 @bp.route('/stock-optimization/slow-moving', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_slow_moving_inventory():
     """Identify slow-moving inventory items."""
     try:
@@ -863,7 +872,7 @@ def get_slow_moving_inventory():
         }), 500
 
 @bp.route('/stock-optimization/multi-location', methods=['POST'])
-@login_required
+@require_clerk_auth
 def optimize_multi_location():
     """Optimize inventory across multiple locations with constraints."""
     try:
@@ -942,7 +951,7 @@ def optimize_multi_location():
         }), 500
 
 @bp.route('/supplier-performance/evaluate/<supplier_id>', methods=['GET'])
-@login_required
+@require_clerk_auth
 def evaluate_supplier_performance(supplier_id):
     """Evaluate comprehensive supplier performance metrics."""
     try:
@@ -966,7 +975,7 @@ def evaluate_supplier_performance(supplier_id):
         }), 500
 
 @bp.route('/supplier-performance/impact-analysis', methods=['POST'])
-@login_required
+@require_clerk_auth
 def analyze_supplier_impact():
     """Analyze supplier performance impact on inventory optimization."""
     try:
@@ -1001,7 +1010,7 @@ def analyze_supplier_impact():
         }), 500
 
 @bp.route('/supplier-performance/compare', methods=['POST'])
-@login_required
+@require_clerk_auth
 def compare_suppliers():
     """Compare multiple suppliers across performance dimensions."""
     try:
@@ -1034,7 +1043,7 @@ def compare_suppliers():
         }), 500
 
 @bp.route('/supplier-performance/scorecard/<supplier_id>', methods=['GET'])
-@login_required
+@require_clerk_auth
 def get_supplier_scorecard(supplier_id):
     """Generate comprehensive supplier scorecard."""
     try:
@@ -1053,7 +1062,7 @@ def get_supplier_scorecard(supplier_id):
         }), 500
 
 @bp.route('/supplier-performance/optimize-mix', methods=['POST'])
-@login_required
+@require_clerk_auth
 def optimize_supplier_mix():
     """Optimize supplier mix for a product category."""
     try:
@@ -1090,7 +1099,7 @@ def optimize_supplier_mix():
         }), 500
 
 @bp.route('/stock-optimization/eoq-calculator', methods=['POST'])
-@login_required
+@require_clerk_auth
 def calculate_eoq():
     """Calculate Economic Order Quantity with variations."""
     try:
@@ -1139,7 +1148,7 @@ def calculate_eoq():
         }), 500
 
 @bp.route('/stock-optimization/safety-stock-calculator', methods=['POST'])
-@login_required
+@require_clerk_auth
 def calculate_safety_stock():
     """Calculate optimal safety stock based on demand and lead time variability."""
     try:

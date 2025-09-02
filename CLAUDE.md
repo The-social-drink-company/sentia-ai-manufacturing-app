@@ -4,8 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Core Commands
-- `python run.py` - Start development server on localhost:5000
+### Frontend Commands (React + Vite)
+- `npm run dev` - Start React development server on localhost:3000
+- `npm run build` - Build production React app
+- `npm run preview` - Preview production build locally
+- `npm install` - Install Node.js dependencies
+
+### Backend Commands (Flask API)
+- `python run.py` - Start Flask API server on localhost:5000
 - `python -m flask db init` - Initialize database
 - `python -m flask db migrate -m "message"` - Create database migration
 - `python -m flask db upgrade` - Apply database migrations
@@ -19,6 +25,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Important**: Always use `python -m flask [command]` instead of `flask [command]` to ensure proper module resolution and environment compatibility.
 
 ### Environment Setup
+
+#### Frontend Setup (Node.js)
+1. Install Node.js (v18+)
+2. Install dependencies: `npm install`
+
+#### Backend Setup (Python)
 1. Create virtual environment:
    - Windows: `py -3.13 -m venv C:\Users\DanielKenny\venvs\sentia` (or `python -m venv C:\Users\DanielKenny\venvs\sentia`)
    - Mac/Linux: `python -m venv venv`
@@ -28,13 +40,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 3. Install dependencies: `python -m pip install -r requirements.txt`
 4. Copy environment template: `cp .env.template .env` and configure
 
+#### Development Workflow
+1. Start Flask API: `python run.py` (runs on port 5000)
+2. Start React frontend: `npm run dev` (runs on port 3000)
+3. Frontend proxies API calls to backend via Vite configuration
+
 ## Architecture Overview
 
+### Hybrid Frontend/Backend Architecture
+- **Frontend**: React with Vite (port 3000) - User interface and client-side logic
+- **Backend**: Flask API (port 5000) - Data processing, advanced analytics (numpy, pandas), and database operations
+- **Development**: Vite dev server proxies `/api/*` requests to Flask backend
+- **Production**: React build served as static files, Flask serves API endpoints
+
 ### Flask Application Factory Pattern
-The application uses Flask's application factory pattern in `app/__init__.py`:
+The Flask backend uses application factory pattern in `app/__init__.py`:
 - Database: SQLAlchemy with Flask-Migrate for migrations
-- CORS enabled for frontend API calls
-- Three main blueprints: main (views), api (REST endpoints), auth (authentication)
+- CORS configured for React frontend (localhost:3000)
+- API-only endpoints under `/api/*` prefix
+- Advanced data analysis capabilities with numpy, pandas, scikit-learn
 
 ### Database Models (app/models/)
 Core entities following manufacturing planning domain:

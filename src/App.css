@@ -1,0 +1,95 @@
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.App {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: #1a1a1a;
+  color: white;
+  padding: 1rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.auth-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.signin-button {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+}
+
+.signin-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.signup-button {
+  background: #646cff;
+  color: white;
+}
+
+.signup-button:hover {
+  background: #535bf2;
+}
+
+main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+.dashboard {
+  text-align: left;
+}
+
+.dashboard h1 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.dashboard pre {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+}

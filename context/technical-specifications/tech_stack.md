@@ -7,8 +7,10 @@
  - Version Control: GitHub CLI
  - Database: Neon PostgreSQL (vector database)
  - Hosting: Railway
- - Backend: Flask (Python)
- - Frontend: HTML/CSS/JavaScript with responsive design
+ - Backend: Flask (Python) - API only, advanced data analysis (numpy, pandas, etc.)
+ - Frontend: Node.js with React and Vite
+ - Build Tool: Vite
+ - Package Manager: npm
 
 ## Branch Structure
 

@@ -54,6 +54,3 @@ celery==5.3.4
 # Production Dependencies
 gunicorn==21.2.0
 gevent==23.9.1
-
-# Authentication - use compatible version
-clerk-backend-api>=1.0.0,<2.0.0

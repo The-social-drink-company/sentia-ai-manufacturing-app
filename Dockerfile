@@ -41,7 +41,6 @@ COPY app/ ./app/
 COPY run.py .
 COPY config.py .
 COPY migrations/ ./migrations/
-COPY alembic.ini .
 
 # Create necessary directories
 RUN mkdir -p instance uploads temp_uploads

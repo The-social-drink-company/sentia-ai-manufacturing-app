@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sentia Manufacturing Dashboard{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <meta name="csrf-token" content="{{ csrf_token() if csrf_token else '' }}">
+    <meta name="csrf-token" content="{{ csrf_token if csrf_token else '' }}">
     {% block styles %}{% endblock %}
 </head>
 <body class="bg-gray-100">

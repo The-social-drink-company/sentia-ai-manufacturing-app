@@ -29,10 +29,10 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     
-    # Redis configuration for Celery
-    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'
+    # Redis configuration for Celery (optional)
+    REDIS_URL = os.environ.get('REDIS_URL')
     
-    # Celery configuration
+    # Celery configuration (optional)
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or REDIS_URL
     CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND') or REDIS_URL
     

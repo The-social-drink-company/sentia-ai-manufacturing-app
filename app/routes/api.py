@@ -34,18 +34,22 @@ def health_check():
         db_status = 'unhealthy'
     
     # Check Redis connection (if configured)
-    redis_status = 'healthy'
+    redis_status = 'not_configured'
     try:
         redis_url = current_app.config.get('REDIS_URL')
-        if redis_url:
+        if redis_url and not redis_url.startswith('redis://localhost'):
             import redis
             r = redis.from_url(redis_url)
             r.ping()
+            redis_status = 'healthy'
+        elif redis_url and redis_url.startswith('redis://localhost'):
+            # Skip localhost Redis in production/Railway
+            redis_status = 'skipped_localhost'
     except Exception as e:
         current_app.logger.error(f"Redis health check failed: {e}")
         redis_status = 'unhealthy'
     
-    health_status = 'healthy' if db_status == 'healthy' and redis_status == 'healthy' else 'degraded'
+    health_status = 'healthy' if db_status == 'healthy' else 'degraded'
     
     return jsonify({
         'status': health_status,

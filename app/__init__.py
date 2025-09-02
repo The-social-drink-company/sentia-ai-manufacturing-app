@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_login import LoginManager
 from config import Config
+import os
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -51,5 +52,21 @@ def create_app(config_class=Config):
     from app.cli_integrations import register_cli_commands
     cli.init_app(app)
     register_cli_commands(app)
+    
+    # Initialize middleware
+    from app.middleware import init_middleware
+    init_middleware(app)
+    
+    # Initialize monitoring
+    from app.monitoring import init_monitoring
+    init_monitoring(app)
+    
+    # Create logs directory for production
+    if not app.debug:
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+    
+    # Initialize config-specific settings
+    config_class.init_app(app)
     
     return app

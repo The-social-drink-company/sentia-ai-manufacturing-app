@@ -23,7 +23,38 @@ supplier_service = SupplierPerformanceService()
 
 @bp.route('/health')
 def health_check():
-    return jsonify({'status': 'healthy', 'message': 'API is running'})
+    """Enhanced health check endpoint with database and Redis connectivity."""
+    try:
+        # Check database connection
+        from sqlalchemy import text
+        db.session.execute(text('SELECT 1'))
+        db_status = 'healthy'
+    except Exception as e:
+        current_app.logger.error(f"Database health check failed: {e}")
+        db_status = 'unhealthy'
+    
+    # Check Redis connection (if configured)
+    redis_status = 'healthy'
+    try:
+        redis_url = current_app.config.get('REDIS_URL')
+        if redis_url:
+            import redis
+            r = redis.from_url(redis_url)
+            r.ping()
+    except Exception as e:
+        current_app.logger.error(f"Redis health check failed: {e}")
+        redis_status = 'unhealthy'
+    
+    health_status = 'healthy' if db_status == 'healthy' and redis_status == 'healthy' else 'degraded'
+    
+    return jsonify({
+        'status': health_status,
+        'version': '1.0.0',
+        'timestamp': datetime.utcnow().isoformat(),
+        'database': db_status,
+        'redis': redis_status,
+        'message': 'API is running'
+    })
 
 @bp.route('/jobs', methods=['GET'])
 def get_jobs():

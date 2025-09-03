@@ -42,7 +42,12 @@
       "WebFetch(domain:sentiaprod.financeflo.ai)",
       "WebFetch(domain:sentiatest.financeflo.ai)",
       "Bash(npx prisma:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(powershell:*)",
+      "Bash(tasklist:*)",
+      "Bash(cmd //c:*)",
+      "Bash(set PORT=5001)",
+      "Bash(unset DATABASE_URL)"
     ],
     "deny": [],
     "ask": []

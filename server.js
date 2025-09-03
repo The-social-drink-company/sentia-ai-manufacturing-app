@@ -23,6 +23,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust Railway proxy - required for proper rate limiting and security
+app.set('trust proxy', 1);
+
 // Initialize Clerk client
 const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
 let clerkClient = null;

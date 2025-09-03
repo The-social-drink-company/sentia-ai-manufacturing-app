@@ -13,8 +13,8 @@ import Grid from '../components/layout/Grid'
 // Widgets
 import KPIStrip from '../components/widgets/KPIStrip'
 import DemandForecastWidget from '../components/widgets/DemandForecastWidget'
-import { CashFlowProjections } from '../components/WorkingCapital/CashFlowProjections'
-import { KPIDashboard } from '../components/WorkingCapital/KPIDashboard'
+import CashFlowProjections from '../components/WorkingCapital/CashFlowProjections'
+import KPIDashboard from '../components/WorkingCapital/KPIDashboard'
 
 // Hooks and stores
 import { useAuthRole } from '../hooks/useAuthRole.jsx'

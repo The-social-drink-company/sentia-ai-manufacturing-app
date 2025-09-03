@@ -300,9 +300,23 @@ app.delete('/api/admin/invitations/:invitationId', requireAuth, requireAdmin, as
 });
 
 // Unleashed API endpoints
-const unleashedService = new UnleashedService();
+let unleashedService;
+try {
+  unleashedService = new UnleashedService();
+  logInfo('Unleashed API service initialized successfully');
+} catch (error) {
+  logError('Failed to initialize Unleashed API service', error);
+  unleashedService = null;
+}
 
 app.get('/api/unleashed/test', async (req, res) => {
+  if (!unleashedService) {
+    return res.status(503).json({ 
+      success: false, 
+      error: 'Unleashed API service not available - check configuration' 
+    });
+  }
+  
   const startTime = Date.now();
   try {
     logInfo('Testing Unleashed API connection');

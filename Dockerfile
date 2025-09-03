@@ -16,6 +16,9 @@ COPY . .
 # Build React frontend
 RUN npm run build
 
+# Create logs directory for winston
+RUN mkdir -p logs
+
 # Remove devDependencies after build
 RUN npm prune --production
 

@@ -10,7 +10,8 @@ class UnleashedService {
     this.baseUrl = process.env.UNLEASHED_API_URL || 'https://api.unleashedsoftware.com';
     
     if (!this.apiId || !this.apiKey) {
-      throw new Error('Unleashed API credentials not found in environment variables');
+      console.warn('Unleashed API credentials not found in environment variables - service will be limited');
+      this.disabled = true;
     }
   }
 
@@ -171,6 +172,13 @@ class UnleashedService {
 
   // Test connection
   async testConnection() {
+    if (this.disabled) {
+      return {
+        success: false,
+        message: 'Unleashed API service is disabled - missing credentials'
+      };
+    }
+    
     try {
       const result = await this.getWarehouses();
       return {

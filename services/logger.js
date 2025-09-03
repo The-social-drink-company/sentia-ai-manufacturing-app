@@ -1,5 +1,6 @@
 import winston from 'winston'
 import DailyRotateFile from 'winston-daily-rotate-file'
+import { existsSync, mkdirSync } from 'fs'
 
 const { combine, timestamp, printf, colorize, errors } = winston.format
 
@@ -20,6 +21,11 @@ const logFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
 
 // Create logs directory if it doesn't exist
 const logsDir = './logs'
+
+// Ensure logs directory exists
+if (!existsSync(logsDir)) {
+  mkdirSync(logsDir, { recursive: true })
+}
 
 // File rotation transport for general logs
 const fileRotateTransport = new DailyRotateFile({

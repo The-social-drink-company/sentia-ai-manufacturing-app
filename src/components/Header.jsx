@@ -1,8 +1,4 @@
 import React from 'react'
-import { SignedIn, SignedOut } from '@clerk/clerk-react'
-import SignInButton from './auth/SignInButton'
-import SignUpButton from './auth/SignUpButton'
-import UserButton from './auth/UserButton'
 
 export default function Header() {
   return (
@@ -12,15 +8,9 @@ export default function Header() {
           <h1>Sentia Manufacturing Dashboard</h1>
         </div>
         <div className="header-right">
-          <SignedOut>
-            <div className="auth-buttons">
-              <SignInButton />
-              <SignUpButton />
-            </div>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+          <div className="auth-status">
+            <span>Demo Mode (Auth Disabled)</span>
+          </div>
         </div>
       </div>
     </header>

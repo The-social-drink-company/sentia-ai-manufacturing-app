@@ -31,6 +31,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from React build FIRST
+app.use(express.static(path.join(__dirname, 'dist')));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
@@ -118,15 +121,14 @@ app.get('/api/schedules', async (req, res) => {
   }
 });
 
-// Serve static files from React build in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'dist')));
-  
-  // Catch-all route for React Router
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-  });
-}
+// Catch-all route for React Router (must be LAST after all API routes)
+app.get('*', (req, res) => {
+  // Only serve index.html for non-API routes
+  if (req.path.startsWith('/api/') || req.path.startsWith('/health')) {
+    return res.status(404).json({ error: 'Endpoint not found' });
+  }
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

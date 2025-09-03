@@ -1,0 +1,45 @@
+# Worker service Dockerfile
+FROM node:18-alpine
+
+# Install runtime dependencies
+RUN apk add --no-cache tini
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install dependencies
+RUN npm ci --only=production && \
+    npx prisma generate
+
+# Copy worker code
+COPY services ./services
+COPY lib ./lib
+COPY utils ./utils
+
+# Create necessary directories
+RUN mkdir -p logs temp && \
+    chown -R nodejs:nodejs logs temp
+
+# Environment
+ENV NODE_ENV=production
+ENV WORKER_ENABLED=true
+
+# Switch to non-root user
+USER nodejs
+
+# Use tini for proper signal handling
+ENTRYPOINT ["/sbin/tini", "--"]
+
+# Health check for worker
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:' + (process.env.WORKER_PORT || 5001) + '/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); });" || exit 1
+
+# Start the worker
+CMD ["node", "services/workers/index.js"]

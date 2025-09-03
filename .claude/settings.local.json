@@ -23,7 +23,12 @@
       "Bash(node:*)",
       "WebFetch(domain:sentiadeploy.financeflo.ai)",
       "WebFetch(domain:sentiaspirits.com)",
-      "Bash(npm run preview:*)"
+      "Bash(npm run preview:*)",
+      "WebFetch(domain:apidocs.unleashedsoftware.com)",
+      "Bash(python:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

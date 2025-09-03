@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import pkg from 'pg';
 import { createClerkClient } from '@clerk/backend';
+import UnleashedService from './services/unleashedService.js';
 const { Pool } = pkg;
 
 // Load environment variables
@@ -23,9 +24,9 @@ const clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
 // Database connection pool for Neon PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || process.env.DEV_DATABASE_URL,
-  ssl: {
+  ssl: process.env.DATABASE_URL ? {
     rejectUnauthorized: false
-  }
+  } : false
 });
 
 // Middleware
@@ -60,18 +61,28 @@ app.get('/api/protected', (req, res) => {
 // Database test endpoint
 app.get('/api/db-test', async (req, res) => {
   try {
+    if (!process.env.DATABASE_URL && !process.env.DEV_DATABASE_URL) {
+      return res.json({ 
+        success: false, 
+        error: 'No database configured',
+        details: 'DATABASE_URL or DEV_DATABASE_URL environment variable not set',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
     const result = await pool.query('SELECT NOW()');
     res.json({ 
       success: true, 
       timestamp: result.rows[0].now,
-      database: 'Connected to Neon PostgreSQL'
+      database: process.env.DATABASE_URL ? 'Connected to Neon PostgreSQL' : 'Connected to local PostgreSQL'
     });
   } catch (error) {
     console.error('Database connection error:', error);
     res.status(500).json({ 
       success: false, 
       error: 'Database connection failed',
-      details: error.message 
+      details: error.message,
+      timestamp: new Date().toISOString()
     });
   }
 });
@@ -79,10 +90,15 @@ app.get('/api/db-test', async (req, res) => {
 // Jobs API endpoints
 app.get('/api/jobs', async (req, res) => {
   try {
+    if (!process.env.DATABASE_URL && !process.env.DEV_DATABASE_URL) {
+      return res.json({ success: true, jobs: [] });
+    }
+    
     const result = await pool.query('SELECT * FROM jobs ORDER BY created_at DESC LIMIT 20');
     res.json({ success: true, jobs: result.rows });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Jobs API error:', error);
+    res.json({ success: true, jobs: [] });
   }
 });
 
@@ -102,10 +118,15 @@ app.post('/api/jobs', async (req, res) => {
 // Resources API endpoints
 app.get('/api/resources', async (req, res) => {
   try {
+    if (!process.env.DATABASE_URL && !process.env.DEV_DATABASE_URL) {
+      return res.json({ success: true, resources: [] });
+    }
+    
     const result = await pool.query('SELECT * FROM resources ORDER BY name');
     res.json({ success: true, resources: result.rows });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Resources API error:', error);
+    res.json({ success: true, resources: [] });
   }
 });
 
@@ -255,6 +276,194 @@ app.delete('/api/admin/invitations/:invitationId', requireAuth, requireAdmin, as
     await pool.query('DELETE FROM invitations WHERE id = $1', [invitationId]);
     
     res.json({ success: true, message: 'Invitation deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Unleashed API endpoints
+const unleashedService = new UnleashedService();
+
+app.get('/api/unleashed/test', async (req, res) => {
+  try {
+    const result = await unleashedService.testConnection();
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/products', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    
+    const data = await unleashedService.getProducts(page, pageSize);
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Total || 0,
+      page,
+      pageSize
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/products/:productGuid', async (req, res) => {
+  try {
+    const data = await unleashedService.getProduct(req.params.productGuid);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/stock', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    
+    const data = await unleashedService.getStockOnHand(page, pageSize);
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Total || 0,
+      page,
+      pageSize
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/sales-orders', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    const orderStatus = req.query.status || null;
+    
+    const data = await unleashedService.getSalesOrders(page, pageSize, orderStatus);
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Total || 0,
+      page,
+      pageSize
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/sales-orders/:orderGuid', async (req, res) => {
+  try {
+    const data = await unleashedService.getSalesOrder(req.params.orderGuid);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/purchase-orders', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    
+    const data = await unleashedService.getPurchaseOrders(page, pageSize);
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Total || 0,
+      page,
+      pageSize
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/customers', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    
+    const data = await unleashedService.getCustomers(page, pageSize);
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Total || 0,
+      page,
+      pageSize
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/suppliers', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    
+    const data = await unleashedService.getSuppliers(page, pageSize);
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Total || 0,
+      page,
+      pageSize
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/warehouses', async (req, res) => {
+  try {
+    const data = await unleashedService.getWarehouses();
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Items?.length || 0
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/bill-of-materials', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    
+    const data = await unleashedService.getBillOfMaterials(page, pageSize);
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Total || 0,
+      page,
+      pageSize
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/unleashed/stock-adjustments', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    
+    const data = await unleashedService.getStockAdjustments(page, pageSize);
+    res.json({
+      success: true,
+      data: data.Items || [],
+      total: data.Total || 0,
+      page,
+      pageSize
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

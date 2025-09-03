@@ -134,6 +134,8 @@ All branches automatically deploy to Railway environments:
 - **test** → `test.sentia-manufacturing.railway.app`  
 - **production** → `sentia-manufacturing.railway.app`
 
+**Railway Project ID**: `ef36131f-d36e-4c2d-8ab9-1914288d5781`
+
 Each environment connects to its corresponding Neon PostgreSQL database.
 
 ### Development Workflow
@@ -237,6 +239,16 @@ After pushing to development branch, verify:
 2. Database connectivity to Neon dev database
 3. Unleashed API integration working
 4. Frontend builds and serves correctly
+
+### Railway Project Verification
+To verify you're deploying to the correct Railway project:
+```bash
+# Check current deployment URLs match expected environment
+curl https://sentiadeploy.financeflo.ai/health
+
+# Verify project ID in Railway dashboard matches:
+# ef36131f-d36e-4c2d-8ab9-1914288d5781
+```
 
 ## Troubleshooting
 

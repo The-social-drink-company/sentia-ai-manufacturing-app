@@ -9,9 +9,33 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { body, validationResult } from 'express-validator';
+import multer from 'multer';
+import csv from 'csv-parser';
+import xlsx from 'xlsx';
+import fs from 'fs';
 import UnleashedService from './services/unleashedService.js';
 import logger, { logInfo, logError, logWarn } from './services/logger.js';
 import { metricsMiddleware, getMetrics, recordUnleashedApiRequest } from './services/metrics.js';
+// Import data import services conditionally to prevent startup crashes
+let dbService = null;
+let queueService = null;
+
+// Function to load data import services
+async function loadDataImportServices() {
+  try {
+    dbService = (await import('./src/services/db/index.js')).default;
+    logInfo('Database service loaded successfully');
+  } catch (error) {
+    logWarn('Database service not available - data import features disabled', error);
+  }
+
+  try {
+    queueService = (await import('./src/services/queueService.js')).default;
+    logInfo('Queue service loaded successfully');
+  } catch (error) {
+    logWarn('Queue service not available - using synchronous processing', error);
+  }
+}
 const { Pool } = pkg;
 
 // Load environment variables
@@ -84,6 +108,45 @@ app.use(cors({
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = 'uploads/';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    const originalName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+    cb(null, `${timestamp}-${originalName}`);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = [
+    'text/csv',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/json'
+  ];
+  
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only CSV, XLSX, and JSON files are allowed.'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: fileFilter
+});
 
 // Logging middleware
 app.use(morgan('combined', {
@@ -597,6 +660,558 @@ app.get('/api/unleashed/stock-adjustments', async (req, res) => {
   }
 });
 
+// Data Import API Endpoints
+
+// File upload endpoint
+app.post('/api/import/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Data import service not available'
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'No file uploaded'
+      });
+    }
+
+    const { dataType, mappingConfig } = req.body;
+    
+    logInfo('File upload received', {
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+      dataType
+    });
+
+    // Create import job record
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const importJob = await prisma.import_job.create({
+      data: {
+        filename: req.file.originalname,
+        file_path: req.file.path,
+        file_size: req.file.size,
+        file_type: req.file.mimetype,
+        data_type: dataType,
+        status: 'uploaded',
+        mapping_config: mappingConfig ? JSON.parse(mappingConfig) : null,
+        uploaded_at: new Date(),
+        total_rows: 0,
+        processed_rows: 0,
+        error_rows: 0,
+        warnings: []
+      }
+    });
+
+    res.json({
+      success: true,
+      importJobId: importJob.id,
+      filename: req.file.originalname,
+      fileSize: req.file.size,
+      message: 'File uploaded successfully'
+    });
+  } catch (error) {
+    logError('File upload failed', error);
+    res.status(500).json({
+      success: false,
+      error: 'File upload failed',
+      details: error.message
+    });
+  }
+});
+
+// Preview uploaded file data
+app.get('/api/import/preview/:importJobId', async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Data import service not available'
+      });
+    }
+
+    const { importJobId } = req.params;
+    const rowLimit = parseInt(req.query.limit) || 10;
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const importJob = await prisma.import_job.findUnique({
+      where: { id: parseInt(importJobId) }
+    });
+    
+    if (!importJob) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import job not found'
+      });
+    }
+    
+    const filePath = importJob.file_path;
+    let previewData = [];
+    let headers = [];
+    
+    try {
+      if (importJob.file_type.includes('csv') || importJob.file_type.includes('text')) {
+        // Parse CSV
+        const results = [];
+        await new Promise((resolve, reject) => {
+          fs.createReadStream(filePath)
+            .pipe(csv())
+            .on('headers', (headersList) => {
+              headers = headersList;
+            })
+            .on('data', (data) => {
+              if (results.length < rowLimit) {
+                results.push(data);
+              }
+            })
+            .on('end', resolve)
+            .on('error', reject);
+        });
+        previewData = results;
+      } else if (importJob.file_type.includes('excel') || importJob.file_type.includes('spreadsheet')) {
+        // Parse Excel
+        const workbook = xlsx.readFile(filePath);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        if (jsonData.length > 0) {
+          headers = jsonData[0];
+          previewData = jsonData.slice(1, rowLimit + 1).map(row => {
+            const obj = {};
+            headers.forEach((header, index) => {
+              obj[header] = row[index] || '';
+            });
+            return obj;
+          });
+        }
+      } else if (importJob.file_type.includes('json')) {
+        // Parse JSON
+        const jsonData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        if (Array.isArray(jsonData) && jsonData.length > 0) {
+          headers = Object.keys(jsonData[0]);
+          previewData = jsonData.slice(0, rowLimit);
+        }
+      }
+      
+      res.json({
+        success: true,
+        headers,
+        preview: previewData,
+        totalRows: previewData.length,
+        importJobId: parseInt(importJobId),
+        filename: importJob.filename
+      });
+    } catch (parseError) {
+      logError('File parsing failed', parseError);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to parse file',
+        details: parseError.message
+      });
+    }
+  } catch (error) {
+    logError('Preview generation failed', error);
+    res.status(500).json({
+      success: false,
+      error: 'Preview generation failed',
+      details: error.message
+    });
+  }
+});
+
+// Start data processing/validation
+app.post('/api/import/process/:importJobId', async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Data import service not available'
+      });
+    }
+
+    const { importJobId } = req.params;
+    const { mappingConfig, validationRules } = req.body;
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    // Update import job with processing configuration
+    await prisma.import_job.update({
+      where: { id: parseInt(importJobId) },
+      data: {
+        mapping_config: mappingConfig,
+        validation_rules: validationRules
+      }
+    });
+    
+    if (!queueService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Queue service not available'
+      });
+    }
+    
+    // Initialize queue service if not already done
+    await queueService.initialize();
+    
+    // Add import job to processing queue
+    const queueResult = await queueService.addImportJob(parseInt(importJobId), {
+      mappingConfig,
+      validationRules
+    });
+    
+    logInfo('Import processing queued', { importJobId, queueJobId: queueResult.jobId });
+    
+    res.json({
+      success: true,
+      message: 'Import processing started',
+      importJobId: parseInt(importJobId),
+      queueJobId: queueResult.jobId,
+      status: 'queued'
+    });
+  } catch (error) {
+    logError('Import processing failed to start', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to start import processing',
+      details: error.message
+    });
+  }
+});
+
+// Start validation process
+app.post('/api/import/validate/:importJobId', async (req, res) => {
+  try {
+    const { importJobId } = req.params;
+    const { validationConfig } = req.body;
+    
+    if (!queueService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Queue service not available'
+      });
+    }
+    
+    // Initialize queue service if not already done
+    await queueService.initialize();
+    
+    // Add validation job to queue
+    const queueResult = await queueService.addValidationJob(parseInt(importJobId), validationConfig);
+    
+    logInfo('Validation processing queued', { importJobId, queueJobId: queueResult.jobId });
+    
+    res.json({
+      success: true,
+      message: 'Validation processing started',
+      importJobId: parseInt(importJobId),
+      queueJobId: queueResult.jobId,
+      status: 'queued'
+    });
+  } catch (error) {
+    logError('Validation processing failed to start', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to start validation processing',
+      details: error.message
+    });
+  }
+});
+
+// Preview validation (sample validation)
+app.post('/api/import/validate-preview', async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Data import service not available'
+      });
+    }
+
+    const { importJobId, validationRules, customRules, sampleSize = 10 } = req.body;
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    // Get sample validation results
+    const validationResults = await prisma.validation_result.findMany({
+      where: { import_job_id: importJobId },
+      take: sampleSize,
+      orderBy: { row_number: 'asc' }
+    });
+    
+    if (validationResults.length === 0) {
+      return res.json({
+        success: false,
+        error: 'No data available for preview validation'
+      });
+    }
+    
+    // Run validation on sample data
+    const ValidationEngine = (await import('./src/services/validationEngine.js')).default;
+    const validationEngine = new ValidationEngine();
+    
+    const importJob = await prisma.import_job.findUnique({
+      where: { id: importJobId }
+    });
+    
+    let validRows = 0;
+    let errorRows = 0;
+    let warningRows = 0;
+    const errors = [];
+    const warnings = [];
+    
+    for (const result of validationResults) {
+      const validation = await validationEngine.validateRow(
+        result.original_data,
+        importJob.data_type,
+        result.row_number
+      );
+      
+      if (validation.isValid) {
+        validRows++;
+      } else {
+        errorRows++;
+        errors.push(...validation.errors);
+      }
+      
+      if (validation.warnings.length > 0) {
+        warningRows++;
+        warnings.push(...validation.warnings);
+      }
+    }
+    
+    res.json({
+      success: true,
+      results: {
+        totalRows: validationResults.length,
+        validRows,
+        errorRows,
+        warningRows,
+        summary: {
+          errors: errors.slice(0, 20), // Limit for preview
+          warnings: warnings.slice(0, 20)
+        }
+      }
+    });
+  } catch (error) {
+    logError('Validation preview failed', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to run validation preview',
+      details: error.message
+    });
+  }
+});
+
+// Get queue statistics
+app.get('/api/queue/stats', async (req, res) => {
+  try {
+    if (!queueService) {
+      return res.json({
+        success: true,
+        stats: {
+          available: false,
+          message: 'Queue service not available'
+        }
+      });
+    }
+    
+    const stats = await queueService.getQueueStats();
+    res.json({
+      success: true,
+      stats
+    });
+  } catch (error) {
+    logError('Failed to get queue stats', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get queue statistics',
+      details: error.message
+    });
+  }
+});
+
+// Get import job status
+app.get('/api/import/status/:importJobId', async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Data import service not available'
+      });
+    }
+
+    const { importJobId } = req.params;
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const importJob = await prisma.import_job.findUnique({
+      where: { id: parseInt(importJobId) }
+    });
+    
+    if (!importJob) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import job not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      importJob: {
+        id: importJob.id,
+        filename: importJob.filename,
+        status: importJob.status,
+        dataType: importJob.data_type,
+        totalRows: importJob.total_rows,
+        processedRows: importJob.processed_rows,
+        errorRows: importJob.error_rows,
+        warnings: importJob.warnings,
+        uploadedAt: importJob.uploaded_at,
+        processedAt: importJob.processed_at,
+        completedAt: importJob.completed_at
+      }
+    });
+  } catch (error) {
+    logError('Failed to get import status', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get import status',
+      details: error.message
+    });
+  }
+});
+
+// Get import jobs list
+app.get('/api/import/jobs', async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Data import service not available'
+      });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 20;
+    const offset = (page - 1) * pageSize;
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const [jobs, totalCount] = await Promise.all([
+      prisma.import_job.findMany({
+        orderBy: { uploaded_at: 'desc' },
+        skip: offset,
+        take: pageSize
+      }),
+      prisma.import_job.count()
+    ]);
+    
+    res.json({
+      success: true,
+      jobs: jobs.map(job => ({
+        id: job.id,
+        filename: job.filename,
+        status: job.status,
+        dataType: job.data_type,
+        fileSize: job.file_size,
+        totalRows: job.total_rows,
+        processedRows: job.processed_rows,
+        errorRows: job.error_rows,
+        uploadedAt: job.uploaded_at,
+        completedAt: job.completed_at
+      })),
+      pagination: {
+        page,
+        pageSize,
+        totalCount,
+        totalPages: Math.ceil(totalCount / pageSize)
+      }
+    });
+  } catch (error) {
+    logError('Failed to get import jobs', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get import jobs',
+      details: error.message
+    });
+  }
+});
+
+// Get validation results for import job
+app.get('/api/import/results/:importJobId', async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Data import service not available'
+      });
+    }
+
+    const { importJobId } = req.params;
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const [importJob, validationResults] = await Promise.all([
+      prisma.import_job.findUnique({
+        where: { id: parseInt(importJobId) }
+      }),
+      prisma.validation_result.findMany({
+        where: { import_job_id: parseInt(importJobId) },
+        orderBy: { row_number: 'asc' }
+      })
+    ]);
+    
+    if (!importJob) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import job not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      importJob: {
+        id: importJob.id,
+        filename: importJob.filename,
+        status: importJob.status,
+        totalRows: importJob.total_rows,
+        processedRows: importJob.processed_rows,
+        errorRows: importJob.error_rows
+      },
+      validationResults: validationResults.map(result => ({
+        id: result.id,
+        rowNumber: result.row_number,
+        status: result.status,
+        errors: result.errors,
+        warnings: result.warnings,
+        originalData: result.original_data,
+        processedData: result.processed_data
+      }))
+    });
+  } catch (error) {
+    logError('Failed to get validation results', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get validation results',
+      details: error.message
+    });
+  }
+});
+
 // Catch-all route for React Router (must be LAST after all API routes)
 app.get('*', (req, res) => {
   // Only serve index.html for non-API routes
@@ -613,6 +1228,35 @@ app.use((err, req, res, _next) => {
     success: false,
     error: err.message || 'Internal server error'
   });
+});
+
+// Load and initialize data import services
+loadDataImportServices().then(async () => {
+  // Initialize queue service on startup if available
+  if (queueService) {
+    queueService.initialize().catch(error => {
+      logWarn('Queue service initialization failed - continuing without queues', error);
+    });
+  }
+}).catch(error => {
+  logWarn('Failed to load data import services', error);
+});
+
+// Graceful shutdown handling
+process.on('SIGTERM', async () => {
+  logInfo('SIGTERM received, shutting down gracefully...');
+  if (queueService) {
+    await queueService.shutdown();
+  }
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  logInfo('SIGINT received, shutting down gracefully...');
+  if (queueService) {
+    await queueService.shutdown();
+  }
+  process.exit(0);
 });
 
 // Start server - Railway deployment force rebuild

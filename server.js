@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { clerkMiddleware, requireAuth } from '@clerk/express';
 import pkg from 'pg';
 const { Pool } = pkg;
 
@@ -31,7 +30,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(clerkMiddleware());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -43,11 +41,11 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working!', environment: process.env.NODE_ENV });
 });
 
-// Protected API route example with Clerk
-app.get('/api/protected', requireAuth(), (req, res) => {
+// Protected API route example (Clerk auth disabled for initial deployment)
+app.get('/api/protected', (req, res) => {
   res.json({ 
-    message: 'This is a protected route',
-    userId: req.auth.userId 
+    message: 'This is a protected route (auth disabled for initial deployment)',
+    userId: 'test-user'
   });
 });
 
@@ -80,12 +78,12 @@ app.get('/api/jobs', async (req, res) => {
   }
 });
 
-app.post('/api/jobs', requireAuth(), async (req, res) => {
+app.post('/api/jobs', async (req, res) => {
   try {
     const { name, description, quantity, due_date } = req.body;
     const result = await pool.query(
       'INSERT INTO jobs (name, description, quantity, due_date, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [name, description, quantity, due_date, req.auth.userId]
+      [name, description, quantity, due_date, 'test-user']
     );
     res.json({ success: true, job: result.rows[0] });
   } catch (error) {

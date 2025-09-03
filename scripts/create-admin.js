@@ -25,6 +25,10 @@ async function createAdminUser() {
             emailAddressVerified: true,
             skipPasswordRequirement: false,
             skipPasswordChecks: false,
+            publicMetadata: {
+                role: 'admin',
+                approved: true
+            }
         });
 
         console.log('SUCCESS: Admin user created successfully!');

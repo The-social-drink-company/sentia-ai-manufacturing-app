@@ -126,6 +126,140 @@ app.get('/api/schedules', async (req, res) => {
   }
 });
 
+// Middleware to verify authentication and admin status
+const requireAuth = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const payload = await clerkClient.verifyToken(token);
+    const user = await clerkClient.users.getUser(payload.sub);
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+const requireAdmin = (req, res, next) => {
+  if (req.user?.publicMetadata?.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+};
+
+// Admin API endpoints
+app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const userList = await clerkClient.users.getUserList({
+      limit: 100,
+      orderBy: '-created_at'
+    });
+    res.json({ success: true, users: userList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/admin/invitations', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    // Get invitations from database
+    const result = await pool.query(`
+      SELECT i.*, u.email_addresses->0->>'email_address' as invited_by_email
+      FROM invitations i
+      LEFT JOIN users u ON i.invited_by = u.clerk_id
+      ORDER BY i.created_at DESC
+    `);
+    res.json({ success: true, invitations: result.rows });
+  } catch (error) {
+    // If invitations table doesn't exist yet, return empty array
+    res.json({ success: true, invitations: [] });
+  }
+});
+
+app.post('/api/admin/invite', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { email, role } = req.body;
+    
+    // Create invitation record (you'll need to create invitations table)
+    try {
+      await pool.query(`
+        INSERT INTO invitations (email, role, invited_by, status, created_at)
+        VALUES ($1, $2, $3, 'sent', NOW())
+      `, [email, role, req.user.id]);
+    } catch (dbError) {
+      // If table doesn't exist, create it first
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS invitations (
+          id SERIAL PRIMARY KEY,
+          email VARCHAR(255) NOT NULL,
+          role VARCHAR(50) DEFAULT 'user',
+          invited_by VARCHAR(255),
+          status VARCHAR(50) DEFAULT 'sent',
+          created_at TIMESTAMP DEFAULT NOW()
+        )
+      `);
+      await pool.query(`
+        INSERT INTO invitations (email, role, invited_by, status, created_at)
+        VALUES ($1, $2, $3, 'sent', NOW())
+      `, [email, role, req.user.id]);
+    }
+    
+    // Here you could integrate with an email service to send the actual invitation
+    res.json({ success: true, message: 'Invitation sent successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/users/:userId/approve', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    await clerkClient.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        approved: true,
+        role: 'user'
+      }
+    });
+    
+    res.json({ success: true, message: 'User approved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/users/:userId/revoke', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    await clerkClient.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        approved: false,
+        role: 'user'
+      }
+    });
+    
+    res.json({ success: true, message: 'User access revoked successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.delete('/api/admin/invitations/:invitationId', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { invitationId } = req.params;
+    
+    await pool.query('DELETE FROM invitations WHERE id = $1', [invitationId]);
+    
+    res.json({ success: true, message: 'Invitation deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Catch-all route for React Router (must be LAST after all API routes)
 app.get('*', (req, res) => {
   // Only serve index.html for non-API routes

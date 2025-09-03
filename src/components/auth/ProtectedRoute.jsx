@@ -1,19 +1,57 @@
 import React from 'react'
-import { useAuth, RedirectToSignIn } from '@clerk/clerk-react'
+import { useAuth, useUser, RedirectToSignIn } from '@clerk/clerk-react'
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, requireAdmin = false }) {
   const { isSignedIn, isLoaded } = useAuth()
+  const { user, isLoaded: userLoaded } = useUser()
 
-  if (!isLoaded) {
+  if (!isLoaded || !userLoaded) {
     return (
       <div className="loading-spinner">
-        Loading...
+        <div className="spinner">Loading...</div>
       </div>
     )
   }
 
   if (!isSignedIn) {
     return <RedirectToSignIn />
+  }
+
+  // Check if user account is approved
+  const isApproved = user?.publicMetadata?.approved === true
+  const isAdmin = user?.publicMetadata?.role === 'admin'
+
+  // Admin users are always approved
+  if (isAdmin) {
+    return children
+  }
+
+  // Check admin requirement
+  if (requireAdmin && !isAdmin) {
+    return (
+      <div className="access-denied">
+        <div className="access-denied-content">
+          <h2>Access Denied</h2>
+          <p>Administrator privileges required to access this page.</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Check approval status for regular users
+  if (!isApproved && !isAdmin) {
+    return (
+      <div className="pending-approval">
+        <div className="pending-approval-content">
+          <h2>Account Pending Approval</h2>
+          <p>Your account is currently under review by an administrator.</p>
+          <p>You will receive access once your account has been approved.</p>
+          <div className="pending-details">
+            <strong>Email:</strong> {user?.emailAddresses[0]?.emailAddress}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return children

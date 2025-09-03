@@ -30,7 +30,12 @@
       "Bash(npm:*)",
       "Bash(git checkout:*)",
       "Bash(grep:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(railway status:*)",
+      "Bash(find:*)",
+      "Bash(git fetch:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:dev.sentia-manufacturing.railway.app)"
     ],
     "deny": [],
     "ask": []

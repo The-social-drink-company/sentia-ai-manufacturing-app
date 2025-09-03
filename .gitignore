@@ -82,3 +82,9 @@ temp-tests/
 
 # Admin credentials (sensitive)
 ADMIN_CREDENTIALS.md
+scripts/add-master-admins.js
+
+# Security sensitive files
+*.credentials
+*secrets*
+admin_*.js

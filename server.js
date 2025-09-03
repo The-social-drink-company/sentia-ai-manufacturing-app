@@ -6,6 +6,9 @@ import { fileURLToPath } from 'url';
 import pkg from 'pg';
 import { createClerkClient } from '@clerk/backend';
 import morgan from 'morgan';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { body, param, query, validationResult } from 'express-validator';
 import UnleashedService from './services/unleashedService.js';
 import logger, { logInfo, logError, logWarn } from './services/logger.js';
 import { metricsMiddleware, getMetrics, recordUnleashedApiRequest } from './services/metrics.js';
@@ -21,22 +24,54 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Initialize Clerk client
-const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY || 'sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx';
+const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
+if (!CLERK_SECRET_KEY) {
+  logError('CLERK_SECRET_KEY environment variable is required');
+  process.exit(1);
+}
 const clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
 
 // Database connection pool for Neon PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || process.env.DEV_DATABASE_URL,
   ssl: process.env.DATABASE_URL ? {
-    rejectUnauthorized: false
+    rejectUnauthorized: true,
+    ca: process.env.DATABASE_SSL_CA || undefined
   } : false
 });
 
-// Middleware
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://api.unleashedsoftware.com"],
+    },
+  },
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
+// CORS middleware
 app.use(cors({
   origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
   credentials: true
 }));
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Logging middleware
 app.use(morgan('combined', {
@@ -48,8 +83,19 @@ app.use(morgan('combined', {
 // Metrics middleware
 app.use(metricsMiddleware);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Validation error handler
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    logWarn('Validation failed', { errors: errors.array(), path: req.path });
+    return res.status(400).json({
+      success: false,
+      error: 'Validation failed',
+      details: errors.array()
+    });
+  }
+  next();
+};
 
 // Serve static files from React build FIRST
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -68,11 +114,12 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working!', environment: process.env.NODE_ENV });
 });
 
-// Protected API route example (Clerk auth disabled for initial deployment)
-app.get('/api/protected', (req, res) => {
+// Protected API route example (Clerk authentication enabled)
+app.get('/api/protected', requireAuth, (req, res) => {
   res.json({ 
-    message: 'This is a protected route (auth disabled for initial deployment)',
-    userId: 'test-user'
+    message: 'This is a protected route - authentication required',
+    userId: req.user.id,
+    email: req.user.emailAddresses?.[0]?.emailAddress
   });
 });
 
@@ -120,16 +167,24 @@ app.get('/api/jobs', async (req, res) => {
   }
 });
 
-app.post('/api/jobs', async (req, res) => {
+app.post('/api/jobs', [
+  body('name').isString().isLength({ min: 1, max: 255 }).trim(),
+  body('description').optional().isString().isLength({ max: 1000 }).trim(),
+  body('quantity').isInt({ min: 1, max: 1000000 }),
+  body('due_date').optional().isISO8601().toDate(),
+  handleValidationErrors
+], async (req, res) => {
   try {
     const { name, description, quantity, due_date } = req.body;
     const result = await pool.query(
       'INSERT INTO jobs (name, description, quantity, due_date, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [name, description, quantity, due_date, 'test-user']
     );
+    logInfo('Job created successfully', { jobId: result.rows[0].id, name });
     res.json({ success: true, job: result.rows[0] });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    logError('Failed to create job', error);
+    res.status(500).json({ success: false, error: 'Failed to create job' });
   }
 });
 

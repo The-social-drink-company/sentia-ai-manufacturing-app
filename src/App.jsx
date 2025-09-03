@@ -1,13 +1,27 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
 import Header from './components/Header'
 import Dashboard from './pages/Dashboard'
+import EnhancedDashboard from './pages/EnhancedDashboard'
 import AdminPanel from './pages/AdminPanel'
 import LandingPage from './pages/LandingPage'
 import WorkingCapitalDashboard from './pages/WorkingCapitalDashboard'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import './App.css'
+
+// Helper component to conditionally render header
+const ConditionalHeader = () => {
+  const location = useLocation()
+  const isEnhancedDashboard = location.pathname === '/' || location.pathname === '/dashboard'
+  
+  // Don't render the old header for enhanced dashboard routes
+  if (isEnhancedDashboard) {
+    return null
+  }
+  
+  return <Header />
+}
 
 function App() {
   // Check if Clerk is available before using hooks
@@ -26,13 +40,13 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Header />
+        <ConditionalHeader />
         <main>
           <Routes>
             <Route path="/" element={
               isSignedIn ? (
                 <ProtectedRoute>
-                  <Dashboard />
+                  <EnhancedDashboard />
                 </ProtectedRoute>
               ) : (
                 <LandingPage />
@@ -44,6 +58,11 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <EnhancedDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard/basic" element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>

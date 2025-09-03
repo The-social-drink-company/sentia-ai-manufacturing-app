@@ -45,6 +45,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2. Start React frontend: `npm run dev` (runs on port 3000)
 3. Frontend proxies API calls to backend via Vite configuration
 
+## Enhanced Dashboard System
+
+### Production Dashboard Implementation (September 2025)
+The main dashboard has been upgraded to a comprehensive, production-ready system implementing the full "Improved Prompt 8: Main Dashboard Interface Development" specification:
+
+#### Key Features Implemented
+- **Responsive Grid Layout**: 12-column responsive grid using react-grid-layout with drag-and-drop widgets
+- **Role-Based Access Control**: Complete RBAC system with admin/manager/operator/viewer roles and granular permissions
+- **Real-time Updates**: Server-Sent Events (SSE) integration for live data updates and job status monitoring
+- **State Management**: Zustand for layout persistence, TanStack Query for data fetching and caching
+- **Widget System**: Modular widget architecture with 7 core widgets (KPI Strip, Demand Forecast, Working Capital, etc.)
+- **Dark/Light Themes**: Complete theming system with user preference persistence
+- **Keyboard Shortcuts**: Navigate with hotkeys (g+o for dashboard, g+f for forecasts, etc.)
+- **Edit Mode**: In-place dashboard customization with visual grid editing
+
+#### Core Components
+- **Enhanced Dashboard** (`/dashboard`): Main production dashboard with all features
+- **Basic Dashboard** (`/dashboard/basic`): Fallback to original simple dashboard
+- **Layout System**: Persistent grid layouts per user role and breakpoint
+- **Authentication Integration**: Seamless Clerk integration with role-based UI
+
+#### Technical Architecture
+- **Frontend**: React 18 + Vite 4 + Tailwind CSS + shadcn/ui components
+- **State**: Zustand stores for layout, TanStack Query for server state
+- **Real-time**: SSE connection with automatic reconnection and query invalidation
+- **Grid**: react-grid-layout with responsive breakpoints (lg/md/sm/xs/xxs)
+- **Permissions**: Granular permission system with 20+ permissions across domains
+
+#### Environment Configuration
+Required Vite environment variables:
+- `VITE_CLERK_PUBLISHABLE_KEY`: Clerk authentication (required)
+- `VITE_API_BASE_URL`: Backend API endpoint (default: http://localhost:5000/api)
+- `VITE_APP_TITLE`: Application title display
+- `VITE_APP_VERSION`: Version display in UI
+
 ## Architecture Overview
 
 ### Hybrid Frontend/Backend Architecture

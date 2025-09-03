@@ -15,7 +15,12 @@
       "Bash(dir:*)",
       "Bash(git rm:*)",
       "Bash(git commit:*)",
-      "Bash(node server.js)"
+      "Bash(node server.js)",
+      "Bash(npm install:*)",
+      "WebSearch",
+      "Bash(npm run dev:*)",
+      "Bash(npx @clerk/dev-cli:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

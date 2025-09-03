@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react'
+import { useAuth, useUser } from '@clerk/clerk-react'
 import axios from 'axios'
 import '../styles/Dashboard.css'
 
 function Dashboard() {
+  const { getToken, isSignedIn } = useAuth()
+  const { user } = useUser()
   const [apiStatus, setApiStatus] = useState(null)
   const [dbStatus, setDbStatus] = useState(null)
   const [jobs, setJobs] = useState([])
@@ -19,29 +22,38 @@ function Dashboard() {
       setLoading(true)
       setError(null)
 
+      // Get auth token if signed in
+      const token = isSignedIn ? await getToken() : null
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
       // Fetch API status
-      const apiResponse = await axios.get('/api/test')
+      const apiResponse = await axios.get('/api/test', { headers })
       setApiStatus(apiResponse.data)
 
       // Fetch database status
-      const dbResponse = await axios.get('/api/db-test')
+      const dbResponse = await axios.get('/api/db-test', { headers })
       setDbStatus(dbResponse.data)
 
-      // Fetch jobs
-      try {
-        const jobsResponse = await axios.get('/api/jobs')
-        setJobs(jobsResponse.data.jobs || [])
-      } catch (jobsError) {
-        // Jobs table might not exist yet
-        setJobs([])
-      }
+      // Fetch jobs (only if authenticated)
+      if (isSignedIn) {
+        try {
+          const jobsResponse = await axios.get('/api/jobs', { headers })
+          setJobs(jobsResponse.data.jobs || [])
+        } catch (jobsError) {
+          // Jobs table might not exist yet
+          setJobs([])
+        }
 
-      // Fetch resources
-      try {
-        const resourcesResponse = await axios.get('/api/resources')
-        setResources(resourcesResponse.data.resources || [])
-      } catch (resourcesError) {
-        // Resources table might not exist yet
+        // Fetch resources (only if authenticated)
+        try {
+          const resourcesResponse = await axios.get('/api/resources', { headers })
+          setResources(resourcesResponse.data.resources || [])
+        } catch (resourcesError) {
+          // Resources table might not exist yet
+          setResources([])
+        }
+      } else {
+        setJobs([])
         setResources([])
       }
 
@@ -75,6 +87,11 @@ function Dashboard() {
       <div className="dashboard-header">
         <h1>Sentia Manufacturing Dashboard</h1>
         <p>Node.js/Express API with React Frontend</p>
+        {isSignedIn && user && (
+          <div className="user-welcome">
+            <p>Welcome, {user.firstName || user.emailAddresses[0]?.emailAddress}!</p>
+          </div>
+        )}
       </div>
 
       <div className="dashboard-grid">

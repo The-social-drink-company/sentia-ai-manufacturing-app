@@ -26,21 +26,51 @@ class QueueService {
     if (this.isInitialized) return;
 
     try {
+      // Check if Redis is configured in environment
+      if (!process.env.REDIS_HOST && !process.env.REDIS_URL) {
+        logWarn('Redis not configured - queue service will be disabled');
+        this.isInitialized = true;
+        return false;
+      }
+
       // Initialize Redis connection
-      const redisConfig = {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: process.env.REDIS_PORT || 6379,
-        password: process.env.REDIS_PASSWORD,
-        db: process.env.REDIS_DB || 0,
-        retryDelayOnFailover: 100,
-        enableReadyCheck: true,
-        lazyConnect: true
-      };
+      const redisConfig = process.env.REDIS_URL ? 
+        process.env.REDIS_URL : 
+        {
+          host: process.env.REDIS_HOST || 'localhost',
+          port: process.env.REDIS_PORT || 6379,
+          password: process.env.REDIS_PASSWORD,
+          db: process.env.REDIS_DB || 0,
+          retryDelayOnFailover: 100,
+          enableReadyCheck: true,
+          lazyConnect: true,
+          maxRetriesPerRequest: 3,
+          connectTimeout: 5000,
+          commandTimeout: 5000
+        };
 
       this.redis = new Redis(redisConfig);
       
-      await this.redis.connect();
-      logInfo('Redis connection established for queue service');
+      // Set up error handling to prevent unhandled errors
+      this.redis.on('error', (error) => {
+        logWarn('Redis connection error - queue service unavailable', error);
+      });
+
+      this.redis.on('connect', () => {
+        logInfo('Redis connection established for queue service');
+      });
+
+      this.redis.on('close', () => {
+        logWarn('Redis connection closed');
+      });
+
+      // Test the connection with timeout
+      const connectionPromise = this.redis.connect();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Redis connection timeout')), 10000)
+      );
+
+      await Promise.race([connectionPromise, timeoutPromise]);
 
       // Initialize queues
       this.queues = {
@@ -83,6 +113,8 @@ class QueueService {
       logError('Failed to initialize queue service', error);
       // Gracefully degrade - continue without queue processing
       logWarn('Queue service disabled - running in synchronous mode');
+      this.isInitialized = true; // Mark as initialized even if failed to prevent retry loops
+      return false;
     }
   }
 

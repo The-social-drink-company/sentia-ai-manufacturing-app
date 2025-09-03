@@ -81,16 +81,28 @@ function LandingPage() {
             </div>
             
             <div className="sentia-auth-actions">
-              <SignInButton mode="modal">
-                <button className="sentia-btn sentia-btn-primary">
-                  Sign In
+              {typeof SignInButton !== 'undefined' ? (
+                <SignInButton mode="modal">
+                  <button className="sentia-btn sentia-btn-primary">
+                    Sign In
+                  </button>
+                </SignInButton>
+              ) : (
+                <button className="sentia-btn sentia-btn-primary" disabled>
+                  Sign In (Authentication Disabled)
                 </button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <button className="sentia-btn sentia-btn-secondary">
-                  Request Access
+              )}
+              {typeof SignUpButton !== 'undefined' ? (
+                <SignUpButton mode="modal">
+                  <button className="sentia-btn sentia-btn-secondary">
+                    Request Access
+                  </button>
+                </SignUpButton>
+              ) : (
+                <button className="sentia-btn sentia-btn-secondary" disabled>
+                  Request Access (Authentication Disabled)
                 </button>
-              </SignUpButton>
+              )}
             </div>
             
             <div className="sentia-auth-note">

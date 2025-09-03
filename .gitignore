@@ -88,3 +88,4 @@ scripts/add-master-admins.js
 *.credentials
 *secrets*
 admin_*.js
+/src/generated/prisma

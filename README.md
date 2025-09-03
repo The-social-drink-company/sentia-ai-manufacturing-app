@@ -15,8 +15,9 @@ A modern, full-stack manufacturing planning and scheduling system built with Rea
 - **Clerk** - Authentication and user management
 
 **Backend:**
-- **Node.js** - JavaScript runtime (v24.4.1)
+- **Node.js** - JavaScript runtime (v18+)
 - **Express.js** - Web framework with comprehensive middleware
+- **Prisma ORM** - Type-safe database client with migrations
 - **PostgreSQL** - Primary database (Neon with SSL)
 - **Clerk Backend** - Authentication and user management
 - **Winston** - Structured logging with daily rotation
@@ -119,6 +120,109 @@ npm run dev:server    # Backend only (Express server)
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5000/api
 - **Health Check**: http://localhost:5000/health
+
+## Database Setup
+
+### Database Architecture
+
+The application uses **Prisma ORM** with **Neon PostgreSQL** in a three-environment setup:
+
+```
+┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│   Development       │    │       Test          │    │    Production       │
+│                     │    │                     │    │                     │
+│ localhost:5000      │    │ test.sentia-*.app   │    │ sentia-*.app        │
+└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
+         │                           │                           │
+         ▼                           ▼                           ▼
+┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│   Neon Dev DB       │    │   Neon Test DB      │    │   Neon Prod DB      │
+│                     │    │                     │    │                     │
+│ ep-***-pooler.      │    │ ep-***-pooler.      │    │ ep-***-pooler.      │
+│ eu-west-2.aws       │    │ eu-west-2.aws       │    │ eu-west-2.aws       │
+└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
+```
+
+### Database Commands
+
+#### Essential Commands:
+```bash
+# Generate Prisma client
+npm run db:generate
+
+# Push schema changes to database (development)
+npm run db:push
+
+# Create and apply migrations
+npm run db:migrate
+
+# Deploy migrations to production
+npm run db:migrate:deploy
+
+# Reset database (development only)
+npm run db:migrate:reset
+
+# Open Prisma Studio (database GUI)
+npm run db:studio
+
+# Seed database with sample data
+npm run db:seed
+```
+
+#### Migration Workflow:
+```bash
+# 1. Make changes to prisma/schema.prisma
+# 2. Create migration
+npm run db:migrate
+
+# 3. Deploy to production
+npm run db:migrate:deploy
+```
+
+### Database Schema
+
+The application implements a comprehensive manufacturing planning schema with the following core entities:
+
+- **Users** - Authentication and role-based access control
+- **Markets** - Geographic markets (UK, EU, USA) with tax and shipping rules
+- **Products** - 9 SKUs (3 categories × 3 regions) with manufacturing specifications
+- **Sales Channels** - E-commerce platforms (Amazon, Shopify) with API integration
+- **Historical Sales** - Transaction-level sales data for analytics
+- **Forecasts** - AI-generated demand predictions with confidence scoring
+- **Inventory Levels** - Multi-location stock management with reorder points
+- **Working Capital** - Financial projections and cash flow management
+- **System Settings** - Flexible configuration management
+
+### Backup and Restore
+
+#### Create Backup:
+```bash
+node -e "
+import utils from './src/services/db/utils.js';
+utils.createBackup({ filename: 'manual-backup.sql' })
+  .then(r => console.log('Backup created:', r.path))
+  .catch(console.error);
+"
+```
+
+#### Restore Backup:
+```bash
+node -e "
+import utils from './src/services/db/utils.js';
+utils.restoreBackup('./backups/backup-file.sql')
+  .then(r => console.log('Restore completed'))
+  .catch(console.error);
+"
+```
+
+#### List Backups:
+```bash
+node -e "
+import utils from './src/services/db/utils.js';
+const backups = utils.listBackups();
+console.table(backups);
+"
+```
 
 ## Environment Configuration
 

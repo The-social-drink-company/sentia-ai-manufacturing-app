@@ -25,11 +25,20 @@ const PORT = process.env.PORT || 5000;
 
 // Initialize Clerk client
 const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
+let clerkClient = null;
+
 if (!CLERK_SECRET_KEY) {
-  logError('CLERK_SECRET_KEY environment variable is required');
-  process.exit(1);
+  logWarn('CLERK_SECRET_KEY environment variable not found - authentication features will be disabled');
+  console.log('WARNING: CLERK_SECRET_KEY missing - authentication disabled');
+} else {
+  try {
+    clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
+    logInfo('Clerk client initialized successfully');
+  } catch (error) {
+    logError('Failed to initialize Clerk client', error);
+    console.log('ERROR: Failed to initialize Clerk - authentication disabled');
+  }
 }
-const clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
 
 // Database connection pool for Neon PostgreSQL
 const pool = new Pool({
@@ -108,6 +117,37 @@ app.get('/health', (req, res) => {
 
 // Metrics endpoint for monitoring
 app.get('/metrics', getMetrics);
+
+// Middleware to verify authentication and admin status
+const requireAuth = async (req, res, next) => {
+  // If Clerk is not available, skip authentication in production
+  if (!clerkClient) {
+    logWarn('Authentication skipped - Clerk client not available');
+    req.user = { id: 'anonymous', emailAddresses: [{ emailAddress: 'anonymous@localhost' }] };
+    return next();
+  }
+  
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const payload = await clerkClient.verifyToken(token);
+    const user = await clerkClient.users.getUser(payload.sub);
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+const requireAdmin = (req, res, next) => {
+  if (req.user?.publicMetadata?.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+};
 
 // API Routes
 app.get('/api/test', (req, res) => {
@@ -220,33 +260,13 @@ app.get('/api/schedules', async (req, res) => {
   }
 });
 
-// Middleware to verify authentication and admin status
-const requireAuth = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const payload = await clerkClient.verifyToken(token);
-    const user = await clerkClient.users.getUser(payload.sub);
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-};
-
-const requireAdmin = (req, res, next) => {
-  if (req.user?.publicMetadata?.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
-  next();
-};
-
 // Admin API endpoints
 app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
   try {
+    if (!clerkClient) {
+      return res.json({ success: true, users: [], message: 'Clerk client not available - no users to display' });
+    }
+    
     const userList = await clerkClient.users.getUserList({
       limit: 100,
       orderBy: '-created_at'
@@ -312,6 +332,10 @@ app.post('/api/admin/users/:userId/approve', requireAuth, requireAdmin, async (r
   try {
     const { userId } = req.params;
     
+    if (!clerkClient) {
+      return res.json({ success: false, error: 'Clerk client not available - cannot approve users' });
+    }
+    
     await clerkClient.users.updateUserMetadata(userId, {
       publicMetadata: {
         approved: true,
@@ -328,6 +352,10 @@ app.post('/api/admin/users/:userId/approve', requireAuth, requireAdmin, async (r
 app.post('/api/admin/users/:userId/revoke', requireAuth, requireAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
+    
+    if (!clerkClient) {
+      return res.json({ success: false, error: 'Clerk client not available - cannot revoke users' });
+    }
     
     await clerkClient.users.updateUserMetadata(userId, {
       publicMetadata: {

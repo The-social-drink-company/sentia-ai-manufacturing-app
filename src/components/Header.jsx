@@ -9,12 +9,30 @@ export default function Header() {
   const { isSignedIn } = useAuth()
   const { user } = useUser()
   const isAdmin = user?.publicMetadata?.role === 'admin'
+  const hasFinancialAccess = () => {
+    const userRole = user?.publicMetadata?.role
+    return ['admin', 'cfo', 'financial_manager', 'financial_analyst'].includes(userRole)
+  }
 
   return (
     <header className="header">
       <div className="header-container">
         <div className="header-left">
           <h1>Sentia Manufacturing Dashboard</h1>
+        </div>
+        <div className="header-center">
+          {isSignedIn && (
+            <nav className="main-nav">
+              <Link to="/dashboard" className="nav-link">
+                Dashboard
+              </Link>
+              {hasFinancialAccess() && (
+                <Link to="/working-capital" className="nav-link">
+                  Working Capital
+                </Link>
+              )}
+            </nav>
+          )}
         </div>
         <div className="header-right">
           <div className="auth-controls">

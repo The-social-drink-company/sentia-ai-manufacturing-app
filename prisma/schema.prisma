@@ -57,6 +57,17 @@ model User {
   system_settings_system_settings_updated_byTousers  SystemSetting[]    @relation("system_settings_updated_byTousers")
   working_capital_working_capital_approved_byTousers WorkingCapital[]   @relation("working_capital_approved_byTousers")
   working_capital_working_capital_created_byTousers  WorkingCapital[]   @relation("working_capital_created_byTousers")
+  
+  // Working Capital Extensions Relations
+  ar_policies                                        ARPolicy[]
+  ap_policies                                        APPolicy[]
+  inventory_policies                                 InventoryPolicy[]
+  wc_projections                                     WCProjection[]
+  wc_kpis                                           WCKPIs[]
+  wc_scenarios_creator                              WCScenario[]       @relation("WCScenarioCreator")
+  wc_scenarios_approver                             WCScenario[]       @relation("WCScenarioApprover")
+  wc_optimizations_creator                          WCOptimization[]   @relation("WCOptimizationCreator")
+  wc_optimizations_approver                         WCOptimization[]   @relation("WCOptimizationApprover")
 
   @@index([last_login], map: "ix_user_last_login")
   @@index([role, isActive], map: "ix_user_role_active")
@@ -108,6 +119,7 @@ model Product {
   inventoryLevels     InventoryLevel[]
   creator             User?            @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   workingCapital      WorkingCapital[]
+  inventory_policies  InventoryPolicy[]
 
   @@index([isActive, createdAt], map: "ix_product_active_created")
   @@index([category, marketRegion], map: "ix_product_category_market")
@@ -142,6 +154,7 @@ model SalesChannel {
   users                     User?            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   market                    Market           @relation(fields: [marketCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   working_capital           WorkingCapital[]
+  ar_policies               ARPolicy[]
 
   @@index([isActive, sync_enabled], map: "ix_sales_channel_active_sync")
   @@index([lastSyncAt], map: "ix_sales_channel_last_sync")
@@ -667,4 +680,173 @@ enum importtype {
   MANUFACTURING_DATA
   FINANCIAL_DATA
   FORECASTS
+}
+
+// Working Capital Extensions - Enhanced Models for Financial Planning
+
+model ARPolicy {
+  id                  String              @id @default(uuid()) @db.Uuid
+  channel_id          String              @db.Uuid
+  term_days           Int
+  pct_share           Decimal             @db.Decimal(5, 4) // Percentage of sales using these terms
+  fees_pct            Decimal             @db.Decimal(5, 4) // Channel fees percentage
+  bad_debt_pct        Decimal             @db.Decimal(5, 4) // Expected bad debt rate
+  active_from         DateTime            @db.Date
+  active_to           DateTime?           @db.Date
+  created_by          String?             @db.Uuid
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime            @updatedAt @db.Timestamptz(6)
+  
+  // Relations
+  sales_channel       SalesChannel        @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+  user                User?               @relation(fields: [created_by], references: [id])
+  
+  @@unique([channel_id, active_from], name: "uq_ar_policy_channel_date")
+  @@index([channel_id, active_from], name: "ix_ar_policy_channel_active")
+  @@map("ar_policies")
+}
+
+model APPolicy {
+  id                      String              @id @default(uuid()) @db.Uuid
+  supplier_id             String              @db.VarChar(100) // External supplier reference
+  supplier_name           String              @db.VarChar(200)
+  term_days               Int
+  early_pay_discount_pct  Decimal?            @db.Decimal(5, 4)
+  early_pay_days          Int?
+  strategy                String              @default("due") @db.VarChar(20) // 'due', 'discount', 'optimize'
+  active_from             DateTime            @db.Date
+  active_to               DateTime?           @db.Date
+  created_by              String?             @db.Uuid
+  created_at              DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime            @updatedAt @db.Timestamptz(6)
+  
+  // Relations
+  user                    User?               @relation(fields: [created_by], references: [id])
+  
+  @@unique([supplier_id, active_from], name: "uq_ap_policy_supplier_date")
+  @@index([supplier_id, active_from], name: "ix_ap_policy_supplier_active")
+  @@map("ap_policies")
+}
+
+model InventoryPolicy {
+  id                  String              @id @default(uuid()) @db.Uuid
+  sku                 String              @db.VarChar(50)
+  product_id          String              @db.Uuid
+  target_dio          Int                 // Target Days Inventory Outstanding
+  service_level       Decimal             @db.Decimal(4, 3) // Service level (0.95 = 95%)
+  rop                 Int                 // Reorder Point
+  ss                  Int                 // Safety Stock
+  effective_from      DateTime            @db.Date
+  effective_to        DateTime?           @db.Date
+  created_by          String?             @db.Uuid
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime            @updatedAt @db.Timestamptz(6)
+  
+  // Relations
+  product             Product             @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  user                User?               @relation(fields: [created_by], references: [id])
+  
+  @@unique([product_id, effective_from], name: "uq_inventory_policy_product_date")
+  @@index([product_id, effective_from], name: "ix_inventory_policy_product_active")
+  @@index([sku], name: "ix_inventory_policy_sku")
+  @@map("inventory_policies")
+}
+
+model WCProjection {
+  id                  String              @id @default(uuid()) @db.Uuid
+  run_id              String              @db.Uuid  // Groups projections from same calculation run
+  month               DateTime            @db.Date  // First day of month
+  cash_in             Decimal             @db.Decimal(15, 2)
+  cash_out            Decimal             @db.Decimal(15, 2)
+  net_change          Decimal             @db.Decimal(15, 2)
+  ending_cash         Decimal             @db.Decimal(15, 2)
+  scenario            String              @default("baseline") @db.VarChar(50)
+  currency_code       String              @default("GBP") @db.VarChar(3)
+  created_by          String?             @db.Uuid
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  
+  // Relations
+  user                User?               @relation(fields: [created_by], references: [id])
+  wc_kpis             WCKPIs[]
+  
+  @@unique([run_id, month, scenario], name: "uq_wc_projection_run_month_scenario")
+  @@index([run_id, scenario], name: "ix_wc_projection_run_scenario")
+  @@index([month], name: "ix_wc_projection_month")
+  @@map("wc_projections")
+}
+
+model WCKPIs {
+  id                  String              @id @default(uuid()) @db.Uuid
+  run_id              String              @db.Uuid
+  projection_id       String              @db.Uuid
+  scenario            String              @default("baseline") @db.VarChar(50)
+  dso                 Decimal             @db.Decimal(6, 2) // Days Sales Outstanding
+  dpo                 Decimal             @db.Decimal(6, 2) // Days Payable Outstanding
+  dio                 Decimal             @db.Decimal(6, 2) // Days Inventory Outstanding
+  ccc                 Decimal             @db.Decimal(6, 2) // Cash Conversion Cycle
+  inv_turnover        Decimal             @db.Decimal(6, 2) // Inventory Turnover
+  wc_turnover         Decimal             @db.Decimal(6, 2) // Working Capital Turnover
+  min_cash            Decimal             @db.Decimal(15, 2) // Minimum cash in period
+  facility_utilization Decimal           @db.Decimal(5, 4) // Credit facility utilization %
+  created_by          String?             @db.Uuid
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  
+  // Relations
+  user                User?               @relation(fields: [created_by], references: [id])
+  projection          WCProjection        @relation(fields: [projection_id], references: [id], onDelete: Cascade)
+  
+  @@unique([run_id, projection_id, scenario], name: "uq_wc_kpis_run_projection_scenario")
+  @@index([run_id, scenario], name: "ix_wc_kpis_run_scenario")
+  @@index([ccc], name: "ix_wc_kpis_ccc")
+  @@map("wc_kpis")
+}
+
+model WCScenario {
+  id                  String              @id @default(uuid()) @db.Uuid
+  name                String              @db.VarChar(100)
+  description         String?             @db.Text
+  scenario_type       String              @db.VarChar(20) // 'baseline', 'optimistic', 'pessimistic', 'stress', 'custom'
+  parameters          Json                @db.Json // Scenario parameters (demand%, price%, terms changes, etc.)
+  status              String              @default("draft") @db.VarChar(20)
+  run_id              String?             @db.Uuid // Latest run ID
+  created_by          String?             @db.Uuid
+  approved_by         String?             @db.Uuid
+  approved_at         DateTime?           @db.Timestamptz(6)
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime            @updatedAt @db.Timestamptz(6)
+  
+  // Relations
+  creator             User?               @relation("WCScenarioCreator", fields: [created_by], references: [id])
+  approver            User?               @relation("WCScenarioApprover", fields: [approved_by], references: [id])
+  
+  @@index([scenario_type, status], name: "ix_wc_scenario_type_status")
+  @@index([created_by], name: "ix_wc_scenario_creator")
+  @@map("wc_scenarios")
+}
+
+model WCOptimization {
+  id                  String              @id @default(uuid()) @db.Uuid
+  run_id              String              @db.Uuid
+  recommendation_type String              @db.VarChar(50) // 'ar_terms', 'ap_terms', 'inventory_policy', 'channel_mix'
+  current_state       Json                @db.Json
+  recommended_state   Json                @db.Json
+  impact_analysis     Json                @db.Json // NPV, KPI changes, risk assessment
+  implementation_notes String?            @db.Text
+  priority_score      Decimal             @db.Decimal(3, 1) // 1-10 priority score
+  confidence_level    Decimal             @db.Decimal(3, 2) // 0-1 confidence
+  status              String              @default("pending") @db.VarChar(20)
+  implemented_at      DateTime?           @db.Timestamptz(6)
+  created_by          String?             @db.Uuid
+  approved_by         String?             @db.Uuid
+  approved_at         DateTime?           @db.Timestamptz(6)
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  
+  // Relations
+  creator             User?               @relation("WCOptimizationCreator", fields: [created_by], references: [id])
+  approver            User?               @relation("WCOptimizationApprover", fields: [approved_by], references: [id])
+  
+  @@index([run_id], name: "ix_wc_optimization_run")
+  @@index([recommendation_type, priority_score], name: "ix_wc_optimization_type_priority")
+  @@index([status, priority_score], name: "ix_wc_optimization_status_priority")
+  @@map("wc_optimizations")
 }

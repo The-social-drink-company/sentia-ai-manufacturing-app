@@ -5,81 +5,146 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ### Frontend Commands (React + Vite)
-- `npm run dev` - Start React development server on localhost:3000
+- `npm run dev:client` - Start React development client only on localhost:3000
 - `npm run build` - Build production React app
 - `npm run preview` - Preview production build locally
-- `npm install` - Install Node.js dependencies
+- `npm run serve` - Serve production build on port 3000
 
-### Backend Commands (Flask API)
-- `python run.py` - Start Flask API server on localhost:5000
-- `python -m flask db init` - Initialize database
-- `python -m flask db migrate -m "message"` - Create database migration
-- `python -m flask db upgrade` - Apply database migrations
-- `pytest` - Run all tests
-- `pytest --cov=app tests/` - Run tests with coverage
-- `python -m flask init-db` - Initialize database (custom CLI command)
-- `python -m flask test-db` - Test database connection and show info
-- `python -m flask list-users` - List all users in the system
-- `python -m flask create-admin` - Create an admin user interactively
+### Backend Commands (Node.js + Express)
+- `npm run dev:server` - Start Node.js/Express API server with nodemon
+- `node server.js` - Start production Node.js server
+- `npm start` - Production start command (same as above)
 
-**Important**: Always use `python -m flask [command]` instead of `flask [command]` to ensure proper module resolution and environment compatibility.
+### Full Stack Development
+- `npm run dev` - Start both frontend and backend concurrently
+- `npm install` - Install all Node.js dependencies
 
-### Environment Setup
+### Testing Commands
+- `npm test` - Run Vitest unit tests in watch mode
+- `npm run test:run` - Run tests once
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run test:ui` - Run tests with UI interface
+- `npm run test:e2e` - Run Playwright end-to-end tests
+- `npm run test:e2e:ui` - Run E2E tests with UI
+- `npm run test:setup` - Install Playwright browsers
 
-#### Frontend Setup (Node.js)
-1. Install Node.js (v18+)
-2. Install dependencies: `npm install`
+### Linting & Quality
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Auto-fix ESLint issues
 
-#### Backend Setup (Python)
-1. Create virtual environment:
-   - Windows: `py -3.13 -m venv C:\Users\DanielKenny\venvs\sentia` (or `python -m venv C:\Users\DanielKenny\venvs\sentia`)
-   - Mac/Linux: `python -m venv venv`
-2. Activate:
-   - Windows: `C:\Users\DanielKenny\venvs\sentia\Scripts\activate`
-   - Mac/Linux: `source venv/bin/activate`
-3. Install dependencies: `python -m pip install -r requirements.txt`
-4. Copy environment template: `cp .env.template .env` and configure
+## Environment Setup
 
-#### Development Workflow
-1. Start Flask API: `python run.py` (runs on port 5000)
-2. Start React frontend: `npm run dev` (runs on port 3000)
-3. Frontend proxies API calls to backend via Vite configuration
+### Prerequisites
+- Node.js (v18+ recommended)
+- npm (comes with Node.js)
+
+### Development Setup
+1. Install Node.js dependencies: `npm install`
+2. Copy environment template: `cp .env.template .env` and configure
+3. Start development servers: `npm run dev`
+
+### Environment Configuration
+Required environment variables:
+
+#### Frontend (Vite - VITE_ prefix)
+- `VITE_CLERK_PUBLISHABLE_KEY`: Clerk authentication key (required)
+- `VITE_API_BASE_URL`: Backend API endpoint (default: http://localhost:5000/api)
+- `VITE_APP_TITLE`: Application title display
+- `VITE_APP_VERSION`: Version display in UI
+
+#### Backend (Node.js)
+- `NODE_ENV`: Environment mode (development/test/production)
+- `PORT`: Server port (default: 5000)
+- `DATABASE_URL`: PostgreSQL connection string (Neon)
+- `DEV_DATABASE_URL`: Development database URL
+- `TEST_DATABASE_URL`: Test database URL
+- `CORS_ORIGINS`: Allowed CORS origins (comma-separated)
+- `REDIS_URL`: Redis connection for caching/sessions
+- `CLERK_SECRET_KEY`: Clerk backend secret key
+- Various API keys (Amazon SP-API, Shopify, Unleashed, etc.)
 
 ## Architecture Overview
 
-### Hybrid Frontend/Backend Architecture
-- **Frontend**: React with Vite (port 3000) - User interface and client-side logic
-- **Backend**: Flask API (port 5000) - Data processing, advanced analytics (numpy, pandas), and database operations
-- **Development**: Vite dev server proxies `/api/*` requests to Flask backend
-- **Production**: React build served as static files, Flask serves API endpoints
+### Full-Stack Node.js Architecture
+- **Frontend**: React 18 + Vite 4 + Tailwind CSS - User interface (port 3000)
+- **Backend**: Node.js + Express - REST API and business logic (port 5000)
+- **Database**: Neon PostgreSQL with Prisma ORM
+- **Authentication**: Clerk for user authentication and RBAC
+- **Real-time**: Server-Sent Events (SSE) for live updates
+- **Development**: Vite dev server proxies `/api/*` requests to Express backend
+- **Production**: React build served as static files, Express serves API endpoints
 
-### Flask Application Factory Pattern
-The Flask backend uses application factory pattern in `app/__init__.py`:
-- Database: SQLAlchemy with Flask-Migrate for migrations
-- CORS configured for React frontend (localhost:3000)
-- API-only endpoints under `/api/*` prefix
-- Advanced data analysis capabilities with numpy, pandas, scikit-learn
+### Enhanced Dashboard System
 
-### Database Models (app/models/)
-Core entities following manufacturing planning domain:
-- `User` - Authentication and user management
-- `Job` - Manufacturing jobs/orders
-- `Resource` - Production resources (machines, workers)
-- `Schedule` - Production schedules linking jobs and resources
+#### Production Dashboard Features
+- **Responsive Grid Layout**: 12-column responsive grid using react-grid-layout with drag-and-drop widgets
+- **Role-Based Access Control**: Complete RBAC system with admin/manager/operator/viewer roles and 20+ granular permissions
+- **Real-time Updates**: Server-Sent Events integration for live data updates and job status monitoring
+- **State Management**: Zustand for layout persistence, TanStack Query for data fetching and caching
+- **Widget System**: Modular widget architecture with 7 core widgets (KPI Strip, Demand Forecast, Working Capital, etc.)
+- **Dark/Light Themes**: Complete theming system with user preference persistence
+- **Keyboard Shortcuts**: Navigate with hotkeys (g+o for dashboard, g+f for forecasts, etc.)
+- **Edit Mode**: In-place dashboard customization with visual grid editing
 
-All models imported via `app/models/__init__.py` for clean imports.
+#### Core Routes
+- **Enhanced Dashboard** (`/dashboard`): Main production dashboard with all features
+- **Basic Dashboard** (`/dashboard/basic`): Fallback to original simple dashboard
+- **Working Capital** (`/working-capital`): Comprehensive financial management
+- **Admin Panel** (`/admin`): User and system management
 
-### Configuration System
-Multi-environment configuration in `config.py`:
-- `DevelopmentConfig` - Local development with SQLite fallback
-- `TestConfig` - Testing with PostgreSQL test database
-- `ProductionConfig` - Production with logging to syslog
-- Environment selection via `FLASK_CONFIG` environment variable
+#### Technical Stack
+- **Frontend**: React 18 + Vite 4 + Tailwind CSS + Heroicons + shadcn/ui components
+- **State Management**: Zustand stores with localStorage persistence + TanStack Query for server state
+- **Real-time**: SSE with 15+ event types and automatic query invalidation
+- **Grid System**: react-grid-layout with responsive breakpoints (lg/md/sm/xs/xxs)
+- **Authentication**: Seamless Clerk integration with role-based UI components
+- **Database**: Prisma ORM with PostgreSQL (Neon)
 
-### Routing Structure (app/routes/)
-- `main.bp` - Web interface routes (dashboard, forms)
-- `api.bp` - REST API endpoints (/api/*)
-- `auth.bp` - Authentication routes (login, logout)
+## Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── auth/           # Authentication components
+│   ├── layout/         # Layout components (Header, Sidebar, Grid)
+│   ├── widgets/        # Dashboard widgets
+│   └── WorkingCapital/ # Financial management components
+├── hooks/              # Custom React hooks (useAuthRole, useSSE)
+├── lib/                # Utility functions
+├── pages/              # Page components (Dashboard, AdminPanel)
+├── services/           # API services and query client
+├── stores/             # Zustand state stores
+├── styles/             # CSS files
+└── utils/              # Helper utilities
+
+context/
+├── api-documentation/      # External API docs
+├── business-requirements/  # Business logic documentation
+├── claude-code-docs/      # Claude Code documentation
+├── technical-specifications/ # Tech stack docs
+└── ui-components/         # UI/UX specifications
+
+database/               # Database scripts and migrations
+prisma/                # Prisma schema and migrations
+public/                # Static assets
+tests/                 # Test files (unit, integration, e2e)
+services/              # Backend service modules
+scripts/               # Utility scripts
+```
+
+## Database & Data Management
+
+### Database Configuration
+- **Primary**: Neon PostgreSQL with connection pooling
+- **ORM**: Prisma for type-safe database operations
+- **Migrations**: Prisma migrations for schema management
+- **Development**: Automatic database setup with Docker fallback
+
+### Key Data Models
+- **Users**: Authentication and role management
+- **Financial Models**: Working capital, AR/AP, cash flow
+- **Manufacturing**: Jobs, resources, capacity planning
+- **Dashboard**: User layouts, widget preferences
 
 ## Branch and Deployment Strategy
 
@@ -88,118 +153,55 @@ Multi-environment configuration in `config.py`:
 - `test` - User acceptance testing environment
 - `production` - Live production environment
 
-### Auto-Deployment
-All branches auto-deploy to Railway with corresponding Neon PostgreSQL databases:
+### Auto-Deployment (Railway)
+All branches auto-deploy with corresponding Neon PostgreSQL databases:
 - development → dev.sentia-manufacturing.railway.app
-- test → test.sentia-manufacturing.railway.app  
+- test → test.sentia-manufacturing.railway.app
 - production → sentia-manufacturing.railway.app
-
-## Key Technical Specifications
-
-### Database
-- Primary: Neon PostgreSQL with vector support
-- Development fallback: SQLite (`sentia_dev.db`)
-- Testing: PostgreSQL test database
-- Connection pooling configured in production
-
-### Task Processing
-- Celery for background tasks
-- Redis as message broker
-- Production settings: 300s max optimization time, 30-day schedule horizon
-
-### Security Configuration
-- Session cookies: secure, httponly, SameSite=Lax
-- CORS origins configurable via environment
-- Secret key management via environment variables
 
 ## Development Methodology
 
 ### Context-Driven Development
-Following "Vibe Coding" methodology from `context/development-methodology/vibe_coding_guide.md`:
-- Use structured context references from `context/` folder
-- Always reference specific context folders/files when working
-- Prevent AI drift by maintaining strict context validation
-- Request additional prompts for any gaps in sequential development
+Following structured context references from `context/` folder:
+- Use specific context folders/files when working
+- Reference technical specifications for consistency
+- Maintain strict context validation to prevent AI drift
 
 ### Context Folder Structure
 - `context/api-documentation/` - External API documentation (Amazon SP-API, Shopify)
-- `context/claude-code-docs/` - Local copy of Claude Code product docs for offline/reference use
+- `context/claude-code-docs/` - Local Claude Code documentation for reference
 - `context/technical-specifications/` - Tech stack and architecture docs
-- `context/development-methodology/` - Development process guidelines
-- Additional context folders for business logic, testing scenarios, etc.
+- `context/business-requirements/` - Business logic and user workflows
+- `context/ui-components/` - Dashboard layouts and UI specifications
 
-#### Claude Code Docs (`context/claude-code-docs/`)
-This folder contains the official Claude Code documentation mirrored locally to guide IDE integration and agent behavior. Key docs include:
-- `overview.md`, `quickstart.md` – High-level intro and setup
-- `sdk.md`, `hooks.md` – Extensibility, custom hooks, programmatic control
-- `ide-integrations.md`, `interactive-mode.md` – Editor workflows and interactive usage
-- `settings.md`, `output-styles.md`, `memory.md` – Configuration, formatting, and memory model
-- `mcp.md`, `llm-gateway.md`, `sub-agents.md` – Advanced architectures and multi-tooling
-- `troubleshooting.md`, `monitoring-usage.md`, `costs.md` – Ops guidance
+## Code Standards & Guidelines
 
-Usage guidance:
-- When asking Claude to code, reference specific files in this folder to enforce correct behavior (e.g., cite `hooks.md` when requesting a custom hook, or `settings.md` for formatting rules).
-- Prefer these local docs over external links to ensure consistent, versioned behavior across environments and CI.
-
-## Placeholder app
-
-The program placeholder_app.js has been created to test the integration between GitHub and Railway. It will be replaced later with a GUI app.
-
-## Character Encoding and Text Guidelines
-
-### Unicode and Character Encoding
-**CRITICAL**: Always use ASCII-compatible characters in code, especially in:
-- Print statements and console output
-- Error messages and logging
-- Comments and docstrings  
+### Character Encoding
+**CRITICAL**: Always use ASCII-compatible characters in:
+- Console output and logging
+- Error messages
+- Comments and documentation
 - Test output and assertions
 
-**AVOID** non-ASCII Unicode characters that can cause encoding issues:
-- ❌ Emoji symbols (✅ ❌ 🎉 ⚠️ etc.)
-- ❌ Unicode checkmarks and crosses (✓ ✗)
-- ❌ Special punctuation (• → ← ↑ ↓)
-- ❌ Mathematical symbols (≥ ≤ ≠ ≈)
-- ❌ Currency symbols beyond $ (€ £ ¥)
+**Avoid Unicode characters**: ✅ ❌ 🎉 ⚠️ → ← ↑ ↓ • etc.
+**Use ASCII alternatives**: "PASS:" "FAIL:" "SUCCESS:" "-->" "*" etc.
 
-**USE** ASCII alternatives instead:
-- ✅ → "PASS:" or "SUCCESS:"
-- ❌ → "FAIL:" or "ERROR:"
-- 🎉 → "SUCCESS!" or "COMPLETED!"
-- ⚠️ → "WARNING:" or "CAUTION:"
-- ✓ → "OK" or "PASS"
-- ✗ → "FAIL" or "ERROR"  
-- • → "-" or "*"
-- → → "-->" or "=>"
-
-### Examples of Safe vs Unsafe Code:
-
-**UNSAFE** (will cause UnicodeEncodeError):
-```python
-print("✅ Test passed!")
-print("❌ Test failed!")
-print("🎉 All done!")
-```
-
-**SAFE** (ASCII-compatible):
-```python
-print("PASS: Test passed!")
-print("FAIL: Test failed!")  
-print("SUCCESS: All done!")
-```
-
-### Exception: Web Templates and JSON
-Unicode characters ARE acceptable in:
+**Exception**: Unicode acceptable in:
 - HTML templates (properly encoded)
 - JSON responses (UTF-8 encoded)
-- Database content (properly handled by ORM)
-- Frontend JavaScript and CSS
+- Frontend React components (properly handled)
 
-**Rationale**: This prevents `UnicodeEncodeError: 'charmap' codec can't encode character` errors that occur when the Windows console or terminal cannot display Unicode characters, especially in automated testing and CI/CD environments.
+### File Naming
+- Use `.jsx` extension for React components with JSX
+- Use `.js` extension for plain JavaScript utilities
+- Use PascalCase for React components
+- Use camelCase for hooks, utilities, and services
 
-## Important Instruction Reminders
+## Important Instructions
 
 - Do what has been asked; nothing more, nothing less
-- NEVER create files unless they're absolutely necessary for achieving your goal
-- ALWAYS prefer editing an existing file to creating a new one
-- NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User
-- NEVER add Unicode characters in print statements, error messages, or console output - use ASCII alternatives only
+- NEVER create files unless absolutely necessary for the goal
+- ALWAYS prefer editing existing files to creating new ones
+- NEVER proactively create documentation files unless explicitly requested
+- NEVER add Unicode characters in console output - use ASCII alternatives only
+- Always check existing code patterns and follow the established architecture

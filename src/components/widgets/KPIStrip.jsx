@@ -1,0 +1,204 @@
+import React from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline'
+import { queryKeys, queryConfigs } from '../../services/queryClient'
+import { cn } from '../../lib/utils'
+
+const KPICard = ({ 
+  title, 
+  value, 
+  change, 
+  changeType, 
+  suffix = '', 
+  loading = false,
+  status = 'neutral'
+}) => {
+  const statusColors = {
+    excellent: 'text-green-600 dark:text-green-400',
+    good: 'text-blue-600 dark:text-blue-400', 
+    warning: 'text-yellow-600 dark:text-yellow-400',
+    critical: 'text-red-600 dark:text-red-400',
+    neutral: 'text-gray-600 dark:text-gray-400'
+  }
+  
+  const changeColors = {
+    positive: 'text-green-600 dark:text-green-400',
+    negative: 'text-red-600 dark:text-red-400',
+    neutral: 'text-gray-500 dark:text-gray-400'
+  }
+  
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg p-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-20 mb-2 dark:bg-gray-600"></div>
+          <div className="h-8 bg-gray-200 rounded w-16 mb-1 dark:bg-gray-600"></div>
+          <div className="h-3 bg-gray-200 rounded w-12 dark:bg-gray-600"></div>
+        </div>
+      </div>
+    )
+  }
+  
+  return (
+    <div className="bg-white rounded-lg p-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {title}
+          </p>
+          <p className={cn(
+            "text-2xl font-bold mt-1",
+            statusColors[status]
+          )}>
+            {value}{suffix}
+          </p>
+          {change !== undefined && (
+            <div className={cn(
+              "flex items-center text-sm mt-1",
+              changeColors[changeType]
+            )}>
+              {changeType === 'positive' && <ArrowUpIcon className="w-4 h-4 mr-1" />}
+              {changeType === 'negative' && <ArrowDownIcon className="w-4 h-4 mr-1" />}
+              <span>{Math.abs(change)}%</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const KPIStrip = () => {
+  // Simulate API call for KPI data
+  const { data: kpiData, isLoading } = useQuery({
+    queryKey: queryKeys.kpiMetrics('24h', {}),
+    queryFn: async () => {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      return {
+        totalRevenue: {
+          value: 127500,
+          change: 8.2,
+          changeType: 'positive',
+          status: 'good'
+        },
+        stockLevel: {
+          value: 94.2,
+          change: -2.1, 
+          changeType: 'negative',
+          status: 'warning'
+        },
+        forecastAccuracy: {
+          value: 87.5,
+          change: 3.4,
+          changeType: 'positive', 
+          status: 'excellent'
+        },
+        capacityUtilization: {
+          value: 78.9,
+          change: 1.2,
+          changeType: 'positive',
+          status: 'good'
+        },
+        cashPosition: {
+          value: 284,
+          change: -5.7,
+          changeType: 'negative',
+          status: 'warning'
+        },
+        alertsCount: {
+          value: 3,
+          change: -40.0,
+          changeType: 'positive',
+          status: 'good'
+        }
+      }
+    },
+    ...queryConfigs.realtime
+  })
+  
+  const kpiCards = [
+    {
+      key: 'revenue',
+      title: 'Revenue (24h)',
+      value: kpiData?.totalRevenue.value ? `£${(kpiData.totalRevenue.value / 1000).toFixed(0)}K` : '—',
+      change: kpiData?.totalRevenue.change,
+      changeType: kpiData?.totalRevenue.changeType,
+      status: kpiData?.totalRevenue.status
+    },
+    {
+      key: 'stock',
+      title: 'Stock Level',
+      value: kpiData?.stockLevel.value?.toFixed(1) || '—',
+      suffix: '%',
+      change: kpiData?.stockLevel.change,
+      changeType: kpiData?.stockLevel.changeType,
+      status: kpiData?.stockLevel.status
+    },
+    {
+      key: 'forecast',
+      title: 'Forecast Accuracy',
+      value: kpiData?.forecastAccuracy.value?.toFixed(1) || '—',
+      suffix: '%',
+      change: kpiData?.forecastAccuracy.change,
+      changeType: kpiData?.forecastAccuracy.changeType,
+      status: kpiData?.forecastAccuracy.status
+    },
+    {
+      key: 'capacity',
+      title: 'Capacity Utilization',
+      value: kpiData?.capacityUtilization.value?.toFixed(1) || '—',
+      suffix: '%',
+      change: kpiData?.capacityUtilization.change,
+      changeType: kpiData?.capacityUtilization.changeType,
+      status: kpiData?.capacityUtilization.status
+    },
+    {
+      key: 'cash',
+      title: 'Cash Position',
+      value: kpiData?.cashPosition.value ? `£${kpiData.cashPosition.value}K` : '—',
+      change: kpiData?.cashPosition.change,
+      changeType: kpiData?.cashPosition.changeType,
+      status: kpiData?.cashPosition.status
+    },
+    {
+      key: 'alerts',
+      title: 'Active Alerts',
+      value: kpiData?.alertsCount.value || '—',
+      change: kpiData?.alertsCount.change,
+      changeType: kpiData?.alertsCount.changeType,
+      status: kpiData?.alertsCount.status
+    }
+  ]
+  
+  return (
+    <div className="h-full flex flex-col">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 h-full">
+        {kpiCards.map((kpi) => (
+          <KPICard
+            key={kpi.key}
+            title={kpi.title}
+            value={kpi.value}
+            suffix={kpi.suffix}
+            change={kpi.change}
+            changeType={kpi.changeType}
+            status={kpi.status}
+            loading={isLoading}
+          />
+        ))}
+      </div>
+      
+      {/* Last updated indicator */}
+      <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <span>Last updated: {new Date().toLocaleTimeString()}</span>
+        <span className="flex items-center">
+          <div className="w-2 h-2 bg-green-400 rounded-full mr-1"></div>
+          Live
+        </span>
+      </div>
+    </div>
+  )
+}
+
+export default KPIStrip

@@ -1,56 +1,59 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { useAuth } from '@clerk/clerk-react'
-import Header from './components/Header'
-import Dashboard from './pages/Dashboard'
-import AdminPanel from './pages/AdminPanel'
-import LandingPage from './pages/LandingPage'
-import ProtectedRoute from './components/auth/ProtectedRoute'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import AdminPortal from './pages/AdminPortal'
 import './App.css'
 
-function App() {
-  // Check if Clerk is available before using hooks
-  const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-  let isSignedIn = false;
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+})
+
+// Helper component to conditionally render header
+const ConditionalHeader = () => {
+  const location = useLocation()
+  const isEnhancedDashboard = location.pathname === '/' || location.pathname === '/dashboard'
+  const isAdminPortal = location.pathname.startsWith('/admin')
   
-  if (PUBLISHABLE_KEY) {
-    try {
-      const auth = useAuth();
-      isSignedIn = auth.isSignedIn;
-    } catch (error) {
-      console.warn('Clerk authentication not available:', error.message);
-    }
+  // Don't render the old header for enhanced dashboard or admin portal routes
+  if (isEnhancedDashboard || isAdminPortal) {
+    return null
   }
   
+  return <Header />
+}
+
+function App() {
   return (
-    <Router>
-      <div className="App">
-        <Header />
-        <main>
-          <Routes>
-            <Route path="/" element={
-              isSignedIn ? (
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              ) : (
-                <LandingPage />
-              )
-            } />
-            <Route path="/admin" element={
-              <ProtectedRoute requireAdmin={true}>
-                <AdminPanel />
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="App">
+          <main>
+            <Routes>
+              <Route path="/" element={
+                <div style={{ padding: '20px', backgroundColor: 'lightblue', color: 'black', minHeight: '100vh' }}>
+                  <h1>🏠 HOME PAGE WORKS!</h1>
+                  <p>This is the home page - routing is working</p>
+                  <p>Try: /test and /admin</p>
+                </div>
+              } />
+              <Route path="/test" element={
+                <div style={{ padding: '20px', backgroundColor: 'lime', color: 'black', minHeight: '100vh' }}>
+                  <h1>🧪 TEST ROUTE WORKS!</h1>
+                  <p>This is /test route - if you see this, routing is working</p>
+                </div>
+              } />
+              <Route path="/admin/*" element={<AdminPortal />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </QueryClientProvider>
   )
 }
 

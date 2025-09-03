@@ -381,8 +381,37 @@ app.get('/api/schedules', async (req, res) => {
   }
 });
 
+// Admin RBAC middleware
+const requireAdminAccess = (permission) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    const userRole = req.user.publicMetadata?.role || 'viewer';
+    const userPermissions = req.user.publicMetadata?.permissions || [];
+    
+    // Admin role has all permissions
+    if (userRole === 'admin') {
+      return next();
+    }
+    
+    // Check if user has specific permission
+    if (permission && !userPermissions.includes(permission)) {
+      return res.status(403).json({ 
+        error: 'Insufficient permissions',
+        required: permission,
+        userRole,
+        userPermissions
+      });
+    }
+    
+    next();
+  };
+};
+
 // Admin API endpoints
-app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
+app.get('/api/admin/users', requireAuth, requireAdminAccess('manage_users'), async (req, res) => {
   try {
     if (!clerkClient) {
       return res.json({ success: true, users: [], message: 'Clerk client not available - no users to display' });
@@ -393,6 +422,298 @@ app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
       orderBy: '-created_at'
     });
     res.json({ success: true, users: userList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// System Health Dashboard
+app.get('/api/admin/health', requireAuth, requireAdminAccess('view_system_health'), async (req, res) => {
+  try {
+    const healthData = {
+      server: {
+        status: 'healthy',
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+        version: process.version
+      },
+      database: {
+        status: 'unknown',
+        connected: false
+      },
+      services: {
+        clerk: !!clerkClient,
+        unleashed: !!unleashedService,
+        workingCapital: !!workingCapitalService,
+        dataImport: !!dbService,
+        queue: !!queueService
+      }
+    };
+
+    // Test database connection
+    try {
+      const dbResult = await pool.query('SELECT NOW()');
+      healthData.database = {
+        status: 'healthy',
+        connected: true,
+        timestamp: dbResult.rows[0].now
+      };
+    } catch (error) {
+      healthData.database = {
+        status: 'error',
+        connected: false,
+        error: error.message
+      };
+    }
+
+    res.json({ success: true, health: healthData });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// System Settings Management
+app.get('/api/admin/settings', requireAuth, requireAdminAccess('manage_system_settings'), async (req, res) => {
+  try {
+    const settings = {
+      system: {
+        environment: process.env.NODE_ENV || 'development',
+        port: process.env.PORT || 5000,
+        corsOrigins: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000']
+      },
+      database: {
+        url: process.env.DATABASE_URL ? '[CONFIGURED]' : '[NOT SET]',
+        ssl: process.env.DATABASE_URL ? true : false
+      },
+      clerk: {
+        configured: !!process.env.CLERK_SECRET_KEY
+      },
+      unleashed: {
+        configured: !!(process.env.UNLEASHED_API_ID && process.env.UNLEASHED_API_KEY)
+      }
+    };
+
+    res.json({ success: true, settings });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Feature Flags Management
+app.get('/api/admin/feature-flags', requireAuth, requireAdminAccess('manage_feature_flags'), async (req, res) => {
+  try {
+    // Mock feature flags - replace with real implementation
+    const featureFlags = [
+      {
+        id: 1,
+        name: 'working_capital_module',
+        description: 'Enable Working Capital Management module',
+        enabled: !!workingCapitalService,
+        environment: 'all'
+      },
+      {
+        id: 2,
+        name: 'data_import_module',
+        description: 'Enable Data Import functionality',
+        enabled: !!dbService,
+        environment: 'all'
+      },
+      {
+        id: 3,
+        name: 'unleashed_integration',
+        description: 'Enable Unleashed API integration',
+        enabled: !!unleashedService,
+        environment: 'all'
+      },
+      {
+        id: 4,
+        name: 'queue_processing',
+        description: 'Enable background queue processing',
+        enabled: !!queueService,
+        environment: 'all'
+      }
+    ];
+
+    res.json({ success: true, featureFlags });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/feature-flags/:flagId/toggle', requireAuth, requireAdminAccess('manage_feature_flags'), async (req, res) => {
+  try {
+    const { flagId } = req.params;
+    const { enabled } = req.body;
+    
+    // Mock implementation - replace with real feature flag storage
+    res.json({ 
+      success: true, 
+      message: `Feature flag ${flagId} ${enabled ? 'enabled' : 'disabled'}`,
+      flagId: parseInt(flagId),
+      enabled
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Integrations Management
+app.get('/api/admin/integrations', requireAuth, requireAdminAccess('manage_integrations'), async (req, res) => {
+  try {
+    const integrations = [
+      {
+        id: 1,
+        name: 'Unleashed Software',
+        type: 'inventory',
+        status: unleashedService ? 'connected' : 'disconnected',
+        lastSync: new Date(),
+        config: {
+          baseUrl: 'https://api.unleashedsoftware.com',
+          configured: !!(process.env.UNLEASHED_API_ID && process.env.UNLEASHED_API_KEY)
+        }
+      },
+      {
+        id: 2,
+        name: 'Clerk Authentication',
+        type: 'auth',
+        status: clerkClient ? 'connected' : 'disconnected',
+        lastSync: new Date(),
+        config: {
+          configured: !!process.env.CLERK_SECRET_KEY
+        }
+      }
+    ];
+
+    res.json({ success: true, integrations });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/integrations/:integrationId/test', requireAuth, requireAdminAccess('manage_integrations'), async (req, res) => {
+  try {
+    const { integrationId } = req.params;
+    
+    if (integrationId === '1' && unleashedService) {
+      // Test Unleashed connection
+      const testResult = await unleashedService.testConnection();
+      return res.json({ success: true, testResult });
+    }
+    
+    if (integrationId === '2' && clerkClient) {
+      // Test Clerk connection
+      try {
+        await clerkClient.users.getUserList({ limit: 1 });
+        return res.json({ success: true, testResult: { status: 'connected', message: 'Clerk API accessible' } });
+      } catch (error) {
+        return res.json({ success: false, testResult: { status: 'error', message: error.message } });
+      }
+    }
+    
+    res.json({ success: false, error: 'Integration not found or not configured' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Logs and Error Explorer
+app.get('/api/admin/logs', requireAuth, requireAdminAccess('view_logs'), async (req, res) => {
+  try {
+    const { level = 'all', limit = 100, offset = 0 } = req.query;
+    
+    // Mock implementation - replace with real log storage
+    const logs = [
+      {
+        id: 1,
+        timestamp: new Date(),
+        level: 'info',
+        message: 'Server started successfully',
+        service: 'server',
+        metadata: { port: process.env.PORT || 5000 }
+      },
+      {
+        id: 2,
+        timestamp: new Date(Date.now() - 5000),
+        level: 'warn',
+        message: 'Database connection slow',
+        service: 'database',
+        metadata: { responseTime: 1200 }
+      },
+      {
+        id: 3,
+        timestamp: new Date(Date.now() - 10000),
+        level: 'error',
+        message: 'Failed to connect to external service',
+        service: 'integrations',
+        metadata: { service: 'unleashed', attempts: 3 }
+      }
+    ];
+
+    res.json({ 
+      success: true, 
+      logs: logs.slice(parseInt(offset), parseInt(offset) + parseInt(limit)),
+      total: logs.length
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Maintenance Tools
+app.get('/api/admin/maintenance/status', requireAuth, requireAdminAccess('manage_maintenance'), async (req, res) => {
+  try {
+    const maintenanceStatus = {
+      database: {
+        size: 'calculating...',
+        lastBackup: null,
+        maintenanceMode: false
+      },
+      cache: {
+        enabled: false,
+        size: 0
+      },
+      cleanup: {
+        lastRun: null,
+        nextScheduled: null
+      }
+    };
+
+    res.json({ success: true, maintenance: maintenanceStatus });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/maintenance/database/backup', requireAuth, requireAdminAccess('manage_maintenance'), async (req, res) => {
+  try {
+    // Mock backup operation - replace with real implementation
+    const backupId = `backup_${Date.now()}`;
+    
+    res.json({ 
+      success: true, 
+      message: 'Database backup initiated',
+      backupId,
+      status: 'in_progress'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/maintenance/cleanup', requireAuth, requireAdminAccess('manage_maintenance'), async (req, res) => {
+  try {
+    // Mock cleanup operation - replace with real implementation
+    const cleanupResults = {
+      tempFiles: 0,
+      oldLogs: 0,
+      expiredSessions: 0
+    };
+    
+    res.json({ 
+      success: true, 
+      message: 'System cleanup completed',
+      results: cleanupResults
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

@@ -9,7 +9,14 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import './App.css'
 
 function App() {
-  const { isSignedIn } = useAuth()
+  // Gracefully handle missing Clerk provider
+  let isSignedIn = false;
+  try {
+    const auth = useAuth();
+    isSignedIn = auth.isSignedIn;
+  } catch (error) {
+    console.warn('Clerk authentication not available:', error.message);
+  }
   
   return (
     <Router>

@@ -20,14 +20,20 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
   // Check if user account is approved
   const isApproved = user?.publicMetadata?.approved === true
   const isAdmin = user?.publicMetadata?.role === 'admin'
+  const isMasterAdmin = user?.publicMetadata?.masterAdmin === true
+  
+  // Master admin users have unlimited access to everything
+  if (isMasterAdmin) {
+    return children
+  }
 
-  // Admin users are always approved
+  // Regular admin users are always approved
   if (isAdmin) {
     return children
   }
 
-  // Check admin requirement
-  if (requireAdmin && !isAdmin) {
+  // Check admin requirement (master admin bypasses this check)
+  if (requireAdmin && !isAdmin && !isMasterAdmin) {
     return (
       <div className="access-denied">
         <div className="access-denied-content">
@@ -38,8 +44,8 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
     )
   }
 
-  // Check approval status for regular users
-  if (!isApproved && !isAdmin) {
+  // Check approval status for regular users (master admin bypasses this check)
+  if (!isApproved && !isAdmin && !isMasterAdmin) {
     return (
       <div className="pending-approval">
         <div className="pending-approval-content">

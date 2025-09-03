@@ -9,57 +9,84 @@ dotenv.config({ path: '.env.local' });
 
 async function updateAdminUser() {
     try {
-        console.log('Updating admin user metadata...');
+        console.log('Setting up master admin user with full privileges...');
         
         // Initialize Clerk client with secret key
         const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
         
-        // Find the existing admin user by email
-        const userList = await clerkClient.users.getUserList({
-            emailAddress: ['dudley@financeflo.ai']
-        });
+        // Target admin user ID
+        const masterAdminUserId = 'user_32BPH7zwpYMYM1X46weccOs4DsR';
         
-        if (!userList || userList.length === 0) {
-            console.error('Admin user not found with email: dudley@financeflo.ai');
+        console.log('Configuring master admin user:', masterAdminUserId);
+        
+        // Get the specific admin user by ID
+        let adminUser;
+        try {
+            adminUser = await clerkClient.users.getUser(masterAdminUserId);
+            console.log('Found master admin user:', adminUser.id);
+        } catch (error) {
+            console.log('User ID not found, searching by email/username...');
             
-            // Try to find by username instead
-            const usersByUsername = await clerkClient.users.getUserList({
-                username: ['dudleypeacock']
+            // Try to find by email
+            const userList = await clerkClient.users.getUserList({
+                emailAddress: ['dudley@financeflo.ai']
             });
             
-            if (!usersByUsername || usersByUsername.length === 0) {
-                console.error('Admin user not found by username either');
-                process.exit(1);
+            if (!userList || userList.length === 0) {
+                // Try to find by username
+                const usersByUsername = await clerkClient.users.getUserList({
+                    username: ['dudleypeacock']
+                });
+                
+                if (!usersByUsername || usersByUsername.length === 0) {
+                    console.error('Master admin user not found by ID, email, or username');
+                    process.exit(1);
+                }
+                
+                adminUser = usersByUsername[0];
+                console.log('Found admin user by username:', adminUser.id);
+            } else {
+                adminUser = userList[0];
+                console.log('Found admin user by email:', adminUser.id);
             }
-            
-            const adminUser = usersByUsername[0];
-            console.log('Found admin user by username:', adminUser.id);
-        } else {
-            var adminUser = userList[0];
-            console.log('Found admin user by email:', adminUser.id);
         }
-        console.log('Found admin user:', adminUser.id);
         
-        // Update the user's metadata
+        // Update the user's metadata with master admin privileges
         await clerkClient.users.updateUserMetadata(adminUser.id, {
             publicMetadata: {
                 role: 'admin',
-                approved: true
+                approved: true,
+                masterAdmin: true,
+                permissions: {
+                    fullAccess: true,
+                    autoApproved: true,
+                    systemAdmin: true,
+                    userManagement: true,
+                    dataAccess: true,
+                    configAccess: true
+                },
+                createdAt: new Date().toISOString(),
+                notes: 'Master administrator with full system privileges'
             }
         });
         
-        console.log('SUCCESS: Admin user metadata updated successfully!');
+        console.log('SUCCESS: Master admin privileges configured!');
+        console.log('=====================================');
         console.log('User ID:', adminUser.id);
-        console.log('Email:', adminUser.emailAddresses[0]?.emailAddress);
-        console.log('Username:', adminUser.username);
-        console.log('Role: admin');
-        console.log('Approved: true');
+        console.log('Email:', adminUser.emailAddresses[0]?.emailAddress || 'dudley@financeflo.ai');
+        console.log('Username:', adminUser.username || 'dudleypeacock');
+        console.log('Role: Master Administrator');
+        console.log('Status: Automatically Approved');
+        console.log('Privileges: Full System Access');
         console.log('');
-        console.log('Admin can now:');
-        console.log('- Access the admin panel at /admin');
-        console.log('- Invite new users');
-        console.log('- Approve/revoke user access');
-        console.log('- Manage all system features');
+        console.log('Master Admin capabilities:');
+        console.log('- Full access to all dashboard features');
+        console.log('- Automatic approval for all functions');
+        console.log('- User management and invitation system');
+        console.log('- System configuration access');
+        console.log('- Database and resource management');
+        console.log('- Admin panel at /admin');
+        console.log('- No restrictions on any functionality');
 
     } catch (error) {
         console.error('ERROR updating admin user:');

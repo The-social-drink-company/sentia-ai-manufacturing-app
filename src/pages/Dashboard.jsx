@@ -105,7 +105,8 @@ function Dashboard() {
                   }
                 </span>
                 <span className="sentia-user-role">
-                  {user.publicMetadata?.role === 'admin' ? 'Administrator' : 'Operator'}
+                  {user.publicMetadata?.masterAdmin ? 'Master Administrator' : 
+                   user.publicMetadata?.role === 'admin' ? 'Administrator' : 'Operator'}
                 </span>
               </div>
             </div>

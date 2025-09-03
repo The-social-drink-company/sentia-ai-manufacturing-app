@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+import { clerkMiddleware, requireAuth } from '@clerk/express';
 import pkg from 'pg';
 const { Pool } = pkg;
 
@@ -31,6 +31,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(clerkMiddleware());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -43,7 +44,7 @@ app.get('/api/test', (req, res) => {
 });
 
 // Protected API route example with Clerk
-app.get('/api/protected', ClerkExpressRequireAuth(), (req, res) => {
+app.get('/api/protected', requireAuth(), (req, res) => {
   res.json({ 
     message: 'This is a protected route',
     userId: req.auth.userId 
@@ -79,7 +80,7 @@ app.get('/api/jobs', async (req, res) => {
   }
 });
 
-app.post('/api/jobs', ClerkExpressRequireAuth(), async (req, res) => {
+app.post('/api/jobs', requireAuth(), async (req, res) => {
   try {
     const { name, description, quantity, due_date } = req.body;
     const result = await pool.query(

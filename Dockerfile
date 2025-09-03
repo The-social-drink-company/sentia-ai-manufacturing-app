@@ -7,14 +7,17 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including devDependencies for build)
+RUN npm ci
 
 # Copy application files
 COPY . .
 
 # Build React frontend
 RUN npm run build
+
+# Remove devDependencies after build
+RUN npm prune --production
 
 # Set environment to production
 ENV NODE_ENV=production

@@ -615,7 +615,7 @@ app.use((err, req, res, _next) => {
   });
 });
 
-// Start server
+// Start server - Railway deployment fix
 app.listen(PORT, () => {
   logInfo(`Server started on port ${PORT}`, {
     environment: process.env.NODE_ENV || 'development',

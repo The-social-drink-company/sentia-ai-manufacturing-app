@@ -33,10 +33,27 @@ model User {
   backup_codes                                       Json?              @db.Json
   session_token                                      String?            @db.VarChar(255)
   session_expires                                    DateTime?          @db.Timestamptz(6)
-  force_password_change                              Boolean
+  
+  // Auth Security Extensions
+  locked_until                                       DateTime?          @db.Timestamptz(6)
+  failed_login_count                                 Int?               @default(0)
+  last_failed_login                                  DateTime?          @db.Timestamptz(6)
   password_changed_at                                DateTime?          @db.Timestamptz(6)
-  timezone                                           String?            @db.VarChar(50)
-  language                                           String?            @db.VarChar(10)
+  
+  // Global Readiness Extensions (nullable, feature-flagged)
+  default_entity_id                                  String?            @db.Uuid
+  allowed_entity_ids                                 Json?              // Array of entity UUIDs
+  allowed_regions                                    Json?              // Array: ["UK","EU","USA"] 
+  preferred_currency_code                            String?            @db.VarChar(3) // ISO-4217
+  preferred_locale                                   String?            @db.VarChar(10) // en-GB, en-US
+  preferred_timezone                                 String?            @db.VarChar(50) // IANA timezone
+  
+  // SSO and JIT Provisioning Extensions
+  sso_provider                                       String?            @db.VarChar(50) // okta, azuread, google
+  last_sso_login                                     DateTime?          @db.Timestamptz(6)
+  created_via_jit                                    Boolean?           @default(false) // User created via JIT provisioning
+  approved                                           Boolean            @default(false) // Manual approval status
+  force_password_change                              Boolean
   preferences                                        Json?              @db.Json
   // Audit columns
   createdAt                                          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -73,6 +90,11 @@ model User {
   wc_scenarios_approver     WCScenario[]      @relation("WCScenarioApprover")
   wc_optimizations_creator  WCOptimization[]  @relation("WCOptimizationCreator")
   wc_optimizations_approver WCOptimization[]  @relation("WCOptimizationApprover")
+  
+  // Authentication & Session Management Relations  
+  user_sessions             UserSession[]
+  audit_logs                AuditLog[]
+  password_reset_tokens     PasswordResetToken[]
 
   @@index([last_login], map: "ix_user_last_login")
   @@index([role, isActive], map: "ix_user_role_active")
@@ -1072,4 +1094,206 @@ model WCOptimization {
   @@index([recommendation_type, priority_score], name: "ix_wc_optimization_type_priority")
   @@index([status, priority_score], name: "ix_wc_optimization_status_priority")
   @@map("wc_optimizations")
+}
+
+// ========================================
+// AUTHENTICATION & SESSION MANAGEMENT
+// Enhanced Security Models
+// ========================================
+
+model UserSession {
+  id                String    @id @default(uuid()) @db.Uuid
+  user_id           String    @db.Uuid
+  refresh_token_hash String   @db.VarChar(255) // bcrypt hash of refresh token
+  access_token_hash String?   @db.VarChar(255) // bcrypt hash of access token (for replay detection)
+  device_name       String?   @db.VarChar(200)
+  user_agent        String?   @db.VarChar(500)
+  ip_address        String?   @db.VarChar(45) // IPv6 compatible
+  ip_country        String?   @db.VarChar(2) // ISO country code
+  ip_city           String?   @db.VarChar(100)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  last_used_at      DateTime  @default(now()) @db.Timestamptz(6)
+  expires_at        DateTime  @db.Timestamptz(6)
+  revoked_at        DateTime? @db.Timestamptz(6)
+  revoked_reason    String?   @db.VarChar(100) // manual, security, expired, replaced
+  is_suspicious     Boolean   @default(false) // New device/location flag
+  
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@index([user_id, revoked_at], map: "ix_sessions_user_active")
+  @@index([refresh_token_hash], map: "ix_sessions_refresh_token")
+  @@index([expires_at], map: "ix_sessions_expires")
+  @@index([is_suspicious, created_at], map: "ix_sessions_suspicious")
+  @@index([ip_address, created_at], map: "ix_sessions_ip_time")
+  @@map("user_sessions")
+}
+
+model AuditLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  user_id       String?  @db.Uuid // Nullable for system events
+  event_type    String   @db.VarChar(50) // LOGIN_SUCCESS, ROLE_CHANGED, etc.
+  event_data    Json?    @db.Json // Additional context
+  ip_address    String?  @db.VarChar(45)
+  user_agent    String?  @db.VarChar(500)
+  session_id    String?  @db.Uuid // Link to session
+  resource_type String?  @db.VarChar(50) // user, setting, integration
+  resource_id   String?  @db.Uuid
+  old_value     Json?    @db.Json // For change tracking
+  new_value     Json?    @db.Json // For change tracking
+  severity      String   @db.VarChar(10) @default("info") // info, warn, error
+  environment   String   @db.VarChar(20) @default("production")
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  
+  // Relations
+  user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  
+  @@index([user_id, created_at], map: "ix_audit_user_time")
+  @@index([event_type, created_at], map: "ix_audit_event_time")
+  @@index([severity, created_at], map: "ix_audit_severity_time")
+  @@index([resource_type, resource_id], map: "ix_audit_resource")
+  @@index([created_at], map: "ix_audit_created")
+  @@map("audit_logs")
+}
+
+model PasswordResetToken {
+  id            String    @id @default(uuid()) @db.Uuid
+  user_id       String    @db.Uuid
+  token_hash    String    @db.VarChar(255) // bcrypt hash of token
+  ip_address    String?   @db.VarChar(45)
+  user_agent    String?   @db.VarChar(500)
+  expires_at    DateTime  @db.Timestamptz(6)
+  used_at       DateTime? @db.Timestamptz(6)
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+  
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@index([user_id], map: "ix_reset_tokens_user")
+  @@index([token_hash], map: "ix_reset_tokens_hash")
+  @@index([expires_at], map: "ix_reset_tokens_expires")
+  @@map("password_reset_tokens")
+}
+
+// SSO Configuration (Future Use)
+model SSOProvider {
+  id                String   @id @default(uuid()) @db.Uuid
+  name              String   @db.VarChar(100) // "Okta", "Azure AD"
+  provider_type     String   @db.VarChar(50) // "saml2", "oidc"
+  metadata_url      String?  @db.VarChar(500)
+  client_id         String?  @db.VarChar(255)
+  client_secret     String?  @db.VarChar(255) // Encrypted
+  domain_whitelist  Json?    @db.Json // Allowed domains
+  default_role      String   @db.VarChar(20) @default("viewer")
+  default_entity_id String?  @db.Uuid
+  is_active         Boolean  @default(false)
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @updatedAt @db.Timestamptz(6)
+  
+  @@map("sso_providers")
+}
+
+// Feature Flags (Enhanced)
+model FeatureFlag {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @unique @db.VarChar(100) // FEATURE_MULTI_ENTITY
+  description  String?  @db.VarChar(500)
+  is_enabled   Boolean  @default(false)
+  rollout_pct  Int      @default(0) // 0-100 percentage rollout
+  environments Json?    @db.Json // ["development", "test", "production"]
+  user_filters Json?    @db.Json // Role/entity filters
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @updatedAt @db.Timestamptz(6)
+  
+  @@map("feature_flags")
+}
+
+// Password history for preventing password reuse
+model password_history {
+  id            Int      @id @default(autoincrement())
+  user_id       String   @db.Uuid // Foreign key to users.clerk_user_id
+  password_hash String   @db.Text // Bcrypt hashed password
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  
+  @@index([user_id, created_at], map: "ix_password_history_user_date")
+  @@map("password_history")
+}
+
+// Business entities for multi-tenant support
+model entities {
+  id                String   @id @default(uuid()) @db.Uuid
+  name              String   @db.VarChar(255)
+  display_name      String?  @db.VarChar(255)
+  region            String   @db.VarChar(10) // UK, EU, USA
+  country_code      String?  @db.VarChar(2) // ISO country code
+  currency_code     String   @default("GBP") @db.VarChar(3)
+  timezone          String   @default("Europe/London") @db.VarChar(50)
+  locale            String   @default("en-GB") @db.VarChar(10)
+  tax_rate          Decimal? @default(0.20) @db.Decimal(5, 4)
+  
+  // Entity configuration
+  is_active         Boolean  @default(true)
+  is_default        Boolean  @default(false)
+  entity_type       String   @default("subsidiary") @db.VarChar(50) // subsidiary, division, region
+  parent_entity_id  String?  @db.Uuid // For hierarchical entities
+  
+  // Contact information
+  address_line1     String?  @db.VarChar(255)
+  address_line2     String?  @db.VarChar(255)
+  city              String?  @db.VarChar(100)
+  postal_code       String?  @db.VarChar(20)
+  phone_number      String?  @db.VarChar(20)
+  email             String?  @db.VarChar(255)
+  
+  // Business details
+  registration_number String? @db.VarChar(50)
+  vat_number         String?  @db.VarChar(50)
+  website            String?  @db.VarChar(255)
+  
+  // Metadata
+  metadata          Json?    @db.Json // Additional configuration
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @updatedAt @db.Timestamptz(6)
+  created_by        String?  @db.Uuid
+  updated_by        String?  @db.Uuid
+  
+  // Self-reference for parent entity
+  parent_entity     entities? @relation("EntityHierarchy", fields: [parent_entity_id], references: [id])
+  child_entities    entities[] @relation("EntityHierarchy")
+  
+  @@index([region, is_active], map: "ix_entities_region_active")
+  @@index([parent_entity_id], map: "ix_entities_parent")
+  @@index([is_default, is_active], map: "ix_entities_default_active")
+  @@map("entities")
+}
+
+// System settings for configuration storage
+model system_settings {
+  id         Int      @id @default(autoincrement())
+  key        String   @unique @db.VarChar(100)
+  value      Json     @db.Json
+  description String? @db.VarChar(500)
+  is_public  Boolean  @default(false) // Whether setting can be read by non-admin users
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+  
+  @@map("system_settings")
+}
+
+// SSO provider configurations
+model SSOProvider {
+  id                String    @id @db.VarChar(50) // okta, azuread, google
+  name              String    @db.VarChar(100)
+  provider_type     String    @db.VarChar(50)
+  configuration     Json      @db.Json // Provider-specific config
+  is_enabled        Boolean   @default(false)
+  last_used_at      DateTime? @db.Timestamptz(6)
+  total_logins      Int       @default(0)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime  @updatedAt @db.Timestamptz(6)
+  created_by        String?   @db.Uuid
+  updated_by        String?   @db.Uuid
+  
+  @@index([is_enabled], map: "ix_sso_providers_enabled")
+  @@map("sso_providers")
 }

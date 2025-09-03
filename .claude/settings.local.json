@@ -1,7 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python test:*)"
+      "Bash(python test:*)",
+      "Bash(dir)",
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(python -m pip:*)",
+      "Bash(python run.py:*)",
+      "Bash(npm audit:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(gh:*)",
+      "Bash(dir:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(node server.js)"
     ],
     "deny": [],
     "ask": []

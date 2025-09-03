@@ -1,44 +1,140 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '@clerk/clerk-react'
 import axios from 'axios'
+import '../styles/Dashboard.css'
 
 function Dashboard() {
-  const { getToken } = useAuth()
-  const [data, setData] = useState(null)
+  const [apiStatus, setApiStatus] = useState(null)
+  const [dbStatus, setDbStatus] = useState(null)
+  const [jobs, setJobs] = useState([])
+  const [resources, setResources] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetchData()
+    fetchDashboardData()
   }, [])
 
-  const fetchData = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const token = await getToken()
-      const response = await axios.get('/api/dashboard', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      setData(response.data)
+      setLoading(true)
+      setError(null)
+
+      // Fetch API status
+      const apiResponse = await axios.get('/api/test')
+      setApiStatus(apiResponse.data)
+
+      // Fetch database status
+      const dbResponse = await axios.get('/api/db-test')
+      setDbStatus(dbResponse.data)
+
+      // Fetch jobs
+      try {
+        const jobsResponse = await axios.get('/api/jobs')
+        setJobs(jobsResponse.data.jobs || [])
+      } catch (jobsError) {
+        // Jobs table might not exist yet
+        setJobs([])
+      }
+
+      // Fetch resources
+      try {
+        const resourcesResponse = await axios.get('/api/resources')
+        setResources(resourcesResponse.data.resources || [])
+      } catch (resourcesError) {
+        // Resources table might not exist yet
+        setResources([])
+      }
+
     } catch (err) {
-      setError('Failed to fetch dashboard data')
-      console.error('Error fetching data:', err)
+      setError(`Failed to fetch dashboard data: ${err.message}`)
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading) return <div>Loading...</div>
-  if (error) return <div>Error: {error}</div>
+  if (loading) {
+    return (
+      <div className="dashboard-loading">
+        <div className="loading-spinner">Loading dashboard...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-error">
+        <h2>Dashboard Error</h2>
+        <p>{error}</p>
+        <button onClick={fetchDashboardData}>Retry</button>
+      </div>
+    )
+  }
 
   return (
     <div className="dashboard">
-      <h1>Manufacturing Dashboard</h1>
-      <p>Authenticated React frontend with Flask API backend</p>
-      {data && (
-        <pre>{JSON.stringify(data, null, 2)}</pre>
-      )}
+      <div className="dashboard-header">
+        <h1>Sentia Manufacturing Dashboard</h1>
+        <p>Node.js/Express API with React Frontend</p>
+      </div>
+
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <h3>System Status</h3>
+          <div className="status-item">
+            <span className="status-label">API:</span>
+            <span className={`status-value ${apiStatus ? 'success' : 'error'}`}>
+              {apiStatus ? 'Connected' : 'Disconnected'}
+            </span>
+          </div>
+          <div className="status-item">
+            <span className="status-label">Database:</span>
+            <span className={`status-value ${dbStatus?.success ? 'success' : 'error'}`}>
+              {dbStatus?.success ? 'Connected to Neon PostgreSQL' : 'Disconnected'}
+            </span>
+          </div>
+          {dbStatus?.timestamp && (
+            <small>Last checked: {new Date(dbStatus.timestamp).toLocaleString()}</small>
+          )}
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Jobs ({jobs.length})</h3>
+          {jobs.length > 0 ? (
+            <ul className="jobs-list">
+              {jobs.slice(0, 5).map(job => (
+                <li key={job.id} className="job-item">
+                  <span className="job-name">{job.name}</span>
+                  <span className="job-status">{job.status}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No jobs found. Database tables may need initialization.</p>
+          )}
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Resources ({resources.length})</h3>
+          {resources.length > 0 ? (
+            <ul className="resources-list">
+              {resources.slice(0, 5).map(resource => (
+                <li key={resource.id} className="resource-item">
+                  <span className="resource-name">{resource.name}</span>
+                  <span className="resource-type">{resource.type}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No resources found. Database tables may need initialization.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="dashboard-actions">
+        <button onClick={fetchDashboardData} className="refresh-btn">
+          Refresh Dashboard
+        </button>
+      </div>
     </div>
   )
 }

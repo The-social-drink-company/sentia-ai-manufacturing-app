@@ -573,7 +573,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [unit-tests, integration-tests, api-tests]
     if: github.ref == 'refs/heads/test' && github.event_name == 'push'
-    environment: testing
     
     steps:
       - uses: actions/checkout@v4

@@ -97,11 +97,6 @@ jobs:
         sleep 60  # Wait for deployment
         curl -f https://dev.sentia-manufacturing.railway.app/api/health || exit 1
     
-    - name: Slack Notification
+    - name: Deployment Complete
       if: always()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        channel: '#deployments'
-        webhook: ${{ secrets.SLACK_WEBHOOK }}
-        fields: repo,message,commit,author,action,eventName,ref,workflow
+      run: echo "Deployment completed with status ${{ job.status }}"

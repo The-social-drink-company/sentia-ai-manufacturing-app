@@ -21,7 +21,9 @@
       "Bash(npm run dev:*)",
       "Bash(npx @clerk/dev-cli:*)",
       "Bash(node:*)",
-      "WebFetch(domain:sentiadeploy.financeflo.ai)"
+      "WebFetch(domain:sentiadeploy.financeflo.ai)",
+      "WebFetch(domain:sentiaspirits.com)",
+      "Bash(npm run preview:*)"
     ],
     "deny": [],
     "ask": []

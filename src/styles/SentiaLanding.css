@@ -1,0 +1,291 @@
+/* Sentia Landing Page Styles */
+/* Inspired by sentiaspirits.com minimalist, scientific aesthetic */
+
+.sentia-landing {
+  min-height: 100vh;
+  background-color: var(--sentia-white);
+  color: var(--sentia-dark-grey);
+}
+
+/* Hero Section */
+.sentia-hero {
+  padding: var(--sentia-spacing-2xl) 0;
+  background: linear-gradient(135deg, var(--sentia-white) 0%, var(--sentia-light-beige) 100%);
+  border-bottom: 1px solid var(--sentia-light-grey);
+}
+
+.sentia-hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--sentia-spacing-2xl);
+  align-items: center;
+  min-height: 60vh;
+}
+
+.sentia-brand {
+  text-align: left;
+}
+
+.sentia-logo-section {
+  margin-bottom: var(--sentia-spacing-lg);
+}
+
+.sentia-brand-title {
+  font-family: var(--sentia-font-family);
+  font-size: 4rem;
+  font-weight: var(--sentia-font-weight-bold);
+  color: var(--sentia-black);
+  letter-spacing: 0.1em;
+  margin: 0;
+  line-height: 0.9;
+}
+
+.sentia-brand-subtitle {
+  font-size: 1.1rem;
+  font-weight: var(--sentia-font-weight-light);
+  color: var(--sentia-medium-grey);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: var(--sentia-spacing-xs);
+}
+
+.sentia-hero-text h2 {
+  font-size: 2.25rem;
+  font-weight: var(--sentia-font-weight-semibold);
+  color: var(--sentia-black);
+  line-height: 1.2;
+  margin-bottom: var(--sentia-spacing-lg);
+  max-width: 600px;
+}
+
+.sentia-hero-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--sentia-medium-grey);
+  max-width: 500px;
+  margin: 0;
+}
+
+/* Features Section */
+.sentia-features {
+  padding: var(--sentia-spacing-2xl) 0;
+  background-color: var(--sentia-white);
+}
+
+.sentia-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sentia-spacing-xl);
+  margin-top: var(--sentia-spacing-xl);
+}
+
+.sentia-feature-card {
+  background: var(--sentia-white);
+  padding: var(--sentia-spacing-xl);
+  border-radius: var(--sentia-radius-lg);
+  border: 1px solid var(--sentia-light-grey);
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sentia-feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sentia-black), var(--sentia-medium-grey));
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.sentia-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sentia-shadow-xl);
+}
+
+.sentia-feature-card:hover::before {
+  transform: scaleX(1);
+}
+
+.sentia-feature-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--sentia-spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sentia-warm-beige);
+  border-radius: 50%;
+  color: var(--sentia-black);
+  transition: all 0.3s ease;
+}
+
+.sentia-feature-card:hover .sentia-feature-icon {
+  background-color: var(--sentia-black);
+  color: var(--sentia-white);
+  transform: scale(1.1);
+}
+
+.sentia-feature-card h3 {
+  font-size: 1.25rem;
+  font-weight: var(--sentia-font-weight-semibold);
+  color: var(--sentia-black);
+  margin: 0 0 var(--sentia-spacing-sm) 0;
+}
+
+.sentia-feature-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--sentia-medium-grey);
+  margin: 0;
+}
+
+/* Access Section */
+.sentia-access {
+  padding: var(--sentia-spacing-2xl) 0;
+  background: linear-gradient(135deg, var(--sentia-light-beige) 0%, var(--sentia-warm-beige) 100%);
+  border-top: 1px solid var(--sentia-light-grey);
+}
+
+.sentia-access-card {
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--sentia-white);
+  padding: var(--sentia-spacing-2xl);
+  border-radius: var(--sentia-radius-lg);
+  text-align: center;
+  box-shadow: var(--sentia-shadow-lg);
+  border: 1px solid var(--sentia-light-grey);
+}
+
+.sentia-access-header {
+  margin-bottom: var(--sentia-spacing-xl);
+}
+
+.sentia-access-header h3 {
+  font-size: 1.75rem;
+  font-weight: var(--sentia-font-weight-semibold);
+  color: var(--sentia-black);
+  margin: 0 0 var(--sentia-spacing-md) 0;
+}
+
+.sentia-access-header p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--sentia-medium-grey);
+  margin: 0;
+}
+
+.sentia-auth-actions {
+  display: flex;
+  gap: var(--sentia-spacing-md);
+  justify-content: center;
+  margin-bottom: var(--sentia-spacing-lg);
+  flex-wrap: wrap;
+}
+
+.sentia-auth-actions .sentia-btn {
+  min-width: 160px;
+  padding: var(--sentia-spacing-md) var(--sentia-spacing-xl);
+  font-size: 1rem;
+  font-weight: var(--sentia-font-weight-medium);
+}
+
+.sentia-auth-note {
+  padding-top: var(--sentia-spacing-lg);
+  border-top: 1px solid var(--sentia-light-grey);
+}
+
+.sentia-auth-note p {
+  font-size: 0.9rem;
+  color: var(--sentia-medium-grey);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .sentia-hero-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--sentia-spacing-xl);
+  }
+  
+  .sentia-brand-title {
+    font-size: 3.5rem;
+  }
+  
+  .sentia-hero-text h2 {
+    font-size: 2rem;
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .sentia-hero {
+    padding: var(--sentia-spacing-xl) 0;
+  }
+  
+  .sentia-hero-content {
+    gap: var(--sentia-spacing-lg);
+  }
+  
+  .sentia-brand-title {
+    font-size: 2.5rem;
+  }
+  
+  .sentia-hero-text h2 {
+    font-size: 1.75rem;
+  }
+  
+  .sentia-features-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sentia-spacing-lg);
+  }
+  
+  .sentia-feature-card {
+    padding: var(--sentia-spacing-lg);
+  }
+  
+  .sentia-access-card {
+    margin: 0 var(--sentia-spacing-sm);
+    padding: var(--sentia-spacing-xl);
+  }
+  
+  .sentia-auth-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sentia-auth-actions .sentia-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sentia-brand-title {
+    font-size: 2rem;
+  }
+  
+  .sentia-hero-text h2 {
+    font-size: 1.5rem;
+  }
+  
+  .sentia-hero-description {
+    font-size: 1rem;
+  }
+  
+  .sentia-feature-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .sentia-access-card {
+    padding: var(--sentia-spacing-lg);
+  }
+}

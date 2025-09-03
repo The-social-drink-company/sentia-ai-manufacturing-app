@@ -1,0 +1,399 @@
+/* Sentia Dashboard Styles */
+/* Manufacturing dashboard with Sentia brand identity */
+
+.sentia-dashboard {
+  min-height: 100vh;
+  background-color: var(--sentia-light-beige);
+  padding: var(--sentia-spacing-lg) 0;
+}
+
+/* Dashboard Header */
+.sentia-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sentia-spacing-xl);
+  padding: var(--sentia-spacing-lg);
+  background: var(--sentia-white);
+  border-radius: var(--sentia-radius-lg);
+  box-shadow: var(--sentia-shadow-sm);
+  border: 1px solid var(--sentia-light-grey);
+}
+
+.sentia-dashboard-title h1 {
+  font-size: 2rem;
+  font-weight: var(--sentia-font-weight-bold);
+  color: var(--sentia-black);
+  margin: 0 0 var(--sentia-spacing-xs) 0;
+}
+
+.sentia-dashboard-title p {
+  font-size: 1rem;
+  color: var(--sentia-medium-grey);
+  margin: 0;
+}
+
+/* User Info */
+.sentia-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--sentia-spacing-md);
+}
+
+.sentia-user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--sentia-black);
+  color: var(--sentia-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--sentia-font-weight-semibold);
+  font-size: 1.1rem;
+}
+
+.sentia-user-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.sentia-user-name {
+  font-weight: var(--sentia-font-weight-medium);
+  color: var(--sentia-black);
+  font-size: 1rem;
+}
+
+.sentia-user-role {
+  font-size: 0.875rem;
+  color: var(--sentia-medium-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Card Enhancements */
+.sentia-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sentia-card-badge {
+  background-color: var(--sentia-black);
+  color: var(--sentia-white);
+  font-size: 0.875rem;
+  font-weight: var(--sentia-font-weight-semibold);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Status Grid */
+.sentia-status-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sentia-spacing-md);
+}
+
+.sentia-status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sentia-spacing-sm) 0;
+  border-bottom: 1px solid var(--sentia-light-grey);
+}
+
+.sentia-status-item:last-child {
+  border-bottom: none;
+}
+
+.sentia-status-label {
+  font-weight: var(--sentia-font-weight-medium);
+  color: var(--sentia-black);
+  font-size: 0.9rem;
+}
+
+.sentia-status-timestamp {
+  font-size: 0.8rem;
+  color: var(--sentia-medium-grey);
+  font-style: italic;
+  text-align: center;
+  padding-top: var(--sentia-spacing-sm);
+  border-top: 1px solid var(--sentia-light-grey);
+  margin-top: var(--sentia-spacing-sm);
+}
+
+/* Jobs List */
+.sentia-jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sentia-spacing-sm);
+}
+
+.sentia-job-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sentia-spacing-sm);
+  background-color: var(--sentia-warm-beige);
+  border-radius: var(--sentia-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.sentia-job-item:hover {
+  background-color: var(--sentia-light-grey);
+  transform: translateX(2px);
+}
+
+.sentia-job-info {
+  flex: 1;
+}
+
+.sentia-job-name {
+  font-weight: var(--sentia-font-weight-medium);
+  color: var(--sentia-black);
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.sentia-job-meta {
+  font-size: 0.8rem;
+  color: var(--sentia-medium-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Resources List */
+.sentia-resources-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sentia-spacing-sm);
+}
+
+.sentia-resource-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sentia-spacing-sm);
+  background-color: var(--sentia-warm-beige);
+  border-radius: var(--sentia-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.sentia-resource-item:hover {
+  background-color: var(--sentia-light-grey);
+  transform: translateX(2px);
+}
+
+.sentia-resource-info {
+  flex: 1;
+}
+
+.sentia-resource-name {
+  font-weight: var(--sentia-font-weight-medium);
+  color: var(--sentia-black);
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.sentia-resource-meta {
+  font-size: 0.8rem;
+  color: var(--sentia-medium-grey);
+  text-transform: capitalize;
+}
+
+.sentia-resource-status {
+  display: flex;
+  align-items: center;
+  gap: var(--sentia-spacing-xs);
+  font-size: 0.8rem;
+  color: var(--sentia-medium-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Status Dot */
+.sentia-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.sentia-status-dot.sentia-status-success {
+  background-color: var(--sentia-success);
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+}
+
+.sentia-status-dot.sentia-status-warning {
+  background-color: var(--sentia-warning);
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+}
+
+.sentia-status-dot.sentia-status-error {
+  background-color: var(--sentia-error);
+  box-shadow: 0 0 8px rgba(220, 53, 69, 0.3);
+}
+
+/* More Items */
+.sentia-more-items {
+  text-align: center;
+  padding: var(--sentia-spacing-sm);
+  font-size: 0.8rem;
+  color: var(--sentia-medium-grey);
+  font-style: italic;
+  border-top: 1px solid var(--sentia-light-grey);
+  margin-top: var(--sentia-spacing-sm);
+}
+
+/* Empty State */
+.sentia-empty-state {
+  text-align: center;
+  padding: var(--sentia-spacing-xl);
+  color: var(--sentia-medium-grey);
+}
+
+.sentia-empty-state p {
+  font-size: 1rem;
+  margin-bottom: var(--sentia-spacing-sm);
+  color: var(--sentia-medium-grey);
+}
+
+.sentia-empty-state small {
+  font-size: 0.8rem;
+  color: var(--sentia-medium-grey);
+  opacity: 0.7;
+}
+
+/* Dashboard Actions */
+.sentia-dashboard-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sentia-spacing-xl);
+}
+
+.sentia-dashboard-actions .sentia-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--sentia-spacing-xs);
+}
+
+.sentia-dashboard-actions .sentia-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading and Error States */
+.sentia-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: var(--sentia-spacing-md);
+}
+
+.sentia-loading p {
+  color: var(--sentia-medium-grey);
+  font-size: 1rem;
+}
+
+.sentia-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--sentia-spacing-lg);
+}
+
+.sentia-error-content {
+  text-align: center;
+  background: var(--sentia-white);
+  padding: var(--sentia-spacing-xl);
+  border-radius: var(--sentia-radius-lg);
+  box-shadow: var(--sentia-shadow-lg);
+  max-width: 500px;
+  width: 100%;
+}
+
+.sentia-error-content h2 {
+  color: var(--sentia-error);
+  margin-bottom: var(--sentia-spacing-md);
+}
+
+.sentia-error-content p {
+  margin-bottom: var(--sentia-spacing-lg);
+  color: var(--sentia-medium-grey);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .sentia-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .sentia-dashboard-header {
+    flex-direction: column;
+    gap: var(--sentia-spacing-md);
+    text-align: center;
+  }
+  
+  .sentia-user-details {
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .sentia-dashboard {
+    padding: var(--sentia-spacing-md) 0;
+  }
+  
+  .sentia-dashboard-header {
+    padding: var(--sentia-spacing-md);
+  }
+  
+  .sentia-dashboard-title h1 {
+    font-size: 1.75rem;
+  }
+  
+  .sentia-user-info {
+    flex-direction: column;
+    gap: var(--sentia-spacing-sm);
+  }
+  
+  .sentia-card {
+    padding: var(--sentia-spacing-md);
+  }
+  
+  .sentia-job-item,
+  .sentia-resource-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sentia-spacing-xs);
+  }
+  
+  .sentia-status-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sentia-spacing-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .sentia-dashboard-title h1 {
+    font-size: 1.5rem;
+  }
+  
+  .sentia-user-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .sentia-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sentia-spacing-sm);
+  }
+}

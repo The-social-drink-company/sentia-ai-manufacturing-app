@@ -9,13 +9,17 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import './App.css'
 
 function App() {
-  // Gracefully handle missing Clerk provider
+  // Check if Clerk is available before using hooks
+  const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
   let isSignedIn = false;
-  try {
-    const auth = useAuth();
-    isSignedIn = auth.isSignedIn;
-  } catch (error) {
-    console.warn('Clerk authentication not available:', error.message);
+  
+  if (PUBLISHABLE_KEY) {
+    try {
+      const auth = useAuth();
+      isSignedIn = auth.isSignedIn;
+    } catch (error) {
+      console.warn('Clerk authentication not available:', error.message);
+    }
   }
   
   return (

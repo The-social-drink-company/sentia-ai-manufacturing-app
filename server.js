@@ -5,7 +5,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import pkg from 'pg';
 import { createClerkClient } from '@clerk/backend';
+import morgan from 'morgan';
 import UnleashedService from './services/unleashedService.js';
+import logger, { logInfo, logError, logWarn } from './services/logger.js';
+import { metricsMiddleware, getMetrics, recordUnleashedApiRequest } from './services/metrics.js';
 const { Pool } = pkg;
 
 // Load environment variables
@@ -34,6 +37,17 @@ app.use(cors({
   origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
   credentials: true
 }));
+
+// Logging middleware
+app.use(morgan('combined', {
+  stream: {
+    write: (message) => logger.info(message.trim())
+  }
+}));
+
+// Metrics middleware
+app.use(metricsMiddleware);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -42,8 +56,12 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  logInfo('Health check requested');
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
+
+// Metrics endpoint for monitoring
+app.get('/metrics', getMetrics);
 
 // API Routes
 app.get('/api/test', (req, res) => {
@@ -285,10 +303,20 @@ app.delete('/api/admin/invitations/:invitationId', requireAuth, requireAdmin, as
 const unleashedService = new UnleashedService();
 
 app.get('/api/unleashed/test', async (req, res) => {
+  const startTime = Date.now();
   try {
+    logInfo('Testing Unleashed API connection');
     const result = await unleashedService.testConnection();
+    const duration = Date.now() - startTime;
+    
+    recordUnleashedApiRequest('test', result.success ? 'success' : 'failure', duration);
+    logInfo(`Unleashed API test completed in ${duration}ms`, { success: result.success });
+    
     res.json(result);
   } catch (error) {
+    const duration = Date.now() - startTime;
+    recordUnleashedApiRequest('test', 'error', duration);
+    logError('Unleashed API test failed', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -489,6 +517,13 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
+  logInfo(`Server started on port ${PORT}`, {
+    environment: process.env.NODE_ENV || 'development',
+    database: process.env.DATABASE_URL ? 'Connected to Neon' : 'Using local database',
+    timestamp: new Date().toISOString()
+  });
+  
+  // Legacy console logs for immediate visibility
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Database: ${process.env.DATABASE_URL ? 'Connected to Neon' : 'Using local database'}`);

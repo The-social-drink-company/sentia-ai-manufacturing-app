@@ -28,7 +28,9 @@
       "Bash(python:*)",
       "Bash(taskkill:*)",
       "Bash(npm:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(grep:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

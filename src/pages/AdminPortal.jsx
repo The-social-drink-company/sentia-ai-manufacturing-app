@@ -87,28 +87,53 @@ const AdminNav = () => {
   
   return (
     <nav style={{
-      backgroundColor: '#1a1a1a',
-      padding: '1rem',
-      marginBottom: '1rem'
+      backgroundColor: '#2c3e50',
+      padding: '1.5rem',
+      marginBottom: '0',
+      borderBottom: '3px solid #34495e',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
     }}>
       <div style={{ 
         display: 'flex', 
-        gap: '1rem', 
+        gap: '1.5rem', 
         flexWrap: 'wrap',
-        alignItems: 'center'
+        alignItems: 'center',
+        maxWidth: '1200px',
+        margin: '0 auto'
       }}>
-        <h2 style={{ color: 'white', margin: '0 1rem 0 0' }}>Admin Portal</h2>
+        <h2 style={{ 
+          color: '#ecf0f1', 
+          margin: '0 2rem 0 0', 
+          fontSize: '1.8rem',
+          fontWeight: '600'
+        }}>Admin Portal</h2>
         {visibleItems.map(item => (
           <Link
             key={item.path}
             to={item.path}
             style={{
-              color: location.pathname === item.path ? '#4CAF50' : 'white',
+              color: location.pathname === item.path ? '#ffffff' : '#bdc3c7',
+              backgroundColor: location.pathname === item.path ? '#3498db' : 'transparent',
               textDecoration: 'none',
-              padding: '0.5rem 1rem',
-              border: location.pathname === item.path ? '1px solid #4CAF50' : '1px solid transparent',
-              borderRadius: '4px',
-              fontSize: '14px'
+              padding: '0.75rem 1.25rem',
+              border: location.pathname === item.path ? '2px solid #2980b9' : '2px solid transparent',
+              borderRadius: '6px',
+              fontSize: '15px',
+              fontWeight: location.pathname === item.path ? '600' : '500',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => {
+              if (location.pathname !== item.path) {
+                e.target.style.backgroundColor = '#34495e';
+                e.target.style.color = '#ecf0f1';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (location.pathname !== item.path) {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = '#bdc3c7';
+              }
             }}
           >
             {item.label}
@@ -157,30 +182,137 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Admin Dashboard</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
-        <div style={{ padding: '1rem', backgroundColor: '#e3f2fd', border: '1px solid #2196f3', borderRadius: '4px' }}>
-          <h3>Server Health</h3>
-          <p>Status: {healthData?.server?.status || 'Unknown'}</p>
-          <p>Uptime: {healthData?.server?.uptime ? formatUptime(healthData.server.uptime) : 'N/A'}</p>
-          <p>Memory: {healthData?.server?.memory ? formatMemory(healthData.server.memory.used) : 'N/A'}</p>
-        </div>
-        <div style={{ padding: '1rem', backgroundColor: healthData?.database?.connected ? '#e8f5e8' : '#ffebee', border: `1px solid ${healthData?.database?.connected ? '#4caf50' : '#f44336'}`, borderRadius: '4px' }}>
-          <h3>Database</h3>
-          <p>Status: {healthData?.database?.status || 'Unknown'}</p>
-          <p>Connected: {healthData?.database?.connected ? 'Yes' : 'No'}</p>
-        </div>
-        <div style={{ padding: '1rem', backgroundColor: '#f3e5f5', border: '1px solid #9c27b0', borderRadius: '4px' }}>
-          <h3>Services</h3>
-          <p>Clerk: {healthData?.services?.clerk ? 'Connected' : 'Disconnected'}</p>
-          <p>Unleashed: {healthData?.services?.unleashed ? 'Connected' : 'Disconnected'}</p>
-          <p>Queue: {healthData?.services?.queue ? 'Active' : 'Inactive'}</p>
-        </div>
-        <div style={{ padding: '1rem', backgroundColor: '#fff3e0', border: '1px solid #ff9800', borderRadius: '4px' }}>
-          <h3>Quick Actions</h3>
-          <button style={{ marginRight: '10px', marginBottom: '10px' }} onClick={fetchHealthData}>Refresh Health</button>
-          <button style={{ marginBottom: '10px' }}>View Logs</button>
+    <div style={{ 
+      padding: '2rem',
+      backgroundColor: '#f8f9fa',
+      minHeight: 'calc(100vh - 120px)',
+      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+    }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <h1 style={{ 
+          color: '#2c3e50',
+          fontSize: '2.5rem',
+          marginBottom: '2rem',
+          fontWeight: '700'
+        }}>System Dashboard</h1>
+        
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+          gap: '1.5rem', 
+          marginTop: '1rem' 
+        }}>
+          <div style={{ 
+            padding: '1.5rem', 
+            backgroundColor: '#ffffff', 
+            border: '2px solid #3498db', 
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ color: '#2c3e50', fontSize: '1.3rem', marginBottom: '1rem', fontWeight: '600' }}>Server Health</h3>
+            <p style={{ color: '#34495e', fontSize: '1rem', margin: '0.5rem 0' }}>
+              <strong>Status:</strong> <span style={{ color: '#27ae60' }}>{healthData?.server?.status || 'Unknown'}</span>
+            </p>
+            <p style={{ color: '#34495e', fontSize: '1rem', margin: '0.5rem 0' }}>
+              <strong>Uptime:</strong> {healthData?.server?.uptime ? formatUptime(healthData.server.uptime) : 'N/A'}
+            </p>
+            <p style={{ color: '#34495e', fontSize: '1rem', margin: '0.5rem 0' }}>
+              <strong>Memory:</strong> {healthData?.server?.memory ? formatMemory(healthData.server.memory.used) : 'N/A'}
+            </p>
+          </div>
+          
+          <div style={{ 
+            padding: '1.5rem', 
+            backgroundColor: '#ffffff', 
+            border: `2px solid ${healthData?.database?.connected ? '#27ae60' : '#e74c3c'}`, 
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ color: '#2c3e50', fontSize: '1.3rem', marginBottom: '1rem', fontWeight: '600' }}>Database</h3>
+            <p style={{ color: '#34495e', fontSize: '1rem', margin: '0.5rem 0' }}>
+              <strong>Status:</strong> <span style={{ color: healthData?.database?.connected ? '#27ae60' : '#e74c3c' }}>
+                {healthData?.database?.status || 'Unknown'}
+              </span>
+            </p>
+            <p style={{ color: '#34495e', fontSize: '1rem', margin: '0.5rem 0' }}>
+              <strong>Connected:</strong> <span style={{ color: healthData?.database?.connected ? '#27ae60' : '#e74c3c' }}>
+                {healthData?.database?.connected ? 'Yes' : 'No'}
+              </span>
+            </p>
+          </div>
+          
+          <div style={{ 
+            padding: '1.5rem', 
+            backgroundColor: '#ffffff', 
+            border: '2px solid #9b59b6', 
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ color: '#2c3e50', fontSize: '1.3rem', marginBottom: '1rem', fontWeight: '600' }}>Services</h3>
+            <p style={{ color: '#34495e', fontSize: '1rem', margin: '0.5rem 0' }}>
+              <strong>Clerk:</strong> <span style={{ color: healthData?.services?.clerk ? '#27ae60' : '#e74c3c' }}>
+                {healthData?.services?.clerk ? 'Connected' : 'Disconnected'}
+              </span>
+            </p>
+            <p style={{ color: '#34495e', fontSize: '1rem', margin: '0.5rem 0' }}>
+              <strong>Unleashed:</strong> <span style={{ color: healthData?.services?.unleashed ? '#27ae60' : '#e74c3c' }}>
+                {healthData?.services?.unleashed ? 'Connected' : 'Disconnected'}
+              </span>
+            </p>
+            <p style={{ color: '#34495e', fontSize: '1rem', margin: '0.5rem 0' }}>
+              <strong>Queue:</strong> <span style={{ color: healthData?.services?.queue ? '#27ae60' : '#e74c3c' }}>
+                {healthData?.services?.queue ? 'Active' : 'Inactive'}
+              </span>
+            </p>
+          </div>
+          
+          <div style={{ 
+            padding: '1.5rem', 
+            backgroundColor: '#ffffff', 
+            border: '2px solid #f39c12', 
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ color: '#2c3e50', fontSize: '1.3rem', marginBottom: '1rem', fontWeight: '600' }}>Quick Actions</h3>
+            <button 
+              onClick={fetchHealthData}
+              style={{ 
+                backgroundColor: '#3498db',
+                color: 'white',
+                border: 'none',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '6px',
+                fontSize: '1rem',
+                fontWeight: '500',
+                cursor: 'pointer',
+                marginRight: '1rem',
+                marginBottom: '0.5rem',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#2980b9'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#3498db'}
+            >
+              Refresh Health
+            </button>
+            <button 
+              style={{ 
+                backgroundColor: '#95a5a6',
+                color: 'white',
+                border: 'none',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '6px',
+                fontSize: '1rem',
+                fontWeight: '500',
+                cursor: 'pointer',
+                marginBottom: '0.5rem',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#7f8c8d'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#95a5a6'}
+            >
+              View Logs
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -695,7 +827,7 @@ const AdminPortal = () => {
   
   return (
     <ProtectedRoute requiredPermission="view_admin_portal">
-      <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
         <AdminNav />
         <Routes>
           <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />

@@ -36,7 +36,9 @@
       "Bash(git fetch:*)",
       "Bash(cat:*)",
       "WebFetch(domain:dev.sentia-manufacturing.railway.app)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(unset CLERK_SECRET_KEY)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []

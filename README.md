@@ -15,15 +15,25 @@ A modern, full-stack manufacturing planning and scheduling system built with Rea
 - **Clerk** - Authentication and user management
 
 **Backend:**
-- **Node.js** - JavaScript runtime
-- **Express** - Web application framework
-- **PostgreSQL** - Primary database (Neon)
+- **Node.js** - JavaScript runtime (v24.4.1)
+- **Express.js** - Web framework with comprehensive middleware
+- **PostgreSQL** - Primary database (Neon with SSL)
+- **Clerk Backend** - Authentication and user management
+- **Winston** - Structured logging with daily rotation
+- **Helmet** - Security headers and middleware
 - **Unleashed API** - Inventory management integration
 
 **Infrastructure:**
-- **Railway** - Deployment platform
-- **Neon** - Serverless PostgreSQL
-- **GitHub** - Version control with CI/CD
+- **Railway** - Cloud deployment platform
+- **Neon PostgreSQL** - Serverless database with vector support
+- **GitHub** - Version control with automated deployments
+- **Docker** - Containerized deployment
+
+**Security & Monitoring:**
+- **ESLint** - Code linting with security rules
+- **Express Rate Limit** - DDoS protection
+- **Express Validator** - Input validation and sanitization
+- **Prometheus** - Metrics collection and monitoring
 
 ## Project Structure
 
@@ -31,26 +41,39 @@ A modern, full-stack manufacturing planning and scheduling system built with Rea
 sentia-manufacturing-dashboard/
 ├── src/                       # React frontend source
 │   ├── components/           # Reusable UI components
-│   ├── pages/               # Route components
-│   ├── services/            # API calls and business logic
+│   │   └── auth/            # Authentication components
+│   ├── pages/               # Route components (Dashboard, Admin, etc.)
+│   ├── services/            # Frontend API service calls
 │   ├── utils/               # Helper functions
 │   └── styles/              # CSS and theme files
-├── services/                 # Backend services
-├── app/                     # Legacy Python modules (if needed)
+├── services/                 # Backend Node.js services
+│   ├── logger.js            # Winston logging service
+│   ├── metrics.js           # Prometheus metrics
+│   ├── unleashedService.js  # Unleashed API integration
+│   └── envValidator.js      # Environment validation
 ├── context/                 # Documentation and specifications
 │   ├── business-requirements/
 │   ├── technical-specifications/
 │   ├── database-schemas/
 │   ├── api-documentation/
+│   ├── business-logic/
+│   ├── testing-scenarios/
 │   └── deployment-configs/
+├── database/                # Database schemas and migrations
+├── tests/                   # Complete testing suite
+│   ├── unit/                # Vitest unit tests
+│   ├── api/                 # Supertest API tests
+│   └── e2e/                # Playwright E2E tests
 ├── public/                  # Static assets
 ├── dist/                    # Production build output
-├── tests/                   # Jest/Playwright test suites
-├── server.js                # Express server
+├── scripts/                 # Utility scripts
+├── logs/                    # Application logs (Winston)
+├── server.js                # Express.js backend server
 ├── package.json             # Dependencies and scripts
-├── vite.config.js          # Vite configuration
-├── tailwind.config.js      # Tailwind configuration
-└── .env.example            # Environment template
+├── vite.config.js          # Vite build configuration
+├── eslint.config.js        # ESLint with security rules
+├── tailwind.config.js      # Tailwind CSS configuration
+└── .env.example            # Environment variables template
 ```
 
 ## Quick Start

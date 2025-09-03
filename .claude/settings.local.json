@@ -35,7 +35,8 @@
       "Bash(find:*)",
       "Bash(git fetch:*)",
       "Bash(cat:*)",
-      "WebFetch(domain:dev.sentia-manufacturing.railway.app)"
+      "WebFetch(domain:dev.sentia-manufacturing.railway.app)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

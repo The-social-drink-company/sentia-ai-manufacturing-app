@@ -20,7 +20,8 @@
       "WebSearch",
       "Bash(npm run dev:*)",
       "Bash(npx @clerk/dev-cli:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "WebFetch(domain:sentiadeploy.financeflo.ai)"
     ],
     "deny": [],
     "ask": []

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import React from 'react'
 
 // Mock environment variables for tests
 process.env.NODE_ENV = 'test'
@@ -19,7 +20,7 @@ vi.mock('@clerk/clerk-react', () => ({
   ClerkProvider: ({ children }) => children,
   SignInButton: ({ children }) => children,
   SignUpButton: ({ children }) => children,
-  UserButton: () => <div data-testid="user-button">User</div>
+  UserButton: () => React.createElement('div', { 'data-testid': 'user-button' }, 'User')
 }))
 
 // Mock fetch for API calls

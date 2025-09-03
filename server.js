@@ -8,7 +8,7 @@ import { createClerkClient } from '@clerk/backend';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { body, param, query, validationResult } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 import UnleashedService from './services/unleashedService.js';
 import logger, { logInfo, logError, logWarn } from './services/logger.js';
 import { metricsMiddleware, getMetrics, recordUnleashedApiRequest } from './services/metrics.js';
@@ -142,7 +142,7 @@ app.get('/api/db-test', async (req, res) => {
       database: process.env.DATABASE_URL ? 'Connected to Neon PostgreSQL' : 'Connected to local PostgreSQL'
     });
   } catch (error) {
-    console.error('Database connection error:', error);
+    logError('Database connection error', error);
     res.status(500).json({ 
       success: false, 
       error: 'Database connection failed',
@@ -162,7 +162,7 @@ app.get('/api/jobs', async (req, res) => {
     const result = await pool.query('SELECT * FROM jobs ORDER BY created_at DESC LIMIT 20');
     res.json({ success: true, jobs: result.rows });
   } catch (error) {
-    console.error('Jobs API error:', error);
+    logError('Jobs API error', error);
     res.json({ success: true, jobs: [] });
   }
 });
@@ -198,7 +198,7 @@ app.get('/api/resources', async (req, res) => {
     const result = await pool.query('SELECT * FROM resources ORDER BY name');
     res.json({ success: true, resources: result.rows });
   } catch (error) {
-    console.error('Resources API error:', error);
+    logError('Resources API error', error);
     res.json({ success: true, resources: [] });
   }
 });
@@ -576,8 +576,8 @@ app.get('*', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
+app.use((err, req, res, _next) => {
+  logError('Unhandled server error', err);
   res.status(err.status || 500).json({
     success: false,
     error: err.message || 'Internal server error'
@@ -592,7 +592,7 @@ app.listen(PORT, () => {
     timestamp: new Date().toISOString()
   });
   
-  // Legacy console logs for immediate visibility
+  // Keep essential startup logs for immediate visibility
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Database: ${process.env.DATABASE_URL ? 'Connected to Neon' : 'Using local database'}`);

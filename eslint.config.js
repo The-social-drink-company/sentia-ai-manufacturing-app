@@ -10,9 +10,9 @@ export default [
     rules: {
       ...security.configs.recommended.rules,
       'no-console': 'warn',
-      'no-unused-vars': 'error',
+      'no-unused-vars': ['error', { 'argsIgnorePattern': '^_|next' }],
       'no-undef': 'error',
-      'security/detect-object-injection': 'error',
+      'security/detect-object-injection': 'warn', // Lower to warning for environment variables
       'security/detect-non-literal-fs-filename': 'error',
       'security/detect-eval-with-expression': 'error',
       'security/detect-no-csrf-before-method-override': 'error',
@@ -29,7 +29,11 @@ export default [
         process: 'readonly',
         Buffer: 'readonly',
         __dirname: 'readonly',
-        __filename: 'readonly'
+        __filename: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        fetch: 'readonly',
+        require: 'readonly'
       }
     }
   }

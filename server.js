@@ -96,28 +96,102 @@ const pool = new Pool({
   } : false
 });
 
-// Security middleware
+// Enhanced Security middleware
+const cspNonce = (req, res, next) => {
+  res.locals.nonce = Buffer.from(Date.now().toString()).toString('base64');
+  next();
+};
+
+app.use(cspNonce);
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://api.unleashedsoftware.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      scriptSrc: [
+        "'self'", 
+        (req, res) => `'nonce-${res.locals.nonce}'`,
+        "https://clerk.dev",
+        "https://unpkg.com"
+      ],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      connectSrc: [
+        "'self'", 
+        "https://api.unleashedsoftware.com",
+        "https://api.clerk.com",
+        "https://clerk.dev",
+        "wss://api.clerk.com"
+      ],
+      workerSrc: ["'self'", "blob:"],
+      childSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
     },
+    reportOnly: false,
   },
+  crossOriginEmbedderPolicy: false, // For React dev tools
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  noSniff: true,
+  frameguard: { action: 'deny' },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
+// Enhanced Rate limiting with different tiers
+const createRateLimiter = (windowMs, max, message) => rateLimit({
+  windowMs,
+  max,
+  message,
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    return req.ip + ':' + (req.user?.id || 'anonymous');
+  },
+  skip: (req) => {
+    // Skip rate limiting for health checks
+    return req.path === '/health' || req.path === '/api/health';
+  },
+  onLimitReached: (req) => {
+    logWarn('Rate limit exceeded', {
+      ip: req.ip,
+      path: req.path,
+      userAgent: req.get('User-Agent'),
+      userId: req.user?.id
+    });
+  }
 });
-app.use(limiter);
+
+// General API rate limiting
+const generalLimiter = createRateLimiter(
+  15 * 60 * 1000, // 15 minutes
+  1000, // requests per window
+  'Too many requests from this IP, please try again later.'
+);
+
+// Strict rate limiting for auth endpoints
+const authLimiter = createRateLimiter(
+  5 * 60 * 1000, // 5 minutes
+  20, // requests per window
+  'Too many authentication attempts, please try again later.'
+);
+
+// Upload rate limiting
+const uploadLimiter = createRateLimiter(
+  60 * 60 * 1000, // 1 hour
+  50, // uploads per hour
+  'Too many file uploads, please try again later.'
+);
+
+app.use('/api/auth', authLimiter);
+app.use('/api/import/upload', uploadLimiter);
+app.use(generalLimiter);
 
 // CORS middleware
 app.use(cors({
@@ -195,10 +269,68 @@ const handleValidationErrors = (req, res, next) => {
 // Serve static files from React build FIRST
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Health check endpoint
+// Enhanced Health check endpoints
 app.get('/health', (req, res) => {
-  logInfo('Health check requested');
-  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+  const healthData = {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: process.env.npm_package_version || '1.0.0',
+    environment: process.env.NODE_ENV || 'development'
+  };
+  
+  res.json(healthData);
+});
+
+// Readiness probe - checks dependencies
+app.get('/ready', async (req, res) => {
+  const checks = {
+    server: true,
+    database: false,
+    clerk: !!clerkClient,
+    unleashed: !!unleashedService,
+    workingCapital: !!workingCapitalService
+  };
+  
+  // Test database connection
+  try {
+    if (process.env.DATABASE_URL || process.env.DEV_DATABASE_URL) {
+      await pool.query('SELECT 1');
+      checks.database = true;
+    }
+  } catch (error) {
+    logWarn('Database readiness check failed', error);
+  }
+  
+  const isReady = checks.database && checks.server;
+  const statusCode = isReady ? 200 : 503;
+  
+  res.status(statusCode).json({
+    status: isReady ? 'ready' : 'not ready',
+    checks,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Liveness probe - basic server health
+app.get('/live', (req, res) => {
+  const memUsage = process.memoryUsage();
+  const memUsedMB = Math.round(memUsage.heapUsed / 1024 / 1024);
+  const memTotalMB = Math.round(memUsage.heapTotal / 1024 / 1024);
+  
+  // Consider unhealthy if using more than 1GB memory
+  const isHealthy = memUsedMB < 1024;
+  
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'alive' : 'unhealthy',
+    memory: {
+      used: `${memUsedMB}MB`,
+      total: `${memTotalMB}MB`,
+      external: `${Math.round(memUsage.external / 1024 / 1024)}MB`
+    },
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Diagnostic endpoint for deployment troubleshooting
@@ -233,8 +365,60 @@ app.get('/diagnostics', (req, res) => {
   res.json(diagnostics);
 });
 
-// Metrics endpoint for monitoring
-app.get('/metrics', getMetrics);
+// Enhanced Metrics endpoint with OpenTelemetry integration
+app.get('/api/metrics', getMetrics);
+app.get('/metrics', getMetrics); // Keep compatibility
+
+// Application metrics endpoint
+app.get('/api/status', async (req, res) => {
+  const status = {
+    server: {
+      status: 'healthy',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      version: process.env.npm_package_version || '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      nodeVersion: process.version
+    },
+    services: {
+      database: { status: 'unknown', connected: false },
+      clerk: { status: clerkClient ? 'connected' : 'disconnected' },
+      unleashed: { status: unleashedService ? 'connected' : 'disconnected' },
+      workingCapital: { status: workingCapitalService ? 'available' : 'unavailable' },
+      dataImport: { status: dbService ? 'available' : 'unavailable' },
+      queue: { status: queueService ? 'available' : 'unavailable' }
+    },
+    timestamp: new Date().toISOString()
+  };
+  
+  // Test database connection
+  try {
+    if (process.env.DATABASE_URL || process.env.DEV_DATABASE_URL) {
+      const result = await pool.query('SELECT NOW()');
+      status.services.database = {
+        status: 'connected',
+        connected: true,
+        latency: Date.now() - new Date(result.rows[0].now).getTime(),
+        timestamp: result.rows[0].now
+      };
+    }
+  } catch (error) {
+    status.services.database = {
+      status: 'error',
+      connected: false,
+      error: error.message
+    };
+  }
+  
+  const overallHealthy = Object.values(status.services).every(service => 
+    service.status !== 'error'
+  );
+  
+  res.status(overallHealthy ? 200 : 503).json({
+    status: overallHealthy ? 'healthy' : 'degraded',
+    ...status
+  });
+});
 
 // Middleware to verify authentication and admin status
 const requireAuth = async (req, res, next) => {

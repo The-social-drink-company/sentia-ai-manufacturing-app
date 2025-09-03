@@ -1,20 +1,18 @@
 import React from 'react'
 
-function EnhancedDashboard() {
+function EnhancedDashboardSimple() {
   return (
     <div style={{ padding: '20px', backgroundColor: 'white', minHeight: '100vh' }}>
-      <h1>Enhanced Dashboard</h1>
-      <p>This is the working Enhanced Dashboard component.</p>
+      <h1>Enhanced Dashboard (Simple)</h1>
+      <p>This is a simplified version of the Enhanced Dashboard to test component rendering.</p>
       
       <div style={{ marginTop: '20px', padding: '20px', border: '1px solid #ccc' }}>
         <h2>Dashboard Features</h2>
         <ul>
-          <li>✅ KPI Strip Widget</li>
-          <li>✅ Demand Forecast Widget</li>
-          <li>✅ Working Capital Components</li>
-          <li>✅ Grid Layout System</li>
-          <li>✅ Real-time Updates</li>
-          <li>✅ Role-based Access Control</li>
+          <li>KPI Strip Widget</li>
+          <li>Demand Forecast Widget</li>
+          <li>Working Capital Components</li>
+          <li>Grid Layout System</li>
         </ul>
       </div>
       
@@ -27,4 +25,4 @@ function EnhancedDashboard() {
   )
 }
 
-export default EnhancedDashboard
+export default EnhancedDashboardSimple

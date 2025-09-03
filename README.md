@@ -83,7 +83,8 @@ sentia-manufacturing-dashboard/
 
 - Node.js 18+ and npm
 - Git
-- GitHub CLI (optional but recommended)
+- Railway CLI (for deployment)
+- Docker (optional, for containerized development)
 
 ### 1. Clone and Setup
 
@@ -91,8 +92,8 @@ sentia-manufacturing-dashboard/
 git clone https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
 cd sentia-manufacturing-dashboard
 
-# Copy environment template
-cp .env.example .env.local
+# Copy environment template for your environment
+cp .env.development .env.local  # For local development
 # Edit .env.local with your configuration
 ```
 
@@ -248,32 +249,85 @@ UNLEASHED_API_KEY=your_unleashed_api_key
 VITE_API_URL=http://localhost:5000/api
 ```
 
-## Branch Strategy & Deployment
+## Deployment & Infrastructure
 
-### Branch Structure
-- `development` - Active development (default branch)
-- `test` - User acceptance testing environment  
-- `production` - Live production environment
+### Railway Deployment
 
-### Auto-Deployment
-All branches automatically deploy to Railway environments:
-- **development** → `dev.sentia-manufacturing.railway.app`
-- **test** → `test.sentia-manufacturing.railway.app`  
-- **production** → `sentia-manufacturing.railway.app`
+The application is deployed on Railway with automatic branch deployments:
 
-**Railway Project ID**: `ef36131f-d36e-4c2d-8ab9-1914288d5781`
+#### Environments
+- **Development**: `dev.sentia-manufacturing.railway.app` (auto-deploy from `development` branch)
+- **Test/UAT**: `test.sentia-manufacturing.railway.app` (auto-deploy from `test` branch)
+- **Production**: `sentia-manufacturing.railway.app` (auto-deploy from `production` branch with approval)
 
-Each environment connects to its corresponding Neon PostgreSQL database.
+#### Services Architecture
+```
+- Web Service: Node.js/Express API + React frontend
+- Worker Service: BullMQ job processor
+- Database: Neon PostgreSQL with connection pooling
+- Cache: Redis for sessions and caching
+```
 
-### Development Workflow
-1. Work on `development` branch
-2. Test locally with `npm run dev`
-3. Commit and push → automatic deployment to dev environment
-4. Merge to `test` for UAT → automatic deployment to test environment
-5. Merge to `production` for release → automatic deployment to production
+### Deployment Commands
+
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Deploy to specific environment
+railway up --environment development
+railway up --environment test
+railway up --environment production
+
+# Check deployment status
+railway status
+railway logs --service web --tail 100
+
+# Rollback if needed
+railway rollback --service web --environment production
+```
+
+### CI/CD Pipeline
+
+GitHub Actions automates the deployment process:
+
+1. **On Push to `development`**: 
+   - Run tests → Build → Deploy to dev
+
+2. **On Push to `test`**:
+   - Run tests → Security scan → Build → Deploy to test → Run E2E tests
+
+3. **On Push to `production`**:
+   - Require approval → Backup database → Deploy → Health checks → Rollback on failure
+
+### Environment Variables
+
+Environment variables are managed through Railway dashboard. Templates available:
+- `.env.development` - Development environment
+- `.env.test` - Test/UAT environment  
+- `.env.production` - Production environment
+
+Critical secrets must be stored in Railway secrets management, not in code.
+
+### Monitoring & Health
+
+- **Health Check**: `/api/health`
+- **Metrics**: `/api/metrics` (Prometheus format)
+- **Monitoring**: GitHub Actions runs health checks every 15 minutes
+- **Alerts**: Automated alerts for errors, high latency, or service degradation
+
+### Disaster Recovery
+
+- **Database Backups**: Automated every 4 hours (production), daily (test)
+- **Recovery Procedures**: See `scripts/disaster-recovery.md`
+- **Rollback**: Automatic rollback on deployment failure
+- **RTO**: < 30 minutes | **RPO**: < 4 hours
+
+For detailed deployment configuration, see `context/deployment-configs/railway_setup.md`
 
 ## Available Scripts
 
+### Development & Build
 ```bash
 npm run dev          # Start both frontend and backend
 npm run dev:client   # Start Vite dev server (frontend only)
@@ -283,10 +337,75 @@ npm run preview      # Preview production build
 npm start            # Start production server
 ```
 
+### Code Quality & Testing
+```bash
+npm run lint         # Run ESLint
+npm run lint:fix     # Auto-fix ESLint issues
+npm run format       # Format code with Prettier
+npm run format:check # Check code formatting
+npm run typecheck    # Run TypeScript type checking
+npm run quality      # Run all quality checks (lint + format + typecheck)
+npm test             # Run Vitest unit tests
+npm run test:run     # Run tests once
+npm run test:coverage # Run tests with coverage
+npm run test:e2e     # Run Playwright E2E tests
+```
+
+### Development Setup (Enhanced)
+```bash
+# Install dependencies
+npm install
+
+# Setup pre-commit hooks (runs automatically after npm install)
+npm run prepare
+
+# Copy environment template and configure
+cp .env.example .env.local
+
+# Run quality checks before committing
+npm run quality
+```
+
+## Enhanced Features (v1.1)
+
+### Security Enhancements
+- **Enhanced CSP**: Content Security Policy with nonce-based script execution
+- **Multi-tier Rate Limiting**: Different limits for API, auth, and upload endpoints
+- **Security Headers**: HSTS, referrer policy, frame protection
+- **Input Validation**: Comprehensive server-side validation with express-validator
+
+### Observability & Monitoring
+- **Health Endpoints**: `/health`, `/ready`, `/live` for different health checks
+- **Metrics Collection**: Prometheus-format metrics at `/api/metrics`
+- **Performance Monitoring**: Web vitals collection for Core Web Vitals
+- **Enhanced Logging**: Structured JSON logging with correlation IDs
+
+### Performance Optimizations
+- **Code Splitting**: Vendor libraries split into optimized chunks
+- **Asset Optimization**: Separate paths for images, fonts, and assets
+- **Tree Shaking**: Unused code elimination in production builds
+- **Compression**: Brotli and gzip compression enabled
+
+### Global Readiness
+- **Multi-Currency Support**: GBP, EUR, USD with configurable base currency
+- **Regional Configuration**: UK, EU, USA regions with localized settings
+- **CFO Dashboard Preset**: Executive-grade dashboard with regional consolidation
+- **Feature Flags**: Toggleable features for gradual rollouts
+
+### Development Experience
+- **Pre-commit Hooks**: Automated linting, formatting, and validation
+- **Conventional Commits**: Enforced commit message standards
+- **TypeScript Support**: Full TypeScript integration with strict mode
+- **Code Quality Gates**: Combined lint, format, and type checking
+
 ## API Endpoints
 
 ### Core Endpoints
-- `GET /health` - Health check
+- `GET /health` - Basic health check
+- `GET /ready` - Readiness probe (checks dependencies)
+- `GET /live` - Liveness probe (memory and uptime)
+- `GET /api/status` - Detailed application status
+- `GET /api/metrics` - Prometheus metrics
 - `GET /api/test` - API connectivity test
 - `GET /api/db-test` - Database connectivity test
 

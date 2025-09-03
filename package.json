@@ -27,7 +27,8 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
-    "db:seed": "node prisma/seed.js"
+    "db:seed": "node prisma/seed.js",
+    "railway:setup": "node scripts/setup-railway-env.js"
   },
   "dependencies": {
     "@clerk/backend": "^2.12.0",

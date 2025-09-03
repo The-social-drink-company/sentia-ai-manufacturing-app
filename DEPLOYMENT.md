@@ -1,8 +1,7 @@
-# Deployment Guide
+# Sentia Manufacturing Dashboard - Production Deployment Guide
 
 ## Overview
-
-This document provides comprehensive instructions for deploying the Sentia Manufacturing Planning Dashboard to Railway with production-grade configuration.
+This guide provides comprehensive instructions for deploying the Sentia Manufacturing Planning Dashboard to Railway with full CI/CD pipeline, multi-environment setup, and enterprise-grade observability.
 
 ## Architecture
 

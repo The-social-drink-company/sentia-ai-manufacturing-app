@@ -1,0 +1,53 @@
+2025-09-03T13:39:24.000000000Z [inf]  Starting Container
+2025-09-03T13:39:25.674666016Z [err]  file:///app/services/unleashedService.js:13
+2025-09-03T13:39:25.674669491Z [err]        throw new Error('Unleashed API credentials not found in environment variables');
+2025-09-03T13:39:25.674673230Z [err]              ^
+2025-09-03T13:39:25.674677320Z [err]  
+2025-09-03T13:39:25.674681476Z [err]  Error: Unleashed API credentials not found in environment variables
+2025-09-03T13:39:25.674685551Z [err]      at new UnleashedService (file:///app/services/unleashedService.js:13:13)
+2025-09-03T13:39:25.674689896Z [err]      at file:///app/server.js:303:26
+2025-09-03T13:39:25.674693542Z [err]      at ModuleJob.run (node:internal/modules/esm/module_job:195:25)
+2025-09-03T13:39:25.674697138Z [err]      at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+2025-09-03T13:39:25.674701353Z [err]      at async loadESM (node:internal/process/esm_loader:34:7)
+2025-09-03T13:39:25.674705944Z [err]      at async handleMainPromise (node:internal/modules/run_main:106:12)
+2025-09-03T13:39:25.674710054Z [err]  
+2025-09-03T13:39:25.674713640Z [err]  Node.js v18.20.8
+2025-09-03T13:39:26.290031114Z [err]  file:///app/services/unleashedService.js:13
+2025-09-03T13:39:26.290035799Z [err]        throw new Error('Unleashed API credentials not found in environment variables');
+2025-09-03T13:39:26.290039976Z [err]              ^
+2025-09-03T13:39:26.290044083Z [err]  
+2025-09-03T13:39:26.290060295Z [err]  Error: Unleashed API credentials not found in environment variables
+2025-09-03T13:39:26.290068138Z [err]      at new UnleashedService (file:///app/services/unleashedService.js:13:13)
+2025-09-03T13:39:26.290073435Z [err]      at file:///app/server.js:303:26
+2025-09-03T13:39:26.290077944Z [err]      at ModuleJob.run (node:internal/modules/esm/module_job:195:25)
+2025-09-03T13:39:26.290082762Z [err]      at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+2025-09-03T13:39:26.290087129Z [err]      at async loadESM (node:internal/process/esm_loader:34:7)
+2025-09-03T13:39:26.290091568Z [err]      at async handleMainPromise (node:internal/modules/run_main:106:12)
+2025-09-03T13:39:26.290096544Z [err]  
+2025-09-03T13:39:26.290101240Z [err]  Node.js v18.20.8
+2025-09-03T13:39:27.388849695Z [err]  file:///app/services/unleashedService.js:13
+2025-09-03T13:39:27.388859104Z [err]        throw new Error('Unleashed API credentials not found in environment variables');
+2025-09-03T13:39:27.388865403Z [err]              ^
+2025-09-03T13:39:27.388871207Z [err]  
+2025-09-03T13:39:27.388876882Z [err]  Error: Unleashed API credentials not found in environment variables
+2025-09-03T13:39:27.388882502Z [err]      at new UnleashedService (file:///app/services/unleashedService.js:13:13)
+2025-09-03T13:39:27.388888467Z [err]      at file:///app/server.js:303:26
+2025-09-03T13:39:27.388894382Z [err]      at ModuleJob.run (node:internal/modules/esm/module_job:195:25)
+2025-09-03T13:39:27.388900144Z [err]      at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+2025-09-03T13:39:27.388905964Z [err]      at async loadESM (node:internal/process/esm_loader:34:7)
+2025-09-03T13:39:27.388912110Z [err]      at async handleMainPromise (node:internal/modules/run_main:106:12)
+2025-09-03T13:39:27.388918000Z [err]  
+2025-09-03T13:39:27.388924207Z [err]  Node.js v18.20.8
+2025-09-03T13:39:28.390515257Z [err]  file:///app/services/unleashedService.js:13
+2025-09-03T13:39:28.390519688Z [err]        throw new Error('Unleashed API credentials not found in environment variables');
+2025-09-03T13:39:28.390523912Z [err]              ^
+2025-09-03T13:39:28.390527952Z [err]  
+2025-09-03T13:39:28.390531800Z [err]  Error: Unleashed API credentials not found in environment variables
+2025-09-03T13:39:28.390537082Z [err]      at new UnleashedService (file:///app/services/unleashedService.js:13:13)
+2025-09-03T13:39:28.390540859Z [err]      at file:///app/server.js:303:26
+2025-09-03T13:39:28.390544646Z [err]      at ModuleJob.run (node:internal/modules/esm/module_job:195:25)
+2025-09-03T13:39:28.390548692Z [err]      at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+2025-09-03T13:39:28.390552577Z [err]      at async loadESM (node:internal/process/esm_loader:34:7)
+2025-09-03T13:39:28.390557294Z [err]      at async handleMainPromise (node:internal/modules/run_main:106:12)
+2025-09-03T13:39:28.390561070Z [err]  
+2025-09-03T13:39:28.390564765Z [err]  Node.js v18.20.8

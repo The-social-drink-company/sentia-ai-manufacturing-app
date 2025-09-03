@@ -1,11 +1,23 @@
 import React from 'react'
-import { useAuth, useUser, RedirectToSignIn } from '@clerk/clerk-react'
+import { RedirectToSignIn } from '@clerk/clerk-react'
+import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 
-export default function ProtectedRoute({ children, requireAdmin = false }) {
-  const { isSignedIn, isLoaded } = useAuth()
-  const { user, isLoaded: userLoaded } = useUser()
+export default function ProtectedRoute({ 
+  children, 
+  requireAdmin = false,
+  requiredRole = null,
+  requiredPermission = null 
+}) {
+  const { 
+    isLoading, 
+    isAuthenticated, 
+    user, 
+    role,
+    hasRole,
+    hasPermission 
+  } = useAuthRole()
 
-  if (!isLoaded || !userLoaded) {
+  if (isLoading) {
     return (
       <div className="loading-spinner">
         <div className="spinner">Loading...</div>
@@ -13,13 +25,13 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
     )
   }
 
-  if (!isSignedIn) {
+  if (!isAuthenticated) {
     return <RedirectToSignIn />
   }
 
   // Check if user account is approved
   const isApproved = user?.publicMetadata?.approved === true
-  const isAdmin = user?.publicMetadata?.role === 'admin'
+  const isAdmin = role === 'admin'
   const isMasterAdmin = user?.publicMetadata?.masterAdmin === true
   
   // Master admin users have unlimited access to everything
@@ -32,13 +44,39 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
     return children
   }
 
-  // Check admin requirement (master admin bypasses this check)
+  // Check admin requirement (for backward compatibility)
   if (requireAdmin && !isAdmin && !isMasterAdmin) {
     return (
       <div className="access-denied">
         <div className="access-denied-content">
           <h2>Access Denied</h2>
           <p>Administrator privileges required to access this page.</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Check specific role requirement
+  if (requiredRole && !hasRole(requiredRole)) {
+    return (
+      <div className="access-denied">
+        <div className="access-denied-content">
+          <h2>Access Denied</h2>
+          <p>Required role: {requiredRole}</p>
+          <p>Your role: {role}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Check specific permission requirement
+  if (requiredPermission && !hasPermission(requiredPermission)) {
+    return (
+      <div className="access-denied">
+        <div className="access-denied-content">
+          <h2>Access Denied</h2>
+          <p>You don't have the required permission to access this page.</p>
+          <p>Required permission: {requiredPermission}</p>
         </div>
       </div>
     )

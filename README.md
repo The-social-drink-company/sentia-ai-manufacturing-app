@@ -1,170 +1,294 @@
 # Sentia Manufacturing Planning Dashboard
 
-A modern, AI-powered manufacturing planning and scheduling system built with Flask and PostgreSQL.
+A modern, full-stack manufacturing planning and scheduling system built with React/Vite frontend and Node.js/Express backend.
 
 ## Tech Stack
 
-- **Backend**: Flask (Python 3.11+)
-- **Database**: Neon PostgreSQL with vector support
-- **Frontend**: HTML/CSS/JavaScript (responsive design)
-- **Hosting**: Railway
-- **Development**: Cursor IDE + Claude Code CLI
-- **Version Control**: GitHub with CI/CD
+**Frontend:**
+- **React 18** - Modern UI library with hooks
+- **Vite** - Fast development server and build tool
+- **Tailwind CSS** - Utility-first CSS framework
+- **Shadcn/UI** - Reusable component library
+- **Recharts** - Data visualization
+- **React Router** - Client-side routing
+- **TanStack Query** - Data fetching and caching
+- **Clerk** - Authentication and user management
+
+**Backend:**
+- **Node.js** - JavaScript runtime
+- **Express** - Web application framework
+- **PostgreSQL** - Primary database (Neon)
+- **Unleashed API** - Inventory management integration
+
+**Infrastructure:**
+- **Railway** - Deployment platform
+- **Neon** - Serverless PostgreSQL
+- **GitHub** - Version control with CI/CD
 
 ## Project Structure
 
 ```
 sentia-manufacturing-dashboard/
-├── app/                    # Flask application
-│   ├── models/            # Database models
-│   ├── routes/            # API and view routes
-│   ├── services/          # Business logic
-│   ├── utils/             # Utility functions
-│   └── templates/         # HTML templates
-├── context/               # Documentation and specifications
-├── static/                # Static assets
-├── migrations/            # Database migrations
-├── tests/                 # Test suite
-├── config.py              # Configuration settings
-├── run.py                 # Application entry point
-└── requirements.txt       # Python dependencies
+├── src/                       # React frontend source
+│   ├── components/           # Reusable UI components
+│   ├── pages/               # Route components
+│   ├── services/            # API calls and business logic
+│   ├── utils/               # Helper functions
+│   └── styles/              # CSS and theme files
+├── services/                 # Backend services
+├── app/                     # Legacy Python modules (if needed)
+├── context/                 # Documentation and specifications
+│   ├── business-requirements/
+│   ├── technical-specifications/
+│   ├── database-schemas/
+│   ├── api-documentation/
+│   └── deployment-configs/
+├── public/                  # Static assets
+├── dist/                    # Production build output
+├── tests/                   # Jest/Playwright test suites
+├── server.js                # Express server
+├── package.json             # Dependencies and scripts
+├── vite.config.js          # Vite configuration
+├── tailwind.config.js      # Tailwind configuration
+└── .env.example            # Environment template
 ```
 
-## Setup Instructions
+## Quick Start
 
-### 1. Clone the repository
+### Prerequisites
+
+- Node.js 18+ and npm
+- Git
+- GitHub CLI (optional but recommended)
+
+### 1. Clone and Setup
+
 ```bash
-git clone https://github.com/yourusername/sentia-manufacturing-dashboard.git
+git clone https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
 cd sentia-manufacturing-dashboard
+
+# Copy environment template
+cp .env.example .env.local
+# Edit .env.local with your configuration
 ```
 
-### 2. Create virtual environment
+### 2. Install Dependencies
+
 ```bash
-# Windows (uses a short, external path to avoid long-path issues):
-py -3.13 -m venv C:\Users\DanielKenny\venvs\sentia
-# or:
-python -m venv C:\Users\DanielKenny\venvs\sentia
-
-# Mac/Linux (project-local venv):
-python -m venv venv
+npm install
 ```
 
-### 3. Activate and install dependencies
+### 3. Development Setup
+
+Start both frontend and backend in development mode:
+
 ```bash
-# Windows:
-C:\Users\DanielKenny\venvs\sentia\Scripts\activate
-python -m pip install -r requirements.txt
+# Start both frontend (port 3000) and backend (port 5000)
+npm run dev
 
-# Mac/Linux:
-source venv/bin/activate
-python -m pip install -r requirements.txt
-```
+# Or run them separately:
+npm run dev:client    # Frontend only (Vite dev server)
+npm run dev:server    # Backend only (Express server)
 ```
 
-### 4. Configure environment variables
+### 4. Access the Application
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000/api
+- **Health Check**: http://localhost:5000/health
+
+## Environment Configuration
+
+Key environment variables in `.env.local`:
+
 ```bash
-cp .env.template .env
-# Edit .env with your configuration
+# Node.js
+NODE_ENV=development
+PORT=5000
+
+# Clerk Authentication
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+
+# Database (Neon PostgreSQL)
+DATABASE_URL=postgresql://username:password@ep-xxx.us-east-1.aws.neon.tech/sentia_dev
+
+# Unleashed API
+UNLEASHED_API_ID=your_unleashed_api_id
+UNLEASHED_API_KEY=your_unleashed_api_key
+
+# Frontend API URL
+VITE_API_URL=http://localhost:5000/api
 ```
 
-### 5. Initialize database
-```bash
-flask db init
-flask db migrate -m "Initial migration"
-flask db upgrade
-```
+## Branch Strategy & Deployment
 
-### 6. Run the application
-```bash
-python run.py
-```
-
-The application will be available at `http://localhost:5000`
-
-## Branch Structure
-
-- `development` - Active development branch
-- `test` - User acceptance testing
+### Branch Structure
+- `development` - Active development (default branch)
+- `test` - User acceptance testing environment  
 - `production` - Live production environment
 
-All branches auto-deploy to respective Railway environments with corresponding Neon databases.
+### Auto-Deployment
+All branches automatically deploy to Railway environments:
+- **development** → `dev.sentia-manufacturing.railway.app`
+- **test** → `test.sentia-manufacturing.railway.app`  
+- **production** → `sentia-manufacturing.railway.app`
+
+Each environment connects to its corresponding Neon PostgreSQL database.
+
+### Development Workflow
+1. Work on `development` branch
+2. Test locally with `npm run dev`
+3. Commit and push → automatic deployment to dev environment
+4. Merge to `test` for UAT → automatic deployment to test environment
+5. Merge to `production` for release → automatic deployment to production
+
+## Available Scripts
+
+```bash
+npm run dev          # Start both frontend and backend
+npm run dev:client   # Start Vite dev server (frontend only)
+npm run dev:server   # Start Express server (backend only)
+npm run build        # Build production React app
+npm run preview      # Preview production build
+npm start            # Start production server
+```
 
 ## API Endpoints
 
-- `GET /api/health` - Health check
-- `GET /api/jobs` - List all jobs
-- `GET /api/schedule` - Get current schedule
-- `POST /api/optimize` - Trigger schedule optimization
+### Core Endpoints
+- `GET /health` - Health check
+- `GET /api/test` - API connectivity test
+- `GET /api/db-test` - Database connectivity test
+
+### Unleashed Integration
+- `GET /api/unleashed/test` - Test Unleashed API connection
+- `GET /api/unleashed/products` - Get products from Unleashed
+- `GET /api/unleashed/stock` - Get current stock levels
+- `GET /api/unleashed/sales-orders` - Get sales orders
+- `GET /api/unleashed/customers` - Get customer data
+- `GET /api/unleashed/warehouses` - Get warehouse information
+
+### Manufacturing Data
+- `GET /api/jobs` - Manufacturing jobs
+- `GET /api/resources` - Production resources
+- `GET /api/schedules` - Production schedules
 
 ## Features
 
+### Core Manufacturing
 - Real-time production scheduling
-- AI-powered optimization algorithms
 - Resource allocation and management
 - Job tracking and monitoring
-- Performance analytics dashboard
-- Multi-user support with role-based access
+- Inventory management via Unleashed integration
 
-## Database
+### User Interface
+- Modern, responsive React frontend
+- Real-time data visualization with Recharts
+- Component-based architecture with Shadcn/UI
+- Dark/light mode support
+- Mobile-friendly design
 
-- Uses PostgreSQL in production (Neon), SQLite by default in local development.
-- Configure via `.env`:
-  - `DATABASE_URL` (production), `DEV_DATABASE_URL` (local), `TEST_DATABASE_URL` (CI/tests)
-- Manage schema with Flask-Migrate:
-  - Initialize once: `flask db init`
-  - Create migration: `flask db migrate -m "<message>"`
-  - Apply: `flask db upgrade`
-- Branch deployments auto-point to environment-specific databases.
+### Authentication & Security
+- Clerk-based authentication
+- Role-based access control
+- Secure API endpoints
+- Environment-based configuration
 
-## User Management
+## Database Management
 
-- Roles: admin, manager, operator, viewer (least-privilege by default).
-- Sign-in: username or email + password; optional "Remember me" keeps you signed in longer.
-- Security: account locks after multiple failed attempts; passwords must be strong; periodic password change enforced.
-- Self-service: change password, request password reset if you forget it.
-- Admins only: create users, set roles, activate/deactivate accounts, unlock locked accounts, and view users in the User Management page.
+The application uses Neon PostgreSQL with environment-specific databases:
 
-## Data Import
-
-- Upload CSV/XLSX files for supported types (e.g., products, historical_sales).
-- Go to Data Import, choose an import type, and select one or more files.
-- Choose Validate to preview and check data without importing, or Import to run a background job.
-- Built-in validation highlights errors, warnings, duplicates, and can auto-correct selected issues.
-- Track progress in real time; open the import to see logs, errors, and summaries.
-- Download ready-made templates from the Templates tab to format your data correctly.
-- View all past imports, filter by status/type, and drill into details from History.
-- Requires the data_import permission (managers and admins typically have access).
-
-## Development Workflow
-
-1. Always work on the `development` branch
-2. Test features locally before committing
-3. Push to trigger automatic deployment to Railway dev environment
-4. After testing, merge to `test` branch for UAT
-5. Finally, merge to `production` for release
+```bash
+# Check database connection
+curl http://localhost:5000/api/db-test
+```
 
 ## Testing
 
-Run tests with:
+Run tests (when test suite is added):
 ```bash
-pytest
-# Or with coverage:
-pytest --cov=app tests/
+npm test                # Run Jest tests
+npm run test:e2e       # Run Playwright E2E tests
+npm run test:coverage  # Run tests with coverage
 ```
 
-## Deployment
+## Validation Steps
 
-The application automatically deploys to Railway on push to respective branches:
-- `development` → dev.sentia-manufacturing.railway.app
-- `test` → test.sentia-manufacturing.railway.app
-- `production` → sentia-manufacturing.railway.app
+### Local Development Test
+```bash
+# 1. Start development environment
+npm run dev
+
+# 2. Test frontend
+curl http://localhost:3000
+
+# 3. Test backend API
+curl http://localhost:5000/health
+curl http://localhost:5000/api/test
+
+# 4. Test Unleashed integration
+curl http://localhost:5000/api/unleashed/test
+```
+
+### Deployment Validation
+After pushing to development branch, verify:
+1. Automatic deployment to Railway dev environment
+2. Database connectivity to Neon dev database
+3. Unleashed API integration working
+4. Frontend builds and serves correctly
+
+## Troubleshooting
+
+### Common Issues
+
+**Port conflicts:**
+```bash
+# Check what's using port 5000
+netstat -ano | findstr :5000
+# Kill process if needed
+taskkill /PID <process_id> /F
+```
+
+**Dependencies issues:**
+```bash
+# Clean and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**Environment variables:**
+- Ensure `.env.local` exists with required variables
+- Check Clerk keys are correctly set
+- Verify database URLs are accessible
 
 ## Contributing
 
 1. Create feature branch from `development`
-2. Make changes and test locally
-3. Submit pull request to `development`
-4. After review, changes will be merged
+2. Implement changes with proper testing
+3. Ensure code follows project conventions
+4. Submit pull request to `development` branch
+5. After review, changes will be merged and auto-deployed
+
+## Architecture Notes
+
+### Frontend (React/Vite)
+- Modern React 18 with functional components and hooks
+- Vite for fast development and optimized production builds
+- Tailwind CSS with custom Sentia brand colors
+- Component library pattern with Shadcn/UI
+
+### Backend (Node.js/Express)
+- RESTful API design
+- Express middleware for CORS, authentication, logging
+- Integration with external APIs (Unleashed)
+- PostgreSQL with connection pooling
+
+### Deployment
+- Railway for hosting and CI/CD
+- Neon for serverless PostgreSQL
+- Branch-based deployment strategy
+- Environment-specific configurations
 
 ## License
 
@@ -172,4 +296,15 @@ Proprietary - Sentia Manufacturing Solutions
 
 ## Support
 
-For issues or questions, contact the development team.
+For technical issues or questions:
+- Create GitHub issues for bug reports
+- Contact development team for urgent matters
+- Refer to context documentation in `/context` folder
+
+---
+
+**Next Steps:**
+- Set up branch protection rules on GitHub
+- Configure Railway deployment webhooks
+- Add comprehensive test suite
+- Implement monitoring and logging

@@ -36,6 +36,18 @@ async function loadDataImportServices() {
     logWarn('Queue service not available - using synchronous processing', error);
   }
 }
+
+// Load working capital service
+let workingCapitalService = null;
+async function loadWorkingCapitalService() {
+  try {
+    const WorkingCapitalService = (await import('./src/services/finance/workingCapital.js')).default;
+    workingCapitalService = new WorkingCapitalService();
+    logInfo('Working Capital service loaded successfully');
+  } catch (error) {
+    logWarn('Working Capital service not available', error);
+  }
+}
 const { Pool } = pkg;
 
 // Load environment variables
@@ -211,6 +223,49 @@ const requireAuth = async (req, res, next) => {
 const requireAdmin = (req, res, next) => {
   if (req.user?.publicMetadata?.role !== 'admin') {
     return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+};
+
+// RBAC middleware for working capital functionality
+const requireFinancialAccess = (req, res, next) => {
+  const userRole = req.user?.publicMetadata?.role;
+  const allowedRoles = ['admin', 'cfo', 'financial_manager', 'financial_analyst'];
+  
+  if (!allowedRoles.includes(userRole)) {
+    return res.status(403).json({ 
+      error: 'Financial access required',
+      requiredRoles: allowedRoles,
+      userRole: userRole || 'unknown'
+    });
+  }
+  next();
+};
+
+const requireFinancialManagement = (req, res, next) => {
+  const userRole = req.user?.publicMetadata?.role;
+  const allowedRoles = ['admin', 'cfo', 'financial_manager'];
+  
+  if (!allowedRoles.includes(userRole)) {
+    return res.status(403).json({ 
+      error: 'Financial management access required',
+      requiredRoles: allowedRoles,
+      userRole: userRole || 'unknown'
+    });
+  }
+  next();
+};
+
+const requireExecutiveAccess = (req, res, next) => {
+  const userRole = req.user?.publicMetadata?.role;
+  const allowedRoles = ['admin', 'ceo', 'cfo'];
+  
+  if (!allowedRoles.includes(userRole)) {
+    return res.status(403).json({ 
+      error: 'Executive access required',
+      requiredRoles: allowedRoles,
+      userRole: userRole || 'unknown'
+    });
   }
   next();
 };
@@ -657,6 +712,452 @@ app.get('/api/unleashed/stock-adjustments', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Working Capital API Endpoints
+
+// Working Capital Projections
+app.post('/api/working-capital/projections', requireAuth, requireFinancialAccess, [
+  body('horizonMonths').optional().isInt({ min: 1, max: 24 }).withMessage('Horizon must be between 1-24 months'),
+  body('currency').optional().isIn(['GBP', 'EUR', 'USD']).withMessage('Invalid currency'),
+  body('scenarios').optional().isArray().withMessage('Scenarios must be an array'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    if (!workingCapitalService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Working Capital service not available'
+      });
+    }
+
+    const {
+      horizonMonths = 12,
+      startMonth = new Date(),
+      currency = 'GBP',
+      scenarios = ['baseline']
+    } = req.body;
+
+    logInfo('Working capital projection requested', { 
+      userId: req.user.id,
+      horizonMonths, 
+      scenarios: scenarios.length 
+    });
+
+    const projectionParams = {
+      horizonMonths,
+      startMonth: new Date(startMonth),
+      currency,
+      scenarios
+    };
+
+    const results = await workingCapitalService.project(projectionParams);
+    
+    res.json({
+      success: true,
+      data: results,
+      generatedAt: new Date(),
+      requestId: results.runId
+    });
+  } catch (error) {
+    logError('Working capital projection failed', error);
+    res.status(500).json({
+      success: false,
+      error: 'Projection calculation failed',
+      details: error.message
+    });
+  }
+});
+
+// Scenario Analysis
+app.post('/api/working-capital/scenarios', requireAuth, requireFinancialAccess, [
+  body('baselineParams').notEmpty().withMessage('Baseline parameters required'),
+  body('overrides').optional().isArray().withMessage('Overrides must be an array'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    if (!workingCapitalService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Working Capital service not available'
+      });
+    }
+
+    const { baselineParams, overrides = [] } = req.body;
+
+    logInfo('Scenario analysis requested', { 
+      userId: req.user.id,
+      scenarios: overrides.length + 1 // baseline + overrides
+    });
+
+    const results = await workingCapitalService.scenarios(baselineParams, overrides);
+    
+    res.json({
+      success: true,
+      data: results,
+      generatedAt: new Date()
+    });
+  } catch (error) {
+    logError('Scenario analysis failed', error);
+    res.status(500).json({
+      success: false,
+      error: 'Scenario analysis failed',
+      details: error.message
+    });
+  }
+});
+
+// Policy Optimization
+app.post('/api/working-capital/optimize', requireAuth, requireFinancialManagement, [
+  body('baseline').notEmpty().withMessage('Baseline scenario required'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    if (!workingCapitalService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Working Capital service not available'
+      });
+    }
+
+    const { baseline } = req.body;
+
+    logInfo('Policy optimization requested', { 
+      userId: req.user.id 
+    });
+
+    const optimizationResults = await workingCapitalService.optimizePolicies(baseline);
+    
+    res.json({
+      success: true,
+      data: optimizationResults,
+      generatedAt: new Date()
+    });
+  } catch (error) {
+    logError('Policy optimization failed', error);
+    res.status(500).json({
+      success: false,
+      error: 'Policy optimization failed',
+      details: error.message
+    });
+  }
+});
+
+// System Diagnostics
+app.get('/api/working-capital/diagnostics', requireAuth, requireFinancialManagement, async (req, res) => {
+  try {
+    if (!workingCapitalService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Working Capital service not available'
+      });
+    }
+
+    logInfo('System diagnostics requested', { 
+      userId: req.user.id 
+    });
+
+    const diagnostics = await workingCapitalService.diagnostics();
+    
+    res.json({
+      success: true,
+      data: diagnostics,
+      generatedAt: new Date()
+    });
+  } catch (error) {
+    logError('System diagnostics failed', error);
+    res.status(500).json({
+      success: false,
+      error: 'System diagnostics failed',
+      details: error.message
+    });
+  }
+});
+
+// Get Historical Projections (Read-only)
+app.get('/api/working-capital/projections/history', requireAuth, requireFinancialAccess, async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database service not available'
+      });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = Math.min(parseInt(req.query.pageSize) || 20, 100);
+    const offset = (page - 1) * pageSize;
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const [projections, totalCount] = await Promise.all([
+      prisma.wCProjection.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip: offset,
+        take: pageSize,
+        select: {
+          id: true,
+          run_id: true,
+          month: true,
+          cash_in: true,
+          cash_out: true,
+          net_change: true,
+          ending_cash: true,
+          scenario: true,
+          currency_code: true,
+          createdAt: true
+        }
+      }),
+      prisma.wCProjection.count()
+    ]);
+    
+    logInfo('Historical projections retrieved', { 
+      userId: req.user.id,
+      count: projections.length 
+    });
+    
+    res.json({
+      success: true,
+      data: {
+        projections,
+        pagination: {
+          page,
+          pageSize,
+          totalCount,
+          totalPages: Math.ceil(totalCount / pageSize)
+        }
+      }
+    });
+  } catch (error) {
+    logError('Failed to retrieve historical projections', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve historical data',
+      details: error.message
+    });
+  }
+});
+
+// Get KPI Trends
+app.get('/api/working-capital/kpis/trends', requireAuth, requireFinancialAccess, async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database service not available'
+      });
+    }
+
+    const months = parseInt(req.query.months) || 12;
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - months);
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const kpis = await prisma.wCKPIs.findMany({
+      where: {
+        createdAt: {
+          gte: startDate
+        }
+      },
+      orderBy: { createdAt: 'asc' },
+      select: {
+        dso: true,
+        dpo: true,
+        dio: true,
+        ccc: true,
+        inv_turnover: true,
+        wc_turnover: true,
+        min_cash: true,
+        facility_utilization: true,
+        createdAt: true,
+        scenario: true
+      }
+    });
+    
+    logInfo('KPI trends retrieved', { 
+      userId: req.user.id,
+      months,
+      dataPoints: kpis.length 
+    });
+    
+    res.json({
+      success: true,
+      data: {
+        trends: kpis,
+        summary: {
+          dateRange: { start: startDate, end: new Date() },
+          dataPoints: kpis.length,
+          scenarios: [...new Set(kpis.map(k => k.scenario))]
+        }
+      }
+    });
+  } catch (error) {
+    logError('Failed to retrieve KPI trends', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve KPI trends',
+      details: error.message
+    });
+  }
+});
+
+// AR/AP Policy Management
+app.get('/api/working-capital/policies/ar', requireAuth, requireFinancialAccess, async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database service not available'
+      });
+    }
+
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const policies = await prisma.aRPolicy.findMany({
+      where: {
+        OR: [
+          { active_to: null },
+          { active_to: { gte: new Date() } }
+        ]
+      },
+      include: {
+        sales_channel: {
+          select: {
+            name: true,
+            channelType: true,
+            marketCode: true
+          }
+        }
+      },
+      orderBy: { active_from: 'desc' }
+    });
+    
+    res.json({
+      success: true,
+      data: policies
+    });
+  } catch (error) {
+    logError('Failed to retrieve AR policies', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve AR policies',
+      details: error.message
+    });
+  }
+});
+
+app.get('/api/working-capital/policies/ap', requireAuth, requireFinancialAccess, async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database service not available'
+      });
+    }
+
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    const policies = await prisma.aPPolicy.findMany({
+      where: {
+        OR: [
+          { active_to: null },
+          { active_to: { gte: new Date() } }
+        ]
+      },
+      orderBy: { active_from: 'desc' }
+    });
+    
+    res.json({
+      success: true,
+      data: policies
+    });
+  } catch (error) {
+    logError('Failed to retrieve AP policies', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve AP policies',
+      details: error.message
+    });
+  }
+});
+
+// Update AR Policy (Financial Management required)
+app.post('/api/working-capital/policies/ar', requireAuth, requireFinancialManagement, [
+  body('channel_id').isUUID().withMessage('Valid channel ID required'),
+  body('terms').isArray().withMessage('Terms must be an array'),
+  body('bad_debt_pct').isFloat({ min: 0, max: 1 }).withMessage('Bad debt percentage must be between 0-1'),
+  body('fees_pct').isFloat({ min: 0, max: 1 }).withMessage('Fees percentage must be between 0-1'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    if (!dbService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database service not available'
+      });
+    }
+
+    const { channel_id, terms, bad_debt_pct, fees_pct, description } = req.body;
+    
+    await dbService.initialize();
+    const prisma = dbService.getClient();
+    
+    // Close existing active policy
+    await prisma.aRPolicy.updateMany({
+      where: {
+        channel_id: channel_id,
+        active_to: null
+      },
+      data: {
+        active_to: new Date()
+      }
+    });
+    
+    // Create new policy
+    const newPolicy = await prisma.aRPolicy.create({
+      data: {
+        channel_id,
+        terms: JSON.stringify(terms),
+        bad_debt_pct: parseFloat(bad_debt_pct),
+        fees_pct: parseFloat(fees_pct),
+        description: description || '',
+        active_from: new Date(),
+        created_by: req.user.id
+      },
+      include: {
+        sales_channel: {
+          select: {
+            name: true,
+            channelType: true
+          }
+        }
+      }
+    });
+    
+    logInfo('AR policy updated', { 
+      userId: req.user.id,
+      channelId: channel_id,
+      policyId: newPolicy.id
+    });
+    
+    res.json({
+      success: true,
+      data: newPolicy,
+      message: 'AR policy updated successfully'
+    });
+  } catch (error) {
+    logError('Failed to update AR policy', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update AR policy',
+      details: error.message
+    });
   }
 });
 
@@ -1230,16 +1731,26 @@ app.use((err, req, res, _next) => {
   });
 });
 
-// Load and initialize data import services
-loadDataImportServices().then(async () => {
+// Load and initialize services
+Promise.all([
+  loadDataImportServices(),
+  loadWorkingCapitalService()
+]).then(async () => {
   // Initialize queue service on startup if available
   if (queueService) {
     queueService.initialize().catch(error => {
       logWarn('Queue service initialization failed - continuing without queues', error);
     });
   }
+  
+  // Initialize working capital service
+  if (workingCapitalService) {
+    workingCapitalService.initialize().catch(error => {
+      logWarn('Working Capital service initialization failed', error);
+    });
+  }
 }).catch(error => {
-  logWarn('Failed to load data import services', error);
+  logWarn('Failed to load services', error);
 });
 
 // Graceful shutdown handling

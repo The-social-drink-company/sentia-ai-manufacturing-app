@@ -1,0 +1,498 @@
+/* Working Capital Dashboard Styles */
+
+/* Tab-specific containers */
+.sentia-projections-container,
+.sentia-kpi-container,
+.sentia-scenario-container,
+.sentia-policy-container,
+.sentia-diagnostics-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* KPI Status Indicators */
+.sentia-kpi-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.sentia-status-excellent {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.sentia-status-good {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.sentia-status-warning {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.sentia-status-critical {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* KPI Cells in Tables */
+.sentia-kpi-cell.sentia-excellent {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.sentia-kpi-cell.sentia-good {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.sentia-kpi-cell.sentia-warning {
+  background-color: #fffbeb;
+  color: #d97706;
+}
+
+.sentia-kpi-cell.sentia-critical {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* Financial Values */
+.sentia-positive {
+  color: #059669;
+  font-weight: 600;
+}
+
+.sentia-negative {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Metrics Cards */
+.sentia-metric {
+  text-align: center;
+}
+
+.sentia-metric-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.sentia-metric-label {
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.sentia-metric-card {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.sentia-metric-card .sentia-metric-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.sentia-metric-card .sentia-metric-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Scenario Forms */
+.sentia-scenario-form {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #f9fafb;
+}
+
+.sentia-scenario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.sentia-scenario-params {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Policy Management */
+.sentia-term-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 0.5rem;
+}
+
+/* System Health */
+.sentia-health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.sentia-health-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.sentia-health-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.sentia-health-content {
+  flex: 1;
+}
+
+.sentia-health-label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.sentia-health-detail {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* Data Quality Grid */
+.sentia-data-quality-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.sentia-quality-item {
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0.375rem;
+}
+
+.sentia-quality-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.sentia-quality-detail {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* Model Accuracy */
+.sentia-accuracy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sentia-accuracy-item {
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0.375rem;
+}
+
+.sentia-accuracy-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.sentia-accuracy-value {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.sentia-accuracy-detail {
+  font-size: 0.75rem;
+  color: #6b7280;
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Recommendations */
+.sentia-recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sentia-recommendation {
+  border-left: 4px solid;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.sentia-recommendation.sentia-priority-critical {
+  border-left-color: #dc2626;
+}
+
+.sentia-recommendation.sentia-priority-high {
+  border-left-color: #ea580c;
+}
+
+.sentia-recommendation.sentia-priority-medium {
+  border-left-color: #d97706;
+}
+
+.sentia-recommendation.sentia-priority-low {
+  border-left-color: #059669;
+}
+
+.sentia-recommendation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.sentia-recommendation-title {
+  font-weight: 600;
+  color: #111827;
+}
+
+.sentia-recommendation-badges {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sentia-recommendation-description {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.sentia-recommendation-category {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Modal Styles */
+.sentia-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.sentia-modal {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 600px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.sentia-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 0;
+  margin-bottom: 1rem;
+}
+
+.sentia-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.sentia-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.sentia-modal-close:hover {
+  color: #374151;
+}
+
+.sentia-modal-content {
+  padding: 0 1.5rem;
+}
+
+.sentia-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 1.5rem;
+}
+
+/* Form Sections */
+.sentia-form-section {
+  margin-bottom: 1.5rem;
+}
+
+.sentia-form-section h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.sentia-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sentia-section-header h4 {
+  margin: 0;
+}
+
+/* Health Score Colors */
+.sentia-excellent {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.sentia-good {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* Quick Actions */
+.sentia-quick-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sentia-scenario-params {
+    grid-template-columns: 1fr;
+  }
+  
+  .sentia-health-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sentia-data-quality-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sentia-accuracy-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sentia-term-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .sentia-recommendation-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .sentia-quick-actions {
+    flex-direction: column;
+  }
+  
+  .sentia-quick-actions .sentia-btn {
+    justify-content: center;
+  }
+}
+
+/* Loading and Error States */
+.sentia-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.sentia-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Table Enhancements for Financial Data */
+.sentia-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.sentia-table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  text-align: left;
+}
+
+.sentia-table td.sentia-positive {
+  background-color: #f0fdf4;
+}
+
+.sentia-table td.sentia-negative {
+  background-color: #fef2f2;
+}
+
+/* Baseline row highlighting */
+.sentia-baseline-row {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+.sentia-baseline-row td {
+  border-top: 2px solid #d1d5db;
+  border-bottom: 2px solid #d1d5db;
+}

@@ -41,7 +41,8 @@
       "Bash(timeout:*)",
       "WebFetch(domain:sentiaprod.financeflo.ai)",
       "WebFetch(domain:sentiatest.financeflo.ai)",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(git merge:*)"
     ],
     "deny": [],
     "ask": []

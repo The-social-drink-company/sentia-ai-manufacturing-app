@@ -5,6 +5,7 @@ import Header from './components/Header'
 import Dashboard from './pages/Dashboard'
 import AdminPanel from './pages/AdminPanel'
 import LandingPage from './pages/LandingPage'
+import WorkingCapitalDashboard from './pages/WorkingCapitalDashboard'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import './App.css'
 
@@ -45,6 +46,11 @@ function App() {
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/working-capital" element={
+              <ProtectedRoute requireRole={['admin', 'cfo', 'financial_manager', 'financial_analyst']}>
+                <WorkingCapitalDashboard />
               </ProtectedRoute>
             } />
           </Routes>

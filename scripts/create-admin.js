@@ -17,7 +17,7 @@ async function createAdminUser() {
         // Create the admin user
         const user = await clerkClient.users.createUser({
             emailAddress: ['dudley@financeflo.ai'],
-            username: 'dudleypacock',
+            username: 'dudleypeacock',
             password: 'dp$456789',
             firstName: 'Dudley',
             lastName: 'Pacock',
@@ -33,7 +33,7 @@ async function createAdminUser() {
         console.log('Username:', user.username);
         console.log('');
         console.log('Login credentials:');
-        console.log('Email/Username: dudleypacock or dudley@financeflo.ai');
+        console.log('Email/Username: dudleypeacock or dudley@financeflo.ai');
         console.log('Password: dp$456789');
         
         // Optional: Create organization and make user admin
@@ -66,7 +66,7 @@ async function createAdminUser() {
         if (error.message.includes('already exists')) {
             console.log('');
             console.log('User may already exist. Try logging in with:');
-            console.log('Email/Username: dudleypacock or dudley@financeflo.ai');
+            console.log('Email/Username: dudleypeacock or dudley@financeflo.ai');
             console.log('Password: dp$456789');
         }
         

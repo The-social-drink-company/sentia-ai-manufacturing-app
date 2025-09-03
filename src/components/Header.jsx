@@ -5,18 +5,7 @@ import SignUpButton from './auth/SignUpButton'
 import UserButton from './auth/UserButton'
 
 export default function Header() {
-  const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-  
-  // Use Clerk auth if available, otherwise show demo mode
-  let isSignedIn = false
-  try {
-    if (PUBLISHABLE_KEY) {
-      const auth = useAuth()
-      isSignedIn = auth.isSignedIn
-    }
-  } catch (error) {
-    console.warn('Clerk not available:', error.message)
-  }
+  const { isSignedIn } = useAuth()
 
   return (
     <header className="header">
@@ -26,18 +15,12 @@ export default function Header() {
         </div>
         <div className="header-right">
           <div className="auth-controls">
-            {PUBLISHABLE_KEY ? (
-              isSignedIn ? (
-                <UserButton />
-              ) : (
-                <div className="auth-buttons">
-                  <SignInButton />
-                  <SignUpButton />
-                </div>
-              )
+            {isSignedIn ? (
+              <UserButton />
             ) : (
-              <div className="auth-status">
-                <span>Demo Mode (Auth Disabled)</span>
+              <div className="auth-buttons">
+                <SignInButton />
+                <SignUpButton />
               </div>
             )}
           </div>

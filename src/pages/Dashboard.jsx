@@ -4,24 +4,8 @@ import axios from 'axios'
 import '../styles/Dashboard.css'
 
 function Dashboard() {
-  const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-  
-  // Use Clerk auth if available
-  let getToken = null
-  let isSignedIn = false
-  let user = null
-  
-  try {
-    if (PUBLISHABLE_KEY) {
-      const auth = useAuth()
-      const userObj = useUser()
-      getToken = auth.getToken
-      isSignedIn = auth.isSignedIn
-      user = userObj.user
-    }
-  } catch (error) {
-    console.warn('Clerk not available:', error.message)
-  }
+  const { getToken, isSignedIn } = useAuth()
+  const { user } = useUser()
   const [apiStatus, setApiStatus] = useState(null)
   const [dbStatus, setDbStatus] = useState(null)
   const [jobs, setJobs] = useState([])
@@ -38,8 +22,8 @@ function Dashboard() {
       setLoading(true)
       setError(null)
 
-      // Get auth token if signed in and Clerk is available
-      const token = (isSignedIn && getToken) ? await getToken() : null
+      // Get auth token if signed in
+      const token = isSignedIn ? await getToken() : null
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
 
       // Fetch API status
@@ -98,7 +82,7 @@ function Dashboard() {
       <div className="dashboard-header">
         <h1>Sentia Manufacturing Dashboard</h1>
         <p>Node.js/Express API with React Frontend</p>
-        {PUBLISHABLE_KEY && isSignedIn && user && (
+        {isSignedIn && user && (
           <div className="user-welcome">
             <p>Welcome, {user.firstName || user.emailAddresses[0]?.emailAddress}!</p>
           </div>

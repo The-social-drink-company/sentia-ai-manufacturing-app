@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pkg from 'pg';
+import { createClerkClient } from '@clerk/backend';
 const { Pool } = pkg;
 
 // Load environment variables
@@ -14,6 +15,10 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Initialize Clerk client
+const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY || 'sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx';
+const clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
 
 // Database connection pool for Neon PostgreSQL
 const pool = new Pool({

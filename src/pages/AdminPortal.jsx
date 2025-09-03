@@ -1,34 +1,68 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom'
+import { useAuth as useClerkAuth, useUser } from '@clerk/clerk-react'
 
-// Mock authentication hook - replace with real auth later
+// Use real Clerk authentication
 const useAuth = () => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { getToken, isSignedIn, isLoaded } = useClerkAuth()
+  const { user, isLoaded: userLoaded } = useUser()
+  
+  const [authState, setAuthState] = useState({
+    user: null,
+    loading: true,
+    getAuthHeaders: async () => ({})
+  })
   
   useEffect(() => {
-    // Simulate authentication check
-    setTimeout(() => {
-      setUser({
-        id: 1,
-        username: 'admin@sentia.com',
-        roles: ['admin'],
-        permissions: [
-          'view_admin_portal',
-          'manage_users',
-          'manage_system_settings',
-          'manage_feature_flags',
-          'view_system_health',
-          'manage_integrations',
-          'view_logs',
-          'manage_maintenance'
-        ]
+    const updateAuthState = async () => {
+      if (!isLoaded || !userLoaded) {
+        setAuthState(prev => ({ ...prev, loading: true }))
+        return
+      }
+      
+      if (!isSignedIn || !user) {
+        setAuthState({
+          user: null,
+          loading: false,
+          getAuthHeaders: async () => ({})
+        })
+        return
+      }
+      
+      // Get authentication token for API calls
+      const getAuthHeaders = async () => {
+        try {
+          const token = await getToken()
+          return token ? { 'Authorization': `Bearer ${token}` } : {}
+        } catch (error) {
+          console.error('Failed to get auth token:', error)
+          return {}
+        }
+      }
+      
+      // Map Clerk user to our admin user format
+      const adminUser = {
+        id: user.id,
+        username: user.emailAddresses?.[0]?.emailAddress || 'Unknown',
+        email: user.emailAddresses?.[0]?.emailAddress,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        roles: [user.publicMetadata?.role || 'viewer'],
+        permissions: user.publicMetadata?.permissions || [],
+        isAdmin: user.publicMetadata?.role === 'admin'
+      }
+      
+      setAuthState({
+        user: adminUser,
+        loading: false,
+        getAuthHeaders
       })
-      setLoading(false)
-    }, 100)
-  }, [])
+    }
+    
+    updateAuthState()
+  }, [isLoaded, userLoaded, isSignedIn, user, getToken])
   
-  return { user, loading }
+  return authState
 }
 
 // RBAC component for protecting routes
@@ -148,6 +182,7 @@ const AdminNav = () => {
 const AdminDashboard = () => {
   const [healthData, setHealthData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { getAuthHeaders } = useAuth()
 
   useEffect(() => {
     fetchHealthData()
@@ -155,7 +190,8 @@ const AdminDashboard = () => {
 
   const fetchHealthData = async () => {
     try {
-      const response = await fetch('/api/admin/health')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/admin/health', { headers })
       const data = await response.json()
       if (data.success) {
         setHealthData(data.health)
@@ -332,6 +368,7 @@ const AdminUsers = () => (
 const AdminSettings = () => {
   const [settings, setSettings] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { getAuthHeaders } = useAuth()
 
   useEffect(() => {
     fetchSettings()
@@ -339,7 +376,8 @@ const AdminSettings = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/admin/settings')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/admin/settings', { headers })
       const data = await response.json()
       if (data.success) {
         setSettings(data.settings)
@@ -383,6 +421,7 @@ const AdminSettings = () => {
 const AdminFeatureFlags = () => {
   const [featureFlags, setFeatureFlags] = useState([])
   const [loading, setLoading] = useState(true)
+  const { getAuthHeaders } = useAuth()
 
   useEffect(() => {
     fetchFeatureFlags()
@@ -390,7 +429,8 @@ const AdminFeatureFlags = () => {
 
   const fetchFeatureFlags = async () => {
     try {
-      const response = await fetch('/api/admin/feature-flags')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/admin/feature-flags', { headers })
       const data = await response.json()
       if (data.success) {
         setFeatureFlags(data.featureFlags)
@@ -404,9 +444,10 @@ const AdminFeatureFlags = () => {
 
   const toggleFeatureFlag = async (flagId, currentEnabled) => {
     try {
+      const authHeaders = await getAuthHeaders()
       const response = await fetch(`/api/admin/feature-flags/${flagId}/toggle`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({ enabled: !currentEnabled })
       })
       const data = await response.json()
@@ -482,6 +523,7 @@ const AdminIntegrations = () => {
   const [integrations, setIntegrations] = useState([])
   const [loading, setLoading] = useState(true)
   const [testing, setTesting] = useState({})
+  const { getAuthHeaders } = useAuth()
 
   useEffect(() => {
     fetchIntegrations()
@@ -489,7 +531,8 @@ const AdminIntegrations = () => {
 
   const fetchIntegrations = async () => {
     try {
-      const response = await fetch('/api/admin/integrations')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/admin/integrations', { headers })
       const data = await response.json()
       if (data.success) {
         setIntegrations(data.integrations)
@@ -504,8 +547,10 @@ const AdminIntegrations = () => {
   const testIntegration = async (integrationId) => {
     setTesting(prev => ({ ...prev, [integrationId]: true }))
     try {
+      const headers = await getAuthHeaders()
       const response = await fetch(`/api/admin/integrations/${integrationId}/test`, {
-        method: 'POST'
+        method: 'POST',
+        headers
       })
       const data = await response.json()
       alert(`Test Result: ${data.testResult?.message || 'Test completed'}`)
@@ -575,6 +620,7 @@ const AdminIntegrations = () => {
 const AdminLogs = () => {
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
+  const { getAuthHeaders } = useAuth()
 
   useEffect(() => {
     fetchLogs()
@@ -582,7 +628,8 @@ const AdminLogs = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await fetch('/api/admin/logs?limit=20')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/admin/logs?limit=20', { headers })
       const data = await response.json()
       if (data.success) {
         setLogs(data.logs)
@@ -673,6 +720,7 @@ const AdminMaintenance = () => {
   const [maintenanceStatus, setMaintenanceStatus] = useState(null)
   const [loading, setLoading] = useState(true)
   const [operations, setOperations] = useState({})
+  const { getAuthHeaders } = useAuth()
 
   useEffect(() => {
     fetchMaintenanceStatus()
@@ -680,7 +728,8 @@ const AdminMaintenance = () => {
 
   const fetchMaintenanceStatus = async () => {
     try {
-      const response = await fetch('/api/admin/maintenance/status')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/admin/maintenance/status', { headers })
       const data = await response.json()
       if (data.success) {
         setMaintenanceStatus(data.maintenance)
@@ -695,8 +744,10 @@ const AdminMaintenance = () => {
   const runBackup = async () => {
     setOperations(prev => ({ ...prev, backup: true }))
     try {
+      const headers = await getAuthHeaders()
       const response = await fetch('/api/admin/maintenance/database/backup', {
-        method: 'POST'
+        method: 'POST',
+        headers
       })
       const data = await response.json()
       if (data.success) {
@@ -713,8 +764,10 @@ const AdminMaintenance = () => {
   const runCleanup = async () => {
     setOperations(prev => ({ ...prev, cleanup: true }))
     try {
+      const headers = await getAuthHeaders()
       const response = await fetch('/api/admin/maintenance/cleanup', {
-        method: 'POST'
+        method: 'POST',
+        headers
       })
       const data = await response.json()
       if (data.success) {

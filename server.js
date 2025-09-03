@@ -64,11 +64,13 @@ app.set('trust proxy', 1);
 
 // Initialize Clerk client
 const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
+const VITE_CLERK_PUBLISHABLE_KEY = process.env.VITE_CLERK_PUBLISHABLE_KEY;
 let clerkClient = null;
 
 if (!CLERK_SECRET_KEY) {
   logWarn('CLERK_SECRET_KEY environment variable not found - authentication features will be disabled');
   console.log('WARNING: CLERK_SECRET_KEY missing - authentication disabled');
+  console.log('To fix: Set CLERK_SECRET_KEY in Railway environment variables');
 } else {
   try {
     clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
@@ -77,6 +79,12 @@ if (!CLERK_SECRET_KEY) {
     logError('Failed to initialize Clerk client', error);
     console.log('ERROR: Failed to initialize Clerk - authentication disabled');
   }
+}
+
+if (!VITE_CLERK_PUBLISHABLE_KEY) {
+  logWarn('VITE_CLERK_PUBLISHABLE_KEY environment variable not found - frontend authentication will be disabled');
+  console.log('WARNING: VITE_CLERK_PUBLISHABLE_KEY missing - frontend may show blank screen');
+  console.log('To fix: Set VITE_CLERK_PUBLISHABLE_KEY in Railway environment variables');
 }
 
 // Database connection pool for Neon PostgreSQL
@@ -191,6 +199,38 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.get('/health', (req, res) => {
   logInfo('Health check requested');
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
+// Diagnostic endpoint for deployment troubleshooting
+app.get('/diagnostics', (req, res) => {
+  const diagnostics = {
+    server: {
+      status: 'running',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      version: process.version,
+      environment: process.env.NODE_ENV || 'development'
+    },
+    environment: {
+      clerkSecretKey: !!process.env.CLERK_SECRET_KEY,
+      clerkPublishableKey: !!process.env.VITE_CLERK_PUBLISHABLE_KEY,
+      databaseUrl: !!process.env.DATABASE_URL,
+      unleashedApiId: !!process.env.UNLEASHED_API_ID,
+      unleashedApiKey: !!process.env.UNLEASHED_API_KEY,
+      corsOrigins: process.env.CORS_ORIGINS || 'not set',
+      port: process.env.PORT || 5000
+    },
+    services: {
+      clerk: !!clerkClient,
+      unleashed: !!unleashedService,
+      workingCapital: !!workingCapitalService,
+      dataImport: !!dbService,
+      queue: !!queueService
+    },
+    timestamp: new Date().toISOString()
+  };
+  
+  res.json(diagnostics);
 });
 
 // Metrics endpoint for monitoring
@@ -831,6 +871,7 @@ try {
   logInfo('Unleashed API service initialized successfully');
 } catch (error) {
   logError('Failed to initialize Unleashed API service', error);
+  console.log('WARNING: Unleashed API service not available - check UNLEASHED_API_ID and UNLEASHED_API_KEY environment variables');
   unleashedService = null;
 }
 

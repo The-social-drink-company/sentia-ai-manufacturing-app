@@ -13,7 +13,7 @@ RUN npm ci
 # Copy application files
 COPY . .
 
-# Build React frontend
+# Build React frontend with proper environment variables
 RUN npm run build
 
 # Create logs directory for winston

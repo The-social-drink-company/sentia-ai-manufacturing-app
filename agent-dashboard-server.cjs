@@ -10,9 +10,9 @@ const PORT = 4500;
 app.use(cors());
 app.use(express.json());
 
-// Serve the enhanced dashboard HTML file
+// Serve the combined dashboard HTML file
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'agent-dashboard-enhanced.html'));
+  res.sendFile(path.join(__dirname, 'agent-dashboard-combined.html'));
 });
 
 // API endpoint to get monitoring data

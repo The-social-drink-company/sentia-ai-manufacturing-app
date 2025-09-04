@@ -32,9 +32,69 @@ app.get('/health', (req, res) => {
   });
 });
 
+// SSE connections for real-time updates
+const sseClients = new Set();
+
+// SSE endpoint for real-time events
+app.get('/api/events', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Cache-Control'
+  });
+
+  // Send initial connection message
+  res.write(`data: ${JSON.stringify({ 
+    type: 'connected', 
+    timestamp: new Date().toISOString(),
+    message: 'SSE connection established'
+  })}\n\n`);
+  
+  sseClients.add(res);
+  
+  req.on('close', () => {
+    sseClients.delete(res);
+    console.log(`SSE client disconnected. Active connections: ${sseClients.size}`);
+  });
+});
+
+// Broadcast SSE events to all connected clients
+function broadcastSSE(eventType, data) {
+  const message = `data: ${JSON.stringify({ 
+    type: eventType, 
+    ...data, 
+    timestamp: new Date().toISOString() 
+  })}\n\n`;
+  
+  for (const client of sseClients) {
+    try {
+      client.write(message);
+    } catch (error) {
+      sseClients.delete(client);
+    }
+  }
+  console.log(`Broadcast SSE event: ${eventType} to ${sseClients.size} clients`);
+}
+
+// Simulate periodic updates for demo purposes
+setInterval(() => {
+  broadcastSSE('metrics.kpi.updated', {
+    efficiency: Math.round((95 + Math.random() * 10) * 100) / 100,
+    throughput: Math.round((85 + Math.random() * 20) * 100) / 100,
+    uptime: Math.round((98 + Math.random() * 2) * 100) / 100,
+    quality: Math.round((96 + Math.random() * 4) * 100) / 100
+  });
+}, 30000); // Every 30 seconds
+
 // API endpoints
 app.get('/api/status', (req, res) => {
-  res.json({ message: 'API is running' });
+  res.json({ 
+    message: 'API is running',
+    sseConnections: sseClients.size,
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.get('/api/*', (req, res) => {

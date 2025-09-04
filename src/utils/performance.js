@@ -3,22 +3,27 @@
  * Implements lazy loading, code splitting, and performance monitoring
  */
 
-// Web Vitals monitoring
-export const measureWebVitals = async (onPerfEntry) => {
+// Web Vitals monitoring - disabled to prevent import errors
+export const measureWebVitals = (onPerfEntry) => {
+  // Web vitals monitoring temporarily disabled
+  // Can be re-enabled by uncommenting the code below and ensuring web-vitals is properly configured
+  /*
   if (onPerfEntry && onPerfEntry instanceof Function) {
     try {
-      // Dynamically import web-vitals only if available
-      const webVitals = await import(/* @vite-ignore */ 'web-vitals');
-      const { getCLS, getFID, getFCP, getLCP, getTTFB } = webVitals;
-      getCLS(onPerfEntry);
-      getFID(onPerfEntry);
-      getFCP(onPerfEntry);
-      getLCP(onPerfEntry);
-      getTTFB(onPerfEntry);
+      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+        getCLS(onPerfEntry);
+        getFID(onPerfEntry);
+        getFCP(onPerfEntry);
+        getLCP(onPerfEntry);
+        getTTFB(onPerfEntry);
+      }).catch(() => {
+        console.warn('web-vitals not available');
+      });
     } catch (err) {
       console.warn('web-vitals not available, skipping performance monitoring');
     }
   }
+  */
 };
 
 // Performance observer for custom metrics

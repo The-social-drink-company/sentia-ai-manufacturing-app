@@ -1368,4 +1368,66 @@ model AgentSchedules {
   @@map("agent_schedules")
 }
 
+// Agent Policy Tables
+model AgentPolicies {
+  id                 String   @id @default(uuid()) @db.Uuid
+  name               String   @db.VarChar(100)
+  description        String?  @db.Text
+  roleScope          String   @map("role_scope") @db.VarChar(50) // admin, manager, operator, viewer
+  allowedTools       String[] @map("allowed_tools") @db.Text // Array of allowed tool IDs
+  defaultMode        String   @map("default_mode") @db.VarChar(20) @default("DRY_RUN") // DRY_RUN, PROPOSE, EXECUTE
+  maxSteps           Int      @map("max_steps") @default(12)
+  wallClockMs        Int      @map("wall_clock_ms") @default(180000) // 3 minutes
+  perToolBudgetsJson Json?    @map("per_tool_budgets_json") @db.Json
+  numericClampsJson  Json?    @map("numeric_clamps_json") @db.Json
+  requireStepUp      Boolean  @map("require_step_up") @default(true)
+  active             Boolean  @default(true)
+  createdBy          String?  @map("created_by") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([roleScope, active])
+  @@index([createdAt])
+  @@map("agent_policies")
+}
+
+model AgentApprovals {
+  id           String   @id @default(uuid()) @db.Uuid
+  runId        String   @map("run_id") @db.Uuid
+  stepId       String   @map("step_id") @db.Uuid
+  approverId   String   @map("approver_id") @db.Uuid
+  approverRole String   @map("approver_role") @db.VarChar(50)
+  decision     String   @db.VarChar(20) // APPROVED, REJECTED, PENDING
+  reason       String?  @db.Text
+  stepUpToken  String?  @map("step_up_token") @db.VarChar(255)
+  expiresAt    DateTime @map("expires_at") @db.Timestamptz(6)
+  approvedAt   DateTime? @map("approved_at") @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([runId, stepId])
+  @@index([approverId])
+  @@index([decision])
+  @@index([expiresAt])
+  @@map("agent_approvals")
+}
+
+model AgentSafetyMetrics {
+  id                   String   @id @default(uuid()) @db.Uuid
+  period               DateTime @db.Date
+  blockedPlans         Int      @map("blocked_plans") @default(0)
+  blockedStepsByRule   Json     @map("blocked_steps_by_rule") @db.Json
+  exceededBudgets      Int      @map("exceeded_budgets") @default(0)
+  disallowedTools      Json     @map("disallowed_tools") @db.Json
+  approvalRequests     Int      @map("approval_requests") @default(0)
+  approvalsGranted     Int      @map("approvals_granted") @default(0)
+  approvalsRejected    Int      @map("approvals_rejected") @default(0)
+  rateLimitHits        Int      @map("rate_limit_hits") @default(0)
+  freezeWindowBlocks   Int      @map("freeze_window_blocks") @default(0)
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([period])
+  @@index([period])
+  @@map("agent_safety_metrics")
+}
+
 

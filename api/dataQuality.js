@@ -4,7 +4,7 @@
 
 import express from 'express';
 import { dqEngine } from '../services/dataQuality/dqEngine.js';
-import { logInfo, logError } from '../services/observability/structuredLogger.js';
+import { logInfo, logError } from '../services/logger.js';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();

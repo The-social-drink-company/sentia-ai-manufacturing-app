@@ -5,7 +5,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { createHash } from 'crypto';
-import { logInfo, logWarn, logError } from '../observability/structuredLogger.js';
+import { logInfo, logWarn, logError } from '../logger.js';
 
 const prisma = new PrismaClient();
 
@@ -32,9 +32,7 @@ const DEFAULT_FRESHNESS_SLOS = {
 export class DQEngine {
   constructor() {
     this.rules = new Map();
-    this.freshnessS
-
-Los = this.loadFreshnessSLOs();
+    this.freshnessSLOs = this.loadFreshnessSLOs();
     this.failInProd = process.env.DQ_FAIL_IN_PROD === 'true';
   }
 
@@ -278,9 +276,7 @@ Los = this.loadFreshnessSLOs();
    */
   async checkFreshness(dataset, config) {
     const findings = [];
-    const sloHours = this.freshnessS
-
-Los[dataset] || 24;
+    const sloHours = this.freshnessSLOs[dataset] || 24;
     
     // Get latest data timestamp
     let query;
@@ -582,9 +578,7 @@ Los[dataset] || 24;
   async getFreshnessStatus() {
     const status = {};
     
-    for (const [dataset, sloHours] of Object.entries(this.freshnessS
-
-Los)) {
+    for (const [dataset, sloHours] of Object.entries(this.freshnessSLOs)) {
       const result = await this.checkFreshness(dataset, {});
       status[dataset] = {
         sloHours,

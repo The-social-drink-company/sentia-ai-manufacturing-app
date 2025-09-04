@@ -4,7 +4,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { logInfo, logError, logWarn } from '../observability/structuredLogger.js';
+import { logInfo, logError, logWarn } from '../logger.js';
 
 const prisma = new PrismaClient();
 

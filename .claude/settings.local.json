@@ -287,7 +287,8 @@
       "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src/**)",
       "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src/**)",
       "WebFetch(domain:docs.railway.com)",
-      "WebFetch(domain:clerk.com)"
+      "WebFetch(domain:clerk.com)",
+      "Bash(ren:*)"
     ],
     "deny": [],
     "ask": []

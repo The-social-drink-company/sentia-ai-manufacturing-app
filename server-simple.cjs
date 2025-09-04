@@ -49,12 +49,13 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Start server - try binding to localhost for Railway
-const server = app.listen(PORT, () => {
+// Start server - NIXPACKS requires binding to all interfaces
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log('========================================');
   console.log('SENTIA MANUFACTURING DASHBOARD');
   console.log(`Server running on port ${PORT}`);
-  console.log(`Server listening on: http://localhost:${PORT}`);
+  console.log(`Server listening on: http://0.0.0.0:${PORT}`);
+  console.log('Using NIXPACKS builder');
   console.log('========================================');
 });
 

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy, Component } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -108,13 +108,51 @@ function ProtectedRoute({ children }) {
   )
 }
 
+// Error Boundary Component for better error handling
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('App Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'sans-serif' }}>
+          <h1>Application Error</h1>
+          <p>The application encountered an error. Please check the console for details.</p>
+          <details style={{ marginTop: '20px', textAlign: 'left', maxWidth: '600px', margin: '20px auto' }}>
+            <summary>Error Details</summary>
+            <pre>{this.state.error?.toString()}</pre>
+          </details>
+          <button onClick={() => window.location.reload()} style={{ marginTop: '20px', padding: '10px 20px' }}>
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 // Main App Component with FULL functionality and Clerk Authentication
 function App() {
   console.log('App rendering - FULL FEATURED VERSION with 100% functionality + Clerk Auth')
   console.log('Clerk key available:', !!clerkPubKey)
+  console.log('Environment:', import.meta.env.MODE)
+  console.log('All env vars:', Object.keys(import.meta.env))
   
   // If no Clerk key, show demo mode
-  if (!clerkPubKey) {
+  if (!clerkPubKey || clerkPubKey === 'undefined' || clerkPubKey === 'null') {
     console.warn('No Clerk publishable key found - running in demo mode')
     return (
       <QueryClientProvider client={queryClient}>
@@ -252,4 +290,11 @@ function App() {
   )
 }
 
-export default App
+// Export wrapped with ErrorBoundary
+export default function AppWithErrorBoundary() {
+  return (
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
+}

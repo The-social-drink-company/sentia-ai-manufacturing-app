@@ -3,29 +3,36 @@ import { Link } from 'react-router-dom'
 import '../styles/SentiaTheme.css'
 import '../styles/SentiaLanding.css'
 
-// Conditionally import Clerk only if configured
-let SignInButton = null
-let SignUpButton = null
-let useAuth = () => ({ isSignedIn: false })
-let useUser = () => ({ user: null })
-
+// Check if Clerk is properly configured
 const hasClerk = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && 
                  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY !== 'undefined' &&
                  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY !== 'null'
 
+// Conditionally import Clerk components
+let ClerkComponents = null
 if (hasClerk) {
-  try {
-    const clerk = require('@clerk/clerk-react')
-    SignInButton = clerk.SignInButton
-    SignUpButton = clerk.SignUpButton
-    useAuth = clerk.useAuth
-    useUser = clerk.useUser
-  } catch (e) {
-    console.log('Clerk not available, running in demo mode')
-  }
+  ClerkComponents = React.lazy(() => import('@clerk/clerk-react').then(module => ({
+    default: module
+  })))
 }
 
 function LandingPage() {
+  // When Clerk is available, use it
+  if (hasClerk && ClerkComponents) {
+    return (
+      <React.Suspense fallback={<div>Loading...</div>}>
+        <ClerkAuthenticatedLandingPage />
+      </React.Suspense>
+    )
+  }
+  
+  // Demo mode without Clerk
+  return <DemoLandingPage />
+}
+
+// Landing page with full Clerk authentication
+function ClerkAuthenticatedLandingPage() {
+  const { SignInButton, SignUpButton, useAuth, useUser } = require('@clerk/clerk-react')
   const { isSignedIn } = useAuth()
   const { user } = useUser()
   
@@ -69,49 +76,32 @@ function LandingPage() {
               <Link to="/working-capital" className="sentia-feature-card sentia-dashboard-link">
                 <div className="sentia-feature-icon">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z" fill="currentColor"/>
+                    <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" fill="currentColor"/>
                   </svg>
                 </div>
                 <h3>Working Capital</h3>
-                <p>Cash flow projections, scenario analysis, and comprehensive financial management tools.</p>
+                <p>Optimize cash flow, manage AR/AP, and forecast financial requirements with precision tools.</p>
               </Link>
               
               <Link to="/data-import" className="sentia-feature-card sentia-dashboard-link">
                 <div className="sentia-feature-icon">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" fill="currentColor"/>
+                    <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
                   </svg>
                 </div>
-                <h3>Data Import</h3>
-                <p>Advanced data upload system with validation, mapping, and template management capabilities.</p>
+                <h3>Data Management</h3>
+                <p>Import, validate, and synchronize data across all systems with enterprise-grade reliability.</p>
               </Link>
               
-              {(user.publicMetadata?.masterAdmin || user.publicMetadata?.role === 'admin') && (
-                <Link to="/admin" className="sentia-feature-card sentia-dashboard-link sentia-admin-access">
-                  <div className="sentia-feature-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11C15.4,11 16,11.4 16,12V16C16,16.6 15.6,17 15,17H9C8.4,17 8,16.6 8,16V12C8,11.4 8.4,11 9,11V10C9,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.2,9 10.2,10V11H13.8V10C13.8,9 12.8,8.2 12,8.2Z" fill="currentColor"/>
-                    </svg>
-                  </div>
-                  <h3>Admin Portal</h3>
-                  <p>System administration, user management, and advanced configuration settings.</p>
-                </Link>
-              )}
-            </div>
-          </section>
-          
-          {/* User Status */}
-          <section className="sentia-access">
-            <div className="sentia-access-card">
-              <div className="sentia-user-status-full">
-                <h3>Current Session</h3>
-                <div className="sentia-user-details-expanded">
-                  <p><strong>Email:</strong> {user.emailAddresses[0]?.emailAddress}</p>
-                  <p><strong>Role:</strong> {user.publicMetadata?.masterAdmin ? 'Master Administrator' : user.publicMetadata?.role === 'admin' ? 'Administrator' : user.publicMetadata?.role || 'User'}</p>
-                  <p><strong>Last Sign In:</strong> {user.lastSignInAt ? new Date(user.lastSignInAt).toLocaleString() : 'Current session'}</p>
-                  <p><strong>Status:</strong> <span className="sentia-status-active">Active Session</span></p>
+              <Link to="/admin" className="sentia-feature-card sentia-dashboard-link">
+                <div className="sentia-feature-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+                  </svg>
                 </div>
-              </div>
+                <h3>Admin Portal</h3>
+                <p>Configure system settings, manage users, and monitor operational performance metrics.</p>
+              </Link>
             </div>
           </section>
         </div>
@@ -119,6 +109,7 @@ function LandingPage() {
     )
   }
   
+  // Not signed in - show full landing page with auth
   return (
     <div className="sentia-landing">
       <div className="sentia-container">
@@ -133,16 +124,15 @@ function LandingPage() {
             </div>
             
             <div className="sentia-hero-text">
-              <h2>Operational Excellence Through Data-Driven Manufacturing</h2>
+              <h2>Enterprise Manufacturing Intelligence</h2>
               <p className="sentia-hero-description">
-                A sophisticated manufacturing management platform designed for 
-                precision production planning, resource optimization, and quality control.
+                Transform your manufacturing operations with real-time analytics, predictive insights, and comprehensive operational control.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
+        {/* Features Grid */}
         <section className="sentia-features">
           <div className="sentia-features-grid">
             <div className="sentia-feature-card">
@@ -196,36 +186,121 @@ function LandingPage() {
             </div>
             
             <div className="sentia-auth-actions">
-              {SignInButton ? (
-                <SignInButton mode="modal">
-                  <button className="sentia-btn sentia-btn-primary">
-                    Sign In
-                  </button>
-                </SignInButton>
-              ) : (
-                <Link to="/dashboard">
-                  <button className="sentia-btn sentia-btn-primary">
-                    Demo Dashboard
-                  </button>
-                </Link>
-              )}
-              {SignUpButton ? (
-                <SignUpButton mode="modal">
-                  <button className="sentia-btn sentia-btn-secondary">
-                    Request Access
-                  </button>
-                </SignUpButton>
-              ) : (
-                <Link to="/working-capital">
-                  <button className="sentia-btn sentia-btn-secondary">
-                    Working Capital Demo
-                  </button>
-                </Link>
-              )}
+              <SignInButton mode="modal">
+                <button className="sentia-btn sentia-btn-primary">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="sentia-btn sentia-btn-secondary">
+                  Request Access
+                </button>
+              </SignUpButton>
             </div>
             
             <div className="sentia-auth-note">
               <p>All registration requests undergo administrative review to ensure authorized access to manufacturing systems.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
+
+// Demo landing page without authentication
+function DemoLandingPage() {
+  return (
+    <div className="sentia-landing">
+      <div className="sentia-container">
+        {/* Hero Section */}
+        <section className="sentia-hero">
+          <div className="sentia-hero-content">
+            <div className="sentia-brand">
+              <div className="sentia-logo-section">
+                <h1 className="sentia-brand-title">SENTIA</h1>
+                <div className="sentia-brand-subtitle">Manufacturing Dashboard - Demo Mode</div>
+              </div>
+            </div>
+            
+            <div className="sentia-hero-text">
+              <h2>Enterprise Manufacturing Intelligence</h2>
+              <p className="sentia-hero-description">
+                Experience the full power of our manufacturing dashboard in demo mode. 
+                Authentication is currently disabled.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Grid with direct access */}
+        <section className="sentia-features">
+          <div className="sentia-features-grid">
+            <Link to="/dashboard" className="sentia-feature-card sentia-dashboard-link">
+              <div className="sentia-feature-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+                </svg>
+              </div>
+              <h3>Enhanced Dashboard</h3>
+              <p>Access the full-featured dashboard with real-time KPIs and customizable widgets.</p>
+            </Link>
+            
+            <Link to="/working-capital" className="sentia-feature-card sentia-dashboard-link">
+              <div className="sentia-feature-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" fill="currentColor"/>
+                </svg>
+              </div>
+              <h3>Working Capital</h3>
+              <p>Explore financial management tools and cash flow optimization features.</p>
+            </Link>
+            
+            <Link to="/data-import" className="sentia-feature-card sentia-dashboard-link">
+              <div className="sentia-feature-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
+                </svg>
+              </div>
+              <h3>Data Management</h3>
+              <p>Try our data import and validation tools.</p>
+            </Link>
+            
+            <Link to="/admin" className="sentia-feature-card sentia-dashboard-link">
+              <div className="sentia-feature-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+                </svg>
+              </div>
+              <h3>Admin Portal</h3>
+              <p>Access administrative features and system configuration.</p>
+            </Link>
+          </div>
+        </section>
+
+        {/* Demo Access Section */}
+        <section className="sentia-access">
+          <div className="sentia-access-card">
+            <div className="sentia-access-header">
+              <h3>Demo Mode Active</h3>
+              <p>Click any feature card above to explore the dashboard without authentication.</p>
+            </div>
+            
+            <div className="sentia-auth-actions">
+              <Link to="/dashboard">
+                <button className="sentia-btn sentia-btn-primary">
+                  Open Dashboard
+                </button>
+              </Link>
+              <Link to="/working-capital">
+                <button className="sentia-btn sentia-btn-secondary">
+                  Working Capital Demo
+                </button>
+              </Link>
+            </div>
+            
+            <div className="sentia-auth-note">
+              <p>To enable authentication, configure Clerk environment variables in your deployment.</p>
             </div>
           </div>
         </section>

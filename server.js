@@ -158,13 +158,6 @@ const createRateLimiter = (windowMs, max, message) => rateLimit({
   message,
   standardHeaders: true,
   legacyHeaders: false,
-  // Use built-in key generator for IPv6 compatibility
-  keyGenerator: (req) => {
-    // Use the built-in IP extraction which handles IPv6 properly
-    const ip = req.ip || req.socket.remoteAddress || 'unknown';
-    const userId = req.user?.id || 'anonymous';
-    return `${ip}:${userId}`;
-  },
   skip: (req) => {
     // Skip rate limiting for health checks
     return req.path === '/health' || req.path === '/api/health';

@@ -2,6 +2,27 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
 const DEFAULT_LAYOUTS = {
+  // CFO Global Preset (FEATURE_CFO_PRESET)
+  cfo_global: {
+    lg: [
+      { i: 'cfo-kpi-strip', x: 0, y: 0, w: 12, h: 2, minH: 2, maxH: 2 },
+      { i: 'forecast-consolidated', x: 0, y: 2, w: 12, h: 5, minH: 4 },
+      { i: 'stock-optimization-heatmap', x: 0, y: 7, w: 6, h: 6, minH: 4 },
+      { i: 'working-capital-runway', x: 6, y: 7, w: 6, h: 6, minH: 4 }
+    ],
+    md: [
+      { i: 'cfo-kpi-strip', x: 0, y: 0, w: 8, h: 2, minH: 2, maxH: 2 },
+      { i: 'forecast-consolidated', x: 0, y: 2, w: 8, h: 6, minH: 4 },
+      { i: 'stock-optimization-heatmap', x: 0, y: 8, w: 8, h: 6, minH: 4 },
+      { i: 'working-capital-runway', x: 0, y: 14, w: 8, h: 6, minH: 4 }
+    ],
+    sm: [
+      { i: 'cfo-kpi-strip', x: 0, y: 0, w: 4, h: 3, minH: 3 },
+      { i: 'forecast-consolidated', x: 0, y: 3, w: 4, h: 8, minH: 6 },
+      { i: 'stock-optimization-heatmap', x: 0, y: 11, w: 4, h: 8, minH: 6 },
+      { i: 'working-capital-runway', x: 0, y: 19, w: 4, h: 8, minH: 6 }
+    ]
+  },
   admin: {
     lg: [
       { i: 'kpi-strip', x: 0, y: 0, w: 12, h: 2, minH: 2, maxH: 2 },
@@ -94,6 +115,7 @@ const DEFAULT_LAYOUTS = {
 }
 
 const WIDGET_PERMISSIONS = {
+  cfo_global: ['cfo-kpi-strip', 'forecast-consolidated', 'stock-optimization-heatmap', 'working-capital-runway'],
   admin: ['kpi-strip', 'working-capital', 'demand-forecast', 'stock-status', 'capacity-util', 'recent-jobs', 'system-health', 'control-panel'],
   manager: ['kpi-strip', 'demand-forecast', 'stock-status', 'capacity-util', 'recent-jobs', 'control-panel'],
   operator: ['kpi-strip', 'stock-status', 'capacity-util', 'recent-jobs'],
@@ -207,6 +229,29 @@ export const useLayoutStore = create(
           }
         }
       })),
+      
+      // CFO Preset Management (FEATURE_CFO_PRESET)
+      switchToCFOPreset: () => {
+        const cfoLayout = DEFAULT_LAYOUTS.cfo_global
+        const cfoWidgets = WIDGET_PERMISSIONS.cfo_global
+        
+        set({
+          currentLayout: cfoLayout,
+          visibleWidgets: cfoWidgets,
+          widgetSettings: cfoWidgets.reduce((acc, widget) => ({
+            ...acc,
+            [widget]: { visible: true, minimized: false }
+          }), {}),
+          isEditing: false
+        })
+      },
+      
+      isCFOPreset: () => {
+        const state = get()
+        const cfoWidgets = WIDGET_PERMISSIONS.cfo_global
+        return state.visibleWidgets.length === cfoWidgets.length &&
+               state.visibleWidgets.every(widget => cfoWidgets.includes(widget))
+      },
       
       resetLayout: (userRole) => {
         const defaultLayout = DEFAULT_LAYOUTS[userRole] || DEFAULT_LAYOUTS.viewer

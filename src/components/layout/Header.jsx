@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { 
   Bars3Icon, 
@@ -14,13 +14,19 @@ import {
   ArrowPathIcon,
   DocumentArrowDownIcon,
   ShareIcon,
-  BookmarkIcon
+  BookmarkIcon,
+  BuildingOffice2Icon,
+  CurrencyDollarIcon,
+  GlobeAltIcon,
+  LanguageIcon
 } from '@heroicons/react/24/outline'
+import { ShareButton } from '../ui/ShareButton'
 import { Menu, Transition } from '@headlessui/react'
 import { UserButton } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
 import { useSSE } from '../../hooks/useSSE'
+import { useFeatureFlags } from '../../hooks/useFeatureFlags.jsx'
 import { cn } from '../../lib/utils'
 
 const QuickActionButton = ({ 
@@ -180,6 +186,272 @@ const Breadcrumbs = () => {
   )
 }
 
+const RegionTabs = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { hasPermission } = useAuthRole()
+  const currentRegion = searchParams.get('region') || 'consolidated'
+  
+  const regions = [
+    { id: 'consolidated', label: 'Consolidated', icon: GlobeAltIcon },
+    { id: 'uk', label: 'UK', icon: null, flagEmoji: '🇬🇧' },
+    { id: 'eu', label: 'EU', icon: null, flagEmoji: '🇪🇺' },
+    { id: 'usa', label: 'USA', icon: null, flagEmoji: '🇺🇸' }
+  ]
+  
+  const handleRegionChange = (regionId) => {
+    const newParams = new URLSearchParams(searchParams)
+    if (regionId === 'consolidated') {
+      newParams.delete('region')
+    } else {
+      newParams.set('region', regionId)
+    }
+    setSearchParams(newParams)
+  }
+  
+  // RBAC: Hide regions user cannot access
+  const accessibleRegions = regions.filter(region => {
+    if (region.id === 'consolidated') return true
+    return hasPermission(`region.${region.id}.view`) || hasPermission('region.all.view')
+  })
+  
+  return (
+    <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+      {accessibleRegions.map((region) => {
+        const Icon = region.icon
+        const isActive = currentRegion === region.id
+        
+        return (
+          <button
+            key={region.id}
+            onClick={() => handleRegionChange(region.id)}
+            className={cn(
+              "inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+              isActive
+                ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-600/50"
+            )}
+            role="tab"
+            aria-selected={isActive}
+            title={`Switch to ${region.label} view`}
+          >
+            {Icon && <Icon className="w-4 h-4 mr-2" />}
+            {region.flagEmoji && (
+              <span className="mr-2 text-base" role="img" aria-label={`${region.label} flag`}>
+                {region.flagEmoji}
+              </span>
+            )}
+            {region.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+const EntitySwitcher = () => {
+  const { hasPermission } = useAuthRole()
+  const [currentEntity, setCurrentEntity] = useState('uk_ltd')
+  
+  // Mock entities - in real app would come from user context
+  const entities = [
+    { id: 'uk_ltd', name: 'Sentia UK Ltd', region: 'UK', currency: 'GBP' },
+    { id: 'eu_bv', name: 'Sentia EU B.V.', region: 'EU', currency: 'EUR' },
+    { id: 'usa_inc', name: 'Sentia USA Inc', region: 'USA', currency: 'USD' }
+  ]
+  
+  // RBAC: Only show entities user has access to
+  const accessibleEntities = entities.filter(entity => 
+    hasPermission(`entity.${entity.id}.view`) || hasPermission('entity.all.view')
+  )
+  
+  // Hide if user has access to only one entity
+  if (accessibleEntities.length <= 1) return null
+  
+  const activeEntity = entities.find(e => e.id === currentEntity)
+  
+  return (
+    <Menu as="div" className="relative">
+      <Menu.Button className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <BuildingOffice2Icon className="w-4 h-4 mr-2" />
+        {activeEntity?.name}
+        <ChevronDownIcon className="w-4 h-4 ml-2" />
+      </Menu.Button>
+      
+      <Transition
+        as={React.Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        <Menu.Items className="absolute left-0 mt-2 w-64 origin-top-left bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <div className="py-1">
+            <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white">Switch Entity</h3>
+            </div>
+            {accessibleEntities.map((entity) => (
+              <Menu.Item key={entity.id}>
+                {({ active }) => (
+                  <button
+                    onClick={() => setCurrentEntity(entity.id)}
+                    className={cn(
+                      "w-full text-left px-4 py-3 text-sm",
+                      active && "bg-gray-50 dark:bg-gray-700",
+                      currentEntity === entity.id && "bg-blue-50 dark:bg-blue-900"
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {entity.name}
+                        </div>
+                        <div className="text-gray-500 dark:text-gray-400">
+                          {entity.region} • {entity.currency}
+                        </div>
+                      </div>
+                      {currentEntity === entity.id && (
+                        <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                      )}
+                    </div>
+                  </button>
+                )}
+              </Menu.Item>
+            ))}
+          </div>
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  )
+}
+
+const CurrencyControl = () => {
+  const [displayCurrency, setDisplayCurrency] = useState('base')
+  const [locale, setLocale] = useState('en-GB')
+  
+  const currencies = [
+    { id: 'base', label: 'Base (GBP)', symbol: '£' },
+    { id: 'local', label: 'Local', symbol: '💱' },
+    { id: 'usd', label: 'USD', symbol: '$' },
+    { id: 'eur', label: 'EUR', symbol: '€' }
+  ]
+  
+  const locales = [
+    { id: 'en-GB', label: 'English (UK)', flag: '🇬🇧' },
+    { id: 'en-US', label: 'English (US)', flag: '🇺🇸' },
+    { id: 'de-DE', label: 'Deutsch', flag: '🇩🇪' },
+    { id: 'fr-FR', label: 'Français', flag: '🇫🇷' }
+  ]
+  
+  const activeCurrency = currencies.find(c => c.id === displayCurrency)
+  const activeLocale = locales.find(l => l.id === locale)
+  
+  return (
+    <div className="flex items-center space-x-2">
+      {/* Currency Switcher */}
+      <Menu as="div" className="relative">
+        <Menu.Button className="inline-flex items-center px-2 py-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <CurrencyDollarIcon className="w-4 h-4 mr-1" />
+          {activeCurrency?.symbol}
+          <ChevronDownIcon className="w-3 h-3 ml-1" />
+        </Menu.Button>
+        
+        <Transition
+          as={React.Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <div className="py-1">
+              <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Display Currency
+                </h3>
+              </div>
+              {currencies.map((currency) => (
+                <Menu.Item key={currency.id}>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setDisplayCurrency(currency.id)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 text-sm",
+                        active && "bg-gray-50 dark:bg-gray-700",
+                        displayCurrency === currency.id && "bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>{currency.label}</span>
+                        <span className="text-gray-400">{currency.symbol}</span>
+                      </div>
+                    </button>
+                  )}
+                </Menu.Item>
+              ))}
+            </div>
+          </Menu.Items>
+        </Transition>
+      </Menu>
+      
+      {/* Locale Switcher */}
+      <Menu as="div" className="relative">
+        <Menu.Button className="inline-flex items-center px-2 py-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <LanguageIcon className="w-4 h-4 mr-1" />
+          <span className="text-base" role="img" aria-label="Current locale">
+            {activeLocale?.flag}
+          </span>
+          <ChevronDownIcon className="w-3 h-3 ml-1" />
+        </Menu.Button>
+        
+        <Transition
+          as={React.Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <div className="py-1">
+              <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Language & Locale
+                </h3>
+              </div>
+              {locales.map((localeOption) => (
+                <Menu.Item key={localeOption.id}>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setLocale(localeOption.id)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 text-sm",
+                        active && "bg-gray-50 dark:bg-gray-700",
+                        locale === localeOption.id && "bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
+                      )}
+                    >
+                      <div className="flex items-center">
+                        <span className="mr-2 text-base" role="img" aria-label={`${localeOption.label} flag`}>
+                          {localeOption.flag}
+                        </span>
+                        <span>{localeOption.label}</span>
+                      </div>
+                    </button>
+                  )}
+                </Menu.Item>
+              ))}
+            </div>
+          </Menu.Items>
+        </Transition>
+      </Menu>
+    </div>
+  )
+}
+
 const Header = () => {
   const navigate = useNavigate()
   const { 
@@ -193,6 +465,7 @@ const Header = () => {
   } = useLayoutStore()
   const { role, hasPermission, getUserDisplayName } = useAuthRole()
   const { isConnected } = useSSE({ enabled: true })
+  const { hasGlobalTabs, hasCFOFeatures } = useFeatureFlags()
   
   // Environment badge
   const environment = import.meta.env.VITE_ENVIRONMENT || 'development'
@@ -285,8 +558,10 @@ const Header = () => {
             </div>
           </div>
           
-          {/* Center section - Breadcrumbs */}
-          <div className="flex-1 flex justify-center px-4">
+          {/* Center section - Global Tabs, Entity Switcher, and Breadcrumbs */}
+          <div className="flex-1 flex items-center justify-center px-4 space-x-4">
+            {hasGlobalTabs && <RegionTabs />}
+            <EntitySwitcher />
             <Breadcrumbs />
           </div>
           
@@ -312,6 +587,13 @@ const Header = () => {
                   variant="default"
                 />
               )}
+              
+              <ShareButton
+                dashboardId="main-dashboard"
+                title="Manufacturing Dashboard"
+                variant="icon"
+                size="md"
+              />
               
               {hasPermission('workingcapital.analyze') && (
                 <QuickActionButton
@@ -350,6 +632,9 @@ const Header = () => {
             </div>
             
             <div className="flex items-center space-x-3 border-l border-gray-200 pl-3 dark:border-gray-700">
+              {/* Currency and Locale Controls */}
+              <CurrencyControl />
+              
               {/* Theme toggle */}
               <button
                 onClick={toggleTheme}

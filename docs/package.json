@@ -5,13 +5,20 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
+    "docs:dev": "next dev -p 3001",
     "build": "next build",
+    "docs:build": "next build",
     "start": "next start -p 3001",
     "export": "next build && next export",
     "lint": "next lint",
+    "docs:lint": "markdownlint '**/*.md' --ignore node_modules --ignore .next && vale .",
+    "docs:linkcheck": "markdown-link-check **/*.md --config ../.markdown-link-check.json",
+    "docs:search:index": "node scripts/generate-search-index.js",
+    "api:docs": "node scripts/generate-api-docs.js",
     "pdf-export": "node scripts/export-pdf.js",
     "check-links": "node scripts/check-links.js",
-    "validate": "vale ."
+    "validate": "vale .",
+    "governance:check": "node scripts/check-governance.js"
   },
   "dependencies": {
     "next": "^14.0.0",

@@ -1,0 +1,40 @@
+{
+  "region": "UK",
+  "currency": "GBP",
+  "forecast": {
+    "baseline": {
+      "mape": 0.12,
+      "coverage": 0.88,
+      "piCoverage": 0.92
+    },
+    "products": [
+      { "id": "PROD001", "demand": 1200, "revenue": 24000 },
+      { "id": "PROD002", "demand": 800, "revenue": 32000 },
+      { "id": "PROD003", "demand": 1500, "revenue": 45000 }
+    ]
+  },
+  "optimization": {
+    "baseline": {
+      "stockouts": 35,
+      "inventoryValue": 1800000,
+      "holdingCost": 45000,
+      "serviceLevel": 0.91
+    },
+    "warehouses": ["WH-LON", "WH-MAN", "WH-EDI"]
+  },
+  "workingCapital": {
+    "baseline": {
+      "ccc": 42,
+      "minCash": 450000,
+      "breachMonths": 1,
+      "dio": 28,
+      "dso": 42,
+      "dpo": 28
+    }
+  },
+  "demand": {
+    "total": 10000,
+    "seasonal": true,
+    "trend": "growing"
+  }
+}

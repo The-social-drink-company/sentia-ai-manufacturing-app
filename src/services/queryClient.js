@@ -11,6 +11,7 @@ const STALE_TIMES = {
   STOCK_LEVELS: 1000 * 60 * 10, // 10 minutes
   DEMAND_FORECAST: 1000 * 60 * 15, // 15 minutes
   RECENT_JOBS: 1000 * 60 * 5, // 5 minutes
+  SALES_DATA: 1000 * 60 * 5, // 5 minutes
   
   // Configuration and slow-changing data
   USER_PREFERENCES: 1000 * 60 * 60, // 1 hour
@@ -67,6 +68,13 @@ export const queryKeys = {
   workingCapitalProjections: (params) => ['wc-projections', params],
   workingCapitalKpis: (timeRange) => ['wc-kpis', timeRange],
   workingCapitalPolicies: (type) => ['wc-policies', type],
+  
+  // Sales and external integrations
+  sales: {
+    multiChannel: (timeRange) => ['sales', 'multi-channel', { timeRange }],
+    amazon: (timeRange, filters) => ['sales', 'amazon', { timeRange, filters }],
+    shopify: (region, timeRange, filters) => ['sales', 'shopify', region, { timeRange, filters }]
+  },
   
   // Capacity and operations
   capacityUtilization: (facilities, timeRange) => ['capacity-utilization', facilities, timeRange],

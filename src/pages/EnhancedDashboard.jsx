@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import KPIStrip from '../components/widgets/KPIStrip'
 import DemandForecastWidget from '../components/widgets/DemandForecastWidget'
+import MultiChannelSalesWidget from '../components/widgets/MultiChannelSalesWidget'
 import WorkingCapitalChart from '../components/charts/WorkingCapitalChart'
 import ManufacturingAnalytics from '../components/analytics/ManufacturingAnalytics'
 import CFOKPIStrip from '../components/widgets/CFOKPIStrip'
@@ -298,6 +299,11 @@ function EnhancedDashboard() {
         <div>
           {/* Demand Forecast */}
           <DemandForecastWidget />
+          
+          {/* Multi-Channel Sales */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <MultiChannelSalesWidget timeRange="30d" />
+          </div>
           
           {/* Production Metrics */}
           <ProductionMetrics />

@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline'
+import { ArrowUpIcon, ArrowDownIcon, GlobeAltIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { queryKeys, queryConfigs } from '../../services/queryClient'
 import { useFeatureFlags } from '../../hooks/useFeatureFlags'
 import { CombinedTrustBadge } from '../ui/TrustBadge'
@@ -17,7 +17,9 @@ const KPICard = memo(({
   status = 'neutral',
   trustLevel = 'good',
   freshness = 'fresh',
-  lastUpdated = null
+  lastUpdated = null,
+  dataSources = [],
+  aiEnhanced = false
 }) => {
   const statusColors = {
     excellent: 'text-green-600 dark:text-green-400',
@@ -52,9 +54,17 @@ const KPICard = memo(({
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              {title}
-            </p>
+            <div className="flex items-center space-x-2">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                {title}
+              </p>
+              {aiEnhanced && (
+                <SparklesIcon className="w-3 h-3 text-purple-500" title="AI Enhanced" />
+              )}
+              {dataSources.length > 0 && (
+                <GlobeAltIcon className="w-3 h-3 text-blue-500" title={`Data from: ${dataSources.join(', ')}`} />
+              )}
+            </div>
             {hasTrustBadges && (
               <CombinedTrustBadge
                 trustLevel={trustLevel}
@@ -120,7 +130,9 @@ const KPIStrip = memo(() => {
       status: kpiData?.totalRevenue.status,
       trustLevel: kpiData?.totalRevenue.trustLevel,
       freshness: kpiData?.totalRevenue.freshness,
-      lastUpdated: kpiData?.totalRevenue.lastUpdated
+      lastUpdated: kpiData?.totalRevenue.lastUpdated,
+      dataSources: kpiData?.totalRevenue.sources || ['Amazon', 'Shopify UK', 'Shopify EU'],
+      aiEnhanced: kpiData?.totalRevenue.aiEnhanced || true
     },
     {
       key: 'stock',
@@ -132,7 +144,9 @@ const KPIStrip = memo(() => {
       status: kpiData?.stockLevel.status,
       trustLevel: kpiData?.stockLevel.trustLevel,
       freshness: kpiData?.stockLevel.freshness,
-      lastUpdated: kpiData?.stockLevel.lastUpdated
+      lastUpdated: kpiData?.stockLevel.lastUpdated,
+      dataSources: kpiData?.stockLevel.sources || ['Amazon FBA', 'Internal ERP'],
+      aiEnhanced: kpiData?.stockLevel.aiEnhanced || false
     },
     {
       key: 'forecast',
@@ -144,7 +158,9 @@ const KPIStrip = memo(() => {
       status: kpiData?.forecastAccuracy.status,
       trustLevel: kpiData?.forecastAccuracy.trustLevel,
       freshness: kpiData?.forecastAccuracy.freshness,
-      lastUpdated: kpiData?.forecastAccuracy.lastUpdated
+      lastUpdated: kpiData?.forecastAccuracy.lastUpdated,
+      dataSources: kpiData?.forecastAccuracy.sources || ['OpenAI', 'Multi-Channel Data'],
+      aiEnhanced: kpiData?.forecastAccuracy.aiEnhanced || true
     },
     {
       key: 'capacity',
@@ -156,7 +172,9 @@ const KPIStrip = memo(() => {
       status: kpiData?.capacityUtilization.status,
       trustLevel: kpiData?.capacityUtilization.trustLevel,
       freshness: kpiData?.capacityUtilization.freshness,
-      lastUpdated: kpiData?.capacityUtilization.lastUpdated
+      lastUpdated: kpiData?.capacityUtilization.lastUpdated,
+      dataSources: kpiData?.capacityUtilization.sources || ['Internal Systems'],
+      aiEnhanced: kpiData?.capacityUtilization.aiEnhanced || false
     },
     {
       key: 'cash',
@@ -167,7 +185,9 @@ const KPIStrip = memo(() => {
       status: kpiData?.cashPosition.status,
       trustLevel: kpiData?.cashPosition.trustLevel,
       freshness: kpiData?.cashPosition.freshness,
-      lastUpdated: kpiData?.cashPosition.lastUpdated
+      lastUpdated: kpiData?.cashPosition.lastUpdated,
+      dataSources: kpiData?.cashPosition.sources || ['Bank APIs', 'Financial Systems'],
+      aiEnhanced: kpiData?.cashPosition.aiEnhanced || false
     },
     {
       key: 'alerts',
@@ -178,7 +198,9 @@ const KPIStrip = memo(() => {
       status: kpiData?.alertsCount.status,
       trustLevel: kpiData?.alertsCount.trustLevel,
       freshness: kpiData?.alertsCount.freshness,
-      lastUpdated: kpiData?.alertsCount.lastUpdated
+      lastUpdated: kpiData?.alertsCount.lastUpdated,
+      dataSources: kpiData?.alertsCount.sources || ['All Systems'],
+      aiEnhanced: kpiData?.alertsCount.aiEnhanced || false
     }
   ]
   
@@ -231,6 +253,8 @@ const KPIStrip = memo(() => {
             trustLevel={kpi.trustLevel}
             freshness={kpi.freshness}
             lastUpdated={kpi.lastUpdated}
+            dataSources={kpi.dataSources}
+            aiEnhanced={kpi.aiEnhanced}
             loading={isLoading}
           />
         ))}

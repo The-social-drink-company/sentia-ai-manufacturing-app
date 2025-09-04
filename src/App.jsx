@@ -1,12 +1,8 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import './index.css'
-
-// Get Clerk publishable key from environment
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 // Create QueryClient instance for React Query
 const queryClient = new QueryClient({
@@ -94,18 +90,9 @@ function AppLayout({ children }) {
   )
 }
 
-// Protected Route Component
+// No protection needed in demo mode
 function ProtectedRoute({ children }) {
-  return (
-    <>
-      <SignedIn>
-        {children}
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </>
-  )
+  return children
 }
 
 // Error Boundary Component for better error handling
@@ -144,17 +131,13 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// Main App Component with FULL functionality and Clerk Authentication
+// Main App Component - Demo Mode (No Authentication)
 function App() {
-  console.log('App rendering - FULL FEATURED VERSION with 100% functionality + Clerk Auth')
-  console.log('Clerk key available:', !!clerkPubKey)
+  console.log('App rendering - Demo Mode Version')
   console.log('Environment:', import.meta.env.MODE)
-  console.log('All env vars:', Object.keys(import.meta.env))
   
-  // If no Clerk key, show demo mode
-  if (!clerkPubKey || clerkPubKey === 'undefined' || clerkPubKey === 'null') {
-    console.warn('No Clerk publishable key found - running in demo mode')
-    return (
+  // Always run in demo mode for now
+  return (
       <QueryClientProvider client={queryClient}>
         <Router>
           <div style={{ minHeight: '100vh' }}>
@@ -175,118 +158,49 @@ function App() {
                 </AppLayout>
               } />
               
-              {/* All other routes redirect to dashboard in demo mode */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </div>
-        </Router>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    )
-  }
-  
-  return (
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <div style={{ minHeight: '100vh' }}>
-            <Routes>
-              {/* Landing page - Always accessible */}
-              <Route path="/" element={
-                <Suspense fallback={<Loading />}>
-                  <LandingPage />
-                </Suspense>
-              } />
-              
-              {/* Enhanced Dashboard with ALL features - Protected */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <EnhancedDashboard />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-              
-              {/* Basic Dashboard (fallback) - Protected */}
-              <Route path="/dashboard/basic" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <Dashboard />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-              
-              {/* Working Capital with full features - Protected */}
+              {/* Working Capital - No auth required */}
               <Route path="/working-capital" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <WorkingCapitalDashboard />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <Suspense fallback={<Loading />}>
+                    <WorkingCapitalDashboard />
+                  </Suspense>
+                </AppLayout>
               } />
               
-              {/* Data Import with all components - Protected */}
+              {/* Data Import - No auth required */}
               <Route path="/data-import" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <DataImport />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <Suspense fallback={<Loading />}>
+                    <DataImport />
+                  </Suspense>
+                </AppLayout>
               } />
               
-              {/* Templates - Protected */}
+              {/* Templates - No auth required */}
               <Route path="/templates" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <Templates />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <Suspense fallback={<Loading />}>
+                    <Templates />
+                  </Suspense>
+                </AppLayout>
               } />
               
-              {/* Admin Portal with all pages - Protected */}
+              {/* Admin Portal - No auth required */}
               <Route path="/admin/*" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <AdminPortal />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <Suspense fallback={<Loading />}>
+                    <AdminPortal />
+                  </Suspense>
+                </AppLayout>
               } />
               
-              {/* Public API test endpoint */}
-              <Route path="/api/test" element={
-                <div style={{ padding: '2rem' }}>
-                  <h1>API Endpoints Active</h1>
-                  <ul>
-                    <li>/api/forecasting - Forecasting service</li>
-                    <li>/api/optimization - Optimization service</li>
-                    <li>/api/working-capital - Working capital calculations</li>
-                    <li>/api/data-import - Data import processing</li>
-                  </ul>
-                </div>
-              } />
-              
-              {/* Catch all - redirect to landing */}
+              {/* All other routes redirect to landing in demo mode */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </Router>
-        
-        {/* React Query Devtools for debugging */}
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
-    </ClerkProvider>
   )
 }
 

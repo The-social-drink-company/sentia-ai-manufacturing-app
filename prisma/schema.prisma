@@ -1306,4 +1306,66 @@ model Approvals {
   @@map("approvals")
 }
 
+// Agent Evaluation Tables
+model AgentEvals {
+  id         String    @id @default(uuid()) @db.Uuid
+  goal       String
+  datasetKey String?   @map("dataset_key") @db.VarChar(100)
+  simulate   Boolean   @default(true)
+  startedAt  DateTime  @map("started_at") @db.Timestamptz(6)
+  finishedAt DateTime? @map("finished_at") @db.Timestamptz(6)
+  status     String    @db.VarChar(20) // RUNNING, COMPLETED, FAILED
+
+  cases  AgentEvalCases[]
+  scores AgentEvalScores[]
+
+  @@index([status])
+  @@map("agent_evals")
+}
+
+model AgentEvalCases {
+  id          String @id @default(uuid()) @db.Uuid
+  evalId      String @map("eval_id") @db.Uuid
+  tool        String @db.VarChar(100)
+  paramsJson  Json   @map("params_json") @db.Json
+  metricsJson Json   @map("metrics_json") @db.Json
+
+  eval AgentEvals @relation(fields: [evalId], references: [id])
+
+  @@index([evalId])
+  @@map("agent_eval_cases")
+}
+
+model AgentEvalScores {
+  id            String  @id @default(uuid()) @db.Uuid
+  evalId        String  @map("eval_id") @db.Uuid
+  scorecardJson Json    @map("scorecard_json") @db.Json
+  passed        Boolean
+
+  eval AgentEvals @relation(fields: [evalId], references: [id])
+
+  @@index([evalId])
+  @@index([passed])
+  @@map("agent_eval_scores")
+}
+
+// Agent Scheduling Tables
+model AgentSchedules {
+  id               String    @id @default(uuid()) @db.Uuid
+  name             String    @db.VarChar(100)
+  cron             String    @db.VarChar(100)
+  tz               String    @db.VarChar(50)
+  mode             String    @db.VarChar(20) // DRY_RUN, PROPOSE
+  entityId         String?   @map("entity_id") @db.Uuid
+  region           String?   @db.VarChar(10)
+  presetKey        String?   @map("preset_key") @db.VarChar(50)
+  enabled          Boolean   @default(true)
+  freezeWindowCron String?   @map("freeze_window_cron") @db.VarChar(100)
+  lastRunAt        DateTime? @map("last_run_at") @db.Timestamptz(6)
+
+  @@index([enabled])
+  @@index([lastRunAt])
+  @@map("agent_schedules")
+}
+
 

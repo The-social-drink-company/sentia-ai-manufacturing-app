@@ -4,15 +4,20 @@
  */
 
 // Web Vitals monitoring
-export const measureWebVitals = (onPerfEntry) => {
+export const measureWebVitals = async (onPerfEntry) => {
   if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+    try {
+      // Dynamically import web-vitals only if available
+      const webVitals = await import(/* @vite-ignore */ 'web-vitals');
+      const { getCLS, getFID, getFCP, getLCP, getTTFB } = webVitals;
       getCLS(onPerfEntry);
       getFID(onPerfEntry);
       getFCP(onPerfEntry);
       getLCP(onPerfEntry);
       getTTFB(onPerfEntry);
-    });
+    } catch (err) {
+      console.warn('web-vitals not available, skipping performance monitoring');
+    }
   }
 };
 

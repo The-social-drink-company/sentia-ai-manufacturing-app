@@ -3,20 +3,24 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
-// Performance monitoring
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
+// Performance monitoring with web-vitals
+import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals'
 
 // Log web vitals for performance monitoring
 function sendToAnalytics(metric) {
   console.log(`[Web Vitals] ${metric.name}:`, metric.value)
 }
 
-// Measure Core Web Vitals
-getCLS(sendToAnalytics)
-getFID(sendToAnalytics)
-getFCP(sendToAnalytics)
-getLCP(sendToAnalytics)
-getTTFB(sendToAnalytics)
+// Measure Core Web Vitals with correct exports
+try {
+  onCLS(sendToAnalytics)
+  onFID(sendToAnalytics)
+  onFCP(sendToAnalytics)
+  onLCP(sendToAnalytics)
+  onTTFB(sendToAnalytics)
+} catch (error) {
+  console.warn('Web vitals measurement not available:', error.message)
+}
 
 console.log('🚀 Starting Sentia Manufacturing Dashboard with full features...');
 console.log('Environment:', import.meta.env.MODE);

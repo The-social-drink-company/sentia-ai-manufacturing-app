@@ -832,9 +832,43 @@
 
         <!-- Deployments Status -->
         <div class="deployments-section">
-            <h2 style="margin-bottom: 20px; color: #374151;">🌍 Deployment Status</h2>
+            <h2 style="margin-bottom: 20px; color: #374151;">
+                Deployment Status
+                <span style="font-size: 0.7em; color: #6b7280; float: right;">
+                    6/9 Healthy
+                </span>
+            </h2>
             <div class="deployments-grid" id="deployments-grid">
-                <!-- Deployment cards will be dynamically populated -->
+                <div class="deployment-card healthy">
+                    <div class="deployment-name">Railway Production</div>
+                    <div class="deployment-status">✓ ONLINE</div>
+                    <div class="deployment-details">NO PHASE 4</div>
+                </div>
+                <div class="deployment-card healthy">
+                    <div class="deployment-name">Railway Development</div>
+                    <div class="deployment-status">✓ ONLINE</div>
+                    <div class="deployment-details">NO PHASE 4</div>
+                </div>
+                <div class="deployment-card healthy">
+                    <div class="deployment-name">Railway Test</div>
+                    <div class="deployment-status">✓ ONLINE</div>
+                    <div class="deployment-details">NO PHASE 4</div>
+                </div>
+                <div class="deployment-card error">
+                    <div class="deployment-name">localhost:3000</div>
+                    <div class="deployment-status">✗ ERROR</div>
+                    <div class="deployment-details">504</div>
+                </div>
+                <div class="deployment-card error">
+                    <div class="deployment-name">localhost:3001</div>
+                    <div class="deployment-status">- OFFLINE</div>
+                    <div class="deployment-details">N/A</div>
+                </div>
+                <div class="deployment-card healthy">
+                    <div class="deployment-name">localhost:3002</div>
+                    <div class="deployment-status">✓ ONLINE</div>
+                    <div class="deployment-details">HEALTHY</div>
+                </div>
             </div>
         </div>
 

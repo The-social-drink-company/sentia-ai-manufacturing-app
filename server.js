@@ -4005,6 +4005,28 @@ if (agentRoutes) {
   logInfo('Agent API routes registered');
 }
 
+// Data Quality API routes
+if (process.env.FEATURE_DQ === 'true') {
+  try {
+    const dqRoutes = (await import('./api/dataQuality.js')).default;
+    app.use('/api', dqRoutes);
+    logInfo('Data Quality API routes registered');
+  } catch (error) {
+    logWarn('Data Quality routes not available', error);
+  }
+}
+
+// Model Registry API routes  
+if (process.env.FEATURE_MODEL_REGISTRY === 'true') {
+  try {
+    const modelRoutes = (await import('./api/models.js')).default;
+    app.use('/api', modelRoutes);
+    logInfo('Model Registry API routes registered');
+  } catch (error) {
+    logWarn('Model Registry routes not available', error);
+  }
+}
+
 // Forecasting API routes
 try {
   const forecastingRoutes = await import('./api/forecasting.js');

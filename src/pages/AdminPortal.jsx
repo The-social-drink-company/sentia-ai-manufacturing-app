@@ -11,7 +11,9 @@ import {
   GlobeAltIcon,
   FlagIcon,
   KeyIcon,
-  BuildingOfficeIcon
+  BuildingOfficeIcon,
+  BeakerIcon,
+  CircleStackIcon
 } from '@heroicons/react/24/outline'
 
 // Import admin page components
@@ -30,6 +32,10 @@ import AdminWebhooks from '../components/admin/pages/AdminWebhooks'
 import AdminEntities from '../components/admin/pages/AdminEntities'
 import AdminFX from '../components/admin/pages/AdminFX'
 
+// Data Quality and Model Registry components
+import DataQualityLineage from '../components/admin/DataQualityLineage'
+import ModelsBaselines from '../components/admin/ModelsBaselines'
+
 function AdminPortal() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -39,6 +45,8 @@ function AdminPortal() {
     FEATURE_INTL_ENTITIES: false,
     FEATURE_INTL_FX: false,
     FEATURE_BOARD_MODE: false,
+    FEATURE_DQ: import.meta.env.VITE_FEATURE_DQ === 'true',
+    FEATURE_MODEL_REGISTRY: import.meta.env.VITE_FEATURE_MODEL_REGISTRY === 'true',
   })
 
   // Environment detection
@@ -165,6 +173,24 @@ function AdminPortal() {
       permissions: ['ADMIN'],
       description: 'Currency management',
       featureFlag: 'FEATURE_INTL_FX'
+    },
+    {
+      id: 'data-quality',
+      name: 'Data Quality',
+      icon: BeakerIcon,
+      path: '/admin/data-quality',
+      permissions: ['ADMIN', 'MANAGER'],
+      description: 'DQ monitoring & lineage',
+      featureFlag: 'FEATURE_DQ'
+    },
+    {
+      id: 'models',
+      name: 'Models & Baselines',
+      icon: CircleStackIcon,
+      path: '/admin/models',
+      permissions: ['ADMIN', 'MANAGER'],
+      description: 'Model registry & baselines',
+      featureFlag: 'FEATURE_MODEL_REGISTRY'
     },
   ]
 
@@ -364,6 +390,12 @@ function AdminPortal() {
               <Route path="webhooks" element={<AdminWebhooks />} />
               <Route path="logs" element={<AdminLogs />} />
               <Route path="errors" element={<AdminErrors />} />
+              {featureFlags.FEATURE_DQ && (
+                <Route path="data-quality" element={<DataQualityLineage />} />
+              )}
+              {featureFlags.FEATURE_MODEL_REGISTRY && (
+                <Route path="models" element={<ModelsBaselines />} />
+              )}
             </>
           )}
           <Route path="*" element={<Navigate to="/admin/overview" replace />} />

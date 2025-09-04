@@ -8,46 +8,46 @@ datasource db {
 }
 
 model User {
-  id                                                 String             @id @default(uuid()) @db.Uuid
-  username                                           String             @unique(map: "ix_users_username") @db.VarChar(64)
-  email                                              String             @unique(map: "ix_users_email") @db.VarChar(120)
-  password_hash                                      String?            @db.VarChar(256)
-  first_name                                         String?            @db.VarChar(50)
-  last_name                                          String?            @db.VarChar(50)
-  display_name                                       String?            @db.VarChar(100)
-  role                                               String             @db.VarChar(20)
-  permissions                                        Json?              @db.Json
-  isActive                                           Boolean            @map("is_active")
-  is_admin                                           Boolean
-  department                                         String?            @db.VarChar(50)
-  access_regions                                     Json?              @db.Json
-  last_login                                         DateTime?          @db.Timestamptz(6)
-  last_login_ip                                      String?            @db.VarChar(45)
-  login_count                                        Int?
-  password_reset_token                               String?            @db.VarChar(255)
-  password_reset_expires                             DateTime?          @db.Timestamptz(6)
-  failed_login_attempts                              Int?
-  account_locked_until                               DateTime?          @db.Timestamptz(6)
-  two_factor_enabled                                 Boolean
-  two_factor_secret                                  String?            @db.VarChar(32)
-  backup_codes                                       Json?              @db.Json
-  session_token                                      String?            @db.VarChar(255)
-  session_expires                                    DateTime?          @db.Timestamptz(6)
-  
+  id                     String    @id @default(uuid()) @db.Uuid
+  username               String    @unique(map: "ix_users_username") @db.VarChar(64)
+  email                  String    @unique(map: "ix_users_email") @db.VarChar(120)
+  password_hash          String?   @db.VarChar(256)
+  first_name             String?   @db.VarChar(50)
+  last_name              String?   @db.VarChar(50)
+  display_name           String?   @db.VarChar(100)
+  role                   String    @db.VarChar(20)
+  permissions            Json?     @db.Json
+  isActive               Boolean   @map("is_active")
+  is_admin               Boolean
+  department             String?   @db.VarChar(50)
+  access_regions         Json?     @db.Json
+  last_login             DateTime? @db.Timestamptz(6)
+  last_login_ip          String?   @db.VarChar(45)
+  login_count            Int?
+  password_reset_token   String?   @db.VarChar(255)
+  password_reset_expires DateTime? @db.Timestamptz(6)
+  failed_login_attempts  Int?
+  account_locked_until   DateTime? @db.Timestamptz(6)
+  two_factor_enabled     Boolean
+  two_factor_secret      String?   @db.VarChar(32)
+  backup_codes           Json?     @db.Json
+  session_token          String?   @db.VarChar(255)
+  session_expires        DateTime? @db.Timestamptz(6)
+
   // Auth Security Extensions
-  locked_until                                       DateTime?          @db.Timestamptz(6)
-  failed_login_count                                 Int?               @default(0)
-  last_failed_login                                  DateTime?          @db.Timestamptz(6)
-  password_changed_at                                DateTime?          @db.Timestamptz(6)
-  
+  locked_until        DateTime? @db.Timestamptz(6)
+  failed_login_count  Int?      @default(0)
+  last_failed_login   DateTime? @db.Timestamptz(6)
+  password_changed_at DateTime? @db.Timestamptz(6)
+
   // Global Readiness Extensions (nullable, feature-flagged)
-  default_entity_id                                  String?            @db.Uuid
-  allowed_entity_ids                                 Json?              // Array of entity UUIDs
-  allowed_regions                                    Json?              // Array: ["UK","EU","USA"] 
-  preferred_currency_code                            String?            @db.VarChar(3) // ISO-4217
-  preferred_locale                                   String?            @db.VarChar(10) // en-GB, en-US
-  preferred_timezone                                 String?            @db.VarChar(50) // IANA timezone
-  
+  default_entity_id       String? @db.Uuid
+  allowed_entity_ids      Json? // Array of entity UUIDs
+  allowed_regions         Json? // Array: ["UK","EU","USA"] 
+  preferred_currency_code String? @db.VarChar(3) // ISO-4217
+  preferred_locale        String? @db.VarChar(10) // en-GB, en-US
+  preferred_timezone      String? @db.VarChar(50) // IANA timezone
+
   // SSO and JIT Provisioning Extensions
   sso_provider                                       String?            @db.VarChar(50) // okta, azuread, google
   last_sso_login                                     DateTime?          @db.Timestamptz(6)
@@ -89,11 +89,13 @@ model User {
   wc_scenarios_approver     WCScenario[]      @relation("WCScenarioApprover")
   wc_optimizations_creator  WCOptimization[]  @relation("WCOptimizationCreator")
   wc_optimizations_approver WCOptimization[]  @relation("WCOptimizationApprover")
-  
+
   // Authentication & Session Management Relations  
-  user_sessions             UserSession[]
-  audit_logs                AuditLog[]
-  password_reset_tokens     PasswordResetToken[]
+  user_sessions         UserSession[]
+  audit_logs            AuditLog[]
+  password_reset_tokens PasswordResetToken[]
+  AgentRuns             AgentRuns[]
+  Approvals             Approvals[]
 
   @@index([last_login], map: "ix_user_last_login")
   @@index([role, isActive], map: "ix_user_role_active")
@@ -1080,25 +1082,25 @@ model WCOptimization {
 // ========================================
 
 model UserSession {
-  id                String    @id @default(uuid()) @db.Uuid
-  user_id           String    @db.Uuid
-  refresh_token_hash String   @db.VarChar(255) // bcrypt hash of refresh token
-  access_token_hash String?   @db.VarChar(255) // bcrypt hash of access token (for replay detection)
-  device_name       String?   @db.VarChar(200)
-  user_agent        String?   @db.VarChar(500)
-  ip_address        String?   @db.VarChar(45) // IPv6 compatible
-  ip_country        String?   @db.VarChar(2) // ISO country code
-  ip_city           String?   @db.VarChar(100)
-  created_at        DateTime  @default(now()) @db.Timestamptz(6)
-  last_used_at      DateTime  @default(now()) @db.Timestamptz(6)
-  expires_at        DateTime  @db.Timestamptz(6)
-  revoked_at        DateTime? @db.Timestamptz(6)
-  revoked_reason    String?   @db.VarChar(100) // manual, security, expired, replaced
-  is_suspicious     Boolean   @default(false) // New device/location flag
-  
+  id                 String    @id @default(uuid()) @db.Uuid
+  user_id            String    @db.Uuid
+  refresh_token_hash String    @db.VarChar(255) // bcrypt hash of refresh token
+  access_token_hash  String?   @db.VarChar(255) // bcrypt hash of access token (for replay detection)
+  device_name        String?   @db.VarChar(200)
+  user_agent         String?   @db.VarChar(500)
+  ip_address         String?   @db.VarChar(45) // IPv6 compatible
+  ip_country         String?   @db.VarChar(2) // ISO country code
+  ip_city            String?   @db.VarChar(100)
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  last_used_at       DateTime  @default(now()) @db.Timestamptz(6)
+  expires_at         DateTime  @db.Timestamptz(6)
+  revoked_at         DateTime? @db.Timestamptz(6)
+  revoked_reason     String?   @db.VarChar(100) // manual, security, expired, replaced
+  is_suspicious      Boolean   @default(false) // New device/location flag
+
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  
+
   @@index([user_id, revoked_at], map: "ix_sessions_user_active")
   @@index([refresh_token_hash], map: "ix_sessions_refresh_token")
   @@index([expires_at], map: "ix_sessions_expires")
@@ -1119,13 +1121,13 @@ model AuditLog {
   resource_id   String?  @db.Uuid
   old_value     Json?    @db.Json // For change tracking
   new_value     Json?    @db.Json // For change tracking
-  severity      String   @db.VarChar(10) @default("info") // info, warn, error
-  environment   String   @db.VarChar(20) @default("production")
+  severity      String   @default("info") @db.VarChar(10) // info, warn, error
+  environment   String   @default("production") @db.VarChar(20)
   created_at    DateTime @default(now()) @db.Timestamptz(6)
-  
+
   // Relations
   user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
-  
+
   @@index([user_id, created_at], map: "ix_audit_user_time")
   @@index([event_type, created_at], map: "ix_audit_event_time")
   @@index([severity, created_at], map: "ix_audit_severity_time")
@@ -1135,18 +1137,18 @@ model AuditLog {
 }
 
 model PasswordResetToken {
-  id            String    @id @default(uuid()) @db.Uuid
-  user_id       String    @db.Uuid
-  token_hash    String    @db.VarChar(255) // bcrypt hash of token
-  ip_address    String?   @db.VarChar(45)
-  user_agent    String?   @db.VarChar(500)
-  expires_at    DateTime  @db.Timestamptz(6)
-  used_at       DateTime? @db.Timestamptz(6)
-  created_at    DateTime  @default(now()) @db.Timestamptz(6)
-  
+  id         String    @id @default(uuid()) @db.Uuid
+  user_id    String    @db.Uuid
+  token_hash String    @db.VarChar(255) // bcrypt hash of token
+  ip_address String?   @db.VarChar(45)
+  user_agent String?   @db.VarChar(500)
+  expires_at DateTime  @db.Timestamptz(6)
+  used_at    DateTime? @db.Timestamptz(6)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+
   // Relations
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  
+
   @@index([user_id], map: "ix_reset_tokens_user")
   @@index([token_hash], map: "ix_reset_tokens_hash")
   @@index([expires_at], map: "ix_reset_tokens_expires")
@@ -1162,12 +1164,12 @@ model SSOProvider {
   client_id         String?  @db.VarChar(255)
   client_secret     String?  @db.VarChar(255) // Encrypted
   domain_whitelist  Json?    @db.Json // Allowed domains
-  default_role      String   @db.VarChar(20) @default("viewer")
+  default_role      String   @default("viewer") @db.VarChar(20)
   default_entity_id String?  @db.Uuid
   is_active         Boolean  @default(false)
   created_at        DateTime @default(now()) @db.Timestamptz(6)
   updated_at        DateTime @updatedAt @db.Timestamptz(6)
-  
+
   @@map("sso_providers")
 }
 
@@ -1182,7 +1184,7 @@ model FeatureFlag {
   user_filters Json?    @db.Json // Role/entity filters
   created_at   DateTime @default(now()) @db.Timestamptz(6)
   updated_at   DateTime @updatedAt @db.Timestamptz(6)
-  
+
   @@map("feature_flags")
 }
 
@@ -1192,7 +1194,7 @@ model password_history {
   user_id       String   @db.Uuid // Foreign key to users.clerk_user_id
   password_hash String   @db.Text // Bcrypt hashed password
   created_at    DateTime @default(now()) @db.Timestamptz(6)
-  
+
   @@index([user_id, created_at], map: "ix_password_history_user_date")
   @@map("password_history")
 }
@@ -1214,7 +1216,7 @@ model AgentRuns {
   nextSteps   Json?     @map("next_steps") @db.Json
   error       String?
 
-  user        User?         @relation(fields: [userId], references: [id])
+  user        User?             @relation(fields: [userId], references: [id])
   steps       AgentSteps[]
   invocations ToolInvocations[]
   reflections Reflections[]
@@ -1226,16 +1228,16 @@ model AgentRuns {
 }
 
 model AgentSteps {
-  id               String    @id @default(uuid()) @db.Uuid
-  runId            String    @map("run_id") @db.Uuid
-  stepNumber       Int       @map("step_number")
-  toolId           String    @map("tool_id") @db.VarChar(100)
-  params           Json      @db.Json
-  dependencies     Json?     @db.Json // Array of step numbers
-  expectedOutcome  Json?     @map("expected_outcome") @db.Json
-  status           String    @db.VarChar(20) // PENDING, APPROVED, EXECUTING, COMPLETED, FAILED
-  result           Json?     @db.Json
-  completedAt      DateTime? @map("completed_at") @db.Timestamptz(6)
+  id              String    @id @default(uuid()) @db.Uuid
+  runId           String    @map("run_id") @db.Uuid
+  stepNumber      Int       @map("step_number")
+  toolId          String    @map("tool_id") @db.VarChar(100)
+  params          Json      @db.Json
+  dependencies    Json?     @db.Json // Array of step numbers
+  expectedOutcome Json?     @map("expected_outcome") @db.Json
+  status          String    @db.VarChar(20) // PENDING, APPROVED, EXECUTING, COMPLETED, FAILED
+  result          Json?     @db.Json
+  completedAt     DateTime? @map("completed_at") @db.Timestamptz(6)
 
   run AgentRuns @relation(fields: [runId], references: [id])
 
@@ -1375,12 +1377,12 @@ model AgentPolicies {
   description        String?  @db.Text
   roleScope          String   @map("role_scope") @db.VarChar(50) // admin, manager, operator, viewer
   allowedTools       String[] @map("allowed_tools") @db.Text // Array of allowed tool IDs
-  defaultMode        String   @map("default_mode") @db.VarChar(20) @default("DRY_RUN") // DRY_RUN, PROPOSE, EXECUTE
-  maxSteps           Int      @map("max_steps") @default(12)
-  wallClockMs        Int      @map("wall_clock_ms") @default(180000) // 3 minutes
+  defaultMode        String   @default("DRY_RUN") @map("default_mode") @db.VarChar(20) // DRY_RUN, PROPOSE, EXECUTE
+  maxSteps           Int      @default(12) @map("max_steps")
+  wallClockMs        Int      @default(180000) @map("wall_clock_ms") // 3 minutes
   perToolBudgetsJson Json?    @map("per_tool_budgets_json") @db.Json
   numericClampsJson  Json?    @map("numeric_clamps_json") @db.Json
-  requireStepUp      Boolean  @map("require_step_up") @default(true)
+  requireStepUp      Boolean  @default(true) @map("require_step_up")
   active             Boolean  @default(true)
   createdBy          String?  @map("created_by") @db.Uuid
   createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -1392,17 +1394,17 @@ model AgentPolicies {
 }
 
 model AgentApprovals {
-  id           String   @id @default(uuid()) @db.Uuid
-  runId        String   @map("run_id") @db.Uuid
-  stepId       String   @map("step_id") @db.Uuid
-  approverId   String   @map("approver_id") @db.Uuid
-  approverRole String   @map("approver_role") @db.VarChar(50)
-  decision     String   @db.VarChar(20) // APPROVED, REJECTED, PENDING
-  reason       String?  @db.Text
-  stepUpToken  String?  @map("step_up_token") @db.VarChar(255)
-  expiresAt    DateTime @map("expires_at") @db.Timestamptz(6)
+  id           String    @id @default(uuid()) @db.Uuid
+  runId        String    @map("run_id") @db.Uuid
+  stepId       String    @map("step_id") @db.Uuid
+  approverId   String    @map("approver_id") @db.Uuid
+  approverRole String    @map("approver_role") @db.VarChar(50)
+  decision     String    @db.VarChar(20) // APPROVED, REJECTED, PENDING
+  reason       String?   @db.Text
+  stepUpToken  String?   @map("step_up_token") @db.VarChar(255)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
   approvedAt   DateTime? @map("approved_at") @db.Timestamptz(6)
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([runId, stepId])
   @@index([approverId])
@@ -1412,22 +1414,134 @@ model AgentApprovals {
 }
 
 model AgentSafetyMetrics {
-  id                   String   @id @default(uuid()) @db.Uuid
-  period               DateTime @db.Date
-  blockedPlans         Int      @map("blocked_plans") @default(0)
-  blockedStepsByRule   Json     @map("blocked_steps_by_rule") @db.Json
-  exceededBudgets      Int      @map("exceeded_budgets") @default(0)
-  disallowedTools      Json     @map("disallowed_tools") @db.Json
-  approvalRequests     Int      @map("approval_requests") @default(0)
-  approvalsGranted     Int      @map("approvals_granted") @default(0)
-  approvalsRejected    Int      @map("approvals_rejected") @default(0)
-  rateLimitHits        Int      @map("rate_limit_hits") @default(0)
-  freezeWindowBlocks   Int      @map("freeze_window_blocks") @default(0)
-  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id                 String   @id @default(uuid()) @db.Uuid
+  period             DateTime @db.Date
+  blockedPlans       Int      @default(0) @map("blocked_plans")
+  blockedStepsByRule Json     @map("blocked_steps_by_rule") @db.Json
+  exceededBudgets    Int      @default(0) @map("exceeded_budgets")
+  disallowedTools    Json     @map("disallowed_tools") @db.Json
+  approvalRequests   Int      @default(0) @map("approval_requests")
+  approvalsGranted   Int      @default(0) @map("approvals_granted")
+  approvalsRejected  Int      @default(0) @map("approvals_rejected")
+  rateLimitHits      Int      @default(0) @map("rate_limit_hits")
+  freezeWindowBlocks Int      @default(0) @map("freeze_window_blocks")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@unique([period])
   @@index([period])
   @@map("agent_safety_metrics")
 }
 
+// Data Quality Tables
+model DQRules {
+  id         String   @id @default(uuid()) @db.Uuid
+  dataset    String   @db.VarChar(100)
+  ruleKey    String   @map("rule_key") @db.VarChar(100)
+  severity   String   @db.VarChar(10) // WARN, FAIL
+  configJson Json?    @map("config_json") @db.Json
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  @@unique([dataset, ruleKey])
+  @@index([dataset, active])
+  @@map("dq_rules")
+}
+
+model DQRuns {
+  id          String    @id @default(uuid()) @db.Uuid
+  dataset     String    @db.VarChar(100)
+  startedAt   DateTime  @map("started_at") @db.Timestamptz(6)
+  finishedAt  DateTime? @map("finished_at") @db.Timestamptz(6)
+  status      String    @db.VarChar(20) // RUNNING, SUCCESS, FAILED
+  profileId   String?   @map("profile_id") @db.Uuid
+  rulesetHash String?   @map("ruleset_hash") @db.VarChar(64)
+  totalRules  Int       @default(0) @map("total_rules")
+  passedRules Int       @default(0) @map("passed_rules")
+  failedRules Int       @default(0) @map("failed_rules")
+  warnedRules Int       @default(0) @map("warned_rules")
+
+  findings DQFindings[]
+
+  @@index([dataset, startedAt])
+  @@index([status])
+  @@map("dq_runs")
+}
+
+model DQFindings {
+  id              String   @id @default(uuid()) @db.Uuid
+  runId           String   @map("run_id") @db.Uuid
+  ruleKey         String   @map("rule_key") @db.VarChar(100)
+  severity        String   @db.VarChar(10) // WARN, FAIL
+  count           Int      @default(0)
+  sampleRef       String?  @map("sample_ref") @db.Text
+  impactValueBase Decimal? @map("impact_value_base") @db.Decimal(15, 2)
+  impactCurrency  String?  @map("impact_currency") @db.VarChar(3)
+  notes           String?  @db.Text
+
+  run DQRuns @relation(fields: [runId], references: [id])
+
+  @@index([runId])
+  @@index([ruleKey, severity])
+  @@map("dq_findings")
+}
+
+// Model/Artifact Registry Tables
+model ModelArtifacts {
+  id          String   @id @default(uuid()) @db.Uuid
+  type        String   @db.VarChar(20) // forecast, opt, wc
+  runId       String?  @map("run_id") @db.Uuid
+  entityId    String?  @map("entity_id") @db.Uuid
+  region      String?  @db.VarChar(10)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdBy   String?  @map("created_by") @db.Uuid
+  metricsJson Json?    @map("metrics_json") @db.Json
+  paramsJson  Json?    @map("params_json") @db.Json
+  artifactUrl String?  @map("artifact_url") @db.Text
+  status      String   @db.VarChar(20) // ACTIVE, ARCHIVED
+  tags        String[] @db.Text
+  version     String?  @db.VarChar(50)
+
+  baselines ModelBaselines[]
+
+  @@index([type, createdAt])
+  @@index([entityId, region])
+  @@index([status])
+  @@map("model_artifacts")
+}
+
+model ModelBaselines {
+  id           String    @id @default(uuid()) @db.Uuid
+  type         String    @db.VarChar(20) // forecast, opt, wc
+  entityId     String?   @map("entity_id") @db.Uuid
+  region       String?   @db.VarChar(10)
+  activeFrom   DateTime  @map("active_from") @db.Timestamptz(6)
+  activeTo     DateTime? @map("active_to") @db.Timestamptz(6)
+  artifactId   String    @map("artifact_id") @db.Uuid
+  approverId   String?   @map("approver_id") @db.Uuid
+  approvedAt   DateTime? @map("approved_at") @db.Timestamptz(6)
+  notes        String?   @db.Text
+  snapshotJson Json?     @map("snapshot_json") @db.Json
+
+  artifact ModelArtifacts @relation(fields: [artifactId], references: [id])
+
+  @@unique([type, entityId, region, activeFrom])
+  @@index([type, entityId, region, activeTo])
+  @@index([artifactId])
+  @@map("model_baselines")
+}
+
+// Lineage tracking extension for imports
+model ImportLineage {
+  id                  String   @id @default(uuid()) @db.Uuid
+  importJobId         Int      @map("import_job_id")
+  validationProfileId String?  @map("validation_profile_id") @db.Uuid
+  lineageTag          String   @map("lineage_tag") @db.Text
+  rulesetHash         String?  @map("ruleset_hash") @db.VarChar(64)
+  rowsAffected        Int      @default(0) @map("rows_affected")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([importJobId])
+  @@index([lineageTag])
+  @@map("import_lineage")
+}

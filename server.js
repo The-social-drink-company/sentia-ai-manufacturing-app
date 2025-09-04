@@ -4045,14 +4045,7 @@ try {
   logWarn('Failed to load optimization API routes', error);
 }
 
-// Catch-all route for React Router (must be LAST after all API routes)
-app.get('*', (req, res) => {
-  // Only serve index.html for non-API routes
-  if (req.path.startsWith('/api/') || req.path.startsWith('/health')) {
-    return res.status(404).json({ error: 'Endpoint not found' });
-  }
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// First catch-all removed - using the one at the end of the file
 
 // Error handling middleware
 app.use((err, req, res, _next) => {
@@ -4102,31 +4095,7 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-// Catch-all handler: send back React's index.html file for any non-API routes
-app.get('*', (req, res) => {
-  // Skip API routes
-  if (req.path.startsWith('/api')) {
-    return res.status(404).json({ error: 'API endpoint not found' });
-  }
-  
-  // Check if dist/index.html exists
-  const indexPath = path.join(__dirname, 'dist', 'index.html');
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    // Fallback if build files don't exist
-    res.status(503).send(`
-      <html>
-        <head><title>Sentia Manufacturing Dashboard</title></head>
-        <body>
-          <h1>Application Unavailable</h1>
-          <p>The application build files are not available. Please run 'npm run build' to generate them.</p>
-          <p>For development, use 'npm run dev:client' to start the Vite development server.</p>
-        </body>
-      </html>
-    `);
-  }
-});
+// Moved catch-all to after server.listen
 
 // Initialize cache service
 async function initializeServices() {
@@ -4143,6 +4112,30 @@ async function initializeServices() {
   await loadWorkingCapitalService();
   await loadAgentRoutes();
 }
+
+// Catch-all handler MUST be last route (after all API routes and static files)
+app.get('*', (req, res) => {
+  // Don't handle API routes here
+  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    return res.status(404).json({ error: 'Endpoint not found' });
+  }
+  
+  // Serve index.html for all other routes (React Router will handle client-side routing)
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(503).send(`
+      <html>
+        <head><title>Sentia Manufacturing Dashboard</title></head>
+        <body style="font-family: sans-serif; padding: 40px; text-align: center;">
+          <h1>Application Starting...</h1>
+          <p>The application is building. Please refresh in a moment.</p>
+        </body>
+      </html>
+    `);
+  }
+});
 
 // Start server - Railway deployment force rebuild
 app.listen(PORT, async () => {

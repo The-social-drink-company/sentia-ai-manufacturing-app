@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import KPIStrip from '../components/widgets/KPIStrip'
 import DemandForecastWidget from '../components/widgets/DemandForecastWidget'
+import WorkingCapitalChart from '../components/charts/WorkingCapitalChart'
+import ManufacturingAnalytics from '../components/analytics/ManufacturingAnalytics'
 import CFOKPIStrip from '../components/widgets/CFOKPIStrip'
 import ManufacturingPlanningWizard from '../components/ManufacturingPlanningWizard'
 
@@ -152,7 +154,9 @@ function EnhancedDashboard() {
     globalTabs: import.meta.env.VITE_FEATURE_GLOBAL_TABS === 'true',
     boardExport: import.meta.env.VITE_FEATURE_BOARD_EXPORT === 'true',
     trustBadges: import.meta.env.VITE_FEATURE_TRUST_BADGES === 'true',
-    benchmarks: import.meta.env.VITE_FEATURE_BENCHMARKS === 'true'
+    benchmarks: import.meta.env.VITE_FEATURE_BENCHMARKS === 'true',
+    advanced: true, // Enable advanced charts
+    analytics: true // Enable manufacturing analytics
   }
 
   const tabs = [
@@ -300,6 +304,20 @@ function EnhancedDashboard() {
           
           {/* Working Capital */}
           <WorkingCapitalSection />
+
+          {/* Advanced Working Capital Chart */}
+          {features.advanced && (
+            <div style={{ marginTop: '1.5rem' }}>
+              <WorkingCapitalChart timeRange="12M" scenario="baseline" />
+            </div>
+          )}
+
+          {/* Manufacturing Analytics */}
+          {features.analytics && (
+            <div style={{ marginTop: '1.5rem' }}>
+              <ManufacturingAnalytics />
+            </div>
+          )}
         </div>
 
         {/* Right Column */}

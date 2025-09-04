@@ -33,7 +33,11 @@ const CACHE_TIMES = {
 // Query key factories for consistent query key generation
 export const queryKeys = {
   // KPI and metrics
-  kpiMetrics: (timeRange, filters) => ['kpi-metrics', { timeRange, filters }],
+  kpi: {
+    metrics: (timeRange, filters) => ['kpi-metrics', { timeRange, filters }],
+    alerts: () => ['kpi-alerts']
+  },
+  kpiMetrics: (timeRange, filters) => ['kpi-metrics', { timeRange, filters }], // Legacy support
   systemHealth: () => ['system-health'],
   
   // Forecasting
@@ -51,7 +55,14 @@ export const queryKeys = {
   reorderSuggestions: (filters) => ['reorder-suggestions', filters],
   
   // Working capital
-  workingCapital: () => ['working-capital'],
+  workingCapital: {
+    diagnostics: () => ['working-capital', 'diagnostics'],
+    projections: (timeRange, scenario) => ['working-capital', 'projections', { timeRange, scenario }],
+    kpis: () => ['working-capital', 'kpis'],
+    policies: (type) => ['working-capital', 'policies', type],
+    job: (jobId) => ['working-capital', 'job', jobId]
+  },
+  // Legacy support
   workingCapitalJob: (jobId) => ['working-capital-job', jobId],
   workingCapitalProjections: (params) => ['wc-projections', params],
   workingCapitalKpis: (timeRange) => ['wc-kpis', timeRange],

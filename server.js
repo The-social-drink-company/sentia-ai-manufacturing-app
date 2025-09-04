@@ -21,6 +21,9 @@ import AuthService from './services/auth/AuthService.js';
 import PasswordService from './services/auth/PasswordService.js';
 import MultiEntityService from './services/auth/MultiEntityService.js';
 import SSOService from './services/auth/SSOService.js';
+// Import performance optimization services
+import { cacheService, paginationMiddleware, sparseFieldsMiddleware } from './services/performance/caching.js';
+import { dbOptimizationService } from './services/performance/dbOptimization.js';
 // Import data import services conditionally to prevent startup crashes
 let dbService = null;
 let queueService = null;
@@ -51,6 +54,17 @@ async function loadWorkingCapitalService() {
     logInfo('Working Capital service loaded successfully');
   } catch (error) {
     logWarn('Working Capital service not available', error);
+  }
+}
+
+// Load agent routes
+let agentRoutes = null;
+async function loadAgentRoutes() {
+  try {
+    agentRoutes = (await import('./api/agent.js')).default;
+    logInfo('Agent routes loaded successfully');
+  } catch (error) {
+    logWarn('Agent routes not available', error);
   }
 }
 const { Pool } = pkg;
@@ -376,6 +390,44 @@ app.get('/diagnostics', (req, res) => {
 app.get('/api/metrics', getMetrics);
 app.get('/metrics', getMetrics); // Keep compatibility
 
+// Performance monitoring endpoints
+app.get('/api/performance/cache-stats', (req, res) => {
+  res.json({
+    success: true,
+    data: cacheService.getStats()
+  });
+});
+
+app.get('/api/performance/db-metrics', async (req, res) => {
+  try {
+    const metrics = await dbOptimizationService.getDatabaseMetrics();
+    res.json({
+      success: true,
+      data: metrics
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+app.post('/api/performance/optimize-db', async (req, res) => {
+  try {
+    const results = await dbOptimizationService.createOptimizedIndexes();
+    res.json({
+      success: true,
+      data: results
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Application metrics endpoint
 app.get('/api/status', async (req, res) => {
   const status = {
@@ -387,6 +439,7 @@ app.get('/api/status', async (req, res) => {
       environment: process.env.NODE_ENV || 'development',
       nodeVersion: process.version
     },
+    cache: cacheService.getStats(),
     services: {
       database: { status: 'unknown', connected: false },
       clerk: { status: clerkClient ? 'connected' : 'disconnected' },
@@ -1330,10 +1383,14 @@ app.get('/api/unleashed/test', async (req, res) => {
   }
 });
 
-app.get('/api/unleashed/products', async (req, res) => {
+app.get('/api/unleashed/products', 
+  paginationMiddleware(),
+  sparseFieldsMiddleware(),
+  cacheService.middleware('unleashed:products', { ttl: 300 }), // 5 min cache
+  async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 50;
+    const page = req.pagination.page;
+    const pageSize = req.pagination.limit;
     
     const data = await unleashedService.getProducts(page, pageSize);
     res.json({
@@ -1357,10 +1414,14 @@ app.get('/api/unleashed/products/:productGuid', async (req, res) => {
   }
 });
 
-app.get('/api/unleashed/stock', async (req, res) => {
+app.get('/api/unleashed/stock',
+  paginationMiddleware(),
+  sparseFieldsMiddleware(),
+  cacheService.middleware('unleashed:stock', { ttl: 120 }), // 2 min cache for stock levels
+  async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 50;
+    const page = req.pagination.page;
+    const pageSize = req.pagination.limit;
     
     const data = await unleashedService.getStockOnHand(page, pageSize);
     res.json({
@@ -1375,10 +1436,14 @@ app.get('/api/unleashed/stock', async (req, res) => {
   }
 });
 
-app.get('/api/unleashed/sales-orders', async (req, res) => {
+app.get('/api/unleashed/sales-orders',
+  paginationMiddleware(),
+  sparseFieldsMiddleware(),
+  cacheService.middleware('unleashed:sales-orders', { ttl: 180 }), // 3 min cache
+  async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 50;
+    const page = req.pagination.page;
+    const pageSize = req.pagination.limit;
     const orderStatus = req.query.status || null;
     
     const data = await unleashedService.getSalesOrders(page, pageSize, orderStatus);
@@ -1457,7 +1522,9 @@ app.get('/api/unleashed/suppliers', async (req, res) => {
   }
 });
 
-app.get('/api/unleashed/warehouses', async (req, res) => {
+app.get('/api/unleashed/warehouses',
+  cacheService.middleware('unleashed:warehouses', { ttl: 3600 }), // 1 hour cache for static data
+  async (req, res) => {
   try {
     const data = await unleashedService.getWarehouses();
     res.json({
@@ -3932,6 +3999,12 @@ app.get('/api/admin/activity', requireAuth, requireRoles(['admin', 'manager']), 
   }
 });
 
+// Agent API routes
+if (agentRoutes) {
+  app.use('/api', agentRoutes);
+  logInfo('Agent API routes registered');
+}
+
 // Forecasting API routes
 try {
   const forecastingRoutes = await import('./api/forecasting.js');
@@ -4033,11 +4106,31 @@ app.get('*', (req, res) => {
   }
 });
 
+// Initialize cache service
+async function initializeServices() {
+  try {
+    // Connect to Redis cache
+    await cacheService.connect();
+    logInfo('Cache service initialized');
+  } catch (error) {
+    logWarn('Cache service initialization failed - continuing without cache', error);
+  }
+  
+  // Load other services
+  await loadDataImportServices();
+  await loadWorkingCapitalService();
+  await loadAgentRoutes();
+}
+
 // Start server - Railway deployment force rebuild
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  // Initialize all services
+  await initializeServices();
+  
   logInfo(`Server started on port ${PORT}`, {
     environment: process.env.NODE_ENV || 'development',
     database: process.env.DATABASE_URL ? 'Connected to Neon' : 'Using local database',
+    cache: cacheService.connected ? 'Redis connected' : 'Cache disabled',
     timestamp: new Date().toISOString()
   });
   

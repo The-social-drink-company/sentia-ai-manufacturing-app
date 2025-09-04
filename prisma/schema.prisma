@@ -1197,4 +1197,113 @@ model password_history {
   @@map("password_history")
 }
 
+// Agentic AI Tables
+model AgentRuns {
+  id          String    @id @default(uuid()) @db.Uuid
+  goal        String
+  mode        String    @db.VarChar(20) // DRY_RUN, PROPOSE, EXECUTE
+  scope       Json?     @db.Json // {entity?, region?}
+  budgets     Json?     @db.Json // {workingCapitalCap?, timeBudget?}
+  status      String    @db.VarChar(20) // PLANNING, EXECUTING, REFLECTING, COMPLETED, FAILED
+  userId      String?   @db.Uuid
+  startedAt   DateTime  @map("started_at") @db.Timestamptz(6)
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(6)
+  outcomes    Json?     @db.Json
+  reflection  Json?     @db.Json
+  lessons     Json?     @db.Json
+  nextSteps   Json?     @map("next_steps") @db.Json
+  error       String?
+
+  user        User?         @relation(fields: [userId], references: [id])
+  steps       AgentSteps[]
+  invocations ToolInvocations[]
+  reflections Reflections[]
+  approvals   Approvals[]
+
+  @@index([userId, startedAt])
+  @@index([status])
+  @@map("agent_runs")
+}
+
+model AgentSteps {
+  id               String    @id @default(uuid()) @db.Uuid
+  runId            String    @map("run_id") @db.Uuid
+  stepNumber       Int       @map("step_number")
+  toolId           String    @map("tool_id") @db.VarChar(100)
+  params           Json      @db.Json
+  dependencies     Json?     @db.Json // Array of step numbers
+  expectedOutcome  Json?     @map("expected_outcome") @db.Json
+  status           String    @db.VarChar(20) // PENDING, APPROVED, EXECUTING, COMPLETED, FAILED
+  result           Json?     @db.Json
+  completedAt      DateTime? @map("completed_at") @db.Timestamptz(6)
+
+  run AgentRuns @relation(fields: [runId], references: [id])
+
+  @@index([runId, stepNumber])
+  @@index([status])
+  @@map("agent_steps")
+}
+
+model ToolInvocations {
+  id          String    @id @default(uuid()) @db.Uuid
+  runId       String    @map("run_id") @db.Uuid
+  stepId      String    @map("step_id") @db.VarChar(100)
+  toolId      String    @map("tool_id") @db.VarChar(100)
+  params      Json      @db.Json
+  result      Json?     @db.Json
+  status      String    @db.VarChar(20) // SUCCESS, FAILED, TIMEOUT
+  startedAt   DateTime  @map("started_at") @db.Timestamptz(6)
+  finishedAt  DateTime? @map("finished_at") @db.Timestamptz(6)
+  metricsJson Json?     @map("metrics_json") @db.Json
+
+  run AgentRuns @relation(fields: [runId], references: [id])
+
+  @@index([runId, stepId])
+  @@index([toolId, startedAt])
+  @@map("tool_invocations")
+}
+
+model Reflections {
+  id        String   @id @default(uuid()) @db.Uuid
+  runId     String   @map("run_id") @db.Uuid
+  content   Json     @db.Json
+  score     Decimal  @db.Decimal(3, 2)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  run AgentRuns @relation(fields: [runId], references: [id])
+
+  @@index([runId])
+  @@map("reflections")
+}
+
+model Lessons {
+  id             String   @id @default(uuid()) @db.Uuid
+  runId          String   @map("run_id") @db.Uuid
+  type           String   @db.VarChar(50) // SUCCESS_PATTERN, FAILURE_PATTERN, OPTIMIZATION
+  content        String
+  recommendation String?
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([runId])
+  @@index([type])
+  @@map("lessons")
+}
+
+model Approvals {
+  id         String    @id @default(uuid()) @db.Uuid
+  runId      String    @map("run_id") @db.Uuid
+  stepId     String    @map("step_id") @db.VarChar(100)
+  approverId String?   @map("approver_id") @db.Uuid
+  decision   String    @db.VarChar(20) // APPROVED, REJECTED, DEFERRED
+  reason     String?
+  approvedAt DateTime? @map("approved_at") @db.Timestamptz(6)
+
+  run      AgentRuns @relation(fields: [runId], references: [id])
+  approver User?     @relation(fields: [approverId], references: [id])
+
+  @@index([runId, stepId])
+  @@index([approverId])
+  @@map("approvals")
+}
+
 

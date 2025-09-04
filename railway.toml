@@ -1,33 +1,114 @@
 # Railway Configuration for Sentia Manufacturing Dashboard
-# Force Node.js detection and proper Docker build
+# Enhanced with auto-scaling, monitoring, and production hardening
 
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 buildCommand = "echo 'Using Dockerfile build process'"
 
+[build.args]
+NODE_VERSION = "20"
+
 [deploy]
 startCommand = "npm start"
-healthcheckPath = "/api/health"
+healthcheckPath = "/health"
 healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
+numReplicas = 1
 
-# Environment detection
+# Graceful shutdown
+[deploy.shutdown]
+gracefulShutdownTimeout = 30
+drainTimeout = 15
+
+# Health checks
+[healthcheck]
+path = "/health"
+interval = 30
+timeout = 10
+retries = 3
+startPeriod = 60
+
+# Readiness checks
+[readiness]
+path = "/ready"
+interval = 10
+timeout = 5
+successThreshold = 1
+failureThreshold = 3
+
+# Production Environment
 [environments.production]
 build.dockerfilePath = "./Dockerfile"
 deploy.startCommand = "npm start"
 deploy.healthcheckPath = "/health"
 deploy.restartPolicyType = "ON_FAILURE"
+deploy.numReplicas = 2
+deploy.minReplicas = 2
+deploy.maxReplicas = 10
 
+# Production scaling
+[environments.production.autoscaling]
+enabled = true
+targetCPU = 70
+targetMemory = 80
+scaleUpCooldown = 300
+scaleDownCooldown = 600
+
+# Production resources
+[environments.production.resources]
+cpuLimit = "2000m"
+memoryLimit = "4Gi"
+cpuRequest = "500m"
+memoryRequest = "1Gi"
+
+# Test Environment
 [environments.test]
 build.dockerfilePath = "./Dockerfile"
 deploy.startCommand = "npm start"
 deploy.healthcheckPath = "/health"
 deploy.restartPolicyType = "ON_FAILURE"
+deploy.numReplicas = 1
 
+[environments.test.resources]
+cpuLimit = "1000m"
+memoryLimit = "2Gi"
+cpuRequest = "250m"
+memoryRequest = "512Mi"
+
+# Development Environment
 [environments.development]
 build.dockerfilePath = "./Dockerfile"
 deploy.startCommand = "npm start"
 deploy.healthcheckPath = "/health"
 deploy.restartPolicyType = "ON_FAILURE"
+deploy.numReplicas = 1
+
+[environments.development.resources]
+cpuLimit = "500m"
+memoryLimit = "1Gi"
+cpuRequest = "100m"
+memoryRequest = "256Mi"
+
+# Network Configuration
+[network]
+internal = false
+ipv6 = true
+
+# Observability
+[observability]
+metricsPath = "/metrics"
+tracingEnabled = true
+loggingDriver = "json"
+
+# Security
+[security]
+enableTLS = true
+tlsMinVersion = "1.2"
+
+# Rollback
+[rollback]
+enabled = true
+maxVersions = 3
+autoRollbackOnFailure = true

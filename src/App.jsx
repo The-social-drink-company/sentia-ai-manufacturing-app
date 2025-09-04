@@ -2,6 +2,10 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ClerkProvider, SignIn, SignUp, SignedIn, SignedOut, RedirectToSignIn, UserButton, useUser } from '@clerk/clerk-react'
+
+// Get Clerk key - with fallback for demo mode
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
 
 // Create QueryClient instance for React Query
 const queryClient = new QueryClient({
@@ -63,9 +67,10 @@ function Loading() {
   )
 }
 
-// Main App Layout Component
+// Main App Layout Component with Authentication Status
 function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = React.useState(true)
+  const { user } = useUser()
   
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -74,7 +79,14 @@ function AppLayout({ children }) {
       </Suspense>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Suspense fallback={<div />}>
-          <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+          <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)}>
+            {/* Add User Button in header */}
+            {user && (
+              <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            )}
+          </Header>
         </Suspense>
         <main style={{ 
           flex: 1, 
@@ -91,6 +103,8 @@ function AppLayout({ children }) {
 
 // Enhanced Landing Page with full features showcase
 function EnhancedLandingPage() {
+  const { user } = useUser()
+  
   return (
     <div style={{
       minHeight: '100vh',
@@ -129,6 +143,9 @@ function EnhancedLandingPage() {
           textAlign: 'center'
         }}>
           Complete Production Management System
+          {user && <span style={{ display: 'block', fontSize: '1rem', marginTop: '0.5rem' }}>
+            Welcome back, {user.firstName || user.emailAddresses[0].emailAddress}!
+          </span>}
         </p>
 
         {/* Feature Cards */}
@@ -152,11 +169,15 @@ function EnhancedLandingPage() {
               border: `2px solid ${feature.color}20`,
               textDecoration: 'none',
               transition: 'all 0.3s',
-              cursor: 'pointer',
-              ':hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-              }
+              cursor: 'pointer'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
             }}>
               <h3 style={{ 
                 color: feature.color, 
@@ -232,32 +253,54 @@ function EnhancedLandingPage() {
           marginTop: '2rem',
           flexWrap: 'wrap'
         }}>
-          <a href="/dashboard" style={{
-            padding: '1rem 2rem',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            borderRadius: '0.5rem',
-            textDecoration: 'none',
-            fontWeight: 'bold',
-            fontSize: '1.125rem',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            transition: 'transform 0.2s',
-            ':hover': { transform: 'translateY(-2px)' }
-          }}>
-            Go to Full Dashboard
-          </a>
+          <SignedIn>
+            <a href="/dashboard" style={{
+              padding: '1rem 2rem',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              borderRadius: '0.5rem',
+              textDecoration: 'none',
+              fontWeight: 'bold',
+              fontSize: '1.125rem',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.2s',
+              display: 'inline-block'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
+              Go to Dashboard
+            </a>
+          </SignedIn>
+          <SignedOut>
+            <a href="/sign-in" style={{
+              padding: '1rem 2rem',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              borderRadius: '0.5rem',
+              textDecoration: 'none',
+              fontWeight: 'bold',
+              fontSize: '1.125rem',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.2s',
+              display: 'inline-block'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
+              Sign In to Get Started
+            </a>
+          </SignedOut>
         </div>
 
         {/* System Status with Authentication Info */}
         <div style={{
           marginTop: '2rem',
           padding: '1rem',
-          backgroundColor: hasClerkKey ? '#f0fdf4' : '#fef3c7',
+          backgroundColor: CLERK_PUBLISHABLE_KEY ? '#f0fdf4' : '#fef3c7',
           borderRadius: '0.5rem',
-          border: hasClerkKey ? '1px solid #86efac' : '1px solid #fcd34d'
+          border: CLERK_PUBLISHABLE_KEY ? '1px solid #86efac' : '1px solid #fcd34d'
         }}>
-          <h4 style={{ color: hasClerkKey ? '#166534' : '#92400e', marginBottom: '0.5rem' }}>
-            System Status: All Features Active {hasClerkKey ? '(Authentication Enabled)' : '(Demo Mode - Authentication Disabled)'}
+          <h4 style={{ color: CLERK_PUBLISHABLE_KEY ? '#166534' : '#92400e', marginBottom: '0.5rem' }}>
+            System Status: {CLERK_PUBLISHABLE_KEY ? 'Fully Operational' : 'Demo Mode'}
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem' }}>
             {[
@@ -267,146 +310,186 @@ function EnhancedLandingPage() {
               'Services ✓', 
               'Widgets ✓', 
               'Analytics ✓',
-              hasClerkKey ? 'Auth ✓' : 'Auth (Demo)',
+              CLERK_PUBLISHABLE_KEY ? 'Auth ✓' : 'Auth (Demo)',
               'All Routes ✓'
             ].map(status => (
-              <span key={status} style={{ color: hasClerkKey ? '#16a34a' : '#d97706', fontSize: '0.875rem' }}>{status}</span>
+              <span key={status} style={{ color: '#16a34a', fontSize: '0.875rem' }}>{status}</span>
             ))}
           </div>
-          {!hasClerkKey && (
-            <div style={{
-              marginTop: '0.5rem',
-              padding: '0.5rem',
-              backgroundColor: 'rgba(255,255,255,0.5)',
-              borderRadius: '0.25rem',
-              fontSize: '0.75rem',
-              color: '#92400e'
-            }}>
-              Note: Authentication is disabled. All features are accessible for demonstration purposes.
-              Set VITE_CLERK_PUBLISHABLE_KEY environment variable to enable authentication.
-            </div>
-          )}
         </div>
       </div>
     </div>
   )
 }
 
-// Check if we have environment variables available
-const hasClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
-
-// Authentication-aware wrapper component
-function AuthAwareRoute({ children, requireAuth = false }) {
-  // If Clerk keys are missing and auth is required, show the content anyway
-  // This prevents blank screens in production deployments
-  return children
+// Protected Route Component
+function ProtectedRoute({ children }) {
+  if (!CLERK_PUBLISHABLE_KEY || CLERK_PUBLISHABLE_KEY === 'your_clerk_publishable_key_here') {
+    // No Clerk key configured - allow access (demo mode)
+    return children;
+  }
+  
+  return (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut><RedirectToSignIn /></SignedOut>
+    </>
+  );
 }
 
 // Main App Component with FULL functionality and robust error handling
 function App() {
-  console.log('App rendering - FULL FEATURED VERSION with 100% functionality')
-  console.log('Clerk key status:', hasClerkKey ? 'Available' : 'Missing (using fallback)')
+  console.log('App rendering - FULL FEATURED VERSION with authentication')
+  console.log('Clerk key status:', CLERK_PUBLISHABLE_KEY ? 'Available' : 'Missing')
   
+  // If no Clerk key or it's the placeholder, render without ClerkProvider
+  if (!CLERK_PUBLISHABLE_KEY || CLERK_PUBLISHABLE_KEY === 'your_clerk_publishable_key_here') {
+    console.log('Running in demo mode - authentication disabled')
+    
+    return (
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <div style={{ minHeight: '100vh' }}>
+            <Routes>
+              <Route path="/" element={<Suspense fallback={<Loading />}><EnhancedLandingPage /></Suspense>} />
+              <Route path="/dashboard" element={<AppLayout><Suspense fallback={<Loading />}><EnhancedDashboard /></Suspense></AppLayout>} />
+              <Route path="/dashboard/basic" element={<AppLayout><Suspense fallback={<Loading />}><Dashboard /></Suspense></AppLayout>} />
+              <Route path="/working-capital" element={<AppLayout><Suspense fallback={<Loading />}><WorkingCapitalDashboard /></Suspense></AppLayout>} />
+              <Route path="/data-import" element={<AppLayout><Suspense fallback={<Loading />}><DataImport /></Suspense></AppLayout>} />
+              <Route path="/templates" element={<AppLayout><Suspense fallback={<Loading />}><Templates /></Suspense></AppLayout>} />
+              <Route path="/admin/*" element={<AppLayout><Suspense fallback={<Loading />}><AdminPortal /></Suspense></AppLayout>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+        </Router>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    )
+  }
+  
+  // Full app with Clerk authentication
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <div style={{ minHeight: '100vh' }}>
-          <Routes>
-            {/* Landing page - Full featured, always accessible */}
-            <Route path="/" element={
-              <Suspense fallback={<Loading />}>
-                <EnhancedLandingPage />
-              </Suspense>
-            } />
-            
-            {/* Enhanced Dashboard with ALL features - always accessible */}
-            <Route path="/dashboard" element={
-              <AuthAwareRoute requireAuth={false}>
-                <AppLayout>
-                  <Suspense fallback={<Loading />}>
-                    <EnhancedDashboard />
-                  </Suspense>
-                </AppLayout>
-              </AuthAwareRoute>
-            } />
-            
-            {/* Basic Dashboard (fallback) - always accessible */}
-            <Route path="/dashboard/basic" element={
-              <AuthAwareRoute>
-                <AppLayout>
-                  <Suspense fallback={<Loading />}>
-                    <Dashboard />
-                  </Suspense>
-                </AppLayout>
-              </AuthAwareRoute>
-            } />
-            
-            {/* Working Capital with full features - always accessible */}
-            <Route path="/working-capital" element={
-              <AuthAwareRoute>
-                <AppLayout>
-                  <Suspense fallback={<Loading />}>
-                    <WorkingCapitalDashboard />
-                  </Suspense>
-                </AppLayout>
-              </AuthAwareRoute>
-            } />
-            
-            {/* Data Import with all components - always accessible */}
-            <Route path="/data-import" element={
-              <AuthAwareRoute>
-                <AppLayout>
-                  <Suspense fallback={<Loading />}>
-                    <DataImport />
-                  </Suspense>
-                </AppLayout>
-              </AuthAwareRoute>
-            } />
-            
-            {/* Templates - always accessible */}
-            <Route path="/templates" element={
-              <AuthAwareRoute>
-                <AppLayout>
-                  <Suspense fallback={<Loading />}>
-                    <Templates />
-                  </Suspense>
-                </AppLayout>
-              </AuthAwareRoute>
-            } />
-            
-            {/* Admin Portal with all pages - always accessible */}
-            <Route path="/admin/*" element={
-              <AuthAwareRoute>
-                <AppLayout>
-                  <Suspense fallback={<Loading />}>
-                    <AdminPortal />
-                  </Suspense>
-                </AppLayout>
-              </AuthAwareRoute>
-            } />
-            
-            {/* API endpoints for testing */}
-            <Route path="/api/test" element={
-              <div style={{ padding: '2rem' }}>
-                <h1>API Endpoints Active</h1>
-                <ul>
-                  <li>/api/forecasting - Forecasting service</li>
-                  <li>/api/optimization - Optimization service</li>
-                  <li>/api/working-capital - Working capital calculations</li>
-                  <li>/api/data-import - Data import processing</li>
-                </ul>
-              </div>
-            } />
-            
-            {/* Catch all - redirect to landing */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-      </Router>
-      
-      {/* React Query Devtools for debugging */}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <div style={{ minHeight: '100vh' }}>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={
+                <Suspense fallback={<Loading />}>
+                  <EnhancedLandingPage />
+                </Suspense>
+              } />
+              
+              {/* Auth routes */}
+              <Route path="/sign-in/*" element={
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  minHeight: '100vh',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                }}>
+                  <SignIn routing="path" path="/sign-in" redirectUrl="/dashboard" />
+                </div>
+              } />
+              
+              <Route path="/sign-up/*" element={
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  minHeight: '100vh',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                }}>
+                  <SignUp routing="path" path="/sign-up" redirectUrl="/dashboard" />
+                </div>
+              } />
+              
+              {/* Protected routes */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Suspense fallback={<Loading />}>
+                      <EnhancedDashboard />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/dashboard/basic" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Suspense fallback={<Loading />}>
+                      <Dashboard />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/working-capital" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Suspense fallback={<Loading />}>
+                      <WorkingCapitalDashboard />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/data-import" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Suspense fallback={<Loading />}>
+                      <DataImport />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/templates" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Suspense fallback={<Loading />}>
+                      <Templates />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/admin/*" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Suspense fallback={<Loading />}>
+                      <AdminPortal />
+                    </Suspense>
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* API test endpoint */}
+              <Route path="/api/test" element={
+                <div style={{ padding: '2rem' }}>
+                  <h1>API Endpoints Active</h1>
+                  <ul>
+                    <li>/api/forecasting - Forecasting service</li>
+                    <li>/api/optimization - Optimization service</li>
+                    <li>/api/working-capital - Working capital calculations</li>
+                    <li>/api/data-import - Data import processing</li>
+                  </ul>
+                </div>
+              } />
+              
+              {/* Catch all - redirect to landing */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+        </Router>
+        
+        {/* React Query Devtools for debugging */}
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ClerkProvider>
   )
 }
 
@@ -429,10 +512,6 @@ globalStyles.innerHTML = `
   
   a {
     transition: all 0.3s ease;
-  }
-  
-  a:hover {
-    transform: translateY(-2px);
   }
   
   /* Custom scrollbar */

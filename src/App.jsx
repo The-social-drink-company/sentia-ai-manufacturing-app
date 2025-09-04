@@ -2,7 +2,6 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { SignedIn, SignedOut, RedirectToSignIn, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 import './index.css'
 
 // Create QueryClient instance for React Query
@@ -91,26 +90,10 @@ function AppLayout({ children }) {
   )
 }
 
-// Protected route with optional Clerk authentication
+// Protected route - for now just pass through
 function ProtectedRoute({ children }) {
-  const hasClerk = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-  
-  if (!hasClerk) {
-    // No Clerk - allow access
-    return children
-  }
-  
-  // Clerk available - use authentication
-  return (
-    <>
-      <SignedIn>
-        {children}
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </>
-  )
+  // Authentication disabled - allow all access
+  return children
 }
 
 // Error Boundary Component for better error handling

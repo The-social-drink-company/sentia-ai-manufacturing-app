@@ -279,7 +279,9 @@
       "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src/**)",
       "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src/**)",
       "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\components\\layout/**)",
-      "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\pages/**)"
+      "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\pages/**)",
+      "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\pages/**)",
+      "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\components\\layout/**)"
     ],
     "deny": [],
     "ask": []

@@ -1,5 +1,5 @@
 // SIMPLE PRODUCTION SERVER - NO EXTRA DEPENDENCIES
-// Force Railway rebuild: 2025-09-04T20:25:00Z - Phase 3 Complete
+// Force Railway rebuild: 2025-09-04T21:10:21.796Z - Auto-correction by Monitoring Agent
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -672,6 +672,210 @@ app.get('/api/status', (req, res) => {
       claude: process.env.CLAUDE_API_KEY ? 'configured' : 'not_configured'
     }
   });
+});
+
+// Phase 4: Advanced Manufacturing Intelligence & Optimization Endpoints
+
+// Predictive Maintenance API Endpoints
+app.get('/api/maintenance/equipment', (req, res) => {
+  // Mock equipment data for predictive maintenance
+  const equipment = Array.from({ length: 15 }, (_, i) => {
+    const types = ['CNC Machine', 'Robotic Arm', 'Conveyor System', 'Press Machine', 'Packaging Line'];
+    const locations = ['Production Floor A', 'Assembly Line 1', 'Assembly Line 2', 'Packaging Area', 'Quality Control'];
+    
+    return {
+      id: `EQ${(i + 1).toString().padStart(3, '0')}`,
+      name: `${types[Math.floor(Math.random() * types.length)]} ${i + 1}`,
+      type: types[Math.floor(Math.random() * types.length)],
+      location: locations[Math.floor(Math.random() * locations.length)],
+      ageInYears: Math.floor(Math.random() * 12) + 1,
+      lastMaintenance: new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000).toISOString(),
+      sensorReadings: {
+        temperature: 20 + Math.random() * 50,
+        vibration: Math.random() * 15,
+        pressure: 50 + Math.random() * 50,
+        efficiency: 60 + Math.random() * 35,
+        dailyRuntime: 8 + Math.random() * 16
+      }
+    };
+  });
+  
+  res.json({ success: true, equipment });
+});
+
+app.get('/api/maintenance/history', (req, res) => {
+  // Mock maintenance history
+  const maintenanceTypes = ['Preventive', 'Corrective', 'Emergency', 'Routine'];
+  const history = Array.from({ length: 50 }, (_, i) => {
+    const equipmentId = `EQ${Math.floor(Math.random() * 15 + 1).toString().padStart(3, '0')}`;
+    const type = maintenanceTypes[Math.floor(Math.random() * maintenanceTypes.length)];
+    
+    return {
+      id: `MH${i.toString().padStart(3, '0')}`,
+      equipmentId,
+      type,
+      date: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
+      duration: Math.floor(Math.random() * 8) + 1,
+      cost: Math.floor(Math.random() * 5000) + 500,
+      description: `${type} maintenance for ${equipmentId}`,
+      technician: `Technician ${Math.floor(Math.random() * 5) + 1}`
+    };
+  });
+  
+  res.json({ success: true, history });
+});
+
+app.post('/api/ai/maintenance-insights', (req, res) => {
+  // Mock AI maintenance insights response
+  setTimeout(() => {
+    res.json({
+      success: true,
+      insights: [
+        "Equipment health scores show declining trend in CNC machines over past 30 days",
+        "Vibration patterns indicate potential bearing failures in 3 robotic arms",
+        "Temperature anomalies detected in conveyor system motors require immediate attention"
+      ],
+      recommendations: [
+        "Schedule immediate inspection for Equipment EQ003 (high failure probability)",
+        "Implement more frequent oil changes for aging CNC machines",
+        "Consider upgrading cooling systems for temperature-sensitive equipment"
+      ],
+      keyFindings: [
+        "Predictive maintenance can reduce unplanned downtime by 40-50%",
+        "Current maintenance strategy is reactive rather than proactive",
+        "Equipment age correlation with failure rate is 85% accurate"
+      ],
+      generatedAt: new Date().toISOString()
+    });
+  }, 1000); // Simulate API delay
+});
+
+// Smart Inventory API Endpoints
+app.get('/api/inventory/items', (req, res) => {
+  // Mock inventory items
+  const categories = ['Raw Materials', 'Components', 'Finished Goods', 'Packaging', 'Tools'];
+  const items = [
+    { name: 'Steel Sheets', category: 'Raw Materials', unitCost: 45.50 },
+    { name: 'Aluminum Rods', category: 'Raw Materials', unitCost: 23.75 },
+    { name: 'Electronic Components', category: 'Components', unitCost: 125.00 },
+    { name: 'Hydraulic Valves', category: 'Components', unitCost: 89.25 },
+    { name: 'Ball Bearings', category: 'Components', unitCost: 15.60 },
+    { name: 'Motors', category: 'Components', unitCost: 234.50 },
+    { name: 'Packaging Boxes', category: 'Packaging', unitCost: 2.15 },
+    { name: 'Labels', category: 'Packaging', unitCost: 0.85 },
+    { name: 'Cutting Tools', category: 'Tools', unitCost: 67.80 },
+    { name: 'Measuring Instruments', category: 'Tools', unitCost: 156.30 }
+  ].map((item, index) => {
+    const sku = `SKU${(index + 1).toString().padStart(3, '0')}`;
+    const leadTime = Math.floor(Math.random() * 14) + 3;
+    const currentStock = Math.floor(Math.random() * 500) + 50;
+    
+    return {
+      sku,
+      ...item,
+      currentStock,
+      leadTime,
+      minOrderQuantity: Math.floor(currentStock * 0.1),
+      maxOrderQuantity: Math.floor(currentStock * 3),
+      preferredSupplierId: `SUP${Math.floor(Math.random() * 3) + 1}`,
+      orderingCost: Math.floor(Math.random() * 200) + 50,
+      storageCapacity: Math.floor(currentStock * 4)
+    };
+  });
+  
+  res.json({ success: true, items });
+});
+
+app.get('/api/inventory/suppliers', (req, res) => {
+  // Mock supplier data
+  const suppliers = [
+    { id: 'SUP1', name: 'Industrial Materials Co.', leadTime: 7, reliability: 0.95 },
+    { id: 'SUP2', name: 'Component Solutions Ltd.', leadTime: 10, reliability: 0.88 },
+    { id: 'SUP3', name: 'Premium Parts Supply', leadTime: 5, reliability: 0.92 }
+  ];
+  
+  res.json({ success: true, suppliers });
+});
+
+app.get('/api/inventory/demand-history', (req, res) => {
+  // Mock demand history for all SKUs
+  const skus = Array.from({ length: 10 }, (_, i) => `SKU${(i + 1).toString().padStart(3, '0')}`);
+  const history = [];
+  
+  skus.forEach(sku => {
+    let baselineMonthlyDemand = Math.floor(Math.random() * 100) + 20;
+    
+    for (let month = 0; month < 12; month++) {
+      const seasonalFactor = 1 + 0.3 * Math.sin((month / 12) * 2 * Math.PI);
+      const trendFactor = 1 + (month * 0.02);
+      const randomFactor = 0.8 + Math.random() * 0.4;
+      
+      const demand = Math.round(baselineMonthlyDemand * seasonalFactor * trendFactor * randomFactor);
+      
+      history.push({
+        sku,
+        period: new Date(2024, month, 1).toISOString(),
+        demand,
+        actualUsage: demand + Math.floor(Math.random() * 10 - 5)
+      });
+    }
+  });
+  
+  res.json({ success: true, history });
+});
+
+app.post('/api/ai/inventory-forecast', (req, res) => {
+  // Mock AI inventory forecasting response
+  const { sku, historicalData } = req.body;
+  
+  setTimeout(() => {
+    const avgDemand = historicalData ? 
+      historicalData.reduce((sum, h) => sum + h.demand, 0) / historicalData.length : 50;
+    
+    res.json({
+      success: true,
+      forecast: {
+        periods: [{ demand: Math.round(avgDemand * (1 + Math.random() * 0.2 - 0.1)) }],
+        confidence: 0.75 + Math.random() * 0.2
+      },
+      insights: [
+        `${sku} shows steady demand pattern with low volatility`,
+        "Seasonal factors detected - higher demand in months 6-8",
+        "Recommended safety stock: 15% above average monthly demand"
+      ]
+    });
+  }, 800);
+});
+
+app.post('/api/ai/inventory-insights', (req, res) => {
+  // Mock AI inventory optimization insights
+  const { data } = req.body;
+  
+  setTimeout(() => {
+    res.json({
+      success: true,
+      insights: [
+        `Total inventory value of $${data.totalValue?.toLocaleString()} represents 12% of annual revenue`,
+        `${data.itemsRequiringAttention} items need immediate attention to prevent stockouts`,
+        `Potential savings of $${data.potentialSavings?.toLocaleString()} identified through optimization`
+      ],
+      recommendations: [
+        "Implement automated reorder points for Class A items",
+        "Consider consignment inventory for high-volume, low-margin components",
+        "Negotiate better payment terms with top 3 suppliers"
+      ],
+      keyFindings: [
+        "Average inventory turnover rate is below industry benchmark",
+        "Overstocking in finished goods category by 23%",
+        "Lead time variability creates 15% increase in safety stock requirements"
+      ],
+      optimizationOpportunities: [
+        "ABC analysis reveals 80/20 rule opportunity for focused management",
+        "Demand forecasting accuracy can be improved by 25% with AI",
+        "Just-in-time delivery feasible for 60% of current inventory items"
+      ]
+    });
+  }, 1200);
 });
 
 app.get('/api/*', (req, res) => {

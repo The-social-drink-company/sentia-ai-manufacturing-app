@@ -1,72 +1,50 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom'
-import { ClerkProvider, SignedIn, SignedOut, UserButton, SignIn, SignUp } from '@clerk/clerk-react'
+import React, { Suspense, lazy } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 
-// Get Clerk key from environment
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
+// Lazy load pages for better performance
+const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
+const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
+const AdminPortal = lazy(() => import('./pages/AdminPortal'))
+const DataImport = lazy(() => import('./pages/DataImport'))
+const Templates = lazy(() => import('./pages/Templates'))
 
-// Simple Dashboard Component
-function Dashboard() {
+// Loading component
+function Loading() {
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
-      <header style={{
-        backgroundColor: '#1f2937',
-        padding: '1rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <h1 style={{ color: 'white', margin: 0 }}>Sentia Manufacturing Dashboard</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <nav style={{ display: 'flex', gap: '1rem' }}>
-            <Link to="/dashboard" style={{ color: 'white', textDecoration: 'none' }}>Dashboard</Link>
-            <Link to="/working-capital" style={{ color: 'white', textDecoration: 'none' }}>Working Capital</Link>
-            <Link to="/data-import" style={{ color: 'white', textDecoration: 'none' }}>Data Import</Link>
-          </nav>
-          <UserButton afterSignOutUrl="/" />
-        </div>
-      </header>
-      
-      <div style={{ padding: '2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>Production Dashboard</h2>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '1rem',
-            marginBottom: '2rem'
-          }}>
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Production Efficiency</h3>
-              <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>98.5%</p>
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Units Produced</h3>
-              <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>1,234</p>
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Active Jobs</h3>
-              <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>45</p>
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Revenue Today</h3>
-              <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#8b5cf6' }}>$2.3M</p>
-            </div>
-          </div>
-          
-          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>System Status</h3>
-            <div style={{ backgroundColor: '#dcfce7', padding: '1rem', borderRadius: '0.375rem', marginBottom: '1rem' }}>
-              <p style={{ color: '#166534' }}>✓ All systems operational</p>
-            </div>
-            <p style={{ color: '#6b7280' }}>
-              Welcome to Sentia Manufacturing Dashboard. Use the navigation above to access different modules.
-            </p>
-          </div>
-        </div>
-      </div>
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      fontSize: '1.5rem',
+      color: '#666'
+    }}>
+      Loading...
     </div>
+  )
+}
+
+// Header component
+function Header() {
+  return (
+    <header style={{
+      backgroundColor: '#1f2937',
+      padding: '1rem',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    }}>
+      <h1 style={{ color: 'white', margin: 0, fontSize: '1.5rem' }}>
+        Sentia Manufacturing Dashboard
+      </h1>
+      <nav style={{ display: 'flex', gap: '1rem' }}>
+        <a href="/dashboard" style={{ color: 'white', textDecoration: 'none' }}>Dashboard</a>
+        <a href="/working-capital" style={{ color: 'white', textDecoration: 'none' }}>Working Capital</a>
+        <a href="/data-import" style={{ color: 'white', textDecoration: 'none' }}>Data Import</a>
+        <a href="/admin" style={{ color: 'white', textDecoration: 'none' }}>Admin</a>
+      </nav>
+    </header>
   )
 }
 
@@ -87,8 +65,8 @@ function LandingPage() {
       <p style={{ fontSize: '1.5rem', color: '#6b7280', marginBottom: '2rem' }}>
         Production Management System
       </p>
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <Link to="/sign-in" style={{
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <a href="/dashboard" style={{
           backgroundColor: '#3b82f6',
           color: 'white',
           padding: '0.75rem 2rem',
@@ -96,9 +74,9 @@ function LandingPage() {
           textDecoration: 'none',
           fontWeight: 'bold'
         }}>
-          Sign In
-        </Link>
-        <Link to="/sign-up" style={{
+          Go to Dashboard
+        </a>
+        <a href="/working-capital" style={{
           backgroundColor: '#10b981',
           color: 'white',
           padding: '0.75rem 2rem',
@@ -106,8 +84,38 @@ function LandingPage() {
           textDecoration: 'none',
           fontWeight: 'bold'
         }}>
-          Sign Up
-        </Link>
+          Working Capital
+        </a>
+        <a href="/data-import" style={{
+          backgroundColor: '#f59e0b',
+          color: 'white',
+          padding: '0.75rem 2rem',
+          borderRadius: '0.375rem',
+          textDecoration: 'none',
+          fontWeight: 'bold'
+        }}>
+          Data Import
+        </a>
+        <a href="/admin" style={{
+          backgroundColor: '#ef4444',
+          color: 'white',
+          padding: '0.75rem 2rem',
+          borderRadius: '0.375rem',
+          textDecoration: 'none',
+          fontWeight: 'bold'
+        }}>
+          Admin Portal
+        </a>
+      </div>
+      <div style={{ marginTop: '3rem', padding: '1rem', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+        <h3 style={{ marginBottom: '0.5rem' }}>System Features:</h3>
+        <ul style={{ margin: 0, paddingLeft: '1.5rem', color: '#6b7280' }}>
+          <li>Real-time Production Monitoring</li>
+          <li>Working Capital Analytics</li>
+          <li>Data Import & Export</li>
+          <li>Advanced Reporting</li>
+          <li>Full Dashboard Suite</li>
+        </ul>
       </div>
     </div>
   )
@@ -115,82 +123,70 @@ function LandingPage() {
 
 // Main App Component
 function App() {
-  console.log('App rendering with Clerk key:', !!clerkPubKey)
-  console.log('Environment:', import.meta.env.MODE)
+  console.log('App rendering - Full featured version')
   
   return (
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <Router>
+    <Router>
+      <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
         <Routes>
-          {/* Public routes */}
-          <Route path="/" element={
+          {/* Landing page */}
+          <Route path="/" element={<LandingPage />} />
+          
+          {/* Dashboard route */}
+          <Route path="/dashboard" element={
             <>
-              <SignedOut>
-                <LandingPage />
-              </SignedOut>
-              <SignedIn>
-                <Navigate to="/dashboard" replace />
-              </SignedIn>
+              <Header />
+              <Suspense fallback={<Loading />}>
+                <EnhancedDashboard />
+              </Suspense>
             </>
           } />
           
-          {/* Authentication routes */}
-          <Route path="/sign-in/*" element={
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minHeight: '100vh',
-              backgroundColor: '#f3f4f6'
-            }}>
-              <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" afterSignInUrl="/dashboard" />
-            </div>
-          } />
-          
-          <Route path="/sign-up/*" element={
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minHeight: '100vh',
-              backgroundColor: '#f3f4f6'
-            }}>
-              <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" afterSignUpUrl="/dashboard" />
-            </div>
-          } />
-          
-          {/* Protected routes */}
-          <Route path="/dashboard" element={
-            <SignedIn>
-              <Dashboard />
-            </SignedIn>
-          } />
-          
+          {/* Working Capital route */}
           <Route path="/working-capital" element={
-            <SignedIn>
-              <Dashboard />
-            </SignedIn>
+            <>
+              <Header />
+              <Suspense fallback={<Loading />}>
+                <WorkingCapitalDashboard />
+              </Suspense>
+            </>
           } />
           
+          {/* Data Import route */}
           <Route path="/data-import" element={
-            <SignedIn>
-              <Dashboard />
-            </SignedIn>
+            <>
+              <Header />
+              <Suspense fallback={<Loading />}>
+                <DataImport />
+              </Suspense>
+            </>
           } />
           
-          {/* Redirect unauthenticated users */}
+          {/* Templates route */}
+          <Route path="/templates" element={
+            <>
+              <Header />
+              <Suspense fallback={<Loading />}>
+                <Templates />
+              </Suspense>
+            </>
+          } />
+          
+          {/* Admin route */}
+          <Route path="/admin/*" element={
+            <>
+              <Header />
+              <Suspense fallback={<Loading />}>
+                <AdminPortal />
+              </Suspense>
+            </>
+          } />
+          
+          {/* Catch all - redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        
-        <SignedOut>
-          <Routes>
-            <Route path="/dashboard" element={<Navigate to="/sign-in" replace />} />
-            <Route path="/working-capital" element={<Navigate to="/sign-in" replace />} />
-            <Route path="/data-import" element={<Navigate to="/sign-in" replace />} />
-          </Routes>
-        </SignedOut>
-      </Router>
-    </ClerkProvider>
+      </div>
+    </Router>
   )
 }
 

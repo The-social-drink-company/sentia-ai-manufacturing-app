@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import KPIStrip from '../components/widgets/KPIStrip'
 import DemandForecastWidget from '../components/widgets/DemandForecastWidget'
 import CFOKPIStrip from '../components/widgets/CFOKPIStrip'
+import ManufacturingPlanningWizard from '../components/ManufacturingPlanningWizard'
 
 // Import all working capital components if they exist
 const WorkingCapitalSection = () => {
@@ -143,6 +144,7 @@ function EnhancedDashboard() {
   const [selectedTab, setSelectedTab] = useState('overview')
   const [timeRange, setTimeRange] = useState('today')
   const [showFeatureFlags, setShowFeatureFlags] = useState(false)
+  const [showPlanningWizard, setShowPlanningWizard] = useState(false)
 
   // Feature flags
   const features = {
@@ -399,6 +401,60 @@ function EnhancedDashboard() {
         </div>
       </div>
 
+      {/* Quick Actions */}
+      <div style={{
+        marginTop: '2rem',
+        padding: '1.5rem',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+          Quick Actions
+        </h3>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setShowPlanningWizard(true)}
+            style={{
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
+          >
+            🏭 Manufacturing Planning Wizard
+          </button>
+          <button
+            style={{
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#059669'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#10b981'}
+          >
+            📊 Generate Report
+          </button>
+        </div>
+      </div>
+
       {/* Footer Status */}
       <div style={{
         marginTop: '2rem',
@@ -414,6 +470,13 @@ function EnhancedDashboard() {
         Data refresh rate: 5 seconds | 
         System status: <span style={{ color: '#10b981', fontWeight: 'bold' }}>Operational</span>
       </div>
+
+      {/* Manufacturing Planning Wizard Modal */}
+      {showPlanningWizard && (
+        <ManufacturingPlanningWizard 
+          onClose={() => setShowPlanningWizard(false)}
+        />
+      )}
     </div>
   )
 }

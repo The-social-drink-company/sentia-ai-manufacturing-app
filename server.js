@@ -4160,4 +4160,6 @@ app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Database: ${process.env.DATABASE_URL ? 'Connected to Neon' : 'Using local database'}`);
+  console.log(`Build Version: 1.0.2 - Web-vitals fix applied`);
+  console.log(`Static files served from: ${path.join(__dirname, 'dist')}`);
 });

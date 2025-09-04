@@ -291,7 +291,17 @@
       "Bash(ren:*)",
       "WebFetch(domain:sentia-manufacturing.railway.app)",
       "Bash(railway link:*)",
-      "WebFetch(domain:sentia-manufacturing-dashboard-development.up.railway.app)"
+      "WebFetch(domain:sentia-manufacturing-dashboard-development.up.railway.app)",
+      "Bash(PORT=3005 node server-simple.cjs)",
+      "Bash(start http://localhost:8080)",
+      "Bash(PORT=3001 node server-simple.cjs)",
+      "Bash(PORT=3000 node server-simple.cjs)",
+      "Bash(PORT=3002 node server-simple.cjs)",
+      "Bash(sed:*)",
+      "Bash(chmod:*)",
+      "Bash(move:*)",
+      "Bash(start http://localhost:3002/dashboard)",
+      "Bash(start https://sentia-manufacturing-dashboard-development.up.railway.app/dashboard)"
     ],
     "deny": [],
     "ask": []

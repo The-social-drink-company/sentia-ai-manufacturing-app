@@ -1,0 +1,14 @@
+# nixpacks.toml
+# Configuration for Railway deployment using Nixpacks
+
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "npm-9_x"]
+
+[phases.install]
+cmds = ["npm ci --prefer-offline --no-audit"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "node server-simple.cjs"

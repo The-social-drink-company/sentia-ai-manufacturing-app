@@ -1,8 +1,75 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import React, { Suspense, lazy } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { ClerkProvider, SignIn, SignUp, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { AuthProvider } from './context/AuthContext'
 import './index.css'
 
-// Simple working components without any external dependencies
+// Get Clerk publishable key from environment
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+// In production, make Clerk optional to avoid blank screens
+const isClerkEnabled = !!clerkPubKey
+if (!isClerkEnabled) {
+  console.warn('Clerk authentication disabled - no VITE_CLERK_PUBLISHABLE_KEY found')
+}
+
+// Create QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+})
+
+// Lazy load pages for better performance
+const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
+const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
+const AdminPortal = lazy(() => import('./pages/AdminPortal'))
+const DataImport = lazy(() => import('./pages/DataImport'))
+const LandingPage = lazy(() => import('./pages/LandingPage'))
+
+// Loading component
+function Loading() {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    }}>
+      <div style={{
+        width: '60px',
+        height: '60px',
+        border: '4px solid rgba(255,255,255,0.3)',
+        borderTopColor: 'white',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite'
+      }}></div>
+      <p style={{ 
+        color: 'white',
+        marginTop: '1rem',
+        fontSize: '1.1rem'
+      }}>
+        Loading SENTIA Dashboard...
+      </p>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// Simple HomePage component for landing
 function HomePage() {
   return (
     <div style={{ padding: '2rem', textAlign: 'center' }}>
@@ -14,132 +81,153 @@ function HomePage() {
       </p>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <Link to="/dashboard" style={{ textDecoration: 'none' }}>
+        <a href="/dashboard" style={{ textDecoration: 'none' }}>
           <div style={{ padding: '2rem', backgroundColor: '#4F46E5', color: 'white', borderRadius: '8px', cursor: 'pointer' }}>
             <h2>Dashboard</h2>
             <p>View real-time KPIs and metrics</p>
           </div>
-        </Link>
+        </a>
         
-        <Link to="/working-capital" style={{ textDecoration: 'none' }}>
+        <a href="/working-capital" style={{ textDecoration: 'none' }}>
           <div style={{ padding: '2rem', backgroundColor: '#10B981', color: 'white', borderRadius: '8px', cursor: 'pointer' }}>
             <h2>Working Capital</h2>
             <p>Financial management and projections</p>
           </div>
-        </Link>
+        </a>
         
-        <Link to="/admin" style={{ textDecoration: 'none' }}>
+        <a href="/admin" style={{ textDecoration: 'none' }}>
           <div style={{ padding: '2rem', backgroundColor: '#F59E0B', color: 'white', borderRadius: '8px', cursor: 'pointer' }}>
             <h2>Admin Portal</h2>
             <p>System configuration and management</p>
           </div>
-        </Link>
+        </a>
       </div>
     </div>
   )
 }
 
-function DashboardPage() {
+// Navigation wrapper for Clerk
+function ClerkWithRouter({ children }) {
+  const navigate = useNavigate()
+  
+  if (!isClerkEnabled) {
+    // Return children without Clerk provider if disabled
+    return children
+  }
+  
   return (
-    <div style={{ padding: '2rem' }}>
-      <Link to="/" style={{ color: '#4F46E5', textDecoration: 'none', marginBottom: '1rem', display: 'inline-block' }}>
-        ← Back to Home
-      </Link>
-      <h1 style={{ fontSize: '2rem', marginBottom: '2rem' }}>Manufacturing Dashboard</h1>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>Production Output</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827' }}>12,450 units</p>
-          <p style={{ color: '#10B981' }}>↑ 15% from last week</p>
-        </div>
-        
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>Efficiency Rate</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827' }}>94.2%</p>
-          <p style={{ color: '#10B981' }}>↑ 2.1% improvement</p>
-        </div>
-        
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>Active Orders</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827' }}>287</p>
-          <p style={{ color: '#F59E0B' }}>23 pending review</p>
-        </div>
-      </div>
-    </div>
+    <ClerkProvider publishableKey={clerkPubKey} navigate={(to) => navigate(to)}>
+      {children}
+    </ClerkProvider>
   )
 }
 
-function WorkingCapitalPage() {
+// Route component that handles authentication conditionally
+function ProtectedRoute({ children }) {
+  if (!isClerkEnabled) {
+    // If Clerk is disabled, render component directly
+    return children
+  }
+  
+  // If Clerk is enabled, require authentication
   return (
-    <div style={{ padding: '2rem' }}>
-      <Link to="/" style={{ color: '#4F46E5', textDecoration: 'none', marginBottom: '1rem', display: 'inline-block' }}>
-        ← Back to Home
-      </Link>
-      <h1 style={{ fontSize: '2rem', marginBottom: '2rem' }}>Working Capital Management</h1>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>Cash Flow</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827' }}>$2.4M</p>
-          <p style={{ color: '#10B981' }}>Positive trend</p>
-        </div>
-        
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>Accounts Receivable</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827' }}>$1.1M</p>
-          <p style={{ color: '#F59E0B' }}>45 days average</p>
-        </div>
-        
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>Accounts Payable</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827' }}>$780K</p>
-          <p style={{ color: '#10B981' }}>30 days average</p>
-        </div>
-      </div>
-    </div>
+    <SignedIn>
+      {children}
+    </SignedIn>
   )
 }
 
-function AdminPage() {
-  return (
-    <div style={{ padding: '2rem' }}>
-      <Link to="/" style={{ color: '#4F46E5', textDecoration: 'none', marginBottom: '1rem', display: 'inline-block' }}>
-        ← Back to Home
-      </Link>
-      <h1 style={{ fontSize: '2rem', marginBottom: '2rem' }}>Admin Portal</h1>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>System Status</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10B981' }}>All Systems Operational</p>
-        </div>
-        
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>Active Users</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827' }}>47</p>
-        </div>
-        
-        <div style={{ padding: '1.5rem', backgroundColor: '#F3F4F6', borderRadius: '8px' }}>
-          <h3 style={{ color: '#6B7280', marginBottom: '0.5rem' }}>Database</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827' }}>PostgreSQL Connected</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Main App Component - Simple and Working
-export default function App() {
+// Main App component with conditional Clerk integration
+function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/working-capital" element={<WorkingCapitalPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="*" element={<HomePage />} />
-      </Routes>
+      <ClerkWithRouter>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <div style={{ minHeight: '100vh' }}>
+              <Routes>
+                {/* Public landing page */}
+                <Route path="/" element={<HomePage />} />
+                
+                {/* Authentication routes - only if Clerk is enabled */}
+                {isClerkEnabled && (
+                  <>
+                    <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
+                    <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
+                  </>
+                )}
+                
+                {/* Protected routes - conditionally protected */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loading />}>
+                        <EnhancedDashboard />
+                      </Suspense>
+                    </ProtectedRoute>
+                  }
+                />
+                
+                <Route
+                  path="/working-capital"
+                  element={
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loading />}>
+                        <WorkingCapitalDashboard />
+                      </Suspense>
+                    </ProtectedRoute>
+                  }
+                />
+                
+                <Route
+                  path="/admin/*"
+                  element={
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loading />}>
+                        <AdminPortal />
+                      </Suspense>
+                    </ProtectedRoute>
+                  }
+                />
+                
+                <Route
+                  path="/data-import"
+                  element={
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loading />}>
+                        <DataImport />
+                      </Suspense>
+                    </ProtectedRoute>
+                  }
+                />
+                
+                {/* Catch-all route - redirect based on auth status */}
+                <Route
+                  path="*"
+                  element={
+                    isClerkEnabled ? (
+                      <>
+                        <SignedIn>
+                          <Navigate to="/dashboard" replace />
+                        </SignedIn>
+                        <SignedOut>
+                          <RedirectToSignIn />
+                        </SignedOut>
+                      </>
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+              </Routes>
+            </div>
+          </AuthProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </ClerkWithRouter>
     </Router>
   )
 }
+
+export default App

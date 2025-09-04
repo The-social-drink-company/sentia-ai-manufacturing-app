@@ -1,4 +1,5 @@
 // SIMPLE PRODUCTION SERVER - NO EXTRA DEPENDENCIES
+// Force Railway rebuild: 2025-09-04T19:13:00Z
 const express = require('express');
 const path = require('path');
 const cors = require('cors');

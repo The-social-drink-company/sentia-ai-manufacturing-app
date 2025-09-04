@@ -1,0 +1,354 @@
+# Viewer Guide
+
+*Role: Viewer* | *Last Updated: January 2025*
+
+Welcome to the Sentia Manufacturing Dashboard! As a **Viewer**, you have read-only access to view dashboards, reports, and key performance indicators. This guide will help you navigate the system and extract valuable insights.
+
+## Getting Started
+
+### Logging In
+
+1. Navigate to the Sentia Manufacturing Dashboard URL provided by your administrator
+2. Click **"Sign In"** 
+3. Use your provided credentials or sign in through your organization's SSO
+4. You'll be redirected to the main dashboard upon successful authentication
+
+![Login Screen](/assets/docs/screenshots/login-screen.png)
+
+### Understanding Your Role
+
+As a **Viewer**, you can:
+- ✅ View all dashboards and reports
+- ✅ Export data to Excel/PDF formats
+- ✅ Use filters and drill-down capabilities
+- ✅ Set up personal dashboard layouts
+- ❌ Import data or make changes
+- ❌ Approve/reject optimization recommendations
+- ❌ Modify user settings or integrations
+
+## Main Dashboard Overview
+
+### Enhanced Dashboard
+
+The Enhanced Dashboard is your central hub for monitoring manufacturing operations.
+
+#### Key Sections
+
+1. **KPI Strip** (Top bar)
+   - Revenue metrics
+   - Inventory turnover
+   - Working capital utilization
+   - Customer satisfaction scores
+
+2. **Demand Forecast Widget**
+   - 12-month demand projections
+   - Confidence intervals
+   - Historical vs. predicted comparisons
+
+3. **Working Capital Overview**
+   - Current working capital position
+   - Cash conversion cycle (CCC)
+   - Days sales outstanding (DSO)
+   - Days payable outstanding (DPO)
+
+4. **Inventory Management**
+   - Stock levels by category
+   - Reorder point alerts
+   - Slow-moving inventory identification
+
+![Enhanced Dashboard](/assets/docs/screenshots/enhanced-dashboard.png)
+
+### Navigation Tips
+
+- Use **keyboard shortcuts** to navigate quickly:
+  - `g + o` - Go to dashboard
+  - `g + f` - Go to forecasts
+  - `g + w` - Go to working capital
+  - `g + i` - Go to inventory
+
+- **Dark/Light Theme Toggle** - Click the theme switcher in the top-right corner
+
+## Viewing Forecasts
+
+### Demand Forecasting
+
+Navigate to the forecasting section to view demand predictions:
+
+1. **Select Product Categories**
+   - Use the dropdown to filter by product type
+   - Multiple selections are supported
+
+2. **Time Horizon Selection**
+   - Choose from 1, 3, 6, or 12-month forecasts
+   - Seasonal patterns are automatically detected
+
+3. **Confidence Levels**
+   - View prediction intervals (80%, 95%)
+   - Understand forecast uncertainty
+
+![Forecast View](/assets/docs/screenshots/forecast-view.png)
+
+### Interpreting Forecast Charts
+
+- **Blue Line**: Historical actual demand
+- **Green Line**: Predicted demand
+- **Shaded Area**: Confidence interval
+- **Red Dots**: Significant events or outliers
+
+### Key Metrics to Monitor
+
+| Metric | Description | Good Range |
+|--------|-------------|------------|
+| MAPE | Mean Absolute Percentage Error | < 15% |
+| Bias | Forecast bias (over/under prediction) | -5% to +5% |
+| R² | Coefficient of determination | > 0.8 |
+
+## Working Capital Analysis
+
+### Understanding Working Capital KPIs
+
+Navigate to **Working Capital** → **Overview** to see:
+
+#### Cash Conversion Cycle (CCC)
+- **Formula**: DSO + DIO - DPO
+- **Target**: Minimize while maintaining service levels
+- **Industry Benchmark**: 30-60 days for manufacturing
+
+#### Key Components
+
+1. **Days Sales Outstanding (DSO)**
+   - How long it takes to collect receivables
+   - Target: < 45 days
+
+2. **Days Inventory Outstanding (DIO)** 
+   - How long inventory sits before being sold
+   - Target: 30-90 days depending on product type
+
+3. **Days Payable Outstanding (DPO)**
+   - How long you take to pay suppliers
+   - Target: Negotiate for 60+ days
+
+![Working Capital Dashboard](/assets/docs/screenshots/working-capital.png)
+
+### Scenario Analysis
+
+View different working capital scenarios:
+
+1. **Current State**: Baseline working capital position
+2. **Optimized**: AI-recommended improvements
+3. **Conservative**: Risk-averse approach
+4. **Aggressive**: Maximum cash preservation
+
+## Inventory Management
+
+### Stock Level Monitoring
+
+#### Reorder Point Analysis
+- **Red**: Below reorder point (immediate action needed)
+- **Yellow**: Approaching reorder point (plan orders)
+- **Green**: Adequate stock levels
+
+#### ABC Classification
+- **A Items**: High-value, tight control (20% items, 80% value)
+- **B Items**: Moderate control (30% items, 15% value)
+- **C Items**: Loose control (50% items, 5% value)
+
+### Slow-Moving Inventory
+
+Identify products with low turnover:
+- **Turnover < 2**: Review for discontinuation
+- **Turnover 2-4**: Monitor closely
+- **Turnover > 4**: Performing well
+
+![Inventory Analysis](/assets/docs/screenshots/inventory-analysis.png)
+
+## Data Export & Sharing
+
+### Exporting Reports
+
+1. **Excel Export**
+   - Click **"Export"** → **"Excel"**
+   - Includes raw data and calculations
+   - Formatted for further analysis
+
+2. **PDF Export**
+   - Click **"Export"** → **"PDF"**
+   - Includes charts and executive summary
+   - Suitable for sharing with stakeholders
+
+3. **Dashboard Screenshots**
+   - Click **"Share"** → **"Screenshot"**
+   - High-resolution image suitable for presentations
+
+### Scheduling Automated Reports
+
+Set up recurring reports:
+1. Go to **Settings** → **Report Scheduling**
+2. Choose report type and frequency
+3. Add email recipients
+4. Set delivery time preferences
+
+![Export Options](/assets/docs/screenshots/export-options.png)
+
+## Filters & Drill-Down
+
+### Using Filters
+
+Apply filters to focus on specific data:
+
+#### Date Range Filters
+- **Quick Options**: Last 7 days, Last 30 days, Last quarter
+- **Custom Range**: Select specific start and end dates
+- **Comparison**: Compare with previous period
+
+#### Product Filters
+- **Category**: Filter by product category
+- **SKU**: Search for specific products
+- **Supplier**: Filter by supplier/vendor
+
+#### Geographic Filters
+- **Region**: North America, Europe, Asia-Pacific
+- **Country**: Specific country analysis
+- **Warehouse**: Location-based inventory
+
+### Drill-Down Capabilities
+
+Click on any chart element to drill down:
+- **Revenue** → By product category → By specific SKU
+- **Inventory** → By warehouse → By product → By batch
+- **Forecast** → By month → By week → By day
+
+## Understanding Alerts & Notifications
+
+### Alert Types
+
+1. **Critical Alerts** (Red)
+   - Stock-outs imminent
+   - Forecast accuracy dropped significantly
+   - Working capital limit exceeded
+
+2. **Warning Alerts** (Yellow)
+   - Approaching reorder points
+   - Forecast accuracy declining
+   - Payment terms changing
+
+3. **Info Alerts** (Blue)
+   - Data refresh completed
+   - New reports available
+   - System maintenance scheduled
+
+### Managing Notifications
+
+Customize your notification preferences:
+1. Go to **Profile** → **Notifications**
+2. Choose alert types to receive
+3. Select delivery method (email, in-app, mobile)
+4. Set quiet hours to avoid after-hours alerts
+
+## Mobile Access
+
+### Mobile App Features
+
+Access key dashboards on mobile devices:
+- **Dashboard Overview**: KPIs and alerts
+- **Quick Forecasts**: Next 30-day predictions
+- **Inventory Alerts**: Critical stock situations
+- **Approval Workflows**: For managers with approval rights
+
+### Offline Capabilities
+
+- **Cached Dashboards**: View recent data offline
+- **Export Downloads**: Access previously downloaded reports
+- **Sync on Reconnect**: Automatic update when online
+
+## Performance Tips
+
+### Optimizing Dashboard Load Times
+
+1. **Use Date Filters**: Limit data range for faster loading
+2. **Minimize Widgets**: Hide unused dashboard widgets
+3. **Regular Refresh**: Use auto-refresh for live data
+4. **Browser Cache**: Clear cache if experiencing slow performance
+
+### Best Practices
+
+- **Regular Check-ins**: Review dashboards daily for emerging trends
+- **Proactive Monitoring**: Set up alerts for key metrics
+- **Cross-Reference Data**: Validate insights across multiple views
+- **Document Observations**: Keep notes on significant changes
+
+## Troubleshooting Common Issues
+
+### Data Not Loading
+
+1. **Check Internet Connection**: Ensure stable connectivity
+2. **Refresh Browser**: Hard refresh with Ctrl+F5 (Cmd+Shift+R on Mac)
+3. **Clear Cache**: Clear browser cache and cookies
+4. **Contact Support**: If issues persist, contact your administrator
+
+### Export Failures
+
+1. **File Size**: Large exports may timeout - try smaller date ranges
+2. **Browser Settings**: Allow pop-ups for download dialogs
+3. **Alternative Formats**: Try different export format if one fails
+
+### Missing Data
+
+1. **Data Lag**: Some integrations have 1-4 hour delays
+2. **Weekend Processing**: Some updates occur only on business days
+3. **Integration Issues**: Check with administrator about data source status
+
+## Getting Help
+
+### In-App Help
+
+- **Help Menu**: Access contextual help for each page
+- **Tooltips**: Hover over metrics for definitions
+- **Guided Tours**: First-time user walkthroughs
+
+### Documentation
+
+- **Knowledge Base**: Comprehensive help articles
+- **Video Tutorials**: Step-by-step visual guides
+- **FAQ**: Common questions and answers
+
+### Support Channels
+
+- **Help Desk**: Submit tickets for technical issues
+- **Training Sessions**: Regular user training webinars
+- **User Forums**: Community discussions and tips
+
+---
+
+## Quick Reference
+
+### Essential Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `g + o` | Go to main dashboard |
+| `g + f` | Go to forecasts |
+| `g + w` | Go to working capital |
+| `g + i` | Go to inventory |
+| `Ctrl + K` | Open search |
+| `?` | Show all shortcuts |
+
+### Key Metrics Glossary
+
+- **CCC**: Cash Conversion Cycle
+- **DSO**: Days Sales Outstanding  
+- **DIO**: Days Inventory Outstanding
+- **DPO**: Days Payable Outstanding
+- **MAPE**: Mean Absolute Percentage Error
+- **EOQ**: Economic Order Quantity
+- **ROP**: Reorder Point
+
+### Contact Information
+
+- **Help Desk**: help@sentia.com
+- **Training**: training@sentia.com  
+- **Administrator**: [Your admin contact]
+
+---
+
+*This guide is updated regularly. For the latest version, check the documentation portal.*

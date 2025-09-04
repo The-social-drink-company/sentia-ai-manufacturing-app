@@ -1,102 +1,203 @@
 import React from 'react'
-import { RedirectToSignIn } from '@clerk/clerk-react'
+import { useAuth } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
+import { AlertCircle, Shield, Clock, Loader2 } from 'lucide-react'
 
 export default function ProtectedRoute({ 
   children, 
   requireAdmin = false,
   requiredRole = null,
-  requiredPermission = null 
+  requiredPermission = null,
+  requiredRoleAtLeast = null,
+  requiredFeature = null,
+  fallback = null
 }) {
+  const { isLoaded, isSignedIn } = useAuth()
   const { 
     isLoading, 
     isAuthenticated, 
-    user, 
+    hasRole, 
+    hasPermission, 
+    isRoleAtLeast,
+    hasFeature,
     role,
-    hasRole,
-    hasPermission 
+    getUserDisplayName
   } = useAuthRole()
 
-  if (isLoading) {
+  // Loading states
+  if (!isLoaded || isLoading) {
     return (
-      <div className="loading-spinner">
-        <div className="spinner">Loading...</div>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return <RedirectToSignIn />
-  }
-
-  // Check if user account is approved
-  const isApproved = user?.publicMetadata?.approved === true
-  const isAdmin = role === 'admin'
-  const isMasterAdmin = user?.publicMetadata?.masterAdmin === true
-  
-  // Master admin users have unlimited access to everything
-  if (isMasterAdmin) {
-    return children
-  }
-
-  // Regular admin users are always approved
-  if (isAdmin) {
-    return children
-  }
-
-  // Check admin requirement (for backward compatibility)
-  if (requireAdmin && !isAdmin && !isMasterAdmin) {
-    return (
-      <div className="access-denied">
-        <div className="access-denied-content">
-          <h2>Access Denied</h2>
-          <p>Administrator privileges required to access this page.</p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-blue-600" />
+          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+            Checking authentication...
+          </p>
         </div>
       </div>
     )
   }
 
-  // Check specific role requirement
-  if (requiredRole && !hasRole(requiredRole)) {
+  // Not signed in
+  if (!isSignedIn || !isAuthenticated) {
     return (
-      <div className="access-denied">
-        <div className="access-denied-content">
-          <h2>Access Denied</h2>
-          <p>Required role: {requiredRole}</p>
-          <p>Your role: {role}</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Check specific permission requirement
-  if (requiredPermission && !hasPermission(requiredPermission)) {
-    return (
-      <div className="access-denied">
-        <div className="access-denied-content">
-          <h2>Access Denied</h2>
-          <p>You don't have the required permission to access this page.</p>
-          <p>Required permission: {requiredPermission}</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Check approval status for regular users (master admin bypasses this check)
-  if (!isApproved && !isAdmin && !isMasterAdmin) {
-    return (
-      <div className="pending-approval">
-        <div className="pending-approval-content">
-          <h2>Account Pending Approval</h2>
-          <p>Your account is currently under review by an administrator.</p>
-          <p>You will receive access once your account has been approved.</p>
-          <div className="pending-details">
-            <strong>Email:</strong> {user?.emailAddresses[0]?.emailAddress}
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div className="text-center">
+            <Shield className="mx-auto h-12 w-12 text-red-500 mb-4" />
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Authentication Required
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              You need to sign in to access this page.
+            </p>
+            <button
+              onClick={() => window.location.href = '/'}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            >
+              Go to Sign In
+            </button>
           </div>
         </div>
       </div>
     )
   }
 
-  return children
+  // Check admin requirement
+  if (requireAdmin && role !== 'admin') {
+    return <UnauthorizedAccess 
+      reason="Admin access required" 
+      userRole={role}
+      requiredRole="admin"
+      fallback={fallback}
+    />
+  }
+
+  // Check specific role requirement
+  if (requiredRole && !hasRole(requiredRole)) {
+    return <UnauthorizedAccess 
+      reason="Specific role required" 
+      userRole={role}
+      requiredRole={requiredRole}
+      fallback={fallback}
+    />
+  }
+
+  // Check minimum role level requirement  
+  if (requiredRoleAtLeast && !isRoleAtLeast(requiredRoleAtLeast)) {
+    return <UnauthorizedAccess 
+      reason="Insufficient role level" 
+      userRole={role}
+      requiredRole={`${requiredRoleAtLeast} or higher`}
+      fallback={fallback}
+    />
+  }
+
+  // Check permission requirement
+  if (requiredPermission && !hasPermission(requiredPermission)) {
+    return <UnauthorizedAccess 
+      reason="Missing required permission" 
+      userRole={role}
+      requiredPermission={requiredPermission}
+      fallback={fallback}
+    />
+  }
+
+  // Check feature requirement
+  if (requiredFeature && !hasFeature(requiredFeature)) {
+    return <UnauthorizedAccess 
+      reason="Feature not available" 
+      userRole={role}
+      requiredFeature={requiredFeature}
+      fallback={fallback}
+    />
+  }
+
+  // All checks passed - render children
+  return <>{children}</>
 }
+
+// Unauthorized access component
+function UnauthorizedAccess({ 
+  reason, 
+  userRole, 
+  requiredRole, 
+  requiredPermission, 
+  requiredFeature, 
+  fallback 
+}) {
+  // If a custom fallback component is provided, use it
+  if (fallback) {
+    return fallback
+  }
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div className="text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-amber-500 mb-4" />
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Access Denied
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {reason}
+          </p>
+          
+          {/* Show access details */}
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6 text-left">
+            <div className="text-sm space-y-2">
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-700 dark:text-gray-300">Your Role:</span>
+                <span className="text-gray-900 dark:text-white capitalize">{userRole || 'Unknown'}</span>
+              </div>
+              
+              {requiredRole && (
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Required Role:</span>
+                  <span className="text-gray-900 dark:text-white capitalize">{requiredRole}</span>
+                </div>
+              )}
+              
+              {requiredPermission && (
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Required Permission:</span>
+                  <span className="text-gray-900 dark:text-white font-mono text-xs">{requiredPermission}</span>
+                </div>
+              )}
+              
+              {requiredFeature && (
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Required Feature:</span>
+                  <span className="text-gray-900 dark:text-white">{requiredFeature}</span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="space-y-3">
+            <button
+              onClick={() => window.location.href = '/dashboard'}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            >
+              Go to Dashboard
+            </button>
+            
+            <button
+              onClick={() => window.history.back()}
+              className="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-md transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
+          
+          <p className="mt-6 text-xs text-gray-500 dark:text-gray-400">
+            If you believe this is an error, please contact your administrator.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Export additional utility components for convenience
+export { UnauthorizedAccess }

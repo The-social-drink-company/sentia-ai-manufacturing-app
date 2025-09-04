@@ -1,0 +1,455 @@
+# Operator Guide
+
+*Role: Operator* | *Last Updated: January 2025*
+
+Welcome to the Sentia Manufacturing Dashboard! As an **Operator**, you have all Viewer capabilities plus the ability to import data, perform basic corrections, and execute retry operations. This guide covers your specific operational responsibilities.
+
+## Your Role & Permissions
+
+### What You Can Do
+
+- ✅ All Viewer capabilities (dashboards, reports, exports)
+- ✅ Import data from various sources
+- ✅ Correct data entry errors
+- ✅ Retry failed data processing jobs
+- ✅ Monitor data quality and resolve issues
+- ✅ Execute predefined data maintenance tasks
+- ❌ Approve/reject optimization recommendations
+- ❌ Modify user settings or system configuration
+- ❌ Access admin functions
+
+## Data Import Operations
+
+### Supported Import Sources
+
+#### File Uploads
+- **Excel Files** (.xlsx, .xls)
+- **CSV Files** (.csv)
+- **JSON Files** (.json)
+- **XML Files** (.xml)
+
+#### API Integrations
+- **Shopify** (orders, products, customers)
+- **Amazon Seller Central** (sales, inventory)
+- **Unleashed Software** (inventory, purchases)
+- **Xero** (financial data)
+
+![Import Dashboard](/assets/docs/screenshots/import-dashboard.png)
+
+### File Import Process
+
+#### Step 1: Access Import Interface
+1. Navigate to **Data** → **Import**
+2. Select import type (Sales, Inventory, Financial, etc.)
+3. Choose data source (File Upload or Integration)
+
+#### Step 2: File Upload
+```bash
+Supported formats:
+- Excel: .xlsx, .xls (max 50MB)
+- CSV: .csv (max 100MB) 
+- JSON: .json (max 25MB)
+```
+
+1. **Drag and drop** files or **click to browse**
+2. **Preview** uploaded file structure
+3. **Validate** data format before processing
+
+#### Step 3: Column Mapping
+
+Map your file columns to system fields:
+
+| Your Column | System Field | Required | Notes |
+|-------------|--------------|----------|-------|
+| Product_Code | SKU | Yes | Must be unique |
+| Item_Name | Product_Name | Yes | 255 char limit |
+| Stock_Qty | Quantity | Yes | Numeric only |
+| Unit_Price | Price | No | Default currency |
+
+![Column Mapping](/assets/docs/screenshots/column-mapping.png)
+
+#### Step 4: Data Validation
+
+The system automatically validates:
+- **Required Fields**: All mandatory fields populated
+- **Data Types**: Numeric, date, text validation
+- **Business Rules**: Price > 0, Quantity >= 0
+- **Duplicates**: Identify duplicate records
+
+#### Step 5: Import Execution
+
+1. Review validation summary
+2. Choose handling for errors:
+   - **Skip errors**: Process valid records only
+   - **Fail on errors**: Stop if any validation fails
+   - **Quarantine errors**: Move invalid records for review
+
+3. Click **"Start Import"**
+4. Monitor progress in real-time
+
+### Import Status Monitoring
+
+#### Import Queue Dashboard
+
+Monitor all import jobs:
+- **Pending**: Waiting for processing
+- **In Progress**: Currently running
+- **Completed**: Successfully finished
+- **Failed**: Encountered errors
+- **Cancelled**: Manually stopped
+
+#### Real-Time Progress
+
+Track import progress:
+```
+Import Status: Processing Sales Data
+Progress: 2,450 / 5,000 records (49%)
+Estimated Time: 8 minutes remaining
+Errors Found: 12 records quarantined
+```
+
+![Import Progress](/assets/docs/screenshots/import-progress.png)
+
+## Data Quality & Error Resolution
+
+### Error Types & Resolution
+
+#### Validation Errors
+
+1. **Missing Required Fields**
+   - **Error**: "SKU field is required"
+   - **Solution**: Add missing SKU values
+   - **Tools**: Bulk edit in quarantine area
+
+2. **Data Type Mismatches**
+   - **Error**: "Price must be numeric"
+   - **Solution**: Convert text to numbers
+   - **Tools**: Data transformation rules
+
+3. **Business Rule Violations**
+   - **Error**: "Negative inventory quantity"
+   - **Solution**: Review source data
+   - **Tools**: Exception reporting
+
+#### Data Quality Issues
+
+1. **Duplicate Records**
+   - **Detection**: Automatic duplicate identification
+   - **Resolution**: Choose master record or merge
+   - **Prevention**: Set up deduplication rules
+
+2. **Inconsistent Formatting**
+   - **Issue**: Date formats (MM/DD/YYYY vs DD/MM/YYYY)
+   - **Solution**: Apply formatting templates
+   - **Tool**: Format standardization
+
+3. **Missing Reference Data**
+   - **Issue**: Product SKU not found in master data
+   - **Solution**: Create new product or map to existing
+   - **Tool**: Reference data management
+
+### Error Correction Workflows
+
+#### Quarantine Management
+
+Access quarantined records:
+1. Go to **Data** → **Quarantine**
+2. Filter by error type or import batch
+3. Select records for correction
+4. Apply bulk corrections or edit individually
+
+#### Bulk Correction Tools
+
+1. **Find & Replace**
+   - Replace specific values across multiple records
+   - Support for regex patterns
+   - Preview changes before applying
+
+2. **Data Transformation**
+   - Apply formatting rules (uppercase, lowercase, trim)
+   - Date format standardization
+   - Unit conversions
+
+3. **Reference Mapping**
+   - Map unknown values to master data
+   - Create mapping rules for future imports
+   - Bulk approval of new reference items
+
+![Error Correction](/assets/docs/screenshots/error-correction.png)
+
+## Integration Management
+
+### Shopify Integration
+
+#### Setup Verification
+1. Check **Integrations** → **Shopify**
+2. Verify connection status: **Connected** ✅
+3. Review last sync timestamp
+4. Check for error messages
+
+#### Manual Sync Operations
+```bash
+Sync Options:
+- Products: Update product catalog
+- Orders: Pull recent orders (last 30 days)
+- Customers: Sync customer data  
+- Inventory: Update stock levels
+```
+
+#### Sync Monitoring
+- **Success Rate**: Track sync success percentage
+- **Error Logs**: Review failed sync attempts
+- **Data Volume**: Monitor records processed
+- **Sync Duration**: Track performance
+
+### Amazon Seller Central
+
+#### Order Management
+1. **Order Sync**: Automatic hourly synchronization
+2. **Status Updates**: Track fulfillment status
+3. **Returns Processing**: Handle return authorizations
+
+#### Inventory Updates
+- **Real-time**: FBA inventory levels
+- **Scheduled**: FBM inventory updates (every 4 hours)
+- **Manual**: On-demand sync for urgent updates
+
+### Unleashed Software
+
+#### Inventory Synchronization
+- **Products**: Master product data
+- **Stock Levels**: Current inventory quantities  
+- **Movements**: Stock transactions (in/out)
+- **Adjustments**: Inventory corrections
+
+#### Purchase Order Integration
+- **PO Status**: Track purchase order lifecycle
+- **Receipts**: Record goods received
+- **Supplier Performance**: Monitor delivery metrics
+
+## Retry Operations
+
+### Failed Job Recovery
+
+#### Identifying Failed Jobs
+1. Navigate to **Operations** → **Job Queue**
+2. Filter by status: **Failed**
+3. Review error details and root cause
+4. Determine if retry is appropriate
+
+#### Retry Decision Matrix
+
+| Error Type | Retry Action | Notes |
+|------------|--------------|-------|
+| Network Timeout | Automatic Retry | Usually resolves itself |
+| Invalid Data | Fix Then Retry | Requires data correction |
+| System Error | Manual Retry | Check system status first |
+| Business Rule | Don't Retry | Fix business logic first |
+
+#### Manual Retry Process
+
+1. **Select Failed Job**: Click on failed job in queue
+2. **Review Error**: Understand failure reason
+3. **Fix Issues**: Resolve underlying problems
+4. **Retry Job**: Click **"Retry"** button
+5. **Monitor Progress**: Watch for successful completion
+
+![Job Retry](/assets/docs/screenshots/job-retry.png)
+
+### Batch Retry Operations
+
+For multiple failed jobs:
+1. **Select Multiple**: Use checkboxes to select jobs
+2. **Bulk Actions**: Choose **"Retry Selected"**
+3. **Confirmation**: Review jobs to be retried
+4. **Execute**: Start batch retry process
+
+## Data Maintenance
+
+### Regular Maintenance Tasks
+
+#### Daily Operations
+- [ ] Check import queue for failed jobs
+- [ ] Review quarantined records
+- [ ] Monitor integration sync status
+- [ ] Clear completed import logs (>30 days)
+
+#### Weekly Operations  
+- [ ] Review data quality metrics
+- [ ] Clean up temporary files
+- [ ] Update reference data mappings
+- [ ] Archive old import files
+
+#### Monthly Operations
+- [ ] Full data quality audit
+- [ ] Review and optimize import templates
+- [ ] Update integration credentials if needed
+- [ ] Performance optimization review
+
+### Data Cleanup Tools
+
+#### Duplicate Detection
+1. **Run Analysis**: Scan for duplicate records
+2. **Review Matches**: Verify duplicate candidates
+3. **Choose Action**: Merge, delete, or mark as different
+4. **Execute Cleanup**: Apply changes
+
+#### Orphaned Record Cleanup
+- **Products**: Without inventory records
+- **Orders**: Without customer records  
+- **Inventory**: Without product records
+
+#### Data Archiving
+- **Old Import Files**: Archive files >90 days
+- **Completed Jobs**: Archive job logs >180 days
+- **Error Logs**: Retain for 1 year minimum
+
+## Performance Monitoring
+
+### Import Performance Metrics
+
+Track key performance indicators:
+- **Throughput**: Records processed per hour
+- **Error Rate**: Percentage of failed records
+- **Processing Time**: Average time per import
+- **Queue Length**: Number of pending jobs
+
+#### Benchmarks
+| Metric | Target | Alert Threshold |
+|--------|--------|-----------------|
+| Error Rate | < 2% | > 5% |
+| Processing Speed | > 1000 records/min | < 500 records/min |
+| Queue Length | < 10 jobs | > 50 jobs |
+
+### System Health Indicators
+
+Monitor system performance:
+- **Database Response**: Query execution time
+- **Integration APIs**: Response time and availability
+- **File Storage**: Disk space utilization
+- **Memory Usage**: System resource consumption
+
+## Troubleshooting Guide
+
+### Common Import Issues
+
+#### "File Format Not Recognized"
+**Symptoms**: Upload fails with format error
+**Solutions**:
+1. Verify file extension matches content
+2. Check for file corruption
+3. Try saving in different format
+4. Remove special characters from filename
+
+#### "Column Mapping Failed"
+**Symptoms**: Cannot map required fields
+**Solutions**:
+1. Check column headers match expected format
+2. Verify data types in source file
+3. Remove empty columns
+4. Check for merged cells in Excel
+
+#### "Import Stuck in Processing"
+**Symptoms**: Import shows processing for >30 minutes
+**Solutions**:
+1. Check system status dashboard
+2. Contact administrator if system issue
+3. Cancel and restart import if possible
+4. Try smaller batch size
+
+### Integration Issues
+
+#### "Shopify Connection Lost"
+**Symptoms**: Sync fails with authentication error
+**Solutions**:
+1. Check API credentials in settings
+2. Verify Shopify app permissions
+3. Re-authenticate if needed
+4. Contact administrator for credential updates
+
+#### "Amazon API Rate Limit"
+**Symptoms**: Sync fails with rate limit error
+**Solutions**:
+1. Wait for rate limit reset (usually 1 hour)
+2. Reduce sync frequency temporarily
+3. Contact administrator to review API usage
+
+## Best Practices
+
+### Import Best Practices
+
+1. **Prepare Data**: Clean data before import
+2. **Test First**: Use small samples for testing
+3. **Schedule Wisely**: Avoid peak system usage
+4. **Monitor Progress**: Don't start and forget
+5. **Document Issues**: Track recurring problems
+
+### Error Handling Best Practices
+
+1. **Fix Root Causes**: Don't just retry failures
+2. **Batch Corrections**: Group similar fixes
+3. **Validate Fixes**: Test corrections before applying
+4. **Document Solutions**: Create playbooks
+5. **Escalate When Needed**: Know when to ask for help
+
+### Integration Best Practices
+
+1. **Regular Health Checks**: Monitor connection status
+2. **Sync Scheduling**: Optimize timing for business needs
+3. **Error Response**: React quickly to sync failures
+4. **Data Validation**: Verify synced data accuracy
+5. **Backup Procedures**: Know rollback procedures
+
+## Getting Help
+
+### Support Resources
+
+1. **Built-in Help**: Context-sensitive help in each screen
+2. **Knowledge Base**: Searchable help articles
+3. **Video Tutorials**: Step-by-step visual guides
+4. **User Community**: Forums for tips and tricks
+
+### Escalation Process
+
+1. **Level 1**: Try built-in help and documentation
+2. **Level 2**: Contact your team lead or supervisor
+3. **Level 3**: Submit help desk ticket
+4. **Level 4**: Emergency escalation for critical issues
+
+### Emergency Procedures
+
+For critical data issues:
+1. **Stop Imports**: Pause all active imports
+2. **Document Issue**: Record what went wrong
+3. **Contact Administrator**: Immediate escalation
+4. **Preserve Evidence**: Don't delete error files
+
+---
+
+## Quick Reference
+
+### Import Checklist
+- [ ] Verify file format and size
+- [ ] Check column mapping
+- [ ] Review validation results
+- [ ] Monitor import progress
+- [ ] Handle errors appropriately
+- [ ] Verify imported data
+
+### Error Resolution Steps
+1. Identify error type
+2. Understand root cause
+3. Apply appropriate fix
+4. Test correction
+5. Retry if needed
+6. Document solution
+
+### Emergency Contacts
+- **Team Lead**: [Contact info]
+- **System Administrator**: [Contact info]
+- **Help Desk**: help@sentia.com
+- **Emergency Line**: [Emergency number]
+
+---
+
+*This guide is updated regularly. Check for the latest version in the documentation portal.*

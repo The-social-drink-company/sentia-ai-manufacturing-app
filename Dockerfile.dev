@@ -1,0 +1,36 @@
+# Development Dockerfile with hot reload
+FROM node:18-alpine
+
+# Install development tools
+RUN apk add --no-cache python3 make g++ git
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies including devDependencies
+RUN npm install
+
+# Copy application files
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Create necessary directories
+RUN mkdir -p logs uploads temp
+
+# Set development environment
+ENV NODE_ENV=development
+ENV CHOKIDAR_USEPOLLING=true
+
+# Expose ports for both frontend and backend
+EXPOSE 3000 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:5000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); });"
+
+# Start development servers
+CMD ["npm", "run", "dev"]

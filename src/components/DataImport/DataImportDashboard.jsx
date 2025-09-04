@@ -1,1 +1,350 @@
-import React, { useState, useEffect } from 'react';\nimport { Upload, BarChart3, Clock, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';\nimport { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';\nimport { Button } from '@/components/ui/button';\nimport { Badge } from '@/components/ui/badge';\nimport { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';\nimport { ScrollArea } from '@/components/ui/scroll-area';\nimport DataImportUploader from './DataImportUploader';\nimport DataImportStepper from './DataImportStepper';\nimport DataPreviewMapper from './DataPreviewMapper';\nimport ValidationConfig from './ValidationConfig';\nimport DataImportResults from './DataImportResults';\n\nconst DataImportDashboard = () => {\n  const [currentStep, setCurrentStep] = useState(1);\n  const [currentImportJob, setCurrentImportJob] = useState(null);\n  const [importHistory, setImportHistory] = useState([]);\n  const [queueStats, setQueueStats] = useState(null);\n  const [loading, setLoading] = useState(true);\n  const [mappingConfig, setMappingConfig] = useState(null);\n  const [validationConfig, setValidationConfig] = useState(null);\n\n  useEffect(() => {\n    fetchImportHistory();\n    fetchQueueStats();\n    \n    // Set up periodic refresh for queue stats\n    const interval = setInterval(fetchQueueStats, 10000);\n    return () => clearInterval(interval);\n  }, []);\n\n  const fetchImportHistory = async () => {\n    try {\n      const response = await fetch('/api/import/jobs?pageSize=20');\n      const data = await response.json();\n      if (data.success) {\n        setImportHistory(data.jobs);\n      }\n    } catch (error) {\n      console.error('Failed to fetch import history:', error);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const fetchQueueStats = async () => {\n    try {\n      const response = await fetch('/api/queue/stats');\n      const data = await response.json();\n      if (data.success) {\n        setQueueStats(data.stats);\n      }\n    } catch (error) {\n      console.error('Failed to fetch queue stats:', error);\n    }\n  };\n\n  const handleUploadComplete = (result) => {\n    setCurrentImportJob({\n      id: result.importJobId,\n      filename: result.filename,\n      status: 'uploaded'\n    });\n    setCurrentStep(2);\n    fetchImportHistory(); // Refresh history\n  };\n\n  const handleMappingComplete = (config) => {\n    setMappingConfig(config);\n    setCurrentStep(3);\n  };\n\n  const handleValidationStart = async (config) => {\n    setValidationConfig(config);\n    \n    try {\n      // First start the import processing\n      const processResponse = await fetch(`/api/import/process/${config.importJobId}`, {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({\n          mappingConfig: mappingConfig?.mapping,\n          validationRules: config.validationConfig\n        })\n      });\n      \n      const processData = await processResponse.json();\n      \n      if (processData.success) {\n        // Then start validation\n        const validateResponse = await fetch(`/api/import/validate/${config.importJobId}`, {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({\n            validationConfig: config.validationConfig\n          })\n        });\n        \n        const validateData = await validateResponse.json();\n        \n        if (validateData.success) {\n          setCurrentStep(4);\n          setCurrentImportJob(prev => ({ ...prev, status: 'processing' }));\n        }\n      }\n    } catch (error) {\n      console.error('Failed to start validation:', error);\n    }\n  };\n\n  const handleNewImport = () => {\n    setCurrentStep(1);\n    setCurrentImportJob(null);\n    setMappingConfig(null);\n    setValidationConfig(null);\n    fetchImportHistory();\n  };\n\n  const getStatusIcon = (status) => {\n    switch (status) {\n      case 'completed':\n        return <CheckCircle className=\"h-4 w-4 text-green-500\" />;\n      case 'completed_with_errors':\n        return <AlertCircle className=\"h-4 w-4 text-yellow-500\" />;\n      case 'failed':\n        return <AlertCircle className=\"h-4 w-4 text-red-500\" />;\n      case 'processing':\n      case 'validating':\n        return <Clock className=\"h-4 w-4 text-blue-500\" />;\n      default:\n        return <Clock className=\"h-4 w-4 text-gray-500\" />;\n    }\n  };\n\n  const getStatusColor = (status) => {\n    switch (status) {\n      case 'completed':\n        return 'bg-green-100 text-green-800';\n      case 'completed_with_errors':\n        return 'bg-yellow-100 text-yellow-800';\n      case 'failed':\n        return 'bg-red-100 text-red-800';\n      case 'processing':\n      case 'validating':\n        return 'bg-blue-100 text-blue-800';\n      default:\n        return 'bg-gray-100 text-gray-800';\n    }\n  };\n\n  const renderCurrentStep = () => {\n    switch (currentStep) {\n      case 1:\n        return (\n          <DataImportUploader \n            onUploadComplete={handleUploadComplete}\n            onError={(error) => console.error('Upload error:', error)}\n          />\n        );\n      case 2:\n        return (\n          <DataPreviewMapper\n            importJobId={currentImportJob?.id}\n            onMappingComplete={handleMappingComplete}\n            onError={(error) => console.error('Mapping error:', error)}\n          />\n        );\n      case 3:\n        return (\n          <ValidationConfig\n            importJobId={currentImportJob?.id}\n            dataType={mappingConfig?.dataType || 'products'}\n            mappingConfig={mappingConfig?.mapping || {}}\n            onValidationStart={handleValidationStart}\n            onError={(error) => console.error('Validation error:', error)}\n          />\n        );\n      case 4:\n      case 5:\n        return (\n          <DataImportResults\n            importJobId={currentImportJob?.id}\n            onRetry={() => setCurrentStep(1)}\n            onNewImport={handleNewImport}\n          />\n        );\n      default:\n        return null;\n    }\n  };\n\n  return (\n    <div className=\"space-y-6 p-6\">\n      {/* Header */}\n      <div className=\"flex items-center justify-between\">\n        <div>\n          <h1 className=\"text-3xl font-bold\">Data Import Dashboard</h1>\n          <p className=\"text-gray-600 mt-1\">\n            Upload, validate, and import data into the manufacturing system\n          </p>\n        </div>\n        <Button onClick={handleNewImport} className=\"flex items-center gap-2\">\n          <Upload className=\"h-4 w-4\" />\n          New Import\n        </Button>\n      </div>\n\n      <div className=\"grid grid-cols-1 lg:grid-cols-4 gap-6\">\n        {/* Left Sidebar - Current Import Progress */}\n        <div className=\"lg:col-span-1 space-y-6\">\n          {currentImportJob && (\n            <DataImportStepper\n              currentStep={currentStep}\n              importJobId={currentImportJob.id}\n              importStatus={currentImportJob.status}\n              onStepChange={setCurrentStep}\n            />\n          )}\n\n          {/* Queue Statistics */}\n          {queueStats && (\n            <Card>\n              <CardHeader>\n                <CardTitle className=\"flex items-center gap-2\">\n                  <TrendingUp className=\"h-5 w-5\" />\n                  Queue Status\n                </CardTitle>\n              </CardHeader>\n              <CardContent className=\"space-y-3\">\n                {queueStats.available ? (\n                  <>\n                    {Object.entries(queueStats.queues || {}).map(([queueName, stats]) => (\n                      <div key={queueName} className=\"space-y-2\">\n                        <div className=\"text-sm font-medium capitalize\">\n                          {queueName.replace('-', ' ')}\n                        </div>\n                        <div className=\"grid grid-cols-2 gap-2 text-xs\">\n                          <div className=\"bg-yellow-50 p-2 rounded text-center\">\n                            <div className=\"font-semibold\">{stats.waiting}</div>\n                            <div className=\"text-yellow-600\">Waiting</div>\n                          </div>\n                          <div className=\"bg-blue-50 p-2 rounded text-center\">\n                            <div className=\"font-semibold\">{stats.active}</div>\n                            <div className=\"text-blue-600\">Active</div>\n                          </div>\n                        </div>\n                      </div>\n                    ))}\n                  </>\n                ) : (\n                  <div className=\"text-sm text-gray-500\">\n                    Queue service unavailable - processing synchronously\n                  </div>\n                )}\n              </CardContent>\n            </Card>\n          )}\n        </div>\n\n        {/* Main Content Area */}\n        <div className=\"lg:col-span-3\">\n          {renderCurrentStep()}\n        </div>\n      </div>\n\n      {/* Import History */}\n      <Card className=\"mt-8\">\n        <CardHeader>\n          <CardTitle className=\"flex items-center gap-2\">\n            <BarChart3 className=\"h-5 w-5\" />\n            Recent Imports\n          </CardTitle>\n        </CardHeader>\n        <CardContent>\n          {loading ? (\n            <div className=\"text-center py-8\">\n              <div className=\"animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4\"></div>\n              <p>Loading import history...</p>\n            </div>\n          ) : importHistory.length === 0 ? (\n            <div className=\"text-center py-8 text-gray-500\">\n              <Upload className=\"h-8 w-8 mx-auto mb-2 opacity-50\" />\n              <p>No imports yet</p>\n              <p className=\"text-sm\">Upload your first data file to get started</p>\n            </div>\n          ) : (\n            <ScrollArea className=\"h-64\">\n              <Table>\n                <TableHeader>\n                  <TableRow>\n                    <TableHead>File</TableHead>\n                    <TableHead>Type</TableHead>\n                    <TableHead>Status</TableHead>\n                    <TableHead>Rows</TableHead>\n                    <TableHead>Uploaded</TableHead>\n                    <TableHead>Actions</TableHead>\n                  </TableRow>\n                </TableHeader>\n                <TableBody>\n                  {importHistory.map((job) => (\n                    <TableRow key={job.id}>\n                      <TableCell className=\"font-medium\">{job.filename}</TableCell>\n                      <TableCell>\n                        <Badge variant=\"outline\">\n                          {job.dataType?.replace('_', ' ').toUpperCase()}\n                        </Badge>\n                      </TableCell>\n                      <TableCell>\n                        <div className=\"flex items-center gap-2\">\n                          {getStatusIcon(job.status)}\n                          <Badge className={getStatusColor(job.status)}>\n                            {job.status.replace('_', ' ')}\n                          </Badge>\n                        </div>\n                      </TableCell>\n                      <TableCell>\n                        <div className=\"text-sm\">\n                          {job.totalRows > 0 && (\n                            <span>\n                              {job.processedRows || 0} / {job.totalRows}\n                              {job.errorRows > 0 && (\n                                <span className=\"text-red-600 ml-1\">({job.errorRows} errors)</span>\n                              )}\n                            </span>\n                          )}\n                        </div>\n                      </TableCell>\n                      <TableCell className=\"text-sm text-gray-500\">\n                        {new Date(job.uploadedAt).toLocaleDateString()}\n                      </TableCell>\n                      <TableCell>\n                        <Button \n                          variant=\"outline\" \n                          size=\"sm\"\n                          onClick={() => {\n                            setCurrentImportJob(job);\n                            setCurrentStep(job.status === 'completed' || job.status === 'failed' ? 5 : 4);\n                          }}\n                        >\n                          View\n                        </Button>\n                      </TableCell>\n                    </TableRow>\n                  ))}\n                </TableBody>\n              </Table>\n            </ScrollArea>\n          )}\n        </CardContent>\n      </Card>\n    </div>\n  );\n};\n\nexport default DataImportDashboard;"}
+import React, { useState, useEffect } from 'react';
+import { Upload, BarChart3, Clock, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
+
+const DataImportDashboard = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [currentImportJob, setCurrentImportJob] = useState(null);
+  const [importHistory, setImportHistory] = useState([]);
+  const [queueStats, setQueueStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [mappingConfig, setMappingConfig] = useState(null);
+  const [validationConfig, setValidationConfig] = useState(null);
+
+  useEffect(() => {
+    fetchImportHistory();
+    fetchQueueStats();
+    
+    const interval = setInterval(fetchQueueStats, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchImportHistory = async () => {
+    try {
+      const response = await fetch('/api/import/jobs?pageSize=20');
+      const data = await response.json();
+      if (data.success) {
+        setImportHistory(data.jobs);
+      }
+    } catch (error) {
+      console.error('Failed to fetch import history:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchQueueStats = async () => {
+    try {
+      const response = await fetch('/api/queue/stats');
+      const data = await response.json();
+      if (data.success) {
+        setQueueStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Failed to fetch queue stats:', error);
+    }
+  };
+
+  const handleUploadComplete = (result) => {
+    setCurrentImportJob({
+      id: result.importJobId,
+      filename: result.filename,
+      status: 'uploaded'
+    });
+    setCurrentStep(2);
+    fetchImportHistory();
+  };
+
+  const handleMappingComplete = (config) => {
+    setMappingConfig(config);
+    setCurrentStep(3);
+  };
+
+  const handleValidationStart = async (config) => {
+    setValidationConfig(config);
+    
+    try {
+      const processResponse = await fetch(`/api/import/process/${config.importJobId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mappingConfig: mappingConfig?.mapping,
+          validationRules: config.validationConfig
+        })
+      });
+      
+      const processData = await processResponse.json();
+      
+      if (processData.success) {
+        const validateResponse = await fetch(`/api/import/validate/${config.importJobId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            validationConfig: config.validationConfig
+          })
+        });
+        
+        const validateData = await validateResponse.json();
+        
+        if (validateData.success) {
+          setCurrentStep(4);
+          setCurrentImportJob(prev => ({ ...prev, status: 'processing' }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to start validation:', error);
+    }
+  };
+
+  const handleNewImport = () => {
+    setCurrentStep(1);
+    setCurrentImportJob(null);
+    setMappingConfig(null);
+    setValidationConfig(null);
+    fetchImportHistory();
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'completed_with_errors':
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      case 'failed':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      case 'processing':
+      case 'validating':
+        return <Clock className="h-4 w-4 text-blue-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'completed_with_errors':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'failed':
+        return 'bg-red-100 text-red-800';
+      case 'processing':
+      case 'validating':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Data Import Dashboard</h1>
+          <p className="text-gray-600 mt-1">
+            Upload, validate, and import data into the manufacturing system
+          </p>
+        </div>
+        <button 
+          onClick={handleNewImport}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+        >
+          <Upload className="h-4 w-4" />
+          New Import
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1 space-y-6">
+          {currentImportJob && (
+            <div className="bg-white rounded-lg shadow p-4">
+              <h3 className="font-semibold mb-2">Import Progress</h3>
+              <div className="space-y-2">
+                <div className={`p-2 rounded ${currentStep >= 1 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                  Step 1: Upload
+                </div>
+                <div className={`p-2 rounded ${currentStep >= 2 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                  Step 2: Preview & Map
+                </div>
+                <div className={`p-2 rounded ${currentStep >= 3 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                  Step 3: Validate
+                </div>
+                <div className={`p-2 rounded ${currentStep >= 4 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                  Step 4: Process
+                </div>
+                <div className={`p-2 rounded ${currentStep >= 5 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                  Step 5: Results
+                </div>
+              </div>
+            </div>
+          )}
+
+          {queueStats && (
+            <div className="bg-white rounded-lg shadow p-4">
+              <h3 className="font-semibold mb-2 flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Queue Status
+              </h3>
+              <div className="space-y-3">
+                {queueStats.available ? (
+                  <>
+                    {Object.entries(queueStats.queues || {}).map(([queueName, stats]) => (
+                      <div key={queueName} className="space-y-2">
+                        <div className="text-sm font-medium capitalize">
+                          {queueName.replace('-', ' ')}
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="bg-yellow-50 p-2 rounded text-center">
+                            <div className="font-semibold">{stats.waiting}</div>
+                            <div className="text-yellow-600">Waiting</div>
+                          </div>
+                          <div className="bg-blue-50 p-2 rounded text-center">
+                            <div className="font-semibold">{stats.active}</div>
+                            <div className="text-blue-600">Active</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <div className="text-sm text-gray-500">
+                    Queue service unavailable - processing synchronously
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="lg:col-span-3">
+          <div className="bg-white rounded-lg shadow p-6">
+            {currentStep === 1 && (
+              <div className="text-center py-8">
+                <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-xl font-semibold mb-2">Upload Data File</h3>
+                <p className="text-gray-600 mb-4">
+                  Select a CSV or Excel file to import
+                </p>
+                <input
+                  type="file"
+                  accept=".csv,.xlsx,.xls"
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      handleUploadComplete({
+                        importJobId: Date.now().toString(),
+                        filename: e.target.files[0].name
+                      });
+                    }
+                  }}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="bg-blue-600 text-white px-6 py-3 rounded cursor-pointer hover:bg-blue-700"
+                >
+                  Choose File
+                </label>
+              </div>
+            )}
+
+            {currentStep > 1 && (
+              <div className="text-center py-8">
+                <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
+                <h3 className="text-xl font-semibold mb-2">
+                  {currentStep === 5 ? 'Import Complete' : 'Processing...'}
+                </h3>
+                <p className="text-gray-600">
+                  {currentImportJob?.filename || 'Processing your import'}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-6 border-b">
+          <h3 className="text-xl font-semibold flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Recent Imports
+          </h3>
+        </div>
+        <div className="p-6">
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p>Loading import history...</p>
+            </div>
+          ) : importHistory.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Upload className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p>No imports yet</p>
+              <p className="text-sm">Upload your first data file to get started</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="px-4 py-2 text-left">File</th>
+                    <th className="px-4 py-2 text-left">Type</th>
+                    <th className="px-4 py-2 text-left">Status</th>
+                    <th className="px-4 py-2 text-left">Rows</th>
+                    <th className="px-4 py-2 text-left">Uploaded</th>
+                    <th className="px-4 py-2 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {importHistory.map((job) => (
+                    <tr key={job.id} className="border-b">
+                      <td className="px-4 py-2 font-medium">{job.filename}</td>
+                      <td className="px-4 py-2">
+                        <span className="px-2 py-1 text-xs border rounded">
+                          {job.dataType?.replace('_', ' ').toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(job.status)}
+                          <span className={`px-2 py-1 text-xs rounded ${getStatusColor(job.status)}`}>
+                            {job.status.replace('_', ' ')}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        {job.totalRows > 0 && (
+                          <span className="text-sm">
+                            {job.processedRows || 0} / {job.totalRows}
+                            {job.errorRows > 0 && (
+                              <span className="text-red-600 ml-1">({job.errorRows} errors)</span>
+                            )}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-gray-500">
+                        {new Date(job.uploadedAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-2">
+                        <button
+                          onClick={() => {
+                            setCurrentImportJob(job);
+                            setCurrentStep(job.status === 'completed' || job.status === 'failed' ? 5 : 4);
+                          }}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DataImportDashboard;

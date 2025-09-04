@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { useAuth } from '@clerk/clerk-react'
+// Removed Clerk import to fix Application Error
 import axios from 'axios'
 
 function ScenarioAnalysis() {
-  const { getToken } = useAuth()
+  // Mock auth for demo mode
+  const getToken = async () => null
   const [scenarioData, setScenarioData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)

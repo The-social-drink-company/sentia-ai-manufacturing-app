@@ -95,69 +95,17 @@ const KPICard = memo(({
 const KPIStrip = memo(() => {
   const { hasBoardExport } = useFeatureFlags()
   
-  // Simulate API call for KPI data
+  // Fetch real-time KPI data from API
   const { data: kpiData, isLoading } = useQuery({
     queryKey: queryKeys.kpiMetrics('24h', {}),
     queryFn: async () => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      return {
-        totalRevenue: {
-          value: 127500,
-          change: 8.2,
-          changeType: 'positive',
-          status: 'good',
-          trustLevel: 'good',
-          freshness: 'fresh',
-          lastUpdated: new Date(Date.now() - 2 * 60 * 1000).toISOString()
-        },
-        stockLevel: {
-          value: 94.2,
-          change: -2.1, 
-          changeType: 'negative',
-          status: 'warning',
-          trustLevel: 'needs_attention',
-          freshness: 'recent',
-          lastUpdated: new Date(Date.now() - 25 * 60 * 1000).toISOString()
-        },
-        forecastAccuracy: {
-          value: 87.5,
-          change: 3.4,
-          changeType: 'positive', 
-          status: 'excellent',
-          trustLevel: 'excellent',
-          freshness: 'fresh',
-          lastUpdated: new Date(Date.now() - 1 * 60 * 1000).toISOString()
-        },
-        capacityUtilization: {
-          value: 78.9,
-          change: 1.2,
-          changeType: 'positive',
-          status: 'good',
-          trustLevel: 'good',
-          freshness: 'recent',
-          lastUpdated: new Date(Date.now() - 15 * 60 * 1000).toISOString()
-        },
-        cashPosition: {
-          value: 284,
-          change: -5.7,
-          changeType: 'negative',
-          status: 'warning',
-          trustLevel: 'good',
-          freshness: 'moderate',
-          lastUpdated: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
-        },
-        alertsCount: {
-          value: 3,
-          change: -40.0,
-          changeType: 'positive',
-          status: 'good',
-          trustLevel: 'stale',
-          freshness: 'stale',
-          lastUpdated: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString()
-        }
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+      const response = await fetch(`${apiBaseUrl}/kpi-metrics?timeRange=24h&filters={}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch KPI metrics: ${response.statusText}`);
       }
+      const data = await response.json();
+      return data.data; // Return just the metrics data
     },
     ...queryConfigs.realtime
   })

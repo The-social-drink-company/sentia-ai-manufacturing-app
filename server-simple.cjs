@@ -88,6 +88,92 @@ setInterval(() => {
   });
 }, 30000); // Every 30 seconds
 
+// KPI Metrics endpoint
+app.get('/api/kpi-metrics', (req, res) => {
+  const { timeRange = '24h', filters = '{}' } = req.query;
+  
+  // Generate realistic KPI data based on time and some randomness
+  const now = new Date();
+  const baseMetrics = {
+    totalRevenue: {
+      value: Math.round((120000 + Math.random() * 20000) * 100) / 100,
+      change: Math.round((5 + Math.random() * 10 - 5) * 10) / 10,
+      changeType: Math.random() > 0.4 ? 'positive' : 'negative',
+      status: Math.random() > 0.3 ? 'good' : 'warning',
+      trustLevel: 'good',
+      freshness: 'fresh',
+      lastUpdated: new Date(now.getTime() - Math.random() * 5 * 60 * 1000).toISOString()
+    },
+    stockLevel: {
+      value: Math.round((90 + Math.random() * 20) * 10) / 10,
+      change: Math.round((Math.random() * 10 - 5) * 10) / 10,
+      changeType: Math.random() > 0.5 ? 'positive' : 'negative',
+      status: Math.random() > 0.4 ? 'good' : 'warning',
+      trustLevel: Math.random() > 0.8 ? 'needs_attention' : 'good',
+      freshness: 'recent',
+      lastUpdated: new Date(now.getTime() - Math.random() * 30 * 60 * 1000).toISOString()
+    },
+    forecastAccuracy: {
+      value: Math.round((80 + Math.random() * 15) * 10) / 10,
+      change: Math.round((Math.random() * 8 - 2) * 10) / 10,
+      changeType: Math.random() > 0.6 ? 'positive' : 'negative',
+      status: Math.random() > 0.2 ? 'excellent' : 'good',
+      trustLevel: 'excellent',
+      freshness: 'fresh',
+      lastUpdated: new Date(now.getTime() - Math.random() * 2 * 60 * 1000).toISOString()
+    },
+    capacityUtilization: {
+      value: Math.round((70 + Math.random() * 25) * 10) / 10,
+      change: Math.round((Math.random() * 6 - 2) * 10) / 10,
+      changeType: Math.random() > 0.5 ? 'positive' : 'negative',
+      status: 'good',
+      trustLevel: 'good',
+      freshness: 'recent',
+      lastUpdated: new Date(now.getTime() - Math.random() * 20 * 60 * 1000).toISOString()
+    },
+    cashPosition: {
+      value: Math.round((250 + Math.random() * 100)),
+      change: Math.round((Math.random() * 20 - 10) * 10) / 10,
+      changeType: Math.random() > 0.4 ? 'positive' : 'negative',
+      status: Math.random() > 0.3 ? 'good' : 'warning',
+      trustLevel: 'good',
+      freshness: 'fresh',
+      lastUpdated: new Date(now.getTime() - Math.random() * 10 * 60 * 1000).toISOString()
+    },
+    productionThroughput: {
+      value: Math.round((85 + Math.random() * 20) * 10) / 10,
+      change: Math.round((Math.random() * 8 - 3) * 10) / 10,
+      changeType: Math.random() > 0.5 ? 'positive' : 'negative',
+      status: Math.random() > 0.3 ? 'good' : 'warning',
+      trustLevel: 'good',
+      freshness: 'fresh',
+      lastUpdated: new Date(now.getTime() - Math.random() * 8 * 60 * 1000).toISOString()
+    },
+    alertsCount: {
+      value: Math.round(Math.random() * 8),
+      change: Math.round((Math.random() * 80 - 40) * 10) / 10,
+      changeType: Math.random() > 0.6 ? 'positive' : 'negative',
+      status: Math.random() > 0.4 ? 'good' : 'warning',
+      trustLevel: Math.random() > 0.7 ? 'stale' : 'good',
+      freshness: Math.random() > 0.8 ? 'stale' : 'recent',
+      lastUpdated: new Date(now.getTime() - Math.random() * 60 * 60 * 1000).toISOString()
+    }
+  };
+  
+  // Set appropriate changeType based on change value
+  Object.keys(baseMetrics).forEach(key => {
+    const metric = baseMetrics[key];
+    metric.changeType = metric.change > 0 ? 'positive' : metric.change < 0 ? 'negative' : 'neutral';
+  });
+  
+  res.json({
+    data: baseMetrics,
+    timeRange,
+    filters: JSON.parse(filters),
+    timestamp: now.toISOString()
+  });
+});
+
 // API endpoints
 app.get('/api/status', (req, res) => {
   res.json({ 

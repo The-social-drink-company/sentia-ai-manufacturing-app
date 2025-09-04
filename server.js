@@ -125,34 +125,7 @@ const cspNonce = (req, res, next) => {
 app.use(cspNonce);
 
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      scriptSrc: [
-        "'self'", 
-        (req, res) => `'nonce-${res.locals.nonce}'`,
-        "https://clerk.dev",
-        "https://unpkg.com"
-      ],
-      imgSrc: ["'self'", "data:", "https:", "blob:"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      connectSrc: [
-        "'self'", 
-        "https://api.unleashedsoftware.com",
-        "https://api.clerk.com",
-        "https://clerk.dev",
-        "wss://api.clerk.com"
-      ],
-      workerSrc: ["'self'", "blob:"],
-      childSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      baseUri: ["'self'"],
-      formAction: ["'self'"],
-      upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
-    },
-    reportOnly: false,
-  },
+  contentSecurityPolicy: false,  // TEMPORARILY DISABLED to fix blank screen issue
   crossOriginEmbedderPolicy: false, // For React dev tools
   hsts: {
     maxAge: 31536000,

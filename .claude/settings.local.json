@@ -252,7 +252,10 @@
       "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\pages/**)",
       "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\pages/**)",
       "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\styles/**)",
-      "Bash(start http://localhost:3002)"
+      "Bash(start http://localhost:3002)",
+      "Bash(start http://localhost:3000)",
+      "Bash(start http://localhost:3000/working-capital)",
+      "Read(/C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard/**)"
     ],
     "deny": [],
     "ask": []

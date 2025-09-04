@@ -630,34 +630,37 @@
 
         <!-- Agents Grid - Detailed Version -->
         <div class="agents-grid">
-            <!-- Simple Monitor Agent -->
+            <!-- Autonomous Completion Agent -->
             <div class="agent-card">
                 <div class="agent-header">
-                    <div class="agent-name">Simple Monitor</div>
-                    <span class="agent-status status-running">CHECKING</span>
+                    <div class="agent-name">Autonomous Completion Agent</div>
+                    <span class="agent-status status-running">RUNNING</span>
                 </div>
                 <div class="agent-metrics">
                     <div class="metric-item">
-                        <div class="metric-label">Checks Ran</div>
-                        <div class="metric-value" id="sm-checks">81</div>
+                        <div class="metric-label">Completion</div>
+                        <div class="metric-value" id="aca-completion">100%</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Phase Ready</div>
-                        <div class="metric-value" id="sm-phase4">0/9</div>
+                        <div class="metric-label">Cycles</div>
+                        <div class="metric-value" id="aca-cycles">59</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">RPC Online</div>
-                        <div class="metric-value" id="sm-online">6/9</div>
+                        <div class="metric-label">Flux Applied</div>
+                        <div class="metric-value" id="aca-fixes">2</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Next Check</div>
-                        <div class="metric-value" id="sm-next">1m 15s</div>
+                        <div class="metric-label">Current Phase</div>
+                        <div class="metric-value" id="aca-phase">Phase 4</div>
                     </div>
                 </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="aca-progress" style="width: 100%">100%</div>
+                </div>
                 <div class="agent-activity">
-                    <div class="activity-log" id="simple-monitor-activity">
-                        <div class="activity-entry">Railway Dev: NO_PHASE4</div>
-                        <div class="activity-entry">localhost:3002: HEALTHY</div>
+                    <div class="activity-log" id="autonomous-activity">
+                        <div class="activity-entry">Fixing Phase-4 deployment...</div>
+                        <div class="activity-entry">Verifying deployments...</div>
                     </div>
                 </div>
             </div>
@@ -729,71 +732,34 @@
                 </div>
             </div>
 
-            <!-- Autonomous Completion Agent -->
+            <!-- Simple Monitor Agent -->
             <div class="agent-card">
                 <div class="agent-header">
-                    <div class="agent-name">Autonomous Completion Agent</div>
-                    <span class="agent-status status-running">RUNNING</span>
+                    <div class="agent-name">Simple Monitor</div>
+                    <span class="agent-status status-running">CHECKING</span>
                 </div>
                 <div class="agent-metrics">
                     <div class="metric-item">
-                        <div class="metric-label">Completion</div>
-                        <div class="metric-value" id="aca-completion">100%</div>
+                        <div class="metric-label">Checks Ran</div>
+                        <div class="metric-value" id="sm-checks">81</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Cycles</div>
-                        <div class="metric-value" id="aca-cycles">59</div>
+                        <div class="metric-label">Phase Ready</div>
+                        <div class="metric-value" id="sm-phase4">0/9</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Flux Applied</div>
-                        <div class="metric-value" id="aca-fixes">2</div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-label">Current Phase</div>
-                        <div class="metric-value" id="aca-phase">Phase 4</div>
-                    </div>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="aca-progress" style="width: 100%">100%</div>
-                </div>
-                <div class="agent-activity">
-                    <div class="activity-log" id="autonomous-activity">
-                        <div class="activity-entry">Fixing Phase-4 deployment...</div>
-                        <div class="activity-entry">Verifying deployments...</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Monitoring Agent -->
-            <div class="agent-card">
-                <div class="agent-header">
-                    <div class="agent-name">🔍 Full Monitoring Agent</div>
-                    <span class="agent-status status-running">RUNNING</span>
-                </div>
-                <div class="agent-metrics">
-                    <div class="metric-item">
-                        <div class="metric-label">URLs Checked</div>
-                        <div class="metric-value">9</div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-label">Online</div>
-                        <div class="metric-value" style="color: #10b981;">6/9</div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-label">Features OK</div>
-                        <div class="metric-value" style="color: #ef4444;">0/9</div>
+                        <div class="metric-label">RPC Online</div>
+                        <div class="metric-value" id="sm-online">6/9</div>
                     </div>
                     <div class="metric-item">
                         <div class="metric-label">Next Check</div>
-                        <div class="metric-value">3 mins</div>
+                        <div class="metric-value" id="sm-next">1m 15s</div>
                     </div>
                 </div>
                 <div class="agent-activity">
-                    <div class="activity-log" id="monitoring-activity">
-                        <div class="activity-entry">Production: OK but no Phase 4</div>
-                        <div class="activity-entry">Development: OK but no Phase 4</div>
-                        <div class="activity-entry">Test: OK but no Phase 4</div>
-                        <div class="activity-entry">Local:3002: OK but no features</div>
+                    <div class="activity-log" id="simple-monitor-activity">
+                        <div class="activity-entry">Railway Dev: NO_PHASE4</div>
+                        <div class="activity-entry">localhost:3002: HEALTHY</div>
                     </div>
                 </div>
             </div>

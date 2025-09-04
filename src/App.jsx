@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { SignedIn, SignedOut, RedirectToSignIn, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 import './index.css'
 
 // Create QueryClient instance for React Query
@@ -90,9 +91,18 @@ function AppLayout({ children }) {
   )
 }
 
-// No protection needed in demo mode
+// Protected route using Clerk authentication
 function ProtectedRoute({ children }) {
-  return children
+  return (
+    <>
+      <SignedIn>
+        {children}
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  )
 }
 
 // Error Boundary Component for better error handling

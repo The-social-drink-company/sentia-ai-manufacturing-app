@@ -4,11 +4,13 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+// Railway always sets PORT - if not set, use 3000 (Railway standard)
+const PORT = process.env.PORT || 3000;
 
 // Log environment info
 console.log('Environment PORT:', process.env.PORT);
 console.log('Using PORT:', PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
 // Basic middleware
 app.use(cors());
@@ -47,12 +49,12 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Start server - Railway requires listening on all interfaces
-const server = app.listen(PORT, '0.0.0.0', () => {
+// Start server - try binding to localhost for Railway
+const server = app.listen(PORT, () => {
   console.log('========================================');
   console.log('SENTIA MANUFACTURING DASHBOARD');
   console.log(`Server running on port ${PORT}`);
-  console.log(`Server listening on: http://0.0.0.0:${PORT}`);
+  console.log(`Server listening on: http://localhost:${PORT}`);
   console.log('========================================');
 });
 

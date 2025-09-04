@@ -91,8 +91,16 @@ function AppLayout({ children }) {
   )
 }
 
-// Protected route using Clerk authentication
+// Protected route with optional Clerk authentication
 function ProtectedRoute({ children }) {
+  const hasClerk = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+  
+  if (!hasClerk) {
+    // No Clerk - allow access
+    return children
+  }
+  
+  // Clerk available - use authentication
   return (
     <>
       <SignedIn>

@@ -10,8 +10,9 @@ import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
 // Get Clerk publishable key from environment
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
+// Don't throw error - just log warning
 if (!PUBLISHABLE_KEY) {
-  throw new Error('Missing Clerk Publishable Key')
+  console.warn('Clerk Publishable Key not found - running without authentication')
 }
 
 // Log web vitals for performance monitoring
@@ -46,9 +47,13 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+    {PUBLISHABLE_KEY ? (
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+        <App />
+      </ClerkProvider>
+    ) : (
       <App />
-    </ClerkProvider>
+    )}
   </React.StrictMode>,
 )
 

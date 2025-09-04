@@ -5,6 +5,14 @@ import '../styles/SentiaTheme.css'
 import '../styles/SentiaLanding.css'
 
 function LandingPage() {
+  const hasClerk = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+  
+  if (!hasClerk) {
+    // No Clerk - show demo landing page
+    return <DemoLandingPage />
+  }
+  
+  // Clerk available - use authentication flow
   return (
     <>
       <SignedOut>

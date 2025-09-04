@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth, useUser } from '@clerk/clerk-react'
+// Temporarily remove Clerk imports to fix Application Error
+// import { useAuth, useUser } from '@clerk/clerk-react'
 import axios from 'axios'
 import '../styles/SentiaTheme.css'
 import '../styles/SentiaDashboard.css'
@@ -13,8 +14,11 @@ import PolicyManagement from '../components/WorkingCapital/PolicyManagement'
 import SystemDiagnostics from '../components/WorkingCapital/SystemDiagnostics'
 
 function WorkingCapitalDashboard() {
-  const { getToken, isSignedIn } = useAuth()
-  const { user } = useUser()
+  // Mock auth for demo mode (no Clerk)
+  const isSignedIn = false
+  const user = null
+  const getToken = async () => null
+  
   const [activeTab, setActiveTab] = useState('overview')
   const [dashboardData, setDashboardData] = useState(null)
   const [loading, setLoading] = useState(true)

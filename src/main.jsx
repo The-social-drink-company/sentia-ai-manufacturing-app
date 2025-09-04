@@ -3,25 +3,28 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
-// Performance monitoring
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
+// Performance monitoring with web-vitals
+import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
 
 // Log web vitals for performance monitoring
 function sendToAnalytics(metric) {
   console.log(`[Web Vitals] ${metric.name}:`, metric.value)
 }
 
-// Measure Core Web Vitals
-getCLS(sendToAnalytics)
-getFID(sendToAnalytics)
-getFCP(sendToAnalytics)
-getLCP(sendToAnalytics)
-getTTFB(sendToAnalytics)
+// Measure Core Web Vitals with correct exports (FID replaced with INP in web-vitals v5)
+try {
+  onCLS(sendToAnalytics)
+  onINP(sendToAnalytics)  // Interaction to Next Paint (replaces FID)
+  onFCP(sendToAnalytics)
+  onLCP(sendToAnalytics)
+  onTTFB(sendToAnalytics)
+} catch (error) {
+  console.warn('Web vitals measurement not available:', error.message)
+}
 
-console.log('🚀 Starting Sentia Manufacturing Dashboard with full features...');
+console.log('🚀 Starting Sentia Manufacturing Dashboard...');
 console.log('Environment:', import.meta.env.MODE);
 console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL || 'Default');
-console.log('Clerk available:', !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
 // Add global error handler
 window.addEventListener('error', (event) => {
@@ -39,3 +42,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 )
 
 console.log('✅ Sentia Manufacturing Dashboard rendered successfully');
+
+// Add global error catcher for debugging
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error('Global error caught:', {
+    message: msg,
+    source: url,
+    lineno: lineNo,
+    colno: columnNo,
+    error: error
+  });
+  return false;
+};

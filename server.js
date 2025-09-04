@@ -158,19 +158,20 @@ const createRateLimiter = (windowMs, max, message) => rateLimit({
   message,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => {
-    return req.ip + ':' + (req.user?.id || 'anonymous');
-  },
   skip: (req) => {
     // Skip rate limiting for health checks
     return req.path === '/health' || req.path === '/api/health';
   },
-  onLimitReached: (req) => {
+  // Handler is the new way to handle rate limit exceeded (replaces onLimitReached)
+  handler: (req, res) => {
     logWarn('Rate limit exceeded', {
       ip: req.ip,
       path: req.path,
       userAgent: req.get('User-Agent'),
       userId: req.user?.id
+    });
+    res.status(429).json({
+      error: message || 'Too many requests, please try again later.'
     });
   }
 });
@@ -288,7 +289,13 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 // Serve static files from React build FIRST
-app.use(express.static(path.join(__dirname, 'dist')));
+// In production/Railway, serve from dist folder with proper cache headers
+app.use(express.static(path.join(__dirname, 'dist'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+  etag: true,
+  lastModified: true,
+  index: false // Don't serve index.html for directory requests - let catch-all handle it
+}));
 
 // Enhanced Health check endpoints
 app.get('/health', (req, res) => {
@@ -4045,14 +4052,7 @@ try {
   logWarn('Failed to load optimization API routes', error);
 }
 
-// Catch-all route for React Router (must be LAST after all API routes)
-app.get('*', (req, res) => {
-  // Only serve index.html for non-API routes
-  if (req.path.startsWith('/api/') || req.path.startsWith('/health')) {
-    return res.status(404).json({ error: 'Endpoint not found' });
-  }
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// First catch-all removed - using the one at the end of the file
 
 // Error handling middleware
 app.use((err, req, res, _next) => {
@@ -4102,31 +4102,7 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-// Catch-all handler: send back React's index.html file for any non-API routes
-app.get('*', (req, res) => {
-  // Skip API routes
-  if (req.path.startsWith('/api')) {
-    return res.status(404).json({ error: 'API endpoint not found' });
-  }
-  
-  // Check if dist/index.html exists
-  const indexPath = path.join(__dirname, 'dist', 'index.html');
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    // Fallback if build files don't exist
-    res.status(503).send(`
-      <html>
-        <head><title>Sentia Manufacturing Dashboard</title></head>
-        <body>
-          <h1>Application Unavailable</h1>
-          <p>The application build files are not available. Please run 'npm run build' to generate them.</p>
-          <p>For development, use 'npm run dev:client' to start the Vite development server.</p>
-        </body>
-      </html>
-    `);
-  }
-});
+// Moved catch-all to after server.listen
 
 // Initialize cache service
 async function initializeServices() {
@@ -4144,6 +4120,30 @@ async function initializeServices() {
   await loadAgentRoutes();
 }
 
+// Catch-all handler MUST be last route (after all API routes and static files)
+app.get('*', (req, res) => {
+  // Don't handle API routes here
+  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    return res.status(404).json({ error: 'Endpoint not found' });
+  }
+  
+  // Serve index.html for all other routes (React Router will handle client-side routing)
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(503).send(`
+      <html>
+        <head><title>Sentia Manufacturing Dashboard</title></head>
+        <body style="font-family: sans-serif; padding: 40px; text-align: center;">
+          <h1>Application Starting...</h1>
+          <p>The application is building. Please refresh in a moment.</p>
+        </body>
+      </html>
+    `);
+  }
+});
+
 // Start server - Railway deployment force rebuild
 app.listen(PORT, async () => {
   // Initialize all services
@@ -4160,4 +4160,14 @@ app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Database: ${process.env.DATABASE_URL ? 'Connected to Neon' : 'Using local database'}`);
+  console.log(`Build Version: 1.0.3 - Static file serving fixed`);
+  console.log(`Static files served from: ${path.join(__dirname, 'dist')}`);
+  console.log(`Dist folder exists: ${fs.existsSync(path.join(__dirname, 'dist'))}`);
+  console.log(`Index.html exists: ${fs.existsSync(path.join(__dirname, 'dist', 'index.html'))}`);
+  
+  // Log first few files in dist for debugging
+  if (fs.existsSync(path.join(__dirname, 'dist'))) {
+    const distFiles = fs.readdirSync(path.join(__dirname, 'dist')).slice(0, 5);
+    console.log(`Sample dist files: ${distFiles.join(', ')}`);
+  }
 });

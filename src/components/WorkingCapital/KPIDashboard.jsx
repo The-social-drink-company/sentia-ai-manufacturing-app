@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '@clerk/clerk-react'
+// Removed Clerk import to fix Application Error
 import axios from 'axios'
 
 function KPIDashboard() {
-  const { getToken } = useAuth()
+  // Mock auth for demo mode
+  const getToken = async () => null
   const [kpiData, setKpiData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)

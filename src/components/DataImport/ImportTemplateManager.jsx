@@ -1,1 +1,149 @@
-import React, { useState, useEffect } from 'react';\nimport { Download, Upload, FileText, Plus, Trash2, Edit, Eye } from 'lucide-react';\nimport { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';\nimport { Button } from '@/components/ui/button';\nimport { Badge } from '@/components/ui/badge';\nimport { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';\nimport { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';\nimport { Input } from '@/components/ui/input';\nimport { Label } from '@/components/ui/label';\nimport { Textarea } from '@/components/ui/textarea';\nimport { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';\nimport { ScrollArea } from '@/components/ui/scroll-area';\nimport { Alert, AlertDescription } from '@/components/ui/alert';\n\nconst ImportTemplateManager = () => {\n  const [templates, setTemplates] = useState([]);\n  const [loading, setLoading] = useState(true);\n  const [editingTemplate, setEditingTemplate] = useState(null);\n  const [showCreateDialog, setShowCreateDialog] = useState(false);\n  const [error, setError] = useState(null);\n\n  // Built-in template definitions\n  const builtInTemplates = {\n    products: {\n      name: 'Products Template',\n      description: 'Standard template for product data import',\n      dataType: 'products',\n      fileFormat: 'CSV',\n      fields: [\n        { name: 'sku', label: 'Product SKU', type: 'string', required: true, example: 'GABA-RED-UK-001' },\n        { name: 'name', label: 'Product Name', type: 'string', required: true, example: 'GABA Red UK Formula' },\n        { name: 'category', label: 'Category', type: 'string', required: false, example: 'GABA Red' },\n        { name: 'weight_kg', label: 'Weight (kg)', type: 'number', required: true, example: '0.125' },\n        { name: 'dimensions_cm', label: 'Dimensions (cm)', type: 'string', required: true, example: '10.0x5.0x15.0' },\n        { name: 'unit_cost', label: 'Unit Cost', type: 'number', required: true, example: '5.50' },\n        { name: 'selling_price', label: 'Selling Price', type: 'number', required: true, example: '12.99' },\n        { name: 'production_time_hours', label: 'Production Time (hours)', type: 'number', required: false, example: '3.5' },\n        { name: 'batch_size_min', label: 'Min Batch Size', type: 'integer', required: false, example: '100' },\n        { name: 'batch_size_max', label: 'Max Batch Size', type: 'integer', required: false, example: '1000' }\n      ]\n    },\n    historical_sales: {\n      name: 'Historical Sales Template',\n      description: 'Template for importing historical sales data',\n      dataType: 'historical_sales',\n      fileFormat: 'CSV',\n      fields: [\n        { name: 'sku', label: 'Product SKU', type: 'string', required: true, example: 'GABA-RED-UK-001' },\n        { name: 'sale_date', label: 'Sale Date', type: 'date', required: true, example: '2024-01-15' },\n        { name: 'quantity_sold', label: 'Quantity Sold', type: 'integer', required: true, example: '25' },\n        { name: 'unit_price', label: 'Unit Price', type: 'number', required: true, example: '12.99' },\n        { name: 'currency', label: 'Currency', type: 'string', required: true, example: 'GBP' },\n        { name: 'sales_channel', label: 'Sales Channel', type: 'string', required: false, example: 'Amazon UK' },\n        { name: 'shipping_country', label: 'Shipping Country', type: 'string', required: false, example: 'GB' },\n        { name: 'gross_revenue', label: 'Gross Revenue', type: 'number', required: false, example: '324.75' },\n        { name: 'discounts', label: 'Discounts', type: 'number', required: false, example: '0.00' },\n        { name: 'net_revenue', label: 'Net Revenue', type: 'number', required: false, example: '324.75' }\n      ]\n    },\n    inventory_levels: {\n      name: 'Inventory Levels Template',\n      description: 'Template for importing inventory level data',\n      dataType: 'inventory_levels',\n      fileFormat: 'CSV',\n      fields: [\n        { name: 'sku', label: 'Product SKU', type: 'string', required: true, example: 'GABA-RED-UK-001' },\n        { name: 'warehouse_location', label: 'Warehouse Location', type: 'string', required: true, example: 'UK-MAIN-01' },\n        { name: 'quantity_on_hand', label: 'Quantity on Hand', type: 'integer', required: true, example: '500' },\n        { name: 'reserved_quantity', label: 'Reserved Quantity', type: 'integer', required: false, example: '50' },\n        { name: 'available_quantity', label: 'Available Quantity', type: 'integer', required: false, example: '450' },\n        { name: 'reorder_point', label: 'Reorder Point', type: 'integer', required: false, example: '100' },\n        { name: 'max_stock_level', label: 'Max Stock Level', type: 'integer', required: false, example: '1000' },\n        { name: 'last_updated', label: 'Last Updated', type: 'date', required: false, example: '2024-01-15' }\n      ]\n    },\n    manufacturing_data: {\n      name: 'Manufacturing Data Template',\n      description: 'Template for importing manufacturing/production data',\n      dataType: 'manufacturing_data',\n      fileFormat: 'CSV',\n      fields: [\n        { name: 'job_number', label: 'Job Number', type: 'string', required: true, example: 'MFG-2024-001' },\n        { name: 'product_sku', label: 'Product SKU', type: 'string', required: true, example: 'GABA-RED-UK-001' },\n        { name: 'batch_number', label: 'Batch Number', type: 'string', required: true, example: 'BATCH-2024-001' },\n        { name: 'quantity_produced', label: 'Quantity Produced', type: 'integer', required: true, example: '500' },\n        { name: 'production_date', label: 'Production Date', type: 'date', required: true, example: '2024-01-15' },\n        { name: 'quality_score', label: 'Quality Score', type: 'number', required: false, example: '95.5' },\n        { name: 'defect_rate', label: 'Defect Rate (%)', type: 'number', required: false, example: '2.5' },\n        { name: 'production_cost', label: 'Production Cost', type: 'number', required: false, example: '2750.00' },\n        { name: 'yield_percentage', label: 'Yield Percentage', type: 'number', required: false, example: '92.0' }\n      ]\n    },\n    financial_data: {\n      name: 'Financial Data Template',\n      description: 'Template for importing financial transaction data',\n      dataType: 'financial_data',\n      fileFormat: 'CSV',\n      fields: [\n        { name: 'transaction_date', label: 'Transaction Date', type: 'date', required: true, example: '2024-01-15' },\n        { name: 'transaction_type', label: 'Transaction Type', type: 'string', required: true, example: 'revenue' },\n        { name: 'amount', label: 'Amount', type: 'number', required: true, example: '1250.00' },\n        { name: 'currency', label: 'Currency', type: 'string', required: true, example: 'GBP' },\n        { name: 'account_code', label: 'Account Code', type: 'string', required: false, example: '4000-01' },\n        { name: 'description', label: 'Description', type: 'string', required: false, example: 'Product sales revenue' },\n        { name: 'reference_number', label: 'Reference Number', type: 'string', required: false, example: 'TXN-2024-001' }\n      ]\n    }\n  };\n\n  useEffect(() => {\n    fetchTemplates();\n  }, []);\n\n  const fetchTemplates = async () => {\n    setLoading(true);\n    setError(null);\n    try {\n      // For now, we'll use the built-in templates\n      // In a real implementation, this would fetch from the API\n      const templateList = Object.entries(builtInTemplates).map(([key, template]) => ({\n        id: key,\n        ...template,\n        isSystem: true,\n        downloadCount: Math.floor(Math.random() * 50),\n        usageCount: Math.floor(Math.random() * 100),\n        successRate: 85 + Math.random() * 15\n      }));\n      setTemplates(templateList);\n    } catch (error) {\n      setError('Failed to load templates');\n      console.error('Error fetching templates:', error);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const generateCSVTemplate = (template) => {\n    const headers = template.fields.map(field => field.label).join(',');\n    const examples = template.fields.map(field => field.example || '').join(',');\n    return `${headers}\\n${examples}`;\n  };\n\n  const downloadTemplate = (template) => {\n    const csvContent = generateCSVTemplate(template);\n    const blob = new Blob([csvContent], { type: 'text/csv' });\n    const url = URL.createObjectURL(blob);\n    const a = document.createElement('a');\n    a.href = url;\n    a.download = `${template.name.toLowerCase().replace(/\\s+/g, '_')}_template.csv`;\n    document.body.appendChild(a);\n    a.click();\n    document.body.removeChild(a);\n    URL.revokeObjectURL(url);\n  };\n\n  const downloadSpecification = (template) => {\n    const spec = {\n      templateName: template.name,\n      description: template.description,\n      dataType: template.dataType,\n      fileFormat: template.fileFormat,\n      fields: template.fields,\n      validationRules: template.fields.map(field => ({\n        field: field.name,\n        type: field.type,\n        required: field.required,\n        description: `${field.label} - ${field.type}${field.required ? ' (required)' : ''}`\n      })),\n      examples: {\n        csvFormat: generateCSVTemplate(template)\n      },\n      generatedAt: new Date().toISOString()\n    };\n\n    const blob = new Blob([JSON.stringify(spec, null, 2)], { type: 'application/json' });\n    const url = URL.createObjectURL(blob);\n    const a = document.createElement('a');\n    a.href = url;\n    a.download = `${template.name.toLowerCase().replace(/\\s+/g, '_')}_specification.json`;\n    document.body.appendChild(a);\n    a.click();\n    document.body.removeChild(a);\n    URL.revokeObjectURL(url);\n  };\n\n  const renderTemplateDetails = (template) => (\n    <Dialog>\n      <DialogTrigger asChild>\n        <Button variant=\"outline\" size=\"sm\">\n          <Eye className=\"h-3 w-3 mr-1\" />\n          View\n        </Button>\n      </DialogTrigger>\n      <DialogContent className=\"max-w-4xl max-h-[80vh] overflow-y-auto\">\n        <DialogHeader>\n          <DialogTitle>{template.name}</DialogTitle>\n        </DialogHeader>\n        <div className=\"space-y-6\">\n          <div>\n            <p className=\"text-gray-600 mb-4\">{template.description}</p>\n            <div className=\"flex items-center gap-4 text-sm\">\n              <Badge variant=\"outline\">{template.dataType.replace('_', ' ').toUpperCase()}</Badge>\n              <Badge variant=\"outline\">{template.fileFormat}</Badge>\n              <span className=\"text-gray-500\">Fields: {template.fields.length}</span>\n            </div>\n          </div>\n          \n          <div>\n            <h4 className=\"font-semibold mb-3\">Field Definitions</h4>\n            <ScrollArea className=\"h-64\">\n              <Table>\n                <TableHeader>\n                  <TableRow>\n                    <TableHead>Field Name</TableHead>\n                    <TableHead>Label</TableHead>\n                    <TableHead>Type</TableHead>\n                    <TableHead>Required</TableHead>\n                    <TableHead>Example</TableHead>\n                  </TableRow>\n                </TableHeader>\n                <TableBody>\n                  {template.fields.map((field, index) => (\n                    <TableRow key={index}>\n                      <TableCell className=\"font-mono text-sm\">{field.name}</TableCell>\n                      <TableCell>{field.label}</TableCell>\n                      <TableCell>\n                        <Badge variant=\"secondary\" className=\"text-xs\">\n                          {field.type}\n                        </Badge>\n                      </TableCell>\n                      <TableCell>\n                        {field.required ? (\n                          <Badge variant=\"destructive\" className=\"text-xs\">Required</Badge>\n                        ) : (\n                          <Badge variant=\"outline\" className=\"text-xs\">Optional</Badge>\n                        )}\n                      </TableCell>\n                      <TableCell className=\"font-mono text-sm text-gray-600\">\n                        {field.example}\n                      </TableCell>\n                    </TableRow>\n                  ))}\n                </TableBody>\n              </Table>\n            </ScrollArea>\n          </div>\n          \n          <div className=\"flex justify-end gap-2\">\n            <Button variant=\"outline\" onClick={() => downloadSpecification(template)}>\n              <Download className=\"h-4 w-4 mr-2\" />\n              Download Specification\n            </Button>\n            <Button onClick={() => downloadTemplate(template)}>\n              <Download className=\"h-4 w-4 mr-2\" />\n              Download Template\n            </Button>\n          </div>\n        </div>\n      </DialogContent>\n    </Dialog>\n  );\n\n  if (loading) {\n    return (\n      <Card>\n        <CardContent className=\"flex items-center justify-center p-8\">\n          <div className=\"text-center\">\n            <div className=\"animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4\"></div>\n            <p>Loading templates...</p>\n          </div>\n        </CardContent>\n      </Card>\n    );\n  }\n\n  return (\n    <div className=\"space-y-6\">\n      {/* Header */}\n      <Card>\n        <CardHeader>\n          <div className=\"flex items-center justify-between\">\n            <CardTitle className=\"flex items-center gap-2\">\n              <FileText className=\"h-5 w-5\" />\n              Import Templates\n            </CardTitle>\n            <Button onClick={() => setShowCreateDialog(true)}>\n              <Plus className=\"h-4 w-4 mr-2\" />\n              Create Template\n            </Button>\n          </div>\n        </CardHeader>\n      </Card>\n\n      {error && (\n        <Alert variant=\"destructive\">\n          <AlertDescription>{error}</AlertDescription>\n        </Alert>\n      )}\n\n      {/* Templates Grid */}\n      <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">\n        {templates.map((template) => (\n          <Card key={template.id} className=\"flex flex-col\">\n            <CardHeader className=\"pb-3\">\n              <div className=\"flex items-start justify-between\">\n                <div>\n                  <CardTitle className=\"text-lg\">{template.name}</CardTitle>\n                  <p className=\"text-sm text-gray-600 mt-1\">{template.description}</p>\n                </div>\n                {template.isSystem && (\n                  <Badge variant=\"secondary\" className=\"text-xs\">\n                    System\n                  </Badge>\n                )}\n              </div>\n            </CardHeader>\n            <CardContent className=\"flex-1 flex flex-col justify-between\">\n              <div className=\"space-y-3\">\n                <div className=\"flex items-center gap-2\">\n                  <Badge variant=\"outline\">{template.dataType.replace('_', ' ').toUpperCase()}</Badge>\n                  <Badge variant=\"outline\">{template.fileFormat}</Badge>\n                </div>\n                \n                <div className=\"text-sm text-gray-600 space-y-1\">\n                  <div>Fields: {template.fields.length}</div>\n                  <div>Downloads: {template.downloadCount}</div>\n                  <div>Usage: {template.usageCount}</div>\n                  <div>Success Rate: {template.successRate.toFixed(1)}%</div>\n                </div>\n              </div>\n              \n              <div className=\"flex gap-2 mt-4\">\n                {renderTemplateDetails(template)}\n                <Button \n                  size=\"sm\" \n                  onClick={() => downloadTemplate(template)}\n                  className=\"flex-1\"\n                >\n                  <Download className=\"h-3 w-3 mr-1\" />\n                  Download\n                </Button>\n              </div>\n            </CardContent>\n          </Card>\n        ))}\n      </div>\n\n      {/* Quick Start Guide */}\n      <Card>\n        <CardHeader>\n          <CardTitle>How to Use Templates</CardTitle>\n        </CardHeader>\n        <CardContent>\n          <div className=\"grid grid-cols-1 md:grid-cols-3 gap-6\">\n            <div className=\"text-center\">\n              <div className=\"w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3\">\n                <Download className=\"h-6 w-6 text-blue-600\" />\n              </div>\n              <h4 className=\"font-semibold mb-2\">1. Download Template</h4>\n              <p className=\"text-sm text-gray-600\">\n                Choose the appropriate template for your data type and download the CSV file.\n              </p>\n            </div>\n            \n            <div className=\"text-center\">\n              <div className=\"w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3\">\n                <Edit className=\"h-6 w-6 text-green-600\" />\n              </div>\n              <h4 className=\"font-semibold mb-2\">2. Fill Your Data</h4>\n              <p className=\"text-sm text-gray-600\">\n                Replace the example data with your actual data, following the field requirements.\n              </p>\n            </div>\n            \n            <div className=\"text-center\">\n              <div className=\"w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3\">\n                <Upload className=\"h-6 w-6 text-purple-600\" />\n              </div>\n              <h4 className=\"font-semibold mb-2\">3. Import Data</h4>\n              <p className=\"text-sm text-gray-600\">\n                Upload your completed file using the data import dashboard.\n              </p>\n            </div>\n          </div>\n        </CardContent>\n      </Card>\n    </div>\n  );\n};\n\nexport default ImportTemplateManager;"
+import React, { useState, useEffect } from 'react';
+import { Download, Upload, Trash2, Edit, Plus } from 'lucide-react';
+
+const ImportTemplateManager = () => {
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
+
+  const fetchTemplates = async () => {
+    try {
+      const response = await fetch('/api/import/templates');
+      const data = await response.json();
+      if (data.success) {
+        setTemplates(data.templates);
+      }
+    } catch (error) {
+      console.error('Failed to fetch templates:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadTemplate = async (templateId) => {
+    try {
+      const response = await fetch(`/api/import/templates/${templateId}/download`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `template-${templateId}.csv`;
+        a.click();
+      }
+    } catch (error) {
+      console.error('Failed to download template:', error);
+    }
+  };
+
+  const handleDeleteTemplate = async (templateId) => {
+    if (!window.confirm('Are you sure you want to delete this template?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/import/templates/${templateId}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        fetchTemplates();
+      }
+    } catch (error) {
+      console.error('Failed to delete template:', error);
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">Import Templates</h1>
+        <p className="text-gray-600">
+          Manage and download data import templates for various data types
+        </p>
+      </div>
+
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-6 border-b flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Available Templates</h2>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Create Template
+          </button>
+        </div>
+
+        <div className="p-6">
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p>Loading templates...</p>
+            </div>
+          ) : templates.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Upload className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No templates available</p>
+              <p className="text-sm mt-1">Create your first template to get started</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {templates.map((template) => (
+                <div
+                  key={template.id}
+                  className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                >
+                  <h3 className="font-semibold mb-2">{template.name}</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {template.description}
+                  </p>
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <span>Type: {template.dataType}</span>
+                    <span>{template.fieldCount} fields</span>
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={() => handleDownloadTemplate(template.id)}
+                      className="flex-1 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 flex items-center justify-center gap-1"
+                    >
+                      <Download className="h-3 w-3" />
+                      Download
+                    </button>
+                    <button
+                      onClick={() => setSelectedTemplate(template)}
+                      className="flex-1 bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-200 flex items-center justify-center gap-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTemplate(template.id)}
+                      className="bg-red-100 text-red-600 px-3 py-1 rounded text-sm hover:bg-red-200 flex items-center justify-center gap-1"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-8 bg-blue-50 rounded-lg p-6">
+        <h3 className="text-lg font-semibold mb-4">Quick Start Guide</h3>
+        <ol className="space-y-2 text-sm">
+          <li>1. Download the template for your data type</li>
+          <li>2. Fill in your data following the template structure</li>
+          <li>3. Save the file as CSV or Excel format</li>
+          <li>4. Upload the file using the Data Import page</li>
+          <li>5. Map fields and validate your data</li>
+          <li>6. Review and confirm the import</li>
+        </ol>
+      </div>
+    </div>
+  );
+};
+
+export default ImportTemplateManager;

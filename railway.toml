@@ -1,57 +1,33 @@
 # Railway Configuration for Sentia Manufacturing Dashboard
-# This file configures Railway services and deployment strategies
+# Force Node.js detection and proper Docker build
 
 [build]
 builder = "DOCKERFILE"
-buildCommand = "npm ci && npm run build"
-watchPatterns = ["src/**", "services/**", "public/**", "package.json"]
+dockerfilePath = "Dockerfile"
+buildCommand = "echo 'Using Dockerfile build process'"
 
-# Environment-specific configurations
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# Environment detection
 [environments.production]
-build.dockerfilePath = "./Dockerfile.production"
-deploy.numReplicas = 2
-deploy.healthcheckPath = "/api/health"
-deploy.healthcheckTimeout = 300
+build.dockerfilePath = "./Dockerfile"
+deploy.startCommand = "npm start"
+deploy.healthcheckPath = "/health"
 deploy.restartPolicyType = "ON_FAILURE"
-deploy.restartPolicyMaxRetries = 10
 
 [environments.test]
 build.dockerfilePath = "./Dockerfile"
-deploy.numReplicas = 1
-deploy.healthcheckPath = "/api/health"
-deploy.healthcheckTimeout = 200
+deploy.startCommand = "npm start"
+deploy.healthcheckPath = "/health"
 deploy.restartPolicyType = "ON_FAILURE"
-deploy.restartPolicyMaxRetries = 5
 
 [environments.development]
-build.dockerfilePath = "./Dockerfile.dev"
-deploy.numReplicas = 1
-deploy.healthcheckPath = "/api/health"
-deploy.healthcheckTimeout = 100
-deploy.restartPolicyType = "ALWAYS"
-
-# Service configurations
-[services.web]
-name = "sentia-web"
 build.dockerfilePath = "./Dockerfile"
-deploy.startCommand = "node server.js"
-deploy.region = "us-west1"
-deploy.port = 5000
-
-[services.worker]
-name = "sentia-worker"
-build.dockerfilePath = "./Dockerfile.worker"
-deploy.startCommand = "node services/workers/index.js"
-deploy.numReplicas = 1
-deploy.region = "us-west1"
-
-[services.frontend]
-name = "sentia-frontend"
-build.buildCommand = "npm run build"
-deploy.staticFilesPath = "./dist"
-deploy.region = "us-west1"
-
-# Database configuration
-[services.database]
-plugin = "postgresql"
-plan = "production"
+deploy.startCommand = "npm start"
+deploy.healthcheckPath = "/health"
+deploy.restartPolicyType = "ON_FAILURE"

@@ -254,18 +254,36 @@ class RailwayDeploymentTracker {
     const logs = [];
     
     try {
-      // Get Railway logs
-      const { stdout } = await execPromise(`railway logs --service ${config.serviceId} -n 200`, {
+      // Get deployment logs
+      const { stdout: deployLogs } = await execPromise(`railway logs --service ${config.serviceId} --deployment`, {
         timeout: 30000,
         maxBuffer: 1024 * 1024 * 10 // 10MB buffer
       });
       
-      if (stdout) {
+      if (deployLogs) {
         logs.push({
-          type: 'RAILWAY_LOGS',
+          type: 'DEPLOYMENT_LOGS',
           timestamp: Date.now(),
-          content: stdout
+          content: deployLogs
         });
+      }
+      
+      // Get build logs
+      try {
+        const { stdout: buildLogs } = await execPromise(`railway logs --service ${config.serviceId} --build`, {
+          timeout: 30000,
+          maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+        });
+        
+        if (buildLogs) {
+          logs.push({
+            type: 'BUILD_LOGS',
+            timestamp: Date.now(),
+            content: buildLogs
+          });
+        }
+      } catch (buildError) {
+        // Build logs might not be available for older deployments
       }
       
     } catch (error) {

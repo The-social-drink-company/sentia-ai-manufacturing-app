@@ -158,19 +158,27 @@ const createRateLimiter = (windowMs, max, message) => rateLimit({
   message,
   standardHeaders: true,
   legacyHeaders: false,
+  // Use built-in key generator for IPv6 compatibility
   keyGenerator: (req) => {
-    return req.ip + ':' + (req.user?.id || 'anonymous');
+    // Use the built-in IP extraction which handles IPv6 properly
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const userId = req.user?.id || 'anonymous';
+    return `${ip}:${userId}`;
   },
   skip: (req) => {
     // Skip rate limiting for health checks
     return req.path === '/health' || req.path === '/api/health';
   },
-  onLimitReached: (req) => {
+  // Handler is the new way to handle rate limit exceeded (replaces onLimitReached)
+  handler: (req, res) => {
     logWarn('Rate limit exceeded', {
       ip: req.ip,
       path: req.path,
       userAgent: req.get('User-Agent'),
       userId: req.user?.id
+    });
+    res.status(429).json({
+      error: message || 'Too many requests, please try again later.'
     });
   }
 });

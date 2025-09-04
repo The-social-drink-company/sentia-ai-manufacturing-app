@@ -1,8 +1,29 @@
 import React from 'react'
-import { SignInButton, SignUpButton, useAuth, useUser } from '@clerk/clerk-react'
 import { Link } from 'react-router-dom'
 import '../styles/SentiaTheme.css'
 import '../styles/SentiaLanding.css'
+
+// Conditionally import Clerk only if configured
+let SignInButton = null
+let SignUpButton = null
+let useAuth = () => ({ isSignedIn: false })
+let useUser = () => ({ user: null })
+
+const hasClerk = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && 
+                 import.meta.env.VITE_CLERK_PUBLISHABLE_KEY !== 'undefined' &&
+                 import.meta.env.VITE_CLERK_PUBLISHABLE_KEY !== 'null'
+
+if (hasClerk) {
+  try {
+    const clerk = require('@clerk/clerk-react')
+    SignInButton = clerk.SignInButton
+    SignUpButton = clerk.SignUpButton
+    useAuth = clerk.useAuth
+    useUser = clerk.useUser
+  } catch (e) {
+    console.log('Clerk not available, running in demo mode')
+  }
+}
 
 function LandingPage() {
   const { isSignedIn } = useAuth()
@@ -175,27 +196,31 @@ function LandingPage() {
             </div>
             
             <div className="sentia-auth-actions">
-              {typeof SignInButton !== 'undefined' ? (
+              {SignInButton ? (
                 <SignInButton mode="modal">
                   <button className="sentia-btn sentia-btn-primary">
                     Sign In
                   </button>
                 </SignInButton>
               ) : (
-                <button className="sentia-btn sentia-btn-primary" disabled>
-                  Sign In (Authentication Disabled)
-                </button>
+                <Link to="/dashboard">
+                  <button className="sentia-btn sentia-btn-primary">
+                    Demo Dashboard
+                  </button>
+                </Link>
               )}
-              {typeof SignUpButton !== 'undefined' ? (
+              {SignUpButton ? (
                 <SignUpButton mode="modal">
                   <button className="sentia-btn sentia-btn-secondary">
                     Request Access
                   </button>
                 </SignUpButton>
               ) : (
-                <button className="sentia-btn sentia-btn-secondary" disabled>
-                  Request Access (Authentication Disabled)
-                </button>
+                <Link to="/working-capital">
+                  <button className="sentia-btn sentia-btn-secondary">
+                    Working Capital Demo
+                  </button>
+                </Link>
               )}
             </div>
             

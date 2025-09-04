@@ -43,3 +43,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 )
 
 console.log('✅ Sentia Manufacturing Dashboard rendered successfully');
+
+// Add global error catcher for debugging
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error('Global error caught:', {
+    message: msg,
+    source: url,
+    lineno: lineNo,
+    colno: columnNo,
+    error: error
+  });
+  return false;
+};

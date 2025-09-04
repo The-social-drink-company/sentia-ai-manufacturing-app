@@ -11,6 +11,7 @@ const STALE_TIMES = {
   STOCK_LEVELS: 1000 * 60 * 10, // 10 minutes
   DEMAND_FORECAST: 1000 * 60 * 15, // 15 minutes
   RECENT_JOBS: 1000 * 60 * 5, // 5 minutes
+  SALES_DATA: 1000 * 60 * 5, // 5 minutes
   
   // Configuration and slow-changing data
   USER_PREFERENCES: 1000 * 60 * 60, // 1 hour
@@ -33,7 +34,11 @@ const CACHE_TIMES = {
 // Query key factories for consistent query key generation
 export const queryKeys = {
   // KPI and metrics
-  kpiMetrics: (timeRange, filters) => ['kpi-metrics', { timeRange, filters }],
+  kpi: {
+    metrics: (timeRange, filters) => ['kpi-metrics', { timeRange, filters }],
+    alerts: () => ['kpi-alerts']
+  },
+  kpiMetrics: (timeRange, filters) => ['kpi-metrics', { timeRange, filters }], // Legacy support
   systemHealth: () => ['system-health'],
   
   // Forecasting
@@ -51,11 +56,25 @@ export const queryKeys = {
   reorderSuggestions: (filters) => ['reorder-suggestions', filters],
   
   // Working capital
-  workingCapital: () => ['working-capital'],
+  workingCapital: {
+    diagnostics: () => ['working-capital', 'diagnostics'],
+    projections: (timeRange, scenario) => ['working-capital', 'projections', { timeRange, scenario }],
+    kpis: () => ['working-capital', 'kpis'],
+    policies: (type) => ['working-capital', 'policies', type],
+    job: (jobId) => ['working-capital', 'job', jobId]
+  },
+  // Legacy support
   workingCapitalJob: (jobId) => ['working-capital-job', jobId],
   workingCapitalProjections: (params) => ['wc-projections', params],
   workingCapitalKpis: (timeRange) => ['wc-kpis', timeRange],
   workingCapitalPolicies: (type) => ['wc-policies', type],
+  
+  // Sales and external integrations
+  sales: {
+    multiChannel: (timeRange) => ['sales', 'multi-channel', { timeRange }],
+    amazon: (timeRange, filters) => ['sales', 'amazon', { timeRange, filters }],
+    shopify: (region, timeRange, filters) => ['sales', 'shopify', region, { timeRange, filters }]
+  },
   
   // Capacity and operations
   capacityUtilization: (facilities, timeRange) => ['capacity-utilization', facilities, timeRange],

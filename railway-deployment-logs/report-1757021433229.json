@@ -1,0 +1,97 @@
+{
+  "timestamp": "2025-09-04T21:30:31.733Z",
+  "checkCount": 1,
+  "results": {
+    "development": {
+      "branch": "development",
+      "timestamp": 1757021431734,
+      "status": "HEALTHY",
+      "logs": [
+        {
+          "type": "ERROR",
+          "timestamp": 1757021432093,
+          "content": "Failed to get logs: Command failed: railway logs --service development -n 200\nerror: unexpected argument '-n' found\n\n  tip: to pass '-n' as a value, use '-- -n'\n\nUsage: railway.exe logs [OPTIONS] [DEPLOYMENT_ID]\n\nFor more information, try '--help'.\n\n"
+        },
+        {
+          "type": "GIT_COMMITS",
+          "timestamp": 1757021432132,
+          "content": "10e88b4 feat: add nixpacks.toml to ensure React build on Railway deployment\n9853752 fix: Remove trailing comma in package.json for Railway build\nc699ca2 feat: Complete Phase 4 - Advanced Manufacturing Intelligence with Predictive Maintenance and Smart Inventory\nf7c88a5 Auto-fix: Force Railway rebuild 2025-09-04T21:10:21.796Z\n07a97fa feat: implement comprehensive monitoring and self-correction system\n"
+        }
+      ],
+      "errors": [
+        {
+          "type": "JSON_ERROR",
+          "count": 1,
+          "pattern": "/trailing comma/gi",
+          "sample": "trailing comma"
+        }
+      ],
+      "build": null,
+      "deployment": "SUCCESS",
+      "health": {
+        "healthy": true,
+        "statusCode": 200,
+        "responseTime": 76,
+        "hasPhase4": false
+      }
+    },
+    "test": {
+      "branch": "test",
+      "timestamp": 1757021432209,
+      "status": "HEALTHY",
+      "logs": [
+        {
+          "type": "ERROR",
+          "timestamp": 1757021432561,
+          "content": "Failed to get logs: Command failed: railway logs --service test -n 200\nerror: unexpected argument '-n' found\n\n  tip: to pass '-n' as a value, use '-- -n'\n\nUsage: railway.exe logs [OPTIONS] [DEPLOYMENT_ID]\n\nFor more information, try '--help'.\n\n"
+        },
+        {
+          "type": "GIT_COMMITS",
+          "timestamp": 1757021432604,
+          "content": "60a0f2c Merge branch 'development' into test\n04d7e1a fix: correct port configuration in Dockerfile for Railway\n79c9d8e Merge branch 'test' of https://github.com/The-social-drink-company/sentia-manufacturing-dashboard into test\nac7890b fix: use simple server without compression module for Railway deployment\n66857c3 CRITICAL FIX: Complete rebuild for 100% functional deployment\n"
+        }
+      ],
+      "errors": [],
+      "build": null,
+      "deployment": "SUCCESS",
+      "health": {
+        "healthy": true,
+        "statusCode": 200,
+        "responseTime": 71,
+        "hasPhase4": false
+      }
+    },
+    "production": {
+      "branch": "production",
+      "timestamp": 1757021432675,
+      "status": "HEALTHY",
+      "logs": [
+        {
+          "type": "ERROR",
+          "timestamp": 1757021433126,
+          "content": "Failed to get logs: Command failed: railway logs --service production -n 200\nerror: unexpected argument '-n' found\n\n  tip: to pass '-n' as a value, use '-- -n'\n\nUsage: railway.exe logs [OPTIONS] [DEPLOYMENT_ID]\n\nFor more information, try '--help'.\n\n"
+        },
+        {
+          "type": "GIT_COMMITS",
+          "timestamp": 1757021433164,
+          "content": "edd0ee4 Merge branch 'development' into production\n04d7e1a fix: correct port configuration in Dockerfile for Railway\nbf4c922 Merge branch 'production' of https://github.com/The-social-drink-company/sentia-manufacturing-dashboard into production\n21d8737 Merge branch 'development' into production\nac7890b fix: use simple server without compression module for Railway deployment\n"
+        }
+      ],
+      "errors": [],
+      "build": null,
+      "deployment": "SUCCESS",
+      "health": {
+        "healthy": true,
+        "statusCode": 200,
+        "responseTime": 64,
+        "hasPhase4": false
+      }
+    }
+  },
+  "summary": {
+    "healthy": 3,
+    "building": 0,
+    "failed": 0,
+    "unknown": 0
+  }
+}

@@ -8,7 +8,7 @@
     "dev:client": "vite",
     "dev:server": "nodemon server.js",
     "build": "vite build",
-    "start": "node server-simple.cjs",
+    "start": "node test-server.cjs",
     "start:dev": "node server.js",
     "preview": "vite preview",
     "serve": "vite preview --port 3000",

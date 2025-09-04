@@ -291,7 +291,8 @@
       "Bash(ren:*)",
       "WebFetch(domain:sentia-manufacturing.railway.app)",
       "Bash(railway link:*)",
-      "WebFetch(domain:sentia-manufacturing-dashboard-development.up.railway.app)"
+      "WebFetch(domain:sentia-manufacturing-dashboard-development.up.railway.app)",
+      "Bash(PORT=3005 node server-simple.cjs)"
     ],
     "deny": [],
     "ask": []

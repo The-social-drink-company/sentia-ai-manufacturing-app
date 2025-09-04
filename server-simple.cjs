@@ -6,6 +6,10 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Log environment info
+console.log('Environment PORT:', process.env.PORT);
+console.log('Using PORT:', PORT);
+
 // Basic middleware
 app.use(cors());
 app.use(express.json());

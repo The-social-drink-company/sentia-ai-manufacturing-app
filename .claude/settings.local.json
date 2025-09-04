@@ -302,7 +302,8 @@
       "Bash(move:*)",
       "Bash(start http://localhost:3002/dashboard)",
       "Bash(start https://sentia-manufacturing-dashboard-development.up.railway.app/dashboard)",
-      "Bash(start http://localhost:4500)"
+      "Bash(start http://localhost:4500)",
+      "Bash(railway logs:*)"
     ],
     "deny": [],
     "ask": []

@@ -288,7 +288,13 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 // Serve static files from React build FIRST
-app.use(express.static(path.join(__dirname, 'dist')));
+// In production/Railway, serve from dist folder with proper cache headers
+app.use(express.static(path.join(__dirname, 'dist'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+  etag: true,
+  lastModified: true,
+  index: false // Don't serve index.html for directory requests - let catch-all handle it
+}));
 
 // Enhanced Health check endpoints
 app.get('/health', (req, res) => {
@@ -4153,6 +4159,14 @@ app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Database: ${process.env.DATABASE_URL ? 'Connected to Neon' : 'Using local database'}`);
-  console.log(`Build Version: 1.0.2 - Web-vitals fix applied`);
+  console.log(`Build Version: 1.0.3 - Static file serving fixed`);
   console.log(`Static files served from: ${path.join(__dirname, 'dist')}`);
+  console.log(`Dist folder exists: ${fs.existsSync(path.join(__dirname, 'dist'))}`);
+  console.log(`Index.html exists: ${fs.existsSync(path.join(__dirname, 'dist', 'index.html'))}`);
+  
+  // Log first few files in dist for debugging
+  if (fs.existsSync(path.join(__dirname, 'dist'))) {
+    const distFiles = fs.readdirSync(path.join(__dirname, 'dist')).slice(0, 5);
+    console.log(`Sample dist files: ${distFiles.join(', ')}`);
+  }
 });

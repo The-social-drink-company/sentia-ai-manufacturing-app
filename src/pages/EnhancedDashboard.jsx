@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import KPIStrip from '../components/widgets/KPIStrip'
 import DemandForecastWidget from '../components/widgets/DemandForecastWidget'
 import MultiChannelSalesWidget from '../components/widgets/MultiChannelSalesWidget'
+import PredictiveMaintenanceWidget from '../components/widgets/PredictiveMaintenanceWidget'
+import SmartInventoryWidget from '../components/widgets/SmartInventoryWidget'
 import WorkingCapitalChart from '../components/charts/WorkingCapitalChart'
 import ManufacturingAnalytics from '../components/analytics/ManufacturingAnalytics'
 import CFOKPIStrip from '../components/widgets/CFOKPIStrip'
@@ -328,7 +330,17 @@ function EnhancedDashboard() {
 
         {/* Right Column */}
         <div>
-          {/* Inventory Status */}
+          {/* Smart Inventory Widget */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <SmartInventoryWidget />
+          </div>
+          
+          {/* Predictive Maintenance Widget */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <PredictiveMaintenanceWidget />
+          </div>
+          
+          {/* Legacy Inventory Status */}
           <InventoryStatus />
           
           {/* Quick Actions */}

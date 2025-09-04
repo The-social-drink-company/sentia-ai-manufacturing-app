@@ -21,6 +21,9 @@
     "test:setup": "playwright install",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "monitor": "node monitoring-agent.cjs",
+    "monitor:status": "node monitoring-agent.cjs --status",
+    "monitor:bg": "node monitoring-agent.cjs &",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
@@ -34,7 +37,10 @@
     "db:migrate:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
-    "railway:setup": "node scripts/setup-railway-env.js"
+    "railway:setup": "node scripts/setup-railway-env.js",
+    "monitor": "node monitoring-agent.js",
+    "monitor:status": "node monitoring-agent.js --status",
+    "monitor:bg": "nohup node monitoring-agent.js > monitoring.log 2>&1 &",
   },
   "dependencies": {
     "@clerk/backend": "^2.12.0",

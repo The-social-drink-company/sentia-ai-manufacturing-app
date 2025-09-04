@@ -295,7 +295,11 @@
       "Bash(PORT=3005 node server-simple.cjs)",
       "Bash(start http://localhost:8080)",
       "Bash(PORT=3001 node server-simple.cjs)",
-      "Bash(PORT=3000 node server-simple.cjs)"
+      "Bash(PORT=3000 node server-simple.cjs)",
+      "Bash(PORT=3002 node server-simple.cjs)",
+      "Bash(sed:*)",
+      "Bash(chmod:*)",
+      "Bash(move:*)"
     ],
     "deny": [],
     "ask": []

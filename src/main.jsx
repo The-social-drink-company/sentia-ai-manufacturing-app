@@ -4,17 +4,17 @@ import App from './App.jsx'
 import './index.css'
 
 // Performance monitoring with web-vitals
-import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals'
+import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
 
 // Log web vitals for performance monitoring
 function sendToAnalytics(metric) {
   console.log(`[Web Vitals] ${metric.name}:`, metric.value)
 }
 
-// Measure Core Web Vitals with correct exports
+// Measure Core Web Vitals with correct exports (FID replaced with INP in web-vitals v5)
 try {
   onCLS(sendToAnalytics)
-  onFID(sendToAnalytics)
+  onINP(sendToAnalytics)  // Interaction to Next Paint (replaces FID)
   onFCP(sendToAnalytics)
   onLCP(sendToAnalytics)
   onTTFB(sendToAnalytics)

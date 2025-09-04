@@ -1,6 +1,9 @@
 import React from 'react'
 import './App.css'
 
+// Check if Clerk is configured
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
 // Simple working dashboard that will render immediately
 function SimpleDashboard() {
   return (
@@ -138,7 +141,10 @@ function SimpleDashboard() {
 }
 
 function App() {
-  // For now, just render the simple dashboard to ensure something displays
+  console.log('App rendering. Clerk key present:', !!clerkPubKey)
+  
+  // Always render the simple dashboard for now to ensure something displays
+  // This guarantees the app works even without Clerk configuration
   return <SimpleDashboard />
 }
 

@@ -62,7 +62,6 @@ model User {
   updated_by                                         String?            @db.Uuid
   // Soft delete
   deleted_at                                         DateTime?          @db.Timestamptz(6)
-  audit_logs                                         audit_logs[]
   data_imports                                       data_imports[]
   forecasts_forecasts_approved_byTousers             Forecast[]         @relation("forecasts_approved_byTousers")
   generatedForecasts                                 Forecast[]
@@ -593,27 +592,6 @@ model Resource {
 
   @@index([name], map: "ix_resources_name")
   @@map("resources")
-}
-
-model audit_logs {
-  id            String   @id @db.Uuid
-  user_id       String?  @db.Uuid
-  activity_type String   @db.VarChar(50)
-  endpoint      String?  @db.VarChar(200)
-  method        String?  @db.VarChar(10)
-  ip_address    String?  @db.VarChar(45)
-  user_agent    String?
-  details       Json?    @db.Json
-  success       Boolean?
-  error_message String?
-  timestamp     DateTime @db.Timestamptz(6)
-  users         User?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([ip_address, timestamp], map: "ix_audit_ip_timestamp")
-  @@index([activity_type], map: "ix_audit_logs_activity_type")
-  @@index([timestamp], map: "ix_audit_logs_timestamp")
-  @@index([timestamp, activity_type], map: "ix_audit_timestamp_type")
-  @@index([user_id, activity_type], map: "ix_audit_user_activity")
 }
 
 model data_imports {
@@ -1219,81 +1197,4 @@ model password_history {
   @@map("password_history")
 }
 
-// Business entities for multi-tenant support
-model entities {
-  id                String   @id @default(uuid()) @db.Uuid
-  name              String   @db.VarChar(255)
-  display_name      String?  @db.VarChar(255)
-  region            String   @db.VarChar(10) // UK, EU, USA
-  country_code      String?  @db.VarChar(2) // ISO country code
-  currency_code     String   @default("GBP") @db.VarChar(3)
-  timezone          String   @default("Europe/London") @db.VarChar(50)
-  locale            String   @default("en-GB") @db.VarChar(10)
-  tax_rate          Decimal? @default(0.20) @db.Decimal(5, 4)
-  
-  // Entity configuration
-  is_active         Boolean  @default(true)
-  is_default        Boolean  @default(false)
-  entity_type       String   @default("subsidiary") @db.VarChar(50) // subsidiary, division, region
-  parent_entity_id  String?  @db.Uuid // For hierarchical entities
-  
-  // Contact information
-  address_line1     String?  @db.VarChar(255)
-  address_line2     String?  @db.VarChar(255)
-  city              String?  @db.VarChar(100)
-  postal_code       String?  @db.VarChar(20)
-  phone_number      String?  @db.VarChar(20)
-  email             String?  @db.VarChar(255)
-  
-  // Business details
-  registration_number String? @db.VarChar(50)
-  vat_number         String?  @db.VarChar(50)
-  website            String?  @db.VarChar(255)
-  
-  // Metadata
-  metadata          Json?    @db.Json // Additional configuration
-  created_at        DateTime @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime @updatedAt @db.Timestamptz(6)
-  created_by        String?  @db.Uuid
-  updated_by        String?  @db.Uuid
-  
-  // Self-reference for parent entity
-  parent_entity     entities? @relation("EntityHierarchy", fields: [parent_entity_id], references: [id])
-  child_entities    entities[] @relation("EntityHierarchy")
-  
-  @@index([region, is_active], map: "ix_entities_region_active")
-  @@index([parent_entity_id], map: "ix_entities_parent")
-  @@index([is_default, is_active], map: "ix_entities_default_active")
-  @@map("entities")
-}
 
-// System settings for configuration storage
-model system_settings {
-  id         Int      @id @default(autoincrement())
-  key        String   @unique @db.VarChar(100)
-  value      Json     @db.Json
-  description String? @db.VarChar(500)
-  is_public  Boolean  @default(false) // Whether setting can be read by non-admin users
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @updatedAt @db.Timestamptz(6)
-  
-  @@map("system_settings")
-}
-
-// SSO provider configurations
-model SSOProvider {
-  id                String    @id @db.VarChar(50) // okta, azuread, google
-  name              String    @db.VarChar(100)
-  provider_type     String    @db.VarChar(50)
-  configuration     Json      @db.Json // Provider-specific config
-  is_enabled        Boolean   @default(false)
-  last_used_at      DateTime? @db.Timestamptz(6)
-  total_logins      Int       @default(0)
-  created_at        DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime  @updatedAt @db.Timestamptz(6)
-  created_by        String?   @db.Uuid
-  updated_by        String?   @db.Uuid
-  
-  @@index([is_enabled], map: "ix_sso_providers_enabled")
-  @@map("sso_providers")
-}

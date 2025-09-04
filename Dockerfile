@@ -31,8 +31,7 @@ RUN npm prune --production
 # Set environment to production
 ENV NODE_ENV=production
 
-# Expose port (Railway will set PORT env variable)
-EXPOSE ${PORT}
+# Railway automatically handles PORT - no EXPOSE needed
 
 # Health check with Railway-compatible timeout
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \

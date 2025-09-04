@@ -47,10 +47,17 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
+// Start server - Railway requires listening on all interfaces
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log('========================================');
   console.log('SENTIA MANUFACTURING DASHBOARD');
   console.log(`Server running on port ${PORT}`);
+  console.log(`Server listening on: http://0.0.0.0:${PORT}`);
   console.log('========================================');
+});
+
+// Handle server errors
+server.on('error', (error) => {
+  console.error('Server error:', error);
+  process.exit(1);
 });

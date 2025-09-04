@@ -73,6 +73,60 @@ app.get('/api/monitoring-data', (req, res) => {
     }
   });
 
+  // Read Railway deployment logs
+  try {
+    const railwayLogsFile = path.join(__dirname, 'railway-deployment-logs', 'latest.json');
+    if (fs.existsSync(railwayLogsFile)) {
+      const railwayData = JSON.parse(fs.readFileSync(railwayLogsFile, 'utf8'));
+      
+      // Extract build and deploy logs
+      const buildLogs = [];
+      const deployLogs = [];
+      
+      if (railwayData.results) {
+        Object.entries(railwayData.results).forEach(([env, envData]) => {
+          // Extract build information
+          if (envData.build) {
+            buildLogs.push(`[${env.toUpperCase()}] Build Status: ${envData.build}`);
+          }
+          
+          // Extract deployment information
+          if (envData.deployment) {
+            deployLogs.push(`[${env.toUpperCase()}] Deployment: ${envData.deployment}`);
+          }
+          
+          // Extract logs
+          if (envData.logs && envData.logs.length > 0) {
+            envData.logs.forEach(log => {
+              if (log.type === 'GIT_COMMITS') {
+                const commits = log.content.split('\n').filter(c => c.trim());
+                commits.slice(0, 3).forEach(commit => {
+                  deployLogs.push(`[${env.toUpperCase()}] Commit: ${commit}`);
+                });
+              } else if (log.type === 'ERROR') {
+                buildLogs.push(`ERROR [${env.toUpperCase()}]: Log fetch failed`);
+              }
+            });
+          }
+          
+          // Add health status
+          if (envData.health) {
+            const status = envData.health.healthy ? 'HEALTHY' : 'UNHEALTHY';
+            const phase4 = envData.health.hasPhase4 ? 'Phase 4 DETECTED' : 'Phase 4 NOT FOUND';
+            deployLogs.push(`[${env.toUpperCase()}] Status: ${status} | ${phase4} | Response: ${envData.health.responseTime}ms`);
+          }
+        });
+      }
+      
+      data.railwayLogs = {
+        build: buildLogs.length > 0 ? buildLogs : ['No build logs available'],
+        deploy: deployLogs.length > 0 ? deployLogs : ['No deployment logs available']
+      };
+    }
+  } catch (error) {
+    console.error('Error reading Railway logs:', error);
+  }
+
   res.json(data);
 });
 

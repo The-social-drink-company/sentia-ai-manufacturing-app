@@ -9,8 +9,10 @@ import './index.css'
 // Get Clerk publishable key from environment
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-if (!clerkPubKey) {
-  throw new Error('Missing Clerk Publishable Key')
+// In production, make Clerk optional to avoid blank screens
+const isClerkEnabled = !!clerkPubKey
+if (!isClerkEnabled) {
+  console.warn('Clerk authentication disabled - no VITE_CLERK_PUBLISHABLE_KEY found')
 }
 
 // Create QueryClient instance
@@ -107,6 +109,12 @@ function HomePage() {
 // Navigation wrapper for Clerk
 function ClerkWithRouter({ children }) {
   const navigate = useNavigate()
+  
+  if (!isClerkEnabled) {
+    // Return children without Clerk provider if disabled
+    return children
+  }
+  
   return (
     <ClerkProvider publishableKey={clerkPubKey} navigate={(to) => navigate(to)}>
       {children}
@@ -114,7 +122,22 @@ function ClerkWithRouter({ children }) {
   )
 }
 
-// Main App component with Clerk integration
+// Route component that handles authentication conditionally
+function ProtectedRoute({ children }) {
+  if (!isClerkEnabled) {
+    // If Clerk is disabled, render component directly
+    return children
+  }
+  
+  // If Clerk is enabled, require authentication
+  return (
+    <SignedIn>
+      {children}
+    </SignedIn>
+  )
+}
+
+// Main App component with conditional Clerk integration
 function App() {
   return (
     <Router>
@@ -126,67 +149,75 @@ function App() {
                 {/* Public landing page */}
                 <Route path="/" element={<HomePage />} />
                 
-                {/* Authentication routes */}
-                <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
-                <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
+                {/* Authentication routes - only if Clerk is enabled */}
+                {isClerkEnabled && (
+                  <>
+                    <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
+                    <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
+                  </>
+                )}
                 
-                {/* Protected routes - require authentication */}
+                {/* Protected routes - conditionally protected */}
                 <Route
                   path="/dashboard"
                   element={
-                    <SignedIn>
+                    <ProtectedRoute>
                       <Suspense fallback={<Loading />}>
                         <EnhancedDashboard />
                       </Suspense>
-                    </SignedIn>
+                    </ProtectedRoute>
                   }
                 />
                 
                 <Route
                   path="/working-capital"
                   element={
-                    <SignedIn>
+                    <ProtectedRoute>
                       <Suspense fallback={<Loading />}>
                         <WorkingCapitalDashboard />
                       </Suspense>
-                    </SignedIn>
+                    </ProtectedRoute>
                   }
                 />
                 
                 <Route
                   path="/admin/*"
                   element={
-                    <SignedIn>
+                    <ProtectedRoute>
                       <Suspense fallback={<Loading />}>
                         <AdminPortal />
                       </Suspense>
-                    </SignedIn>
+                    </ProtectedRoute>
                   }
                 />
                 
                 <Route
                   path="/data-import"
                   element={
-                    <SignedIn>
+                    <ProtectedRoute>
                       <Suspense fallback={<Loading />}>
                         <DataImport />
                       </Suspense>
-                    </SignedIn>
+                    </ProtectedRoute>
                   }
                 />
                 
-                {/* Redirect unauthenticated users to sign in */}
+                {/* Catch-all route - redirect based on auth status */}
                 <Route
                   path="*"
                   element={
-                    <>
-                      <SignedIn>
-                        <Navigate to="/dashboard" replace />
-                      </SignedIn>
-                      <SignedOut>
-                        <RedirectToSignIn />
-                      </SignedOut>
-                    </>
+                    isClerkEnabled ? (
+                      <>
+                        <SignedIn>
+                          <Navigate to="/dashboard" replace />
+                        </SignedIn>
+                        <SignedOut>
+                          <RedirectToSignIn />
+                        </SignedOut>
+                      </>
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
                   }
                 />
               </Routes>

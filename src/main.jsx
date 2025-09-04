@@ -2,18 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
-import { ClerkProvider } from '@clerk/clerk-react'
 
 // Performance monitoring with web-vitals
 import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
-
-// Get Clerk publishable key from environment
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-
-// Don't throw error - just log warning
-if (!PUBLISHABLE_KEY) {
-  console.warn('Clerk Publishable Key not found - running without authentication')
-}
 
 // Log web vitals for performance monitoring
 function sendToAnalytics(metric) {
@@ -31,10 +22,9 @@ try {
   console.warn('Web vitals measurement not available:', error.message)
 }
 
-console.log('🚀 Starting Sentia Manufacturing Dashboard with full features...');
+console.log('🚀 Starting Sentia Manufacturing Dashboard...');
 console.log('Environment:', import.meta.env.MODE);
 console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL || 'Default');
-console.log('Clerk available:', !!PUBLISHABLE_KEY);
 
 // Add global error handler
 window.addEventListener('error', (event) => {
@@ -47,13 +37,7 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {PUBLISHABLE_KEY ? (
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-        <App />
-      </ClerkProvider>
-    ) : (
-      <App />
-    )}
+    <App />
   </React.StrictMode>,
 )
 

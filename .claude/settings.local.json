@@ -299,7 +299,9 @@
       "Bash(PORT=3002 node server-simple.cjs)",
       "Bash(sed:*)",
       "Bash(chmod:*)",
-      "Bash(move:*)"
+      "Bash(move:*)",
+      "Bash(start http://localhost:3002/dashboard)",
+      "Bash(start https://sentia-manufacturing-dashboard-development.up.railway.app/dashboard)"
     ],
     "deny": [],
     "ask": []

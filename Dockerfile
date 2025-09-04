@@ -32,11 +32,11 @@ RUN npm prune --production
 ENV NODE_ENV=production
 
 # Expose port (Railway will set PORT env variable)
-EXPOSE ${PORT:-5000}
+EXPOSE 8080
 
 # Health check with Railway-compatible timeout
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \
-  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 5000) + '/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); });"
+  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 8080) + '/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); });"
 
 # Start the Node.js application
 CMD ["npm", "start"]

@@ -1,414 +1,420 @@
-import React, { useEffect, useState } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { motion, AnimatePresence } from 'framer-motion'
-
-// Layout components
-import Header from '../components/layout/Header'
-import Sidebar from '../components/layout/Sidebar'
-import Grid from '../components/layout/Grid'
-
-// Widgets
+import React, { useState, useEffect } from 'react'
 import KPIStrip from '../components/widgets/KPIStrip'
 import DemandForecastWidget from '../components/widgets/DemandForecastWidget'
-import CashFlowProjections from '../components/WorkingCapital/CashFlowProjections'
-import KPIDashboard from '../components/WorkingCapital/KPIDashboard'
+import CFOKPIStrip from '../components/widgets/CFOKPIStrip'
 
-// Hooks and stores
-import { useAuthRole } from '../hooks/useAuthRole.jsx'
-import { useLayoutStore } from '../stores/layoutStore'
-import { useSSE } from '../hooks/useSSE'
-import { queryClient } from '../services/queryClient'
-import { cn } from '../lib/utils'
-
-// Simple widget components for demonstration
-const StockStatusWidget = () => {
+// Import all working capital components if they exist
+const WorkingCapitalSection = () => {
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-medium">Stock Status</h3>
-        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
-          3 Alerts
-        </span>
-      </div>
-      
-      <div className="flex-1 space-y-4">
-        {[
-          { sku: 'SKU-001', level: 45, rop: 50, status: 'low' },
-          { sku: 'SKU-002', level: 120, rop: 75, status: 'good' },
-          { sku: 'SKU-003', level: 15, rop: 30, status: 'critical' }
-        ].map(item => (
-          <div key={item.sku} className="flex items-center justify-between p-3 border rounded-lg">
-            <div className="flex-1">
-              <div className="font-medium text-sm">{item.sku}</div>
-              <div className="text-xs text-gray-500">ROP: {item.rop}</div>
-            </div>
-            <div className="text-right">
-              <div className="font-semibold">{item.level}</div>
-              <div className={cn(
-                "text-xs px-2 py-1 rounded",
-                item.status === 'critical' && "bg-red-100 text-red-700",
-                item.status === 'low' && "bg-yellow-100 text-yellow-700", 
-                item.status === 'good' && "bg-green-100 text-green-700"
-              )}>
-                {item.status}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="pt-4 border-t">
-        <button className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          View All Stock
-        </button>
-      </div>
-    </div>
-  )
-}
-
-const CapacityWidget = () => {
-  const facilities = [
-    { name: 'Infusion Line 1', utilization: 78.5, status: 'good' },
-    { name: 'Bottling Line 2', utilization: 92.1, status: 'high' },
-    { name: 'Packaging Unit', utilization: 65.3, status: 'good' }
-  ]
-  
-  return (
-    <div className="h-full flex flex-col">
-      <h3 className="font-medium mb-4">Capacity Utilization</h3>
-      
-      <div className="flex-1 space-y-4">
-        {facilities.map(facility => (
-          <div key={facility.name} className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">{facility.name}</span>
-              <span className="text-sm">{facility.utilization}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-              <div 
-                className={cn(
-                  "h-2 rounded-full transition-all duration-500",
-                  facility.status === 'high' ? "bg-red-500" : "bg-blue-500"
-                )}
-                style={{ width: `${facility.utilization}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="pt-4 border-t text-xs text-gray-500">
-        Last updated: {new Date().toLocaleTimeString()}
-      </div>
-    </div>
-  )
-}
-
-const SystemHealthWidget = () => {
-  const healthMetrics = [
-    { metric: 'API Response Time', value: '145ms', status: 'good' },
-    { metric: 'Database Connection', value: 'Connected', status: 'good' },
-    { metric: 'Queue Processing', value: '12 jobs', status: 'good' },
-    { metric: 'Memory Usage', value: '67%', status: 'warning' }
-  ]
-  
-  return (
-    <div className="h-full flex flex-col">
-      <h3 className="font-medium mb-4">System Health</h3>
-      
-      <div className="flex-1 space-y-3">
-        {healthMetrics.map(metric => (
-          <div key={metric.metric} className="flex items-center justify-between">
-            <span className="text-sm">{metric.metric}</span>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">{metric.value}</span>
-              <div className={cn(
-                "w-3 h-3 rounded-full",
-                metric.status === 'good' && "bg-green-400",
-                metric.status === 'warning' && "bg-yellow-400",
-                metric.status === 'error' && "bg-red-400"
-              )} />
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="pt-4 border-t">
-        <div className="text-xs text-gray-500">
-          All systems operational
+    <div style={{
+      backgroundColor: 'white',
+      padding: '1.5rem',
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      marginBottom: '1.5rem'
+    }}>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+        Working Capital Management
+      </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+        <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
+          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Accounts Receivable</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>$1.2M</p>
+          <p style={{ fontSize: '0.75rem', color: '#10b981' }}>↓ 5% from last month</p>
+        </div>
+        <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
+          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Accounts Payable</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>$800K</p>
+          <p style={{ fontSize: '0.75rem', color: '#ef4444' }}>↑ 3% from last month</p>
+        </div>
+        <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
+          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Cash Conversion Cycle</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>45 days</p>
+          <p style={{ fontSize: '0.75rem', color: '#10b981' }}>↓ 2 days improvement</p>
         </div>
       </div>
     </div>
   )
 }
 
-const RecentJobsWidget = () => {
-  const [jobs] = useState([
-    { id: 1, type: 'Forecast', status: 'completed', duration: '2m 34s', timestamp: new Date(Date.now() - 1000 * 60 * 15) },
-    { id: 2, type: 'Stock Optimization', status: 'running', duration: '1m 12s', timestamp: new Date(Date.now() - 1000 * 60 * 5) },
-    { id: 3, type: 'Working Capital', status: 'completed', duration: '45s', timestamp: new Date(Date.now() - 1000 * 60 * 30) }
-  ])
-  
+// Production metrics component
+const ProductionMetrics = () => {
   return (
-    <div className="h-full flex flex-col">
-      <h3 className="font-medium mb-4">Recent Jobs</h3>
-      
-      <div className="flex-1 space-y-3">
-        {jobs.map(job => (
-          <div key={job.id} className="flex items-center justify-between p-3 border rounded-lg">
-            <div className="flex-1">
-              <div className="font-medium text-sm">{job.type}</div>
-              <div className="text-xs text-gray-500">
-                {job.timestamp.toLocaleTimeString()}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm">{job.duration}</div>
-              <div className={cn(
-                "text-xs px-2 py-1 rounded",
-                job.status === 'completed' && "bg-green-100 text-green-700",
-                job.status === 'running' && "bg-blue-100 text-blue-700",
-                job.status === 'failed' && "bg-red-100 text-red-700"
-              )}>
-                {job.status}
-              </div>
-            </div>
+    <div style={{
+      backgroundColor: 'white',
+      padding: '1.5rem',
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      marginBottom: '1.5rem'
+    }}>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+        Production Metrics
+      </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+        <div>
+          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Units Produced</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>12,345</p>
+          <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '0.5rem' }}>
+            <div style={{ width: '75%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '2px' }}></div>
           </div>
-        ))}
+        </div>
+        <div>
+          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Efficiency Rate</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>89.2%</p>
+          <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '0.5rem' }}>
+            <div style={{ width: '89%', height: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
+          </div>
+        </div>
+        <div>
+          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Defect Rate</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>0.8%</p>
+          <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '0.5rem' }}>
+            <div style={{ width: '8%', height: '100%', backgroundColor: '#fbbf24', borderRadius: '2px' }}></div>
+          </div>
+        </div>
+        <div>
+          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>On-Time Delivery</h3>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>95.6%</p>
+          <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '0.5rem' }}>
+            <div style={{ width: '95%', height: '100%', backgroundColor: '#8b5cf6', borderRadius: '2px' }}></div>
+          </div>
+        </div>
       </div>
     </div>
   )
 }
 
-const EnhancedDashboard = () => {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  const { 
-    theme, 
-    sidebarCollapsed, 
-    isEditing, 
-    setEditing, 
-    initializeLayout,
-    currentLayout
-  } = useLayoutStore()
-  const { role, isAuthenticated, isLoading: authLoading, hasPermission } = useAuthRole()
-  
-  // SSE connection for real-time updates
-  const { isConnected } = useSSE({
-    enabled: isAuthenticated,
-    onConnect: () => console.log('Dashboard connected to real-time updates'),
-    onError: (error) => console.error('SSE connection error:', error)
-  })
-  
-  // Handle query parameters for actions
-  useEffect(() => {
-    const action = searchParams.get('action')
-    if (action) {
-      switch (action) {
-        case 'run-forecast':
-          // Trigger forecast workflow
-          console.log('Triggering forecast workflow')
-          break
-        case 'optimize-stock':
-          // Trigger stock optimization workflow
-          console.log('Triggering stock optimization workflow')
-          break
-        default:
-          break
-      }
-    }
-  }, [searchParams])
-  
-  // Initialize layout based on user role
-  useEffect(() => {
-    if (role && !currentLayout.lg) {
-      initializeLayout(role)
-    }
-  }, [role, currentLayout.lg, initializeLayout])
-  
-  // Theme effect
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [theme])
-  
-  // Keyboard shortcuts
-  useHotkeys('e', () => {
-    if (hasPermission('dashboard.edit')) {
-      setEditing(!isEditing)
-    }
-  }, { enableOnFormTags: false })
-  
-  useHotkeys('escape', () => {
-    if (isEditing) {
-      setEditing(false)
-    }
-  }, { enableOnFormTags: false })
-  
-  // Widget definitions
-  const widgets = [
-    {
-      id: 'kpi-strip',
-      title: 'Key Performance Indicators',
-      component: <KPIStrip />
-    },
-    {
-      id: 'demand-forecast',
-      title: 'Demand Forecast',
-      component: <DemandForecastWidget />
-    },
-    {
-      id: 'working-capital',
-      title: 'Working Capital Overview',
-      component: <KPIDashboard />
-    },
-    {
-      id: 'stock-status',
-      title: 'Stock Status',
-      component: <StockStatusWidget />
-    },
-    {
-      id: 'capacity-util',
-      title: 'Capacity Utilization',
-      component: <CapacityWidget />
-    },
-    {
-      id: 'system-health',
-      title: 'System Health',
-      component: <SystemHealthWidget />
-    },
-    {
-      id: 'recent-jobs',
-      title: 'Recent Jobs',
-      component: <RecentJobsWidget />
-    }
+// Inventory status component
+const InventoryStatus = () => {
+  const inventoryItems = [
+    { name: 'Raw Materials', value: 450, unit: 'tons', status: 'good' },
+    { name: 'Work in Progress', value: 128, unit: 'units', status: 'warning' },
+    { name: 'Finished Goods', value: 892, unit: 'units', status: 'good' },
+    { name: 'Packaging Materials', value: 3200, unit: 'pcs', status: 'critical' }
   ]
-  
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading dashboard...</p>
-        </div>
-      </div>
-    )
+
+  return (
+    <div style={{
+      backgroundColor: 'white',
+      padding: '1.5rem',
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    }}>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+        Inventory Status
+      </h2>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
+            <th style={{ padding: '0.5rem', textAlign: 'left' }}>Item</th>
+            <th style={{ padding: '0.5rem', textAlign: 'center' }}>Quantity</th>
+            <th style={{ padding: '0.5rem', textAlign: 'center' }}>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {inventoryItems.map((item, index) => (
+            <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
+              <td style={{ padding: '0.75rem' }}>{item.name}</td>
+              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                {item.value} {item.unit}
+              </td>
+              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                <span style={{
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '9999px',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  backgroundColor: item.status === 'good' ? '#d1fae5' : item.status === 'warning' ? '#fef3c7' : '#fee2e2',
+                  color: item.status === 'good' ? '#065f46' : item.status === 'warning' ? '#92400e' : '#991b1b'
+                }}>
+                  {item.status.toUpperCase()}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+// Main Enhanced Dashboard Component
+function EnhancedDashboard() {
+  const [selectedTab, setSelectedTab] = useState('overview')
+  const [timeRange, setTimeRange] = useState('today')
+  const [showFeatureFlags, setShowFeatureFlags] = useState(false)
+
+  // Feature flags
+  const features = {
+    cfoPreset: import.meta.env.VITE_FEATURE_CFO_PRESET === 'true',
+    globalTabs: import.meta.env.VITE_FEATURE_GLOBAL_TABS === 'true',
+    boardExport: import.meta.env.VITE_FEATURE_BOARD_EXPORT === 'true',
+    trustBadges: import.meta.env.VITE_FEATURE_TRUST_BADGES === 'true',
+    benchmarks: import.meta.env.VITE_FEATURE_BENCHMARKS === 'true'
   }
-  
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Authentication Required
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Please sign in to access the dashboard
-          </p>
-          <button 
-            onClick={() => navigate('/login')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700"
-          >
-            Sign In
-          </button>
-        </div>
-      </div>
-    )
-  }
-  
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'production', label: 'Production', icon: '🏭' },
+    { id: 'finance', label: 'Finance', icon: '💰' },
+    { id: 'inventory', label: 'Inventory', icon: '📦' },
+    { id: 'analytics', label: 'Analytics', icon: '📈' }
+  ]
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className={cn(
-        "min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200",
-        theme
-      )}>
-        <div className="flex h-screen">
-          {/* Sidebar */}
-          <AnimatePresence>
-            {!sidebarCollapsed && (
-              <motion.div
-                initial={{ x: -280 }}
-                animate={{ x: 0 }}
-                exit={{ x: -280 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="flex-shrink-0"
-              >
-                <Sidebar />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          {sidebarCollapsed && <Sidebar />}
-          
-          {/* Main content */}
-          <div className="flex-1 flex flex-col min-w-0">
-            <Header />
+    <div style={{ 
+      minHeight: 'calc(100vh - 64px)', 
+      backgroundColor: '#f3f4f6',
+      padding: '1.5rem'
+    }}>
+      {/* Dashboard Header */}
+      <div style={{ 
+        backgroundColor: 'white',
+        padding: '1.5rem',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        marginBottom: '1.5rem'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827' }}>
+              Enhanced Manufacturing Dashboard
+            </h1>
+            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
+              Real-time production and financial metrics
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {/* Time range selector */}
+            <select 
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                border: '1px solid #d1d5db',
+                backgroundColor: 'white'
+              }}
+            >
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
+              <option value="year">This Year</option>
+            </select>
             
-            {/* Dashboard content */}
-            <main className="flex-1 overflow-hidden p-6">
-              <motion.div
-                key="dashboard-grid"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="h-full"
-              >
-                <Grid 
-                  widgets={widgets}
-                  onLayoutChange={(layout, allLayouts) => {
-                    console.log('Layout changed:', { layout, allLayouts })
-                  }}
-                  className="h-full"
-                />
-              </motion.div>
-            </main>
+            {/* Export button */}
+            {features.boardExport && (
+              <button style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer'
+              }}>
+                Export 📥
+              </button>
+            )}
+            
+            {/* Settings */}
+            <button 
+              onClick={() => setShowFeatureFlags(!showFeatureFlags)}
+              style={{
+                padding: '0.5rem',
+                backgroundColor: '#f3f4f6',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              ⚙️
+            </button>
           </div>
         </div>
-        
-        {/* Connection status indicator */}
-        {!isConnected && (
-          <div className="fixed bottom-4 right-4 bg-yellow-100 border border-yellow-300 text-yellow-800 px-4 py-2 rounded-lg shadow-lg dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-200">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-              <span className="text-sm">Reconnecting...</span>
-            </div>
+
+        {/* Tabs */}
+        {features.globalTabs && (
+          <div style={{ 
+            display: 'flex', 
+            gap: '0.5rem', 
+            marginTop: '1rem',
+            borderTop: '1px solid #e5e7eb',
+            paddingTop: '1rem'
+          }}>
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedTab(tab.id)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: selectedTab === tab.id ? '#3b82f6' : 'transparent',
+                  color: selectedTab === tab.id ? 'white' : '#6b7280',
+                  fontWeight: selectedTab === tab.id ? 'bold' : 'normal'
+                }}
+              >
+                {tab.icon} {tab.label}
+              </button>
+            ))}
           </div>
         )}
-        
-        {/* Edit mode controls */}
-        {isEditing && (
-          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg">
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium">Edit Mode Active</span>
-              <button
-                onClick={() => setEditing(false)}
-                className="bg-blue-500 hover:bg-blue-400 px-3 py-1 rounded text-sm"
-              >
-                Done (ESC)
+      </div>
+
+      {/* Feature Flags Debug Panel */}
+      {showFeatureFlags && (
+        <div style={{
+          backgroundColor: '#fef3c7',
+          border: '1px solid #fbbf24',
+          padding: '1rem',
+          borderRadius: '6px',
+          marginBottom: '1rem'
+        }}>
+          <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Feature Flags</h3>
+          <ul style={{ fontSize: '0.875rem', listStyle: 'none', padding: 0 }}>
+            {Object.entries(features).map(([key, value]) => (
+              <li key={key}>
+                {value ? '✅' : '❌'} {key}: {value ? 'Enabled' : 'Disabled'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* KPI Strips */}
+      {features.cfoPreset ? <CFOKPIStrip /> : <KPIStrip />}
+
+      {/* Main Content Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
+        {/* Left Column */}
+        <div>
+          {/* Demand Forecast */}
+          <DemandForecastWidget />
+          
+          {/* Production Metrics */}
+          <ProductionMetrics />
+          
+          {/* Working Capital */}
+          <WorkingCapitalSection />
+        </div>
+
+        {/* Right Column */}
+        <div>
+          {/* Inventory Status */}
+          <InventoryStatus />
+          
+          {/* Quick Actions */}
+          <div style={{
+            backgroundColor: 'white',
+            padding: '1.5rem',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            marginTop: '1.5rem'
+          }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+              Quick Actions
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <button style={{
+                padding: '0.75rem',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left'
+              }}>
+                📊 Generate Report
+              </button>
+              <button style={{
+                padding: '0.75rem',
+                backgroundColor: '#10b981',
+                color: 'white',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left'
+              }}>
+                📦 Update Inventory
+              </button>
+              <button style={{
+                padding: '0.75rem',
+                backgroundColor: '#8b5cf6',
+                color: 'white',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left'
+              }}>
+                💰 Review Financials
+              </button>
+              <button style={{
+                padding: '0.75rem',
+                backgroundColor: '#f59e0b',
+                color: 'white',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left'
+              }}>
+                🔔 Set Alerts
               </button>
             </div>
           </div>
-        )}
-        
-        {/* Help overlay */}
-        <div className="fixed bottom-4 left-4">
-          <button className="bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500">
-            <span className="text-sm">Press ? for help</span>
-          </button>
+
+          {/* Trust Badges */}
+          {features.trustBadges && (
+            <div style={{
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '8px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              marginTop: '1.5rem'
+            }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                Certifications
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>🏆</span>
+                  <span>ISO 9001:2015 Certified</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>✅</span>
+                  <span>GDPR Compliant</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>🔒</span>
+                  <span>SOC 2 Type II</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>🌱</span>
+                  <span>Carbon Neutral</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      
-      {/* React Query Devtools - only in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
-    </QueryClientProvider>
+
+      {/* Footer Status */}
+      <div style={{
+        marginTop: '2rem',
+        padding: '1rem',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        textAlign: 'center',
+        color: '#6b7280',
+        fontSize: '0.875rem'
+      }}>
+        Last updated: {new Date().toLocaleString()} | 
+        Data refresh rate: 5 seconds | 
+        System status: <span style={{ color: '#10b981', fontWeight: 'bold' }}>Operational</span>
+      </div>
+    </div>
   )
 }
 

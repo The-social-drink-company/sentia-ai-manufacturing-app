@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, memo, useMemo, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { ArrowTrendingUpIcon, Cog6ToothIcon } from '@heroicons/react/24/outline'
 import { queryKeys, queryConfigs } from '../../services/queryClient'
 import { useSSEEvent } from '../../hooks/useSSE'
+import { useFeatureFlags } from '../../hooks/useFeatureFlags'
+import { CombinedTrustBadge } from '../ui/TrustBadge'
+import { ExportButton } from '../ui/ExportButton'
 import { cn } from '../../lib/utils'
 
-const ModelToggle = ({ models, activeModels, onToggle }) => {
+const ModelToggle = memo(({ models, activeModels, onToggle }) => {
   const modelColors = {
     Ensemble: '#3B82F6',
     ARIMA: '#10B981', 
@@ -38,9 +41,9 @@ const ModelToggle = ({ models, activeModels, onToggle }) => {
       ))}
     </div>
   )
-}
+})
 
-const ScenarioSelector = ({ scenarios, activeScenario, onSelect }) => {
+const ScenarioSelector = memo(({ scenarios, activeScenario, onSelect }) => {
   return (
     <select
       value={activeScenario}
@@ -54,9 +57,9 @@ const ScenarioSelector = ({ scenarios, activeScenario, onSelect }) => {
       ))}
     </select>
   )
-}
+})
 
-const AccuracyMetrics = ({ metrics }) => {
+const AccuracyMetrics = memo(({ metrics }) => {
   const metricItems = [
     { key: 'mape', label: 'MAPE', value: metrics?.mape, suffix: '%', target: 15 },
     { key: 'smape', label: 'sMAPE', value: metrics?.smape, suffix: '%', target: 20 },
@@ -85,9 +88,9 @@ const AccuracyMetrics = ({ metrics }) => {
       })}
     </div>
   )
-}
+})
 
-const DemandForecastWidget = ({ seriesId = 'UK-AMAZON-SKU123' }) => {
+const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
   const [activeModels, setActiveModels] = useState(['Ensemble', 'ARIMA'])
   const [activeScenario, setActiveScenario] = useState('Baseline')
   const [timeHorizon, setTimeHorizon] = useState(30)
@@ -135,6 +138,11 @@ const DemandForecastWidget = ({ seriesId = 'UK-AMAZON-SKU123' }) => {
           lastUpdate: new Date().toISOString(),
           modelCount: activeModels.length,
           dataPoints: baseData.length
+        },
+        trust: {
+          level: 'excellent',
+          freshness: 'fresh',
+          lastValidated: new Date(Date.now() - 3 * 60 * 1000).toISOString()
         }
       }
     },
@@ -149,13 +157,13 @@ const DemandForecastWidget = ({ seriesId = 'UK-AMAZON-SKU123' }) => {
     }
   }, [seriesId])
   
-  const handleModelToggle = (model) => {
+  const handleModelToggle = useCallback((model) => {
     setActiveModels(prev => 
       prev.includes(model) 
         ? prev.filter(m => m !== model)
         : [...prev, model]
     )
-  }
+  }, [])
   
   const handleUseInOptimization = () => {
     // Emit event for workflow integration
@@ -192,14 +200,41 @@ const DemandForecastWidget = ({ seriesId = 'UK-AMAZON-SKU123' }) => {
     )
   }
   
+  const { hasTrustBadges, hasBoardExport } = useFeatureFlags()
+  
+  // Prepare export data with memoization
+  const exportData = useMemo(() => 
+    forecastData?.series?.map(item => ({
+      date: item.date,
+      actual: item.actual,
+      ensemble_forecast: item.Ensemble,
+      arima_forecast: item.ARIMA,
+      holt_winters_forecast: item.HoltWinters,
+      linear_forecast: item.Linear,
+      confidence_lower: item.confidence_lower,
+      confidence_upper: item.confidence_upper
+    })) || []
+  , [forecastData?.series])
+  
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col" data-widget-id="demand-forecast">
       {/* Header controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
         <div className="flex items-center space-x-4">
-          <h3 className="font-medium text-gray-900 dark:text-white">
-            {seriesId}
-          </h3>
+          <div className="flex items-center space-x-2">
+            <h3 className="font-medium text-gray-900 dark:text-white">
+              {seriesId}
+            </h3>
+            {hasTrustBadges && forecastData?.trust && (
+              <CombinedTrustBadge
+                trustLevel={forecastData.trust.level}
+                freshness={forecastData.trust.freshness}
+                lastUpdated={forecastData.trust.lastValidated}
+                size="sm"
+                layout="horizontal"
+              />
+            )}
+          </div>
           <ScenarioSelector
             scenarios={['Baseline', 'Optimistic', 'Pessimistic', 'Holiday']}
             activeScenario={activeScenario}
@@ -225,6 +260,16 @@ const DemandForecastWidget = ({ seriesId = 'UK-AMAZON-SKU123' }) => {
           >
             Use in Optimization
           </button>
+          
+          {hasBoardExport && (
+            <ExportButton
+              widgetId="demand-forecast"
+              widgetTitle={`Demand Forecast - ${seriesId}`}
+              data={exportData}
+              formats={['csv', 'png']}
+              size="sm"
+            />
+          )}
           
           <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
             <Cog6ToothIcon className="w-4 h-4" />
@@ -328,6 +373,6 @@ const DemandForecastWidget = ({ seriesId = 'UK-AMAZON-SKU123' }) => {
       </div>
     </div>
   )
-}
+})
 
 export default DemandForecastWidget

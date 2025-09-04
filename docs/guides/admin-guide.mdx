@@ -1,0 +1,831 @@
+# Admin Guide
+
+*Role: Admin* | *Last Updated: January 2025*
+
+Welcome to the Sentia Manufacturing Dashboard! As an **Admin**, you have full system access including user management, integration setup, system maintenance, and deployment management. This comprehensive guide covers all administrative functions.
+
+## Your Role & Permissions
+
+### Administrative Capabilities
+
+- ✅ All Manager, Operator, and Viewer capabilities
+- ✅ User and role management
+- ✅ System configuration and settings
+- ✅ Integration setup and management
+- ✅ Database and system maintenance
+- ✅ Security and audit management
+- ✅ Deployment and environment management
+- ✅ Backup and recovery operations
+
+## System Administration
+
+### Dashboard Overview for Admins
+
+The Admin Dashboard provides system-wide visibility:
+
+#### System Health Monitoring
+- **Service Status**: Web, Worker, Database, Redis
+- **Performance Metrics**: Response time, throughput, errors
+- **Resource Utilization**: CPU, memory, disk space
+- **Active Users**: Current sessions and concurrent users
+
+#### Security Monitoring
+- **Authentication Events**: Logins, failures, lockouts
+- **Access Violations**: Unauthorized access attempts
+- **Data Changes**: Audit trail of sensitive operations
+- **Integration Status**: API health and security
+
+![Admin Dashboard](/assets/docs/screenshots/admin-dashboard.png)
+
+### System Configuration
+
+#### Application Settings
+
+**General Configuration**
+```javascript
+// Environment Settings
+NODE_ENV: production
+PORT: 5000
+APP_URL: https://sentia-manufacturing.railway.app
+
+// Feature Flags
+FEATURE_FORECASTING: true
+FEATURE_OPTIMIZATION: true
+FEATURE_WORKING_CAPITAL: true
+FEATURE_SSE_UPDATES: true
+```
+
+**Performance Tuning**
+- **Database Connections**: Pool size, timeout settings
+- **Cache Configuration**: Redis TTL, memory limits
+- **Queue Settings**: Worker concurrency, retry policies
+- **Rate Limiting**: API request limits, user quotas
+
+#### Business Rules Configuration
+
+**Working Capital Settings**
+- **Cost of Capital**: 12% (adjustable by environment)
+- **Default WC Limit**: $1,000,000
+- **Warning Threshold**: 80% of limit
+- **Payment Terms**: Default 30 days
+
+**Forecasting Parameters**
+- **Default Horizon**: 6 months
+- **Confidence Levels**: 80%, 90%, 95%
+- **Seasonality Detection**: Automatic
+- **Outlier Removal**: Enable statistical filtering
+
+**Inventory Settings**
+- **ABC Analysis**: 70/20/10 rule
+- **Service Levels**: 95% for A items, 90% for B, 85% for C
+- **Lead Time Safety**: 1.5x average lead time
+- **Minimum Order Quantities**: By supplier agreement
+
+## User Management
+
+### User Administration Interface
+
+Access user management: **Admin** → **User Management**
+
+#### User Listing
+View all system users with:
+- **Name and Email**: User identification
+- **Role**: Current access level
+- **Status**: Active, Inactive, Locked
+- **Last Login**: Recent activity
+- **Actions**: Edit, Deactivate, Reset Password
+
+![User Management](/assets/docs/screenshots/user-management.png)
+
+### Role-Based Access Control (RBAC)
+
+#### Predefined Roles
+
+**Viewer**
+```javascript
+permissions: [
+  'dashboard:read',
+  'reports:read',
+  'exports:create',
+  'profile:update'
+]
+```
+
+**Operator**
+```javascript
+permissions: [
+  ...viewer_permissions,
+  'imports:create',
+  'imports:retry',
+  'data:correct',
+  'integrations:sync'
+]
+```
+
+**Manager**
+```javascript
+permissions: [
+  ...operator_permissions,
+  'scenarios:create',
+  'approvals:manage',
+  'analytics:advanced',
+  'team:manage'
+]
+```
+
+**Admin**
+```javascript
+permissions: [
+  '*'  // Full access to all functions
+]
+```
+
+#### Custom Role Creation
+
+1. **Create New Role**
+   - Navigate to **Admin** → **Roles** → **Create New**
+   - Define role name and description
+   - Select permissions from available options
+
+2. **Permission Categories**
+   - **Data Access**: Read/write permissions by data type
+   - **System Functions**: Import, export, backup operations
+   - **User Management**: Create, modify, delete users
+   - **Configuration**: System settings and integrations
+
+3. **Permission Inheritance**
+   - **Base Roles**: Start with existing role template
+   - **Additional Permissions**: Add specific capabilities
+   - **Restrictions**: Remove default permissions if needed
+
+### User Lifecycle Management
+
+#### User Creation Process
+
+1. **Basic Information**
+   ```javascript
+   {
+     "firstName": "John",
+     "lastName": "Smith",
+     "email": "john.smith@company.com",
+     "department": "Operations",
+     "manager": "jane.doe@company.com"
+   }
+   ```
+
+2. **Access Configuration**
+   - **Primary Role**: Assign base role (Viewer, Operator, etc.)
+   - **Additional Permissions**: Grant specific capabilities
+   - **Data Restrictions**: Limit access to specific products/regions
+   - **Time-based Access**: Set account expiration if needed
+
+3. **Authentication Setup**
+   - **SSO Integration**: Configure SAML/OAuth if available
+   - **Local Account**: Set temporary password for first login
+   - **MFA Requirements**: Enforce two-factor authentication
+   - **Password Policy**: Set complexity requirements
+
+#### User Modification
+
+**Role Changes**
+- **Promotion**: Add new role while maintaining current access
+- **Role Transfer**: Change from one role to another
+- **Permission Adjustment**: Add/remove specific permissions
+- **Temporary Access**: Grant time-limited elevated permissions
+
+**Account Status Management**
+- **Deactivation**: Temporarily disable account
+- **Reactivation**: Restore previously deactivated account
+- **Account Lockout**: Security-driven access blocking
+- **Password Reset**: Force password change on next login
+
+#### User Deprovisioning
+
+**Account Removal Process**
+1. **Data Ownership Transfer**: Reassign created content
+2. **Access Revocation**: Remove all system permissions
+3. **Audit Trail**: Maintain record of account actions
+4. **Data Retention**: Follow company data retention policies
+
+## Integration Management
+
+### Shopify Integration
+
+#### Initial Setup
+
+1. **App Installation**
+   - Install Sentia app in Shopify admin
+   - Grant required permissions:
+     - Products (read/write)
+     - Orders (read)
+     - Inventory (read/write)
+     - Customers (read)
+
+2. **API Configuration**
+   ```javascript
+   // Environment Variables
+   SHOPIFY_SHOP_DOMAIN: "sentia.myshopify.com"
+   SHOPIFY_API_KEY: "your_api_key"
+   SHOPIFY_API_SECRET: "your_api_secret"
+   SHOPIFY_ACCESS_TOKEN: "shpat_xxxxx"
+   SHOPIFY_WEBHOOK_SECRET: "your_webhook_secret"
+   ```
+
+3. **Webhook Configuration**
+   Set up webhooks for real-time updates:
+   - **Orders**: Created, updated, paid, fulfilled
+   - **Products**: Created, updated, deleted
+   - **Inventory**: Level updates
+   - **Customers**: Created, updated
+
+#### Sync Configuration
+
+**Sync Schedule**
+- **Orders**: Every 15 minutes
+- **Products**: Every 4 hours  
+- **Inventory**: Every hour
+- **Customers**: Daily at 2 AM
+
+**Error Handling**
+- **Retry Logic**: 3 attempts with exponential backoff
+- **Rate Limiting**: Respect Shopify API limits
+- **Error Notifications**: Alert admins of persistent failures
+
+![Integration Setup](/assets/docs/screenshots/integration-setup.png)
+
+### Amazon Seller Central Integration
+
+#### SP-API Configuration
+
+1. **Developer Account Setup**
+   - Register for Amazon SP-API access
+   - Create application and obtain credentials
+   - Complete security assessment
+
+2. **Authentication Setup**
+   ```javascript
+   // LWA (Login with Amazon) Configuration
+   AMAZON_CLIENT_ID: "amzn1.application-oa2-client.xxxxx"
+   AMAZON_CLIENT_SECRET: "your_client_secret"
+   AMAZON_REFRESH_TOKEN: "Atzr|xxxxx"
+   
+   // AWS IAM Role
+   AMAZON_ACCESS_KEY_ID: "AKIA..."
+   AMAZON_SECRET_ACCESS_KEY: "your_secret"
+   AMAZON_ROLE_ARN: "arn:aws:iam::account:role/role-name"
+   ```
+
+3. **Marketplace Configuration**
+   - **Primary Marketplace**: US (ATVPDKIKX0DER)
+   - **Additional Markets**: CA, MX, UK, DE, FR, IT, ES
+   - **FBA vs FBM**: Configure fulfillment methods
+
+#### Data Synchronization
+
+**Orders API**
+- **Order Status**: Pending, shipped, delivered
+- **Financial Data**: Revenue, fees, taxes
+- **FBA Inventory**: Stock levels and movements
+
+**Reports API**
+- **Settlement Reports**: Financial reconciliation
+- **Inventory Reports**: Stock levels and health
+- **Business Reports**: Sales and traffic analytics
+
+### Unleashed Software Integration
+
+#### API Setup
+
+1. **API Credentials**
+   ```javascript
+   UNLEASHED_API_ID: "your_api_id"
+   UNLEASHED_API_KEY: "your_api_key"
+   UNLEASHED_API_URL: "https://api.unleashedsoftware.com"
+   ```
+
+2. **Data Mapping Configuration**
+   - **Products**: SKU mapping and categories
+   - **Customers**: Account codes and terms
+   - **Suppliers**: Vendor codes and lead times
+   - **Warehouses**: Location mapping
+
+#### Synchronization Settings
+
+**Master Data Sync**
+- **Products**: Hourly updates for new/changed items
+- **Customers**: Daily synchronization
+- **Suppliers**: Weekly updates
+- **Stock Levels**: Real-time for critical items
+
+**Transaction Sync**
+- **Sales Orders**: Real-time processing
+- **Purchase Orders**: Hourly updates
+- **Stock Movements**: Every 15 minutes
+- **Invoices**: Daily batch processing
+
+### Xero Integration
+
+#### OAuth 2.0 Setup
+
+1. **Xero App Configuration**
+   ```javascript
+   XERO_CLIENT_ID: "your_client_id"
+   XERO_CLIENT_SECRET: "your_client_secret"
+   XERO_TENANT_ID: "your_tenant_id"
+   XERO_REDIRECT_URL: "https://app.sentia.com/auth/xero/callback"
+   ```
+
+2. **Scope Configuration**
+   - **Accounting.read**: Access financial data
+   - **Accounting.contacts.read**: Customer information
+   - **Assets.read**: Fixed asset information
+
+#### Financial Data Sync
+
+**Chart of Accounts**
+- **Revenue Accounts**: Sales by product category
+- **Cost Accounts**: COGS and direct costs
+- **Balance Sheet**: Assets, liabilities, equity
+
+**Reporting Integration**
+- **Profit & Loss**: Monthly P&L statements
+- **Cash Flow**: Working capital analysis
+- **Balance Sheet**: Financial position
+
+## System Maintenance
+
+### Database Management
+
+#### Neon PostgreSQL Administration
+
+**Connection Management**
+- **Pool Configuration**: Min 2, Max 10 connections
+- **Connection Monitoring**: Track active/idle connections
+- **Query Performance**: Monitor slow queries >1 second
+- **Index Optimization**: Regular index analysis
+
+**Backup Configuration**
+```javascript
+// Automated Backup Schedule
+production: {
+  frequency: "0 */4 * * *",  // Every 4 hours
+  retention: "30 days",
+  type: "Point-in-time recovery"
+}
+
+test: {
+  frequency: "0 2 * * *",    // Daily at 2 AM
+  retention: "7 days"
+}
+```
+
+#### Database Maintenance Tasks
+
+**Daily Maintenance**
+- [ ] Check database connection health
+- [ ] Monitor query performance metrics
+- [ ] Review error logs for issues
+- [ ] Verify backup completion
+
+**Weekly Maintenance**
+- [ ] Analyze table statistics
+- [ ] Review index usage and performance
+- [ ] Clean up old log entries
+- [ ] Vacuum and analyze tables
+
+**Monthly Maintenance**
+- [ ] Full database performance review
+- [ ] Index optimization analysis
+- [ ] Storage usage assessment
+- [ ] Backup restoration testing
+
+### Redis Cache Management
+
+#### Cache Configuration
+
+**Memory Management**
+```javascript
+// Redis Configuration
+maxmemory: "2gb"
+maxmemory-policy: "allkeys-lru"
+timeout: 300
+databases: 16
+```
+
+**Cache Strategies**
+- **Session Data**: TTL 24 hours
+- **API Responses**: TTL 5 minutes
+- **Computed Results**: TTL 1 hour
+- **Static Reference Data**: TTL 24 hours
+
+#### Cache Monitoring
+
+**Performance Metrics**
+- **Hit Ratio**: Target >90% for optimal performance
+- **Memory Usage**: Monitor for memory pressure
+- **Connection Count**: Track active connections
+- **Eviction Rate**: Monitor key expiration patterns
+
+**Maintenance Operations**
+- **Memory Analysis**: Identify memory usage patterns
+- **Key Expiration**: Review TTL settings effectiveness
+- **Performance Tuning**: Optimize cache policies
+- **Cleanup Operations**: Remove stale keys
+
+### Application Maintenance
+
+#### Log Management
+
+**Winston Logging Configuration**
+```javascript
+// Log Levels and Rotation
+levels: {
+  error: 0,
+  warn: 1, 
+  info: 2,
+  debug: 3
+}
+
+rotation: {
+  maxSize: "10m",
+  maxFiles: 30,
+  datePattern: "YYYY-MM-DD"
+}
+```
+
+**Log Analysis**
+- **Error Monitoring**: Track application errors
+- **Performance Logging**: API response times
+- **Security Events**: Authentication failures
+- **Business Events**: Key business transactions
+
+#### Performance Monitoring
+
+**Application Metrics**
+- **Response Time**: API endpoint performance
+- **Throughput**: Requests per minute
+- **Error Rate**: 4xx and 5xx response rates
+- **Memory Usage**: Node.js heap utilization
+
+**System Health Checks**
+```bash
+# Health Check Endpoints
+GET /api/health          # Basic health status
+GET /api/health/detailed # Comprehensive system check
+GET /api/metrics         # Prometheus metrics
+GET /api/status          # Service status page
+```
+
+## Security Management
+
+### Authentication & Authorization
+
+#### Clerk Integration Management
+
+**User Authentication**
+- **SSO Configuration**: SAML, OAuth providers
+- **MFA Enforcement**: Require 2FA for admin roles
+- **Password Policies**: Complexity and rotation requirements
+- **Session Management**: Timeout and concurrent session limits
+
+**Security Policies**
+```javascript
+// Security Configuration
+session: {
+  timeout: "24 hours",
+  maxConcurrent: 3,
+  requireMFA: ["admin", "manager"]
+}
+
+password: {
+  minLength: 12,
+  requireSpecialChars: true,
+  rotationDays: 90,
+  historyCount: 5
+}
+```
+
+### Audit & Compliance
+
+#### Audit Trail Management
+
+**Tracked Events**
+- **User Actions**: Login, logout, password changes
+- **Data Changes**: Create, update, delete operations
+- **System Changes**: Configuration modifications
+- **Security Events**: Failed logins, privilege escalations
+
+**Audit Log Structure**
+```javascript
+{
+  timestamp: "2024-01-15T10:30:00Z",
+  userId: "user123",
+  action: "user.role.update",
+  resource: "user456",
+  details: {
+    oldRole: "operator",
+    newRole: "manager",
+    reason: "promotion"
+  },
+  ipAddress: "192.168.1.100",
+  userAgent: "Mozilla/5.0..."
+}
+```
+
+#### Compliance Reporting
+
+**Access Reports**
+- **User Access Review**: Quarterly access certification
+- **Privileged Access**: Monthly admin activity review
+- **Inactive Accounts**: Identify unused accounts
+- **Role Assignments**: Verify appropriate access levels
+
+**Data Protection**
+- **Data Classification**: Categorize sensitive data
+- **Retention Policies**: Define data lifecycle rules
+- **Deletion Procedures**: Secure data destruction
+- **Privacy Controls**: GDPR/CCPA compliance features
+
+## Deployment Management
+
+### Environment Management
+
+#### Environment Configuration
+
+**Development Environment**
+- **Purpose**: Feature development and testing
+- **Data**: Anonymized production data subset
+- **Access**: Development team members
+- **Resources**: Lower CPU/memory allocation
+
+**Test/UAT Environment**
+- **Purpose**: User acceptance testing
+- **Data**: Production-like test data
+- **Access**: Business users and QA team
+- **Resources**: Production-equivalent sizing
+
+**Production Environment**
+- **Purpose**: Live user operations
+- **Data**: Real business data
+- **Access**: Authorized users only
+- **Resources**: Full scaling capabilities
+
+#### Deployment Pipeline Management
+
+**Railway Deployment Configuration**
+```yaml
+environments:
+  development:
+    branch: development
+    auto_deploy: true
+    replicas: 1
+    
+  test:
+    branch: test
+    auto_deploy: true
+    replicas: 1
+    approval_required: false
+    
+  production:
+    branch: production
+    auto_deploy: false
+    replicas: 2
+    approval_required: true
+```
+
+**Release Management**
+1. **Development Phase**: Feature development and testing
+2. **Staging Phase**: UAT and performance testing
+3. **Production Phase**: Approved releases only
+4. **Rollback Capability**: Quick reversion if issues occur
+
+### Monitoring & Alerting
+
+#### System Monitoring
+
+**Infrastructure Metrics**
+- **Server Health**: CPU, memory, disk usage
+- **Database Performance**: Query time, connection count
+- **Network**: Response time, throughput
+- **Application**: Error rates, user sessions
+
+**Alert Configuration**
+```javascript
+alerts: [
+  {
+    name: "High Error Rate",
+    condition: "error_rate > 1%",
+    duration: "5 minutes",
+    notification: "email,slack"
+  },
+  {
+    name: "Database Slow Queries", 
+    condition: "query_time > 2000ms",
+    duration: "10 minutes",
+    notification: "email"
+  }
+]
+```
+
+#### Business Monitoring
+
+**KPI Alerts**
+- **Revenue Impact**: Significant revenue changes
+- **Data Quality**: Import failures or data inconsistencies
+- **User Activity**: Unusual access patterns
+- **Integration Health**: API failures or delays
+
+## Backup & Recovery
+
+### Backup Strategies
+
+#### Automated Backup Configuration
+
+**Database Backups**
+```javascript
+// Neon PostgreSQL Backups
+production: {
+  schedule: "0 */4 * * *",     // Every 4 hours
+  retention: "30 days",
+  type: "continuous_backup",
+  encryption: true
+}
+
+application_files: {
+  schedule: "0 3 * * *",       // Daily at 3 AM
+  retention: "7 days", 
+  destination: "s3://sentia-backups/"
+}
+```
+
+**Recovery Testing**
+- **Monthly**: Database restore verification
+- **Quarterly**: Full system recovery test
+- **Annually**: Disaster recovery drill
+
+#### Disaster Recovery Procedures
+
+**Recovery Time Objectives (RTO)**
+- **Critical Systems**: 30 minutes
+- **Important Systems**: 4 hours
+- **Non-critical Systems**: 24 hours
+
+**Recovery Point Objectives (RPO)**
+- **Financial Data**: 1 hour
+- **Operational Data**: 4 hours
+- **Configuration Data**: 24 hours
+
+**Recovery Process**
+1. **Assess Situation**: Determine scope of outage
+2. **Activate DR Plan**: Notify stakeholders
+3. **Restore Services**: Follow documented procedures
+4. **Validate Recovery**: Test all critical functions
+5. **Post-Incident Review**: Document lessons learned
+
+## Performance Optimization
+
+### Application Performance
+
+#### Query Optimization
+- **Slow Query Analysis**: Identify queries >1 second
+- **Index Optimization**: Add/remove indexes based on usage
+- **Query Rewriting**: Optimize complex joins and subqueries
+- **Connection Pooling**: Optimize database connections
+
+#### Caching Strategy
+- **API Response Caching**: Cache frequent queries
+- **Computed Result Caching**: Store expensive calculations
+- **Static Asset Caching**: CDN for images and files
+- **Database Query Caching**: Redis query result cache
+
+### Infrastructure Scaling
+
+#### Horizontal Scaling
+- **Load Balancing**: Distribute traffic across instances
+- **Auto-Scaling**: Scale based on demand metrics
+- **Database Read Replicas**: Distribute read operations
+- **Queue Processing**: Scale workers independently
+
+#### Resource Optimization
+- **Memory Management**: Optimize Node.js heap usage
+- **CPU Utilization**: Balance workload distribution
+- **Storage Optimization**: Compress and archive old data
+- **Network Optimization**: Minimize data transfer
+
+## Troubleshooting Guide
+
+### Common System Issues
+
+#### "Service Unavailable" Errors
+**Symptoms**: Users cannot access the application
+**Diagnosis**:
+1. Check service status: `railway status`
+2. Review error logs: `railway logs --tail 100`
+3. Check database connectivity
+4. Verify Redis availability
+
+**Resolution**:
+1. Restart services if needed
+2. Scale up resources if utilization is high
+3. Check for recent deployments
+4. Review infrastructure alerts
+
+#### Database Connection Issues
+**Symptoms**: Slow queries or connection timeouts
+**Diagnosis**:
+1. Check connection pool usage
+2. Review slow query logs
+3. Monitor database CPU/memory
+4. Check for long-running transactions
+
+**Resolution**:
+1. Optimize slow queries
+2. Increase connection pool size
+3. Scale database resources
+4. Kill blocking transactions if necessary
+
+#### Integration Failures
+**Symptoms**: Data sync errors or API timeouts
+**Diagnosis**:
+1. Check API credentials and permissions
+2. Review rate limiting status
+3. Verify webhook endpoints
+4. Check network connectivity
+
+**Resolution**:
+1. Refresh API tokens if expired
+2. Implement retry logic with backoff
+3. Contact integration provider if persistent
+4. Use manual sync as workaround
+
+### Emergency Procedures
+
+#### System Outage Response
+
+**Immediate Actions (0-15 minutes)**
+1. **Assess Impact**: Determine affected users and functions
+2. **Communication**: Post status page update
+3. **Initial Diagnosis**: Check basic system health
+4. **Escalation**: Contact on-call engineer if needed
+
+**Short-term Response (15-60 minutes)**
+1. **Root Cause Analysis**: Identify source of problem
+2. **Implement Fix**: Apply immediate resolution
+3. **Monitor Recovery**: Verify system restoration
+4. **User Communication**: Update stakeholders on progress
+
+**Follow-up Actions (1+ hours)**
+1. **Post-Incident Review**: Document what happened
+2. **Prevention Measures**: Implement safeguards
+3. **Process Improvement**: Update procedures
+4. **Stakeholder Debrief**: Communicate lessons learned
+
+---
+
+## Quick Reference
+
+### Critical Admin Contacts
+- **Railway Support**: Via dashboard help
+- **Neon Support**: console.neon.tech
+- **Clerk Support**: dashboard.clerk.io
+- **Emergency Escalation**: [Internal escalation path]
+
+### Essential Commands
+```bash
+# Railway Commands
+railway status                    # Check service status
+railway logs --tail 100          # View recent logs
+railway restart --service web    # Restart service
+railway scale --replicas 2       # Scale service
+
+# Database Commands
+railway run psql $DATABASE_URL   # Connect to database
+railway run npm run db:migrate   # Run migrations
+railway run npm run db:backup    # Create backup
+```
+
+### Emergency Checklists
+
+**System Outage Checklist**
+- [ ] Check service status dashboard
+- [ ] Review error logs for clues
+- [ ] Post initial status update
+- [ ] Contact on-call engineer
+- [ ] Implement temporary workarounds
+- [ ] Monitor recovery progress
+- [ ] Communicate resolution
+- [ ] Schedule post-mortem
+
+**Security Incident Checklist**
+- [ ] Isolate affected systems
+- [ ] Preserve evidence/logs
+- [ ] Reset compromised credentials
+- [ ] Notify security team
+- [ ] Review audit logs
+- [ ] Implement additional controls
+- [ ] Document incident
+- [ ] Report to management
+
+---
+
+*This guide is updated regularly. Check the documentation portal for the latest version and additional administrative resources.*

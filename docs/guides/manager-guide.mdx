@@ -1,0 +1,471 @@
+# Manager Guide
+
+*Role: Manager* | *Last Updated: January 2025*
+
+Welcome to the Sentia Manufacturing Dashboard! As a **Manager**, you have all Operator capabilities plus the ability to run scenarios, approve optimization plans, and review performance analytics. This guide focuses on strategic decision-making and approval workflows.
+
+## Your Role & Permissions
+
+### Management Capabilities
+
+- ✅ All Viewer and Operator capabilities
+- ✅ Run forecasting and optimization scenarios
+- ✅ Approve/reject optimization recommendations
+- ✅ Review variance and performance analytics
+- ✅ Configure business rules and parameters
+- ✅ Access advanced reporting and analytics
+- ✅ Manage team member access and permissions
+- ❌ System administration functions
+- ❌ Integration configuration
+
+## Strategic Dashboard Overview
+
+### Manager-Specific Widgets
+
+The Enhanced Dashboard includes manager-focused components:
+
+#### Executive KPI Strip
+- **Revenue Performance**: Actual vs. target
+- **Margin Analysis**: Gross and net margins
+- **Working Capital Efficiency**: WC as % of revenue
+- **Forecast Accuracy**: MAPE across all products
+- **Customer Satisfaction**: NPS and retention metrics
+
+#### Strategic Insights Panel
+- **Variance Analysis**: Budget vs. actual performance
+- **Trend Indicators**: Leading vs. lagging metrics
+- **Risk Alerts**: Potential issues requiring attention
+- **Opportunity Identification**: Revenue enhancement possibilities
+
+![Manager Dashboard](/assets/docs/screenshots/manager-dashboard.png)
+
+## Scenario Analysis & Planning
+
+### Demand Forecasting Scenarios
+
+#### Running Forecast Scenarios
+
+1. Navigate to **Planning** → **Demand Forecasting**
+2. Select **"Create New Scenario"**
+3. Configure scenario parameters:
+   - **Time Horizon**: 1, 3, 6, or 12 months
+   - **Product Scope**: All products or specific categories
+   - **Confidence Level**: 80%, 90%, or 95%
+   - **Seasonal Adjustments**: Enable/disable seasonality
+
+4. Set business assumptions:
+   - **Market Growth Rate**: Expected market expansion
+   - **Promotional Impact**: Planned marketing campaigns
+   - **Economic Factors**: GDP, inflation, industry trends
+   - **Competitive Actions**: Known competitor activities
+
+#### Scenario Comparison
+
+Compare multiple scenarios side-by-side:
+
+| Scenario | Revenue Impact | Inventory Req | Risk Level |
+|----------|---------------|---------------|------------|
+| Conservative | +5% | $2.1M | Low |
+| Base Case | +12% | $2.8M | Medium |
+| Aggressive | +25% | $3.9M | High |
+
+#### Scenario Approval Workflow
+
+1. **Review Results**: Analyze forecast outputs
+2. **Validate Assumptions**: Verify input parameters
+3. **Assess Risk**: Evaluate downside scenarios
+4. **Make Decision**: Approve, reject, or request modifications
+5. **Communicate Plan**: Share approved scenario with teams
+
+![Scenario Analysis](/assets/docs/screenshots/scenario-analysis.png)
+
+### Working Capital Optimization
+
+#### WC Scenario Planning
+
+Run working capital optimization scenarios:
+
+1. **Current State Analysis**
+   - Baseline CCC (Cash Conversion Cycle)
+   - Component breakdown (DSO, DIO, DPO)
+   - Seasonal patterns and trends
+
+2. **Optimization Scenarios**
+   - **Conservative**: 10% improvement target
+   - **Moderate**: 20% improvement target  
+   - **Aggressive**: 35% improvement target
+
+3. **Impact Assessment**
+   - **Cash Flow Impact**: Immediate and ongoing
+   - **Operations Impact**: Service level changes
+   - **Risk Assessment**: Implementation challenges
+
+#### WC Improvement Recommendations
+
+The system generates specific recommendations:
+
+**Accounts Receivable (AR) Optimization**
+- Reduce payment terms from 45 to 30 days
+- Implement early payment discounts (2/10 net 30)
+- Automated collection reminders
+- **Impact**: Reduce DSO by 8-12 days
+
+**Inventory Optimization**
+- Implement ABC analysis for stock management
+- Reduce safety stock on slow-moving items
+- Negotiate consignment arrangements with suppliers
+- **Impact**: Reduce DIO by 15-20 days
+
+**Accounts Payable (AP) Optimization**
+- Negotiate extended payment terms (60-90 days)
+- Take advantage of supplier early payment discounts
+- Optimize payment timing for cash flow
+- **Impact**: Increase DPO by 10-15 days
+
+### Stock Optimization Scenarios
+
+#### Inventory Planning Models
+
+1. **Economic Order Quantity (EOQ)**
+   - Optimal order quantities to minimize total cost
+   - Balance carrying costs vs. ordering costs
+   - Account for demand variability
+
+2. **Reorder Point (ROP) Optimization**
+   - Set optimal reorder triggers
+   - Factor in lead time variability
+   - Service level targets (95%, 98%, 99%)
+
+3. **Safety Stock Calculations**
+   - Demand variability analysis
+   - Lead time uncertainty
+   - Service level requirements
+
+#### Multi-Echelon Optimization
+
+For complex supply chains:
+- **Warehouse Network**: Optimize stock allocation across locations
+- **Supplier Tiers**: Coordinate with tier 1 and tier 2 suppliers
+- **Transportation**: Balance inventory vs. shipping costs
+
+![Stock Optimization](/assets/docs/screenshots/stock-optimization.png)
+
+## Approval Workflows
+
+### Optimization Recommendation Reviews
+
+#### Approval Dashboard
+
+Access pending recommendations:
+1. Navigate to **Approvals** → **Pending Reviews**
+2. Filter by priority: **Critical**, **High**, **Medium**, **Low**
+3. Sort by financial impact or implementation complexity
+
+#### Recommendation Details
+
+Each recommendation includes:
+- **Business Case**: ROI, payback period, NPV
+- **Implementation Plan**: Timeline, resources required
+- **Risk Assessment**: Potential issues and mitigation
+- **Impact Analysis**: Quantified benefits and costs
+
+#### Approval Actions
+
+For each recommendation:
+
+1. **Approve**: Accept recommendation as proposed
+   - Set implementation priority
+   - Assign owner and team
+   - Define success metrics
+
+2. **Approve with Modifications**: Accept with changes
+   - Specify required modifications
+   - Set conditional approval criteria
+   - Request revised proposal
+
+3. **Reject**: Decline recommendation
+   - Provide detailed rejection reason
+   - Suggest alternative approaches
+   - Document decision rationale
+
+4. **Request More Information**: Need additional analysis
+   - Specify information requirements
+   - Set deadline for response
+   - Assign to analyst for follow-up
+
+![Approval Workflow](/assets/docs/screenshots/approval-workflow.png)
+
+### Batch Approval Operations
+
+For multiple related recommendations:
+1. **Select Multiple**: Use checkboxes for bulk selection
+2. **Group Actions**: Apply same decision to all selected
+3. **Conditional Approval**: Set criteria for automatic approval
+4. **Delegation**: Assign to subordinates for pre-screening
+
+## Performance Analytics
+
+### Variance Analysis Dashboard
+
+#### Financial Variance Tracking
+
+Monitor key financial metrics:
+- **Revenue Variance**: Actual vs. budget/forecast
+- **Cost Variance**: Direct costs, overhead, labor
+- **Margin Variance**: Product-level and overall
+- **Volume Variance**: Quantity sold vs. planned
+
+#### Operational Variance Analysis
+
+Track operational performance:
+- **Forecast Accuracy**: Demand prediction vs. actual
+- **Inventory Performance**: Turns, fill rates, stockouts
+- **Customer Service**: On-time delivery, quality metrics
+- **Supplier Performance**: Delivery, quality, cost
+
+#### Root Cause Analysis
+
+For significant variances:
+1. **Identify**: Variances >5% or $50K threshold
+2. **Analyze**: Drill down to root causes
+3. **Categorize**: Market, internal, or external factors
+4. **Action Plan**: Corrective measures and prevention
+
+![Variance Analysis](/assets/docs/screenshots/variance-analysis.png)
+
+### Performance Trending
+
+#### Leading Indicators
+
+Monitor forward-looking metrics:
+- **Pipeline Health**: Sales opportunities by stage
+- **Customer Satisfaction**: NPS trends and feedback
+- **Inventory Turns**: Improving or declining efficiency
+- **Supplier Lead Times**: Supply chain health
+
+#### Lagging Indicators
+
+Track historical performance:
+- **Financial Results**: Revenue, profit, cash flow
+- **Customer Metrics**: Retention, lifetime value
+- **Operational Metrics**: Quality, delivery, efficiency
+- **Market Position**: Market share, competitive ranking
+
+### Executive Reporting
+
+#### Automated Executive Reports
+
+**Daily Flash Report**
+- Key metrics summary
+- Alert notifications
+- Action items requiring attention
+
+**Weekly Business Review**
+- Performance against targets
+- Variance analysis
+- Trend identification
+- Upcoming decisions needed
+
+**Monthly Management Report**
+- Comprehensive performance review
+- Strategic initiative progress
+- Financial analysis
+- Forward-looking insights
+
+## Advanced Analytics
+
+### Predictive Analytics
+
+#### Demand Sensing
+- Real-time demand signal detection
+- Social media sentiment analysis
+- Economic indicator correlation
+- Weather pattern impacts
+
+#### Risk Prediction
+- Supply disruption probability
+- Customer churn likelihood
+- Cash flow stress scenarios
+- Market volatility impacts
+
+#### Optimization Algorithms
+- Machine learning-based recommendations
+- Multi-objective optimization
+- Constraint-based planning
+- Genetic algorithm solutions
+
+### Business Intelligence Tools
+
+#### Custom Dashboard Creation
+1. **Select Metrics**: Choose KPIs to display
+2. **Configure Layout**: Arrange widgets and charts
+3. **Set Filters**: Define default view parameters
+4. **Share Dashboard**: Grant access to team members
+
+#### Advanced Reporting
+- **Pivot Tables**: Multidimensional analysis
+- **Trend Analysis**: Time series forecasting
+- **Correlation Analysis**: Variable relationships
+- **Regression Models**: Predictive modeling
+
+![Advanced Analytics](/assets/docs/screenshots/advanced-analytics.png)
+
+## Team Management
+
+### User Access Management
+
+#### Role-Based Permissions
+- **Viewer**: Read-only access to dashboards
+- **Operator**: Data import and maintenance
+- **Analyst**: Advanced analytics and reporting
+- **Manager**: Approval workflows and strategy
+
+#### Access Control
+1. Navigate to **Administration** → **User Management**
+2. Select user to modify
+3. Assign/revoke roles and permissions
+4. Set data access restrictions if needed
+
+### Performance Management
+
+#### Team Metrics Dashboard
+- **Individual Performance**: Key metrics by team member
+- **Team Goals**: Progress toward objectives
+- **Productivity Metrics**: Output and efficiency measures
+- **Development Needs**: Training and skill gaps
+
+#### Goal Setting and Tracking
+1. **Define Objectives**: SMART goals for each team member
+2. **Set Metrics**: Quantifiable success measures
+3. **Track Progress**: Regular check-ins and updates
+4. **Review Performance**: Quarterly and annual reviews
+
+## Decision Support Tools
+
+### What-If Analysis
+
+#### Sensitivity Analysis
+Test how changes in key variables affect outcomes:
+- **Price Changes**: Impact on revenue and margins
+- **Volume Changes**: Effect on costs and profitability
+- **Cost Changes**: Supplier price variations
+- **Market Changes**: Economic scenario impacts
+
+#### Monte Carlo Simulation
+- **Probabilistic Modeling**: Account for uncertainty
+- **Risk Assessment**: Probability distributions
+- **Confidence Intervals**: Range of possible outcomes
+- **Decision Trees**: Sequential decision analysis
+
+### Financial Planning Tools
+
+#### Budget Planning
+- **Top-down Budgeting**: Start with revenue targets
+- **Bottom-up Budgeting**: Aggregate from operational plans
+- **Zero-based Budgeting**: Justify all expenditures
+- **Rolling Forecasts**: Continuous planning updates
+
+#### Investment Analysis
+- **NPV Analysis**: Net present value calculations
+- **IRR Calculation**: Internal rate of return
+- **Payback Period**: Time to recover investment
+- **Risk-Adjusted Returns**: Risk-weighted evaluations
+
+## Best Practices for Managers
+
+### Strategic Planning
+
+1. **Data-Driven Decisions**: Base decisions on analytics
+2. **Scenario Planning**: Always consider multiple outcomes
+3. **Risk Assessment**: Understand and mitigate risks
+4. **Stakeholder Alignment**: Communicate plans clearly
+5. **Performance Monitoring**: Track progress continuously
+
+### Approval Process Management
+
+1. **Timely Reviews**: Don't delay approval decisions
+2. **Thorough Analysis**: Review all supporting data
+3. **Clear Communication**: Provide detailed feedback
+4. **Consistent Standards**: Apply criteria consistently
+5. **Documentation**: Record decision rationale
+
+### Team Leadership
+
+1. **Clear Expectations**: Set specific, measurable goals
+2. **Regular Communication**: Hold frequent team meetings
+3. **Skills Development**: Invest in team training
+4. **Recognition**: Acknowledge good performance
+5. **Continuous Improvement**: Foster innovation
+
+## Troubleshooting
+
+### Performance Issues
+
+#### Dashboard Loading Slowly
+**Causes**:
+- Large date ranges selected
+- Too many widgets on dashboard
+- Network connectivity issues
+
+**Solutions**:
+1. Reduce date range filters
+2. Hide unused widgets
+3. Clear browser cache
+4. Check network connection
+
+#### Scenario Analysis Timeouts
+**Causes**:
+- Complex optimization models
+- Large data volumes
+- System resource constraints
+
+**Solutions**:
+1. Reduce scope of analysis
+2. Use smaller time horizons
+3. Schedule analysis during off-peak hours
+4. Contact administrator for resource allocation
+
+### Data Quality Issues
+
+#### Inconsistent Metrics
+**Symptoms**: Different values for same metric across reports
+**Solutions**:
+1. Check date range consistency
+2. Verify filter settings
+3. Review data source timing
+4. Validate calculation methods
+
+#### Missing Approval Items
+**Symptoms**: Expected recommendations not appearing
+**Solutions**:
+1. Check approval thresholds
+2. Verify user permissions
+3. Review workflow status
+4. Contact system administrator
+
+---
+
+## Quick Reference
+
+### Key Manager Metrics
+- **Revenue Growth**: Month-over-month and year-over-year
+- **Gross Margin**: Target >40% for manufacturing
+- **Inventory Turns**: Target >6 turns annually
+- **Cash Conversion Cycle**: Target <60 days
+- **Forecast Accuracy**: Target >85% (MAPE <15%)
+
+### Approval Thresholds
+- **Auto-Approve**: <$10K impact, <2% risk
+- **Manager Approval**: $10K-$100K impact
+- **Executive Approval**: >$100K impact
+- **Board Approval**: >$1M impact or strategic change
+
+### Emergency Contacts
+- **Operations Team**: ops@sentia.com
+- **Finance Team**: finance@sentia.com
+- **IT Support**: support@sentia.com
+- **Executive Assistant**: [Contact info]
+
+---
+
+*This guide is updated regularly. Access the latest version through the documentation portal.*

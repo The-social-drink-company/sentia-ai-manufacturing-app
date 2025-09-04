@@ -37,10 +37,7 @@
     "db:migrate:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
-    "railway:setup": "node scripts/setup-railway-env.js",
-    "monitor": "node monitoring-agent.js",
-    "monitor:status": "node monitoring-agent.js --status",
-    "monitor:bg": "nohup node monitoring-agent.js > monitoring.log 2>&1 &",
+    "railway:setup": "node scripts/setup-railway-env.js"
   },
   "dependencies": {
     "@clerk/backend": "^2.12.0",

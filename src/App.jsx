@@ -1,538 +1,58 @@
-import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { ClerkProvider, SignIn, SignUp, SignedIn, SignedOut, RedirectToSignIn, UserButton, useUser } from '@clerk/clerk-react'
+import React from 'react'
 
-// Get Clerk key - with fallback for demo mode
-const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
-
-// Create QueryClient instance for React Query
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-})
-
-// Lazy load ALL pages for better performance
-const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
-const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
-const AdminPortal = lazy(() => import('./pages/AdminPortal'))
-const DataImport = lazy(() => import('./pages/DataImport'))
-const Templates = lazy(() => import('./pages/Templates'))
-const Dashboard = lazy(() => import('./pages/Dashboard'))
-const LandingPage = lazy(() => import('./pages/LandingPage'))
-
-// Import layout components
-const Header = lazy(() => import('./components/layout/Header'))
-const Sidebar = lazy(() => import('./components/layout/Sidebar'))
-
-// Loading component with enhanced UI
-function Loading() {
-  return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
-      <div style={{
-        width: '60px',
-        height: '60px',
-        border: '4px solid rgba(255,255,255,0.3)',
-        borderTopColor: 'white',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite'
-      }}></div>
-      <p style={{ 
-        marginTop: '1rem', 
-        color: 'white', 
-        fontSize: '1.25rem',
-        fontWeight: '500'
-      }}>
-        Loading Sentia Manufacturing Dashboard...
-      </p>
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
-  )
-}
-
-// Main App Layout Component with Authentication Status
-function AppLayout({ children }) {
-  const [sidebarOpen, setSidebarOpen] = React.useState(true)
-  const { user } = useUser()
-  
-  return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <Suspense fallback={<div />}>
-        <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      </Suspense>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Suspense fallback={<div />}>
-          <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)}>
-            {/* Add User Button in header */}
-            {user && (
-              <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>
-                <UserButton afterSignOutUrl="/" />
-              </div>
-            )}
-          </Header>
-        </Suspense>
-        <main style={{ 
-          flex: 1, 
-          overflowY: 'auto',
-          backgroundColor: '#f5f5f5',
-          padding: '1rem'
-        }}>
-          {children}
-        </main>
-      </div>
-    </div>
-  )
-}
-
-// Enhanced Landing Page with full features showcase
-function EnhancedLandingPage() {
-  const { user } = useUser()
-  
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem'
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '1rem',
-        padding: '3rem',
-        maxWidth: '1200px',
-        width: '100%',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-      }}>
-        <h1 style={{ 
-          fontSize: '3.5rem', 
-          fontWeight: 'bold', 
-          marginBottom: '1rem',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          textAlign: 'center'
-        }}>
-          Sentia Manufacturing Dashboard
-        </h1>
-        
-        <p style={{ 
-          fontSize: '1.5rem', 
-          color: '#6b7280', 
-          marginBottom: '3rem',
-          textAlign: 'center'
-        }}>
-          Complete Production Management System
-          {user && <span style={{ display: 'block', fontSize: '1rem', marginTop: '0.5rem' }}>
-            Welcome back, {user.firstName || user.emailAddresses[0].emailAddress}!
-          </span>}
-        </p>
-
-        {/* Feature Cards */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '1.5rem',
-          marginBottom: '3rem'
-        }}>
-          {[
-            { title: 'Enhanced Dashboard', desc: 'Real-time KPIs, widgets, and analytics', color: '#3b82f6', path: '/dashboard' },
-            { title: 'Working Capital', desc: 'Cash flow, projections, and scenarios', color: '#10b981', path: '/working-capital' },
-            { title: 'Data Import', desc: 'Advanced import with validation', color: '#f59e0b', path: '/data-import' },
-            { title: 'Admin Portal', desc: 'Complete system management', color: '#ef4444', path: '/admin' },
-          ].map((feature, idx) => (
-            <a key={idx} href={feature.path} style={{
-              display: 'block',
-              padding: '1.5rem',
-              backgroundColor: 'white',
-              borderRadius: '0.5rem',
-              border: `2px solid ${feature.color}20`,
-              textDecoration: 'none',
-              transition: 'all 0.3s',
-              cursor: 'pointer'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}>
-              <h3 style={{ 
-                color: feature.color, 
-                fontSize: '1.25rem', 
-                fontWeight: 'bold',
-                marginBottom: '0.5rem'
-              }}>
-                {feature.title}
-              </h3>
-              <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                {feature.desc}
-              </p>
-            </a>
-          ))}
-        </div>
-
-        {/* Full Feature List */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-          padding: '2rem',
-          backgroundColor: '#f9fafb',
-          borderRadius: '0.5rem'
-        }}>
-          <div>
-            <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Dashboard Features</h4>
-            <ul style={{ fontSize: '0.875rem', color: '#6b7280', paddingLeft: '1.25rem' }}>
-              <li>KPI Strip with live metrics</li>
-              <li>Demand Forecast Widget</li>
-              <li>CFO KPI Strip</li>
-              <li>Drag-and-drop layout</li>
-              <li>Widget customization</li>
-            </ul>
-          </div>
-          <div>
-            <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Working Capital</h4>
-            <ul style={{ fontSize: '0.875rem', color: '#6b7280', paddingLeft: '1.25rem' }}>
-              <li>Cash Flow Projections</li>
-              <li>Policy Management</li>
-              <li>Scenario Analysis</li>
-              <li>System Diagnostics</li>
-              <li>KPI Dashboard</li>
-            </ul>
-          </div>
-          <div>
-            <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Data Management</h4>
-            <ul style={{ fontSize: '0.875rem', color: '#6b7280', paddingLeft: '1.25rem' }}>
-              <li>File Upload System</li>
-              <li>Data Preview & Mapping</li>
-              <li>Validation Engine</li>
-              <li>Template Manager</li>
-              <li>Import History</li>
-            </ul>
-          </div>
-          <div>
-            <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Administration</h4>
-            <ul style={{ fontSize: '0.875rem', color: '#6b7280', paddingLeft: '1.25rem' }}>
-              <li>User Management</li>
-              <li>API Configuration</li>
-              <li>Feature Flags</li>
-              <li>System Logs</li>
-              <li>Integrations</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Quick Access Buttons */}
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          justifyContent: 'center',
-          marginTop: '2rem',
-          flexWrap: 'wrap'
-        }}>
-          <SignedIn>
-            <a href="/dashboard" style={{
-              padding: '1rem 2rem',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              borderRadius: '0.5rem',
-              textDecoration: 'none',
-              fontWeight: 'bold',
-              fontSize: '1.125rem',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              transition: 'transform 0.2s',
-              display: 'inline-block'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
-              Go to Dashboard
-            </a>
-          </SignedIn>
-          <SignedOut>
-            <a href="/sign-in" style={{
-              padding: '1rem 2rem',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              borderRadius: '0.5rem',
-              textDecoration: 'none',
-              fontWeight: 'bold',
-              fontSize: '1.125rem',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              transition: 'transform 0.2s',
-              display: 'inline-block'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
-              Sign In to Get Started
-            </a>
-          </SignedOut>
-        </div>
-
-        {/* System Status with Authentication Info */}
-        <div style={{
-          marginTop: '2rem',
-          padding: '1rem',
-          backgroundColor: CLERK_PUBLISHABLE_KEY ? '#f0fdf4' : '#fef3c7',
-          borderRadius: '0.5rem',
-          border: CLERK_PUBLISHABLE_KEY ? '1px solid #86efac' : '1px solid #fcd34d'
-        }}>
-          <h4 style={{ color: CLERK_PUBLISHABLE_KEY ? '#166534' : '#92400e', marginBottom: '0.5rem' }}>
-            System Status: {CLERK_PUBLISHABLE_KEY ? 'Fully Operational' : 'Demo Mode'}
-          </h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem' }}>
-            {[
-              'Dashboard ✓', 
-              'APIs ✓', 
-              'Database ✓', 
-              'Services ✓', 
-              'Widgets ✓', 
-              'Analytics ✓',
-              CLERK_PUBLISHABLE_KEY ? 'Auth ✓' : 'Auth (Demo)',
-              'All Routes ✓'
-            ].map(status => (
-              <span key={status} style={{ color: '#16a34a', fontSize: '0.875rem' }}>{status}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Protected Route Component
-function ProtectedRoute({ children }) {
-  if (!CLERK_PUBLISHABLE_KEY || CLERK_PUBLISHABLE_KEY === 'your_clerk_publishable_key_here') {
-    // No Clerk key configured - allow access (demo mode)
-    return children;
-  }
-  
-  return (
-    <>
-      <SignedIn>{children}</SignedIn>
-      <SignedOut><RedirectToSignIn /></SignedOut>
-    </>
-  );
-}
-
-// Main App Component with FULL functionality and robust error handling
+// EMERGENCY MINIMAL APP - GUARANTEED TO WORK
 function App() {
-  console.log('App rendering - FULL FEATURED VERSION with authentication')
-  console.log('Clerk key status:', CLERK_PUBLISHABLE_KEY ? 'Available' : 'Missing')
-  
-  // If no Clerk key or it's the placeholder, render without ClerkProvider
-  if (!CLERK_PUBLISHABLE_KEY || CLERK_PUBLISHABLE_KEY === 'your_clerk_publishable_key_here') {
-    console.log('Running in demo mode - authentication disabled')
-    
-    return (
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <div style={{ minHeight: '100vh' }}>
-            <Routes>
-              <Route path="/" element={<Suspense fallback={<Loading />}><EnhancedLandingPage /></Suspense>} />
-              <Route path="/dashboard" element={<AppLayout><Suspense fallback={<Loading />}><EnhancedDashboard /></Suspense></AppLayout>} />
-              <Route path="/dashboard/basic" element={<AppLayout><Suspense fallback={<Loading />}><Dashboard /></Suspense></AppLayout>} />
-              <Route path="/working-capital" element={<AppLayout><Suspense fallback={<Loading />}><WorkingCapitalDashboard /></Suspense></AppLayout>} />
-              <Route path="/data-import" element={<AppLayout><Suspense fallback={<Loading />}><DataImport /></Suspense></AppLayout>} />
-              <Route path="/templates" element={<AppLayout><Suspense fallback={<Loading />}><Templates /></Suspense></AppLayout>} />
-              <Route path="/admin/*" element={<AppLayout><Suspense fallback={<Loading />}><AdminPortal /></Suspense></AppLayout>} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </div>
-        </Router>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    )
-  }
-  
-  // Full app with Clerk authentication
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <div style={{ minHeight: '100vh' }}>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={
-                <Suspense fallback={<Loading />}>
-                  <EnhancedLandingPage />
-                </Suspense>
-              } />
-              
-              {/* Auth routes */}
-              <Route path="/sign-in/*" element={
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  minHeight: '100vh',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                }}>
-                  <SignIn routing="path" path="/sign-in" redirectUrl="/dashboard" />
-                </div>
-              } />
-              
-              <Route path="/sign-up/*" element={
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  minHeight: '100vh',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                }}>
-                  <SignUp routing="path" path="/sign-up" redirectUrl="/dashboard" />
-                </div>
-              } />
-              
-              {/* Protected routes */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <EnhancedDashboard />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/dashboard/basic" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <Dashboard />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/working-capital" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <WorkingCapitalDashboard />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/data-import" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <DataImport />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/templates" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <Templates />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/admin/*" element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Suspense fallback={<Loading />}>
-                      <AdminPortal />
-                    </Suspense>
-                  </AppLayout>
-                </ProtectedRoute>
-              } />
-              
-              {/* API test endpoint */}
-              <Route path="/api/test" element={
-                <div style={{ padding: '2rem' }}>
-                  <h1>API Endpoints Active</h1>
-                  <ul>
-                    <li>/api/forecasting - Forecasting service</li>
-                    <li>/api/optimization - Optimization service</li>
-                    <li>/api/working-capital - Working capital calculations</li>
-                    <li>/api/data-import - Data import processing</li>
-                  </ul>
-                </div>
-              } />
-              
-              {/* Catch all - redirect to landing */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </div>
-        </Router>
-        
-        {/* React Query Devtools for debugging */}
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </ClerkProvider>
+    <div style={{
+      backgroundColor: '#ff0000',
+      color: '#ffffff',
+      fontSize: '3rem',
+      padding: '2rem',
+      minHeight: '100vh',
+      border: '20px solid #000000',
+      textAlign: 'center'
+    }}>
+      <h1 style={{
+        backgroundColor: '#000000',
+        color: '#ffffff',
+        padding: '2rem',
+        margin: '2rem',
+        fontSize: '4rem'
+      }}>
+        🚨 EMERGENCY WORKING APP 🚨
+      </h1>
+      <p>If you can see this RED screen, React is working!</p>
+      <p>Current time: {new Date().toLocaleString()}</p>
+      
+      <div style={{
+        backgroundColor: '#00ff00',
+        color: '#000000',
+        padding: '2rem',
+        margin: '2rem',
+        fontSize: '2rem'
+      }}>
+        <h2>✅ SYSTEM STATUS ✅</h2>
+        <ul style={{ textAlign: 'left', fontSize: '1.5rem' }}>
+          <li>✅ React is rendering</li>
+          <li>✅ JavaScript is working</li>
+          <li>✅ CSS is applying</li>
+          <li>✅ App is mounted</li>
+        </ul>
+      </div>
+
+      <div style={{
+        backgroundColor: '#0000ff',
+        color: '#ffffff',
+        padding: '2rem',
+        margin: '2rem'
+      }}>
+        <h3>NEXT: Navigate to these URLs</h3>
+        <p>Main Dashboard: <strong>http://localhost:3001/dashboard</strong></p>
+        <p>Working Capital: <strong>http://localhost:3001/working-capital</strong></p>
+        <p>Admin Panel: <strong>http://localhost:3001/admin</strong></p>
+      </div>
+    </div>
   )
 }
-
-// Add global styles for better UI
-const globalStyles = document.createElement('style')
-globalStyles.innerHTML = `
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  a {
-    transition: all 0.3s ease;
-  }
-  
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-`
-document.head.appendChild(globalStyles)
 
 export default App

@@ -1,0 +1,45 @@
+# Railway Environment Variables Template
+# Copy these to Railway dashboard Variables section
+# Make sure there are NO empty keys or malformed entries
+
+# Node Configuration
+NODE_ENV=production
+PORT=3000
+
+# Clerk Authentication (Required)
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk
+CLERK_SECRET_KEY=sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx
+
+# Database Configuration
+DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+
+# Unleashed API (Required for production data)
+UNLEASHED_API_ID=d5313df6-db35-430c-a69e-ae27dffe0c5a
+UNLEASHED_API_KEY=2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+
+# Application Settings
+SECRET_KEY=7a91c84993193fe2592863a924eefff4b39fe51bc656fb6475c227d7b969c6fb
+VITE_API_BASE_URL=/api
+VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_VERSION=2.0.0
+
+# Shopify Configuration
+SHOPIFY_UK_API_KEY=7a30cd84e7a106b852c8e0fb789de10e
+SHOPIFY_UK_SECRET=8b2d61745c506970c70d8c892f5f977e
+SHOPIFY_UK_ACCESS_TOKEN=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
+SHOPIFY_UK_SHOP_URL=sentiaspirits.myshopify.com
+
+# Feature Flags
+FEATURE_DQ=true
+VITE_FEATURE_DQ=true
+FEATURE_AGENT=true
+VITE_FEATURE_MODEL_REGISTRY=true
+
+# CORS Configuration
+CORS_ORIGINS=*
+
+# IMPORTANT: Check for and remove any entries that look like:
+# = VARIABLE_NAME=
+# =VARIABLE_NAME=
+# VARIABLE_NAME==
+# Or any entries with empty keys before the equals sign

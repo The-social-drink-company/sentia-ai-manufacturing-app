@@ -19,15 +19,15 @@ const queryClient = new QueryClient({
   },
 })
 
-// Import pages directly for debugging
-import EnhancedDashboard from './pages/EnhancedDashboard'
+// Import AI Enhanced Dashboard as the main dashboard
+import AIEnhancedDashboard from './pages/AIEnhancedDashboard'
 // Lazy load other pages
 const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
 const AdminPortal = lazy(() => import('./pages/AdminPortal'))
 const DataImport = lazy(() => import('./pages/DataImport'))
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const AIDashboard = lazy(() => import('./pages/AIDashboard'))
-const AIEnhancedDashboard = lazy(() => import('./pages/AIEnhancedDashboard'))
+const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 
 // Loading component
 function Loading() {
@@ -101,7 +101,7 @@ function App() {
                   
                   <Route
                     path="/dashboard"
-                    element={<EnhancedDashboard />}
+                    element={<AIEnhancedDashboard />}
                   />
                   
                   <Route
@@ -141,10 +141,10 @@ function App() {
                   />
                   
                   <Route
-                    path="/ai-enhanced"
+                    path="/enhanced"
                     element={
                       <Suspense fallback={<Loading />}>
-                        <AIEnhancedDashboard />
+                        <EnhancedDashboard />
                       </Suspense>
                     }
                   />

@@ -304,7 +304,9 @@
       "Bash(start https://sentia-manufacturing-dashboard-development.up.railway.app/dashboard)",
       "Bash(start http://localhost:4500)",
       "Bash(railway logs:*)",
-      "Bash(start http://localhost:4501)"
+      "Bash(start http://localhost:4501)",
+      "Bash(del \"C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\pages\\SimpleDashboard.jsx\")",
+      "Bash(del \"C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\components\\widgets\\Simple*.jsx\")"
     ],
     "deny": [],
     "ask": []

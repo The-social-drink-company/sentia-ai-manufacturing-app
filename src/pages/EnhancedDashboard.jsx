@@ -52,7 +52,8 @@ class WidgetErrorBoundary extends React.Component {
 
 // Lazy load widgets with fallbacks
 const KPIStrip = lazy(() => 
-  import('../components/widgets/KPIStrip').catch(() => ({
+  import('../components/widgets/RealKPIStrip').catch(() => 
+    import('../components/widgets/KPIStrip').catch(() => ({
     default: () => <WidgetFallback name="KPI Metrics">
       <div style={{ 
         display: 'grid', 
@@ -67,7 +68,7 @@ const KPIStrip = lazy(() =>
         ))}
       </div>
     </WidgetFallback>
-  }))
+  })))
 )
 
 const DemandForecastWidget = lazy(() => 

@@ -3,7 +3,8 @@
     "allow": [
       "Read(/\\c\\Projects/**)",
       "Bash(ping:*)",
-      "Bash(redis-cli:*)"
+      "Bash(redis-cli:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

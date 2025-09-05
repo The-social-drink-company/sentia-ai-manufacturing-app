@@ -15,7 +15,9 @@
       "Bash(git merge:*)",
       "Bash(git stash:*)",
       "Bash(gh pr create:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "WebFetch(domain:sentia-manufacturing-dashboard-production.up.railway.app)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []

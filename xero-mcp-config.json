@@ -1,0 +1,26 @@
+{
+  "xero": {
+    "clientId": "9C0CAB921C134476A249E48BBECB8C4B",
+    "clientSecret": "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5",
+    "redirectUri": "http://localhost:5000/api/xero/callback",
+    "scopes": [
+      "accounting.transactions",
+      "accounting.contacts", 
+      "accounting.settings",
+      "accounting.reports.read"
+    ],
+    "tenantId": "",
+    "accessToken": "",
+    "refreshToken": ""
+  },
+  "server": {
+    "port": 3001,
+    "host": "localhost"
+  },
+  "logging": {
+    "level": "info",
+    "enableConsole": true,
+    "enableFile": true,
+    "filePath": "./logs/xero-mcp.log"
+  }
+}

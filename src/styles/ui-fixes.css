@@ -1,0 +1,320 @@
+/* UI Fixes for Sentia Manufacturing Dashboard */
+
+/* Fix oversized icons - constrain all icon sizes */
+svg {
+  max-width: 24px !important;
+  max-height: 24px !important;
+}
+
+/* Specific icon size classes */
+.w-4.h-4 svg,
+svg.w-4.h-4 {
+  width: 16px !important;
+  height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+}
+
+.w-5.h-5 svg,
+svg.w-5.h-5 {
+  width: 20px !important;
+  height: 20px !important;
+  max-width: 20px !important;
+  max-height: 20px !important;
+}
+
+.w-6.h-6 svg,
+svg.w-6.h-6 {
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+}
+
+.w-8.h-8 svg,
+svg.w-8.h-8 {
+  width: 32px !important;
+  height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+}
+
+/* Fix Heroicons specifically */
+[class*="heroicon"] {
+  max-width: 24px !important;
+  max-height: 24px !important;
+}
+
+/* Fix navigation menu */
+nav {
+  position: relative;
+  z-index: 1000;
+}
+
+.nav-menu,
+.navigation-menu {
+  display: flex !important;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Fix header layout */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  height: 64px;
+}
+
+/* Dark mode header */
+.dark header {
+  background: #1f2937;
+  border-bottom-color: #374151;
+}
+
+/* Fix sidebar */
+.sidebar,
+aside {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  bottom: 0;
+  width: 256px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+  z-index: 998;
+}
+
+.dark .sidebar,
+.dark aside {
+  background: #1f2937;
+  border-right-color: #374151;
+}
+
+/* Fix main content area */
+main {
+  margin-top: 64px;
+  margin-left: 256px;
+  min-height: calc(100vh - 64px);
+  padding: 1.5rem;
+}
+
+/* Collapsed sidebar adjustments */
+.sidebar-collapsed main {
+  margin-left: 64px;
+}
+
+.sidebar-collapsed .sidebar,
+.sidebar-collapsed aside {
+  width: 64px;
+}
+
+/* Fix button styles */
+button {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:not(:disabled):hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Fix card layouts */
+.card,
+.widget-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  background: white;
+  padding: 1rem;
+}
+
+.dark .card,
+.dark .widget-card {
+  background: #1f2937;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Fix grid layout for dashboard */
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Fix dropdown menus */
+.dropdown-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+}
+
+.dark .dropdown-menu {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+/* Fix modal overlays */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  z-index: 10000;
+}
+
+.dark .modal-content {
+  background: #1f2937;
+}
+
+/* Fix tooltips */
+.tooltip {
+  position: absolute;
+  background: #1f2937;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+/* Fix charts and graphs */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.chart-container canvas {
+  max-height: 100% !important;
+}
+
+/* Fix table layouts */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.dark th {
+  border-bottom-color: #374151;
+}
+
+td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark td {
+  border-bottom-color: #374151;
+}
+
+/* Fix form elements */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background: #374151;
+  border-color: #4b5563;
+  color: white;
+}
+
+/* Fix loading spinners */
+.spinner {
+  display: inline-block;
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fix status badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Fix responsive layout */
+@media (max-width: 768px) {
+  .sidebar,
+  aside {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open,
+  aside.open {
+    transform: translateX(0);
+  }
+  
+  main {
+    margin-left: 0;
+  }
+}
+
+/* Fix z-index hierarchy */
+.z-0 { z-index: 0 !important; }
+.z-10 { z-index: 10 !important; }
+.z-20 { z-index: 20 !important; }
+.z-30 { z-index: 30 !important; }
+.z-40 { z-index: 40 !important; }
+.z-50 { z-index: 50 !important; }
+
+/* Ensure proper stacking context */
+.relative { position: relative !important; }
+.absolute { position: absolute !important; }
+.fixed { position: fixed !important; }
+.sticky { position: sticky !important; }

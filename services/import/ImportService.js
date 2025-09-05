@@ -17,6 +17,7 @@ import fs from 'fs';
 import { logInfo, logWarn, logError } from '../logger.js';
 import dbService from '../../src/services/db/index.js';
 import ValidationEngine from '../../src/services/validationEngine.js';
+import EmailUtils from '../email/emailUtils.js';
 
 class ImportService {
   constructor() {

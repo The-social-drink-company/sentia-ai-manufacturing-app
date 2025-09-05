@@ -1,7 +1,14 @@
 # nixpacks.toml
 # Configuration for Railway deployment using Nixpacks
+# Node.js ONLY - No Python
+
+[providers]
+# Explicitly set Node.js as the only provider
+node = true
+python = false
 
 [phases.setup]
+# Only Node.js packages - no Python
 nixPkgs = ["nodejs-18_x", "npm-9_x"]
 
 [phases.install]

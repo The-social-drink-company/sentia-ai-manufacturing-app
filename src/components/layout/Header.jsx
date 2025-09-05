@@ -678,13 +678,10 @@ const Header = () => {
                 <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
                   {role}
                 </span>
-                <UserButton
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-8 h-8"
-                    }
-                  }}
-                />
+                {/* Temporary user avatar until Clerk is properly configured */}
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                  {getUserDisplayName()?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
               </div>
             </div>
           </div>

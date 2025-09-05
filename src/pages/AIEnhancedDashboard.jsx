@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@clerk/clerk-react';
+import { useAIRealTimeData, useAIForecasting, useMaintenanceAlerts, useQualityInspections } from '../hooks/useAIRealTimeData';
+import MCPConnectionStatus from '../components/ai/MCPConnectionStatus';
+import MLForecastingPanel from '../components/ai/MLForecastingPanel';
+import DigitalTwin3D from '../components/ai/DigitalTwin3D';
 import { 
   CpuChipIcon, 
   ChartBarIcon, 
@@ -21,12 +25,30 @@ import {
 
 const AIEnhancedDashboard = () => {
   const { getToken } = useAuth();
+  
+  // Real-time AI data hooks
+  const { 
+    data: aiData, 
+    connectionStatus, 
+    error: aiError,
+    connect: connectAI,
+    sendCommand,
+    mcpStatus,
+    forecastingData,
+    maintenanceAlerts: liveMaintenanceAlerts,
+    qualityMetrics: liveQualityMetrics,
+    supplyChainData: liveSupplyChain,
+    digitalTwinData,
+    analyticsData,
+    agentMetrics
+  } = useAIRealTimeData();
+  
+  const { forecast: gabaRedForecast, loading: forecastLoading } = useAIForecasting('GABA-RED-001');
+  const { alerts: maintenanceAlerts, criticalAlerts } = useMaintenanceAlerts();
+  const { inspections: qualityInspections, statistics: qualityStats } = useQualityInspections();
+  
+  // Local state
   const [aiStatus, setAiStatus] = useState(null);
-  const [dashboardData, setDashboardData] = useState(null);
-  const [forecast, setForecast] = useState(null);
-  const [maintenanceData, setMaintenanceData] = useState(null);
-  const [qualityMetrics, setQualityMetrics] = useState(null);
-  const [supplyChainData, setSupplyChainData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -275,12 +297,12 @@ const AIEnhancedDashboard = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex space-x-8 border-b">
-            {['overview', 'forecasting', 'quality', 'maintenance', 'supply-chain', 'chat'].map(tab => (
+          <div className="flex space-x-8 border-b overflow-x-auto">
+            {['overview', 'forecasting', 'mcp', 'digital-twin', 'quality', 'maintenance', 'supply-chain', 'chat'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm capitalize ${
+                className={`py-2 px-1 border-b-2 font-medium text-sm capitalize whitespace-nowrap ${
                   activeTab === tab 
                     ? 'border-blue-500 text-blue-600' 
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -368,45 +390,70 @@ const AIEnhancedDashboard = () => {
         )}
 
         {/* Forecasting Tab */}
-        {activeTab === 'forecasting' && forecast && (
+        {activeTab === 'forecasting' && (
           <div className="space-y-6">
-            <h2 className="text-lg font-semibold">AI Ensemble Forecasting - GABA Red</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="font-semibold mb-4">30-Day Demand Forecast</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Predicted Demand</span>
-                    <span className="font-bold">{forecast.prediction?.value || 'N/A'} units</span>
+            <MLForecastingPanel 
+              forecastData={forecastingData} 
+              className=""
+            />
+            {gabaRedForecast && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="font-semibold mb-4">Live GABA Red Forecast</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Predicted Demand</span>
+                      <span className="font-bold">{gabaRedForecast.prediction?.value || 'N/A'} units</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Confidence Level</span>
+                      <span className="font-bold">{gabaRedForecast.confidence || 'N/A'}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Model Agreement</span>
+                      <span className="font-bold">{gabaRedForecast.modelAgreement || 'N/A'}%</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Confidence Level</span>
-                    <span className="font-bold">{forecast.confidence || 'N/A'}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Model Agreement</span>
-                    <span className="font-bold">{forecast.modelAgreement || 'N/A'}%</span>
+                </div>
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="font-semibold mb-4">AI Insights</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Peak Season</span>
+                      <span className="font-bold">{gabaRedForecast.seasonality?.peak || 'Summer'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Trend Direction</span>
+                      <span className="font-bold text-green-600">Upward</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Next Reorder Date</span>
+                      <span className="font-bold">{gabaRedForecast.reorderDate || 'In 14 days'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="font-semibold mb-4">Seasonality Analysis</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Peak Season</span>
-                    <span className="font-bold">{forecast.seasonality?.peak || 'Summer'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Trend Direction</span>
-                    <span className="font-bold text-green-600">Upward</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Next Reorder Date</span>
-                    <span className="font-bold">{forecast.reorderDate || 'In 14 days'}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
+          </div>
+        )}
+
+        {/* MCP Tab */}
+        {activeTab === 'mcp' && (
+          <div className="space-y-6">
+            <MCPConnectionStatus 
+              mcpStatus={mcpStatus} 
+              className=""
+            />
+          </div>
+        )}
+
+        {/* Digital Twin Tab */}
+        {activeTab === 'digital-twin' && (
+          <div className="space-y-6">
+            <DigitalTwin3D 
+              digitalTwinData={digitalTwinData} 
+              className=""
+            />
           </div>
         )}
 

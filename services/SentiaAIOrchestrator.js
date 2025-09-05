@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import logger, { logInfo, logError, logWarn } from './logger.js';
 import agentMonitor from './ai/agentMonitor.js';
+import agentMonitoring from './ai/agentMonitoring.js';
 
 // Core AI Systems
 import ManufacturingMCPServers from './mcp/manufacturingMCPServers.js';
@@ -861,52 +862,111 @@ class SentiaAIOrchestrator extends EventEmitter {
   /**
    * Setup 24/7 Agent Monitoring
    */
-  setup247Monitoring() {
-    logInfo('Setting up 24/7 agent monitoring...');
+  async setup247Monitoring() {
+    logInfo('🤖 Setting up comprehensive 24/7 agent monitoring...');
     
-    // Register all AI agents for monitoring
+    // Initialize the comprehensive monitoring system
+    try {
+      await agentMonitoring.initialize();
+      logInfo('✅ Advanced 24/7 monitoring system activated');
+    } catch (error) {
+      logError('❌ Failed to initialize advanced monitoring:', error);
+      // Fall back to basic monitoring
+      logWarn('🔄 Falling back to basic agent monitoring...');
+    }
+    
+    // Register all AI agents for basic monitoring (backup system)
     const agentConfigs = [
-      { id: 'mcp', agent: this.systems.mcp, critical: true },
-      { id: 'forecasting', agent: this.systems.forecasting, critical: true },
-      { id: 'maintenance', agent: this.systems.maintenance, critical: true },
-      { id: 'quality', agent: this.systems.quality, critical: false },
-      { id: 'supplyChain', agent: this.systems.supplyChain, critical: true },
-      { id: 'digitalTwin', agent: this.systems.digitalTwin, critical: false },
-      { id: 'execution', agent: this.systems.execution, critical: true },
-      { id: 'agent', agent: this.systems.agent, critical: false },
-      { id: 'analytics', agent: this.systems.analytics, critical: true },
-      { id: 'integration', agent: this.systems.integration, critical: true }
+      { id: 'mcp', agent: this.systems.mcp, critical: true, priority: 'critical' },
+      { id: 'forecasting', agent: this.systems.forecasting, critical: true, priority: 'high' },
+      { id: 'maintenance', agent: this.systems.maintenance, critical: true, priority: 'high' },
+      { id: 'quality', agent: this.systems.quality, critical: false, priority: 'medium' },
+      { id: 'supplyChain', agent: this.systems.supplyChain, critical: true, priority: 'high' },
+      { id: 'digitalTwin', agent: this.systems.digitalTwin, critical: false, priority: 'medium' },
+      { id: 'execution', agent: this.systems.execution, critical: true, priority: 'critical' },
+      { id: 'agent', agent: this.systems.agent, critical: false, priority: 'medium' },
+      { id: 'analytics', agent: this.systems.analytics, critical: true, priority: 'high' },
+      { id: 'integration', agent: this.systems.integration, critical: true, priority: 'critical' }
     ];
 
-    agentConfigs.forEach(({ id, agent, critical }) => {
+    // Register with basic monitoring system (backup)
+    agentConfigs.forEach(({ id, agent, critical, priority }) => {
       if (agent) {
         agentMonitor.registerAgent(id, agent, {
           critical,
+          priority,
           autoRestart: true,
-          healthCheckMethod: 'getSystemStatus'
+          healthCheckMethod: 'getSystemStatus',
+          monitoring24x7: true,
+          alertThresholds: {
+            responseTime: priority === 'critical' ? 2000 : 5000,
+            errorRate: priority === 'critical' ? 0.01 : 0.05,
+            uptime: priority === 'critical' ? 0.999 : 0.95
+          }
         });
+        
+        logInfo(`📋 Registered ${priority.toUpperCase()} priority agent: ${id}`);
       }
     });
 
-    // Setup event listeners for monitoring events
+    // Setup comprehensive event listeners for monitoring events
     agentMonitor.on('agent-failed', (event) => {
-      logError(`Critical agent failed: ${event.agentId}`);
-      this.systemStatus.alerts.add({
+      logError(`💥 Critical agent failed: ${event.agentId}`);
+      this.systemStatus.alerts.set(`agent-failure-${event.agentId}`, {
         type: 'agent-failure',
         severity: event.critical ? 'critical' : 'warning',
         message: `Agent ${event.agentId} failed after ${event.attempts} restart attempts`,
-        timestamp: new Date()
+        timestamp: new Date(),
+        agentId: event.agentId,
+        attempts: event.attempts,
+        autoRestart: event.autoRestart
       });
+      
+      // Emit event for dashboard updates
+      this.emit('agent-failure', event);
     });
 
     agentMonitor.on('agent-restarted', (event) => {
-      logInfo(`Agent restarted successfully: ${event.agentId}`);
+      logInfo(`🔄 Agent restarted successfully: ${event.agentId}`);
+      
+      // Clear failure alert
+      this.systemStatus.alerts.delete(`agent-failure-${event.agentId}`);
+      
+      // Emit success event
+      this.emit('agent-restored', {
+        agentId: event.agentId,
+        timestamp: new Date(),
+        message: `Agent ${event.agentId} successfully restarted and operational`
+      });
     });
 
     agentMonitor.on('critical-agent-down', (event) => {
-      logError(`CRITICAL ALERT: Essential agent down - ${event.agentId}`);
-      // Could trigger external alerts here (email, Slack, etc.)
+      logError(`🚨 CRITICAL ALERT: Essential agent down - ${event.agentId}`);
+      
+      // Store critical alert
+      this.systemStatus.alerts.set(`critical-${event.agentId}`, {
+        type: 'critical-failure',
+        severity: 'critical',
+        message: `CRITICAL: Essential system ${event.agentId} is non-operational`,
+        timestamp: new Date(),
+        agentId: event.agentId,
+        impact: 'high',
+        requiresImmediate: true
+      });
+      
+      // Emit critical event for immediate dashboard notification
+      this.emit('critical-system-failure', event);
+      
+      // Could trigger external alerts here (email, Slack, PagerDuty, etc.)
+      this.triggerExternalAlert('critical', event);
     });
+
+    // Setup periodic health reporting
+    setInterval(() => {
+      this.reportSystemHealth();
+    }, 300000); // Every 5 minutes
+
+    logInfo('✅ 24/7 Agent monitoring fully configured - all systems under continuous surveillance');
 
     // Start 24/7 monitoring
     agentMonitor.start();

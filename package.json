@@ -12,7 +12,7 @@
     "start": "node server.js",
     "start:dev": "node server.js",
     "preview": "vite preview",
-    "serve": "node server-simple.cjs",
+    "serve": "node server.js",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",

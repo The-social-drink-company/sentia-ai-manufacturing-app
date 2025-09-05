@@ -17,7 +17,7 @@ import {
 import { Line, Bar, Doughnut, Radar } from 'react-chartjs-2'
 import annotationPlugin from 'chartjs-plugin-annotation'
 import zoomPlugin from 'chartjs-plugin-zoom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { dataIntegrationService } from './services/dataIntegrationService'
 
 // Register Chart.js components
@@ -38,6 +38,8 @@ ChartJS.register(
 )
 
 function TestDashboard() {
+  const queryClient = useQueryClient();
+  
   // Real-time chart data from API integrations - NO MOCK DATA
   const { data: chartData, isLoading, error } = useQuery({
     queryKey: ['dashboard-charts', dateRange, selectedMetric],
@@ -180,55 +182,14 @@ function TestDashboard() {
 
   // Handle auto-refresh toggle
   const toggleAutoRefresh = () => {
-    setAutoRefresh(!autoRefresh)
-    if (refreshInterval.current) {
-      clearInterval(refreshInterval.current)
-      refreshInterval.current = null
-    }
-  }
+    setAutoRefresh(!autoRefresh);
+  };
 
-  // Manual refresh function
+  // Manual refresh function - trigger new API call
   const handleManualRefresh = () => {
-    const updateData = () => {
-      const generateProductionData = () => {
-        const labels = []
-        const data = []
-        const baseProduction = 8000
-        
-        for (let i = 29; i >= 0; i--) {
-          const date = new Date()
-          date.setDate(date.getDate() - i)
-          labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
-          
-          // More realistic production variation with current time influence
-          const variation = (Math.random() - 0.5) * 1000
-          const timeInfluence = Math.sin((new Date().getHours() / 24) * 2 * Math.PI) * 200
-          const trendValue = baseProduction + (29 - i) * 15 + variation + timeInfluence
-          data.push(Math.max(trendValue, 0))
-        }
-        
-        return {
-          labels,
-          datasets: [{
-            label: 'Daily Production (units)',
-            data,
-            borderColor: 'rgb(59, 130, 246)',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.4,
-            fill: true
-          }]
-        }
-      }
-
-      setChartData(prev => ({
-        ...prev,
-        production: generateProductionData()
-      }))
-      setRefreshCount(prev => prev + 1)
-    }
-    
-    updateData()
-  }
+    // Force refresh by invalidating the query
+    queryClient.invalidateQueries(['dashboard-charts']);
+  };
 
   const getAdvancedChartOptions = (chartType = 'default') => {
     const baseOptions = {
@@ -470,106 +431,130 @@ function TestDashboard() {
             </div>
           </div>
           
+          {/* Real KPI Cards - No hardcoded values */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-4">
-            <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-green-500 cursor-pointer group"
-                 onClick={() => setSelectedMetric('revenue')}>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Total Revenue</h3>
-                <div className="p-1.5 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                  <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+            {isLoading ? (
+              // Loading state for KPIs
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-lg shadow p-4 animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+                  <div className="h-6 bg-gray-200 rounded w-16 mb-1"></div>
+                  <div className="h-3 bg-gray-200 rounded w-12"></div>
                 </div>
+              ))
+            ) : error ? (
+              <div className="col-span-6 bg-red-50 rounded-lg p-4 text-center">
+                <p className="text-red-600 font-medium">Unable to load KPI data from real sources</p>
+                <p className="text-sm text-red-500 mt-1">Please connect to APIs or upload data files</p>
               </div>
-              <p className="text-xl font-bold text-gray-900">$1,245,000</p>
-              <p className="text-xs text-green-600 font-medium">+12.5% from last month</p>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
-              </div>
-            </div>
+            ) : (
+              // Real KPI data from APIs
+              <>
+                <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-green-500 cursor-pointer group" onClick={() => setSelectedMetric('revenue')}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Total Revenue</h3>
+                    <div className="p-1.5 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="text-xl font-bold text-gray-900">
+                    {chartData?.revenue?.datasets?.[0]?.data?.reduce((a, b) => a + b, 0)?.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) || 'No Data'}
+                  </p>
+                  <p className="text-xs text-green-600 font-medium">From real data sources</p>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                    <div className="bg-green-500 h-1.5 rounded-full" style={{ width: chartData?.revenue ? '100%' : '0%' }}></div>
+                  </div>
+                </div>
 
-            <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-blue-500 cursor-pointer group"
-                 onClick={() => setSelectedMetric('production')}>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Production Output</h3>
-                <div className="p-1.5 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
+                <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-blue-500 cursor-pointer group" onClick={() => setSelectedMetric('production')}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Production Output</h3>
+                    <div className="p-1.5 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="text-xl font-bold text-gray-900">
+                    {chartData?.production?.datasets?.[0]?.data?.slice(-1)[0]?.toLocaleString() || 'No Data'} units
+                  </p>
+                  <p className="text-xs text-blue-600 font-medium">Real production data</p>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                    <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: chartData?.production ? '100%' : '0%' }}></div>
+                  </div>
                 </div>
-              </div>
-              <p className="text-xl font-bold text-gray-900">8,456 units</p>
-              <p className="text-xs text-blue-600 font-medium">On target</p>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '92%' }}></div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-amber-500 cursor-pointer group"
-                 onClick={() => setSelectedMetric('efficiency')}>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">OEE Score</h3>
-                <div className="p-1.5 bg-amber-100 rounded-lg group-hover:bg-amber-200 transition-colors">
-                  <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
+                <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-amber-500 cursor-pointer group" onClick={() => setSelectedMetric('efficiency')}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">OEE Score</h3>
+                    <div className="p-1.5 bg-amber-100 rounded-lg group-hover:bg-amber-200 transition-colors">
+                      <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="text-xl font-bold text-gray-900">
+                    {chartData?.efficiency?.datasets?.[0]?.data?.slice(-1)[0]?.toFixed(1) || 'No Data'}%
+                  </p>
+                  <p className="text-xs text-amber-600 font-medium">Real efficiency data</p>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                    <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: chartData?.efficiency?.datasets?.[0]?.data?.slice(-1)[0] ? `${chartData.efficiency.datasets[0].data.slice(-1)[0]}%` : '0%' }}></div>
+                  </div>
                 </div>
-              </div>
-              <p className="text-xl font-bold text-gray-900">89.2%</p>
-              <p className="text-xs text-amber-600 font-medium">Above target (85%)</p>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: '89%' }}></div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-purple-500 cursor-pointer group"
-                 onClick={() => setSelectedMetric('quality')}>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Quality Rate</h3>
-                <div className="p-1.5 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                  <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-purple-500 cursor-pointer group" onClick={() => setSelectedMetric('quality')}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Quality Rate</h3>
+                    <div className="p-1.5 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="text-xl font-bold text-gray-900">
+                    {chartData?.qualityMetrics?.datasets?.[0]?.data?.[0]?.toFixed(1) || 'No Data'}%
+                  </p>
+                  <p className="text-xs text-purple-600 font-medium">Real quality metrics</p>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                    <div className="bg-purple-500 h-1.5 rounded-full" style={{ width: chartData?.qualityMetrics?.datasets?.[0]?.data?.[0] ? `${chartData.qualityMetrics.datasets[0].data[0]}%` : '0%' }}></div>
+                  </div>
                 </div>
-              </div>
-              <p className="text-xl font-bold text-gray-900">94.8%</p>
-              <p className="text-xs text-purple-600 font-medium">Excellent quality</p>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div className="bg-purple-500 h-1.5 rounded-full" style={{ width: '95%' }}></div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-red-500 cursor-pointer group">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Downtime</h3>
-                <div className="p-1.5 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
-                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-red-500 cursor-pointer group">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Downtime</h3>
+                    <div className="p-1.5 bg-red-100 rounded-lg group-hover:bg-red-200 transition-colors">
+                      <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="text-xl font-bold text-gray-900">Real Data Only</p>
+                  <p className="text-xs text-red-600 font-medium">Connect to systems</p>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                    <div className="bg-red-500 h-1.5 rounded-full" style={{ width: '0%' }}></div>
+                  </div>
                 </div>
-              </div>
-              <p className="text-xl font-bold text-gray-900">2.3 hrs</p>
-              <p className="text-xs text-red-600 font-medium">-45 min vs yesterday</p>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div className="bg-red-500 h-1.5 rounded-full" style={{ width: '23%' }}></div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-indigo-500 cursor-pointer group">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Active Orders</h3>
-                <div className="p-1.5 bg-indigo-100 rounded-lg group-hover:bg-indigo-200 transition-colors">
-                  <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
+                <div className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow border-l-4 border-indigo-500 cursor-pointer group">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-medium text-gray-600 group-hover:text-gray-800">Active Orders</h3>
+                    <div className="p-1.5 bg-indigo-100 rounded-lg group-hover:bg-indigo-200 transition-colors">
+                      <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="text-xl font-bold text-gray-900">Real Data Only</p>
+                  <p className="text-xs text-indigo-600 font-medium">Connect to APIs</p>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                    <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: '0%' }}></div>
+                  </div>
                 </div>
-              </div>
-              <p className="text-xl font-bold text-gray-900">342</p>
-              <p className="text-xs text-indigo-600 font-medium">28 pending</p>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: '68%' }}></div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
 
           {/* Advanced Manufacturing Metrics */}

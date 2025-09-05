@@ -231,7 +231,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use((req, res, next) => {
   const startTime = process.hrtime.bigint();
   
-  res.on('finish', () => {
+  // Override the end method to capture timing before headers are sent
+  const originalEnd = res.end;
+  res.end = function(...args) {
     const endTime = process.hrtime.bigint();
     const duration = Number((endTime - startTime) / 1000000n); // Convert to milliseconds
     
@@ -245,9 +247,14 @@ app.use((req, res, next) => {
       });
     }
     
-    // Add response time header
-    res.set('X-Response-Time', `${duration}ms`);
-  });
+    // Set response time header before sending response
+    if (!res.headersSent) {
+      res.set('X-Response-Time', `${duration}ms`);
+    }
+    
+    // Call the original end method
+    return originalEnd.apply(this, args);
+  };
   
   next();
 });

@@ -23,5 +23,8 @@ cmd = "npm start"
 [variables]
 NODE_ENV = "production"
 NPM_CONFIG_PRODUCTION = "false"
-# Cache bust to force rebuilds with correct Node version
+# Fallback environment variables to prevent empty key errors
+UNLEASHED_API_ID = ""
+UNLEASHED_API_KEY = ""
+# Cache bust to force rebuilds with correct Node version  
 BUILD_CACHE_VERSION = "v2-node18-fix"

@@ -322,7 +322,7 @@ function EnhancedDashboard() {
                 Enterprise Manufacturing Intelligence Platform
               </p>
             </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             {/* Time range selector - SENTIA BRANDED */}
             <select 
               value={timeRange}
@@ -350,6 +350,7 @@ function EnhancedDashboard() {
             >
               ⚙️
             </button>
+          </div>
           </div>
         </div>
 

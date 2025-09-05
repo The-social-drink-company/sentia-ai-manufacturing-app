@@ -31,7 +31,8 @@
       "Bash(railway login:*)",
       "Bash(set PORT=3001)",
       "Bash(npm run lint)",
-      "Bash(npm run test:run:*)"
+      "Bash(npm run test:run:*)",
+      "Bash(powershell:*)"
     ],
     "deny": [],
     "ask": []

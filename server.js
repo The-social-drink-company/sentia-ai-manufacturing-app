@@ -3456,14 +3456,16 @@ app.post('/api/import/validate-enhanced/:importJobId', async (req, res) => {
       {}
     );
 
-    // Load and stage raw data (simplified for demo)
-    // In production, this would parse the actual uploaded file
-    const sampleData = [
-      { sku: 'GABA-RED-UK-001', name: 'Red GABA Tea', unit_cost: 3.50, selling_price: 8.99 },
-      { sku: 'GABA-GREEN-US-002', name: 'Green GABA Tea', unit_cost: 3.25, selling_price: 7.99 }
-    ];
+    // Parse and load real data from uploaded file
+    const uploadedFileData = await importService.parseUploadedFile(req.file);
+    
+    if (!uploadedFileData || uploadedFileData.length === 0) {
+      return res.status(400).json({
+        error: 'No valid data found in uploaded file'
+      });
+    }
 
-    await importService.stageRawData(importJobId, sampleData, { entityContext });
+    await importService.stageRawData(importJobId, uploadedFileData, { entityContext });
 
     // Enhanced validation with outlier detection
     const validationResults = await importService.validateStagedData(importJobId, {

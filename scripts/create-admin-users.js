@@ -55,6 +55,18 @@ const adminUsers = [
     lastName: 'Orren', 
     emailAddress: 'David.Orren@gabalabs.com',
     organization: 'Gaba Labs'
+  },
+  {
+    firstName: 'Dudley',
+    lastName: 'Peacock',
+    emailAddress: 'dudley@leverageflo.com',
+    organization: 'LeverageFlo'
+  },
+  {
+    firstName: 'Adam',
+    lastName: 'Pavitt',
+    emailAddress: 'adam@financeflo.ai',
+    organization: 'FinanceFlo'
   }
 ];
 

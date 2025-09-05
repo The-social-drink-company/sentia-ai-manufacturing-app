@@ -1,0 +1,13 @@
+{
+  "providers": {
+    "node": {
+      "enabled": true,
+      "version": "18"
+    },
+    "python": {
+      "enabled": false
+    }
+  },
+  "exclude": ["*.py", "**/*.py", "requirements.txt", "Pipfile", "pyproject.toml"],
+  "preferredProvider": "node"
+}

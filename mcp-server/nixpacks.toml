@@ -1,4 +1,10 @@
+[providers]
+# Explicitly use Node.js only - no Python
+node = true
+python = false
+
 [phases.setup]
+# Only Node.js packages
 nixPkgs = ["nodejs_18", "npm"]
 
 [phases.install]

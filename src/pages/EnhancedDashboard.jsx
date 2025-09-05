@@ -48,6 +48,12 @@ import {
 } from '../components/widgets/AllWidgetsFixed'
 import FixedPlanningWizard from '../components/widgets/FixedPlanningWizard'
 
+// Import new enterprise integration widgets
+import AmazonSPAPIWidget from '../components/widgets/AmazonSPAPIWidget'
+import ShopifyMultiStoreWidget from '../components/widgets/ShopifyMultiStoreWidget'
+import UnleashedERPWidget from '../components/widgets/UnleashedERPWidget'
+import AIForecastingWidget from '../components/widgets/AIForecastingWidget'
+
 // Lazy load widgets with fallbacks to fixed versions
 const KPIStrip = lazy(() => 
   import('../components/widgets/RealKPIStrip').catch(() => ({
@@ -436,6 +442,43 @@ function EnhancedDashboard() {
             <WidgetErrorBoundary name="Working Capital">
               <Suspense fallback={<WidgetFallback name="Working Capital" />}>
                 <WorkingCapitalWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* ENTERPRISE INTEGRATION WIDGETS */}
+          {/* Amazon SP-API Integration */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Amazon SP-API">
+              <Suspense fallback={<WidgetFallback name="Amazon SP-API" />}>
+                <AmazonSPAPIWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* Shopify Multi-Store Integration */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Shopify Multi-Store">
+              <Suspense fallback={<WidgetFallback name="Shopify Multi-Store" />}>
+                <ShopifyMultiStoreWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* Unleashed ERP Integration */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Unleashed ERP">
+              <Suspense fallback={<WidgetFallback name="Unleashed ERP" />}>
+                <UnleashedERPWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* AI Forecasting Widget */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="AI Forecasting">
+              <Suspense fallback={<WidgetFallback name="AI Forecasting" />}>
+                <AIForecastingWidget />
               </Suspense>
             </WidgetErrorBoundary>
           </div>

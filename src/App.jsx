@@ -6,13 +6,12 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AuthProvider } from './context/AuthContext'
 import './index.css'
 
-// Get Clerk publishable key from environment
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+// Get Clerk publishable key from environment - MANDATORY FOR ENTERPRISE
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
 
-// Make Clerk optional to prevent blank pages
-const isClerkEnabled = !!clerkPubKey
-if (!isClerkEnabled) {
-  console.warn('Clerk authentication not configured - running without authentication')
+// Clerk is MANDATORY - no exceptions for enterprise security
+if (!clerkPubKey) {
+  throw new Error('CRITICAL: Clerk authentication is required for enterprise security. Configure VITE_CLERK_PUBLISHABLE_KEY.')
 }
 
 // Create QueryClient instance
@@ -106,35 +105,42 @@ function HomePage() {
   )
 }
 
-// Navigation wrapper for Clerk
+// Navigation wrapper for Clerk - MANDATORY
 function ClerkWithRouter({ children }) {
   const navigate = useNavigate()
   
-  if (!isClerkEnabled) {
-    return children
-  }
-  
   return (
-    <ClerkProvider publishableKey={clerkPubKey} navigate={(to) => navigate(to)}>
+    <ClerkProvider 
+      publishableKey={clerkPubKey} 
+      navigate={(to) => navigate(to)}
+      appearance={{
+        elements: {
+          formButtonPrimary: 'bg-blue-600 hover:bg-blue-700',
+          card: 'shadow-xl',
+        },
+        variables: {
+          colorPrimary: '#2563eb',
+          colorText: '#111827',
+          colorBackground: '#ffffff',
+          colorInputBackground: '#f9fafb',
+          borderRadius: '0.5rem',
+        },
+      }}
+    >
       {children}
     </ClerkProvider>
   )
 }
 
-// Route component that conditionally requires authentication
+// Enterprise Security Gate - ALL routes require authentication
 function ProtectedRoute({ children }) {
-  if (!isClerkEnabled) {
-    // If Clerk is disabled, render without authentication
-    return children
-  }
-  
   return (
     <>
       <SignedIn>
         {children}
       </SignedIn>
       <SignedOut>
-        <RedirectToSignIn />
+        <RedirectToSignIn afterSignInUrl="/dashboard" />
       </SignedOut>
     </>
   )
@@ -149,16 +155,26 @@ function App() {
           <AuthProvider>
             <div style={{ minHeight: '100vh' }}>
               <Routes>
-                {/* Landing page - public */}
-                <Route path="/" element={<HomePage />} />
+                {/* Authentication routes - MANDATORY */}
+                <Route path="/sign-in/*" element={
+                  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+                    <div>
+                      <h1 className="text-3xl font-bold text-center mb-8 text-gray-900">SENTIA Manufacturing</h1>
+                      <SignIn routing="path" path="/sign-in" afterSignInUrl="/dashboard" />
+                    </div>
+                  </div>
+                } />
+                <Route path="/sign-up/*" element={
+                  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+                    <div>
+                      <h1 className="text-3xl font-bold text-center mb-8 text-gray-900">SENTIA Manufacturing</h1>
+                      <SignUp routing="path" path="/sign-up" afterSignUpUrl="/dashboard" />
+                    </div>
+                  </div>
+                } />
                 
-                {/* Authentication routes - only if Clerk enabled */}
-                {isClerkEnabled && (
-                  <>
-                    <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
-                    <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
-                  </>
-                )}
+                {/* Root redirects to sign-in for security */}
+                <Route path="/" element={<Navigate to="/sign-in" replace />} />
                 
                 {/* Protected routes - conditionally protected */}
                 <Route
@@ -205,22 +221,18 @@ function App() {
                   }
                 />
                 
-                {/* Catch-all route */}
+                {/* Catch-all route - Enterprise security enforcement */}
                 <Route
                   path="*"
                   element={
-                    isClerkEnabled ? (
-                      <>
-                        <SignedIn>
-                          <Navigate to="/dashboard" replace />
-                        </SignedIn>
-                        <SignedOut>
-                          <RedirectToSignIn />
-                        </SignedOut>
-                      </>
-                    ) : (
-                      <Navigate to="/dashboard" replace />
-                    )
+                    <>
+                      <SignedIn>
+                        <Navigate to="/dashboard" replace />
+                      </SignedIn>
+                      <SignedOut>
+                        <RedirectToSignIn afterSignInUrl="/dashboard" />
+                      </SignedOut>
+                    </>
                   }
                 />
               </Routes>

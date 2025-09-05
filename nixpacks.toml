@@ -2,10 +2,8 @@
 # Configuration for Railway deployment using Nixpacks
 # Node.js ONLY - No Python
 
-[providers]
-# Explicitly set Node.js as the only provider
-node = true
-python = false
+# Only use Node.js provider - exclude Python
+providers = ["node"]
 
 [phases.setup]
 # Only Node.js packages - no Python
@@ -20,7 +18,7 @@ cmds = ["npm run build"]
 cacheDirectories = []
 
 [start]
-cmd = "npm run serve"
+cmd = "npm start"
 
 [variables]
 NODE_ENV = "production"

@@ -1,7 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUpIcon, TrendingDownIcon, AlertTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { Line } from 'react-chartjs-2';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const IntelligentKPICard = ({ 
   metric, 

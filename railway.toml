@@ -12,6 +12,3 @@ restartPolicyMaxRetries = 3
 [[services]]
 name = "web"
 port = 3000
-
-# Variables should be set in Railway dashboard, not in railway.toml
-# See .env.railway for the list of required environment variables

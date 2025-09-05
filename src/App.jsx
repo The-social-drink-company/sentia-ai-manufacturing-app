@@ -25,6 +25,7 @@ const TestWorkingCapital = lazy(() => import('./TestWorkingCapital')) // Tempora
 const AdminPortal = lazy(() => import('./pages/AdminPortal'))
 const DataImport = lazy(() => import('./pages/DataImport'))
 const LandingPage = lazy(() => import('./pages/LandingPage'))
+// const AIDashboard = lazy(() => import('./pages/AIDashboard')) // AI-Powered Dashboard
 
 // Loading component
 function Loading() {
@@ -107,6 +108,17 @@ function App() {
                 </Suspense>
               }
             />
+            
+            {/* AI Dashboard route disabled - missing components
+            <Route
+              path="/ai-dashboard"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <AIDashboard />
+                </Suspense>
+              }
+            />
+            */}
             
             {/* Catch-all route */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

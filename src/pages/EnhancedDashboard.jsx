@@ -732,6 +732,7 @@ function EnhancedDashboard() {
           </Suspense>
         </WidgetErrorBoundary>
       )}
+      </div>
     </div>
   );
 }

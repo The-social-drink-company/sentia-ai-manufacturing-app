@@ -13,13 +13,5 @@ restartPolicyMaxRetries = 3
 name = "web"
 port = 3000
 
-[variables]
-NODE_ENV = "production"
-VITE_CLERK_PUBLISHABLE_KEY = "pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk"
-VITE_API_BASE_URL = "https://vivacious-prosperity-internal.up.railway.app/api"
-VITE_INTERNAL_DASHBOARD = "true"
-VITE_DASHBOARD_REFRESH_RATE = "5000"
-VITE_AGENT_MONITORING = "true"
-VITE_LIVE_UPDATES = "true"
-VITE_APP_TITLE = "Sentia Manufacturing Dashboard - Internal"
-VITE_APP_VERSION = "2.0.0-internal"
+# Variables should be set in Railway dashboard, not in railway.toml
+# See .env.railway for the list of required environment variables

@@ -36,7 +36,7 @@ class SentiaManufacturingExecution extends EventEmitter {
 
     // Sentia-specific production workflows
     this.productionWorkflows = {
-      'GABA_RED': this.createGABARed WorkflowTemplate(),
+      'GABA_RED': this.createGABARedWorkflowTemplate(),
       'GABA_GOLD': this.createGABAGoldWorkflowTemplate(),
       'GABA_BLACK': this.createGABABlackWorkflowTemplate()
     };

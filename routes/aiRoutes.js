@@ -1,14 +1,30 @@
 import express from 'express';
-import { requireAuth } from '@clerk/backend';
+import { createClerkClient } from '@clerk/backend';
 import sentiaAIOrchestrator from '../services/SentiaAIOrchestrator.js';
 import logger from '../services/logger.js';
 
 const router = express.Router();
+const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 // Middleware to check authentication
-const authMiddleware = requireAuth({ 
-  apiKey: process.env.CLERK_SECRET_KEY 
-});
+const authMiddleware = async (req, res, next) => {
+  try {
+    const sessionToken = req.headers.authorization?.replace('Bearer ', '');
+    if (!sessionToken) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    // Verify the session with Clerk
+    const session = await clerk.sessions.verifySession({ 
+      sessionId: sessionToken,
+      token: sessionToken 
+    });
+    req.auth = { userId: session.userId };
+    next();
+  } catch (error) {
+    logger.error('Auth middleware error:', error);
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+};
 
 /**
  * Initialize AI Systems

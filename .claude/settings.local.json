@@ -14,7 +14,11 @@
       "Bash(git commit:*)",
       "Bash(git merge:*)",
       "Bash(git stash:*)",
+<<<<<<< HEAD
       "Bash(gh pr create:*)"
+=======
+      "Bash(npm install:*)"
+>>>>>>> test
     ],
     "deny": [],
     "ask": []

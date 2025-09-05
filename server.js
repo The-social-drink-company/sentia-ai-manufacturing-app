@@ -773,6 +773,10 @@ const requireExecutiveAccess = (req, res, next) => {
   next();
 };
 
+// SSE (Server-Sent Events) Routes
+import sseRoutes from './server/routes/sse.js';
+app.use('/api/sse', sseRoutes);
+
 // API Routes
 app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working!', environment: process.env.NODE_ENV });

@@ -1,12 +1,12 @@
 {
-  "timestamp": "2025-09-05T05:58:05.635Z",
-  "cycle": 12,
-  "qualityScore": 33,
+  "timestamp": "2025-09-05T06:02:27.545Z",
+  "cycle": 1,
+  "qualityScore": 58,
   "summary": {
     "totalTests": 41,
-    "passed": 25,
-    "failed": 16,
-    "criticalIssues": 19,
+    "passed": 29,
+    "failed": 12,
+    "criticalIssues": 12,
     "warnings": 0
   },
   "categories": {
@@ -27,7 +27,7 @@
           "id": "auth-2",
           "description": "Login page accessible",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -43,7 +43,7 @@
           "id": "auth-4",
           "description": "Admin role functions",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -56,9 +56,9 @@
           "details": {}
         }
       ],
-      "passed": 2,
-      "failed": 3,
-      "score": 40
+      "passed": 4,
+      "failed": 1,
+      "score": 80
     },
     "dashboard": {
       "category": "dashboard",
@@ -69,7 +69,7 @@
           "id": "dash-1",
           "description": "Main dashboard loads",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -114,9 +114,9 @@
           "details": {}
         }
       ],
-      "passed": 3,
-      "failed": 3,
-      "score": 25
+      "passed": 4,
+      "failed": 2,
+      "score": 50
     },
     "manufacturing": {
       "category": "manufacturing",
@@ -285,7 +285,7 @@
           "id": "api-1",
           "description": "Unleashed API connected",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -322,9 +322,9 @@
           "details": {}
         }
       ],
-      "passed": 4,
-      "failed": 1,
-      "score": 50
+      "passed": 5,
+      "failed": 0,
+      "score": 100
     },
     "ai_ml": {
       "category": "ai_ml",
@@ -422,14 +422,14 @@
   "environments": {
     "production": {
       "url": "https://sentia-manufacturing-dashboard-production.up.railway.app",
-      "accessible": false,
-      "responseTime": 74,
-      "statusCode": 0,
+      "accessible": true,
+      "responseTime": 289,
+      "statusCode": 200,
       "features": {
-        "dashboard": false,
+        "dashboard": true,
         "authentication": false,
         "widgets": false,
-        "apis": false,
+        "apis": true,
         "phase4": false,
         "phase5": false
       },
@@ -437,14 +437,14 @@
     },
     "development": {
       "url": "https://sentia-manufacturing-dashboard-development.up.railway.app",
-      "accessible": false,
-      "responseTime": 11,
-      "statusCode": 0,
+      "accessible": true,
+      "responseTime": 244,
+      "statusCode": 200,
       "features": {
-        "dashboard": false,
+        "dashboard": true,
         "authentication": false,
         "widgets": false,
-        "apis": false,
+        "apis": true,
         "phase4": false,
         "phase5": false
       },
@@ -452,14 +452,14 @@
     },
     "test": {
       "url": "https://sentiatest.financeflo.ai",
-      "accessible": false,
-      "responseTime": 18,
-      "statusCode": 0,
+      "accessible": true,
+      "responseTime": 286,
+      "statusCode": 200,
       "features": {
-        "dashboard": false,
+        "dashboard": true,
         "authentication": false,
         "widgets": false,
-        "apis": false,
+        "apis": true,
         "phase4": false,
         "phase5": false
       },
@@ -468,7 +468,7 @@
     "local": {
       "url": "http://localhost:3002",
       "accessible": true,
-      "responseTime": 3,
+      "responseTime": 8,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -565,971 +565,19 @@
       "description": "Multi-channel sales display",
       "severity": "HIGH",
       "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-2",
-      "description": "Login page accessible",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-4",
-      "description": "Admin role functions",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-1",
-      "description": "Main dashboard loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "apis",
-      "test": "api-1",
-      "description": "Unleashed API connected",
-      "severity": "HIGH",
-      "required": true
     }
   ],
   "fixes": [],
   "recommendations": [
     {
       "category": "Authentication System",
-      "currentScore": 40,
-      "recommendation": "Improve Authentication System - 3 tests failing"
+      "currentScore": 80,
+      "recommendation": "Improve Authentication System - 1 tests failing"
     },
     {
       "category": "Dashboard Functionality",
-      "currentScore": 25,
-      "recommendation": "Improve Dashboard Functionality - 3 tests failing"
+      "currentScore": 50,
+      "recommendation": "Improve Dashboard Functionality - 2 tests failing"
     },
     {
       "category": "Manufacturing Features",
@@ -1545,11 +593,6 @@
       "category": "Analytics & Reporting",
       "currentScore": 33.33333333333333,
       "recommendation": "Improve Analytics & Reporting - 2 tests failing"
-    },
-    {
-      "category": "External API Integrations",
-      "currentScore": 50,
-      "recommendation": "Improve External API Integrations - 1 tests failing"
     }
   ]
 }

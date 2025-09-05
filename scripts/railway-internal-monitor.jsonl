@@ -16,3 +16,6 @@
 {"timestamp":"2025-09-05T15:11:38.479Z","level":"INFO","message":"Starting deployment cycle 21","cycle":21}
 {"timestamp":"2025-09-05T15:11:38.637Z","level":"ERROR","message":"Failed to ensure internal branch","cycle":21,"error":"Command failed: git checkout internal\nerror: Your local changes to the following files would be overwritten by checkout:\n\tscripts/railway-internal-monitor.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
 {"timestamp":"2025-09-05T15:11:38.699Z","level":"ERROR","message":"Deployment cycle 21 failed","cycle":21,"error":"Failed to setup internal branch"}
+{"timestamp":"2025-09-05T15:26:38.502Z","level":"INFO","message":"Starting deployment cycle 24","cycle":24}
+{"timestamp":"2025-09-05T15:26:38.694Z","level":"ERROR","message":"Failed to ensure internal branch","cycle":24,"error":"Command failed: git checkout internal\nerror: Your local changes to the following files would be overwritten by checkout:\n\t.claude/settings.local.json\n\tscripts/railway-internal-monitor.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-05T15:26:38.753Z","level":"ERROR","message":"Deployment cycle 24 failed","cycle":24,"error":"Failed to setup internal branch"}

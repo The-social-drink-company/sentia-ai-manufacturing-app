@@ -16,7 +16,10 @@
       "Bash(git stash:*)",
       "Bash(gh pr create:*)",
       "Bash(npm install:*)",
+<<<<<<< HEAD
       "WebFetch(domain:sentia-manufacturing-dashboard-production.up.railway.app)",
+=======
+>>>>>>> development
       "Bash(git pull:*)"
     ],
     "deny": [],

@@ -1,29 +1,16 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react'
+import '../styles/SentiaTheme.css'
 
-// Fallback widget for error boundaries
+// Fallback widget for error boundaries - SENTIA BRANDED
 const WidgetFallback = ({ name, children }) => (
-  <div style={{
-    backgroundColor: 'white',
-    padding: '1.5rem',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    marginBottom: '1rem'
-  }}>
+  <div className="sentia-card">
     {children || (
       <>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1rem' }}>{name}</h3>
-        <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            margin: '0 auto 1rem',
-            backgroundColor: '#f3f4f6',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '24px'
-          }}>📊</div>
+        <div className="sentia-card-header">
+          <h3 className="sentia-card-title">{name}</h3>
+        </div>
+        <div className="sentia-loading">
+          <div className="sentia-spinner"></div>
           <p>Loading {name}...</p>
         </div>
       </>
@@ -60,6 +47,13 @@ import {
   FixedCFOKPIStrip
 } from '../components/widgets/AllWidgetsFixed'
 import FixedPlanningWizard from '../components/widgets/FixedPlanningWizard'
+
+// Import new enterprise integration widgets
+import AmazonSPAPIWidget from '../components/widgets/AmazonSPAPIWidget'
+import ShopifyMultiStoreWidget from '../components/widgets/ShopifyMultiStoreWidget'
+import UnleashedERPWidget from '../components/widgets/UnleashedERPWidget'
+import AIForecastingWidget from '../components/widgets/AIForecastingWidget'
+import EnterprisePerformanceWidget from '../components/widgets/EnterprisePerformanceWidget'
 
 // Lazy load widgets with fallbacks to fixed versions
 const KPIStrip = lazy(() => 
@@ -322,39 +316,25 @@ function EnhancedDashboard() {
   ]
 
   return (
-    <div style={{ 
-      minHeight: 'calc(100vh - 64px)', 
-      backgroundColor: '#f3f4f6',
-      padding: '1.5rem'
-    }}>
-      {/* Dashboard Header */}
-      <div style={{ 
-        backgroundColor: 'white',
-        padding: '1.5rem',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        marginBottom: '1.5rem'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827' }}>
-              Enhanced Manufacturing Dashboard
-            </h1>
-            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
-              Real-time production and financial metrics
-            </p>
-          </div>
+    <div className="sentia-dashboard">
+      <div className="sentia-container">
+        {/* Dashboard Header - SENTIA BRANDED */}
+        <div className="sentia-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="sentia-dashboard-header">
+              <h1 className="sentia-dashboard-title">
+                SENTIA Manufacturing Dashboard
+              </h1>
+              <p className="sentia-dashboard-subtitle">
+                Enterprise Manufacturing Intelligence Platform
+              </p>
+            </div>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            {/* Time range selector */}
+            {/* Time range selector - SENTIA BRANDED */}
             <select 
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                border: '1px solid #d1d5db',
-                backgroundColor: 'white'
-              }}
+              className="sentia-select"
             >
               <option value="today">Today</option>
               <option value="week">This Week</option>
@@ -363,58 +343,37 @@ function EnhancedDashboard() {
               <option value="year">This Year</option>
             </select>
             
-            {/* Export button */}
+            {/* Export button - SENTIA BRANDED */}
             {features.boardExport && (
-              <button style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer'
-              }}>
+              <button className="sentia-btn sentia-btn-primary">
                 Export 📥
               </button>
             )}
             
-            {/* Settings */}
+            {/* Settings - SENTIA BRANDED */}
             <button 
               onClick={() => setShowFeatureFlags(!showFeatureFlags)}
-              style={{
-                padding: '0.5rem',
-                backgroundColor: '#f3f4f6',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer'
-              }}
+              className="sentia-btn sentia-btn-ghost"
             >
               ⚙️
             </button>
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs - SENTIA BRANDED */}
         {features.globalTabs && (
           <div style={{ 
             display: 'flex', 
             gap: '0.5rem', 
             marginTop: '1rem',
-            borderTop: '1px solid #e5e7eb',
+            borderTop: '1px solid var(--sentia-light-grey)',
             paddingTop: '1rem'
           }}>
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  backgroundColor: selectedTab === tab.id ? '#3b82f6' : 'transparent',
-                  color: selectedTab === tab.id ? 'white' : '#6b7280',
-                  fontWeight: selectedTab === tab.id ? 'bold' : 'normal'
-                }}
+                className={`sentia-btn ${selectedTab === tab.id ? 'sentia-btn-primary' : 'sentia-btn-ghost'}`}
               >
                 {tab.icon} {tab.label}
               </button>
@@ -450,13 +409,8 @@ function EnhancedDashboard() {
         </Suspense>
       </WidgetErrorBoundary>
 
-      {/* Main Content Grid - Responsive */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: windowWidth < 768 ? '1fr' : windowWidth < 1024 ? '1fr' : '2fr 1fr',
-        gap: '1.5rem', 
-        marginTop: '1.5rem'
-      }}>
+      {/* Main Content Grid - SENTIA RESPONSIVE GRID */}
+      <div className={`sentia-grid ${windowWidth < 768 ? 'sentia-grid-1' : windowWidth < 1024 ? 'sentia-grid-1' : 'sentia-grid-2'}`}>
         {/* Left Column */}
         <div>
           {/* Demand Forecast */}
@@ -489,6 +443,52 @@ function EnhancedDashboard() {
             <WidgetErrorBoundary name="Working Capital">
               <Suspense fallback={<WidgetFallback name="Working Capital" />}>
                 <WorkingCapitalWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* ENTERPRISE INTEGRATION WIDGETS */}
+          {/* Amazon SP-API Integration */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Amazon SP-API">
+              <Suspense fallback={<WidgetFallback name="Amazon SP-API" />}>
+                <AmazonSPAPIWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* Shopify Multi-Store Integration */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Shopify Multi-Store">
+              <Suspense fallback={<WidgetFallback name="Shopify Multi-Store" />}>
+                <ShopifyMultiStoreWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* Unleashed ERP Integration */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Unleashed ERP">
+              <Suspense fallback={<WidgetFallback name="Unleashed ERP" />}>
+                <UnleashedERPWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* AI Forecasting Widget */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="AI Forecasting">
+              <Suspense fallback={<WidgetFallback name="AI Forecasting" />}>
+                <AIForecastingWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* Enterprise Performance Monitor */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Enterprise Performance">
+              <Suspense fallback={<WidgetFallback name="Enterprise Performance" />}>
+                <EnterprisePerformanceWidget />
               </Suspense>
             </WidgetErrorBoundary>
           </div>
@@ -731,8 +731,9 @@ function EnhancedDashboard() {
           </Suspense>
         </WidgetErrorBoundary>
       )}
+      </div>
     </div>
-  )
+  );
 }
 
-export default EnhancedDashboard
+export default EnhancedDashboard;

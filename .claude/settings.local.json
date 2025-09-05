@@ -32,7 +32,8 @@
       "Bash(set PORT=3001)",
       "Bash(npm run lint)",
       "Bash(npm run test:run:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "ask": []

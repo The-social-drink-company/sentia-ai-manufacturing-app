@@ -10,6 +10,14 @@ node_modules/
 database/
 scripts/
 
+# Agent-generated files (problematic linting)
+*-agent.js
+*-agent.cjs
+agent-*.js
+agent-*.cjs
+*agent*.js
+*agent*.cjs
+
 # Generated files
 *.min.js
 

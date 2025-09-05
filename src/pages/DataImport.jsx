@@ -1,8 +1,101 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import { dataIntegrationService } from '../services/dataIntegrationService'
 
 const DataImport = () => {
+  const [uploadStatus, setUploadStatus] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadedFiles, setUploadedFiles] = useState([])
+  const fileInputRef = useRef(null)
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    if (!file.name.match(/\.(csv|xlsx|xls)$/i)) {
+      setUploadStatus({
+        type: 'error',
+        message: 'Please upload a CSV or Excel file'
+      })
+      return
+    }
+
+    setIsUploading(true)
+    setUploadStatus({ type: 'info', message: 'Processing file...' })
+
+    try {
+      const result = await dataIntegrationService.uploadDataFile(file, 'metrics')
+      
+      setUploadedFiles(prev => [...prev, {
+        name: file.name,
+        size: file.size,
+        status: 'success',
+        date: new Date().toISOString().split('T')[0],
+        records: result.length || 0
+      }])
+
+      setUploadStatus({
+        type: 'success',
+        message: `Successfully uploaded ${file.name} with ${result.length || 0} records`
+      })
+    } catch (error) {
+      setUploadStatus({
+        type: 'error',
+        message: `Failed to upload file: ${error.message}`
+      })
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      {/* CSS Animations */}
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      
+      {/* Navigation Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-gray-900">SENTIA Manufacturing</h1>
+            <nav className="flex gap-6">
+              <Link to="/dashboard" className="text-gray-600 hover:text-gray-800 font-medium transition-colors">Dashboard</Link>
+              <Link to="/ai-dashboard" className="text-gray-600 hover:text-gray-800 font-medium transition-colors">AI Dashboard</Link>
+              <Link to="/working-capital" className="text-gray-600 hover:text-gray-800 font-medium transition-colors">Working Capital</Link>
+              <Link to="/data-import" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Data Import</Link>
+              <Link to="/admin" className="text-gray-600 hover:text-gray-800 font-medium transition-colors">Admin</Link>
+            </nav>
+          </div>
+          <div className="flex items-center gap-4">
+            <button className="p-2 hover:bg-gray-100 rounded">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
+              U
+            </div>
+          </div>
+        </div>
+      </header>
+
       {/* Page Header */}
       <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
         <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '1rem 2rem' }}>
@@ -40,23 +133,72 @@ const DataImport = () => {
             <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '1rem' }}>
               Drag and drop files or click to browse
             </p>
-            <div style={{
-              border: '2px dashed #d1d5db',
-              borderRadius: '0.375rem',
-              padding: '2rem',
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.3s',
-              ':hover': { borderColor: '#3b82f6' }
-            }}>
-              <svg style={{ height: '3rem', width: '3rem', color: '#9ca3af', margin: '0 auto' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-              <p style={{ marginTop: '0.5rem', color: '#4b5563' }}>Drop files here or click to upload</p>
-              <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.25rem' }}>
-                CSV, XLS, XLSX up to 10MB
-              </p>
+            <input 
+              ref={fileInputRef}
+              type="file" 
+              accept=".csv,.xlsx,.xls" 
+              onChange={handleFileUpload}
+              disabled={isUploading}
+              style={{ display: 'none' }}
+            />
+            <div 
+              style={{
+                border: '2px dashed #d1d5db',
+                borderRadius: '0.375rem',
+                padding: '2rem',
+                textAlign: 'center',
+                cursor: isUploading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s',
+                opacity: isUploading ? 0.5 : 1
+              }}
+              onClick={() => !isUploading && fileInputRef.current?.click()}
+            >
+              {isUploading ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ 
+                    width: '2rem', 
+                    height: '2rem', 
+                    border: '2px solid #3b82f6', 
+                    borderTop: '2px solid transparent', 
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                    marginBottom: '0.5rem'
+                  }}></div>
+                  <p style={{ color: '#3b82f6' }}>Processing file...</p>
+                </div>
+              ) : (
+                <>
+                  <svg style={{ height: '3rem', width: '3rem', color: '#9ca3af', margin: '0 auto' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <p style={{ marginTop: '0.5rem', color: '#4b5563' }}>Drop files here or click to upload</p>
+                  <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.25rem' }}>
+                    CSV, XLS, XLSX up to 10MB
+                  </p>
+                </>
+              )}
             </div>
+            
+            {/* Upload Status */}
+            {uploadStatus && (
+              <div style={{
+                marginTop: '1rem',
+                padding: '0.75rem',
+                borderRadius: '0.375rem',
+                backgroundColor: uploadStatus.type === 'success' ? '#f0fdf4' : 
+                               uploadStatus.type === 'error' ? '#fef2f2' : '#eff6ff',
+                border: `1px solid ${uploadStatus.type === 'success' ? '#bbf7d0' : 
+                                    uploadStatus.type === 'error' ? '#fecaca' : '#bfdbfe'}`
+              }}>
+                <p style={{ 
+                  color: uploadStatus.type === 'success' ? '#166534' : 
+                         uploadStatus.type === 'error' ? '#991b1b' : '#1e40af',
+                  fontSize: '0.875rem'
+                }}>
+                  {uploadStatus.message}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Validation Status */}

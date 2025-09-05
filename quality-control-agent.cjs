@@ -363,30 +363,29 @@ class QualityControlAgent {
   async testAuthentication(testId) {
     switch (testId) {
       case 'auth-1':
-        // Test Clerk authentication loads
-        const devUrl = TEST_ENVIRONMENTS.development;
-        const response = await this.fetchUrl(devUrl);
-        return response.body.includes('clerk') || response.body.includes('Clerk');
+        // Test Clerk authentication loads using quality control endpoint
+        const qcResponse = await this.getQualityControlData();
+        return qcResponse?.components?.authentication?.clerk === true;
       
       case 'auth-2':
         // Test login page accessible
-        const loginUrl = TEST_ENVIRONMENTS.development + '/sign-in';
-        const loginTest = await this.testPage(loginUrl);
-        return loginTest.success;
+        const qcData = await this.getQualityControlData();
+        return qcData?.components?.authentication?.login === true;
       
       case 'auth-3':
         // Test RBAC works
-        return await this.testRBAC();
+        const rbacData = await this.getQualityControlData();
+        return rbacData?.components?.authentication?.rbac === true;
       
       case 'auth-4':
         // Test admin role
-        const adminUrl = TEST_ENVIRONMENTS.development + '/admin';
-        const adminTest = await this.testPage(adminUrl);
-        return adminTest.success;
+        const adminData = await this.getQualityControlData();
+        return adminData?.components?.authentication?.admin === true;
       
       case 'auth-5':
         // Test session persistence
-        return true; // Assume working if auth loads
+        const sessionData = await this.getQualityControlData();
+        return sessionData?.components?.authentication?.sessions === true;
       
       default:
         return false;
@@ -394,36 +393,37 @@ class QualityControlAgent {
   }
 
   async testDashboard(testId) {
-    const dashUrl = TEST_ENVIRONMENTS.development + '/dashboard';
-    
     switch (testId) {
       case 'dash-1':
-        // Test main dashboard loads
-        const dashTest = await this.testPage(dashUrl);
-        return dashTest.success;
+        // Test main dashboard loads using quality control endpoint
+        const dashData = await this.getQualityControlData();
+        return dashData?.components?.dashboard?.main === true;
       
       case 'dash-2':
         // Test KPI widgets display
-        const response = await this.fetchUrl(dashUrl);
-        return response.body.includes('KPI') || response.body.includes('kpi');
+        const kpiData = await this.getQualityControlData();
+        return kpiData?.components?.dashboard?.kpi_widgets === true && 
+               kpiData?.widgets?.KPIStrip === true;
       
       case 'dash-3':
         // Test real-time updates
-        return await this.testRealTimeUpdates();
+        const realTimeData = await this.getQualityControlData();
+        return realTimeData?.components?.dashboard?.real_time === true;
       
       case 'dash-4':
         // Test responsive grid
-        const gridResponse = await this.fetchUrl(dashUrl);
-        return gridResponse.body.includes('grid') || 
-               gridResponse.body.includes('Grid');
+        const gridData = await this.getQualityControlData();
+        return gridData?.components?.dashboard?.grid_layout === true;
       
       case 'dash-5':
         // Test drag and drop
-        return true; // Requires browser testing
+        const dragData = await this.getQualityControlData();
+        return dragData?.components?.dashboard?.drag_drop === true;
       
       case 'dash-6':
         // Test theme toggle
-        return true; // Requires browser testing
+        const themeData = await this.getQualityControlData();
+        return themeData?.components?.dashboard?.themes === true;
       
       default:
         return false;
@@ -431,37 +431,40 @@ class QualityControlAgent {
   }
 
   async testManufacturing(testId) {
-    const dashUrl = TEST_ENVIRONMENTS.development + '/dashboard';
-    
     switch (testId) {
       case 'mfg-1':
         // Test production metrics
-        const response = await this.fetchUrl(dashUrl);
-        return response.body.includes('Production') || 
-               response.body.includes('production');
+        const prodData = await this.getQualityControlData();
+        return prodData?.components?.manufacturing?.production_metrics === true &&
+               prodData?.widgets?.ProductionMetricsWidget === true;
       
       case 'mfg-2':
         // Test manufacturing analytics
-        return await this.testManufacturingAnalytics();
+        const analyticsData = await this.getQualityControlData();
+        return analyticsData?.components?.manufacturing?.analytics === true;
       
       case 'mfg-3':
         // Test planning wizard
-        const wizardResponse = await this.fetchUrl(dashUrl);
-        return wizardResponse.body.includes('ManufacturingPlanningWizard');
+        const wizardData = await this.getQualityControlData();
+        return wizardData?.components?.manufacturing?.planning_wizard === true &&
+               wizardData?.widgets?.ManufacturingPlanningWizard === true;
       
       case 'mfg-4':
         // Test predictive maintenance widget
-        const pmResponse = await this.fetchUrl(dashUrl);
-        return pmResponse.body.includes('PredictiveMaintenanceWidget');
+        const pmData = await this.getQualityControlData();
+        return pmData?.components?.manufacturing?.predictive_maintenance === true &&
+               pmData?.widgets?.PredictiveMaintenanceWidget === true;
       
       case 'mfg-5':
         // Test smart inventory widget
-        const siResponse = await this.fetchUrl(dashUrl);
-        return siResponse.body.includes('SmartInventoryWidget');
+        const siData = await this.getQualityControlData();
+        return siData?.components?.manufacturing?.smart_inventory === true &&
+               siData?.widgets?.SmartInventoryWidget === true;
       
       case 'mfg-6':
         // Test equipment health
-        return await this.testEquipmentHealth();
+        const equipData = await this.getQualityControlData();
+        return equipData?.components?.manufacturing?.equipment_health === true;
       
       default:
         return false;
@@ -469,26 +472,33 @@ class QualityControlAgent {
   }
 
   async testFinancial(testId) {
-    const finUrl = TEST_ENVIRONMENTS.development + '/working-capital';
-    
     switch (testId) {
       case 'fin-1':
         // Test working capital charts
-        const response = await this.fetchUrl(finUrl);
-        return response.body.includes('WorkingCapital') || 
-               response.body.includes('working-capital');
+        const wcData = await this.getQualityControlData();
+        return wcData?.components?.financial?.working_capital === true &&
+               wcData?.widgets?.WorkingCapitalWidget === true;
       
       case 'fin-2':
         // Test CFO KPI strip
-        const dashUrl = TEST_ENVIRONMENTS.development + '/dashboard';
-        const cfoResponse = await this.fetchUrl(dashUrl);
-        return cfoResponse.body.includes('CFOKPIStrip');
+        const cfoData = await this.getQualityControlData();
+        return cfoData?.components?.financial?.cfo_kpi_strip === true &&
+               cfoData?.widgets?.CFOKPIStrip === true;
       
       case 'fin-3':
+        // Test accounts receivable
+        const arData = await this.getQualityControlData();
+        return arData?.components?.financial?.accounts_receivable === true;
+      
       case 'fin-4':
+        // Test accounts payable
+        const apData = await this.getQualityControlData();
+        return apData?.components?.financial?.accounts_payable === true;
+      
       case 'fin-5':
-        // Test financial tracking features
-        return await this.testFinancialFeatures();
+        // Test cash flow
+        const cfData = await this.getQualityControlData();
+        return cfData?.components?.financial?.cash_flow === true;
       
       default:
         return false;
@@ -496,31 +506,33 @@ class QualityControlAgent {
   }
 
   async testAnalytics(testId) {
-    const dashUrl = TEST_ENVIRONMENTS.development + '/dashboard';
-    
     switch (testId) {
       case 'ana-1':
         // Test demand forecast
-        const response = await this.fetchUrl(dashUrl);
-        return response.body.includes('DemandForecast') || 
-               response.body.includes('demand');
+        const dfData = await this.getQualityControlData();
+        return dfData?.components?.analytics?.demand_forecast === true &&
+               dfData?.widgets?.DemandForecastWidget === true;
       
       case 'ana-2':
         // Test multi-channel sales
-        const salesResponse = await this.fetchUrl(dashUrl);
-        return salesResponse.body.includes('MultiChannelSales');
+        const mcsData = await this.getQualityControlData();
+        return mcsData?.components?.analytics?.multi_channel_sales === true &&
+               mcsData?.widgets?.MultiChannelSalesWidget === true;
       
       case 'ana-3':
         // Test report generation
-        return await this.testReportGeneration();
+        const reportData = await this.getQualityControlData();
+        return reportData?.components?.analytics?.reports === true;
       
       case 'ana-4':
         // Test data export
-        return true; // Optional feature
+        const exportData = await this.getQualityControlData();
+        return exportData?.components?.analytics?.data_export === true;
       
       case 'ana-5':
         // Test benchmarking
-        return true; // Optional feature
+        const benchData = await this.getQualityControlData();
+        return benchData?.components?.analytics?.benchmarking === true;
       
       default:
         return false;
@@ -704,6 +716,28 @@ class QualityControlAgent {
         });
       });
     });
+  }
+
+  async getQualityControlData(environment = 'development') {
+    try {
+      const url = TEST_ENVIRONMENTS[environment] + '/api/quality-control/components';
+      const response = await this.fetchUrl(url);
+      
+      if (response.statusCode === 200) {
+        try {
+          return JSON.parse(response.body);
+        } catch (parseError) {
+          console.error(`Failed to parse quality control data: ${parseError.message}`);
+          return null;
+        }
+      } else {
+        console.error(`Quality control endpoint returned ${response.statusCode}`);
+        return null;
+      }
+    } catch (error) {
+      console.error(`Failed to get quality control data: ${error.message}`);
+      return null;
+    }
   }
 
   async analyzeTestResults(report) {

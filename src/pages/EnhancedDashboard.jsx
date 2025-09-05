@@ -482,6 +482,87 @@ function EnhancedDashboard() {
         </Suspense>
       </WidgetErrorBoundary>
 
+      {/* Comprehensive Agent Monitoring Section */}
+      <div style={{ marginTop: '1.5rem' }}>
+        <h2 style={{ 
+          fontSize: '1.5rem', 
+          fontWeight: 'bold', 
+          color: '#111827',
+          marginBottom: '1rem',
+          padding: '1rem',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          🤖 Autonomous Agent Monitoring - All 7 Agents Running 24/7
+        </h2>
+        
+        {/* Agent Overview Widget */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <WidgetErrorBoundary name="Agent Monitoring Overview">
+            <Suspense fallback={<WidgetFallback name="Agent Monitoring Overview" />}>
+              <AgentMonitoringWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
+        </div>
+
+        {/* Individual Agent Widgets Grid */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: windowWidth < 768 ? '1fr' : windowWidth < 1024 ? '1fr' : '1fr 1fr',
+          gap: '1.5rem'
+        }}>
+          {/* UI/UX Enhancement Agent */}
+          <WidgetErrorBoundary name="UI/UX Enhancement Agent">
+            <Suspense fallback={<WidgetFallback name="UI/UX Enhancement Agent" />}>
+              <UIUXEnhancementWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
+
+          {/* Data Integration Agent */}
+          <WidgetErrorBoundary name="Data Integration Agent">
+            <Suspense fallback={<WidgetFallback name="Data Integration Agent" />}>
+              <DataIntegrationWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
+
+          {/* Performance Optimization Agent */}
+          <WidgetErrorBoundary name="Performance Optimization Agent">
+            <Suspense fallback={<WidgetFallback name="Performance Optimization Agent" />}>
+              <PerformanceOptimizationWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
+
+          {/* Quality Control Agent */}
+          <WidgetErrorBoundary name="Quality Control Agent">
+            <Suspense fallback={<WidgetFallback name="Quality Control Agent" />}>
+              <QualityControlWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
+
+          {/* Autonomous Completion Agent */}
+          <WidgetErrorBoundary name="Autonomous Completion Agent">
+            <Suspense fallback={<WidgetFallback name="Autonomous Completion Agent" />}>
+              <AutonomousCompletionWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
+
+          {/* Monitoring Agent */}
+          <WidgetErrorBoundary name="Monitoring Agent">
+            <Suspense fallback={<WidgetFallback name="Monitoring Agent" />}>
+              <MonitoringAgentWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
+
+          {/* Dashboard Update Agent */}
+          <WidgetErrorBoundary name="Dashboard Update Agent">
+            <Suspense fallback={<WidgetFallback name="Dashboard Update Agent" />}>
+              <DashboardUpdateWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
+        </div>
+      </div>
+
       {/* Main Content Grid - Responsive */}
       <div style={{ 
         display: 'grid', 

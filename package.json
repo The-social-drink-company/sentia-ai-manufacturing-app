@@ -65,6 +65,8 @@
     "bcrypt": "^6.0.0",
     "bullmq": "^5.58.4",
     "chart.js": "^4.5.0",
+    "chartjs-plugin-annotation": "^3.1.0",
+    "chartjs-plugin-zoom": "^2.2.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "concurrently": "^8.2.2",

@@ -227,6 +227,31 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Performance timing middleware
+app.use((req, res, next) => {
+  const startTime = process.hrtime.bigint();
+  
+  res.on('finish', () => {
+    const endTime = process.hrtime.bigint();
+    const duration = Number((endTime - startTime) / 1000000n); // Convert to milliseconds
+    
+    // Log slow requests (> 500ms)
+    if (duration > 500) {
+      logWarn(`Slow API request detected`, {
+        method: req.method,
+        url: req.url,
+        duration: `${duration}ms`,
+        statusCode: res.statusCode
+      });
+    }
+    
+    // Add response time header
+    res.set('X-Response-Time', `${duration}ms`);
+  });
+  
+  next();
+});
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

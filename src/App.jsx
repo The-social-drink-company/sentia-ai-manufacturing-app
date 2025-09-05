@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AuthProvider } from './context/AuthContext'
+import { ClerkProvider } from '@clerk/clerk-react'
+import SimpleAuth from './components/auth/SimpleAuth'
 import './index.css'
 import './styles/ui-fixes.css'
 
@@ -24,6 +26,7 @@ const AdminPortal = lazy(() => import('./pages/AdminPortal'))
 const DataImport = lazy(() => import('./pages/DataImport'))
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const AIDashboard = lazy(() => import('./pages/AIDashboard'))
+const AIEnhancedDashboard = lazy(() => import('./pages/AIEnhancedDashboard'))
 
 // Loading component
 function Loading() {
@@ -61,69 +64,95 @@ function Loading() {
   )
 }
 
-// Main App component - temporarily bypassing Clerk for development
+// Get Clerk publishable key from environment
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
+
+// Main App component with Clerk authentication
 function App() {
+  if (!clerkPubKey) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        textAlign: 'center'
+      }}>
+        <div>
+          <h1>Authentication Configuration Required</h1>
+          <p>Please configure VITE_CLERK_PUBLISHABLE_KEY in your environment variables.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <AuthProvider>
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <div style={{ minHeight: '100vh' }}>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              
-              <Route
-                path="/dashboard"
-                element={
-                  <Suspense fallback={<Loading />}>
-                    <EnhancedDashboard />
-                  </Suspense>
-                }
-              />
-              
-              <Route
-                path="/working-capital"
-                element={
-                  <Suspense fallback={<Loading />}>
-                    <WorkingCapitalDashboard />
-                  </Suspense>
-                }
-              />
-              
-              <Route
-                path="/admin/*"
-                element={
-                  <Suspense fallback={<Loading />}>
-                    <AdminPortal />
-                  </Suspense>
-                }
-              />
-              
-              <Route
-                path="/data-import"
-                element={
-                  <Suspense fallback={<Loading />}>
-                    <DataImport />
-                  </Suspense>
-                }
-              />
-              
-              <Route
-                path="/ai-dashboard"
-                element={
-                  <Suspense fallback={<Loading />}>
-                    <AIDashboard />
-                  </Suspense>
-                }
-              />
-              
-              {/* Catch-all route */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </div>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </Router>
-    </AuthProvider>
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <AuthProvider>
+        <Router>
+          <QueryClientProvider client={queryClient}>
+            <SimpleAuth>
+              <div style={{ minHeight: '100vh' }}>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <EnhancedDashboard />
+                      </Suspense>
+                    }
+                  />
+                  
+                  <Route
+                    path="/working-capital"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <WorkingCapitalDashboard />
+                      </Suspense>
+                    }
+                  />
+                  
+                  <Route
+                    path="/admin/*"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <AdminPortal />
+                      </Suspense>
+                    }
+                  />
+                  
+                  <Route
+                    path="/data-import"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <DataImport />
+                      </Suspense>
+                    }
+                  />
+                  
+                  <Route
+                    path="/ai-dashboard"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <AIDashboard />
+                      </Suspense>
+                    }
+                  />
+                  
+                  {/* Catch-all route */}
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </div>
+              <ReactQueryDevtools initialIsOpen={false} />
+            </SimpleAuth>
+          </QueryClientProvider>
+        </Router>
+      </AuthProvider>
+    </ClerkProvider>
   )
 }
 

@@ -383,6 +383,64 @@ router.post('/procurement/recommendations', authMiddleware, async (req, res) => 
 });
 
 /**
+ * Get 24/7 Agent Monitoring Status
+ * GET /api/ai/monitoring/status
+ */
+router.get('/monitoring/status', authMiddleware, async (req, res) => {
+  try {
+    const monitoringStatus = sentiaAIOrchestrator.getAgentMonitoringStatus();
+    res.json(monitoringStatus);
+  } catch (error) {
+    logger.error('Failed to get monitoring status:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * Force Agent Health Check
+ * POST /api/ai/monitoring/health-check
+ */
+router.post('/monitoring/health-check', authMiddleware, async (req, res) => {
+  try {
+    const healthResults = await sentiaAIOrchestrator.checkAgentHealth();
+    res.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      results: healthResults
+    });
+  } catch (error) {
+    logger.error('Health check failed:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * Restart Specific Agent
+ * POST /api/ai/monitoring/restart/:agentId
+ */
+router.post('/monitoring/restart/:agentId', authMiddleware, async (req, res) => {
+  try {
+    const { agentId } = req.params;
+    const result = await sentiaAIOrchestrator.restartAgent(agentId);
+    
+    if (result) {
+      res.json({
+        success: true,
+        message: `Agent ${agentId} restarted successfully`
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: `Failed to restart agent ${agentId}`
+      });
+    }
+  } catch (error) {
+    logger.error('Agent restart failed:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
  * Shutdown AI Systems
  * POST /api/ai/shutdown
  */

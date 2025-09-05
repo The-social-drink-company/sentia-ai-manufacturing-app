@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import logger, { logInfo, logError, logWarn } from './logger.js';
+import agentMonitor from './ai/agentMonitor.js';
 
 // Core AI Systems
 import ManufacturingMCPServers from './mcp/manufacturingMCPServers.js';
@@ -99,6 +100,9 @@ class SentiaAIOrchestrator extends EventEmitter {
       
       this.systemStatus.initialized = true;
       this.systemStatus.activeModules = Object.values(this.systems).filter(s => s !== null).length;
+      
+      // Initialize 24/7 Agent Monitoring
+      this.setup247Monitoring();
       
       logInfo(`Sentia AI Orchestrator initialization complete. ${this.systemStatus.activeModules} modules active.`);
       
@@ -849,8 +853,86 @@ class SentiaAIOrchestrator extends EventEmitter {
       modules: Object.keys(this.systems).reduce((acc, key) => {
         acc[key] = this.systems[key] ? 'active' : 'inactive';
         return acc;
-      }, {})
+      }, {}),
+      monitoring247: agentMonitor.getStatus()
     };
+  }
+
+  /**
+   * Setup 24/7 Agent Monitoring
+   */
+  setup247Monitoring() {
+    logInfo('Setting up 24/7 agent monitoring...');
+    
+    // Register all AI agents for monitoring
+    const agentConfigs = [
+      { id: 'mcp', agent: this.systems.mcp, critical: true },
+      { id: 'forecasting', agent: this.systems.forecasting, critical: true },
+      { id: 'maintenance', agent: this.systems.maintenance, critical: true },
+      { id: 'quality', agent: this.systems.quality, critical: false },
+      { id: 'supplyChain', agent: this.systems.supplyChain, critical: true },
+      { id: 'digitalTwin', agent: this.systems.digitalTwin, critical: false },
+      { id: 'execution', agent: this.systems.execution, critical: true },
+      { id: 'agent', agent: this.systems.agent, critical: false },
+      { id: 'analytics', agent: this.systems.analytics, critical: true },
+      { id: 'integration', agent: this.systems.integration, critical: true }
+    ];
+
+    agentConfigs.forEach(({ id, agent, critical }) => {
+      if (agent) {
+        agentMonitor.registerAgent(id, agent, {
+          critical,
+          autoRestart: true,
+          healthCheckMethod: 'getSystemStatus'
+        });
+      }
+    });
+
+    // Setup event listeners for monitoring events
+    agentMonitor.on('agent-failed', (event) => {
+      logError(`Critical agent failed: ${event.agentId}`);
+      this.systemStatus.alerts.add({
+        type: 'agent-failure',
+        severity: event.critical ? 'critical' : 'warning',
+        message: `Agent ${event.agentId} failed after ${event.attempts} restart attempts`,
+        timestamp: new Date()
+      });
+    });
+
+    agentMonitor.on('agent-restarted', (event) => {
+      logInfo(`Agent restarted successfully: ${event.agentId}`);
+    });
+
+    agentMonitor.on('critical-agent-down', (event) => {
+      logError(`CRITICAL ALERT: Essential agent down - ${event.agentId}`);
+      // Could trigger external alerts here (email, Slack, etc.)
+    });
+
+    // Start 24/7 monitoring
+    agentMonitor.start();
+    
+    logInfo('24/7 agent monitoring activated');
+  }
+
+  /**
+   * Get agent monitoring status
+   */
+  getAgentMonitoringStatus() {
+    return agentMonitor.getStatus();
+  }
+
+  /**
+   * Manually restart specific agent
+   */
+  async restartAgent(agentId) {
+    return await agentMonitor.forceRestartAgent(agentId);
+  }
+
+  /**
+   * Force health check on all agents
+   */
+  async checkAgentHealth() {
+    return await agentMonitor.performHealthCheck();
   }
 }
 

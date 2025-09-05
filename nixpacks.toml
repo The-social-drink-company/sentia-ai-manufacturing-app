@@ -3,11 +3,11 @@
 # FORCE Node.js 18 ONLY - Override auto-detection
 
 # Force explicit Node.js provider only
-providers = ["nodejs-18_x"]
+providers = ["node"]
 
 [phases.setup]
 # Explicitly prevent Node.js 22 collision - ONLY Node.js 18
-nixPkgs = ["nodejs-18_x", "npm-9_x", "openssl"]
+nixPkgs = ["nodejs_18", "npm", "openssl"]
 aptPkgs = []
 pythonPackages = []
 

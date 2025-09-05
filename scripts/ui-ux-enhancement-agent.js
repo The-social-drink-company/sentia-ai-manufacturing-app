@@ -6,7 +6,7 @@ import fs from 'fs/promises';
 
 const execAsync = promisify(exec);
 
-class UI/UXEnhancementAgent {
+class UIUXEnhancementAgent {
   constructor() {
     this.name = 'UI/UX Enhancement Agent';
     this.interval = process.env.AGENT_INTERVAL || 120000;
@@ -32,7 +32,7 @@ class UI/UXEnhancementAgent {
       
       // Make automated improvements
       const timestamp = new Date().toISOString();
-      const updateFile = `agent-updates/${this.name.toLowerCase().replace(/s+/g, '-')}.json`;
+      const updateFile = `agent-updates/${this.name.toLowerCase().replace(/\s+/g, '-')}.json`;
       
       await fs.mkdir('agent-updates', { recursive: true });
       await fs.writeFile(updateFile, JSON.stringify({
@@ -83,7 +83,7 @@ class UI/UXEnhancementAgent {
   }
 }
 
-const agent = new UI/UXEnhancementAgent();
+const agent = new UIUXEnhancementAgent();
 agent.start().catch(console.error);
 
 process.on('SIGINT', () => {

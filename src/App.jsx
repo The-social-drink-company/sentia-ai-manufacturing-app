@@ -2,7 +2,9 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-// import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthContext'
+import { ClerkProvider } from '@clerk/clerk-react'
+import SimpleAuth from './components/auth/SimpleAuth'
 import './index.css'
 import './styles/ui-fixes.css'
 
@@ -17,15 +19,15 @@ const queryClient = new QueryClient({
   },
 })
 
-// Lazy load pages for better performance
-// const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
-const TestDashboard = lazy(() => import('./TestDashboard')) // Temporary test dashboard
-// const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
-const TestWorkingCapital = lazy(() => import('./TestWorkingCapital')) // Temporary test working capital
+// Import AI Enhanced Dashboard as the main dashboard
+import AIEnhancedDashboard from './pages/AIEnhancedDashboard'
+// Lazy load other pages
+const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
 const AdminPortal = lazy(() => import('./pages/AdminPortal'))
 const DataImport = lazy(() => import('./pages/DataImport'))
 const LandingPage = lazy(() => import('./pages/LandingPage'))
-const AIDashboard = lazy(() => import('./pages/AIDashboard')) // AI-Powered Dashboard
+const AIDashboard = lazy(() => import('./pages/AIDashboard'))
+const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 
 // Loading component
 function Loading() {
@@ -63,68 +65,100 @@ function Loading() {
   )
 }
 
-// Main App component - Temporarily without Clerk for debugging
+// Get Clerk publishable key from environment
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
+
+// Main App component with Clerk authentication
 function App() {
-  return (
-    <Router>
-      <QueryClientProvider client={queryClient}>
-        <div style={{ minHeight: '100vh' }}>
-          <Routes>
-            {/* Direct access to dashboard - no auth required temporarily */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            
-            <Route
-              path="/dashboard"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <TestDashboard />
-                </Suspense>
-              }
-            />
-            
-            <Route
-              path="/working-capital"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <TestWorkingCapital />
-                </Suspense>
-              }
-            />
-            
-            <Route
-              path="/admin/*"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <AdminPortal />
-                </Suspense>
-              }
-            />
-            
-            <Route
-              path="/data-import"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <DataImport />
-                </Suspense>
-              }
-            />
-            
-            <Route
-              path="/ai-dashboard"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <AIDashboard />
-                </Suspense>
-              }
-            />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
+  if (!clerkPubKey) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        textAlign: 'center'
+      }}>
+        <div>
+          <h1>Authentication Configuration Required</h1>
+          <p>Please configure VITE_CLERK_PUBLISHABLE_KEY in your environment variables.</p>
         </div>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </Router>
+      </div>
+    )
+  }
+
+  return (
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <AuthProvider>
+        <Router>
+          <QueryClientProvider client={queryClient}>
+            <SimpleAuth>
+              <div style={{ minHeight: '100vh' }}>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  
+                  <Route
+                    path="/dashboard"
+                    element={<AIEnhancedDashboard />}
+                  />
+                  
+                  <Route
+                    path="/working-capital"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <WorkingCapitalDashboard />
+                      </Suspense>
+                    }
+                  />
+                  
+                  <Route
+                    path="/admin/*"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <AdminPortal />
+                      </Suspense>
+                    }
+                  />
+                  
+                  <Route
+                    path="/data-import"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <DataImport />
+                      </Suspense>
+                    }
+                  />
+                  
+                  <Route
+                    path="/ai-dashboard"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <AIDashboard />
+                      </Suspense>
+                    }
+                  />
+                  
+                  <Route
+                    path="/enhanced"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <EnhancedDashboard />
+                      </Suspense>
+                    }
+                  />
+                  
+                  {/* Catch-all route */}
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </div>
+              <ReactQueryDevtools initialIsOpen={false} />
+            </SimpleAuth>
+          </QueryClientProvider>
+        </Router>
+      </AuthProvider>
+    </ClerkProvider>
   )
 }
 

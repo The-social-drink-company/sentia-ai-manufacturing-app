@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-05T09:21:45.634Z",
+  "timestamp": "2025-09-05T19:06:08.652Z",
   "cycle": 3,
   "qualityScore": 87,
   "summary": {
@@ -423,7 +423,7 @@
     "production": {
       "url": "https://sentia-manufacturing-dashboard-production.up.railway.app",
       "accessible": true,
-      "responseTime": 231,
+      "responseTime": 128,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -438,7 +438,7 @@
     "development": {
       "url": "https://sentia-manufacturing-dashboard-development.up.railway.app",
       "accessible": true,
-      "responseTime": 232,
+      "responseTime": 269,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -453,7 +453,7 @@
     "test": {
       "url": "https://sentiatest.financeflo.ai",
       "accessible": true,
-      "responseTime": 174,
+      "responseTime": 373,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -468,8 +468,8 @@
     "local": {
       "url": "http://localhost:3002",
       "accessible": false,
-      "responseTime": 2,
-      "statusCode": 0,
+      "responseTime": 3,
+      "statusCode": 404,
       "features": {
         "dashboard": false,
         "authentication": false,

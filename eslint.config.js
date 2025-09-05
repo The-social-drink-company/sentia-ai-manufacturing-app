@@ -66,11 +66,18 @@ export default [
         URL: 'readonly',
         URLSearchParams: 'readonly',
         Event: 'readonly',
+        Element: 'readonly',
         MutationObserver: 'readonly',
         PerformanceObserver: 'readonly',
         IntersectionObserver: 'readonly',
         ResizeObserver: 'readonly',
-        React: 'readonly'
+        React: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly',
+        performance: 'readonly',
+        CSS: 'readonly'
       }
     },
     settings: {
@@ -100,7 +107,13 @@ export default [
         __dirname: 'readonly',
         __filename: 'readonly',
         global: 'readonly',
-        require: 'readonly'
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly'
       }
     },
     rules: {
@@ -125,7 +138,11 @@ export default [
         beforeEach: 'readonly',
         afterEach: 'readonly',
         beforeAll: 'readonly',
-        afterAll: 'readonly'
+        afterAll: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly'
       }
     },
     rules: {

@@ -5,7 +5,8 @@
       "Bash(ping:*)",
       "Bash(redis-cli:*)",
       "Bash(rm:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

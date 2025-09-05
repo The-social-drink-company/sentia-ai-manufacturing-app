@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUpIcon, TrendingDownIcon, AlertTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
 import {
   Chart as ChartJS,
@@ -86,9 +86,9 @@ const IntelligentKPICard = ({
     
     const trendValue = parseFloat(metric.trend);
     if (trendValue > 0) {
-      return <TrendingUpIcon className="h-5 w-5 text-green-500" />;
+      return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
     } else if (trendValue < 0) {
-      return <TrendingDownIcon className="h-5 w-5 text-red-500" />;
+      return <ArrowTrendingDownIcon className="h-5 w-5 text-red-500" />;
     }
     return null;
   };
@@ -173,7 +173,7 @@ const IntelligentKPICard = ({
             )}
           </div>
           {anomalies.length > 0 && (
-            <AlertTriangleIcon className="h-5 w-5 text-red-500 animate-bounce" />
+            <ExclamationTriangleIcon className="h-5 w-5 text-red-500 animate-bounce" />
           )}
         </div>
       </div>
@@ -243,7 +243,7 @@ const IntelligentKPICard = ({
         {showAnomalies && anomalies.length > 0 && (
           <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-md">
             <div className="flex items-start">
-              <AlertTriangleIcon className="h-5 w-5 text-red-600 dark:text-red-400 mr-2 flex-shrink-0" />
+              <ExclamationTriangleIcon className="h-5 w-5 text-red-600 dark:text-red-400 mr-2 flex-shrink-0" />
               <div>
                 <p className="text-sm font-medium text-red-800 dark:text-red-300">
                   Anomaly Detected

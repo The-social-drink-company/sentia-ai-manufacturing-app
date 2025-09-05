@@ -31,7 +31,17 @@
       "Bash(railway login:*)",
       "Bash(set PORT=3001)",
       "Bash(npm run lint)",
-      "Bash(npm run test:run:*)"
+      "Bash(npm run test:run:*)",
+      "Bash(powershell:*)",
+      "Bash(npm run lint:*)",
+      "WebSearch",
+      "WebFetch(domain:localhost)",
+      "Bash(npm run dev:*)",
+      "Bash(start http://localhost:3003)",
+      "Bash(start http://localhost:3000)",
+      "Bash(set PORT=5001)",
+      "Bash(start http://localhost:3001)",
+      "Bash(railway status:*)"
     ],
     "deny": [],
     "ask": []

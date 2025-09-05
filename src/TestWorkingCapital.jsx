@@ -32,29 +32,30 @@ function TestWorkingCapital() {
   })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // Mock data for demonstration
-  const mockData = {
-    cashFlow: {
-      current: 450000,
-      trend: '+12.5%',
-      status: 'healthy'
-    },
-    receivables: {
-      total: 1250000,
-      overdue: 125000,
-      dso: 45
-    },
-    payables: {
-      total: 780000,
-      due: 95000,
-      dpo: 38
-    },
-    inventory: {
-      value: 2100000,
-      turnover: 8.2,
-      daysOnHand: 44
+  // Real financial data from Xero API
+  const [workingCapitalData, setWorkingCapitalData] = useState({
+    cashFlow: { current: 0, trend: '0%', status: 'loading' },
+    receivables: { total: 0, overdue: 0, dso: 0 },
+    payables: { total: 0, due: 0, dpo: 0 },
+    inventory: { value: 0, turnover: 0, daysOnHand: 0 }
+  })
+
+  useEffect(() => {
+    const fetchRealWorkingCapitalData = async () => {
+      try {
+        const response = await fetch('/api/working-capital/real-data')
+        const data = await response.json()
+        setWorkingCapitalData(data)
+      } catch (error) {
+        console.error('Failed to fetch real working capital data:', error)
+      }
     }
-  }
+    
+    fetchRealWorkingCapitalData()
+    // Refresh data every 5 minutes
+    const interval = setInterval(fetchRealWorkingCapitalData, 5 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     // Generate working capital trend data
@@ -190,8 +191,8 @@ function TestWorkingCapital() {
                 </svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">${(mockData.cashFlow.current / 1000).toFixed(0)}k</p>
-            <p className="text-sm text-green-600 font-medium">{mockData.cashFlow.trend} from last month</p>
+            <p className="text-2xl font-bold text-gray-900">${(workingCapitalData.cashFlow.current / 1000).toFixed(0)}k</p>
+            <p className="text-sm text-green-600 font-medium">{workingCapitalData.cashFlow.trend} from last month</p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500">
@@ -203,8 +204,8 @@ function TestWorkingCapital() {
                 </svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">${(mockData.receivables.total / 1000000).toFixed(2)}M</p>
-            <p className="text-sm text-blue-600 font-medium">DSO: {mockData.receivables.dso} days</p>
+            <p className="text-2xl font-bold text-gray-900">${(workingCapitalData.receivables.total / 1000000).toFixed(2)}M</p>
+            <p className="text-sm text-blue-600 font-medium">DSO: {workingCapitalData.receivables.dso} days</p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow border-l-4 border-yellow-500">
@@ -216,8 +217,8 @@ function TestWorkingCapital() {
                 </svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">${(mockData.payables.total / 1000).toFixed(0)}k</p>
-            <p className="text-sm text-yellow-600 font-medium">DPO: {mockData.payables.dpo} days</p>
+            <p className="text-2xl font-bold text-gray-900">${(workingCapitalData.payables.total / 1000).toFixed(0)}k</p>
+            <p className="text-sm text-yellow-600 font-medium">DPO: {workingCapitalData.payables.dpo} days</p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow border-l-4 border-purple-500">
@@ -229,8 +230,8 @@ function TestWorkingCapital() {
                 </svg>
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">${(mockData.inventory.value / 1000000).toFixed(1)}M</p>
-            <p className="text-sm text-purple-600 font-medium">Turnover: {mockData.inventory.turnover}x</p>
+            <p className="text-2xl font-bold text-gray-900">${(workingCapitalData.inventory.value / 1000000).toFixed(1)}M</p>
+            <p className="text-sm text-purple-600 font-medium">Turnover: {workingCapitalData.inventory.turnover}x</p>
           </div>
         </div>
 
@@ -242,7 +243,7 @@ function TestWorkingCapital() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">Days Sales Outstanding</span>
-                  <span className="text-sm font-medium">{mockData.receivables.dso} days</span>
+                  <span className="text-sm font-medium">{workingCapitalData.receivables.dso} days</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-blue-500 h-2 rounded-full" style={{ width: '45%' }}></div>
@@ -251,7 +252,7 @@ function TestWorkingCapital() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">Days Inventory Outstanding</span>
-                  <span className="text-sm font-medium">{mockData.inventory.daysOnHand} days</span>
+                  <span className="text-sm font-medium">{workingCapitalData.inventory.daysOnHand} days</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-purple-500 h-2 rounded-full" style={{ width: '44%' }}></div>
@@ -260,7 +261,7 @@ function TestWorkingCapital() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">Days Payable Outstanding</span>
-                  <span className="text-sm font-medium">{mockData.payables.dpo} days</span>
+                  <span className="text-sm font-medium">{workingCapitalData.payables.dpo} days</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '38%' }}></div>
@@ -270,7 +271,7 @@ function TestWorkingCapital() {
                 <div className="flex justify-between">
                   <span className="text-sm font-semibold text-gray-900">Cash Conversion Cycle</span>
                   <span className="text-lg font-bold text-green-600">
-                    {mockData.receivables.dso + mockData.inventory.daysOnHand - mockData.payables.dpo} days
+                    {workingCapitalData.receivables.dso + workingCapitalData.inventory.daysOnHand - workingCapitalData.payables.dpo} days
                   </span>
                 </div>
               </div>
@@ -467,7 +468,7 @@ function TestWorkingCapital() {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">Review Overdue Receivables</p>
-                  <p className="text-sm text-gray-600">${(mockData.receivables.overdue / 1000).toFixed(0)}k in overdue payments require immediate attention</p>
+                  <p className="text-sm text-gray-600">${(workingCapitalData.receivables.overdue / 1000).toFixed(0)}k in overdue payments require immediate attention</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -489,7 +490,7 @@ function TestWorkingCapital() {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">Strong Inventory Turnover</p>
-                  <p className="text-sm text-gray-600">Current turnover rate of {mockData.inventory.turnover}x is above industry average</p>
+                  <p className="text-sm text-gray-600">Current turnover rate of {workingCapitalData.inventory.turnover}x is above industry average</p>
                 </div>
               </div>
             </div>

@@ -26,6 +26,11 @@ class QueueService {
     if (this.isInitialized) return;
 
     try {
+      // Temporarily disable queue service to stabilize server
+      logWarn('Queue service temporarily disabled for server stability - using synchronous processing');
+      this.isInitialized = true;
+      return false;
+      
       // Check if Redis is configured in environment
       if (!process.env.REDIS_HOST && !process.env.REDIS_URL) {
         logWarn('Redis not configured - queue service will be disabled');

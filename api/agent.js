@@ -10,7 +10,7 @@ import { autopilotScheduler } from '../services/agent/scheduler.js';
 import { policyGuard, policyMiddleware } from '../services/agent/policyGuard.js';
 import { planValidator } from '../services/agent/planValidator.js';
 import { agentRateLimiter } from '../services/agent/rateLimiter.js';
-import { logInfo, logError } from '../services/observability/structuredLogger.js';
+import { logError } from '../services/observability/structuredLogger.js';
 
 const router = express.Router();
 

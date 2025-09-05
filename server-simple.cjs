@@ -1,5 +1,5 @@
 // SIMPLE PRODUCTION SERVER - NO EXTRA DEPENDENCIES
-// Force Railway rebuild: 2025-09-04T21:10:21.796Z - Auto-correction by Monitoring Agent
+// Force Railway rebuild: 2025-09-05T09:02:28.743Z - Auto-correction by Monitoring Agent
 const express = require('express');
 const path = require('path');
 const cors = require('cors');

@@ -45,7 +45,7 @@ class QueueService {
             retryDelayOnFailover: 100,
             enableReadyCheck: true,
             lazyConnect: true,
-            maxRetriesPerRequest: 3,
+            maxRetriesPerRequest: null,
             connectTimeout: 5000,
             commandTimeout: 5000
           };

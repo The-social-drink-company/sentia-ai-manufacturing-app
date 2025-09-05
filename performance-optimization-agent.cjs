@@ -11,7 +11,7 @@ const { execSync } = require('child_process');
 
 class PerformanceOptimizationAgent {
   constructor() {
-    this.cycleCount = 0;
+    this.cycleCount = 7;
     this.completionPercentage = 0;
     this.isRunning = false;
     

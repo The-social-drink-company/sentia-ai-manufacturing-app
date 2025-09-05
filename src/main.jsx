@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-// import App from './App.jsx'
+import App from './App.jsx'
 // import AppFixed from './AppFixed.jsx'
 // import MinimalApp from './MinimalApp.jsx'
-import AppWithClerk from './AppWithClerk.jsx'
+// import AppWithClerk from './AppWithClerk.jsx'
 // import TestClerk from './TestClerk.jsx'
 // import SimpleApp from './SimpleApp.jsx'
 // import AppMinimal from './AppMinimal.jsx'
@@ -43,7 +43,7 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AppWithClerk />
+    <App />
   </React.StrictMode>,
 )
 

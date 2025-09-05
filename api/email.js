@@ -1,8 +1,12 @@
-const express = require('express');
+import express from 'express';
+import { createRequire } from 'module';
+import { logInfo, logError, logWarn } from '../services/logger.js';
+
+const require = createRequire(import.meta.url);
+const EmailService = require('../services/email/EmailService.cjs');
+const NotificationService = require('../services/email/NotificationService.cjs');
+
 const router = express.Router();
-const EmailService = require('../services/email/EmailService');
-const NotificationService = require('../services/email/NotificationService');
-const { logger } = require('../services/logger');
 
 // Initialize services
 const emailService = new EmailService();
@@ -16,7 +20,7 @@ router.get('/test', async (req, res) => {
     const result = await emailService.testConfiguration();
     res.json(result);
   } catch (error) {
-    logger.error('Email test failed:', error.message);
+    logError('Email test failed:', error.message);
     res.status(500).json({ 
       success: false, 
       message: 'Email test failed', 
@@ -49,7 +53,7 @@ router.post('/send', async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    logger.error('Failed to send email:', error.message);
+    logError('Failed to send email:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send email',
@@ -75,7 +79,7 @@ router.post('/admin', async (req, res) => {
     const result = await emailService.sendAdminNotification(subject, body, attachments);
     res.json(result);
   } catch (error) {
-    logger.error('Failed to send admin notification:', error.message);
+    logError('Failed to send admin notification:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send admin notification',
@@ -101,7 +105,7 @@ router.post('/data', async (req, res) => {
     const result = await emailService.sendDataUploadNotification(subject, body, attachments);
     res.json(result);
   } catch (error) {
-    logger.error('Failed to send data notification:', error.message);
+    logError('Failed to send data notification:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send data notification',
@@ -127,7 +131,7 @@ router.post('/system-alert', async (req, res) => {
     const result = await emailService.sendSystemAlert(alertType, message, context);
     res.json(result);
   } catch (error) {
-    logger.error('Failed to send system alert:', error.message);
+    logError('Failed to send system alert:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send system alert',
@@ -153,7 +157,7 @@ router.post('/data-processing', async (req, res) => {
     const result = await emailService.sendDataProcessingNotification(processType, status, details);
     res.json(result);
   } catch (error) {
-    logger.error('Failed to send data processing notification:', error.message);
+    logError('Failed to send data processing notification:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send data processing notification',
@@ -179,7 +183,7 @@ router.post('/health-alert', async (req, res) => {
     await notificationService.sendSystemHealthAlert(level, component, message, metrics);
     res.json({ success: true, message: 'Health alert sent successfully' });
   } catch (error) {
-    logger.error('Failed to send health alert:', error.message);
+    logError('Failed to send health alert:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send health alert',
@@ -205,7 +209,7 @@ router.post('/data-import', async (req, res) => {
     await notificationService.sendDataImportNotification(status, details);
     res.json({ success: true, message: 'Data import notification sent successfully' });
   } catch (error) {
-    logger.error('Failed to send data import notification:', error.message);
+    logError('Failed to send data import notification:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send data import notification',
@@ -231,7 +235,7 @@ router.post('/user-action', async (req, res) => {
     await notificationService.sendUserActionNotification(action, user, details);
     res.json({ success: true, message: 'User action notification sent successfully' });
   } catch (error) {
-    logger.error('Failed to send user action notification:', error.message);
+    logError('Failed to send user action notification:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send user action notification',
@@ -257,7 +261,7 @@ router.post('/performance-alert', async (req, res) => {
     await notificationService.sendPerformanceAlert(metric, value, threshold, unit);
     res.json({ success: true, message: 'Performance alert sent successfully' });
   } catch (error) {
-    logger.error('Failed to send performance alert:', error.message);
+    logError('Failed to send performance alert:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send performance alert',
@@ -283,7 +287,7 @@ router.post('/data-quality', async (req, res) => {
     await notificationService.sendDataQualityAlert(dataset, qualityIssues);
     res.json({ success: true, message: 'Data quality alert sent successfully' });
   } catch (error) {
-    logger.error('Failed to send data quality alert:', error.message);
+    logError('Failed to send data quality alert:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send data quality alert',
@@ -309,7 +313,7 @@ router.post('/excel-upload', async (req, res) => {
     await notificationService.sendExcelUploadNotification(filename, recordCount, processingResults);
     res.json({ success: true, message: 'Excel upload notification sent successfully' });
   } catch (error) {
-    logger.error('Failed to send Excel upload notification:', error.message);
+    logError('Failed to send Excel upload notification:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to send Excel upload notification',
@@ -326,7 +330,7 @@ router.get('/test-notifications', async (req, res) => {
     const result = await notificationService.testService();
     res.json(result);
   } catch (error) {
-    logger.error('Notification service test failed:', error.message);
+    logError('Notification service test failed:', error.message);
     res.status(500).json({
       success: false,
       message: 'Notification service test failed',
@@ -335,4 +339,4 @@ router.get('/test-notifications', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

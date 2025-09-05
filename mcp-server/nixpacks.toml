@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = ["nodejs_18", "npm"]
+
+[phases.install]
+cmds = ["npm ci --only=production"]
+
+[phases.build]
+cmds = ["mkdir -p logs"]
+
+[start]
+cmd = "node index.js"
+
+[variables]
+NODE_ENV = "production"
+LOG_LEVEL = "info"

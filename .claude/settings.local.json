@@ -20,7 +20,9 @@
       "Bash(gh run list:*)",
       "Bash(gh run view:*)",
       "Bash(curl:*)",
-      "Bash(npm run dev:client:*)"
+      "Bash(npm run dev:client:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c:*)"
     ],
     "deny": [],
     "ask": []

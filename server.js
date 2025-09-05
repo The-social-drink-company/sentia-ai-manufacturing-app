@@ -21,6 +21,7 @@ import AuthService from './services/auth/AuthService.js';
 import PasswordService from './services/auth/PasswordService.js';
 import MultiEntityService from './services/auth/MultiEntityService.js';
 import SSOService from './services/auth/SSOService.js';
+import EmailUtils from './services/email/emailUtils.js';
 // Import performance optimization services
 import { cacheService, paginationMiddleware, sparseFieldsMiddleware } from './services/performance/caching.js';
 import { dbOptimizationService } from './services/performance/dbOptimization.js';
@@ -3275,6 +3276,17 @@ app.post('/api/import/upload-enhanced', upload.single('file'), async (req, res) 
       }
     });
 
+    // Send email notification for successful upload
+    try {
+      await EmailUtils.notifyDataUpload(
+        'File Upload Successful',
+        `File "${req.file.originalname}" has been uploaded and is ready for processing.`,
+        'success'
+      );
+    } catch (emailError) {
+      logWarn('Failed to send upload notification email', emailError);
+    }
+
     res.json({
       success: true,
       importJob: {
@@ -3287,6 +3299,18 @@ app.post('/api/import/upload-enhanced', upload.single('file'), async (req, res) 
 
   } catch (error) {
     logError('Enhanced upload failed', error);
+    
+    // Send email notification for upload failure
+    try {
+      await EmailUtils.notifyDataUpload(
+        'File Upload Failed',
+        `Failed to upload file "${req.file?.originalname || 'unknown'}": ${error.message}`,
+        'error'
+      );
+    } catch (emailError) {
+      logWarn('Failed to send upload failure notification email', emailError);
+    }
+    
     res.status(500).json({
       success: false,
       error: 'Upload failed',
@@ -4054,6 +4078,15 @@ try {
   logInfo('Optimization API routes loaded successfully');
 } catch (error) {
   logWarn('Failed to load optimization API routes', error);
+}
+
+// Email API routes
+try {
+  const emailRoutes = await import('./api/email.js');
+  app.use('/api/email', emailRoutes.default);
+  logInfo('Email API routes loaded successfully');
+} catch (error) {
+  logWarn('Failed to load email API routes', error);
 }
 
 // First catch-all removed - using the one at the end of the file

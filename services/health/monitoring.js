@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import { createClient } from 'redis';
 import { performance } from 'perf_hooks';
 import { logInfo, logError } from '../logger.js';
+import EmailUtils from '../email/emailUtils.js';
 
 // Health check status enum
 export const HealthStatus = {
@@ -75,6 +76,43 @@ export const performHealthCheck = async () => {
     overallStatus = HealthStatus.UNHEALTHY;
   } else if (hasUnhealthy || hasDegraded) {
     overallStatus = HealthStatus.DEGRADED;
+  }
+
+  // Send email notifications for critical issues
+  try {
+    if (hasUnhealthyCritical) {
+      const criticalFailures = checks.filter(c => 
+        c.status === HealthStatus.UNHEALTHY && healthChecks.get(c.name).critical
+      );
+      
+      for (const failure of criticalFailures) {
+        await EmailUtils.alertSystemError(
+          failure.name,
+          failure.message,
+          {
+            duration: failure.duration,
+            timestamp: failure.timestamp,
+            metadata: failure.metadata
+          }
+        );
+      }
+    } else if (hasDegraded) {
+      const degradedComponents = checks.filter(c => c.status === HealthStatus.DEGRADED);
+      
+      for (const degraded of degradedComponents) {
+        await EmailUtils.alertSystemWarning(
+          degraded.name,
+          degraded.message,
+          {
+            duration: degraded.duration,
+            timestamp: degraded.timestamp,
+            metadata: degraded.metadata
+          }
+        );
+      }
+    }
+  } catch (emailError) {
+    logError('Failed to send health check email notification', emailError);
   }
   
   return {

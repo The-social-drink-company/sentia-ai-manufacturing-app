@@ -1,0 +1,393 @@
+/* UI Fixes for Sentia Manufacturing Dashboard */
+
+/* Fix oversized icons globally */
+svg.heroicon,
+svg[class*="w-"][class*="h-"],
+.w-4.h-4, .w-5.h-5, .w-6.h-6 {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Specific icon size fixes */
+.w-4.h-4 {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+.w-5.h-5 {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+.w-6.h-6 {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
+.w-8.h-8 {
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+/* Fix navigation header layout */
+header {
+  position: relative;
+  z-index: 50;
+}
+
+header .max-w-full {
+  max-width: 100%;
+}
+
+/* Fix sidebar navigation */
+nav.sidebar,
+aside.sidebar {
+  position: fixed;
+  top: 4rem; /* Account for header height */
+  left: 0;
+  height: calc(100vh - 4rem);
+  overflow-y: auto;
+  z-index: 40;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  transition: transform 0.3s ease-in-out;
+}
+
+nav.sidebar.collapsed,
+aside.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+@media (min-width: 768px) {
+  nav.sidebar.collapsed,
+  aside.sidebar.collapsed {
+    transform: translateX(0);
+    width: 4rem;
+  }
+}
+
+/* Fix button styles */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Fix main content area spacing */
+main {
+  margin-left: 0;
+  padding-top: 4rem; /* Account for fixed header */
+  min-height: calc(100vh - 4rem);
+  transition: margin-left 0.3s ease-in-out;
+}
+
+@media (min-width: 768px) {
+  main.with-sidebar {
+    margin-left: 16rem; /* Standard sidebar width */
+  }
+  
+  main.with-sidebar.sidebar-collapsed {
+    margin-left: 4rem; /* Collapsed sidebar width */
+  }
+}
+
+/* Fix dashboard grid layout */
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Fix widget cards */
+.widget-card,
+.sentia-card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.widget-card-header,
+.sentia-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.widget-card-title,
+.sentia-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.widget-card-content,
+.sentia-card-content {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Fix dropdown menus */
+.dropdown-menu,
+[role="menu"] {
+  position: absolute;
+  z-index: 50;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  min-width: 12rem;
+  padding: 0.25rem 0;
+}
+
+.dropdown-item,
+[role="menuitem"] {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #374151;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover,
+[role="menuitem"]:hover {
+  background-color: #f3f4f6;
+}
+
+/* Fix modal overlays */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  padding: 1.5rem;
+}
+
+/* Fix loading spinners */
+.loading-spinner,
+.sentia-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fix tooltips */
+.tooltip {
+  position: absolute;
+  z-index: 60;
+  background: #1f2937;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Fix form inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #111827;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Fix table layouts */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Dark mode fixes */
+@media (prefers-color-scheme: dark) {
+  .widget-card,
+  .sentia-card {
+    background: #1f2937;
+    color: #f3f4f6;
+  }
+  
+  .widget-card-header,
+  .sentia-card-header {
+    border-bottom-color: #374151;
+  }
+  
+  .widget-card-title,
+  .sentia-card-title {
+    color: #f3f4f6;
+  }
+  
+  .dropdown-menu,
+  [role="menu"] {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .dropdown-item,
+  [role="menuitem"] {
+    color: #d1d5db;
+  }
+  
+  .dropdown-item:hover,
+  [role="menuitem"]:hover {
+    background-color: #374151;
+  }
+  
+  input,
+  textarea,
+  select {
+    background-color: #1f2937;
+    color: #f3f4f6;
+    border-color: #374151;
+  }
+  
+  th {
+    background-color: #111827;
+    color: #f3f4f6;
+    border-bottom-color: #374151;
+  }
+  
+  td {
+    border-bottom-color: #1f2937;
+  }
+}
+
+/* Responsive fixes */
+@media (max-width: 640px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    padding: 1rem;
+  }
+  
+  header .flex {
+    flex-wrap: wrap;
+  }
+  
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  header,
+  nav,
+  aside,
+  .no-print {
+    display: none !important;
+  }
+  
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .widget-card,
+  .sentia-card {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    page-break-inside: avoid;
+  }
+}

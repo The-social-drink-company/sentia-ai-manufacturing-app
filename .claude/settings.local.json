@@ -16,7 +16,11 @@
       "Bash(git stash:*)",
       "Bash(gh pr create:*)",
       "Bash(npm install:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:client:*)"
     ],
     "deny": [],
     "ask": []

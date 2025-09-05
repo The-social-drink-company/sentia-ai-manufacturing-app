@@ -4,7 +4,8 @@
       "Read(/\\c\\Projects/**)",
       "Bash(ping:*)",
       "Bash(redis-cli:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

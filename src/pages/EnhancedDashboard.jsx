@@ -732,7 +732,7 @@ function EnhancedDashboard() {
         </WidgetErrorBoundary>
       )}
     </div>
-  )
+  );
 }
 
-export default EnhancedDashboard
+export default EnhancedDashboard;

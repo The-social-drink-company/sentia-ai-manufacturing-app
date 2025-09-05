@@ -53,6 +53,7 @@ import AmazonSPAPIWidget from '../components/widgets/AmazonSPAPIWidget'
 import ShopifyMultiStoreWidget from '../components/widgets/ShopifyMultiStoreWidget'
 import UnleashedERPWidget from '../components/widgets/UnleashedERPWidget'
 import AIForecastingWidget from '../components/widgets/AIForecastingWidget'
+import EnterprisePerformanceWidget from '../components/widgets/EnterprisePerformanceWidget'
 
 // Lazy load widgets with fallbacks to fixed versions
 const KPIStrip = lazy(() => 
@@ -479,6 +480,15 @@ function EnhancedDashboard() {
             <WidgetErrorBoundary name="AI Forecasting">
               <Suspense fallback={<WidgetFallback name="AI Forecasting" />}>
                 <AIForecastingWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+
+          {/* Enterprise Performance Monitor */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Enterprise Performance">
+              <Suspense fallback={<WidgetFallback name="Enterprise Performance" />}>
+                <EnterprisePerformanceWidget />
               </Suspense>
             </WidgetErrorBoundary>
           </div>

@@ -131,12 +131,6 @@ const WorkingCapitalWidget = lazy(() =>
   }))
 )
 
-const WorkingCapitalChart = lazy(() => 
-  import('../components/widgets/WorkingCapitalChart').catch(() => ({
-    default: FixedWorkingCapital
-  }))
-)
-
 const ManufacturingPlanningWizard = lazy(() => 
   import('../components/ManufacturingPlanningWizard').catch(() => ({
     default: FixedPlanningWizard

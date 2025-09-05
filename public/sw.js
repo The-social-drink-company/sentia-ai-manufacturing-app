@@ -1,6 +1,6 @@
 
-// Dashboard Service Worker - Updated 2025-09-05T10:39:53.047Z
-const CACHE_NAME = 'dashboard-v1757068793047';
+// Dashboard Service Worker - Updated 2025-09-05T10:41:53.062Z
+const CACHE_NAME = 'dashboard-v1757068913062';
 const urlsToCache = [
   '/',
   '/dashboard',

@@ -3227,6 +3227,211 @@ app.get('/api/queue/stats', async (req, res) => {
   }
 });
 
+// ==================== AI ORCHESTRATOR API ROUTES ====================
+
+// Get AI system status
+app.get('/api/ai/status', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const status = global.aiOrchestrator.getSystemStatus();
+    res.json({ success: true, status });
+  } catch (error) {
+    logError('Failed to get AI status', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get AI system health
+app.get('/api/ai/health', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const health = global.aiOrchestrator.getSystemHealth();
+    res.json({ success: true, health });
+  } catch (error) {
+    logError('Failed to get AI health', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Execute unified AI query
+app.post('/api/ai/query', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const { query, options } = req.body;
+    const result = await global.aiOrchestrator.executeUnifiedQuery(query, options);
+    res.json({ success: true, result });
+  } catch (error) {
+    logError('Failed to execute AI query', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Generate AI forecast
+app.post('/api/ai/forecast', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const { productSKU, options } = req.body;
+    const forecast = await global.aiOrchestrator.generateForecast(productSKU, options);
+    res.json({ success: true, forecast });
+  } catch (error) {
+    logError('Failed to generate forecast', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Start production batch with AI optimization
+app.post('/api/ai/production/start', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const { productType, quantity, options } = req.body;
+    const result = await global.aiOrchestrator.startProductionBatch(productType, quantity, options);
+    res.json({ success: true, result });
+  } catch (error) {
+    logError('Failed to start production batch', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get unified AI dashboard
+app.get('/api/ai/dashboard/:type?', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const dashboardType = req.params.type || 'executive';
+    const dashboard = await global.aiOrchestrator.getUnifiedDashboard(dashboardType);
+    res.json({ success: true, dashboard });
+  } catch (error) {
+    logError('Failed to get AI dashboard', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Perform quality inspection with computer vision
+app.post('/api/ai/quality/inspect', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const { imageData, inspectionType, productInfo } = req.body;
+    const result = await global.aiOrchestrator.performQualityInspection(imageData, inspectionType, productInfo);
+    res.json({ success: true, result });
+  } catch (error) {
+    logError('Failed to perform quality inspection', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get production insights
+app.get('/api/ai/insights/production', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const insights = await global.aiOrchestrator.getProductionInsights();
+    res.json({ success: true, insights });
+  } catch (error) {
+    logError('Failed to get production insights', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get sales insights
+app.get('/api/ai/insights/sales', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const insights = await global.aiOrchestrator.getSalesInsights();
+    res.json({ success: true, insights });
+  } catch (error) {
+    logError('Failed to get sales insights', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get inventory optimization
+app.get('/api/ai/optimization/inventory', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const optimization = await global.aiOrchestrator.getInventoryOptimization();
+    res.json({ success: true, optimization });
+  } catch (error) {
+    logError('Failed to get inventory optimization', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get quality predictions
+app.get('/api/ai/predictions/quality', async (req, res) => {
+  try {
+    if (!global.aiOrchestrator) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'AI Orchestrator not initialized' 
+      });
+    }
+    
+    const predictions = await global.aiOrchestrator.getQualityPredictions();
+    res.json({ success: true, predictions });
+  } catch (error) {
+    logError('Failed to get quality predictions', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Get import job status
 app.get('/api/import/status/:importJobId', async (req, res) => {
   try {
@@ -4339,6 +4544,18 @@ async function initializeServices() {
   // Skip working capital service - disabled for server stability
   logInfo('Working Capital service skipped during startup - disabled for stability');
   await loadAgentRoutes();
+  
+  // Initialize AI Orchestrator
+  try {
+    const { default: sentiaAIOrchestrator } = await import('./services/SentiaAIOrchestrator.js');
+    await sentiaAIOrchestrator.initialize();
+    logInfo('AI Orchestrator initialized successfully');
+    
+    // Make AI orchestrator available globally
+    global.aiOrchestrator = sentiaAIOrchestrator;
+  } catch (error) {
+    logError('AI Orchestrator initialization failed:', error);
+  }
 }
 
 // Catch-all handler MUST be last route (after all API routes and static files)

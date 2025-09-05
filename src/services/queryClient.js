@@ -140,6 +140,66 @@ export const queryConfigs = {
     refetchIntervalInBackground: true
   },
   
+  // Query functions for CFO KPI Strip and other widgets
+  forecast: {
+    accuracy: (timeRange, region) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            mape: Math.random() * 15 + 5, // 5-20%
+            smape: Math.random() * 20 + 8, // 8-28%
+            rmse: Math.random() * 50 + 75, // 75-125
+            coverage: Math.random() * 10 + 90, // 90-100%
+            change: (Math.random() - 0.5) * 10, // ±5%
+            dataQuality: Math.random() > 0.5 ? 'excellent' : 'good'
+          })
+        }, 500)
+      })
+    }
+  },
+  
+  workingCapital: {
+    kpis: (timeRange, region) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            cashConversionCycle: Math.round(Math.random() * 30 + 40), // 40-70 days
+            cccChange: (Math.random() - 0.5) * 20, // ±10%
+            cccTrend: Math.random() * 100, // 0-100%
+            wcUnlockedQTD: Math.random() * 300000 + 100000, // £100k-400k
+            wcUnlockedChange: (Math.random() - 0.5) * 30 // ±15%
+          })
+        }, 500)
+      })
+    },
+    
+    cashPosition: (region) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            minCash90d: Math.random() * 1500000 + 200000, // £200k-1.7M
+            minCashChange: (Math.random() - 0.5) * 40, // ±20%
+            fxExposureNet: (Math.random() - 0.5) * 2000000, // ±£1M
+            fxExposureChange: (Math.random() - 0.5) * 50 // ±25%
+          })
+        }, 500)
+      })
+    }
+  },
+  
+  optimization: {
+    facilityUtilization: (region) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            overallUtilization: Math.random() * 40 + 60, // 60-100%
+            utilizationChange: (Math.random() - 0.5) * 20 // ±10%
+          })
+        }, 500)
+      })
+    }
+  },
+  
   // Operational data for daily use
   operational: {
     staleTime: STALE_TIMES.STOCK_LEVELS,

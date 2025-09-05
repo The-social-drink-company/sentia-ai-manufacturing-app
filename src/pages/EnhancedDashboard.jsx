@@ -59,6 +59,7 @@ import {
   FixedWorkingCapital,
   FixedCFOKPIStrip
 } from '../components/widgets/AllWidgetsFixed'
+import FixedPlanningWizard from '../components/widgets/FixedPlanningWizard'
 
 // Lazy load widgets with fallbacks to fixed versions
 const KPIStrip = lazy(() => 
@@ -138,7 +139,7 @@ const WorkingCapitalChart = lazy(() =>
 
 const ManufacturingPlanningWizard = lazy(() => 
   import('../components/ManufacturingPlanningWizard').catch(() => ({
-    default: () => <WidgetFallback name="Manufacturing Planning Wizard" />
+    default: FixedPlanningWizard
   }))
 )
 
@@ -530,6 +531,15 @@ function EnhancedDashboard() {
             <WidgetErrorBoundary name="Predictive Maintenance">
               <Suspense fallback={<WidgetFallback name="Predictive Maintenance" />}>
                 <PredictiveMaintenanceWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+          
+          {/* Manufacturing Planning Wizard - Always visible */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <WidgetErrorBoundary name="Manufacturing Planning">
+              <Suspense fallback={<WidgetFallback name="Manufacturing Planning" />}>
+                <ManufacturingPlanningWizard />
               </Suspense>
             </WidgetErrorBoundary>
           </div>

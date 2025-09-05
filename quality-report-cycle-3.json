@@ -1,12 +1,12 @@
 {
-  "timestamp": "2025-09-05T06:22:33.352Z",
+  "timestamp": "2025-09-05T07:03:56.895Z",
   "cycle": 3,
-  "qualityScore": 53,
+  "qualityScore": 58,
   "summary": {
     "totalTests": 41,
     "passed": 29,
     "failed": 12,
-    "criticalIssues": 13,
+    "criticalIssues": 12,
     "warnings": 0
   },
   "categories": {
@@ -423,7 +423,7 @@
     "production": {
       "url": "https://sentia-manufacturing-dashboard-production.up.railway.app",
       "accessible": true,
-      "responseTime": 113,
+      "responseTime": 280,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -438,7 +438,7 @@
     "development": {
       "url": "https://sentia-manufacturing-dashboard-development.up.railway.app",
       "accessible": true,
-      "responseTime": 250,
+      "responseTime": 289,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -453,7 +453,7 @@
     "test": {
       "url": "https://sentiatest.financeflo.ai",
       "accessible": true,
-      "responseTime": 822,
+      "responseTime": 140,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -467,14 +467,14 @@
     },
     "local": {
       "url": "http://localhost:3002",
-      "accessible": false,
-      "responseTime": 34,
-      "statusCode": 404,
+      "accessible": true,
+      "responseTime": 5,
+      "statusCode": 200,
       "features": {
-        "dashboard": false,
+        "dashboard": true,
         "authentication": false,
         "widgets": false,
-        "apis": false,
+        "apis": true,
         "phase4": false,
         "phase5": false
       },

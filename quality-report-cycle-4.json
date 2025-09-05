@@ -1,12 +1,12 @@
 {
-  "timestamp": "2025-09-05T08:25:40.199Z",
+  "timestamp": "2025-09-05T09:31:48.000Z",
   "cycle": 4,
-  "qualityScore": 92,
+  "qualityScore": 87,
   "summary": {
     "totalTests": 41,
     "passed": 41,
     "failed": 0,
-    "criticalIssues": 0,
+    "criticalIssues": 1,
     "warnings": 0
   },
   "categories": {
@@ -423,7 +423,7 @@
     "production": {
       "url": "https://sentia-manufacturing-dashboard-production.up.railway.app",
       "accessible": true,
-      "responseTime": 110,
+      "responseTime": 103,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -438,7 +438,7 @@
     "development": {
       "url": "https://sentia-manufacturing-dashboard-development.up.railway.app",
       "accessible": true,
-      "responseTime": 120,
+      "responseTime": 136,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -453,7 +453,7 @@
     "test": {
       "url": "https://sentiatest.financeflo.ai",
       "accessible": true,
-      "responseTime": 134,
+      "responseTime": 306,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -467,183 +467,21 @@
     },
     "local": {
       "url": "http://localhost:3002",
-      "accessible": true,
-      "responseTime": 4,
-      "statusCode": 200,
+      "accessible": false,
+      "responseTime": 3,
+      "statusCode": 0,
       "features": {
-        "dashboard": true,
+        "dashboard": false,
         "authentication": false,
         "widgets": false,
-        "apis": true,
+        "apis": false,
         "phase4": false,
         "phase5": false
       },
       "errors": []
     }
   },
-  "issues": [
-    {
-      "category": "authentication",
-      "test": "auth-1",
-      "description": "Clerk authentication loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-2",
-      "description": "Login page accessible",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-3",
-      "description": "Role-based access control works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-4",
-      "description": "Admin role functions",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "authentication",
-      "test": "auth-5",
-      "description": "User sessions persist",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-1",
-      "description": "Main dashboard loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-2",
-      "description": "KPI widgets display data",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-3",
-      "description": "Real-time updates work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "dashboard",
-      "test": "dash-4",
-      "description": "Responsive grid layout",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-1",
-      "description": "Production metrics display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-2",
-      "description": "Manufacturing analytics work",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-3",
-      "description": "Planning wizard functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-4",
-      "description": "Predictive maintenance widget loads",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-5",
-      "description": "Smart inventory widget works",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "manufacturing",
-      "test": "mfg-6",
-      "description": "Equipment health monitoring",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-1",
-      "description": "Working capital charts render",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-2",
-      "description": "CFO KPI strip displays",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-3",
-      "description": "Accounts receivable tracking",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-4",
-      "description": "Accounts payable management",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "financial",
-      "test": "fin-5",
-      "description": "Cash flow visualization",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-1",
-      "description": "Demand forecast widget functional",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-2",
-      "description": "Multi-channel sales display",
-      "severity": "HIGH",
-      "required": true
-    },
-    {
-      "category": "analytics",
-      "test": "ana-3",
-      "description": "Reports can be generated",
-      "severity": "HIGH",
-      "required": true
-    }
-  ],
+  "issues": [],
   "fixes": [],
   "recommendations": []
 }

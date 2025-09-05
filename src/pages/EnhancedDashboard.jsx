@@ -137,6 +137,13 @@ const ManufacturingPlanningWizard = lazy(() =>
   }))
 )
 
+// Agent Monitoring Widget
+const AgentMonitoringWidget = lazy(() => 
+  import('../components/widgets/AgentMonitoringWidget').catch(() => ({
+    default: () => <WidgetFallback name="Agent Monitoring" />
+  }))
+)
+
 // Import all working capital components if they exist
 const WorkingCapitalSection = () => {
   return (
@@ -511,6 +518,15 @@ function EnhancedDashboard() {
 
         {/* Right Column */}
         <div>
+          {/* Agent Monitoring Widget */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <WidgetErrorBoundary name="Agent Monitoring">
+              <Suspense fallback={<WidgetFallback name="Agent Monitoring" />}>
+                <AgentMonitoringWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+          
           {/* Smart Inventory Widget */}
           <div style={{ marginBottom: '1.5rem' }}>
             <WidgetErrorBoundary name="Smart Inventory">

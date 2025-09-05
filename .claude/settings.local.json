@@ -14,7 +14,12 @@
       "Bash(git commit:*)",
       "Bash(git merge:*)",
       "Bash(git stash:*)",
+<<<<<<< HEAD
       "WebFetch(domain:vivacious-prosperity-internal.up.railway.app)"
+=======
+      "Bash(gh pr create:*)",
+      "Bash(npm install:*)"
+>>>>>>> 0fe789259365b46f21b84b2a9395c6af295ce12b
     ],
     "deny": [],
     "ask": []

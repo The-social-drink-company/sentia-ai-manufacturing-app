@@ -40,7 +40,8 @@
       "Bash(start http://localhost:3003)",
       "Bash(start http://localhost:3000)",
       "Bash(set PORT=5001)",
-      "Bash(start http://localhost:3001)"
+      "Bash(start http://localhost:3001)",
+      "Bash(railway status:*)"
     ],
     "deny": [],
     "ask": []

@@ -9,9 +9,10 @@ import './index.css'
 // Get Clerk publishable key from environment
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-// Clerk is mandatory for authentication
-if (!clerkPubKey) {
-  throw new Error('VITE_CLERK_PUBLISHABLE_KEY is required. Please configure Clerk authentication.')
+// Make Clerk optional to prevent blank pages
+const isClerkEnabled = !!clerkPubKey
+if (!isClerkEnabled) {
+  console.warn('Clerk authentication not configured - running without authentication')
 }
 
 // Create QueryClient instance
@@ -109,6 +110,10 @@ function HomePage() {
 function ClerkWithRouter({ children }) {
   const navigate = useNavigate()
   
+  if (!isClerkEnabled) {
+    return children
+  }
+  
   return (
     <ClerkProvider publishableKey={clerkPubKey} navigate={(to) => navigate(to)}>
       {children}
@@ -116,8 +121,13 @@ function ClerkWithRouter({ children }) {
   )
 }
 
-// Route component that requires authentication
+// Route component that conditionally requires authentication
 function ProtectedRoute({ children }) {
+  if (!isClerkEnabled) {
+    // If Clerk is disabled, render without authentication
+    return children
+  }
+  
   return (
     <>
       <SignedIn>
@@ -139,19 +149,16 @@ function App() {
           <AuthProvider>
             <div style={{ minHeight: '100vh' }}>
               <Routes>
-                {/* Authentication routes */}
-                <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
-                <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
+                {/* Landing page - public */}
+                <Route path="/" element={<HomePage />} />
                 
-                {/* Protected landing page */}
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <HomePage />
-                    </ProtectedRoute>
-                  }
-                />
+                {/* Authentication routes - only if Clerk enabled */}
+                {isClerkEnabled && (
+                  <>
+                    <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
+                    <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
+                  </>
+                )}
                 
                 {/* Protected routes - conditionally protected */}
                 <Route
@@ -198,18 +205,22 @@ function App() {
                   }
                 />
                 
-                {/* Catch-all route - redirect to sign in */}
+                {/* Catch-all route */}
                 <Route
                   path="*"
                   element={
-                    <>
-                      <SignedIn>
-                        <Navigate to="/dashboard" replace />
-                      </SignedIn>
-                      <SignedOut>
-                        <RedirectToSignIn />
-                      </SignedOut>
-                    </>
+                    isClerkEnabled ? (
+                      <>
+                        <SignedIn>
+                          <Navigate to="/dashboard" replace />
+                        </SignedIn>
+                        <SignedOut>
+                          <RedirectToSignIn />
+                        </SignedOut>
+                      </>
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
                   }
                 />
               </Routes>

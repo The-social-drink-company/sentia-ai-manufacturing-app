@@ -6,6 +6,7 @@ import { useFeatureFlags } from '../../hooks/useFeatureFlags'
 import { CombinedTrustBadge } from '../ui/TrustBadge'
 import { ExportButton } from '../ui/ExportButton'
 import { cn } from '../../lib/utils'
+import liveDataService from '../../services/liveDataService'
 
 const KPICard = memo(({ 
   title, 

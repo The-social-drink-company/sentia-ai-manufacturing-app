@@ -1,13 +1,13 @@
 # nixpacks.toml
-# Configuration for Railway deployment using Nixpacks
-# Node.js ONLY - No Python
+# Configuration for Railway deployment using Nixpacks  
+# Node.js 18 ONLY - Fix version collision
 
 # Only use Node.js provider - exclude Python
 providers = ["node"]
 
 [phases.setup]
-# Only Node.js packages - no Python
-nixPkgs = ["nodejs-18_x", "npm-9_x"]
+# Only Node.js 18 packages - no Python - no Node 22 collision
+nixPkgs = ["nodejs-18_x", "npm-9_x", "openssl"]
 
 [phases.install]
 cmds = ["npm ci --prefer-offline --no-audit"]
@@ -23,3 +23,5 @@ cmd = "npm start"
 [variables]
 NODE_ENV = "production"
 NPM_CONFIG_PRODUCTION = "false"
+# Cache bust to force rebuilds with correct Node version
+BUILD_CACHE_VERSION = "v2-node18-fix"

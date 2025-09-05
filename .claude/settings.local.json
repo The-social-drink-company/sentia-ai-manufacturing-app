@@ -29,7 +29,9 @@
       "Bash(railway --version)",
       "Bash(railway whoami:*)",
       "Bash(railway login:*)",
-      "Bash(set PORT=3001)"
+      "Bash(set PORT=3001)",
+      "Bash(npm run lint)",
+      "Bash(npm run test:run:*)"
     ],
     "deny": [],
     "ask": []

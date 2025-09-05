@@ -22,6 +22,7 @@ import PasswordService from './services/auth/PasswordService.js';
 import MultiEntityService from './services/auth/MultiEntityService.js';
 import SSOService from './services/auth/SSOService.js';
 import EmailUtils from './services/email/emailUtilsWrapper.js';
+import manufacturingMetricsService from './services/manufacturingMetricsService.js';
 // Import performance optimization services
 import { cacheService, paginationMiddleware, sparseFieldsMiddleware } from './services/performance/caching.js';
 import { dbOptimizationService } from './services/performance/dbOptimization.js';
@@ -790,6 +791,93 @@ app.get('/api/protected', requireAuth, (req, res) => {
     userId: req.user.id,
     email: req.user.emailAddresses?.[0]?.emailAddress
   });
+});
+
+// Manufacturing Metrics API Endpoints (Real Data Only)
+// Get current manufacturing metrics
+app.get('/api/metrics/current', requireAuth, async (req, res) => {
+  try {
+    const metrics = await manufacturingMetricsService.getCurrentMetrics();
+    res.json(metrics);
+  } catch (error) {
+    logError('Failed to fetch current manufacturing metrics', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to fetch manufacturing metrics',
+      message: error.message
+    });
+  }
+});
+
+// Get historical manufacturing data
+app.get('/api/metrics/historical', requireAuth, async (req, res) => {
+  try {
+    const { days = 30 } = req.query;
+    const data = await manufacturingMetricsService.getHistoricalData(parseInt(days));
+    res.json(data);
+  } catch (error) {
+    logError('Failed to fetch historical manufacturing data', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to fetch historical data',
+      message: error.message
+    });
+  }
+});
+
+// Upload and process manufacturing data
+app.post('/api/metrics/upload', requireAuth, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'No file uploaded' 
+      });
+    }
+    
+    const result = await manufacturingMetricsService.processDataUpload(req.file);
+    res.json(result);
+  } catch (error) {
+    logError('Failed to process manufacturing data upload', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to process upload',
+      message: error.message
+    });
+  }
+});
+
+// Get all manufacturing data (comprehensive)
+app.get('/api/metrics/all', requireAuth, async (req, res) => {
+  try {
+    const data = await manufacturingMetricsService.getAllManufacturingData();
+    res.json(data);
+  } catch (error) {
+    logError('Failed to fetch all manufacturing data', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to fetch manufacturing data',
+      message: error.message
+    });
+  }
+});
+
+// Get manufacturing data sources status
+app.get('/api/metrics/sources', requireAuth, async (req, res) => {
+  try {
+    const sources = await manufacturingMetricsService.getDataSources();
+    res.json({ 
+      success: true, 
+      data: sources 
+    });
+  } catch (error) {
+    logError('Failed to fetch data sources status', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to fetch data sources',
+      message: error.message
+    });
+  }
 });
 
 // Database test endpoint

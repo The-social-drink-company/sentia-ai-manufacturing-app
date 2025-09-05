@@ -11,7 +11,7 @@
     "start": "node server-simple.cjs",
     "start:dev": "node server.js",
     "preview": "vite preview",
-    "serve": "vite preview --port 3000",
+    "serve": "node server-simple.cjs",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",

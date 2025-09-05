@@ -1,13 +1,135 @@
-import React, { useState, useEffect } from 'react'
-import KPIStrip from '../components/widgets/KPIStrip'
-import DemandForecastWidget from '../components/widgets/DemandForecastWidget'
-import MultiChannelSalesWidget from '../components/widgets/MultiChannelSalesWidget'
-import PredictiveMaintenanceWidget from '../components/widgets/PredictiveMaintenanceWidget'
-import SmartInventoryWidget from '../components/widgets/SmartInventoryWidget'
-import WorkingCapitalChart from '../components/charts/WorkingCapitalChart'
-import ManufacturingAnalytics from '../components/analytics/ManufacturingAnalytics'
-import CFOKPIStrip from '../components/widgets/CFOKPIStrip'
-import ManufacturingPlanningWizard from '../components/ManufacturingPlanningWizard'
+import React, { useState, useEffect, Suspense, lazy } from 'react'
+
+// Fallback widget for error boundaries
+const WidgetFallback = ({ name, children }) => (
+  <div style={{
+    backgroundColor: 'white',
+    padding: '1.5rem',
+    borderRadius: '8px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    marginBottom: '1rem'
+  }}>
+    {children || (
+      <>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1rem' }}>{name}</h3>
+        <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            margin: '0 auto 1rem',
+            backgroundColor: '#f3f4f6',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '24px'
+          }}>📊</div>
+          <p>Loading {name}...</p>
+        </div>
+      </>
+    )}
+  </div>
+)
+
+// Error boundary for widget loading
+class WidgetErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  
+  static getDerivedStateFromError(error) {
+    return { hasError: true }
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return <WidgetFallback name={this.props.name} />
+    }
+    return this.props.children
+  }
+}
+
+// Lazy load widgets with fallbacks
+const KPIStrip = lazy(() => 
+  import('../components/widgets/KPIStrip').catch(() => ({
+    default: () => <WidgetFallback name="KPI Metrics">
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: `repeat(${window.innerWidth < 640 ? 1 : window.innerWidth < 768 ? 2 : window.innerWidth < 1024 ? 3 : 4}, 1fr)`,
+        gap: '1rem' 
+      }}>
+        {['Revenue', 'Orders', 'Efficiency', 'Quality'].map(kpi => (
+          <div key={kpi} style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '6px' }}>
+            <h4 style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>{kpi}</h4>
+            <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>--</p>
+          </div>
+        ))}
+      </div>
+    </WidgetFallback>
+  }))
+)
+
+const DemandForecastWidget = lazy(() => 
+  import('../components/widgets/DemandForecastWidget').catch(() => ({
+    default: () => <WidgetFallback name="Demand Forecast" />
+  }))
+)
+
+const MultiChannelSalesWidget = lazy(() => 
+  import('../components/widgets/MultiChannelSalesWidget').catch(() => ({
+    default: () => <WidgetFallback name="Multi-Channel Sales" />
+  }))
+)
+
+const PredictiveMaintenanceWidget = lazy(() => 
+  import('../components/widgets/PredictiveMaintenanceWidget').catch(() => ({
+    default: () => <WidgetFallback name="Predictive Maintenance" />
+  }))
+)
+
+const SmartInventoryWidget = lazy(() => 
+  import('../components/widgets/SmartInventoryWidget').catch(() => ({
+    default: () => <WidgetFallback name="Smart Inventory" />
+  }))
+)
+
+const WorkingCapitalChart = lazy(() => 
+  import('../components/charts/WorkingCapitalChart').catch(() => ({
+    default: () => <WidgetFallback name="Working Capital Chart" />
+  }))
+)
+
+const ManufacturingAnalytics = lazy(() => 
+  import('../components/analytics/ManufacturingAnalytics').catch(() => ({
+    default: () => <WidgetFallback name="Manufacturing Analytics" />
+  }))
+)
+
+const CFOKPIStrip = lazy(() => 
+  import('../components/widgets/CFOKPIStrip').catch(() => ({
+    default: () => <WidgetFallback name="CFO KPI Strip">
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: `repeat(${window.innerWidth < 640 ? 1 : window.innerWidth < 768 ? 2 : window.innerWidth < 1024 ? 3 : 5}, 1fr)`,
+        gap: '1rem' 
+      }}>
+        {['Cash Flow', 'AR Days', 'AP Days', 'Working Capital', 'EBITDA'].map(kpi => (
+          <div key={kpi} style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '6px' }}>
+            <h4 style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>{kpi}</h4>
+            <p style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>--</p>
+          </div>
+        ))}
+      </div>
+    </WidgetFallback>
+  }))
+)
+
+const ManufacturingPlanningWizard = lazy(() => 
+  import('../components/ManufacturingPlanningWizard').catch(() => ({
+    default: () => <WidgetFallback name="Manufacturing Planning Wizard" />
+  }))
+)
 
 // Import all working capital components if they exist
 const WorkingCapitalSection = () => {
@@ -22,7 +144,11 @@ const WorkingCapitalSection = () => {
       <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
         Working Capital Management
       </h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: `repeat(${window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3}, 1fr)`,
+        gap: '1rem' 
+      }}>
         <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
           <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Accounts Receivable</h3>
           <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>$1.2M</p>
@@ -56,7 +182,11 @@ const ProductionMetrics = () => {
       <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
         Production Metrics
       </h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: `repeat(${window.innerWidth < 640 ? 1 : window.innerWidth < 768 ? 2 : window.innerWidth < 1024 ? 3 : 4}, 1fr)`,
+        gap: '1rem' 
+      }}>
         <div>
           <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Units Produced</h3>
           <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>12,345</p>
@@ -293,18 +423,35 @@ function EnhancedDashboard() {
       )}
 
       {/* KPI Strips */}
-      {features.cfoPreset ? <CFOKPIStrip /> : <KPIStrip />}
+      <WidgetErrorBoundary name="KPI Strip">
+        <Suspense fallback={<WidgetFallback name="Loading KPIs..." />}>
+          {features.cfoPreset ? <CFOKPIStrip /> : <KPIStrip />}
+        </Suspense>
+      </WidgetErrorBoundary>
 
-      {/* Main Content Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
+      {/* Main Content Grid - Responsive */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: window.innerWidth < 768 ? '1fr' : window.innerWidth < 1024 ? '1fr' : '2fr 1fr',
+        gap: '1.5rem', 
+        marginTop: '1.5rem'
+      }}>
         {/* Left Column */}
         <div>
           {/* Demand Forecast */}
-          <DemandForecastWidget />
+          <WidgetErrorBoundary name="Demand Forecast">
+            <Suspense fallback={<WidgetFallback name="Demand Forecast" />}>
+              <DemandForecastWidget />
+            </Suspense>
+          </WidgetErrorBoundary>
           
           {/* Multi-Channel Sales */}
           <div style={{ marginTop: '1.5rem' }}>
-            <MultiChannelSalesWidget timeRange="30d" />
+            <WidgetErrorBoundary name="Multi-Channel Sales">
+              <Suspense fallback={<WidgetFallback name="Multi-Channel Sales" />}>
+                <MultiChannelSalesWidget timeRange="30d" />
+              </Suspense>
+            </WidgetErrorBoundary>
           </div>
           
           {/* Production Metrics */}
@@ -316,14 +463,22 @@ function EnhancedDashboard() {
           {/* Advanced Working Capital Chart */}
           {features.advanced && (
             <div style={{ marginTop: '1.5rem' }}>
-              <WorkingCapitalChart timeRange="12M" scenario="baseline" />
+              <WidgetErrorBoundary name="Working Capital Chart">
+                <Suspense fallback={<WidgetFallback name="Working Capital Chart" />}>
+                  <WorkingCapitalChart timeRange="12M" scenario="baseline" />
+                </Suspense>
+              </WidgetErrorBoundary>
             </div>
           )}
 
           {/* Manufacturing Analytics */}
           {features.analytics && (
             <div style={{ marginTop: '1.5rem' }}>
-              <ManufacturingAnalytics />
+              <WidgetErrorBoundary name="Manufacturing Analytics">
+                <Suspense fallback={<WidgetFallback name="Manufacturing Analytics" />}>
+                  <ManufacturingAnalytics />
+                </Suspense>
+              </WidgetErrorBoundary>
             </div>
           )}
         </div>
@@ -332,12 +487,20 @@ function EnhancedDashboard() {
         <div>
           {/* Smart Inventory Widget */}
           <div style={{ marginBottom: '1.5rem' }}>
-            <SmartInventoryWidget />
+            <WidgetErrorBoundary name="Smart Inventory">
+              <Suspense fallback={<WidgetFallback name="Smart Inventory" />}>
+                <SmartInventoryWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
           </div>
           
           {/* Predictive Maintenance Widget */}
           <div style={{ marginBottom: '1.5rem' }}>
-            <PredictiveMaintenanceWidget />
+            <WidgetErrorBoundary name="Predictive Maintenance">
+              <Suspense fallback={<WidgetFallback name="Predictive Maintenance" />}>
+                <PredictiveMaintenanceWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
           </div>
           
           {/* Legacy Inventory Status */}
@@ -509,9 +672,13 @@ function EnhancedDashboard() {
 
       {/* Manufacturing Planning Wizard Modal */}
       {showPlanningWizard && (
-        <ManufacturingPlanningWizard 
-          onClose={() => setShowPlanningWizard(false)}
-        />
+        <WidgetErrorBoundary name="Manufacturing Planning Wizard">
+          <Suspense fallback={<WidgetFallback name="Manufacturing Planning Wizard" />}>
+            <ManufacturingPlanningWizard 
+              onClose={() => setShowPlanningWizard(false)}
+            />
+          </Suspense>
+        </WidgetErrorBoundary>
       )}
     </div>
   )

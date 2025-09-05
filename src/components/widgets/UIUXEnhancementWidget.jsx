@@ -7,7 +7,8 @@ import {
   SwatchIcon,
   CursorArrowRaysIcon,
   DocumentTextIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline';
 
 const UIUXEnhancementWidget = () => {

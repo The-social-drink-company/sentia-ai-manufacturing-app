@@ -144,6 +144,38 @@ const AgentMonitoringWidget = lazy(() =>
   }))
 )
 
+// Individual Agent Widgets
+const UIUXEnhancementWidget = lazy(() => 
+  import('../components/widgets/UIUXEnhancementWidget').catch(() => ({
+    default: () => <WidgetFallback name="UI/UX Enhancement Agent" />
+  }))
+)
+
+const DataIntegrationWidget = lazy(() => 
+  import('../components/widgets/DataIntegrationWidget').catch(() => ({
+    default: () => <WidgetFallback name="Data Integration Agent" />
+  }))
+)
+
+const PerformanceOptimizationWidget = lazy(() => 
+  import('../components/widgets/PerformanceOptimizationWidget').catch(() => ({
+    default: () => <WidgetFallback name="Performance Optimization Agent" />
+  }))
+)
+
+// Import all other agent widgets - need separate imports for lazy loading
+import { 
+  QualityControlWidget as QualityControl,
+  AutonomousCompletionWidget as AutonomousCompletion,
+  MonitoringAgentWidget as MonitoringAgent,
+  DashboardUpdateWidget as DashboardUpdate
+} from '../components/widgets/AllAgentWidgets'
+
+const QualityControlWidget = () => <QualityControl />
+const AutonomousCompletionWidget = () => <AutonomousCompletion />
+const MonitoringAgentWidget = () => <MonitoringAgent />
+const DashboardUpdateWidget = () => <DashboardUpdate />
+
 // Import all working capital components if they exist
 const WorkingCapitalSection = () => {
   return (

@@ -9,7 +9,9 @@ import {
   RocketLaunchIcon,
   CommandLineIcon,
   WifiIcon,
-  CubeTransparentIcon
+  CubeTransparentIcon,
+  CheckCircleIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
 const PerformanceOptimizationWidget = () => {

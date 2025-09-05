@@ -1,20 +1,20 @@
 {
-  "timestamp": "2025-09-05T05:58:02.584Z",
-  "checkCount": 8,
+  "timestamp": "2025-09-04T23:42:38.605Z",
+  "checkCount": 7,
   "results": {
     "development": {
       "branch": "development",
-      "timestamp": 1757051882585,
+      "timestamp": 1757029358605,
       "status": "HEALTHY",
       "logs": [
         {
           "type": "ERROR",
-          "timestamp": 1757051886512,
+          "timestamp": 1757029359067,
           "content": "Failed to get logs: Command failed: railway logs --service development --deployment\nNo linked project found. Run railway link to connect to a project\n"
         },
         {
           "type": "GIT_COMMITS",
-          "timestamp": 1757051887002,
+          "timestamp": 1757029359108,
           "content": "48b788f fix: ensure Phase 4 widgets are included in dashboard\n04ff32e fix: ensure Phase 4 widgets are included in dashboard\nb7af8ff fix: ensure Phase 4 widgets are included in dashboard\ne4813c3 fix: ensure Phase 4 widgets are included in dashboard\naeda0dc fix: ensure Phase 4 widgets are included in dashboard\n"
         }
       ],
@@ -24,23 +24,23 @@
       "health": {
         "healthy": true,
         "statusCode": 200,
-        "responseTime": 577,
+        "responseTime": 231,
         "hasPhase4": false
       }
     },
     "test": {
       "branch": "test",
-      "timestamp": 1757051887580,
+      "timestamp": 1757029359340,
       "status": "HEALTHY",
       "logs": [
         {
           "type": "ERROR",
-          "timestamp": 1757051890080,
+          "timestamp": 1757029359822,
           "content": "Failed to get logs: Command failed: railway logs --service test --deployment\nNo linked project found. Run railway link to connect to a project\n"
         },
         {
           "type": "GIT_COMMITS",
-          "timestamp": 1757051890603,
+          "timestamp": 1757029359868,
           "content": "f66e85b Merge branch 'development' into test\n48b788f fix: ensure Phase 4 widgets are included in dashboard\n8bcd80a Merge branch 'development' into test\n04ff32e fix: ensure Phase 4 widgets are included in dashboard\nde69b16 Merge branch 'development' into test\n"
         }
       ],
@@ -50,23 +50,23 @@
       "health": {
         "healthy": true,
         "statusCode": 200,
-        "responseTime": 240,
+        "responseTime": 277,
         "hasPhase4": false
       }
     },
     "production": {
       "branch": "production",
-      "timestamp": 1757051890844,
+      "timestamp": 1757029360147,
       "status": "HEALTHY",
       "logs": [
         {
           "type": "ERROR",
-          "timestamp": 1757051893662,
+          "timestamp": 1757029360523,
           "content": "Failed to get logs: Command failed: railway logs --service production --deployment\nNo linked project found. Run railway link to connect to a project\n"
         },
         {
           "type": "GIT_COMMITS",
-          "timestamp": 1757051894735,
+          "timestamp": 1757029360567,
           "content": "274cbe8 Merge branch 'development' into production\n48b788f fix: ensure Phase 4 widgets are included in dashboard\n8702f46 Merge branch 'development' into production\n04ff32e fix: ensure Phase 4 widgets are included in dashboard\n1e96ee1 Merge branch 'development' into production\n"
         }
       ],
@@ -76,7 +76,7 @@
       "health": {
         "healthy": true,
         "statusCode": 200,
-        "responseTime": 440,
+        "responseTime": 151,
         "hasPhase4": false
       }
     }

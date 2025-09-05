@@ -143,6 +143,15 @@ function App() {
                     }
                   />
                   
+                  <Route
+                    path="/ai-enhanced"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <AIEnhancedDashboard />
+                      </Suspense>
+                    }
+                  />
+                  
                   {/* Catch-all route */}
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>

@@ -7,7 +7,7 @@ providers = ["node"]
 
 [phases.setup]
 # Explicitly prevent Node.js 22 collision - ONLY Node.js 18
-nixPkgs = ["nodejs_18", "npm", "openssl"]
+nixPkgs = ["nodejs_18", "openssl"]
 aptPkgs = []
 pythonPackages = []
 

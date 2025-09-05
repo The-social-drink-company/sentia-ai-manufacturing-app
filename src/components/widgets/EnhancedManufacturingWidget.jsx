@@ -13,6 +13,8 @@ import {
   ArcElement
 } from 'chart.js'
 import { Line, Bar, Doughnut } from 'react-chartjs-2'
+import { useQuery } from '@tanstack/react-query'
+import { dataIntegrationService } from '../../services/dataIntegrationService'
 
 // Register Chart.js components
 ChartJS.register(
@@ -35,133 +37,75 @@ const EnhancedManufacturingWidget = memo(() => {
   const [manufacturingData, setManufacturingData] = useState(null)
   const [alerts, setAlerts] = useState([])
 
+  // Fetch real manufacturing data from API integrations
+  const { data: manufacturingData, isLoading, error } = useQuery({
+    queryKey: ['manufacturing-data', refreshInterval],
+    queryFn: async () => {
+      try {
+        // Get real manufacturing metrics from multiple sources
+        const [currentMetrics, historicalData, externalData] = await Promise.all([
+          dataIntegrationService.fetchCurrentMetrics(),
+          dataIntegrationService.fetchHistoricalData(7),
+          fetch(`/api/manufacturing/live`).then(r => r.ok ? r.json() : null).catch(() => null)
+        ]);
+
+        // Transform real data into manufacturing format
+        const realData = {
+          productionLines: externalData?.productionLines || [
+            {
+              id: 'LINE-001',
+              name: 'Primary Production Line',
+              status: currentMetrics?.find(m => m.id === 'production')?.status || 'running',
+              efficiency: currentMetrics?.find(m => m.id === 'efficiency')?.value * 100 || 0,
+              throughput: currentMetrics?.find(m => m.id === 'production')?.value || 0,
+              temperature: externalData?.temperature || 0,
+              lastMaintenance: externalData?.lastMaintenance || new Date().toISOString().split('T')[0],
+              nextMaintenance: externalData?.nextMaintenance || new Date().toISOString().split('T')[0]
+            }
+          ],
+          qualityData: {
+            firstPassYield: currentMetrics?.find(m => m.id === 'quality')?.value * 100 || 0,
+            defectRate: 100 - (currentMetrics?.find(m => m.id === 'quality')?.value * 100 || 0),
+            reworkRate: externalData?.reworkRate || 0,
+            customerReturns: externalData?.customerReturns || 0
+          },
+          energyData: {
+            labels: historicalData?.slice(-6).map(d => new Date(d.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })) || ['No Data'],
+            datasets: [{
+              label: 'Energy Usage (kWh)',
+              data: historicalData?.slice(-6).map(d => d.energy || 0) || [0],
+              borderColor: 'rgb(59, 130, 246)',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          alerts: externalData?.alerts || [],
+          oee: {
+            overall: currentMetrics?.find(m => m.id === 'efficiency')?.value * 100 || 0,
+            availability: externalData?.oee?.availability || 0,
+            performance: externalData?.oee?.performance || 0,
+            quality: currentMetrics?.find(m => m.id === 'quality')?.value * 100 || 0
+          }
+        };
+
+        return realData;
+      } catch (error) {
+        console.error('Failed to fetch real manufacturing data:', error);
+        throw new Error('Unable to load manufacturing data from real sources');
+      }
+    },
+    refetchInterval: refreshInterval * 1000,
+    retry: 2,
+    staleTime: 10000
+  });
+
   useEffect(() => {
-    // Simulate real-time manufacturing data
-    const generateManufacturingData = () => {
-      const currentTime = new Date()
-      
-      // Production line data
-      const productionLines = [
-        {
-          id: 'LINE-001',
-          name: 'Assembly Line A',
-          status: 'running',
-          efficiency: 94.2 + (Math.random() - 0.5) * 2,
-          throughput: 245 + Math.floor(Math.random() * 20 - 10),
-          temperature: 68 + (Math.random() - 0.5) * 4,
-          lastMaintenance: '2024-09-03',
-          nextMaintenance: '2024-09-17'
-        },
-        {
-          id: 'LINE-002', 
-          name: 'Assembly Line B',
-          status: 'running',
-          efficiency: 89.1 + (Math.random() - 0.5) * 2,
-          throughput: 238 + Math.floor(Math.random() * 15 - 7),
-          temperature: 71 + (Math.random() - 0.5) * 3,
-          lastMaintenance: '2024-09-01',
-          nextMaintenance: '2024-09-15'
-        },
-        {
-          id: 'LINE-003',
-          name: 'Packaging Line',
-          status: 'warning',
-          efficiency: 78.5 + (Math.random() - 0.5) * 3,
-          throughput: 180 + Math.floor(Math.random() * 25 - 12),
-          temperature: 73 + (Math.random() - 0.5) * 2,
-          lastMaintenance: '2024-08-28',
-          nextMaintenance: '2024-09-12'
-        }
-      ]
-
-      // Quality metrics
-      const qualityData = {
-        firstPassYield: 94.8,
-        defectRate: 1.2,
-        reworkRate: 3.0,
-        customerReturns: 0.3
-      }
-
-      // Energy consumption data
-      const energyData = {
-        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-        datasets: [{
-          label: 'Energy Usage (kWh)',
-          data: [180, 165, 220, 245, 235, 190],
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      }
-
-      // Generate alerts based on current conditions
-      const currentAlerts = []
-      productionLines.forEach(line => {
-        if (line.efficiency < 85) {
-          currentAlerts.push({
-            id: `alert-${line.id}-efficiency`,
-            type: 'warning',
-            message: `${line.name} efficiency below target (${line.efficiency.toFixed(1)}%)`,
-            timestamp: currentTime,
-            line: line.name
-          })
-        }
-        
-        if (line.temperature > 72) {
-          currentAlerts.push({
-            id: `alert-${line.id}-temp`,
-            type: 'info',
-            message: `${line.name} temperature elevated (${line.temperature.toFixed(1)}°F)`,
-            timestamp: currentTime,
-            line: line.name
-          })
-        }
-
-        // Maintenance alerts
-        const nextMaintenance = new Date(line.nextMaintenance)
-        const daysUntilMaintenance = Math.ceil((nextMaintenance - currentTime) / (1000 * 60 * 60 * 24))
-        
-        if (daysUntilMaintenance <= 3) {
-          currentAlerts.push({
-            id: `alert-${line.id}-maintenance`,
-            type: 'warning',
-            message: `${line.name} maintenance due in ${daysUntilMaintenance} days`,
-            timestamp: currentTime,
-            line: line.name
-          })
-        }
-      })
-
-      return {
-        productionLines,
-        qualityData,
-        energyData,
-        alerts: currentAlerts,
-        oee: {
-          overall: 89.2,
-          availability: 96.8,
-          performance: 92.4,
-          quality: 99.6
-        }
-      }
+    if (manufacturingData) {
+      setAlerts(manufacturingData.alerts || []);
+      setLastUpdate(new Date());
     }
-
-    const updateData = () => {
-      const data = generateManufacturingData()
-      setManufacturingData(data)
-      setAlerts(data.alerts)
-      setLastUpdate(new Date())
-    }
-
-    // Initial load
-    updateData()
-
-    // Set up refresh interval
-    const interval = setInterval(updateData, refreshInterval * 1000)
-
-    return () => clearInterval(interval)
-  }, [refreshInterval])
+  }, [manufacturingData]);
 
   const chartOptions = {
     responsive: true,
@@ -216,7 +160,7 @@ const EnhancedManufacturingWidget = memo(() => {
     }
   }
 
-  if (!manufacturingData) {
+  if (isLoading || !manufacturingData) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
         <div className="animate-pulse">
@@ -226,6 +170,23 @@ const EnhancedManufacturingWidget = memo(() => {
             <div className="h-4 bg-gray-200 rounded w-3/4"></div>
             <div className="h-4 bg-gray-200 rounded w-1/2"></div>
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="text-center py-8">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Real Data Available</h3>
+          <p className="text-gray-600 mb-4">Unable to load manufacturing data from connected systems.</p>
+          <p className="text-sm text-gray-500">Please connect to real manufacturing systems, upload CSV data, or check API connections.</p>
         </div>
       </div>
     )

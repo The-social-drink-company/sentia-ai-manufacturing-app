@@ -17,7 +17,19 @@
       "Bash(gh pr create:*)",
       "Bash(npm install:*)",
       "Bash(git pull:*)",
-      "Bash(npm run lint:*)"
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:client:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c:*)",
+      "Bash(npm run dev:server:*)",
+      "Bash(npm run serve:*)",
+      "Bash(npx serve:*)",
+      "Bash(railway --version)",
+      "Bash(railway whoami:*)",
+      "Bash(railway login:*)",
+      "Bash(set PORT=3001)"
     ],
     "deny": [],
     "ask": []

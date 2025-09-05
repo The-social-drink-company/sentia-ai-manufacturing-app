@@ -1,0 +1,146 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "react-hooks"
+  ],
+  "globals": {
+    "setTimeout": "readonly",
+    "setInterval": "readonly",
+    "clearTimeout": "readonly",
+    "clearInterval": "readonly",
+    "console": "readonly",
+    "process": "readonly",
+    "global": "readonly",
+    "Buffer": "readonly",
+    "__dirname": "readonly",
+    "__filename": "readonly",
+    "exports": "readonly",
+    "module": "readonly",
+    "require": "readonly",
+    "localStorage": "readonly",
+    "sessionStorage": "readonly",
+    "document": "readonly",
+    "window": "readonly",
+    "navigator": "readonly",
+    "alert": "readonly",
+    "confirm": "readonly",
+    "prompt": "readonly",
+    "fetch": "readonly",
+    "URL": "readonly",
+    "URLSearchParams": "readonly",
+    "FormData": "readonly",
+    "Blob": "readonly",
+    "File": "readonly",
+    "FileReader": "readonly",
+    "CustomEvent": "readonly",
+    "Event": "readonly",
+    "EventTarget": "readonly",
+    "HTMLElement": "readonly",
+    "XMLHttpRequest": "readonly",
+    "WebSocket": "readonly",
+    "Intl": "readonly"
+  },
+  "rules": {
+    "no-console": "off",
+    "no-unused-vars": ["warn", { 
+      "args": "none",
+      "varsIgnorePattern": "^_",
+      "argsIgnorePattern": "^_"
+    }],
+    "no-undef": "off",
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/display-name": "off",
+    "react/no-unescaped-entities": "off",
+    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "no-useless-escape": "off",
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "no-mixed-spaces-and-tabs": "off",
+    "no-irregular-whitespace": "off",
+    "no-prototype-builtins": "off",
+    "no-async-promise-executor": "off",
+    "no-case-declarations": "off",
+    "no-constant-condition": "off",
+    "no-control-regex": "off",
+    "no-debugger": "warn",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "no-empty-pattern": "off",
+    "no-ex-assign": "off",
+    "no-fallthrough": "off",
+    "no-func-assign": "error",
+    "no-import-assign": "error",
+    "no-inner-declarations": "off",
+    "no-invalid-regexp": "error",
+    "no-loss-of-precision": "off",
+    "no-misleading-character-class": "off",
+    "no-obj-calls": "error",
+    "no-redeclare": "warn",
+    "no-regex-spaces": "off",
+    "no-self-assign": "off",
+    "no-setter-return": "off",
+    "no-shadow-restricted-names": "error",
+    "no-sparse-arrays": "off",
+    "no-unexpected-multiline": "off",
+    "no-unreachable": "warn",
+    "no-unsafe-finally": "error",
+    "no-unsafe-negation": "error",
+    "no-unsafe-optional-chaining": "warn",
+    "no-unused-expressions": "off",
+    "no-useless-backreference": "off",
+    "no-useless-catch": "off",
+    "require-yield": "off",
+    "use-isnan": "error",
+    "valid-typeof": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "overrides": [
+    {
+      "files": ["*.test.js", "*.spec.js", "tests/**/*.js"],
+      "env": {
+        "jest": true,
+        "mocha": true
+      },
+      "globals": {
+        "describe": "readonly",
+        "it": "readonly",
+        "test": "readonly",
+        "expect": "readonly",
+        "beforeEach": "readonly",
+        "afterEach": "readonly",
+        "beforeAll": "readonly",
+        "afterAll": "readonly",
+        "jest": "readonly"
+      }
+    },
+    {
+      "files": ["dist/**/*.js", "build/**/*.js"],
+      "rules": {
+        "no-unused-vars": "off",
+        "no-undef": "off"
+      }
+    }
+  ]
+}

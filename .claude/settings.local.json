@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Read(/\\c\\Projects/**)"
+      "Read(/\\c\\Projects/**)",
+      "Bash(ping:*)",
+      "Bash(redis-cli:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,13 +1,11 @@
 # nixpacks.toml
 # Configuration for Railway deployment using Nixpacks  
-# FORCE Node.js 18 ONLY - Override auto-detection
+# Use default Node.js auto-detection to avoid conflicts
 
-# Force explicit Node.js provider only
 providers = ["node"]
 
 [phases.setup]
-# Explicitly prevent Node.js 22 collision - ONLY Node.js 18
-nixPkgs = ["nodejs_18", "openssl"]
+# Minimal setup - let Nixpacks handle Node.js version
 aptPkgs = []
 pythonPackages = []
 

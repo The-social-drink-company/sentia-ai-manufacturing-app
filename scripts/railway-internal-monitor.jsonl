@@ -1,0 +1,3 @@
+{"timestamp":"2025-09-05T11:39:09.257Z","level":"INFO","message":"Starting deployment cycle 4","cycle":4}
+{"timestamp":"2025-09-05T11:39:09.384Z","level":"ERROR","message":"Failed to ensure internal branch","cycle":4,"error":"Command failed: git checkout internal\nerror: The following untracked working tree files would be overwritten by checkout:\n\tscripts/railway-internal-monitor.jsonl\nPlease move or remove them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-05T11:39:09.436Z","level":"ERROR","message":"Deployment cycle 4 failed","cycle":4,"error":"Failed to setup internal branch"}

@@ -1,0 +1,157 @@
+name: Deploy MCP Server to Railway
+
+on:
+  push:
+    branches:
+      - production
+      - test
+      - development
+    paths:
+      - 'mcp-server/**'
+      - '.github/workflows/deploy-mcp-server.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - production
+          - test
+          - development
+
+env:
+  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy MCP Server
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+        
+      - name: Determine Environment
+        id: determine-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "DEPLOY_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" == "refs/heads/production" ]; then
+            echo "DEPLOY_ENV=production" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" == "refs/heads/test" ]; then
+            echo "DEPLOY_ENV=test" >> $GITHUB_OUTPUT
+          else
+            echo "DEPLOY_ENV=development" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Deploy to Railway - ${{ steps.determine-env.outputs.DEPLOY_ENV }}
+        run: |
+          cd mcp-server
+          railway link sentia-mcp-server
+          railway environment ${{ steps.determine-env.outputs.DEPLOY_ENV }}
+          railway up --environment ${{ steps.determine-env.outputs.DEPLOY_ENV }}
+          
+      - name: Health Check
+        run: |
+          sleep 30  # Wait for deployment to stabilize
+          
+          if [ "${{ steps.determine-env.outputs.DEPLOY_ENV }}" == "production" ]; then
+            URL="https://sentia-mcp-server.railway.app/health"
+          elif [ "${{ steps.determine-env.outputs.DEPLOY_ENV }}" == "test" ]; then
+            URL="https://test-sentia-mcp-server.railway.app/health"
+          else
+            URL="https://dev-sentia-mcp-server.railway.app/health"
+          fi
+          
+          echo "Checking health at: $URL"
+          response=$(curl -s -o /dev/null -w "%{http_code}" $URL)
+          
+          if [ "$response" -eq 200 ]; then
+            echo "Health check passed!"
+          else
+            echo "Health check failed with status: $response"
+            exit 1
+          fi
+          
+      - name: Send Deployment Notification
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}' === 'success' ? '✅' : '❌';
+            const env = '${{ steps.determine-env.outputs.DEPLOY_ENV }}';
+            const message = `${status} MCP Server deployment to ${env} environment: ${{ job.status }}`;
+            
+            // Create deployment status
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment?.id || 1,
+              state: '${{ job.status }}' === 'success' ? 'success' : 'failure',
+              environment_url: env === 'production' 
+                ? 'https://sentia-mcp-server.railway.app'
+                : env === 'test'
+                  ? 'https://test-sentia-mcp-server.railway.app'
+                  : 'https://dev-sentia-mcp-server.railway.app',
+              description: message
+            }).catch(err => console.log('Failed to create deployment status:', err));
+            
+            // Comment on PR if exists
+            if (context.payload.pull_request) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: message
+              });
+            }
+
+  monitor:
+    needs: deploy
+    if: success()
+    runs-on: ubuntu-latest
+    name: Monitor Deployment
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          cd mcp-server
+          npm install node-fetch chalk
+          
+      - name: Run Health Monitor
+        run: |
+          cd mcp-server
+          node monitor-health.js
+          
+      - name: Create Health Report
+        if: always()
+        run: |
+          echo "## MCP Server Health Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Deployment Status" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: ${{ needs.deploy.outputs.DEPLOY_ENV }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Endpoints" >> $GITHUB_STEP_SUMMARY
+          echo "- Production: https://sentia-mcp-server.railway.app" >> $GITHUB_STEP_SUMMARY
+          echo "- Test: https://test-sentia-mcp-server.railway.app" >> $GITHUB_STEP_SUMMARY
+          echo "- Development: https://dev-sentia-mcp-server.railway.app" >> $GITHUB_STEP_SUMMARY

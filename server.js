@@ -21,7 +21,7 @@ import AuthService from './services/auth/AuthService.js';
 import PasswordService from './services/auth/PasswordService.js';
 import MultiEntityService from './services/auth/MultiEntityService.js';
 import SSOService from './services/auth/SSOService.js';
-import EmailUtils from './services/email/emailUtils.js';
+import EmailUtils from './services/email/emailUtilsWrapper.js';
 // Import performance optimization services
 import { cacheService, paginationMiddleware, sparseFieldsMiddleware } from './services/performance/caching.js';
 import { dbOptimizationService } from './services/performance/dbOptimization.js';

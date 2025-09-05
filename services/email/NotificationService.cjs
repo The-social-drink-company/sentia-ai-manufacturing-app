@@ -1,5 +1,5 @@
-const EmailService = require('./EmailService');
-const { logger } = require('../logger');
+const EmailService = require('./EmailService.cjs');
+const { logger } = require('../loggerWrapper.cjs');
 
 /**
  * Notification Service

@@ -22,7 +22,14 @@
       "Bash(curl:*)",
       "Bash(npm run dev:client:*)",
       "Bash(taskkill:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(npm run dev:server:*)",
+      "Bash(npm run serve:*)",
+      "Bash(npx serve:*)",
+      "Bash(railway --version)",
+      "Bash(railway whoami:*)",
+      "Bash(railway login:*)",
+      "Bash(set PORT=3001)"
     ],
     "deny": [],
     "ask": []

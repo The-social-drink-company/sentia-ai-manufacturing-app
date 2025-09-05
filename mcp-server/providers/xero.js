@@ -3,7 +3,8 @@
  * Handles Xero API operations
  */
 
-import { XeroApi, XeroClient } from 'xero-node';
+import pkg from 'xero-node';
+const { XeroClient, AccountingApi } = pkg;
 
 export class XeroProvider {
   constructor(logger) {
@@ -35,6 +36,8 @@ export class XeroProvider {
       scopes: this.scope.split(','),
     });
 
+    this.accountingApi = new AccountingApi(this.xeroClient);
+
     if (this.accessToken) {
       this.xeroClient.setTokenSet({
         access_token: this.accessToken,
@@ -50,7 +53,7 @@ export class XeroProvider {
       }
 
       this.xeroClient.setTokenSet({ access_token: this.accessToken });
-      const response = await this.xeroClient.accountingApi.getOrganisations();
+      const response = await this.accountingApi.getOrganisations();
       
       return {
         success: true,
@@ -74,7 +77,7 @@ export class XeroProvider {
       }
 
       this.xeroClient.setTokenSet({ access_token: this.accessToken });
-      const response = await this.xeroClient.accountingApi.getContacts(tenantId);
+      const response = await this.accountingApi.getContacts(tenantId);
       
       return {
         success: true,
@@ -110,7 +113,7 @@ export class XeroProvider {
         }] : undefined
       };
 
-      const response = await this.xeroClient.accountingApi.createOrUpdateContacts(
+      const response = await this.accountingApi.createOrUpdateContacts(
         tenantId,
         { contacts: [contact] }
       );
@@ -136,7 +139,7 @@ export class XeroProvider {
       }
 
       this.xeroClient.setTokenSet({ access_token: this.accessToken });
-      const response = await this.xeroClient.accountingApi.getInvoices(tenantId);
+      const response = await this.accountingApi.getInvoices(tenantId);
       
       return {
         success: true,
@@ -178,7 +181,7 @@ export class XeroProvider {
         dueDate: invoiceData.dueDate
       };
 
-      const response = await this.xeroClient.accountingApi.createInvoices(
+      const response = await this.accountingApi.createInvoices(
         tenantId,
         { invoices: [invoice] }
       );
@@ -204,7 +207,7 @@ export class XeroProvider {
       }
 
       this.xeroClient.setTokenSet({ access_token: this.accessToken });
-      const response = await this.xeroClient.accountingApi.getItems(tenantId);
+      const response = await this.accountingApi.getItems(tenantId);
       
       return {
         success: true,

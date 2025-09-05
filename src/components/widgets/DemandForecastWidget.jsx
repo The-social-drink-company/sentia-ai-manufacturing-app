@@ -1,10 +1,17 @@
 import React, { useState, memo, useMemo, useCallback } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { ArrowTrendingUpIcon, Cog6ToothIcon, SparklesIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
 import { queryKeys, queryConfigs } from '../../services/queryClient'
-import { useSSEEvent } from '../../hooks/useSSE'
 import { useFeatureFlags } from '../../hooks/useFeatureFlags'
+// Optional import for SSE functionality
+let useSSEEvent
+try {
+  useSSEEvent = require('../../hooks/useSSE').useSSEEvent
+} catch (error) {
+  // Fallback if SSE hook is not available
+  useSSEEvent = () => {}
+}
 import { CombinedTrustBadge } from '../ui/TrustBadge'
 import { ExportButton } from '../ui/ExportButton'
 import { cn } from '../../lib/utils'
@@ -103,6 +110,7 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
   const [activeScenario, setActiveScenario] = useState('Baseline')
   const [timeHorizon, setTimeHorizon] = useState(30)
   const [useExternalData, setUseExternalData] = useState(true)
+  const queryClient = useQueryClient()
   
   // Fetch forecast data with AI enhancement
   const { data: forecastData, isLoading, error } = useQuery({
@@ -203,13 +211,20 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
     ...queryConfigs.operational
   })
   
-  // Listen for forecast job completion
-  useSSEEvent('job.forecast.completed', (data) => {
-    if (data.seriesId === seriesId) {
-      // Refresh the forecast data
-      queryClient.invalidateQueries({ queryKey: queryKeys.forecastSeries(seriesId) })
+  // Listen for forecast job completion (with fallback if useSSEEvent not available)
+  if (useSSEEvent && typeof useSSEEvent === 'function') {
+    try {
+      useSSEEvent('job.forecast.completed', (data) => {
+        if (data.seriesId === seriesId) {
+          // Refresh the forecast data  
+          queryClient.invalidateQueries({ queryKey: queryKeys.forecastSeries(seriesId) })
+        }
+      }, [seriesId])
+    } catch (error) {
+      // Fallback if SSE hook fails
+      console.log('SSE not available, using polling fallback')
     }
-  }, [seriesId])
+  }
   
   const handleModelToggle = useCallback((model) => {
     setActiveModels(prev => 

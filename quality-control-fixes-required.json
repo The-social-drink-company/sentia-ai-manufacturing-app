@@ -1,7 +1,7 @@
 {
-  "timestamp": 1757053352237,
-  "cycle": 3,
-  "criticalCount": 13,
+  "timestamp": 1757053955989,
+  "cycle": 4,
+  "criticalCount": 12,
   "warningCount": 0,
   "requirements": [
     {
@@ -98,14 +98,6 @@
       "test": "ana-2",
       "description": "Multi-channel sales display",
       "action": "Investigate and fix issue",
-      "autoFix": false
-    },
-    {
-      "severity": "CRITICAL",
-      "category": "Environment",
-      "test": "local",
-      "description": "local environment not accessible",
-      "action": "Deploy or restart environment",
       "autoFix": false
     }
   ],

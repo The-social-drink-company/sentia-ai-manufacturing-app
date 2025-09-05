@@ -17,6 +17,8 @@ import {
 import { Line, Bar, Doughnut, Radar } from 'react-chartjs-2'
 import annotationPlugin from 'chartjs-plugin-annotation'
 import zoomPlugin from 'chartjs-plugin-zoom'
+import { useQuery } from '@tanstack/react-query'
+import { dataIntegrationService } from './services/dataIntegrationService'
 
 // Register Chart.js components
 ChartJS.register(
@@ -36,12 +38,108 @@ ChartJS.register(
 )
 
 function TestDashboard() {
-  const [chartData, setChartData] = useState({
-    production: null,
-    revenue: null,
-    efficiency: null,
-    qualityMetrics: null,
-    machineUtilization: null
+  // Real-time chart data from API integrations - NO MOCK DATA
+  const { data: chartData, isLoading, error } = useQuery({
+    queryKey: ['dashboard-charts', dateRange, selectedMetric],
+    queryFn: async () => {
+      try {
+        // Fetch real data from multiple sources
+        const [currentMetrics, historicalData] = await Promise.all([
+          dataIntegrationService.fetchCurrentMetrics(),
+          dataIntegrationService.fetchHistoricalData(dateRange === '30d' ? 30 : dateRange === '7d' ? 7 : 1)
+        ]);
+
+        if (!currentMetrics && !historicalData) {
+          throw new Error('No real data sources available');
+        }
+
+        return {
+          production: {
+            labels: historicalData?.slice(-30).map(d => new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) || ['No Data'],
+            datasets: [{
+              label: 'Daily Production (units)',
+              data: historicalData?.slice(-30).map(d => d.production || 0) || [0],
+              borderColor: 'rgb(59, 130, 246)',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          revenue: {
+            labels: historicalData?.slice(-6).map(d => new Date(d.date).toLocaleDateString('en-US', { month: 'short' })) || ['No Data'],
+            datasets: [{
+              label: 'Revenue ($)',
+              data: historicalData?.slice(-6).map(d => d.revenue || 0) || [0],
+              backgroundColor: [
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(59, 130, 246, 0.8)', 
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(139, 92, 246, 0.8)',
+                'rgba(236, 72, 153, 0.8)'
+              ],
+              borderColor: [
+                'rgb(16, 185, 129)',
+                'rgb(59, 130, 246)',
+                'rgb(245, 158, 11)',
+                'rgb(239, 68, 68)',
+                'rgb(139, 92, 246)',
+                'rgb(236, 72, 153)'
+              ],
+              borderWidth: 2
+            }]
+          },
+          efficiency: {
+            labels: historicalData?.slice(-6).map((d, i) => `Week ${i + 1}`) || ['No Data'],
+            datasets: [
+              {
+                label: 'OEE (%)',
+                data: historicalData?.slice(-6).map(d => (d.efficiency || 0) * 100) || [0],
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+              }
+            ]
+          },
+          qualityMetrics: {
+            labels: ['Pass', 'Rework', 'Scrap'],
+            datasets: [{
+              data: [
+                currentMetrics?.find(m => m.id === 'quality')?.value * 100 || 0,
+                100 - (currentMetrics?.find(m => m.id === 'quality')?.value * 100 || 0),
+                currentMetrics?.find(m => m.id === 'defects')?.value || 0
+              ],
+              backgroundColor: ['rgb(16, 185, 129)', 'rgb(245, 158, 11)', 'rgb(239, 68, 68)'],
+              borderColor: ['rgb(16, 185, 129)', 'rgb(245, 158, 11)', 'rgb(239, 68, 68)'],
+              borderWidth: 2,
+              hoverOffset: 4
+            }]
+          },
+          machineUtilization: {
+            labels: ['Machine 1', 'Machine 2', 'Machine 3', 'Machine 4', 'Machine 5'],
+            datasets: [
+              {
+                label: 'Utilization',
+                data: currentMetrics?.slice(0, 5).map(m => m.value * 100) || [0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgb(59, 130, 246)',
+                pointBackgroundColor: 'rgb(59, 130, 246)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(59, 130, 246)'
+              }
+            ]
+          }
+        };
+      } catch (error) {
+        console.error('Failed to load real dashboard data:', error);
+        throw new Error('Unable to load data from real sources. Please connect to APIs or upload data files.');
+      }
+    },
+    refetchInterval: autoRefresh ? 30000 : false,
+    retry: 2,
+    staleTime: 10000
   })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedMetric, setSelectedMetric] = useState('production')
@@ -52,204 +150,33 @@ function TestDashboard() {
   const chartRefs = useRef({})
   const refreshInterval = useRef(null)
 
+  // Update refresh count when data changes
   useEffect(() => {
-    // Generate realistic chart data
-    const generateProductionData = () => {
-      const labels = []
-      const data = []
-      const baseProduction = 8000
-      
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date()
-        date.setDate(date.getDate() - i)
-        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
-        
-        // Realistic production variation with slight upward trend
-        const variation = (Math.random() - 0.5) * 1000
-        const trendValue = baseProduction + (29 - i) * 15 + variation
-        data.push(Math.max(trendValue, 0))
-      }
-      
-      return {
-        labels,
-        datasets: [{
-          label: 'Daily Production (units)',
-          data,
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      }
+    if (chartData && !isLoading) {
+      setRefreshCount(prev => prev + 1);
     }
+  }, [chartData, isLoading]);
 
-    const generateRevenueData = () => {
-      const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-      const data = [
-        1120000, 1245000, 1180000, 1350000, 1280000, 1420000
-      ]
-      
-      return {
-        labels,
-        datasets: [{
-          label: 'Monthly Revenue ($)',
-          data,
-          backgroundColor: [
-            'rgba(16, 185, 129, 0.8)',
-            'rgba(59, 130, 246, 0.8)', 
-            'rgba(245, 158, 11, 0.8)',
-            'rgba(239, 68, 68, 0.8)',
-            'rgba(139, 92, 246, 0.8)',
-            'rgba(236, 72, 153, 0.8)'
-          ],
-          borderColor: [
-            'rgb(16, 185, 129)',
-            'rgb(59, 130, 246)',
-            'rgb(245, 158, 11)',
-            'rgb(239, 68, 68)',
-            'rgb(139, 92, 246)',
-            'rgb(236, 72, 153)'
-          ],
-          borderWidth: 2
-        }]
-      }
-    }
-
-    const generateEfficiencyData = () => {
-      const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6']
-      const oee = [82, 86, 84, 88, 91, 89] // Overall Equipment Effectiveness
-      const availability = [95, 97, 96, 98, 99, 97]
-      const performance = [88, 91, 89, 92, 94, 93]
-      const quality = [93, 96, 95, 97, 98, 96]
-
-      return {
-        labels,
-        datasets: [
-          {
-            label: 'OEE (%)',
-            data: oee,
-            borderColor: 'rgb(59, 130, 246)',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.4,
-            fill: true
-          },
-          {
-            label: 'Availability (%)',
-            data: availability,
-            borderColor: 'rgb(16, 185, 129)',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            tension: 0.4,
-            fill: false
-          },
-          {
-            label: 'Performance (%)',
-            data: performance,
-            borderColor: 'rgb(245, 158, 11)',
-            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-            tension: 0.4,
-            fill: false
-          },
-          {
-            label: 'Quality (%)',
-            data: quality,
-            borderColor: 'rgb(139, 92, 246)',
-            backgroundColor: 'rgba(139, 92, 246, 0.1)',
-            tension: 0.4,
-            fill: false
-          }
-        ]
-      }
-    }
-
-    const generateQualityMetrics = () => {
-      const data = [
-        { label: 'Pass', value: 94.8, color: 'rgb(16, 185, 129)' },
-        { label: 'Rework', value: 3.7, color: 'rgb(245, 158, 11)' },
-        { label: 'Scrap', value: 1.5, color: 'rgb(239, 68, 68)' }
-      ]
-
-      return {
-        labels: data.map(item => item.label),
-        datasets: [{
-          data: data.map(item => item.value),
-          backgroundColor: data.map(item => item.color),
-          borderColor: data.map(item => item.color),
-          borderWidth: 2,
-          hoverOffset: 4
-        }]
-      }
-    }
-
-    const generateMachineUtilizationData = () => {
-      const machines = ['CNC-001', 'CNC-002', 'Assembly-A', 'Assembly-B', 'Packaging']
-      const utilization = [92, 88, 94, 85, 91]
-      const performance = [96, 92, 97, 89, 94]
-      const availability = [98, 96, 99, 94, 97]
-
-      return {
-        labels: machines,
-        datasets: [
-          {
-            label: 'Utilization',
-            data: utilization,
-            backgroundColor: 'rgba(59, 130, 246, 0.5)',
-            borderColor: 'rgb(59, 130, 246)',
-            pointBackgroundColor: 'rgb(59, 130, 246)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgb(59, 130, 246)'
-          },
-          {
-            label: 'Performance',
-            data: performance,
-            backgroundColor: 'rgba(16, 185, 129, 0.5)',
-            borderColor: 'rgb(16, 185, 129)',
-            pointBackgroundColor: 'rgb(16, 185, 129)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgb(16, 185, 129)'
-          },
-          {
-            label: 'Availability',
-            data: availability,
-            backgroundColor: 'rgba(245, 158, 11, 0.5)',
-            borderColor: 'rgb(245, 158, 11)',
-            pointBackgroundColor: 'rgb(245, 158, 11)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgb(245, 158, 11)'
-          }
-        ]
-      }
-    }
-
-    const updateChartData = () => {
-      setChartData({
-        production: generateProductionData(),
-        revenue: generateRevenueData(),
-        efficiency: generateEfficiencyData(),
-        qualityMetrics: generateQualityMetrics(),
-        machineUtilization: generateMachineUtilizationData()
-      })
-      setRefreshCount(prev => prev + 1)
-    }
-
-    // Initial load
-    updateChartData()
-
-    // Set up auto-refresh
+  // Handle auto-refresh interval
+  useEffect(() => {
     if (autoRefresh) {
       refreshInterval.current = setInterval(() => {
-        updateChartData()
-      }, 30000) // Refresh every 30 seconds
+        // Query will auto-refresh due to refetchInterval
+        setRefreshCount(prev => prev + 1);
+      }, 30000);
+    } else {
+      if (refreshInterval.current) {
+        clearInterval(refreshInterval.current);
+        refreshInterval.current = null;
+      }
     }
 
     return () => {
       if (refreshInterval.current) {
-        clearInterval(refreshInterval.current)
+        clearInterval(refreshInterval.current);
       }
-    }
-  }, [autoRefresh])
+    };
+  }, [autoRefresh]);
 
   // Handle auto-refresh toggle
   const toggleAutoRefresh = () => {

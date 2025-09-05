@@ -9,10 +9,12 @@ function TestDashboard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-gray-900">SENTIA Manufacturing</h1>
-            <nav className="flex gap-4">
-              <Link to="/dashboard" className="text-blue-600 hover:text-blue-800">Dashboard</Link>
-              <Link to="/working-capital" className="text-gray-600 hover:text-gray-800">Working Capital</Link>
-              <Link to="/admin" className="text-gray-600 hover:text-gray-800">Admin</Link>
+            <nav className="flex gap-6">
+              <Link to="/dashboard" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Dashboard</Link>
+              <Link to="/ai-dashboard" className="text-gray-600 hover:text-gray-800 font-medium transition-colors">AI Dashboard</Link>
+              <Link to="/working-capital" className="text-gray-600 hover:text-gray-800 font-medium transition-colors">Working Capital</Link>
+              <Link to="/data-import" className="text-gray-600 hover:text-gray-800 font-medium transition-colors">Data Import</Link>
+              <Link to="/admin" className="text-gray-600 hover:text-gray-800 font-medium transition-colors">Admin</Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">

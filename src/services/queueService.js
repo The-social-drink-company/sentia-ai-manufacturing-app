@@ -33,44 +33,56 @@ class QueueService {
         return false;
       }
 
-      // Initialize Redis connection
-      const redisConfig = process.env.REDIS_URL ? 
-        process.env.REDIS_URL : 
-        {
-          host: process.env.REDIS_HOST || 'localhost',
-          port: process.env.REDIS_PORT || 6379,
-          password: process.env.REDIS_PASSWORD,
-          db: process.env.REDIS_DB || 0,
-          retryDelayOnFailover: 100,
-          enableReadyCheck: true,
-          lazyConnect: true,
-          maxRetriesPerRequest: 3,
-          connectTimeout: 5000,
-          commandTimeout: 5000
-        };
+      // Initialize Redis connection only if we don't have one or it's not connected
+      if (!this.redis || this.redis.status === 'end' || this.redis.status === 'close') {
+        const redisConfig = process.env.REDIS_URL ? 
+          process.env.REDIS_URL : 
+          {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: process.env.REDIS_PORT || 6379,
+            password: process.env.REDIS_PASSWORD,
+            db: process.env.REDIS_DB || 0,
+            retryDelayOnFailover: 100,
+            enableReadyCheck: true,
+            lazyConnect: true,
+            maxRetriesPerRequest: 3,
+            connectTimeout: 5000,
+            commandTimeout: 5000
+          };
 
-      this.redis = new Redis(redisConfig);
-      
-      // Set up error handling to prevent unhandled errors
-      this.redis.on('error', (error) => {
-        logWarn('Redis connection error - queue service unavailable', error);
-      });
+        this.redis = new Redis(redisConfig);
+        
+        // Set up error handling to prevent unhandled errors
+        this.redis.on('error', (error) => {
+          logWarn('Redis connection error - queue service unavailable', error);
+        });
 
-      this.redis.on('connect', () => {
-        logInfo('Redis connection established for queue service');
-      });
+        this.redis.on('connect', () => {
+          logInfo('Redis connection established for queue service');
+        });
 
-      this.redis.on('close', () => {
-        logWarn('Redis connection closed');
-      });
+        this.redis.on('close', () => {
+          logWarn('Redis connection closed');
+        });
+      }
 
-      // Test the connection with timeout
-      const connectionPromise = this.redis.connect();
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Redis connection timeout')), 10000)
-      );
+      // Only connect if not already connected/connecting
+      if (this.redis.status !== 'ready' && this.redis.status !== 'connecting') {
+        try {
+          // Test the connection with timeout
+          const connectionPromise = this.redis.connect();
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Redis connection timeout')), 10000)
+          );
 
-      await Promise.race([connectionPromise, timeoutPromise]);
+          await Promise.race([connectionPromise, timeoutPromise]);
+        } catch (connectionError) {
+          // If connection fails, continue without Redis
+          logWarn('Redis connection failed - continuing without queue service', connectionError.message);
+          this.isInitialized = true;
+          return false;
+        }
+      }
 
       // Initialize queues
       this.queues = {

@@ -1,0 +1,7 @@
+{"timestamp":"2025-09-05T11:24:06.224Z","level":"INFO","message":"Railway Internal Agent Monitor started","cycle":0}
+{"timestamp":"2025-09-05T11:24:06.229Z","level":"INFO","message":"Starting local development server on port 4501","cycle":0}
+{"timestamp":"2025-09-05T11:24:09.078Z","level":"SUCCESS","message":"Local server started on port 4501","cycle":0}
+{"timestamp":"2025-09-05T11:24:09.081Z","level":"INFO","message":"Starting deployment cycle 1","cycle":1}
+{"timestamp":"2025-09-05T11:24:09.184Z","level":"ERROR","message":"Failed to ensure internal branch","cycle":1,"error":"Command failed: git checkout internal\nerror: Your local changes to the following files would be overwritten by checkout:\n\t.claude/settings.local.json\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-05T11:24:09.229Z","level":"ERROR","message":"Deployment cycle 1 failed","cycle":1,"error":"Failed to setup internal branch"}
+{"timestamp":"2025-09-05T11:24:09.372Z","level":"ERROR","message":"Local server error","cycle":1,"error":"Command failed: npm run dev:internal\nnpm error Missing script: \"dev:internal\"\nnpm error\nnpm error To see a list of scripts, run:\nnpm error   npm run\nnpm error A complete log of this run can be found in: C:\\Users\\User\\AppData\\Local\\npm-cache\\_logs\\2025-09-05T11_24_09_275Z-debug-0.log\n"}

@@ -33,7 +33,14 @@
       "Bash(npm run lint)",
       "Bash(npm run test:run:*)",
       "Bash(powershell:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "WebSearch",
+      "WebFetch(domain:localhost)",
+      "Bash(npm run dev:*)",
+      "Bash(start http://localhost:3003)",
+      "Bash(start http://localhost:3000)",
+      "Bash(set PORT=5001)",
+      "Bash(start http://localhost:3001)"
     ],
     "deny": [],
     "ask": []

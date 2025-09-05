@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-// import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthContext'
 import './index.css'
 import './styles/ui-fixes.css'
 
@@ -18,14 +18,12 @@ const queryClient = new QueryClient({
 })
 
 // Lazy load pages for better performance
-// const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
-const TestDashboard = lazy(() => import('./TestDashboard')) // Temporary test dashboard
-// const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
-const TestWorkingCapital = lazy(() => import('./TestWorkingCapital')) // Temporary test working capital
+const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
+const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
 const AdminPortal = lazy(() => import('./pages/AdminPortal'))
 const DataImport = lazy(() => import('./pages/DataImport'))
 const LandingPage = lazy(() => import('./pages/LandingPage'))
-const AIDashboard = lazy(() => import('./pages/AIDashboard')) // AI-Powered Dashboard
+const AIDashboard = lazy(() => import('./pages/AIDashboard'))
 
 // Loading component
 function Loading() {
@@ -63,68 +61,69 @@ function Loading() {
   )
 }
 
-// Main App component - Temporarily without Clerk for debugging
+// Main App component - temporarily bypassing Clerk for development
 function App() {
   return (
-    <Router>
-      <QueryClientProvider client={queryClient}>
-        <div style={{ minHeight: '100vh' }}>
-          <Routes>
-            {/* Direct access to dashboard - no auth required temporarily */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            
-            <Route
-              path="/dashboard"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <TestDashboard />
-                </Suspense>
-              }
-            />
-            
-            <Route
-              path="/working-capital"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <TestWorkingCapital />
-                </Suspense>
-              }
-            />
-            
-            <Route
-              path="/admin/*"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <AdminPortal />
-                </Suspense>
-              }
-            />
-            
-            <Route
-              path="/data-import"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <DataImport />
-                </Suspense>
-              }
-            />
-            
-            <Route
-              path="/ai-dashboard"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <AIDashboard />
-                </Suspense>
-              }
-            />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </div>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <div style={{ minHeight: '100vh' }}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              
+              <Route
+                path="/dashboard"
+                element={
+                  <Suspense fallback={<Loading />}>
+                    <EnhancedDashboard />
+                  </Suspense>
+                }
+              />
+              
+              <Route
+                path="/working-capital"
+                element={
+                  <Suspense fallback={<Loading />}>
+                    <WorkingCapitalDashboard />
+                  </Suspense>
+                }
+              />
+              
+              <Route
+                path="/admin/*"
+                element={
+                  <Suspense fallback={<Loading />}>
+                    <AdminPortal />
+                  </Suspense>
+                }
+              />
+              
+              <Route
+                path="/data-import"
+                element={
+                  <Suspense fallback={<Loading />}>
+                    <DataImport />
+                  </Suspense>
+                }
+              />
+              
+              <Route
+                path="/ai-dashboard"
+                element={
+                  <Suspense fallback={<Loading />}>
+                    <AIDashboard />
+                  </Suspense>
+                }
+              />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </div>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </Router>
+    </AuthProvider>
   )
 }
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+</head>
+<body>
+    <h1 style="color: red; text-align: center; margin-top: 50px;">
+        TEST PAGE IS WORKING
+    </h1>
+    <p style="text-align: center;">
+        If you can see this, the server is running correctly.
+    </p>
+    <div id="root"></div>
+    <script>
+        console.log('Test page loaded successfully');
+        document.getElementById('root').innerHTML = '<h2>Root element is accessible</h2>';
+    </script>
+</body>
+</html>

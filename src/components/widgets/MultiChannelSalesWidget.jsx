@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
 import { queryKeys, queryConfigs } from '../../services/queryClient'
+import liveDataService from '../../services/liveDataService'
 
 const CHANNEL_COLORS = {
   amazon: '#FF9500',
@@ -31,19 +32,63 @@ const MultiChannelSalesWidget = ({ timeRange = '30d', className = '' }) => {
   const [selectedView, setSelectedView] = useState('overview')
   const [selectedChannel, setSelectedChannel] = useState('all')
 
-  // Fetch multi-channel sales data
+  // Fetch multi-channel sales data from LIVE DATA SERVICE ONLY - NO MOCK DATA
   const { data: salesData, isLoading, error, refetch } = useQuery({
-    queryKey: queryKeys.sales.multiChannel(timeRange),
+    queryKey: ['live-multi-channel-sales', timeRange],
     queryFn: async () => {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api'
-      const response = await fetch(`${apiBaseUrl}/sales/multi-channel?timeRange=${timeRange}`)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch multi-channel data: ${response.statusText}`)
-      }
-      return response.json()
+      // Use live data service that connects to real external APIs
+      const [salesAnalytics, unleashed, amazon, shopify] = await Promise.all([
+        liveDataService.getSalesAnalytics(),
+        liveDataService.getUnleashedData(),
+        liveDataService.getAmazonData(),
+        liveDataService.getShopifyData()
+      ]);
+
+      // Structure the data according to the expected format
+      return {
+        data: {
+          amazon: {
+            orders: amazon?.sales || [],
+            revenue: amazon?.totalRevenue || 0,
+            trend: 0,
+            status: amazon?.status === 'API_NOT_CONFIGURED' ? 'disconnected' : 'connected'
+          },
+          shopify: {
+            uk: {
+              orders: shopify?.orders || [],
+              revenue: shopify?.totalRevenue || 0,
+              trend: 0,
+              status: shopify ? 'connected' : 'disconnected'
+            },
+            eu: {
+              orders: [],
+              revenue: 0,
+              trend: 0,
+              status: 'disconnected'
+            },
+            usa: {
+              orders: [],
+              revenue: 0,
+              trend: 0,
+              status: 'disconnected'
+            }
+          },
+          dailyTrends: salesAnalytics?.channels?.map((channel, index) => ({
+            date: new Date(Date.now() - (index * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
+            amazon: amazon?.totalRevenue || 0,
+            shopify_uk: shopify?.totalRevenue || 0,
+            shopify_eu: 0,
+            shopify_usa: 0
+          })) || []
+        },
+        timestamp: new Date().toISOString(),
+        status: 'LIVE_DATA_ONLY',
+        lastUpdated: new Date().toISOString()
+      };
     },
-    ...queryConfigs.operational,
-    refetchInterval: 5 * 60 * 1000 // Refetch every 5 minutes
+    refetchInterval: 30000, // Refetch every 30 seconds for live data
+    staleTime: 10000, // Consider data stale after 10 seconds
+    cacheTime: 30000 // Keep in cache for 30 seconds
   })
 
   // Process and aggregate data

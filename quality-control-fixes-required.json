@@ -1,7 +1,7 @@
 {
-  "timestamp": 1757028851804,
-  "cycle": 11,
-  "criticalCount": 12,
+  "timestamp": 1757051882764,
+  "cycle": 12,
+  "criticalCount": 19,
   "warningCount": 0,
   "requirements": [
     {
@@ -10,6 +10,30 @@
       "test": "auth-1",
       "description": "Clerk authentication loads",
       "action": "Fix Clerk authentication configuration",
+      "autoFix": false
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Authentication System",
+      "test": "auth-2",
+      "description": "Login page accessible",
+      "action": "Investigate and fix issue",
+      "autoFix": false
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Authentication System",
+      "test": "auth-4",
+      "description": "Admin role functions",
+      "action": "Investigate and fix issue",
+      "autoFix": false
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Dashboard Functionality",
+      "test": "dash-1",
+      "description": "Main dashboard loads",
+      "action": "Repair dashboard component rendering",
       "autoFix": false
     },
     {
@@ -98,6 +122,38 @@
       "test": "ana-2",
       "description": "Multi-channel sales display",
       "action": "Investigate and fix issue",
+      "autoFix": false
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "External API Integrations",
+      "test": "api-1",
+      "description": "Unleashed API connected",
+      "action": "Implement or fix API endpoint",
+      "autoFix": false
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Environment",
+      "test": "production",
+      "description": "production environment not accessible",
+      "action": "Deploy or restart environment",
+      "autoFix": false
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Environment",
+      "test": "development",
+      "description": "development environment not accessible",
+      "action": "Deploy or restart environment",
+      "autoFix": false
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Environment",
+      "test": "test",
+      "description": "test environment not accessible",
+      "action": "Deploy or restart environment",
       "autoFix": false
     }
   ],

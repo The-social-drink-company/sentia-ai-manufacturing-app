@@ -9,7 +9,8 @@
       "Bash(node:*)",
       "WebFetch(domain:sentiaspirits.com)",
       "Bash(git checkout:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

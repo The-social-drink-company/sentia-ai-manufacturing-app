@@ -6,7 +6,8 @@
       "Bash(redis-cli:*)",
       "Bash(rm:*)",
       "Bash(npm run build:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "WebFetch(domain:sentiaspirits.com)"
     ],
     "deny": [],
     "ask": []

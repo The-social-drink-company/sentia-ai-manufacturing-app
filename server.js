@@ -4227,12 +4227,8 @@ Promise.all([
   loadDataImportServices(),
   loadWorkingCapitalService()
 ]).then(async () => {
-  // Initialize queue service on startup if available
-  if (queueService) {
-    queueService.initialize().catch(error => {
-      logWarn('Queue service initialization failed - continuing without queues', error);
-    });
-  }
+  // Skip queue service initialization - disabled for stability
+  logInfo('Queue service skipped - using synchronous processing for stability');
   
   // Initialize working capital service
   if (workingCapitalService) {

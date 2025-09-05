@@ -1,7 +1,132 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line, Bar } from 'react-chartjs-2'
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 function TestDashboard() {
+  const [chartData, setChartData] = useState({
+    production: null,
+    revenue: null
+  })
+
+  useEffect(() => {
+    // Generate realistic chart data
+    const generateProductionData = () => {
+      const labels = []
+      const data = []
+      const baseProduction = 8000
+      
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date()
+        date.setDate(date.getDate() - i)
+        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+        
+        // Realistic production variation with slight upward trend
+        const variation = (Math.random() - 0.5) * 1000
+        const trendValue = baseProduction + (29 - i) * 15 + variation
+        data.push(Math.max(trendValue, 0))
+      }
+      
+      return {
+        labels,
+        datasets: [{
+          label: 'Daily Production (units)',
+          data,
+          borderColor: 'rgb(59, 130, 246)',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      }
+    }
+
+    const generateRevenueData = () => {
+      const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+      const data = [
+        1120000, 1245000, 1180000, 1350000, 1280000, 1420000
+      ]
+      
+      return {
+        labels,
+        datasets: [{
+          label: 'Monthly Revenue ($)',
+          data,
+          backgroundColor: [
+            'rgba(16, 185, 129, 0.8)',
+            'rgba(59, 130, 246, 0.8)', 
+            'rgba(245, 158, 11, 0.8)',
+            'rgba(239, 68, 68, 0.8)',
+            'rgba(139, 92, 246, 0.8)',
+            'rgba(236, 72, 153, 0.8)'
+          ],
+          borderColor: [
+            'rgb(16, 185, 129)',
+            'rgb(59, 130, 246)',
+            'rgb(245, 158, 11)',
+            'rgb(239, 68, 68)',
+            'rgb(139, 92, 246)',
+            'rgb(236, 72, 153)'
+          ],
+          borderWidth: 2
+        }]
+      }
+    }
+
+    setChartData({
+      production: generateProductionData(),
+      revenue: generateRevenueData()
+    })
+  }, [])
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top'
+      },
+      tooltip: {
+        mode: 'index',
+        intersect: false
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: false,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)'
+        }
+      },
+      x: {
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)'
+        }
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -86,17 +211,55 @@ function TestDashboard() {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Production Trend</h3>
-            <div className="h-64 bg-gray-100 rounded flex items-center justify-center">
-              <p className="text-gray-500">Chart Component Here</p>
+          <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Production Trend</h3>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <span className="text-sm text-gray-600">Last 30 days</span>
+              </div>
+            </div>
+            <div className="h-64">
+              {chartData.production ? (
+                <Line data={chartData.production} options={chartOptions} />
+              ) : (
+                <div className="h-full bg-gray-50 rounded flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="animate-pulse bg-gray-300 h-4 w-20 rounded mb-2 mx-auto"></div>
+                    <p className="text-gray-400 text-sm">Loading chart...</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+              <span>Current: 8,456 units</span>
+              <span className="text-green-600 font-medium">↑ 5.2% vs last month</span>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Analysis</h3>
-            <div className="h-64 bg-gray-100 rounded flex items-center justify-center">
-              <p className="text-gray-500">Chart Component Here</p>
+          <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Revenue Analysis</h3>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-sm text-gray-600">Monthly view</span>
+              </div>
+            </div>
+            <div className="h-64">
+              {chartData.revenue ? (
+                <Bar data={chartData.revenue} options={chartOptions} />
+              ) : (
+                <div className="h-full bg-gray-50 rounded flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="animate-pulse bg-gray-300 h-4 w-20 rounded mb-2 mx-auto"></div>
+                    <p className="text-gray-400 text-sm">Loading chart...</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+              <span>YTD: $7.6M</span>
+              <span className="text-green-600 font-medium">↑ 12.5% vs last year</span>
             </div>
           </div>
         </div>

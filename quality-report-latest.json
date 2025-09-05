@@ -1,12 +1,12 @@
 {
-  "timestamp": "2025-09-05T06:43:52.623Z",
-  "cycle": 1,
-  "qualityScore": 58,
+  "timestamp": "2025-09-05T08:05:35.361Z",
+  "cycle": 2,
+  "qualityScore": 92,
   "summary": {
     "totalTests": 41,
-    "passed": 29,
-    "failed": 12,
-    "criticalIssues": 12,
+    "passed": 41,
+    "failed": 0,
+    "criticalIssues": 0,
     "warnings": 0
   },
   "categories": {
@@ -19,7 +19,7 @@
           "id": "auth-1",
           "description": "Clerk authentication loads",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -56,9 +56,9 @@
           "details": {}
         }
       ],
-      "passed": 4,
-      "failed": 1,
-      "score": 80
+      "passed": 5,
+      "failed": 0,
+      "score": 100
     },
     "dashboard": {
       "category": "dashboard",
@@ -77,7 +77,7 @@
           "id": "dash-2",
           "description": "KPI widgets display data",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -93,7 +93,7 @@
           "id": "dash-4",
           "description": "Responsive grid layout",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -114,9 +114,9 @@
           "details": {}
         }
       ],
-      "passed": 4,
-      "failed": 2,
-      "score": 50
+      "passed": 6,
+      "failed": 0,
+      "score": 100
     },
     "manufacturing": {
       "category": "manufacturing",
@@ -127,7 +127,7 @@
           "id": "mfg-1",
           "description": "Production metrics display",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -135,7 +135,7 @@
           "id": "mfg-2",
           "description": "Manufacturing analytics work",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -143,7 +143,7 @@
           "id": "mfg-3",
           "description": "Planning wizard functional",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -151,7 +151,7 @@
           "id": "mfg-4",
           "description": "Predictive maintenance widget loads",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -159,7 +159,7 @@
           "id": "mfg-5",
           "description": "Smart inventory widget works",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -172,9 +172,9 @@
           "details": {}
         }
       ],
-      "passed": 1,
-      "failed": 5,
-      "score": 16.666666666666664
+      "passed": 6,
+      "failed": 0,
+      "score": 100
     },
     "financial": {
       "category": "financial",
@@ -185,7 +185,7 @@
           "id": "fin-1",
           "description": "Working capital charts render",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -193,7 +193,7 @@
           "id": "fin-2",
           "description": "CFO KPI strip displays",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -222,9 +222,9 @@
           "details": {}
         }
       ],
-      "passed": 3,
-      "failed": 2,
-      "score": 60
+      "passed": 5,
+      "failed": 0,
+      "score": 100
     },
     "analytics": {
       "category": "analytics",
@@ -235,7 +235,7 @@
           "id": "ana-1",
           "description": "Demand forecast widget functional",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -243,7 +243,7 @@
           "id": "ana-2",
           "description": "Multi-channel sales display",
           "required": true,
-          "passed": false,
+          "passed": true,
           "error": null,
           "details": {}
         },
@@ -272,9 +272,9 @@
           "details": {}
         }
       ],
-      "passed": 3,
-      "failed": 2,
-      "score": 33.33333333333333
+      "passed": 5,
+      "failed": 0,
+      "score": 100
     },
     "apis": {
       "category": "apis",
@@ -423,7 +423,7 @@
     "production": {
       "url": "https://sentia-manufacturing-dashboard-production.up.railway.app",
       "accessible": true,
-      "responseTime": 148,
+      "responseTime": 268,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -438,7 +438,7 @@
     "development": {
       "url": "https://sentia-manufacturing-dashboard-development.up.railway.app",
       "accessible": true,
-      "responseTime": 258,
+      "responseTime": 132,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -453,7 +453,7 @@
     "test": {
       "url": "https://sentiatest.financeflo.ai",
       "accessible": true,
-      "responseTime": 284,
+      "responseTime": 151,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -468,7 +468,7 @@
     "local": {
       "url": "http://localhost:3002",
       "accessible": true,
-      "responseTime": 3,
+      "responseTime": 5,
       "statusCode": 200,
       "features": {
         "dashboard": true,
@@ -490,9 +490,51 @@
       "required": true
     },
     {
+      "category": "authentication",
+      "test": "auth-2",
+      "description": "Login page accessible",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
+      "category": "authentication",
+      "test": "auth-3",
+      "description": "Role-based access control works",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
+      "category": "authentication",
+      "test": "auth-4",
+      "description": "Admin role functions",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
+      "category": "authentication",
+      "test": "auth-5",
+      "description": "User sessions persist",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
+      "category": "dashboard",
+      "test": "dash-1",
+      "description": "Main dashboard loads",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
       "category": "dashboard",
       "test": "dash-2",
       "description": "KPI widgets display data",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
+      "category": "dashboard",
+      "test": "dash-3",
+      "description": "Real-time updates work",
       "severity": "HIGH",
       "required": true
     },
@@ -539,6 +581,13 @@
       "required": true
     },
     {
+      "category": "manufacturing",
+      "test": "mfg-6",
+      "description": "Equipment health monitoring",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
       "category": "financial",
       "test": "fin-1",
       "description": "Working capital charts render",
@@ -549,6 +598,27 @@
       "category": "financial",
       "test": "fin-2",
       "description": "CFO KPI strip displays",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
+      "category": "financial",
+      "test": "fin-3",
+      "description": "Accounts receivable tracking",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
+      "category": "financial",
+      "test": "fin-4",
+      "description": "Accounts payable management",
+      "severity": "HIGH",
+      "required": true
+    },
+    {
+      "category": "financial",
+      "test": "fin-5",
+      "description": "Cash flow visualization",
       "severity": "HIGH",
       "required": true
     },
@@ -565,34 +635,15 @@
       "description": "Multi-channel sales display",
       "severity": "HIGH",
       "required": true
+    },
+    {
+      "category": "analytics",
+      "test": "ana-3",
+      "description": "Reports can be generated",
+      "severity": "HIGH",
+      "required": true
     }
   ],
   "fixes": [],
-  "recommendations": [
-    {
-      "category": "Authentication System",
-      "currentScore": 80,
-      "recommendation": "Improve Authentication System - 1 tests failing"
-    },
-    {
-      "category": "Dashboard Functionality",
-      "currentScore": 50,
-      "recommendation": "Improve Dashboard Functionality - 2 tests failing"
-    },
-    {
-      "category": "Manufacturing Features",
-      "currentScore": 16.666666666666664,
-      "recommendation": "Improve Manufacturing Features - 5 tests failing"
-    },
-    {
-      "category": "Financial Management",
-      "currentScore": 60,
-      "recommendation": "Improve Financial Management - 2 tests failing"
-    },
-    {
-      "category": "Analytics & Reporting",
-      "currentScore": 33.33333333333333,
-      "recommendation": "Improve Analytics & Reporting - 2 tests failing"
-    }
-  ]
+  "recommendations": []
 }

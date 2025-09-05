@@ -1,8 +1,8 @@
 /**
- * Smart Inventory Optimization Service
+ * Smart Inventory Optimization Service - REAL DATA ONLY
  * 
- * AI-powered inventory management with demand forecasting, automated reordering,
- * and optimization algorithms for reducing costs while maintaining service levels
+ * Connects to actual inventory systems, ERP databases, and supplier APIs
+ * NO MOCK DATA - Only real production inventory and supply chain data
  */
 
 import axios from 'axios';
@@ -46,7 +46,7 @@ class SmartInventoryService {
   }
 
   /**
-   * Load current inventory data
+   * Load real inventory data from ERP/WMS systems
    */
   async loadInventoryData() {
     try {
@@ -64,13 +64,23 @@ class SmartInventoryService {
         });
       }
     } catch (error) {
-      // Generate mock inventory data
-      this.generateMockInventoryData();
+      // Try alternative endpoints
+      try {
+        const unleashedResponse = await axios.get(`${this.baseURL}/external/unleashed/stock`);
+        if (unleashedResponse.data.success) {
+          unleashedResponse.data.items.forEach(item => {
+            this.inventoryData.set(item.sku, item);
+          });
+        }
+      } catch (unleashedError) {
+        console.error('Unable to connect to inventory systems:', error);
+        // No mock data - keep inventoryData empty
+      }
     }
   }
 
   /**
-   * Load supplier information
+   * Load real supplier data from procurement system
    */
   async loadSupplierData() {
     try {
@@ -81,13 +91,23 @@ class SmartInventoryService {
         });
       }
     } catch (error) {
-      // Generate mock supplier data
-      this.generateMockSupplierData();
+      // Try ERP supplier endpoint
+      try {
+        const erpResponse = await axios.get(`${this.baseURL}/erp/suppliers`);
+        if (erpResponse.data.success) {
+          erpResponse.data.suppliers.forEach(supplier => {
+            this.suppliers.set(supplier.id, supplier);
+          });
+        }
+      } catch (erpError) {
+        console.error('Unable to retrieve supplier data:', error);
+        // No mock data - keep suppliers empty
+      }
     }
   }
 
   /**
-   * Load historical demand data
+   * Load real demand history from sales/order database
    */
   async loadDemandHistory() {
     try {
@@ -101,8 +121,21 @@ class SmartInventoryService {
         });
       }
     } catch (error) {
-      // Generate mock demand history
-      this.generateMockDemandHistory();
+      // Try sales history endpoint
+      try {
+        const salesResponse = await axios.get(`${this.baseURL}/sales/history`);
+        if (salesResponse.data.success) {
+          salesResponse.data.history.forEach(record => {
+            if (!this.demandHistory.has(record.sku)) {
+              this.demandHistory.set(record.sku, []);
+            }
+            this.demandHistory.get(record.sku).push(record);
+          });
+        }
+      } catch (salesError) {
+        console.error('Unable to load demand history:', error);
+        // No mock data - keep demandHistory empty
+      }
     }
   }
 
@@ -449,81 +482,7 @@ class SmartInventoryService {
     return 1;
   }
 
-  /**
-   * Mock data generation for development
-   */
-  generateMockInventoryData() {
-    const categories = ['Raw Materials', 'Components', 'Finished Goods', 'Packaging', 'Tools'];
-    const items = [
-      { name: 'Steel Sheets', category: 'Raw Materials', unitCost: 45.50 },
-      { name: 'Aluminum Rods', category: 'Raw Materials', unitCost: 23.75 },
-      { name: 'Electronic Components', category: 'Components', unitCost: 125.00 },
-      { name: 'Hydraulic Valves', category: 'Components', unitCost: 89.25 },
-      { name: 'Ball Bearings', category: 'Components', unitCost: 15.60 },
-      { name: 'Motors', category: 'Components', unitCost: 234.50 },
-      { name: 'Packaging Boxes', category: 'Packaging', unitCost: 2.15 },
-      { name: 'Labels', category: 'Packaging', unitCost: 0.85 },
-      { name: 'Cutting Tools', category: 'Tools', unitCost: 67.80 },
-      { name: 'Measuring Instruments', category: 'Tools', unitCost: 156.30 }
-    ];
-    
-    items.forEach((item, index) => {
-      const sku = `SKU${(index + 1).toString().padStart(3, '0')}`;
-      const leadTime = Math.floor(Math.random() * 14) + 3; // 3-17 days
-      const currentStock = Math.floor(Math.random() * 500) + 50;
-      
-      this.inventoryData.set(sku, {
-        sku,
-        name: item.name,
-        category: item.category,
-        unitCost: item.unitCost,
-        currentStock,
-        leadTime,
-        minOrderQuantity: Math.floor(currentStock * 0.1),
-        maxOrderQuantity: Math.floor(currentStock * 3),
-        preferredSupplierId: `SUP${Math.floor(Math.random() * 3) + 1}`,
-        orderingCost: Math.floor(Math.random() * 200) + 50,
-        storageCapacity: Math.floor(currentStock * 4)
-      });
-    });
-  }
-
-  generateMockSupplierData() {
-    const suppliers = [
-      { id: 'SUP1', name: 'Industrial Materials Co.', leadTime: 7, reliability: 0.95 },
-      { id: 'SUP2', name: 'Component Solutions Ltd.', leadTime: 10, reliability: 0.88 },
-      { id: 'SUP3', name: 'Premium Parts Supply', leadTime: 5, reliability: 0.92 }
-    ];
-    
-    suppliers.forEach(supplier => {
-      this.suppliers.set(supplier.id, supplier);
-    });
-  }
-
-  generateMockDemandHistory() {
-    Array.from(this.inventoryData.keys()).forEach(sku => {
-      const history = [];
-      let baselineMonthlyDemand = Math.floor(Math.random() * 100) + 20;
-      
-      // Generate 12 months of demand data
-      for (let month = 0; month < 12; month++) {
-        const seasonalFactor = 1 + 0.3 * Math.sin((month / 12) * 2 * Math.PI);
-        const trendFactor = 1 + (month * 0.02); // 2% growth per month
-        const randomFactor = 0.8 + Math.random() * 0.4; // ±20% variability
-        
-        const demand = Math.round(baselineMonthlyDemand * seasonalFactor * trendFactor * randomFactor);
-        
-        history.push({
-          sku,
-          period: new Date(2024, month, 1),
-          demand,
-          actualUsage: demand + Math.floor(Math.random() * 10 - 5) // Slight variance
-        });
-      }
-      
-      this.demandHistory.set(sku, history);
-    });
-  }
+  // Removed mock data generation methods - using only real data
 
   /**
    * Additional utility methods
@@ -639,7 +598,7 @@ class SmartInventoryService {
   generateBasicForecast(sku, historicalData) {
     const avgDemand = historicalData.length > 0 
       ? historicalData.reduce((sum, r) => sum + r.demand, 0) / historicalData.length
-      : 50; // Default demand
+      : 0; // No data = no forecast
     
     return {
       method: 'basic',

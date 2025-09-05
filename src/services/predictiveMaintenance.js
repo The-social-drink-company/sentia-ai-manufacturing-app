@@ -1,8 +1,8 @@
 /**
- * Predictive Maintenance Analytics Service
+ * Predictive Maintenance Analytics Service - REAL DATA ONLY
  * 
- * Advanced analytics for equipment health monitoring and maintenance predictions
- * using statistical analysis, machine learning algorithms, and AI insights
+ * Connects to actual IoT sensors, ML models, and maintenance databases
+ * NO MOCK DATA - Only real production data from equipment sensors
  */
 
 import axios from 'axios';
@@ -39,7 +39,7 @@ class PredictiveMaintenanceService {
   }
 
   /**
-   * Load equipment data and current sensor readings
+   * Load real equipment data from IoT sensors and database
    */
   async loadEquipmentData() {
     try {
@@ -56,13 +56,23 @@ class PredictiveMaintenanceService {
         });
       }
     } catch (error) {
-      // Generate mock data for development
-      this.generateMockEquipmentData();
+      // Try alternative IoT endpoint
+      try {
+        const iotResponse = await axios.get(`${this.baseURL}/iot/equipment-status`);
+        if (iotResponse.data.success) {
+          iotResponse.data.equipment.forEach(equipment => {
+            this.equipmentData.set(equipment.id, equipment);
+          });
+        }
+      } catch (iotError) {
+        console.error('Unable to connect to equipment sensors:', error);
+        // No mock data - keep equipmentData empty
+      }
     }
   }
 
   /**
-   * Load historical maintenance records
+   * Load real maintenance history from database
    */
   async loadMaintenanceHistory() {
     try {
@@ -71,8 +81,16 @@ class PredictiveMaintenanceService {
         this.maintenanceHistory = response.data.history;
       }
     } catch (error) {
-      // Generate mock maintenance history
-      this.generateMockMaintenanceHistory();
+      // Try database endpoint
+      try {
+        const dbResponse = await axios.get(`${this.baseURL}/database/maintenance-logs`);
+        if (dbResponse.data.success) {
+          this.maintenanceHistory = dbResponse.data.logs;
+        }
+      } catch (dbError) {
+        console.error('Unable to retrieve maintenance history:', error);
+        // No mock data - keep maintenanceHistory empty
+      }
     }
   }
 
@@ -201,7 +219,7 @@ class PredictiveMaintenanceService {
    * Calculate equipment health score (0-100)
    */
   calculateHealthScore(equipment) {
-    if (!equipment.sensorReadings) return 85; // Default for mock data
+    if (!equipment.sensorReadings) return 0; // No data = no score
     
     const readings = equipment.sensorReadings;
     const scores = [];
@@ -347,59 +365,7 @@ class PredictiveMaintenanceService {
     return recommendations;
   }
 
-  /**
-   * Generate mock equipment data for development
-   */
-  generateMockEquipmentData() {
-    const equipmentTypes = ['CNC Machine', 'Robotic Arm', 'Conveyor System', 'Press Machine', 'Packaging Line'];
-    const locations = ['Production Floor A', 'Assembly Line 1', 'Assembly Line 2', 'Packaging Area', 'Quality Control'];
-    
-    for (let i = 1; i <= 15; i++) {
-      const type = equipmentTypes[Math.floor(Math.random() * equipmentTypes.length)];
-      const location = locations[Math.floor(Math.random() * locations.length)];
-      
-      const equipment = {
-        id: `EQ${i.toString().padStart(3, '0')}`,
-        name: `${type} ${i}`,
-        type,
-        location,
-        ageInYears: Math.floor(Math.random() * 12) + 1,
-        lastMaintenance: new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000),
-        sensorReadings: {
-          temperature: 20 + Math.random() * 50,
-          vibration: Math.random() * 15,
-          pressure: 50 + Math.random() * 50,
-          efficiency: 60 + Math.random() * 35,
-          dailyRuntime: 8 + Math.random() * 16
-        }
-      };
-      
-      this.equipmentData.set(equipment.id, equipment);
-    }
-  }
-
-  /**
-   * Generate mock maintenance history
-   */
-  generateMockMaintenanceHistory() {
-    const maintenanceTypes = ['Preventive', 'Corrective', 'Emergency', 'Routine'];
-    
-    for (let i = 0; i < 50; i++) {
-      const equipmentId = `EQ${Math.floor(Math.random() * 15 + 1).toString().padStart(3, '0')}`;
-      const type = maintenanceTypes[Math.floor(Math.random() * maintenanceTypes.length)];
-      
-      this.maintenanceHistory.push({
-        id: `MH${i.toString().padStart(3, '0')}`,
-        equipmentId,
-        type,
-        date: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
-        duration: Math.floor(Math.random() * 8) + 1,
-        cost: Math.floor(Math.random() * 5000) + 500,
-        description: `${type} maintenance for ${equipmentId}`,
-        technician: `Technician ${Math.floor(Math.random() * 5) + 1}`
-      });
-    }
-  }
+  // Removed mock data generation methods - using only real data
 
   /**
    * Build AI prompt for maintenance analysis
@@ -430,19 +396,24 @@ Format your response as a JSON object with 'insights', 'recommendations', and 'k
    * Utility methods for calculations and data processing
    */
   async getCurrentSensorReadings(equipmentId) {
-    // In production, this would fetch real-time sensor data
-    const equipment = this.equipmentData.get(equipmentId);
-    if (!equipment?.sensorReadings) return {};
-    
-    // Simulate slight variations in sensor readings
-    const readings = { ...equipment.sensorReadings };
-    Object.keys(readings).forEach(key => {
-      if (typeof readings[key] === 'number') {
-        readings[key] += (Math.random() - 0.5) * 2; // ±1 variation
+    // Fetch real-time sensor data from IoT devices
+    try {
+      const response = await axios.get(`${this.baseURL}/iot/sensors/${equipmentId}/realtime`);
+      if (response.data.success) {
+        return response.data.readings;
       }
-    });
-    
-    return readings;
+    } catch (error) {
+      // Try alternative sensor endpoint
+      try {
+        const altResponse = await axios.get(`${this.baseURL}/sensors/equipment/${equipmentId}`);
+        if (altResponse.data) {
+          return altResponse.data;
+        }
+      } catch (altError) {
+        console.error(`Unable to fetch sensor data for ${equipmentId}:`, error);
+      }
+    }
+    return {}; // Return empty if no real data available
   }
 
   getHistoricalData(equipmentId) {
@@ -589,12 +560,17 @@ Format your response as a JSON object with 'insights', 'recommendations', and 'k
     return 'routine';
   }
 
-  getRecentAlerts() {
-    // Mock recent alerts for development
-    return [
-      { equipmentId: 'EQ001', severity: 'warning', message: 'Temperature elevated', timestamp: new Date() },
-      { equipmentId: 'EQ003', severity: 'critical', message: 'Vibration excessive', timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) }
-    ];
+  async getRecentAlerts() {
+    // Fetch real alerts from monitoring system
+    try {
+      const response = await axios.get(`${this.baseURL}/alerts/recent?days=7`);
+      if (response.data.success) {
+        return response.data.alerts;
+      }
+    } catch (error) {
+      console.error('Unable to fetch recent alerts:', error);
+    }
+    return []; // Return empty if no real data available
   }
 
   analyzeMaintenanceTrends() {

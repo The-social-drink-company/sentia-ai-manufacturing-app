@@ -26,7 +26,6 @@ const queryClient = new QueryClient({
 })
 
 // Lazy load pages for better performance
-const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
 const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
 const AdminPortal = lazy(() => import('./pages/AdminPortal'))

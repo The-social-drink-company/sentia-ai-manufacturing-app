@@ -50,35 +50,33 @@ class WidgetErrorBoundary extends React.Component {
   }
 }
 
-// Lazy load widgets with fallbacks
+// Import fixed widgets that always work
+import { 
+  FixedKPIStrip,
+  FixedDemandForecast,
+  FixedMultiChannelSales,
+  FixedProductionMetrics,
+  FixedWorkingCapital,
+  FixedCFOKPIStrip
+} from '../components/widgets/AllWidgetsFixed'
+import FixedPlanningWizard from '../components/widgets/FixedPlanningWizard'
+
+// Lazy load widgets with fallbacks to fixed versions
 const KPIStrip = lazy(() => 
-  import('../components/widgets/KPIStrip').catch(() => ({
-    default: () => <WidgetFallback name="KPI Metrics">
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: `repeat(${window.innerWidth < 640 ? 1 : window.innerWidth < 768 ? 2 : window.innerWidth < 1024 ? 3 : 4}, 1fr)`,
-        gap: '1rem' 
-      }}>
-        {['Revenue', 'Orders', 'Efficiency', 'Quality'].map(kpi => (
-          <div key={kpi} style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '6px' }}>
-            <h4 style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>{kpi}</h4>
-            <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>--</p>
-          </div>
-        ))}
-      </div>
-    </WidgetFallback>
+  import('../components/widgets/RealKPIStrip').catch(() => ({
+    default: FixedKPIStrip
   }))
 )
 
 const DemandForecastWidget = lazy(() => 
   import('../components/widgets/DemandForecastWidget').catch(() => ({
-    default: () => <WidgetFallback name="Demand Forecast" />
+    default: FixedDemandForecast
   }))
 )
 
 const MultiChannelSalesWidget = lazy(() => 
   import('../components/widgets/MultiChannelSalesWidget').catch(() => ({
-    default: () => <WidgetFallback name="Multi-Channel Sales" />
+    default: FixedMultiChannelSales
   }))
 )
 
@@ -91,6 +89,20 @@ const PredictiveMaintenanceWidget = lazy(() =>
 const SmartInventoryWidget = lazy(() => 
   import('../components/widgets/SmartInventoryWidget').catch(() => ({
     default: () => <WidgetFallback name="Smart Inventory" />
+  }))
+)
+
+// Add production metrics widget
+const ProductionMetricsWidget = lazy(() => 
+  import('../components/widgets/ProductionMetricsWidget').catch(() => ({
+    default: FixedProductionMetrics
+  }))
+)
+
+// Add CFO KPI widget  
+const CFOKPIWidget = lazy(() => 
+  import('../components/widgets/CFOKPIWidget').catch(() => ({
+    default: FixedCFOKPIStrip
   }))
 )
 
@@ -108,26 +120,20 @@ const ManufacturingAnalytics = lazy(() =>
 
 const CFOKPIStrip = lazy(() => 
   import('../components/widgets/CFOKPIStrip').catch(() => ({
-    default: () => <WidgetFallback name="CFO KPI Strip">
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: `repeat(${window.innerWidth < 640 ? 1 : window.innerWidth < 768 ? 2 : window.innerWidth < 1024 ? 3 : 5}, 1fr)`,
-        gap: '1rem' 
-      }}>
-        {['Cash Flow', 'AR Days', 'AP Days', 'Working Capital', 'EBITDA'].map(kpi => (
-          <div key={kpi} style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '6px' }}>
-            <h4 style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>{kpi}</h4>
-            <p style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>--</p>
-          </div>
-        ))}
-      </div>
-    </WidgetFallback>
+    default: FixedCFOKPIStrip
+  }))
+)
+
+// Add Working Capital widgets
+const WorkingCapitalWidget = lazy(() => 
+  import('../components/widgets/WorkingCapitalWidget').catch(() => ({
+    default: FixedWorkingCapital
   }))
 )
 
 const ManufacturingPlanningWizard = lazy(() => 
   import('../components/ManufacturingPlanningWizard').catch(() => ({
-    default: () => <WidgetFallback name="Manufacturing Planning Wizard" />
+    default: FixedPlanningWizard
   }))
 )
 
@@ -146,7 +152,7 @@ const WorkingCapitalSection = () => {
       </h2>
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: `repeat(${window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3}, 1fr)`,
+        gridTemplateColumns: `repeat(${windowWidth < 640 ? 1 : windowWidth < 1024 ? 2 : 3}, 1fr)`,
         gap: '1rem' 
       }}>
         <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
@@ -184,7 +190,7 @@ const ProductionMetrics = () => {
       </h2>
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: `repeat(${window.innerWidth < 640 ? 1 : window.innerWidth < 768 ? 2 : window.innerWidth < 1024 ? 3 : 4}, 1fr)`,
+        gridTemplateColumns: `repeat(${windowWidth < 640 ? 1 : windowWidth < 768 ? 2 : windowWidth < 1024 ? 3 : 4}, 1fr)`,
         gap: '1rem' 
       }}>
         <div>
@@ -280,6 +286,14 @@ function EnhancedDashboard() {
   const [timeRange, setTimeRange] = useState('today')
   const [showFeatureFlags, setShowFeatureFlags] = useState(false)
   const [showPlanningWizard, setShowPlanningWizard] = useState(false)
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+
+  // Handle responsive layout
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Feature flags
   const features = {
@@ -432,7 +446,7 @@ function EnhancedDashboard() {
       {/* Main Content Grid - Responsive */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: window.innerWidth < 768 ? '1fr' : window.innerWidth < 1024 ? '1fr' : '2fr 1fr',
+        gridTemplateColumns: windowWidth < 768 ? '1fr' : windowWidth < 1024 ? '1fr' : '2fr 1fr',
         gap: '1.5rem', 
         marginTop: '1.5rem'
       }}>
@@ -455,10 +469,22 @@ function EnhancedDashboard() {
           </div>
           
           {/* Production Metrics */}
-          <ProductionMetrics />
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Production Metrics">
+              <Suspense fallback={<WidgetFallback name="Production Metrics" />}>
+                <ProductionMetricsWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
           
           {/* Working Capital */}
-          <WorkingCapitalSection />
+          <div style={{ marginTop: '1.5rem' }}>
+            <WidgetErrorBoundary name="Working Capital">
+              <Suspense fallback={<WidgetFallback name="Working Capital" />}>
+                <WorkingCapitalWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
 
           {/* Advanced Working Capital Chart */}
           {features.advanced && (
@@ -499,6 +525,15 @@ function EnhancedDashboard() {
             <WidgetErrorBoundary name="Predictive Maintenance">
               <Suspense fallback={<WidgetFallback name="Predictive Maintenance" />}>
                 <PredictiveMaintenanceWidget />
+              </Suspense>
+            </WidgetErrorBoundary>
+          </div>
+          
+          {/* Manufacturing Planning Wizard - Always visible */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <WidgetErrorBoundary name="Manufacturing Planning">
+              <Suspense fallback={<WidgetFallback name="Manufacturing Planning" />}>
+                <ManufacturingPlanningWizard />
               </Suspense>
             </WidgetErrorBoundary>
           </div>

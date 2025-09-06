@@ -1,29 +1,17 @@
 {
-<<<<<<< HEAD
   "name": "sentia-autonomous-agents",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "24/7 Autonomous Agent System for Sentia Manufacturing Dashboard",
   "type": "module",
   "main": "autonomous-orchestrator.js",
   "scripts": {
     "start": "node autonomous-orchestrator.js",
-    "test": "node code-quality-agent.js"
+    "test": "node code-quality-agent.js",
+    "pm2": "pm2 start autonomous-orchestrator.js --name autonomous-system"
   },
   "dependencies": {
     "node-fetch": "^3.3.2"
   },
-=======
-  "name": "autonomous-agents",
-  "version": "3.0.0",
-  "type": "module",
-  "description": "24/7 Autonomous Agent System",
-  "main": "orchestrator.js",
-  "scripts": {
-    "start": "node orchestrator.js",
-    "pm2": "pm2 start orchestrator.js --name autonomous-system"
-  },
-  "dependencies": {},
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
   "engines": {
     "node": ">=18.0.0"
   }

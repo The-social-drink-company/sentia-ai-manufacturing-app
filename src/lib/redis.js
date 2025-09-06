@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport Redis from 'ioredis';
+import { devLog } from '../lib/devLog.js';
+import Redis from 'ioredis';
 
 class RedisCache {
   constructor() {

@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, memo, useMemo, useCallback } from 'react'
+import { devLog } from '../lib/devLog.js';
+import React, { useState, memo, useMemo, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { ArrowTrendingUpIcon, Cog6ToothIcon, SparklesIcon, GlobeAltIcon } from '@heroicons/react/24/outline'

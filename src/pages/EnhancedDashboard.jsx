@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, Suspense } from 'react'
+import { devLog } from '../lib/devLog.js';
+import React, { useState, useEffect, Suspense } from 'react'
 import '../styles/SentiaTheme.css'
 import { useKPIData } from '../hooks/useRealTimeData'
 import { AdvancedKPI, ProductionStageKPI, ChannelKPI } from '../components/ui/AdvancedKPI'

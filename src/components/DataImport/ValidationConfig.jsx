@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, useMemo } from 'react';
+import { devLog } from '../lib/devLog.js';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, AlertTriangle, CheckCircle, Info, Play, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

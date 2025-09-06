@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport redisCache from './redis.js';
+import { devLog } from '../lib/devLog.js';
+import redisCache from './redis.js';
 
 class DatabaseOptimization {
   constructor() {

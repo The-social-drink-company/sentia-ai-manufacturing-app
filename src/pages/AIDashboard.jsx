@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, useRef } from 'react';
+import { devLog } from '../lib/devLog.js';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import IntelligentKPICard from '../components/AI/IntelligentKPICard';
 import ConversationalAssistant from '../components/AI/ConversationalAssistant';

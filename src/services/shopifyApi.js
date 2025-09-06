@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport axios from 'axios'
+import { devLog } from '../lib/devLog.js';
+import axios from 'axios'
 
 // Shopify API integration service
 class ShopifyAPIService {

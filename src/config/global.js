@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n// Global Configuration Module
+import { devLog } from '../lib/devLog.js';
+// Global Configuration Module
 // Provides global readiness settings for multi-region support
 
 import { z } from 'zod';

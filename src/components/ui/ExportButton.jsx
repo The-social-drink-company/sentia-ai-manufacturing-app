@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../lib/devLog.js';
+/**
  * Export Button Component for PROMPT 8 Dashboard Overlay
  * Provides CSV/PNG export per widget and PDF export for entire dashboard
  */

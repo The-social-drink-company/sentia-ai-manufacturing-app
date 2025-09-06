@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport { useState, useEffect, useCallback, useRef } from 'react';
+import { devLog } from '../lib/devLog.js';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 
 /**

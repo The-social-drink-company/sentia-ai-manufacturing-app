@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, useRef } from 'react'
+import { devLog } from '../lib/devLog.js';
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Chart as ChartJS,

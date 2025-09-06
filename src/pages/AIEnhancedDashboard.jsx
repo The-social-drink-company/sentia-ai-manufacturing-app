@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, useCallback } from 'react';
+import { devLog } from '../lib/devLog.js';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { useAIRealTimeData, useAIForecasting, useMaintenanceAlerts, useQualityInspections } from '../hooks/useAIRealTimeData';
 import MCPConnectionStatus from '../components/AI/MCPConnectionStatus';

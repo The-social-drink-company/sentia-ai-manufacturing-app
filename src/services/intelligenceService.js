@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../lib/devLog.js';
+/**
  * Intelligence Service - Core AI Operations
  * Integrates with MCP Server on Railway for AI-powered features
  */

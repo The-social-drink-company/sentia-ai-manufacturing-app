@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport dbService from './index.js';
+import { devLog } from '../lib/devLog.js';
+import dbService from './index.js';
 import { logInfo, logError } from '../../../services/logger.js';
 
 class DatabaseTest {

@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport { QueryClient } from '@tanstack/react-query'
+import { devLog } from '../lib/devLog.js';
+import { QueryClient } from '@tanstack/react-query'
 
 // API-specific stale times based on data update frequency
 const STALE_TIMES = {

@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { Component } from 'react'
+import { devLog } from '../lib/devLog.js';
+import React, { Component } from 'react'
 
 // Universal error boundary for all widgets
 class WidgetErrorBoundary extends Component {

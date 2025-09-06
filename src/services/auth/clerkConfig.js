@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../../lib/devLog.js';
+/**
  * Clerk Authentication Configuration for Railway Deployments
  * Handles environment-specific settings and fallback scenarios
  */

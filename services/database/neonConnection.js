@@ -75,7 +75,6 @@ class NeonDatabaseConnection {
       min: 0,  // Allow scale to zero
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,
-      statement_timeout: 30000,
       query_timeout: 30000,
       ssl: {
         rejectUnauthorized: true,
@@ -84,8 +83,7 @@ class NeonDatabaseConnection {
       // Neon-specific optimizations
       keepAlive: true,
       keepAliveInitialDelayMillis: 10000,
-      application_name: `sentia-${branch}`,
-      options: '-c statement_timeout=30s'
+      application_name: `sentia-${branch}`
     };
 
     const pool = new Pool(poolConfig);
@@ -242,9 +240,6 @@ class NeonDatabaseConnection {
         const client = await pool.connect();
         
         try {
-          // Set query timeout
-          await client.query(`SET statement_timeout = ${timeout}`);
-          
           // Execute query
           const result = await client.query(query, params);
           return { success: true, data: result.rows };

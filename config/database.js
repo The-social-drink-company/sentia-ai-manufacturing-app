@@ -28,7 +28,6 @@ export const databaseConfig = {
     
     // Neon-specific optimizations
     application_name: `sentia-dashboard-${process.env.NODE_ENV || 'development'}`,
-    statement_timeout: 60000, // 1 minute
     query_timeout: 30000, // 30 seconds
     
     // Vector database optimizations
@@ -110,7 +109,6 @@ export const databaseConfig = {
       // Production SSL is required for Neon
       ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 15000,
-      statement_timeout: 120000, // 2 minutes for complex vector queries
     }
   }
 };

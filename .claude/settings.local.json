@@ -67,6 +67,7 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
       "Bash(npm ls:*)",
       "Bash(npm run test:coverage:*)"
@@ -119,6 +120,9 @@
       "Bash(pm2 start:*)"
 >>>>>>> Stashed changes
 >>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
 =======
       "Bash(pm2 start:*)"
 >>>>>>> Stashed changes

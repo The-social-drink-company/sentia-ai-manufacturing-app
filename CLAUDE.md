@@ -359,6 +359,7 @@ try {
 - Always check existing code patterns and follow the established architecture
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 ### Pre-Development Checklist
 1. **Check ESLint configuration** - Ensure proper exclusions and globals
@@ -395,6 +396,9 @@ try {
 
 This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase analysis (September 2025) and establishes enterprise-grade development standards for the Sentia Manufacturing Dashboard.
 - Raiway does not like docker and uses Nixpacks nix-based builder developed by Railway
+=======
+- app is Express/Node.js, not a static site, so Caddy shouldn't be used at all
+>>>>>>> Stashed changes
 =======
 - app is Express/Node.js, not a static site, so Caddy shouldn't be used at all
 >>>>>>> Stashed changes

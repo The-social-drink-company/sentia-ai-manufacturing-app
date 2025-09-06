@@ -1,4 +1,5 @@
-import { devLog } from '../../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
+import { devLog } from '../../lib/devLog.js';
+import React, { useState, useEffect } from 'react';
 import { Download, Upload, Trash2, Edit, Plus } from 'lucide-react';
 
 const ImportTemplateManager = () => {

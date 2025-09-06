@@ -1,4 +1,5 @@
-import { devLog } from '../../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
+import { devLog } from '../../lib/devLog.js';
+import React, { useState, useEffect } from 'react';
 import { Upload, BarChart3, Clock, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 
 const DataImportDashboard = () => {

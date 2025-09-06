@@ -76,7 +76,8 @@
       "Bash(set VITE_API_BASE_URL=https://sentia-manufacturing-dashboard.fly.dev/api)",
       "WebFetch(domain:sentia-manufacturing-dashboard-production.up.railway.app)",
       "Bash(railway variables set:*)",
-      "Bash(railway variables:*)"
+      "Bash(railway variables:*)",
+      "Bash(pm2 restart:*)"
     ],
     "deny": [],
     "ask": []

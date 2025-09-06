@@ -3,7 +3,7 @@ app = "sentia-manufacturing-dashboard"
 primary_region = "lhr"
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = "Dockerfile.simple"
 
 [env]
   NODE_ENV = "production"

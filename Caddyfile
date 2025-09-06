@@ -1,0 +1,49 @@
+:{$PORT:8080} {
+    # Enable gzip compression
+    encode gzip
+    
+    # Serve static files from dist directory
+    root * /app/dist
+    
+    # SPA configuration - serve index.html for all routes
+    try_files {path} /index.html
+    
+    # File server with browse disabled
+    file_server
+    
+    # Security headers
+    header {
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Content-Security-Policy "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https: wss:;"
+    }
+    
+    # CORS headers for API calls
+    header /api/* {
+        Access-Control-Allow-Origin "*"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization"
+    }
+    
+    # Cache static assets
+    header /assets/* {
+        Cache-Control "public, max-age=31536000, immutable"
+    }
+    
+    header /js/* {
+        Cache-Control "public, max-age=31536000, immutable"
+    }
+    
+    # Health check endpoint
+    handle /health {
+        respond "OK" 200
+    }
+    
+    # Logging
+    log {
+        output stdout
+        format console
+    }
+}

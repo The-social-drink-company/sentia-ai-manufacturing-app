@@ -1,30 +1,41 @@
 # nixpacks.toml
-# Configuration for Railway deployment using Nixpacks  
-# Use default Node.js auto-detection to avoid conflicts
+# Production-ready Railway deployment configuration
+# Optimized for Sentia Manufacturing Dashboard with Caddy
 
 providers = ["node"]
 
 [phases.setup]
-# Minimal setup - let Nixpacks handle Node.js version
-aptPkgs = []
-pythonPackages = []
+# Install Caddy for static file serving
+aptPkgs = ["curl", "ca-certificates"]
+nixPkgs = ["caddy"]
 
 [phases.install]
-cmds = ["npm ci --prefer-offline --no-audit"]
+# Clean install with optimizations
+cmds = [
+    "npm ci --prefer-offline --no-audit --silent",
+    "npm cache clean --force"
+]
 
 [phases.build]
-# Skip cache mount entirely to avoid conflicts
-cmds = ["npm run build"]
-cacheDirectories = []
+# Build React app and prepare for Caddy
+cmds = [
+    "npm run build",
+    "ls -la dist/ || echo 'No dist folder found'",
+    "test -f dist/index.html || echo 'ERROR: index.html not found in dist'"
+]
+cacheDirectories = ["node_modules", ".npm"]
 
 [start]
-cmd = "npm start"
+# Use Caddy to serve static files - this fixes all Railway deployment issues
+cmd = "caddy run --config Caddyfile --adapter caddyfile"
 
 [variables]
 NODE_ENV = "production"
 NPM_CONFIG_PRODUCTION = "false"
-# Fallback environment variables to prevent empty key errors
-UNLEASHED_API_ID = ""
-UNLEASHED_API_KEY = ""
-# Cache bust to force rebuilds with correct Node version  
-BUILD_CACHE_VERSION = "v2-node18-fix"
+# Ensure PORT is available for Caddy
+PORT = "8080"
+# Database connection optimization
+DATABASE_CONNECTION_LIMIT = "5"
+DATABASE_IDLE_TIMEOUT = "30000"
+# Build optimization
+BUILD_CACHE_VERSION = "v3-caddy-static-fix"

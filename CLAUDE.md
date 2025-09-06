@@ -392,3 +392,4 @@ try {
 - **Breaking changes**: Document any changes that affect existing functionality
 
 This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase analysis (September 2025) and establishes enterprise-grade development standards for the Sentia Manufacturing Dashboard.
+- Raiway does not like docker and uses Nixpacks nix-based builder developed by Railway

@@ -4,6 +4,7 @@ import ForecastingService from '../services/forecasting/ForecastingService.js';
 import FeatureEngineeringService from '../services/forecasting/FeatureEngineeringService.js';
 import CFOWorkbenchService from '../services/forecasting/CFOWorkbenchService.js';
 import AccuracyDashboardService from '../services/forecasting/AccuracyDashboardService.js';
+import { logError } from '../services/logger.js';
 
 const router = express.Router();
 
@@ -225,7 +226,7 @@ router.post('/forecast/jobs/:jobId/cancel', async (req, res) => {
 router.get('/forecast/series/:seriesId/diagnostics', async (req, res) => {
   try {
     const { seriesId } = req.params;
-    const { models = ['Ensemble'] } = req.query;
+    // Extract seriesId from params
 
     // Load time series data
     const timeSeriesData = await forecastingService.loadTimeSeriesData(seriesId);

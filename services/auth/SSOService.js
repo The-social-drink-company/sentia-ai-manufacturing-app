@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { logInfo, logWarn, logError } from '../logger.js';
 
 /**
@@ -350,7 +351,7 @@ class SSOService {
     try {
       // In a real implementation, this would integrate with Clerk's user creation API
       // For now, create a mock user record
-      const userId = require('crypto').randomUUID();
+      const userId = crypto.randomUUID();
       
       const query = `
         INSERT INTO users (

@@ -1,4 +1,5 @@
 /**
+<<<<<<< HEAD
  * Development-only logging utility
  * Provides console logging that's automatically disabled in production
  * Use this for debugging that should never reach production builds
@@ -172,3 +173,28 @@ export const featureLog = (feature) => ({
 });
 
 export default devLog;
+=======
+ * Development logging utility
+ * Only logs in development mode
+ */
+
+export const devLog = (...args) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[DEV]', ...args);
+  }
+};
+
+export const devWarn = (...args) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('[DEV WARNING]', ...args);
+  }
+};
+
+export const devError = (...args) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.error('[DEV ERROR]', ...args);
+  }
+};
+
+export default { devLog, devWarn, devError };
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7

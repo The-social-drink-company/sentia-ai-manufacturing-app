@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { logError } from '../../lib/logger';
+=======
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
 import { 
   CheckCircleIcon, 
   XCircleIcon, 
@@ -37,7 +40,11 @@ const APIStatusDashboard = () => {
       setHealthMetrics(diagnosticsData.metrics || {});
       setLastUpdated(new Date());
     } catch (error) {
+<<<<<<< HEAD
       logError('Failed to fetch API status', error, { component: 'APIStatusDashboard' });
+=======
+      console.error('Failed to fetch API status:', error);
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
     } finally {
       setLoading(false);
     }

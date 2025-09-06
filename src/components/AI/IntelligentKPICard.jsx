@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react';
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
@@ -76,7 +77,11 @@ const IntelligentKPICard = ({
         ].slice(0, 3));
       }
     } catch (error) {
+<<<<<<< HEAD
       logError('Failed to analyze metric', error, { component: 'IntelligentKPICard', metric: metric?.name });
+=======
+      devLog.error('Failed to analyze metric:', error);
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
     } finally {
       setIsLoading(false);
     }

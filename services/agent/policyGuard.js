@@ -5,7 +5,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-import { logError, logWarn, logInfo } from '../observability/structuredLogger.js';
+import { logError, logWarn } from '../observability/structuredLogger.js';
 import { createHash } from 'crypto';
 
 const prisma = new PrismaClient();

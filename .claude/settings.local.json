@@ -63,8 +63,58 @@
       "Bash(touch:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr edit:*)",
+<<<<<<< HEAD
       "Bash(npm ls:*)",
       "Bash(npm run test:coverage:*)"
+=======
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+      "Bash(pm2 status:*)",
+      "Bash(pm2 logs:*)",
+      "Bash(pm2 stop:*)",
+      "Bash(pm2 delete:*)",
+      "Bash(timeout:*)",
+      "Bash(pm2 start:*)",
+      "Bash(flyctl:*)",
+      "Bash(C:UsersUser.flybinflyctl.exe --version)",
+      "Bash(git fetch:*)",
+      "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_test_placeholder)",
+      "Bash(set VITE_API_BASE_URL=https://sentia-manufacturing-dashboard.fly.dev/api)",
+      "WebFetch(domain:sentia-manufacturing-dashboard-production.up.railway.app)",
+      "Bash(railway variables set:*)",
+      "Bash(railway variables:*)",
+      "Bash(pm2 restart:*)"
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
     ],
     "deny": [],
     "ask": []

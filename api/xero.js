@@ -7,6 +7,7 @@ const express = require('express');
 const { logError } = require('../services/observability/structuredLogger');
 const router = express.Router();
 const XeroService = require('../services/xeroService');
+const { logError } = require('../services/logger');
 
 // Initialize Xero service
 const xeroService = new XeroService();
@@ -39,7 +40,7 @@ router.get('/auth', (req, res) => {
  */
 router.get('/callback', async (req, res) => {
   try {
-    const { code, state } = req.query;
+    const { code } = req.query;
     
     if (!code) {
       return res.status(400).json({
@@ -402,4 +403,4 @@ router.get('/test', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

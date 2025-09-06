@@ -11,6 +11,7 @@ import WorkingCapitalService from '../services/optimization/WorkingCapitalServic
 import DiagnosticsService from '../services/optimization/DiagnosticsService.js';
 import CFOReportingService from '../services/optimization/CFOReportingService.js';
 import JobManagerService from '../services/optimization/JobManagerService.js';
+import { logError } from '../services/logger.js';
 
 const router = express.Router();
 

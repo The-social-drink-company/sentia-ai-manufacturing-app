@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import { logInfo, logWarn, logError } from '../logger.js';
 
 /**
@@ -370,7 +371,6 @@ class PasswordService {
    * @returns {string} Secure random token
    */
   generateSecureToken(length = 32) {
-    const crypto = require('crypto');
     return crypto.randomBytes(length).toString('hex');
   }
 

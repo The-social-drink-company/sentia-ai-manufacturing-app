@@ -143,7 +143,7 @@ router.get('/dq/freshness', checkFeatureEnabled, async (req, res) => {
 // GET /dq/lineage - Get lineage information
 router.get('/dq/lineage', checkFeatureEnabled, async (req, res) => {
   try {
-    const { dataset, importJobId, limit = 10 } = req.query;
+    const { importJobId, limit = 10 } = req.query;
     
     const where = {};
     if (importJobId) {

@@ -1,0 +1,58 @@
+# Fly.io ignore file
+node_modules
+.git
+.gitignore
+README.md
+.dockerignore
+.nyc_output
+coverage
+.coverage
+*.log
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Development files
+.env.local
+.env.development
+.env.test
+
+# Build artifacts
+dist/
+build/
+
+# Test files
+tests/
+test/
+**/*.test.*
+**/*.spec.*
+coverage/
+.nyc_output
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+.cache/
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

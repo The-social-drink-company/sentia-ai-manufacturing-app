@@ -1,41 +1,40 @@
 # nixpacks.toml
 # Production-ready Railway deployment configuration
-# Optimized for Sentia Manufacturing Dashboard with Caddy
+# Full-stack deployment: Node.js backend + React frontend
 
 providers = ["node"]
 
 [phases.setup]
-# Install Caddy for static file serving
-aptPkgs = ["curl", "ca-certificates"]
-nixPkgs = ["caddy"]
+# No additional setup needed - Node.js handles everything
 
 [phases.install]
 # Clean install with optimizations
 cmds = [
-    "npm ci --prefer-offline --no-audit --silent",
+    "npm ci --prefer-offline --no-audit",
     "npm cache clean --force"
 ]
 
 [phases.build]
-# Build React app and prepare for Caddy
+# Build React app for production
 cmds = [
+    "echo 'Building React frontend...'",
     "npm run build",
-    "ls -la dist/ || echo 'No dist folder found'",
-    "test -f dist/index.html || echo 'ERROR: index.html not found in dist'"
+    "echo 'Build complete. Checking dist folder...'",
+    "ls -la dist/ || echo 'WARNING: dist folder not found'",
+    "test -f dist/index.html && echo 'SUCCESS: index.html found' || echo 'ERROR: index.html missing'"
 ]
-cacheDirectories = ["node_modules", ".npm"]
+cacheDirectories = ["node_modules", ".npm", "dist"]
 
 [start]
-# Use Caddy to serve static files - this fixes all Railway deployment issues
-cmd = "caddy run --config Caddyfile --adapter caddyfile"
+# Start Node.js server which serves both API and static files
+cmd = "node server.js"
 
 [variables]
 NODE_ENV = "production"
 NPM_CONFIG_PRODUCTION = "false"
-# Ensure PORT is available for Caddy
-PORT = "8080"
+# Railway provides PORT automatically - server.js uses it
 # Database connection optimization
 DATABASE_CONNECTION_LIMIT = "5"
 DATABASE_IDLE_TIMEOUT = "30000"
 # Build optimization
-BUILD_CACHE_VERSION = "v3-caddy-static-fix"
+BUILD_CACHE_VERSION = "v4-fullstack-fix"

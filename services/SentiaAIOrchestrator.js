@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
-import logger, { logInfo, logError, logWarn } from './logger.js';
+import { setTimeout, setInterval } from 'timers';
+import { logInfo, logError, logWarn } from './logger.js';
 import agentMonitor from './ai/agentMonitor.js';
 import agentMonitoring from './ai/agentMonitoring.js';
 

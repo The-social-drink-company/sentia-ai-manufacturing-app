@@ -1,6 +1,16 @@
 
 // Memory Optimization and Leak Detection for Sentia Dashboard
+<<<<<<< HEAD
 import { devLog } from '../lib/devLog.js';
+=======
+
+// Development-only logger
+const devLog = {
+  log: (...args) => { if (process.env.NODE_ENV === 'development') console.log(...args); },
+  warn: (...args) => { if (process.env.NODE_ENV === 'development') console.warn(...args); },
+  info: (...args) => { if (process.env.NODE_ENV === 'development') console.info(...args); }
+};
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
 
 class MemoryMonitor {
   constructor() {
@@ -23,7 +33,11 @@ class MemoryMonitor {
     // Set up performance observers
     this.setupPerformanceObservers();
     
+<<<<<<< HEAD
     devLog.log('Memory monitoring started');
+=======
+    devLog.info('Memory monitoring started');
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
   }
 
   stopMonitoring() {
@@ -38,7 +52,11 @@ class MemoryMonitor {
     this.observers.forEach(observer => observer.disconnect());
     this.observers = [];
     
+<<<<<<< HEAD
     devLog.log('Memory monitoring stopped');
+=======
+    devLog.info('Memory monitoring stopped');
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
   }
 
   recordMemoryUsage() {
@@ -178,7 +196,11 @@ export const withMemoryOptimization = (Component) => {
         // Component unmounting - cleanup check
         const lifetime = Date.now() - mountTime;
         if (lifetime > 300000) { // 5 minutes
+<<<<<<< HEAD
           devLog.log(`Long-lived component unmounting: ${Component.name}, lifetime: ${lifetime}ms`);
+=======
+          devLog.info(`Long-lived component unmounting: ${Component.name}, lifetime: ${lifetime}ms`);
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
         }
       };
     }, []);

@@ -1,0 +1,239 @@
+{
+  "timestamp": "2025-09-06T07:51:23.792Z",
+  "summary": {
+    "totalTests": 27,
+    "totalPassed": 6,
+    "totalWarned": 3,
+    "totalFailed": 18
+  },
+  "environments": [
+    {
+      "environment": "Production",
+      "url": "https://sentia-manufacturing.railway.app",
+      "branch": "production",
+      "tests": [
+        {
+          "name": "SSL Certificate and Domain Resolution",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Health Check Endpoints",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "CSS and Static Asset Loading",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "API Endpoints Functionality",
+          "critical": true,
+          "status": "PASS",
+          "details": "/api/test: ERROR - fetch is not a function, /api/metrics/current: ERROR - fetch is not a function, /api/kpis/realtime: ERROR - fetch is not a function",
+          "duration": "1ms"
+        },
+        {
+          "name": "Database Connectivity",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "AI Forecasting Service",
+          "critical": false,
+          "status": "WARN",
+          "details": "AI Forecasting: Not available - fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Multi-Market Data Validation",
+          "critical": true,
+          "status": "PASS",
+          "details": "UK: ERROR, USA: ERROR, EU: ERROR, ASIA: ERROR",
+          "duration": "0ms"
+        },
+        {
+          "name": "Security Headers Validation",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Performance Metrics",
+          "critical": false,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        }
+      ],
+      "summary": {
+        "passed": 2,
+        "warned": 1,
+        "failed": 6,
+        "total": 9
+      }
+    },
+    {
+      "environment": "Testing",
+      "url": "https://test.sentia-manufacturing.railway.app",
+      "branch": "test",
+      "tests": [
+        {
+          "name": "SSL Certificate and Domain Resolution",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Health Check Endpoints",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "CSS and Static Asset Loading",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "1ms"
+        },
+        {
+          "name": "API Endpoints Functionality",
+          "critical": true,
+          "status": "PASS",
+          "details": "/api/test: ERROR - fetch is not a function, /api/metrics/current: ERROR - fetch is not a function, /api/kpis/realtime: ERROR - fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Database Connectivity",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "AI Forecasting Service",
+          "critical": false,
+          "status": "WARN",
+          "details": "AI Forecasting: Not available - fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Multi-Market Data Validation",
+          "critical": true,
+          "status": "PASS",
+          "details": "UK: ERROR, USA: ERROR, EU: ERROR, ASIA: ERROR",
+          "duration": "0ms"
+        },
+        {
+          "name": "Security Headers Validation",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Performance Metrics",
+          "critical": false,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        }
+      ],
+      "summary": {
+        "passed": 2,
+        "warned": 1,
+        "failed": 6,
+        "total": 9
+      }
+    },
+    {
+      "environment": "Development",
+      "url": "https://dev.sentia-manufacturing.railway.app",
+      "branch": "development",
+      "tests": [
+        {
+          "name": "SSL Certificate and Domain Resolution",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Health Check Endpoints",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "CSS and Static Asset Loading",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "API Endpoints Functionality",
+          "critical": true,
+          "status": "PASS",
+          "details": "/api/test: ERROR - fetch is not a function, /api/metrics/current: ERROR - fetch is not a function, /api/kpis/realtime: ERROR - fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Database Connectivity",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "AI Forecasting Service",
+          "critical": false,
+          "status": "WARN",
+          "details": "AI Forecasting: Not available - fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Multi-Market Data Validation",
+          "critical": true,
+          "status": "PASS",
+          "details": "UK: ERROR, USA: ERROR, EU: ERROR, ASIA: ERROR",
+          "duration": "0ms"
+        },
+        {
+          "name": "Security Headers Validation",
+          "critical": true,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "0ms"
+        },
+        {
+          "name": "Performance Metrics",
+          "critical": false,
+          "status": "FAIL",
+          "details": "fetch is not a function",
+          "duration": "1ms"
+        }
+      ],
+      "summary": {
+        "passed": 2,
+        "warned": 1,
+        "failed": 6,
+        "total": 9
+      }
+    }
+  ]
+}

@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import { devLog } from '../lib/devLog.js';\nimport React, { useState, useCallback } from 'react';
+=======
+import { devLog } from '../../lib/devLog.js';
+import React, { useState, useCallback } from 'react';
+>>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

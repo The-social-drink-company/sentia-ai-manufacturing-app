@@ -80,6 +80,7 @@
 <<<<<<< Updated upstream
 <<<<<<< HEAD
       "Bash(npm ls:*)",
+<<<<<<< HEAD
       "Bash(npm run test:coverage:*)"
 =======
 <<<<<<< Updated upstream
@@ -175,6 +176,10 @@
 =======
       "Bash(pm2 start:*)"
 >>>>>>> Stashed changes
+=======
+      "Bash(npm run test:coverage:*)",
+      "Bash(git cherry-pick:*)"
+>>>>>>> development
     ],
     "deny": [],
     "ask": []

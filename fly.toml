@@ -34,7 +34,7 @@ primary_region = "lhr"
   memory_mb = 2048
 
 [deploy]
-  release_command = "npx prisma migrate deploy && npx prisma generate"
+  # release_command = "npx prisma migrate deploy && npx prisma generate"
 
 [[statics]]
   guest_path = "/app/dist"

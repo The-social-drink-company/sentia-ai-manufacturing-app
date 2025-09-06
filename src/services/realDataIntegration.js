@@ -1,4 +1,4 @@
-// Comprehensive Real Data Integration Service
+import { devLog } from '../lib/devLog.js';\n// Comprehensive Real Data Integration Service
 // Handles all external data sources: Unleashed, Amazon, Shopify, Spreadsheets
 
 const API_BASE = process.env.API_BASE_URL || 'http://localhost:5000/api'
@@ -68,7 +68,7 @@ class RealDataIntegrationService {
         return data
       }
     } catch (error) {
-      console.error('Unleashed API error:', error)
+      devLog.error('Unleashed API error:', error)
     }
 
     // Return structured empty data instead of null
@@ -117,7 +117,7 @@ class RealDataIntegrationService {
         return data
       }
     } catch (error) {
-      console.error('Amazon SP-API error:', error)
+      devLog.error('Amazon SP-API error:', error)
     }
 
     return this.getDefaultDataStructure(endpoint)
@@ -157,7 +157,7 @@ class RealDataIntegrationService {
         return data
       }
     } catch (error) {
-      console.error('Shopify API error:', error)
+      devLog.error('Shopify API error:', error)
     }
 
     return this.getDefaultDataStructure(endpoint)
@@ -203,7 +203,7 @@ class RealDataIntegrationService {
         }
       }
     } catch (error) {
-      console.error('Spreadsheet upload error:', error)
+      devLog.error('Spreadsheet upload error:', error)
     }
 
     return {
@@ -270,7 +270,7 @@ class RealDataIntegrationService {
         return await response.json()
       }
     } catch (error) {
-      console.error('Production metrics error:', error)
+      devLog.error('Production metrics error:', error)
     }
 
     return {
@@ -317,7 +317,7 @@ class RealDataIntegrationService {
     }
 
     eventSource.onerror = (error) => {
-      console.error('SSE error:', error)
+      devLog.error('SSE error:', error)
       eventSource.close()
       // Retry connection after delay
       setTimeout(() => this.subscribeToUpdates(callback), 5000)

@@ -72,7 +72,7 @@ const sendToLogService = async (entry) => {
   } catch (error) {
     // Silently fail - don't break the app for logging issues
     if (import.meta.env.DEV) {
-      console.warn('Failed to send log to service:', error);
+      devLog.warn('Failed to send log to service:', error);
     }
   }
 };
@@ -92,7 +92,7 @@ const log = (level, message, metadata = {}) => {
     const consoleMethod = console[level] || console.log;
     consoleMethod(`[${level.toUpperCase()}] ${message}`, metadata);
   } else {
-    console.log(JSON.stringify(entry));
+    devLog.log(JSON.stringify(entry));
   }
 
   // Send to external log service if configured
@@ -246,17 +246,17 @@ export const getCorrelationId = () => {
 export const devLog = {
   log: (...args) => {
     if (import.meta.env.DEV) {
-      console.log('[DEV]', ...args);
+      devLog.log('[DEV]', ...args);
     }
   },
   warn: (...args) => {
     if (import.meta.env.DEV) {
-      console.warn('[DEV]', ...args);
+      devLog.warn('[DEV]', ...args);
     }
   },
   error: (...args) => {
     if (import.meta.env.DEV) {
-      console.error('[DEV]', ...args);
+      devLog.error('[DEV]', ...args);
     }
   },
   table: (data) => {

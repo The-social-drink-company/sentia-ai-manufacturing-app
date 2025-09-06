@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Chart as ChartJS,
@@ -47,7 +47,7 @@ function TestWorkingCapital() {
         const data = await response.json()
         setWorkingCapitalData(data)
       } catch (error) {
-        console.error('Failed to fetch real working capital data:', error)
+        devLog.error('Failed to fetch real working capital data:', error)
       }
     }
     

@@ -218,8 +218,8 @@ router.get('/health', (req, res) => {
       
       if (!content.includes('/health')) {
         const updated = content.replace(
-          'app.use(\\'/api\\'',
-          healthRoute + '\\n\\napp.use(\\'/api\\''
+          "app.use('/api'",
+          healthRoute + "\n\napp.use('/api'"
         );
         
         await fs.writeFile(serverFile, updated);

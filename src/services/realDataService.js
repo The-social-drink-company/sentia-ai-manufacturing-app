@@ -1,4 +1,4 @@
-// Real Data Service - Connects to actual external APIs
+import { devLog } from '../lib/devLog.js';\n// Real Data Service - Connects to actual external APIs
 // NO MOCK DATA - Only real production data
 
 const API_BASE = process.env.API_BASE_URL || 'http://localhost:5000/api'
@@ -22,7 +22,7 @@ export const fetchRealKPIs = async () => {
     }
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch real KPIs:', error)
+    devLog.error('Failed to fetch real KPIs:', error)
     // Return zeros instead of mock data
     return { revenue: 0, orders: 0, efficiency: 0, quality: 0 }
   }
@@ -35,7 +35,7 @@ export const fetchAmazonData = async () => {
     if (!response.ok) throw new Error('Amazon API unavailable')
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch Amazon data:', error)
+    devLog.error('Failed to fetch Amazon data:', error)
     return { orders: [], revenue: 0, units: 0 }
   }
 }
@@ -47,7 +47,7 @@ export const fetchShopifyData = async () => {
     if (!response.ok) throw new Error('Shopify API unavailable')
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch Shopify data:', error)
+    devLog.error('Failed to fetch Shopify data:', error)
     return { sales: 0, orders: 0, customers: 0 }
   }
 }
@@ -59,7 +59,7 @@ export const fetchUnleashedInventory = async () => {
     if (!response.ok) throw new Error('Unleashed API unavailable')
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch Unleashed data:', error)
+    devLog.error('Failed to fetch Unleashed data:', error)
     return { items: [], totalValue: 0 }
   }
 }
@@ -71,7 +71,7 @@ export const fetchProductionMetrics = async () => {
     if (!response.ok) throw new Error('Production API unavailable')
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch production metrics:', error)
+    devLog.error('Failed to fetch production metrics:', error)
     return { unitsProduced: 0, efficiency: 0, defectRate: 0, oee: 0 }
   }
 }
@@ -87,7 +87,7 @@ export const fetchFinancialData = async () => {
     }
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch financial data:', error)
+    devLog.error('Failed to fetch financial data:', error)
     return { ebitda: 0, grossMargin: 0, cashFlow: 0, roi: 0 }
   }
 }
@@ -99,7 +99,7 @@ export const fetchDemandForecast = async () => {
     if (!response.ok) throw new Error('Forecast API unavailable')
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch demand forecast:', error)
+    devLog.error('Failed to fetch demand forecast:', error)
     return { forecast: [], accuracy: 0 }
   }
 }
@@ -111,7 +111,7 @@ export const fetchMaintenanceAlerts = async () => {
     if (!response.ok) throw new Error('Maintenance API unavailable')
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch maintenance data:', error)
+    devLog.error('Failed to fetch maintenance data:', error)
     return { alerts: [], nextMaintenance: null }
   }
 }
@@ -132,7 +132,7 @@ export const fetchMultiChannelSales = async () => {
       total: (amazon.revenue || 0) + (shopify.sales || 0) + (direct.sales || 0)
     }
   } catch (error) {
-    console.error('Failed to fetch multi-channel sales:', error)
+    devLog.error('Failed to fetch multi-channel sales:', error)
     return { amazon: 0, shopify: 0, direct: 0, total: 0 }
   }
 }
@@ -144,7 +144,7 @@ export const fetchWorkingCapital = async () => {
     if (!response.ok) throw new Error('Working capital API unavailable')
     return await response.json()
   } catch (error) {
-    console.error('Failed to fetch working capital:', error)
+    devLog.error('Failed to fetch working capital:', error)
     return { arDays: 0, apDays: 0, cashCycle: 0, workingCapital: 0 }
   }
 }
@@ -160,12 +160,12 @@ export const connectToRealTimeData = (onUpdate) => {
       const data = JSON.parse(event.data)
       onUpdate(data)
     } catch (error) {
-      console.error('Failed to parse real-time data:', error)
+      devLog.error('Failed to parse real-time data:', error)
     }
   }
   
   ws.onerror = (error) => {
-    console.error('WebSocket error:', error)
+    devLog.error('WebSocket error:', error)
   }
   
   return ws

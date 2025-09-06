@@ -200,7 +200,12 @@ class AutonomousOrchestrator {
       console.log(`✅ Switched to branch: ${branch}`);
     } catch (error) {
       // Try to create branch if it doesn't exist
-      await execAsync(`git checkout -b ${branch} origin/${branch}`);
+      try {
+        await execAsync(`git checkout -b ${branch} origin/${branch}`);
+      } catch (createError) {
+        // Branch exists locally but not checked out properly
+        await execAsync(`git checkout ${branch} --force`);
+      }
     }
   }
 

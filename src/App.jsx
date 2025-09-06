@@ -26,7 +26,7 @@ const queryClient = new QueryClient({
 })
 
 // Import AI Enhanced Dashboard as the main dashboard
-import AIEnhancedDashboard from './pages/AIEnhancedDashboard'
+
 // Lazy load other pages
 const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
 const AdminPortal = lazy(() => import('./pages/AdminPortal'))

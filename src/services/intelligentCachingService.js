@@ -1,4 +1,4 @@
-
+import { devLog } from '../lib/devLog.js';\n
 // Intelligent Caching Service - Enterprise Grade
 class IntelligentCachingService {
   constructor() {
@@ -52,7 +52,7 @@ class IntelligentCachingService {
       this.stats.sets++;
       return true;
     } catch (error) {
-      console.error('Cache set error:', error);
+      devLog.error('Cache set error:', error);
       return false;
     }
   }
@@ -87,7 +87,7 @@ class IntelligentCachingService {
         this.decompress(entry.value) : entry.value;
       return JSON.parse(value);
     } catch (error) {
-      console.error('Cache get error:', error);
+      devLog.error('Cache get error:', error);
       this.delete(key);
       return null;
     }
@@ -168,7 +168,7 @@ class IntelligentCachingService {
     }
 
     if (cleaned > 0) {
-      console.log(`Cache cleanup: removed ${cleaned} expired entries`);
+      devLog.log(`Cache cleanup: removed ${cleaned} expired entries`);
     }
   }
 

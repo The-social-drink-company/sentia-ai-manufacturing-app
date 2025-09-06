@@ -1,40 +1,8 @@
-# nixpacks.toml
-# Production-ready Railway deployment configuration
-# Full-stack deployment: Node.js backend + React frontend
-
-providers = ["node"]
-
-[phases.setup]
-# No additional setup needed - Node.js handles everything
-
-[phases.install]
-# Clean install with optimizations
-cmds = [
-    "npm ci --prefer-offline --no-audit",
-    "npm cache clean --force"
-]
+﻿[phases.setup]
+nixPkgs = ["nodejs_18", "npm-9_x"]
 
 [phases.build]
-# Build React app for production
-cmds = [
-    "echo 'Building React frontend...'",
-    "npm run build",
-    "echo 'Build complete. Checking dist folder...'",
-    "ls -la dist/ || echo 'WARNING: dist folder not found'",
-    "test -f dist/index.html && echo 'SUCCESS: index.html found' || echo 'ERROR: index.html missing'"
-]
-cacheDirectories = ["node_modules", ".npm", "dist"]
+cmds = ["npm ci", "npm run build"]
 
 [start]
-# Start Node.js server which serves both API and static files
 cmd = "node server.js"
-
-[variables]
-NODE_ENV = "production"
-NPM_CONFIG_PRODUCTION = "false"
-# Railway provides PORT automatically - server.js uses it
-# Database connection optimization
-DATABASE_CONNECTION_LIMIT = "5"
-DATABASE_IDLE_TIMEOUT = "30000"
-# Build optimization
-BUILD_CACHE_VERSION = "v4-fullstack-fix"

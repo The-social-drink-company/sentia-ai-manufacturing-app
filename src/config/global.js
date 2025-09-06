@@ -1,4 +1,4 @@
-// Global Configuration Module
+import { devLog } from '../lib/devLog.js';\n// Global Configuration Module
 // Provides global readiness settings for multi-region support
 
 import { z } from 'zod';
@@ -92,7 +92,7 @@ const loadGlobalConfig = () => {
   try {
     return GlobalConfigSchema.parse(config);
   } catch (error) {
-    console.error('Global configuration validation failed:', error.errors);
+    devLog.error('Global configuration validation failed:', error.errors);
     // Return default configuration if validation fails
     return GlobalConfigSchema.parse({});
   }
@@ -260,7 +260,7 @@ export const auditConfigChange = (userId, changes, previousConfig) => {
   };
   
   // In production, this would send to audit log service
-  console.log('Configuration audit:', auditEntry);
+  devLog.log('Configuration audit:', auditEntry);
   return auditEntry;
 };
 

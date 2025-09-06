@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react'
 // Temporarily remove Clerk imports to fix Application Error
 // import { useAuth, useUser } from '@clerk/clerk-react'
 import axios from 'axios'
@@ -57,7 +57,7 @@ function WorkingCapitalDashboard() {
       setDashboardData(response.data.data)
 
     } catch (err) {
-      console.error('Dashboard data fetch error:', err)
+      devLog.error('Dashboard data fetch error:', err)
       setError(`Failed to fetch working capital data: ${err.response?.data?.error || err.message}`)
     } finally {
       setLoading(false)

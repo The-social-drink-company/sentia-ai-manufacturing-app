@@ -1,4 +1,4 @@
-import redisCache from './redis.js';
+import { devLog } from '../lib/devLog.js';\nimport redisCache from './redis.js';
 
 class DatabaseOptimization {
   constructor() {
@@ -21,7 +21,7 @@ class DatabaseOptimization {
     if (useCache && cacheKey) {
       const cached = await redisCache.get(`query:${cacheKey}`);
       if (cached) {
-        console.log(`📊 Cache hit for query: ${cacheKey}`);
+        devLog.log(`📊 Cache hit for query: ${cacheKey}`);
         return cached;
       }
     }
@@ -36,14 +36,14 @@ class DatabaseOptimization {
 
       // Execute query with performance monitoring
       const startTime = Date.now();
-      console.log(`🔍 Executing query: ${optimizedSql.substring(0, 100)}...`);
+      devLog.log(`🔍 Executing query: ${optimizedSql.substring(0, 100)}...`);
       
       // In a real implementation, this would use your actual database connection
       // For now, we'll simulate the optimized query execution
       const result = await this.simulateOptimizedQuery(optimizedSql, params);
       
       const executionTime = Date.now() - startTime;
-      console.log(`⚡ Query executed in ${executionTime}ms`);
+      devLog.log(`⚡ Query executed in ${executionTime}ms`);
 
       // Cache the result if requested
       if (useCache && cacheKey && result) {
@@ -52,13 +52,13 @@ class DatabaseOptimization {
 
       // Log slow queries for optimization
       if (executionTime > 1000) {
-        console.warn(`🐌 Slow query detected (${executionTime}ms): ${optimizedSql}`);
+        devLog.warn(`🐌 Slow query detected (${executionTime}ms): ${optimizedSql}`);
         await this.logSlowQuery(optimizedSql, params, executionTime);
       }
 
       return result;
     } catch (error) {
-      console.error('❌ Database query error:', error);
+      devLog.error('❌ Database query error:', error);
       throw error;
     }
   }
@@ -86,7 +86,7 @@ class DatabaseOptimization {
 
   // Database connection pool optimization
   initializeConnectionPool(config) {
-    console.log('🔗 Initializing optimized database connection pool');
+    devLog.log('🔗 Initializing optimized database connection pool');
     
     const poolConfig = {
       ...config,
@@ -102,7 +102,7 @@ class DatabaseOptimization {
       propagateCreateError: false
     };
 
-    console.log('✅ Connection pool initialized with enterprise settings');
+    devLog.log('✅ Connection pool initialized with enterprise settings');
     return poolConfig;
   }
 
@@ -144,13 +144,13 @@ class DatabaseOptimization {
       });
     }
 
-    console.log(`📈 Generated ${recommendations.length} database optimization recommendations`);
+    devLog.log(`📈 Generated ${recommendations.length} database optimization recommendations`);
     return recommendations;
   }
 
   // Query plan analysis
   async explainQuery(sql, params = []) {
-    console.log(`🔬 Analyzing query plan for: ${sql}`);
+    devLog.log(`🔬 Analyzing query plan for: ${sql}`);
     
     // Simulate EXPLAIN output
     const plan = {
@@ -170,7 +170,7 @@ class DatabaseOptimization {
       plan.recommendations.push('Multiple table scans detected - consider query optimization');
     }
 
-    console.log('📊 Query plan analysis complete:', plan);
+    devLog.log('📊 Query plan analysis complete:', plan);
     return plan;
   }
 
@@ -194,7 +194,7 @@ class DatabaseOptimization {
     }
 
     await redisCache.set('slow_queries', recentSlowQueries, 3600); // 1 hour TTL
-    console.log(`📝 Logged slow query: ${executionTime}ms`);
+    devLog.log(`📝 Logged slow query: ${executionTime}ms`);
   }
 
   // Database health monitoring
@@ -215,7 +215,7 @@ class DatabaseOptimization {
 
   // Cleanup and maintenance
   async performMaintenance() {
-    console.log('🔧 Starting database maintenance tasks');
+    devLog.log('🔧 Starting database maintenance tasks');
     
     const tasks = [
       'ANALYZE TABLE users, dashboard_widgets, manufacturing_data',
@@ -226,11 +226,11 @@ class DatabaseOptimization {
     ];
 
     for (const task of tasks) {
-      console.log(`⚙️ ${task}`);
+      devLog.log(`⚙️ ${task}`);
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate task
     }
 
-    console.log('✅ Database maintenance completed');
+    devLog.log('✅ Database maintenance completed');
     return { success: true, tasks_completed: tasks.length };
   }
 }

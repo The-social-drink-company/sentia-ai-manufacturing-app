@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { Component } from 'react'
 
 // Universal error boundary for all widgets
 class WidgetErrorBoundary extends Component {
@@ -12,7 +12,7 @@ class WidgetErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error(`Widget error in ${this.props.widgetName}:`, error, errorInfo)
+    devLog.error(`Widget error in ${this.props.widgetName}:`, error, errorInfo)
   }
 
   render() {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react'
 import { 
   BuildingOfficeIcon,
   PlusIcon,
@@ -28,7 +28,7 @@ function AdminEntities() {
         setEntities(data.entities || [])
       }
     } catch (error) {
-      console.error('Failed to fetch entities:', error)
+      devLog.error('Failed to fetch entities:', error)
     } finally {
       setLoading(false)
     }
@@ -50,7 +50,7 @@ function AdminEntities() {
         setShowCreateModal(false)
       }
     } catch (error) {
-      console.error('Failed to create entity:', error)
+      devLog.error('Failed to create entity:', error)
     }
   }
 

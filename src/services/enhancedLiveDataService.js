@@ -1,4 +1,4 @@
-
+import { devLog } from '../lib/devLog.js';\n
 // Enhanced Live Data Service - Enterprise Grade
 // NO MOCK DATA ALLOWED - LIVE DATA ONLY WITH INTELLIGENT FALLBACKS
 
@@ -321,7 +321,7 @@ class EnhancedLiveDataService extends EventEmitter {
   }
 
   log(message) {
-    console.log(`[Enhanced Live Data Service] ${new Date().toISOString()}: ${message}`);
+    devLog.log(`[Enhanced Live Data Service] ${new Date().toISOString()}: ${message}`);
   }
 }
 
@@ -331,7 +331,7 @@ const enhancedLiveDataService = new EnhancedLiveDataService();
 // Auto-initialize
 if (typeof window !== 'undefined') {
   enhancedLiveDataService.initialize().catch(error => {
-    console.error('Failed to initialize Enhanced Live Data Service:', error);
+    devLog.error('Failed to initialize Enhanced Live Data Service:', error);
   });
 }
 

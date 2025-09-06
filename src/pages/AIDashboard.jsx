@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import IntelligentKPICard from '../components/AI/IntelligentKPICard';
 import ConversationalAssistant from '../components/AI/ConversationalAssistant';
@@ -47,7 +47,7 @@ const AIDashboard = () => {
         setExecutiveSummary(summary);
       }
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+      devLog.error('Failed to load dashboard data:', error);
       setDataSource('No data available - Please upload CSV/Excel or connect APIs');
       setMetrics([]);
       setHistoricalData([]);
@@ -74,7 +74,7 @@ const AIDashboard = () => {
       // Reload dashboard with new data
       await loadDashboardData();
     } catch (error) {
-      console.error('File upload failed:', error);
+      devLog.error('File upload failed:', error);
       alert('Failed to upload file: ' + error.message);
     } finally {
       setIsLoading(false);
@@ -89,7 +89,7 @@ const AIDashboard = () => {
   });
 
   const handleActionExecuted = (action) => {
-    console.log('Action executed:', action);
+    devLog.log('Action executed:', action);
     // Handle actions from the conversational assistant
     if (action.type === 'navigate') {
       setSelectedView(action.target);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport { useEffect, useRef, useState, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { queryKeys, cacheUtils } from '../services/queryClient'
 
@@ -227,7 +227,7 @@ export const useSSE = ({
       }))
       
     } catch (error) {
-      console.error('Error parsing SSE message:', error, event)
+      devLog.error('Error parsing SSE message:', error, event)
     }
   }, [onMessage, queryClient, addToEventLog])
   
@@ -262,7 +262,7 @@ export const useSSE = ({
       }
       
       eventSource.onerror = (error) => {
-        console.error('SSE connection error:', error)
+        devLog.error('SSE connection error:', error)
         
         setConnectionState(prev => ({
           connected: false,
@@ -295,7 +295,7 @@ export const useSSE = ({
       })
       
     } catch (error) {
-      console.error('Failed to create SSE connection:', error)
+      devLog.error('Failed to create SSE connection:', error)
       setConnectionState(prev => ({
         ...prev,
         connecting: false,

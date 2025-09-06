@@ -1,4 +1,4 @@
-
+import { devLog } from '../lib/devLog.js';\n
 // Enterprise Error Handling Service
 class ErrorHandlingService {
   constructor() {
@@ -56,7 +56,7 @@ class ErrorHandlingService {
     switch (errorEntry.severity) {
       case 'high':
         this.sendAlert(errorEntry);
-        console.error('[CRITICAL ERROR]', errorEntry);
+        devLog.error('[CRITICAL ERROR]', errorEntry);
         break;
       case 'medium':
         this.logWarning(errorEntry);
@@ -77,11 +77,11 @@ class ErrorHandlingService {
   }
 
   logWarning(errorEntry) {
-    console.warn('[WARNING]', errorEntry.message, errorEntry.context);
+    devLog.warn('[WARNING]', errorEntry.message, errorEntry.context);
   }
 
   logInfo(errorEntry) {
-    console.log('[INFO]', errorEntry.message);
+    devLog.log('[INFO]', errorEntry.message);
   }
 
   getErrorSummary() {

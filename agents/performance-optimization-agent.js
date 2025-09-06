@@ -285,7 +285,7 @@ class PerformanceOptimizationAgent {
           let updated = content;
           
           // Convert static imports to lazy imports for routes
-          const importRegex = /import (\\w+) from ['"](.+\\/pages\\/.+)['"]/g;
+          const importRegex = /import (\w+) from ['"](.+\/pages\/.+)['"]/g;
           const lazyImports = [];
           
           updated = updated.replace(importRegex, (match, component, path) => {
@@ -339,7 +339,7 @@ class PerformanceOptimizationAgent {
         let updated = content;
         
         // Add React.memo to functional components
-        const componentRegex = /export (default )?function (\\w+)\\s*\\(/g;
+        const componentRegex = /export (default )?function (\w+)\s*\(/g;
         
         updated = updated.replace(componentRegex, (match, exportDefault, name) => {
           if (!content.includes(`React.memo(${name})`)) {

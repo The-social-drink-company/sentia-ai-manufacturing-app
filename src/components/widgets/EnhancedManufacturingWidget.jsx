@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, memo } from 'react'
 import { 
   Chart as ChartJS,
   CategoryScale,
@@ -91,7 +91,7 @@ const EnhancedManufacturingWidget = memo(() => {
 
         return realData;
       } catch (error) {
-        console.error('Failed to fetch real manufacturing data:', error);
+        devLog.error('Failed to fetch real manufacturing data:', error);
         throw new Error('Unable to load manufacturing data from real sources');
       }
     },

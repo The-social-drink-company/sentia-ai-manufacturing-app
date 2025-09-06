@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, Suspense } from 'react'
 import '../styles/SentiaTheme.css'
 import { useKPIData } from '../hooks/useRealTimeData'
 import { AdvancedKPI, ProductionStageKPI, ChannelKPI } from '../components/ui/AdvancedKPI'
@@ -172,17 +172,17 @@ function EnhancedDashboard() {
                 <ProductionStageKPI 
                   stage="mixing" 
                   data={kpiData.productionStages.mixing}
-                  onClick={() => console.log('Navigate to mixing details')}
+                  onClick={() => devLog.log('Navigate to mixing details')}
                 />
                 <ProductionStageKPI 
                   stage="bottling" 
                   data={kpiData.productionStages.bottling}
-                  onClick={() => console.log('Navigate to bottling details')}
+                  onClick={() => devLog.log('Navigate to bottling details')}
                 />
                 <ProductionStageKPI 
                   stage="warehousing" 
                   data={kpiData.productionStages.warehousing}
-                  onClick={() => console.log('Navigate to warehouse details')}
+                  onClick={() => devLog.log('Navigate to warehouse details')}
                 />
               </>
             )}
@@ -303,7 +303,7 @@ function EnhancedDashboard() {
                     key={channel}
                     channel={channel}
                     data={data}
-                    onClick={() => console.log(`Navigate to ${channel} analytics`)}
+                    onClick={() => devLog.log(`Navigate to ${channel} analytics`)}
                   />
                 ))}
               </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react'
 import { useAuth, useUser } from '@clerk/clerk-react'
 import axios from 'axios'
 import '../styles/AdminPanel.css'
@@ -27,7 +27,7 @@ function AdminPanel() {
       })
       setUsers(response.data.users || [])
     } catch (err) {
-      console.error('Error fetching users:', err)
+      devLog.error('Error fetching users:', err)
       setError('Failed to fetch users')
     }
   }
@@ -40,7 +40,7 @@ function AdminPanel() {
       })
       setInvitations(response.data.invitations || [])
     } catch (err) {
-      console.error('Error fetching invitations:', err)
+      devLog.error('Error fetching invitations:', err)
     } finally {
       setLoading(false)
     }
@@ -66,7 +66,7 @@ function AdminPanel() {
       fetchInvitations()
       alert('Invitation sent successfully!')
     } catch (err) {
-      console.error('Error sending invitation:', err)
+      devLog.error('Error sending invitation:', err)
       alert('Failed to send invitation: ' + (err.response?.data?.error || err.message))
     } finally {
       setInviteLoading(false)
@@ -82,7 +82,7 @@ function AdminPanel() {
       fetchUsers()
       alert('User approved successfully!')
     } catch (err) {
-      console.error('Error approving user:', err)
+      devLog.error('Error approving user:', err)
       alert('Failed to approve user: ' + (err.response?.data?.error || err.message))
     }
   }
@@ -96,7 +96,7 @@ function AdminPanel() {
       fetchUsers()
       alert('User access revoked successfully!')
     } catch (err) {
-      console.error('Error revoking user:', err)
+      devLog.error('Error revoking user:', err)
       alert('Failed to revoke user: ' + (err.response?.data?.error || err.message))
     }
   }
@@ -110,7 +110,7 @@ function AdminPanel() {
       fetchInvitations()
       alert('Invitation deleted successfully!')
     } catch (err) {
-      console.error('Error deleting invitation:', err)
+      devLog.error('Error deleting invitation:', err)
       alert('Failed to delete invitation: ' + (err.response?.data?.error || err.message))
     }
   }

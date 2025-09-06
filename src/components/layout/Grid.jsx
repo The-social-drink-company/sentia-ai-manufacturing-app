@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -180,7 +180,7 @@ const Grid = ({ widgets, onLayoutChange, className = "" }) => {
   
   const handleWidgetSettings = useCallback((widgetId) => {
     // Implementation for widget settings modal
-    console.log('Open settings for widget:', widgetId)
+    devLog.log('Open settings for widget:', widgetId)
   }, [])
   
   const handleWidgetRemove = useCallback((widgetId) => {

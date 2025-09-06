@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react'
 import { fetchRealKPIs } from '../../services/realDataService'
 
 const RealKPIStrip = () => {
@@ -15,7 +15,7 @@ const RealKPIStrip = () => {
         setError(null)
       } catch (err) {
         setError('Failed to load real KPI data')
-        console.error(err)
+        devLog.error(err)
       } finally {
         setLoading(false)
       }

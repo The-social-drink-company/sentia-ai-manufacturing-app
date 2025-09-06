@@ -1,4 +1,4 @@
-import React, { useState, memo, useMemo, useCallback } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, memo, useMemo, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { ArrowTrendingUpIcon, Cog6ToothIcon, SparklesIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
@@ -154,7 +154,7 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
             }
           }
         } catch (aiError) {
-          console.warn('AI forecasting failed, falling back to statistical models:', aiError)
+          devLog.warn('AI forecasting failed, falling back to statistical models:', aiError)
         }
       }
       
@@ -224,7 +224,7 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
       }, [seriesId])
     } catch (error) {
       // Fallback if SSE hook fails
-      console.log('SSE not available, using polling fallback')
+      devLog.log('SSE not available, using polling fallback')
     }
   }
   

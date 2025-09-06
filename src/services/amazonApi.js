@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { devLog } from '../lib/devLog.js';\nimport axios from 'axios'
 
 // Amazon SP-API integration service
 class AmazonSPAPIService {
@@ -42,7 +42,7 @@ class AmazonSPAPIService {
       
       return this.accessToken
     } catch (error) {
-      console.error('Failed to get Amazon access token:', error)
+      devLog.error('Failed to get Amazon access token:', error)
       throw new Error('Amazon API authentication failed')
     }
   }
@@ -82,7 +82,7 @@ class AmazonSPAPIService {
         pagination: response.data.payload?.NextToken ? { nextToken: response.data.payload.NextToken } : null
       }
     } catch (error) {
-      console.error('Amazon SP-API orders error:', error)
+      devLog.error('Amazon SP-API orders error:', error)
       return {
         success: false,
         error: this.handleApiError(error),
@@ -105,7 +105,7 @@ class AmazonSPAPIService {
         data: response.data.payload?.OrderItems || []
       }
     } catch (error) {
-      console.error('Amazon SP-API order items error:', error)
+      devLog.error('Amazon SP-API order items error:', error)
       return {
         success: false,
         error: this.handleApiError(error),
@@ -140,7 +140,7 @@ class AmazonSPAPIService {
         data: response.data.payload || []
       }
     } catch (error) {
-      console.error('Amazon SP-API sales metrics error:', error)
+      devLog.error('Amazon SP-API sales metrics error:', error)
       return {
         success: false,
         error: this.handleApiError(error),
@@ -169,7 +169,7 @@ class AmazonSPAPIService {
         data: response.data.payload?.inventorySummaries || []
       }
     } catch (error) {
-      console.error('Amazon SP-API inventory error:', error)
+      devLog.error('Amazon SP-API inventory error:', error)
       return {
         success: false,
         error: this.handleApiError(error),
@@ -317,7 +317,7 @@ class AmazonSPAPIService {
         }
       }
     } catch (error) {
-      console.error('Error generating Amazon KPIs:', error)
+      devLog.error('Error generating Amazon KPIs:', error)
       return {
         success: false,
         error: error.message,

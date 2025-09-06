@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { createContext, useContext, useReducer, useEffect } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { useAuthRole } from '../hooks/useAuthRole.jsx'
 
@@ -153,7 +153,7 @@ export function AuthProvider({ children }) {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch security status:', error)
+      devLog.error('Failed to fetch security status:', error)
     }
   }
 
@@ -188,7 +188,7 @@ export function AuthProvider({ children }) {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch password status:', error)
+      devLog.error('Failed to fetch password status:', error)
     }
   }
 
@@ -210,7 +210,7 @@ export function AuthProvider({ children }) {
         })
       }
     } catch (error) {
-      console.error('Failed to fetch sessions:', error)
+      devLog.error('Failed to fetch sessions:', error)
     }
   }
 
@@ -293,7 +293,7 @@ export function AuthProvider({ children }) {
       
       dispatch({ type: AuthActionTypes.LOGOUT })
     } catch (error) {
-      console.error('Logout failed:', error)
+      devLog.error('Logout failed:', error)
       // Force logout even if API calls fail
       dispatch({ type: AuthActionTypes.LOGOUT })
       await signOut()

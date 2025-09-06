@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 
 /**
@@ -46,7 +46,7 @@ export const useAIRealTimeData = (options = {}) => {
         setConnectionStatus('connected');
         setError(null);
         reconnectAttemptsRef.current = 0;
-        console.log('AI SSE connection established');
+        devLog.log('AI SSE connection established');
       };
 
       // Handle different event types
@@ -131,7 +131,7 @@ export const useAIRealTimeData = (options = {}) => {
 
       // Handle errors
       eventSource.onerror = (error) => {
-        console.error('AI SSE connection error:', error);
+        devLog.error('AI SSE connection error:', error);
         setConnectionStatus('error');
         setError('Connection lost. Attempting to reconnect...');
         eventSource.close();
@@ -150,7 +150,7 @@ export const useAIRealTimeData = (options = {}) => {
       };
 
     } catch (err) {
-      console.error('Failed to establish AI SSE connection:', err);
+      devLog.error('Failed to establish AI SSE connection:', err);
       setError(err.message);
       setConnectionStatus('error');
     }
@@ -188,7 +188,7 @@ export const useAIRealTimeData = (options = {}) => {
 
       return await response.json();
     } catch (err) {
-      console.error('AI command error:', err);
+      devLog.error('AI command error:', err);
       throw err;
     }
   }, [getToken, API_BASE]);
@@ -263,7 +263,7 @@ export const useAIForecasting = (productSKU) => {
         const data = await sendCommand('generate-forecast', { productSKU });
         setForecast(data);
       } catch (err) {
-        console.error('Forecast loading error:', err);
+        devLog.error('Forecast loading error:', err);
       } finally {
         setLoading(false);
       }

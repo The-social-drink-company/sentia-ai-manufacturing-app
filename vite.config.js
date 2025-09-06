@@ -4,6 +4,8 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
+  // Critical: Set base path for Railway deployment
+  base: './', // Ensures relative paths work on Railway
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -29,10 +31,14 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    emptyOutDir: true, // Clear dist folder before build
     sourcemap: process.env.NODE_ENV !== 'production', // Only generate sourcemaps in dev
     minify: 'esbuild',
     target: 'es2020',
     chunkSizeWarningLimit: 1000,
+    // Railway-specific build optimizations
+    cssCodeSplit: true, // Split CSS for better caching
+    assetsInlineLimit: 4096, // Inline small assets as base64
     rollupOptions: {
       output: {
         manualChunks: {

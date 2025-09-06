@@ -44,7 +44,8 @@
       "Bash(railway status:*)",
       "Read(//c/Projects/**)",
       "Bash(sed:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:sentia-manufacturing-dashboard-development.up.railway.app)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,118 @@
+# Caddyfile for Sentia Manufacturing Dashboard
+# Production-ready configuration for Railway deployment
+
+# Global options
+{
+    admin off # Disable admin API in Railway environment
+    persist_config off # Railway storage isn't persistent
+    auto_https off # Railway handles HTTPS, this would cause conflicts
+    
+    # Runtime logs configuration
+    log {
+        format json # JSON format for Railway logs
+        level INFO
+    }
+    
+    # Server options for Railway environment
+    servers {
+        trusted_proxies static private_ranges 100.0.0.0/8 # Trust Railway's proxy network
+    }
+}
+
+# Main site configuration
+# Listen on PORT environment variable (automatically assigned by Railway)
+:{$PORT:8080} {
+    # Access logs in JSON format for Railway
+    log {
+        format json
+        output stdout
+    }
+    
+    # Health check endpoint for Railway monitoring
+    respond /health "OK" 200
+    respond /healthz "OK" 200
+    
+    # API routes - proxy to Node.js backend if it exists
+    handle /api/* {
+        # Try to proxy to backend server first
+        reverse_proxy localhost:5000 {
+            # If backend is down, return maintenance message
+            handle_errors {
+                respond "API temporarily unavailable" 503
+            }
+        }
+    }
+    
+    # Serve built React app from dist directory
+    root * dist
+    
+    # Security headers
+    header {
+        # Content Security Policy for manufacturing dashboard
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.neon.tech https://*.railway.app wss://*;"
+        
+        # Additional security headers
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        
+        # Performance headers
+        Cache-Control "public, max-age=31536000" # 1 year for static assets
+    }
+    
+    # Enable gzip compression for better performance
+    encode gzip
+    
+    # Handle static assets with long cache times
+    @static {
+        path *.js *.css *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot
+    }
+    handle @static {
+        header Cache-Control "public, max-age=31536000, immutable"
+        file_server
+    }
+    
+    # Handle all other files (including index.html) with shorter cache
+    @html {
+        path *.html
+    }
+    handle @html {
+        header Cache-Control "public, max-age=0, must-revalidate"
+        file_server
+    }
+    
+    # Single Page Application routing
+    # If the requested path doesn't exist, serve index.html for client-side routing
+    try_files {path} {path}/ /index.html
+    
+    # Default file server for remaining files
+    file_server
+    
+    # Custom error pages
+    handle_errors {
+        @4xx expression `{http.error.status_code} >= 400 && {http.error.status_code} < 500`
+        handle @4xx {
+            respond "Client Error: {http.error.status_code}" {http.error.status_code}
+        }
+        
+        @5xx expression `{http.error.status_code} >= 500`
+        handle @5xx {
+            respond "Server Error: {http.error.status_code}" {http.error.status_code}
+        }
+    }
+}
+
+# Development/staging subdomain configuration (optional)
+dev.{$RAILWAY_PROJECT_DOMAIN:localhost} {
+    log {
+        format json
+        level DEBUG
+    }
+    
+    respond /health "DEV OK" 200
+    root * dist
+    encode gzip
+    try_files {path} /index.html
+    file_server
+}

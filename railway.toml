@@ -1,14 +1,16 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm ci && npm run build"
+buildCommand = "npm ci --prefer-offline --no-audit && npm run build"
 
 [deploy]
-startCommand = "npm run serve"
-healthcheckPath = "/"
-healthcheckTimeout = 30
+# Use Caddy to serve static files - this fixes blank screen issues
+startCommand = "caddy run --config Caddyfile --adapter caddyfile"
+healthcheckPath = "/health"
+healthcheckTimeout = 45
 restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 3
+restartPolicyMaxRetries = 5
 
 [[services]]
 name = "web"
-port = 5000
+# Railway assigns PORT automatically, Caddyfile uses $PORT
+port = 8080

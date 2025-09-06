@@ -26,6 +26,10 @@ import manufacturingMetricsService from './services/manufacturingMetricsService.
 // Import performance optimization services
 import { cacheService, paginationMiddleware, sparseFieldsMiddleware } from './services/performance/caching.js';
 import { dbOptimizationService } from './services/performance/dbOptimization.js';
+// Import enhanced health check router
+import healthCheckRouter from './services/api/healthCheck.js';
+// Import Neon database connection layer
+import neonDB from './services/database/neonConnection.js';
 // Import data import services conditionally to prevent startup crashes
 let dbService = null;
 let queueService = null;

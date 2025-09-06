@@ -1,5 +1,5 @@
 // All Critical Widgets with Real Data Fallbacks - 100% Rendering Guaranteed
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } , { useMemo } from 'react'
 import UniversalWidgetWrapper from './UniversalWidgetWrapper'
 import realDataService from '../../services/realDataIntegration'
 

@@ -364,13 +364,27 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
+// Add comprehensive request logging for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 // Serve static files from React build FIRST
 // In production/Railway, serve from dist folder with proper cache headers
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
   etag: true,
   lastModified: true,
-  index: false // Don't serve index.html for directory requests - let catch-all handle it
+  index: false, // Don't serve index.html for directory requests - let catch-all handle it
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+    if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    }
+  }
 }));
 
 // Enhanced Health check endpoints
@@ -4606,6 +4620,8 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
     return res.status(404).json({ error: 'Endpoint not found' });
   }
+  
+  console.log(`Serving index.html for route: ${req.url}`);
   
   // Serve index.html for all other routes (React Router will handle client-side routing)
   const indexPath = path.join(__dirname, 'dist', 'index.html');

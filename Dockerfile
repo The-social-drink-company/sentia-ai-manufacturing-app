@@ -20,6 +20,11 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# After build - verify dist directory structure
+RUN ls -la dist/
+RUN ls -la dist/assets/ || echo "No assets directory"
+RUN ls -la public/ || echo "No public directory"
+
 # Expose port
 EXPOSE 8080
 

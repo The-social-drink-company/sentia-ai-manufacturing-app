@@ -42,9 +42,9 @@ export default defineConfig({
       }
     },
     target: 'es2020',
-    chunkSizeWarningLimit: 1500,
+    chunkSizeWarningLimit: 1000, // Reduced for better bundle analysis
     cssCodeSplit: true,
-    assetsInlineLimit: 4096,
+    assetsInlineLimit: 8192, // Increased for better performance
     rollupOptions: {
       output: {
         manualChunks(id) {

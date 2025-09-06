@@ -3,10 +3,16 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AuthProvider } from './context/AuthContext'
-import { ClerkProvider } from '@clerk/clerk-react'
+import ClerkProviderWithFallback from './components/auth/ClerkProviderWithFallback'
 import SimpleAuth from './components/auth/SimpleAuth'
+import clerkConfig from './services/auth/clerkConfig'
 import './index.css'
 import './styles/ui-fixes.css'
+
+// Initialize Clerk configuration
+if (typeof window !== 'undefined') {
+  window.clerkConfig = clerkConfig;
+}
 
 // Create QueryClient instance
 const queryClient = new QueryClient({
@@ -90,7 +96,7 @@ function App() {
   }
 
   return (
-    <ClerkProvider publishableKey={clerkPubKey}>
+    <ClerkProviderWithFallback>
       <AuthProvider>
         <Router>
           <QueryClientProvider client={queryClient}>
@@ -158,7 +164,7 @@ function App() {
           </QueryClientProvider>
         </Router>
       </AuthProvider>
-    </ClerkProvider>
+    </ClerkProviderWithFallback>
   )
 }
 

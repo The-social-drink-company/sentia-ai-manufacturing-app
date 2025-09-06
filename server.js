@@ -221,11 +221,49 @@ app.use('/api/auth', authLimiter);
 app.use('/api/import/upload', uploadLimiter);
 app.use(generalLimiter);
 
+// Enhanced CORS configuration for Railway deployments
+const corsOptions = {
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    // Allowed origins for Railway deployments
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+      'http://127.0.0.1:5173',
+      'https://sentia-manufacturing.railway.app',
+      'https://sentia-manufacturing-dashboard-production.up.railway.app',
+      'https://test.sentia-manufacturing.railway.app',
+      'https://sentia-manufacturing-dashboard-test.up.railway.app',
+      'https://dev.sentia-manufacturing.railway.app',
+      'https://sentia-manufacturing-dashboard-development.up.railway.app'
+    ];
+    
+    // Add custom origins from environment
+    if (process.env.CORS_ORIGINS) {
+      allowedOrigins.push(...process.env.CORS_ORIGINS.split(','));
+    }
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-clerk-session-id', 'x-requested-with'],
+  exposedHeaders: ['x-clerk-session-id', 'x-total-count', 'x-page', 'x-per-page'],
+  maxAge: 86400 // 24 hours
+};
+
 // CORS middleware
-app.use(cors({
-  origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
-  credentials: true
-}));
+app.use(cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));

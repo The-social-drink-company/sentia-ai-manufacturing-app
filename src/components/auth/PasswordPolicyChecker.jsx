@@ -1,4 +1,5 @@
-import { devLog } from '../../lib/devLog.js';\nimport React, { useState, useEffect, useMemo } from 'react'
+import { devLog } from '../../lib/devLog.js';
+import React, { useState, useEffect, useMemo } from 'react'
 import { CheckCircle, XCircle, AlertCircle, Eye, EyeOff, Shield } from 'lucide-react'
 
 export default function PasswordPolicyChecker({ 

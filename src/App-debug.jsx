@@ -1,4 +1,5 @@
-import { devLog } from './lib/devLog.js';\nimport React from 'react'
+import { devLog } from './lib/devLog.js';
+import React from 'react'
 
 function App() {
   devLog.log('App component is rendering')

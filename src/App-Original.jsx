@@ -1,4 +1,5 @@
-import { devLog } from './lib/devLog.js';\nimport React, { Suspense, lazy } from 'react'
+import { devLog } from './lib/devLog.js';
+import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'

@@ -1,4 +1,5 @@
-import { devLog } from './lib/devLog.js';\nimport React from 'react'
+import { devLog } from './lib/devLog.js';
+import React from 'react'
 import { ClerkProvider, SignIn, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY

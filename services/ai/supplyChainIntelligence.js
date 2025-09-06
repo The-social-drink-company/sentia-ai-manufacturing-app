@@ -234,11 +234,11 @@ class SentiaSupplyChainIntelligence extends EventEmitter {
 
     // Risk assessment models
     this.riskModels = {
-      supplier: this.initializeSupplierRiskModel(),
-      geographical: this.initializeGeographicalRiskModel(),
-      commodity: this.initializeCommodityRiskModel(),
-      quality: this.initializeQualityRiskModel(),
-      logistics: this.initializeLogisticsRiskModel()
+      supplier: null,
+      geographical: null,
+      commodity: null,
+      quality: null,
+      logistics: null
     };
 
     // Supply chain optimization
@@ -464,9 +464,119 @@ class SentiaSupplyChainIntelligence extends EventEmitter {
   }
 
   /**
+   * Initialize supplier risk model
+   */
+  initializeSupplierRiskModel() {
+    return {
+      factors: {
+        performance: 0.25,
+        financial: 0.20,
+        geographical: 0.20,
+        diversification: 0.15,
+        compliance: 0.10,
+        sustainability: 0.10
+      },
+      calculate: (supplier) => {
+        let score = 100;
+        // Basic risk calculation logic
+        if (supplier.deliveryRate < 95) score -= 10;
+        if (supplier.qualityRate < 98) score -= 10;
+        if (supplier.financialHealth < 80) score -= 15;
+        return Math.max(0, Math.min(100, score));
+      }
+    };
+  }
+
+  /**
+   * Initialize geographical risk model
+   */
+  initializeGeographicalRiskModel() {
+    return {
+      regions: {
+        'Europe': { stability: 90, logistics: 95, regulatory: 85 },
+        'North America': { stability: 95, logistics: 90, regulatory: 80 },
+        'Asia': { stability: 75, logistics: 85, regulatory: 70 },
+        'South America': { stability: 70, logistics: 75, regulatory: 65 }
+      },
+      calculate: (location) => {
+        const region = this.getRegion(location);
+        const regionData = this.regions[region] || { stability: 50, logistics: 50, regulatory: 50 };
+        return (regionData.stability + regionData.logistics + regionData.regulatory) / 3;
+      }
+    };
+  }
+
+  /**
+   * Initialize commodity risk model
+   */
+  initializeCommodityRiskModel() {
+    return {
+      commodities: new Map([
+        ['botanicals', { volatility: 'medium', availability: 'good', priceStability: 75 }],
+        ['glass', { volatility: 'low', availability: 'excellent', priceStability: 90 }],
+        ['labels', { volatility: 'low', availability: 'excellent', priceStability: 95 }],
+        ['chemicals', { volatility: 'high', availability: 'moderate', priceStability: 60 }]
+      ]),
+      calculate: (commodity) => {
+        const data = this.commodities.get(commodity) || { priceStability: 50 };
+        return data.priceStability;
+      }
+    };
+  }
+
+  /**
+   * Initialize quality risk model
+   */
+  initializeQualityRiskModel() {
+    return {
+      metrics: {
+        defectRate: 0.3,
+        consistencyScore: 0.3,
+        certificationStatus: 0.2,
+        auditScore: 0.2
+      },
+      calculate: (qualityData) => {
+        let score = 100;
+        if (qualityData.defectRate > 2) score -= 20;
+        if (qualityData.consistencyScore < 95) score -= 15;
+        if (!qualityData.certified) score -= 10;
+        return Math.max(0, Math.min(100, score));
+      }
+    };
+  }
+
+  /**
+   * Initialize logistics risk model
+   */
+  initializeLogisticsRiskModel() {
+    return {
+      factors: {
+        leadTime: 0.25,
+        reliability: 0.30,
+        flexibility: 0.20,
+        cost: 0.25
+      },
+      calculate: (logisticsData) => {
+        let score = 100;
+        if (logisticsData.avgLeadTime > 14) score -= 15;
+        if (logisticsData.onTimeDelivery < 95) score -= 20;
+        if (logisticsData.flexibility < 80) score -= 10;
+        return Math.max(0, Math.min(100, score));
+      }
+    };
+  }
+
+  /**
    * Initialize risk assessment models
    */
   async initializeRiskModels() {
+    // Initialize all risk models
+    this.riskModels.supplier = this.initializeSupplierRiskModel();
+    this.riskModels.geographical = this.initializeGeographicalRiskModel();
+    this.riskModels.commodity = this.initializeCommodityRiskModel();
+    this.riskModels.quality = this.initializeQualityRiskModel();
+    this.riskModels.logistics = this.initializeLogisticsRiskModel();
+    
     // Supplier risk model with multiple factors
     this.riskModels.supplier = {
       factors: {

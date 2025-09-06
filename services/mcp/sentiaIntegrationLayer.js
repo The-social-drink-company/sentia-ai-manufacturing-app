@@ -31,12 +31,13 @@ class SentiaIntegrationLayer extends EventEmitter {
 
     // Sentia-specific data mappings
     this.sentiaDataMappings = {
-      products: this.createProductMappings(),
-      botanicals: this.createBotanicalMappings(),
-      customers: this.createCustomerMappings(),
-      suppliers: this.createSupplierMappings(),
-      financials: this.createFinancialMappings()
+      products: new Map(),
+      botanicals: new Map(),
+      customers: new Map(),
+      suppliers: new Map(),
+      financials: new Map()
     };
+    this.initializeDataMappings();
 
     // MCP server configurations for Sentia systems
     this.mcpConfigurations = {

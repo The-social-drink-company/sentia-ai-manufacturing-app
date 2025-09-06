@@ -67,11 +67,7 @@ const PredictiveAnalyticsDashboard = ({
         ...(dashboardInsights?.opportunities || [])
       ].slice(0, 5));
     } catch (error) {
-<<<<<<< HEAD
       logError('Predictive analysis failed', error, { component: 'PredictiveAnalyticsDashboard' });
-=======
-      devLog.error('Predictive analysis failed:', error);
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
     } finally {
       setIsLoading(false);
     }

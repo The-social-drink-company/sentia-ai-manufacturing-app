@@ -2,15 +2,7 @@
  * Resilience and fallback mechanisms for robust operation
  */
 
-<<<<<<< HEAD
 import { devLog } from '../lib/devLog.js';
-=======
-// Development-only logger
-const devLog = {
-  warn: (...args) => { if (process.env.NODE_ENV === 'development') console.warn(...args); },
-  info: (...args) => { if (process.env.NODE_ENV === 'development') console.info(...args); }
-};
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
 
 // Circuit breaker implementation
 export class CircuitBreaker {
@@ -66,11 +58,7 @@ export class CircuitBreaker {
       this.successCount++;
       if (this.successCount >= 3) {
         this.state = 'CLOSED';
-<<<<<<< HEAD
-        devLog.log('Circuit breaker recovered to CLOSED state');
-=======
         devLog.info('Circuit breaker recovered to CLOSED state');
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
       }
     }
   }

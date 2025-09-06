@@ -89,11 +89,7 @@ const ClerkProviderWithFallback = ({ children }) => {
         const configuration = clerkConfig.getConfig ? clerkConfig.getConfig() : null;
         
         if (!configuration || !configuration.publishableKey) {
-<<<<<<< HEAD
           logWarn('No publishable key found, running without authentication', { component: 'ClerkProvider' });
-=======
-          devLog.warn('[ClerkProvider] No publishable key found, running without authentication');
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
           setClerkError('No authentication configuration');
           return;
         }
@@ -109,11 +105,7 @@ const ClerkProviderWithFallback = ({ children }) => {
           setClerkError('Failed to initialize authentication');
         }
       } catch (error) {
-<<<<<<< HEAD
         logError('ClerkProvider initialization error', error, { component: 'ClerkProvider' });
-=======
-        devLog.error('[ClerkProvider] Initialization error:', error);
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
         setClerkError(error.message);
       }
     };
@@ -131,11 +123,7 @@ const ClerkProviderWithFallback = ({ children }) => {
 
   // Clerk initialization failed - show fallback
   if (clerkError) {
-<<<<<<< HEAD
     logWarn('Using fallback mode', { clerkError, component: 'ClerkProvider' });
-=======
-    devLog.warn('[ClerkProvider] Using fallback mode:', clerkError);
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
     return (
       <ErrorBoundary>
         <ClerkFallback>{children}</ClerkFallback>
@@ -193,11 +181,7 @@ export const useClerkAuth = () => {
           isFallback: false
         });
       } catch (error) {
-<<<<<<< HEAD
         logError('Error getting auth state', error, { component: 'useClerkAuth' });
-=======
-        devLog.error('[useClerkAuth] Error getting auth state:', error);
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
         setAuthState({
           isLoaded: true,
           isSignedIn: false,

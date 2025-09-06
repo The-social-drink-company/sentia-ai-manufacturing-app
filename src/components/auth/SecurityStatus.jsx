@@ -56,11 +56,7 @@ export default function SecurityStatus() {
         }
         
       } catch (error) {
-<<<<<<< HEAD
         logError('Failed to fetch security data', error, { component: 'SecurityStatus' })
-=======
-        devLog.error('Failed to fetch security data:', error)
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
         setError('Failed to load security information')
       } finally {
         setLoading(false)
@@ -88,11 +84,7 @@ export default function SecurityStatus() {
         throw new Error('Failed to revoke session')
       }
     } catch (error) {
-<<<<<<< HEAD
       logError('Failed to revoke session', error, { component: 'SecurityStatus', sessionId })
-=======
-      devLog.error('Failed to revoke session:', error)
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
       setError('Failed to revoke session')
     } finally {
       setActionLoading(false)
@@ -123,11 +115,7 @@ export default function SecurityStatus() {
         throw new Error('Failed to revoke sessions')
       }
     } catch (error) {
-<<<<<<< HEAD
       logError('Failed to revoke sessions', error, { component: 'SecurityStatus' })
-=======
-      devLog.error('Failed to revoke sessions:', error)
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
       setError('Failed to revoke sessions')
     } finally {
       setActionLoading(false)

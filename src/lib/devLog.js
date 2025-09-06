@@ -1,5 +1,4 @@
 /**
-<<<<<<< HEAD
  * Development-only logging utility
  * Provides console logging that's automatically disabled in production
  * Use this for debugging that should never reach production builds
@@ -16,7 +15,7 @@ export const devLog = {
    */
   log: (...args) => {
     if (process.env.NODE_ENV === 'development') {
-      devLog.log('[DEV]', ...args);
+      console.log('[DEV]', ...args);
     }
   },
 
@@ -26,7 +25,7 @@ export const devLog = {
    */
   info: (...args) => {
     if (process.env.NODE_ENV === 'development') {
-      devLog.log('[DEV]', ...args);
+      console.info('[DEV]', ...args);
     }
   },
 
@@ -36,7 +35,7 @@ export const devLog = {
    */
   warn: (...args) => {
     if (process.env.NODE_ENV === 'development') {
-      devLog.warn('[DEV]', ...args);
+      console.warn('[DEV]', ...args);
     }
   },
 
@@ -46,7 +45,7 @@ export const devLog = {
    */
   error: (...args) => {
     if (process.env.NODE_ENV === 'development') {
-      devLog.error('[DEV]', ...args);
+      console.error('[DEV]', ...args);
     }
   },
 
@@ -117,7 +116,7 @@ export const devLog = {
    */
   component: (component, lifecycle, props = {}) => {
     if (process.env.NODE_ENV === 'development') {
-      devLog.log(`[DEV] ${component} - ${lifecycle}`, props);
+      console.log(`[DEV] ${component} - ${lifecycle}`, props);
     }
   },
 
@@ -129,7 +128,7 @@ export const devLog = {
    */
   api: (method, endpoint, data = {}) => {
     if (process.env.NODE_ENV === 'development') {
-      devLog.log(`[DEV] API ${method} ${endpoint}`, data);
+      console.log(`[DEV] API ${method} ${endpoint}`, data);
     }
   },
 
@@ -141,7 +140,7 @@ export const devLog = {
    */
   stateChange: (state, oldValue, newValue) => {
     if (process.env.NODE_ENV === 'development') {
-      devLog.log(`[DEV] State: ${state}`, {
+      console.log(`[DEV] State: ${state}`, {
         from: oldValue,
         to: newValue
       });
@@ -157,44 +156,19 @@ export const devLog = {
 export const featureLog = (feature) => ({
   log: (...args) => {
     if (process.env.NODE_ENV === 'development' && process.env[`FEATURE_DEBUG_${feature.toUpperCase()}`] === 'true') {
-      devLog.log(`[${feature}]`, ...args);
+      console.log(`[${feature}]`, ...args);
     }
   },
   warn: (...args) => {
     if (process.env.NODE_ENV === 'development' && process.env[`FEATURE_DEBUG_${feature.toUpperCase()}`] === 'true') {
-      devLog.warn(`[${feature}]`, ...args);
+      console.warn(`[${feature}]`, ...args);
     }
   },
   error: (...args) => {
     if (process.env.NODE_ENV === 'development' && process.env[`FEATURE_DEBUG_${feature.toUpperCase()}`] === 'true') {
-      devLog.error(`[${feature}]`, ...args);
+      console.error(`[${feature}]`, ...args);
     }
   }
 });
 
 export default devLog;
-=======
- * Development logging utility
- * Only logs in development mode
- */
-
-export const devLog = (...args) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[DEV]', ...args);
-  }
-};
-
-export const devWarn = (...args) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.warn('[DEV WARNING]', ...args);
-  }
-};
-
-export const devError = (...args) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.error('[DEV ERROR]', ...args);
-  }
-};
-
-export default { devLog, devWarn, devError };
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7

@@ -157,7 +157,7 @@ scripts/               # Utility scripts
 All branches auto-deploy with corresponding Neon PostgreSQL databases:
 - development → dev.sentia-manufacturing.railway.app
 - test → test.sentia-manufacturing.railway.app
-- production → sentia-manufacturing.railway.app
+- production → web-production-1f10.up.railway.app
 
 ### Development Workflow (Critical)
 **NODE_ENV=development in Railway** - Therefore we must follow this branching workflow:

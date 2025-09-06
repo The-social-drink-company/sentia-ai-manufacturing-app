@@ -2,7 +2,7 @@
 
 ## Production Environment
 - **Main URL:** https://sentiaprod.financeflo.ai
-- **Railway URL:** https://sentia-manufacturing-dashboard-production.up.railway.app
+- **Railway URL:** https://web-production-1f10.up.railway.app
 - **Health Check:** https://sentiaprod.financeflo.ai/health
 - **Port:** 8080
 - **Branch:** production
@@ -32,7 +32,7 @@
 
 #### Production Health Checks:
 - **Custom Domain:** https://sentiaprod.financeflo.ai/health
-- **Railway Domain:** https://sentia-manufacturing-dashboard-production.up.railway.app/health
+- **Railway Domain:** https://web-production-1f10.up.railway.app/health
 - **Alternative Endpoint:** https://sentiaprod.financeflo.ai/healthz
 
 #### Testing Health Checks:
@@ -191,7 +191,7 @@ cache-control: no-cache
 If main URLs don't work, try these alternatives:
 
 ### Direct Railway URLs:
-- **Production:** https://sentia-manufacturing-dashboard-production.up.railway.app
+- **Production:** https://web-production-1f10.up.railway.app
 - **Testing:** https://courageous-insight-testing.up.railway.app
 - **Development:** https://sentia-manufacturing-dashboard-development.up.railway.app
 

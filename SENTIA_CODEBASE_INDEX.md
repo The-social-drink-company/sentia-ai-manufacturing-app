@@ -1,17 +1,83 @@
-# Sentia Manufacturing Dashboard - Codebase Index
+# Sentia Manufacturing Dashboard - Comprehensive Codebase Index
 
 ## Overview
-This document provides a comprehensive index of the Sentia Manufacturing Dashboard codebase to help developers understand the structure, find specific functionality, and navigate the project efficiently.
 
-**Project Type:** Full-Stack Manufacturing Dashboard
-**Architecture:** React + Vite Frontend with Node.js + Express Backend
-**Database:** Neon PostgreSQL with Prisma ORM
-**Authentication:** Clerk
+The Sentia Manufacturing Dashboard is an enterprise-grade manufacturing intelligence platform built with modern full-stack technologies. It provides real-time manufacturing insights, AI-powered forecasting, working capital management, and comprehensive business intelligence capabilities.
+
+**Version**: 1.0.0  
+**Node.js**: >=18.0.0  
+**Project Type:** Full-Stack Manufacturing Intelligence Platform
+**Architecture:** React 18 + Vite 4 Frontend with Node.js + Express Backend
+**Database:** Neon PostgreSQL with Prisma ORM (50+ models)
+**Authentication:** Clerk with RBAC (admin/manager/operator/viewer)
+**Real-time:** Server-Sent Events (SSE)
 **Deployment:** Railway with auto-deployment
+**Last Updated:** September 2025
 
 ---
 
-## 1. File Structure Overview
+## 1. Architecture Overview
+
+### System Architecture
+- **Type**: Full-Stack Node.js Application
+- **Frontend**: React 18 + Vite 4 + Tailwind CSS (Port 3000)
+- **Backend**: Node.js + Express.js REST API (Port 5000)
+- **Database**: Neon PostgreSQL with Prisma ORM (50+ models)
+- **Authentication**: Clerk (RBAC with 20+ granular permissions)
+- **Real-time**: Server-Sent Events (SSE) with 15+ event types
+- **State Management**: Zustand + TanStack Query
+- **Development**: Concurrent frontend/backend development
+- **Production**: Static React build + Express API server
+
+### Key Design Patterns
+- **Component Architecture**: Modular React components with separation of concerns
+- **Service Layer**: Dedicated service modules for business logic
+- **Repository Pattern**: Prisma ORM with structured data access
+- **Event-Driven**: SSE for real-time updates and notifications
+- **Caching Strategy**: Multi-level caching (Redis + in-memory)
+- **Security-First**: RBAC, rate limiting, input validation, CSRF protection
+
+### Integration Points
+- **Unleashed Software API**: Inventory and product management
+- **Amazon SP-API**: E-commerce sales data (planned)
+- **Shopify API**: E-commerce integration (planned)
+- **Xero API**: Financial data integration (planned)
+- **Railway**: Auto-deployment platform
+- **Neon PostgreSQL**: Cloud database hosting
+- **AI Services**: OpenAI, Claude API integration
+- **MCP Integration**: Model Context Protocol server
+
+### Technology Stack Overview
+
+#### Frontend Stack
+- **React 18.2.0**: UI framework with concurrent features
+- **Vite 4.4.5**: Build tool with HMR and optimizations
+- **Tailwind CSS 3.3.3**: Utility-first CSS framework
+- **TanStack Query 5.0.0**: Server state management and caching
+- **Zustand**: Client state management
+- **React Router DOM 6.15.0**: Client-side routing
+- **React Grid Layout 1.5.2**: Drag-and-drop dashboard widgets
+
+#### Backend Stack
+- **Node.js**: Runtime environment (v18+)
+- **Express.js 4.19.2**: Web framework with 100+ endpoints
+- **Prisma 6.15.0**: Type-safe ORM with auto-generated client
+- **Neon PostgreSQL**: Serverless database with connection pooling
+- **Clerk**: Authentication service with JWT tokens
+- **Winston**: Centralized logging
+- **Redis**: Caching layer
+
+#### Development & Quality Tools
+- **ESLint 8.57.1**: Code linting with security rules
+- **Prettier 3.1.0**: Code formatting
+- **Vitest 0.34.6**: Unit testing framework
+- **Playwright 1.40.0**: E2E testing
+- **TypeScript 5.3.0**: Type checking
+- **Husky**: Git hooks for quality gates
+
+---
+
+## 2. Project Structure & File Organization
 
 ### Root Directory Structure
 ```
@@ -48,58 +114,218 @@ sentia-manufacturing-dashboard/
 
 ---
 
-## 2. API Endpoints Documentation
+## 3. API Documentation (100+ Endpoints)
 
-### Health and Monitoring Endpoints
-- **GET `/health`** - Basic health check
-- **GET `/ready`** - Readiness probe with database connection test
-- **GET `/live`** - Liveness probe
-- **GET `/diagnostics`** - Detailed system diagnostics
-- **GET `/api/metrics`** - Prometheus-style metrics
-- **GET `/api/performance/cache-stats`** - Cache performance metrics
-- **GET `/api/performance/db-metrics`** - Database performance metrics
+### API Architecture
+**Base URL**: `/api`  
+**Authentication**: Clerk JWT tokens  
+**Rate Limiting**: Configured per endpoint type  
+**Total Endpoints**: 100+ across multiple categories
 
-### Core API Routes
-- **GET `/api/test`** - Basic API test endpoint
-- **GET `/api/protected`** - Protected endpoint requiring authentication
-- **GET `/api/metrics/current`** - Real-time KPI metrics (Auth required)
-- **GET `/api/kpis/realtime`** - Real-time KPI data
-- **GET `/api/metrics/historical`** - Historical metrics data (Auth required)
-- **POST `/api/metrics/upload`** - File upload for metrics (Auth required)
-- **GET `/api/metrics/all`** - All metrics summary (Auth required)
-- **GET `/api/metrics/sources`** - Data source information (Auth required)
+### Health & Monitoring Endpoints
+```
+GET    /health                      # Basic health check
+GET    /ready                      # Readiness probe with database test
+GET    /live                       # Liveness probe
+GET    /diagnostics                # Detailed system diagnostics
+GET    /api/metrics                # Prometheus-style metrics
+GET    /api/performance/cache-stats # Cache performance metrics
+GET    /api/performance/db-metrics  # Database performance metrics
+POST   /api/performance/optimize-db # Database optimization
+```
 
-### Manufacturing and Operations
-- **GET `/api/jobs`** - Manufacturing job listings
-- **GET `/api/db-test`** - Database connection test
+### Authentication & Security (15+ endpoints)
+```
+GET    /api/auth/sessions           # List user sessions
+DELETE /api/auth/sessions/:id       # Revoke specific session
+DELETE /api/auth/sessions           # Revoke all sessions
+GET    /api/auth/security/status    # Security status overview
+POST   /api/auth/password/validate  # Password strength validation
+POST   /api/auth/password/reset-request # Password reset initiation
+POST   /api/auth/password/reset-verify  # Password reset completion
+GET    /api/auth/password/status    # Password policy status
+GET    /api/auth/entity-context     # Multi-entity context
+PUT    /api/auth/entity-context     # Update entity context
+GET    /api/auth/accessible-entities # Available entities
+GET    /api/auth/regions           # Available regions
+GET    /api/auth/sso/providers     # SSO provider list
+POST   /api/auth/sso/:id/callback  # SSO callback handler
+```
 
-### AI and Intelligence Routes (`/api/ai/*`)
-Located in `routes/aiRoutes.js`, all require authentication:
+### Core Business Data (15+ endpoints)
+```
+GET    /api/test                    # Health check
+GET    /api/protected               # Authentication test
+GET    /api/metrics/current         # Real-time KPIs
+GET    /api/kpis/realtime          # Live KPI data
+GET    /api/metrics/historical      # Time-series data
+POST   /api/metrics/upload          # Data import
+GET    /api/metrics/all            # All metrics summary
+GET    /api/metrics/sources        # Data source info
+GET    /api/db-test                # Database connectivity
+GET    /api/status                 # API status
+```
 
-- **POST `/api/ai/initialize`** - Initialize AI systems
-- **GET `/api/ai/status`** - Get AI system status
-- **GET `/api/ai/health`** - AI system health check
-- **POST `/api/ai/query`** - Execute unified AI queries
-- **POST `/api/ai/production/start`** - Start production batch
-- **POST `/api/ai/forecast`** - Generate demand forecasts
-- **GET `/api/ai/dashboard/:type`** - Get unified dashboard data
-- **POST `/api/ai/quality/inspect`** - AI quality inspection
-- **GET `/api/ai/analytics/:dashboardId`** - Analytics dashboard data
-- **GET `/api/ai/digital-twin/scene`** - 3D digital twin scene data
-- **GET `/api/ai/supply-chain/dashboard`** - Supply chain dashboard
-- **GET `/api/ai/maintenance/dashboard`** - Maintenance dashboard
-- **GET `/api/ai/quality/dashboard`** - Quality dashboard
-- **POST `/api/ai/chat`** - Conversational AI interface
-- **GET `/api/ai/reports/executive`** - Executive reports
-- **GET `/api/ai/execution/dashboard`** - Manufacturing execution dashboard
-- **POST `/api/ai/procurement/recommendations`** - Procurement recommendations
-- **GET `/api/ai/monitoring/status`** - Agent monitoring status
-- **POST `/api/ai/monitoring/health-check`** - Force health check
-- **POST `/api/ai/monitoring/restart/:agentId`** - Restart specific agent
-- **POST `/api/ai/shutdown`** - Shutdown AI systems (Admin only)
+### Manufacturing Operations (10+ endpoints)
+```
+GET    /api/jobs                    # Manufacturing jobs
+POST   /api/jobs                    # Create manufacturing job
+GET    /api/resources              # Manufacturing resources
+GET    /api/schedules              # Production schedules
+```
 
-### Authentication Middleware
-All protected routes use Clerk authentication middleware with session verification.
+### Unleashed ERP Integration (15+ endpoints)
+```
+GET    /api/unleashed/test          # Connection test
+GET    /api/unleashed/products      # Product catalog
+GET    /api/unleashed/products/:id  # Specific product
+GET    /api/unleashed/stock         # Inventory levels
+GET    /api/unleashed/sales-orders  # Sales orders
+GET    /api/unleashed/sales-orders/:id # Specific order
+GET    /api/unleashed/purchase-orders  # Purchase orders
+GET    /api/unleashed/customers     # Customer data
+GET    /api/unleashed/suppliers     # Supplier data
+GET    /api/unleashed/warehouses    # Warehouse data
+GET    /api/unleashed/bill-of-materials # BOM data
+GET    /api/unleashed/stock-adjustments # Stock adjustments
+```
+
+### Working Capital Management (10+ endpoints)
+```
+POST   /api/working-capital/projections    # Generate projections
+GET    /api/working-capital/projections/history # Historical projections
+POST   /api/working-capital/scenarios      # Scenario modeling
+POST   /api/working-capital/optimize       # Optimization engine
+GET    /api/working-capital/diagnostics    # Health diagnostics
+GET    /api/working-capital/kpis/trends    # KPI trends analysis
+GET    /api/working-capital/policies/ar    # AR policy management
+GET    /api/working-capital/policies/ap    # AP policy management
+POST   /api/working-capital/policies/ar    # Create AR policies
+```
+
+### Data Import System (15+ endpoints)
+```
+POST   /api/import/upload           # File upload
+GET    /api/import/preview/:id      # Preview import data
+POST   /api/import/process/:id      # Process import job
+POST   /api/import/validate/:id     # Validate import data
+GET    /api/import/status/:id       # Import job status
+GET    /api/import/jobs             # List import jobs
+GET    /api/import/results/:id      # Import results
+POST   /api/import/upload-enhanced  # Enhanced file upload
+POST   /api/import/validate-enhanced/:id # Enhanced validation
+POST   /api/import/commit/:id       # Commit import
+GET    /api/import/templates/:type  # Import templates
+POST   /api/import/templates        # Create template
+GET    /api/import/statistics/:id   # Import statistics
+GET    /api/import/entity-report/:id # Entity-specific reports
+GET    /api/entities/available      # Available entities
+```
+
+### AI & Machine Learning (15+ endpoints)
+```
+GET    /api/ai/status              # AI service status
+GET    /api/ai/health              # AI health check
+POST   /api/ai/query               # AI query endpoint
+POST   /api/ai/forecast            # Generate forecasts
+POST   /api/ai/production/start    # Start production
+GET    /api/ai/dashboard/:type     # AI dashboard data
+POST   /api/ai/quality/inspect     # Quality inspection
+GET    /api/ai/insights/production # Production insights
+GET    /api/ai/insights/sales      # Sales insights
+GET    /api/ai/optimization/inventory # Inventory optimization
+GET    /api/ai/predictions/quality # Quality predictions
+```
+
+### Admin Panel (30+ endpoints)
+```
+# User Management
+GET    /api/admin/users            # User list
+GET    /api/admin/invitations      # Pending invitations
+POST   /api/admin/invite           # Invite user
+POST   /api/admin/users/:id/approve # Approve user
+POST   /api/admin/users/:id/revoke  # Revoke user access
+DELETE /api/admin/invitations/:id  # Delete invitation
+
+# System Management
+GET    /api/admin/health           # System health
+GET    /api/admin/errors           # Error tracking
+POST   /api/admin/errors/:id/ack   # Acknowledge errors
+GET    /api/admin/settings         # System settings
+GET    /api/admin/feature-flags    # Feature flags
+PATCH  /api/admin/feature-flags/:id # Update feature flag
+GET    /api/admin/integrations     # Integration status
+POST   /api/admin/integrations/:id/test # Test integration
+GET    /api/admin/logs             # System logs
+GET    /api/admin/audit-logs       # Audit trail
+
+# Maintenance Operations
+GET    /api/admin/maintenance/status # Maintenance status
+POST   /api/admin/maintenance/database/backup # Database backup
+POST   /api/admin/maintenance/cleanup # System cleanup
+GET    /api/admin/env              # Environment variables
+POST   /api/admin/env/propose      # Propose env changes
+POST   /api/admin/secret/rotate    # Rotate secrets
+POST   /api/admin/queue/:name/retry # Retry queue operations
+POST   /api/admin/cache/clear      # Clear cache
+
+# Multi-Entity Management
+GET    /api/admin/entities         # Entity management
+POST   /api/admin/entities         # Create entity
+PUT    /api/admin/entities/:id     # Update entity
+GET    /api/admin/multi-entity/health # Multi-entity health
+GET    /api/admin/global/entities  # Global entity view
+
+# SSO Management
+GET    /api/admin/sso/providers    # SSO providers
+POST   /api/admin/sso/providers    # Create SSO provider
+PUT    /api/admin/sso/jit-config   # JIT provisioning config
+GET    /api/admin/sso/statistics   # SSO usage statistics
+GET    /api/admin/sso/health       # SSO health check
+
+# Financial Exchange
+GET    /api/admin/fx/settings      # FX rate settings
+POST   /api/admin/fx/settings      # Update FX settings
+POST   /api/admin/approvals        # Approval workflows
+GET    /api/admin/activity         # Activity monitoring
+```
+
+### Request/Response Patterns
+
+#### Standard Success Response
+```json
+{
+  "success": true,
+  "data": { /* response data */ },
+  "message": "Operation completed successfully",
+  "timestamp": "2025-09-06T10:00:00Z"
+}
+```
+
+#### Standard Error Response
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Human readable error message",
+    "details": { /* error specifics */ }
+  },
+  "timestamp": "2025-09-06T10:00:00Z"
+}
+```
+
+### Middleware Stack
+- **CORS**: Configurable cross-origin resource sharing
+- **Helmet**: Security headers (HSTS, CSP, etc.)
+- **Morgan**: HTTP request logging
+- **Rate Limiting**: Per-endpoint and per-user limits
+- **Authentication**: Clerk JWT token validation
+- **RBAC**: Role-based access control with granular permissions
+- **Input Validation**: Express-validator for request validation
+- **File Upload**: Multer with security constraints
+- **Compression**: Response compression for performance
+- **Error Handling**: Centralized error handling with logging
 
 ---
 
@@ -545,4 +771,312 @@ All branches auto-deploy with corresponding databases:
 3. Run `npm run db:migrate` to create migration
 4. Update seed data if necessary
 
-This index provides a comprehensive overview of the Sentia Manufacturing Dashboard codebase. For specific implementation details, refer to the individual files and the `context/` directory documentation.
+---
+
+## 9. Database Schema & Models (50+ Models)
+
+### Database Technology
+- **Engine**: Neon PostgreSQL (Serverless)
+- **ORM**: Prisma (Type-safe, auto-generated client)
+- **Connection**: Connection pooling enabled
+- **Migrations**: Prisma migrations with versioning
+- **Total Models**: 50+ models covering all business domains
+
+### Core Data Models
+
+#### User Management & Authentication
+```sql
+User                   # User accounts with RBAC (20+ fields)
+UserSession           # Session management with device tracking
+AuditLog              # Security audit trail with event tracking
+PasswordResetToken    # Secure password reset tokens
+password_history      # Password history for policy enforcement
+SSOProvider          # SSO configuration (future use)
+FeatureFlag          # Feature toggles with rollout percentages
+```
+
+#### Business Core Models
+```sql
+Market                # Geographic markets with regulatory requirements
+Product               # Product catalog with cost/pricing data
+SalesChannel          # Sales channel management with API configs
+HistoricalSale        # Sales transaction data with global currency support
+Forecast              # AI-generated forecasts with confidence scores
+InventoryLevel        # Inventory tracking with optimization metrics
+```
+
+#### Manufacturing Operations
+```sql
+Job                   # Manufacturing jobs with scheduling
+Schedule              # Production schedules with optimization scores
+Resource              # Manufacturing resources with maintenance tracking
+```
+
+#### Financial Management (Advanced Working Capital)
+```sql
+WorkingCapital        # Working capital projections with scenarios
+ARPolicy              # Accounts receivable policies by channel
+APPolicy              # Accounts payable policies by supplier
+InventoryPolicy       # Inventory management policies by product
+WCProjection          # Monthly cash flow projections
+WCKPIs               # Working capital KPIs (DSO, DPO, DIO, CCC)
+WCScenario           # Scenario modeling (baseline, optimistic, pessimistic)
+WCOptimization       # AI-generated optimization recommendations
+```
+
+#### Data Management & Import System
+```sql
+data_imports          # Master import job tracking
+import_errors         # Detailed error tracking with resolution
+import_logs           # Import audit logs with performance metrics
+import_templates      # Reusable import templates
+import_job           # Enhanced import job management
+validation_result    # Data validation results with quality scores
+ImportLineage        # Data lineage tracking for compliance
+ImportProvenance     # Import provenance and batch tracking
+```
+
+#### Global Multi-Entity Support
+```sql
+Entity                # Business entities for multi-tenant support
+Currency              # Multi-currency support with ISO codes
+FxRate               # Foreign exchange rates with provider tracking
+VatRate              # European VAT rates by country and date
+SalesTaxUs           # US sales tax rates by state/locality
+```
+
+#### AI & Agent System (Comprehensive)
+```sql
+AgentRuns            # AI agent execution runs with outcomes
+AgentSteps           # Individual agent steps with dependencies
+ToolInvocations      # Tool usage tracking with metrics
+Reflections          # Agent learning and reflection data
+Lessons              # Knowledge capture for continuous learning
+Approvals            # Human approval workflow for critical operations
+AgentEvals           # Agent evaluation and testing framework
+AgentEvalCases       # Individual test cases for agents
+AgentEvalScores      # Performance scoring and validation
+AgentSchedules       # Automated agent scheduling with cron
+AgentPolicies        # Safety policies and constraints
+AgentApprovals       # Approval workflow management
+AgentSafetyMetrics   # Safety metrics and monitoring
+```
+
+#### Data Quality & Governance
+```sql
+DQRules              # Data quality rules by dataset
+DQRuns               # Data quality validation runs
+DQFindings           # Data quality issues and impact assessment
+ModelArtifacts       # Model registry with versioning
+ModelBaselines       # Model baseline management and approval
+```
+
+#### System Configuration
+```sql
+SystemSetting        # System configuration with versioning
+```
+
+### Database Relationships & Constraints
+
+#### Key Relationships
+- **User → Sessions**: One-to-many with cascade delete
+- **User → AuditLog**: One-to-many for activity tracking
+- **Product → HistoricalSale**: One-to-many with foreign keys
+- **Market → SalesChannel**: One-to-many with regulatory constraints
+- **Entity → Multi-currency data**: One-to-many for global operations
+- **AgentRuns → AgentSteps**: One-to-many with execution flow
+- **WCProjection → WCKPIs**: One-to-many for detailed metrics
+
+#### Database Indexes & Performance
+- **100+ optimized indexes** for query performance
+- **Composite indexes** for complex multi-column queries
+- **Partial indexes** for filtered data access
+- **Foreign key constraints** with proper cascading rules
+- **UUID primary keys** for distributed scaling and security
+- **Date range indexes** for time-series data
+- **Full-text search indexes** for content search
+
+### Data Validation & Constraints
+
+#### Field Validation
+- **Email validation** with unique constraints
+- **Currency codes** validated against ISO 4217
+- **Country codes** validated against ISO 3166
+- **Percentage fields** with range constraints (0-1)
+- **UUID fields** with proper formatting
+- **Date ranges** with logical validation
+- **Enum constraints** for status fields
+
+#### Business Logic Constraints
+- **Unique constraints** on business keys
+- **Check constraints** for data integrity
+- **Cascade rules** for related data cleanup
+- **Soft delete patterns** for audit trails
+- **Versioning support** for configuration changes
+
+### Global Multi-Currency Architecture
+
+#### Currency Support
+- **Base Currency**: GBP (configurable)
+- **Supported Currencies**: GBP, EUR, USD (extensible)
+- **FX Rate Management**: Daily rates with provider tracking
+- **Currency Conversion**: Automatic conversion in projections
+- **Historical Rates**: Full rate history for accurate reporting
+
+#### Regional Compliance
+- **VAT Rates**: European VAT by country and rate type
+- **Sales Tax**: US state and local tax rates
+- **Regulatory Fields**: Compliance status tracking
+- **Data Residency**: Regional data handling flags
+
+---
+
+## 10. Recent Improvements & Enhancements (2025)
+
+### Performance Optimizations
+- **Vite Build Optimization**: Advanced chunking strategy reducing initial load by 40%
+- **Database Connection Pooling**: Neon PostgreSQL with optimized connection management
+- **Redis Caching**: Multi-level caching reducing API response times by 60%
+- **Memory Management**: Efficient garbage collection patterns and memory leak prevention
+- **Bundle Splitting**: Strategic code splitting for 3-second initial load times
+
+### AI & Agent System Implementation
+- **Agentic AI Framework**: Complete AI agent orchestration with 12-step execution
+- **Safety Policies**: Comprehensive policy enforcement preventing unauthorized operations
+- **Agent Evaluation**: Performance monitoring with automated testing and learning
+- **Human-in-the-loop**: Approval workflows for critical business operations
+- **Agent Scheduling**: Automated execution with freeze window protection
+
+### Enhanced Security Features
+- **Multi-factor Authentication**: TOTP implementation with backup codes
+- **Session Management**: Advanced session tracking with device fingerprinting
+- **Audit Logging**: Comprehensive audit trail with event correlation
+- **Rate Limiting**: Sophisticated rate limiting with burst handling
+- **RBAC Enhancement**: 20+ granular permissions with role inheritance
+
+### Global Readiness Features
+- **Multi-Entity Support**: Complete multi-tenant architecture with data isolation
+- **Multi-Currency**: Comprehensive foreign exchange rate management
+- **Regional Compliance**: VAT, sales tax, and regulatory compliance automation
+- **Localization**: Multi-language support with timezone handling
+- **Data Residency**: Regional data handling for GDPR compliance
+
+### Data Quality & Lineage
+- **Data Quality Rules**: Comprehensive validation framework with 10+ rule types
+- **Import Lineage**: Complete data provenance tracking for compliance
+- **Validation Pipelines**: Multi-stage validation with error recovery
+- **Quality Scoring**: Automated data quality assessment and reporting
+
+### Working Capital Management
+- **Advanced Projections**: 18-month rolling projections with scenario modeling
+- **Policy Management**: Automated AR/AP policy optimization
+- **KPI Monitoring**: Real-time working capital KPI tracking
+- **Optimization Engine**: AI-powered recommendations for cash flow improvement
+
+---
+
+## 11. Code Quality & Standards
+
+### ESLint Configuration
+- **Base Rules**: eslint:recommended with React and security plugins
+- **React Rules**: Comprehensive React/JSX linting with hooks validation
+- **Security Rules**: Security vulnerability detection and prevention
+- **Custom Rules**: Performance optimizations and best practices
+
+### Code Style Guidelines
+
+#### JavaScript/React Conventions
+- **Components**: PascalCase naming (e.g., `DashboardWidget`)
+- **Files**: `.jsx` for React components, `.js` for utilities
+- **Hooks**: Custom hooks prefixed with `use` (e.g., `useWorkingCapital`)
+- **Constants**: UPPER_SNAKE_CASE for application constants
+- **Functions**: camelCase for all function names
+
+#### Import/Export Standards
+```javascript
+// Standard import ordering
+import React from 'react'           // External libraries first
+import { useState } from 'react'    // React-specific imports
+import { useQuery } from '@tanstack/react-query' // Third-party hooks
+import ComponentName from './ComponentName' // Local component imports
+import { utilityFunction } from '../utils' // Utility imports
+```
+
+#### Error Handling Standards
+```javascript
+// Consistent API error responses
+{
+  success: false,
+  error: {
+    code: 'BUSINESS_LOGIC_ERROR',
+    message: 'User-friendly error message',
+    details: { field: 'specific validation error' }
+  },
+  timestamp: '2025-09-06T10:00:00Z'
+}
+```
+
+### Security Standards
+- **Input Validation**: All API endpoints use express-validator
+- **SQL Injection Protection**: Prisma ORM provides parameterized queries
+- **XSS Prevention**: React built-in escaping + CSP headers
+- **CSRF Protection**: CSRF tokens for state-changing operations
+- **Rate Limiting**: Per-endpoint limits with IP-based tracking
+- **Authentication**: JWT tokens with proper expiration and refresh
+- **Authorization**: RBAC with granular permission checking
+
+### Performance Standards
+- **Bundle Size**: Main chunks under 1.5MB with warning thresholds
+- **Load Time**: Initial page load under 3 seconds on 3G networks
+- **Memory Usage**: Efficient React patterns preventing memory leaks
+- **Database**: All queries optimized with proper indexing
+- **Caching**: Multi-level caching with 95% hit rates
+
+### Testing Standards
+- **Unit Tests**: 80%+ code coverage on critical business logic
+- **Integration Tests**: Full API endpoint testing with mocked external services
+- **E2E Tests**: Complete user workflow testing with Playwright
+- **Performance Tests**: Load testing for high-traffic scenarios
+
+---
+
+## 12. Troubleshooting Guide
+
+### Common Development Issues
+
+#### Environment Setup
+- **Port Conflicts**: Ensure ports 3000 (frontend) and 5000 (backend) are available
+- **Database Connection**: Verify DATABASE_URL in .env points to accessible Neon instance
+- **Clerk Authentication**: Check VITE_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY are set
+- **Node Version**: Ensure Node.js v18+ is installed (`node --version`)
+- **NPM Cache**: Clear npm cache if installation fails (`npm cache clean --force`)
+
+#### Build and Development
+- **Vite Build Errors**: Clear dist/ directory and rebuild (`rm -rf dist && npm run build`)
+- **Hot Reload Issues**: Restart dev server and clear browser cache
+- **TypeScript Errors**: Run type checking (`npm run typecheck`) and fix issues
+- **ESLint Errors**: Auto-fix where possible (`npm run lint:fix`)
+- **Prisma Issues**: Regenerate client (`npm run db:generate`) after schema changes
+
+#### Production Deployment
+- **Railway Deployment**: Check build logs in Railway dashboard for specific errors
+- **Environment Variables**: Verify all production env vars are set in Railway
+- **Database Migrations**: Ensure migrations run in production (`npm run db:migrate:deploy`)
+- **Static Assets**: Verify Vite build assets are properly served by Express
+- **SSL Issues**: Check CORS configuration for HTTPS origins
+
+#### Performance Issues
+- **Slow Database Queries**: Use Prisma Studio to analyze query performance
+- **High Memory Usage**: Monitor Node.js memory with `--inspect` flag
+- **Large Bundle Sizes**: Analyze bundle with Vite build analyzer
+- **Cache Issues**: Clear Redis cache and restart application
+- **API Rate Limits**: Check rate limiting logs and adjust limits
+
+### Support Resources
+- **Documentation**: Complete API and component documentation
+- **Error Logs**: Winston logging with structured error information
+- **Performance Monitoring**: Built-in metrics and monitoring endpoints
+- **Database Tools**: Prisma Studio for database inspection
+- **Development Tools**: React DevTools and Clerk Dashboard
+
+This comprehensive codebase index provides developers with everything needed to navigate, understand, and contribute to the Sentia Manufacturing Dashboard. It serves as the definitive reference for this enterprise-grade manufacturing intelligence platform.

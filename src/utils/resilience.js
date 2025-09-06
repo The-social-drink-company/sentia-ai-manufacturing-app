@@ -2,6 +2,12 @@
  * Resilience and fallback mechanisms for robust operation
  */
 
+// Development-only logger
+const devLog = {
+  warn: (...args) => { if (process.env.NODE_ENV === 'development') console.warn(...args); },
+  info: (...args) => { if (process.env.NODE_ENV === 'development') console.info(...args); }
+};
+
 // Circuit breaker implementation
 export class CircuitBreaker {
   constructor(options = {}) {
@@ -22,7 +28,7 @@ export class CircuitBreaker {
         this.state = 'HALF_OPEN';
         this.successCount = 0;
       } else {
-        console.warn('Circuit breaker is OPEN, using fallback');
+        devLog.warn('Circuit breaker is OPEN, using fallback');
         return fallback ? fallback() : Promise.reject(new Error('Circuit breaker is OPEN'));
       }
     }
@@ -41,7 +47,7 @@ export class CircuitBreaker {
       this.onFailure();
       
       if (fallback) {
-        console.warn('Operation failed, using fallback:', error.message);
+        devLog.warn('Operation failed, using fallback:', error.message);
         return fallback();
       }
       
@@ -56,7 +62,7 @@ export class CircuitBreaker {
       this.successCount++;
       if (this.successCount >= 3) {
         this.state = 'CLOSED';
-        console.info('Circuit breaker recovered to CLOSED state');
+        devLog.info('Circuit breaker recovered to CLOSED state');
       }
     }
   }

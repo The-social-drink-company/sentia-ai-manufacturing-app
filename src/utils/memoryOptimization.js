@@ -1,5 +1,13 @@
 
 // Memory Optimization and Leak Detection for Sentia Dashboard
+
+// Development-only logger
+const devLog = {
+  log: (...args) => { if (process.env.NODE_ENV === 'development') console.log(...args); },
+  warn: (...args) => { if (process.env.NODE_ENV === 'development') console.warn(...args); },
+  info: (...args) => { if (process.env.NODE_ENV === 'development') console.info(...args); }
+};
+
 class MemoryMonitor {
   constructor() {
     this.observers = [];
@@ -21,7 +29,7 @@ class MemoryMonitor {
     // Set up performance observers
     this.setupPerformanceObservers();
     
-    console.log('Memory monitoring started');
+    devLog.info('Memory monitoring started');
   }
 
   stopMonitoring() {
@@ -36,7 +44,7 @@ class MemoryMonitor {
     this.observers.forEach(observer => observer.disconnect());
     this.observers = [];
     
-    console.log('Memory monitoring stopped');
+    devLog.info('Memory monitoring stopped');
   }
 
   recordMemoryUsage() {
@@ -68,7 +76,7 @@ class MemoryMonitor {
     const trend = this.calculateTrend(recent.map(entry => entry.used));
 
     if (trend > 0.1) { // 10% increase trend
-      console.warn('Potential memory leak detected:', {
+      devLog.warn('Potential memory leak detected:', {
         trend: trend * 100 + '%',
         currentUsage: this.formatBytes(recent[recent.length - 1].used),
         memoryHistory: recent
@@ -104,7 +112,7 @@ class MemoryMonitor {
       const longTaskObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           if (entry.duration > 50) { // Tasks longer than 50ms
-            console.warn('Long task detected:', {
+            devLog.warn('Long task detected:', {
               duration: entry.duration,
               startTime: entry.startTime,
               name: entry.name
@@ -117,7 +125,7 @@ class MemoryMonitor {
         longTaskObserver.observe({ entryTypes: ['longtask'] });
         this.observers.push(longTaskObserver);
       } catch (e) {
-        console.log('Long task observer not supported');
+        devLog.log('Long task observer not supported');
       }
     }
   }
@@ -176,7 +184,7 @@ export const withMemoryOptimization = (Component) => {
         // Component unmounting - cleanup check
         const lifetime = Date.now() - mountTime;
         if (lifetime > 300000) { // 5 minutes
-          console.log(`Long-lived component unmounting: ${Component.name}, lifetime: ${lifetime}ms`);
+          devLog.info(`Long-lived component unmounting: ${Component.name}, lifetime: ${lifetime}ms`);
         }
       };
     }, []);

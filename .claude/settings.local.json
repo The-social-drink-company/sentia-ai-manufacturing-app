@@ -50,7 +50,19 @@
       "Bash(railway link:*)",
       "Bash(test:*)",
       "Bash(start http://localhost:59588)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(npm outdated)",
+      "Bash(npm audit:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm test:*)",
+      "Bash(npx vite-bundle-analyzer:*)",
+      "Bash(tree:*)",
+      "Bash(npx eslint:*)",
+      "Bash(timeout 30s npm run test:run:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr edit:*)"
     ],
     "deny": [],
     "ask": []

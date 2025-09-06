@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy, Component } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -8,6 +8,47 @@ import SimpleAuth from './components/auth/SimpleAuth'
 import clerkConfig from './services/auth/clerkConfig'
 import './index.css'
 import './styles/ui-fixes.css'
+
+// Emergency Error Boundary for debugging
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  
+  componentDidCatch(error, errorInfo) {
+    console.error('React Error Boundary Caught:', error, errorInfo);
+    console.error('Error Stack:', error.stack);
+    console.error('Component Stack:', errorInfo.componentStack);
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ 
+          padding: '20px', 
+          background: '#ff0000', 
+          color: 'white',
+          fontFamily: 'monospace',
+          minHeight: '100vh'
+        }}>
+          <h1>🚨 React Error Caught!</h1>
+          <p>Error: {this.state.error?.message}</p>
+          <details>
+            <summary>Click for full error details</summary>
+            <pre>{this.state.error?.stack}</pre>
+          </details>
+        </div>
+      );
+    }
+    
+    return this.props.children;
+  }
+}
 
 // Initialize Clerk configuration
 if (typeof window !== 'undefined') {
@@ -76,7 +117,38 @@ const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZ
 
 // Main App component with Clerk authentication
 function App() {
+  console.log('🚀 App component rendering - START');
+  console.log('Environment mode:', import.meta.env.MODE);
+  console.log('Clerk pubkey:', clerkPubKey ? 'Present' : 'Missing');
+  console.log('Current URL:', window.location.href);
+  
+  // Emergency Debug Mode - Shows immediately if React is working
+  const showDebugMode = import.meta.env.VITE_DEBUG_MODE === 'true' || window.location.search.includes('debug=true');
+  
+  if (showDebugMode) {
+    console.log('🛠️ Emergency Debug Mode Activated');
+    return (
+      <div style={{ 
+        padding: '20px', 
+        background: '#00ff00', 
+        color: 'black',
+        minHeight: '100vh'
+      }}>
+        <h1>🛠️ EMERGENCY DEBUG MODE</h1>
+        <p><strong>React is working!</strong></p>
+        <p>Environment: {import.meta.env.MODE}</p>
+        <p>Base URL: {import.meta.env.BASE_URL}</p>
+        <p>Time: {new Date().toISOString()}</p>
+        <h2>Navigation Test</h2>
+        <button onClick={() => window.location.href = '/?debug=false'}>Exit Debug Mode</button>
+        <h2>Console Logs</h2>
+        <p>Check browser console for detailed logs</p>
+      </div>
+    );
+  }
+
   if (!clerkPubKey) {
+    console.log('❌ No Clerk publishable key found');
     return (
       <div style={{
         display: 'flex',
@@ -95,7 +167,10 @@ function App() {
     )
   }
 
+  console.log('✅ App component rendering normally');
+  
   return (
+    <ErrorBoundary>
     <ClerkProviderWithFallback>
       <AuthProvider>
         <Router>

@@ -1,0 +1,17 @@
+{
+  "name": "sentia-autonomous-agents",
+  "version": "2.0.0",
+  "description": "24/7 Autonomous Agent System for Sentia Manufacturing Dashboard",
+  "type": "module",
+  "main": "autonomous-orchestrator.js",
+  "scripts": {
+    "start": "node autonomous-orchestrator.js",
+    "test-agent": "node --experimental-modules"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

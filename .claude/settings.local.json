@@ -64,7 +64,8 @@
       "Bash(gh pr view:*)",
       "Bash(gh pr edit:*)",
       "Bash(npm ls:*)",
-      "Bash(npm run test:coverage:*)"
+      "Bash(npm run test:coverage:*)",
+      "Bash(git cherry-pick:*)"
     ],
     "deny": [],
     "ask": []

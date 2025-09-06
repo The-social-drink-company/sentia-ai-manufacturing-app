@@ -345,15 +345,9 @@ const AdminUsers = () => {
       queryClient.invalidateQueries(['admin', 'users'])
       setIsModalOpen(false)
       
-<<<<<<< HEAD
       logInfo('User saved', { component: 'AdminUsers', userData })
     } catch (error) {
       logError('Error saving user', error, { component: 'AdminUsers' })
-=======
-      devLog.log('User saved:', userData)
-    } catch (error) {
-      devLog.error('Error saving user:', error)
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
     }
   }
 
@@ -367,15 +361,9 @@ const AdminUsers = () => {
       await new Promise(resolve => setTimeout(resolve, 500))
       
       queryClient.invalidateQueries(['admin', 'users'])
-<<<<<<< HEAD
       logInfo('User status changed', { component: 'AdminUsers', userId, newStatus })
     } catch (error) {
       logError('Error updating user status', error, { component: 'AdminUsers', userId })
-=======
-      devLog.log(`User ${userId} status changed to ${newStatus}`)
-    } catch (error) {
-      devLog.error('Error updating user status:', error)
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
     }
   }
 
@@ -388,17 +376,10 @@ const AdminUsers = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
       
-<<<<<<< HEAD
       logInfo('Password reset sent', { component: 'AdminUsers', userId })
       // Show success notification
     } catch (error) {
       logError('Error sending password reset', error, { component: 'AdminUsers', userId })
-=======
-      devLog.log(`Password reset sent for user ${userId}`)
-      // Show success notification
-    } catch (error) {
-      devLog.error('Error sending password reset:', error)
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
     }
   }
 

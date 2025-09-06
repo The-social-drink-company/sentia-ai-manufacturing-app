@@ -258,11 +258,7 @@ const AdminSettings = () => {
     mutationFn: async ({ category, key, value }) => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
-<<<<<<< HEAD
       logInfo('Settings updated', { component: 'AdminSettings', category, key, value })
-=======
-      devLog.log(`Updating ${category}.${key} to:`, value)
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
       return { success: true }
     },
     onSuccess: () => {

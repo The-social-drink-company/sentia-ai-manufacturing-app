@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, useMemo } from 'react';
-=======
 import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect, useMemo } from 'react';
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
 import { 
   CheckCircle, 
   AlertTriangle, 

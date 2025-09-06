@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
-=======
 import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react';
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7
 import { Upload, BarChart3, Clock, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 
 const DataImportDashboard = () => {

@@ -63,6 +63,7 @@
       "Bash(touch:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr edit:*)",
+<<<<<<< Updated upstream
       "Bash(pm2 status:*)",
       "Bash(pm2 logs:*)",
       "Bash(pm2 stop:*)",
@@ -78,6 +79,9 @@
       "Bash(railway variables set:*)",
       "Bash(railway variables:*)",
       "Bash(pm2 restart:*)"
+=======
+      "Bash(pm2 start:*)"
+>>>>>>> Stashed changes
     ],
     "deny": [],
     "ask": []

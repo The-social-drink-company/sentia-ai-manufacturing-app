@@ -4,6 +4,7 @@
  */
 
 import express from 'express';
+import { setInterval, clearInterval } from 'timers';
 import forecastingService from '../services/ai/openAIForecastingService.js';
 import logger from '../services/logger.js';
 

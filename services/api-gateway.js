@@ -5,6 +5,7 @@ import compression from 'compression';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import redisCacheService from './redis-cache.js';
+import { logInfo, logWarn, logError } from './observability/structuredLogger.js';
 
 class APIGateway {
   constructor() {
@@ -102,7 +103,7 @@ class APIGateway {
           return req.path === '/health' || req.headers['x-internal-request'];
         },
         onLimitReached: async (req, res, options) => {
-          console.warn(`Rate limit exceeded for ${req.ip} on ${req.path}`);
+          logWarn('Rate limit exceeded', { ip: req.ip, path: req.path });
           await this.logSecurityEvent('RATE_LIMIT_EXCEEDED', {
             ip: req.ip,
             path: req.path,
@@ -195,7 +196,7 @@ class APIGateway {
       req.user = decoded;
       next();
     } catch (error) {
-      console.error('Authentication error:', error);
+      logError('Authentication error', error);
       res.status(401).json({ error: 'Invalid authentication token' });
     }
   };
@@ -219,7 +220,7 @@ class APIGateway {
       req.apiKeyInfo = cachedKey;
       next();
     } catch (error) {
-      console.error('API key authentication error:', error);
+      logError('API key authentication error', error);
       res.status(401).json({ error: 'API key authentication failed' });
     }
   };
@@ -241,7 +242,7 @@ class APIGateway {
       }
     });
 
-    console.log(`API Gateway: Registered service ${name}`);
+    logInfo('Service registered', { service: name });
   }
 
   // Route registration with middleware
@@ -271,7 +272,7 @@ class APIGateway {
     ];
 
     this.app[route.method](path, ...middlewares);
-    console.log(`API Gateway: Registered route ${routeKey} -> ${serviceName}`);
+    logInfo('Route registered', { route: routeKey, service: serviceName });
   }
 
   // Service request handler
@@ -318,7 +319,7 @@ class APIGateway {
       this.recordSuccess(service);
 
     } catch (error) {
-      console.error(`Gateway error for ${route.service}:`, error);
+      logError(`Gateway error for ${route.service}`, error);
       
       // Record failure for circuit breaker
       this.recordFailure(this.services.get(route.service));
@@ -369,7 +370,7 @@ class APIGateway {
     if (cb.failures >= cb.failureThreshold && cb.state === 'closed') {
       cb.state = 'open';
       cb.nextAttempt = Date.now() + cb.resetTimeout;
-      console.warn(`Circuit breaker opened for service ${service.name}`);
+      logWarn('Circuit breaker opened', { service: service.name });
     }
   }
 
@@ -379,7 +380,7 @@ class APIGateway {
     if (cb.state === 'half-open') {
       cb.state = 'closed';
       cb.failures = 0;
-      console.log(`Circuit breaker closed for service ${service.name}`);
+      logInfo('Circuit breaker closed', { service: service.name });
     } else if (cb.state === 'closed') {
       cb.failures = Math.max(0, cb.failures - 1);
     }
@@ -467,7 +468,7 @@ class APIGateway {
     };
 
     // Log to console and optionally to external service
-    console.log(`${logData.method} ${logData.path} ${logData.statusCode} ${duration}ms`);
+    logInfo('Request processed', { method: logData.method, path: logData.path, statusCode: logData.statusCode, duration: `${duration}ms` });
     
     // Store in Redis for monitoring
     await redisCacheService.set(
@@ -485,7 +486,7 @@ class APIGateway {
       severity: this.getEventSeverity(event)
     };
 
-    console.warn(`Security Event: ${event}`, data);
+    logWarn(`Security event: ${event}`, data);
     
     // Store security events with longer retention
     await redisCacheService.set(
@@ -518,7 +519,7 @@ class APIGateway {
     await this.registerDefaultServices();
     
     this.isInitialized = true;
-    console.log('API Gateway initialized successfully');
+    logInfo('API Gateway initialized successfully');
   }
 
   async registerDefaultServices() {

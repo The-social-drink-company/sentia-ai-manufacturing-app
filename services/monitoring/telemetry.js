@@ -7,6 +7,7 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { propagation, context, trace, metrics } from '@opentelemetry/api';
 import { logger } from '../logging/logger.js';
 
 const serviceName = 'sentia-manufacturing-dashboard';
@@ -169,19 +170,16 @@ export const addSpanEvent = (span, name, attributes = {}) => {
 
 // Context propagation helper
 export const extractContext = (headers) => {
-  const { propagation, context } = require('@opentelemetry/api');
   return propagation.extract(context.active(), headers);
 };
 
 export const injectContext = (headers) => {
-  const { propagation, context } = require('@opentelemetry/api');
   propagation.inject(context.active(), headers);
   return headers;
 };
 
 // Error reporting helper
 export const reportError = (error, context = {}) => {
-  const { trace } = require('@opentelemetry/api');
   const span = trace.getActiveSpan();
   
   if (span) {
@@ -203,7 +201,6 @@ export const reportError = (error, context = {}) => {
 
 // Performance measurement helper
 export const measurePerformance = async (name, fn, attributes = {}) => {
-  const { trace, metrics } = require('@opentelemetry/api');
   const tracer = trace.getTracer(serviceName);
   const meter = metrics.getMeter(serviceName);
   

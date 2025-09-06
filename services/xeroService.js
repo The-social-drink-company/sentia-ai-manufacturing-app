@@ -4,6 +4,7 @@
  */
 
 const { XeroApi, XeroClient } = require('xero-node');
+const { logError } = require('./observability/structuredLogger.js');
 
 class XeroService {
   constructor() {
@@ -27,7 +28,7 @@ class XeroService {
     try {
       return this.xeroClient.buildConsentUrl();
     } catch (error) {
-      console.error('Error building Xero consent URL:', error);
+      logError('Error building Xero consent URL', error);
       throw new Error('Failed to generate Xero authorization URL');
     }
   }
@@ -40,7 +41,7 @@ class XeroService {
       const tokenSet = await this.xeroClient.apiCallback(code);
       return tokenSet;
     } catch (error) {
-      console.error('Error exchanging code for token:', error);
+      logError('Error exchanging code for token', error);
       throw new Error('Failed to exchange authorization code for access token');
     }
   }
@@ -53,7 +54,7 @@ class XeroService {
       const tokenSet = await this.xeroClient.refreshAccessToken(refreshToken);
       return tokenSet;
     } catch (error) {
-      console.error('Error refreshing token:', error);
+      logError('Error refreshing token', error);
       throw new Error('Failed to refresh access token');
     }
   }
@@ -67,7 +68,7 @@ class XeroService {
       const response = await this.xeroClient.accountingApi.getOrganisations();
       return response.body.organisations;
     } catch (error) {
-      console.error('Error fetching organizations:', error);
+      logError('Error fetching organizations', error);
       throw new Error('Failed to fetch Xero organizations');
     }
   }
@@ -96,7 +97,7 @@ class XeroService {
       );
       return response.body.contacts;
     } catch (error) {
-      console.error('Error fetching contacts:', error);
+      logError('Error fetching contacts', error);
       throw new Error('Failed to fetch Xero contacts');
     }
   }
@@ -113,7 +114,7 @@ class XeroService {
       );
       return response.body.contacts[0];
     } catch (error) {
-      console.error('Error creating/updating contact:', error);
+      logError('Error creating/updating contact', error);
       throw new Error('Failed to create or update Xero contact');
     }
   }
@@ -142,7 +143,7 @@ class XeroService {
       );
       return response.body.invoices;
     } catch (error) {
-      console.error('Error fetching invoices:', error);
+      logError('Error fetching invoices', error);
       throw new Error('Failed to fetch Xero invoices');
     }
   }
@@ -159,7 +160,7 @@ class XeroService {
       );
       return response.body.invoices[0];
     } catch (error) {
-      console.error('Error creating invoice:', error);
+      logError('Error creating invoice', error);
       throw new Error('Failed to create Xero invoice');
     }
   }
@@ -185,7 +186,7 @@ class XeroService {
       );
       return response.body.items;
     } catch (error) {
-      console.error('Error fetching items:', error);
+      logError('Error fetching items', error);
       throw new Error('Failed to fetch Xero items');
     }
   }
@@ -202,7 +203,7 @@ class XeroService {
       );
       return response.body.items[0];
     } catch (error) {
-      console.error('Error creating/updating item:', error);
+      logError('Error creating/updating item', error);
       throw new Error('Failed to create or update Xero item');
     }
   }
@@ -221,7 +222,7 @@ class XeroService {
       );
       return response.body;
     } catch (error) {
-      console.error('Error fetching financial reports:', error);
+      logError('Error fetching financial reports', error);
       throw new Error('Failed to fetch Xero financial reports');
     }
   }

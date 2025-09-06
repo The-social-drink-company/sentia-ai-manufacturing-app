@@ -390,7 +390,7 @@ describe('Security Validation', () => {
     // Test malicious inputs
     const maliciousInputs = [
       '<script>alert("xss")</script>',
-      ''; DROP TABLE users; --',
+      "'; DROP TABLE users; --",
       '../../etc/passwd',
       'javascript:alert(1)'
     ];

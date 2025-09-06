@@ -370,20 +370,27 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from React build FIRST
-// In production/Railway, serve from dist folder with proper cache headers
-app.use(express.static(path.join(__dirname, 'dist'), {
-  maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
-  etag: true,
-  lastModified: true,
-  index: false, // Don't serve index.html for directory requests - let catch-all handle it
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
+// EMERGENCY FIX: Bulletproof static file serving
+// Log the dist directory status
+const distPath = path.join(__dirname, 'dist');
+console.log('Dist directory exists:', fs.existsSync(distPath));
+console.log('Dist directory contents:', fs.existsSync(distPath) ? fs.readdirSync(distPath) : 'N/A');
+
+// Serve static files with error handling
+app.use(express.static(distPath, {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res, filepath) => {
+    // Force proper content types
+    if (filepath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    } else if (filepath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+    } else if (filepath.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html; charset=UTF-8');
     }
-    if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-    }
+    // Disable caching for debugging
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   }
 }));
 
@@ -4614,6 +4621,12 @@ async function initializeServices() {
   }
 }
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).send('Internal Server Error');
+});
+
 // Catch-all handler MUST be last route (after all API routes and static files)
 app.get('*', (req, res) => {
   // Don't handle API routes here
@@ -4628,15 +4641,7 @@ app.get('*', (req, res) => {
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
-    res.status(503).send(`
-      <html>
-        <head><title>Sentia Manufacturing Dashboard</title></head>
-        <body style="font-family: sans-serif; padding: 40px; text-align: center;">
-          <h1>Application Starting...</h1>
-          <p>The application is building. Please refresh in a moment.</p>
-        </body>
-      </html>
-    `);
+    res.status(404).send('index.html not found');
   }
 });
 

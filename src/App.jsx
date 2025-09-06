@@ -240,6 +240,7 @@ function App() {
         </Router>
       </AuthProvider>
     </ClerkProviderWithFallback>
+    </ErrorBoundary>
   )
 }
 

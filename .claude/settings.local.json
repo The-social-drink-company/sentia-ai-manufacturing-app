@@ -67,7 +67,8 @@
       "Bash(pm2 logs:*)",
       "Bash(pm2 stop:*)",
       "Bash(pm2 delete:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(pm2 start:*)"
     ],
     "deny": [],
     "ask": []

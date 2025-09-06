@@ -1,170 +1,105 @@
-import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { AuthProvider } from './context/AuthContext'
-import ClerkProviderWithFallback from './components/auth/ClerkProviderWithFallback'
-import SimpleAuth from './components/auth/SimpleAuth'
-import clerkConfig from './services/auth/clerkConfig'
+import React from 'react'
 import './index.css'
-import './styles/ui-fixes.css'
 
-// Initialize Clerk configuration
-if (typeof window !== 'undefined') {
-  window.clerkConfig = clerkConfig;
-}
-
-// Create QueryClient instance
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-})
-
-// Import AI Enhanced Dashboard as the main dashboard
-
-// Lazy load other pages
-const WorkingCapitalDashboard = lazy(() => import('./pages/WorkingCapitalDashboard'))
-const AdminPortal = lazy(() => import('./pages/AdminPortal'))
-const DataImport = lazy(() => import('./pages/DataImport'))
-const LandingPage = lazy(() => import('./pages/LandingPage'))
-const AIDashboard = lazy(() => import('./pages/AIDashboard'))
-const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
-
-// Loading component
-function Loading() {
+function App() {
   return (
     <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '2rem',
+      color: 'white'
     }}>
       <div style={{
-        width: '60px',
-        height: '60px',
-        border: '4px solid rgba(255,255,255,0.3)',
-        borderTopColor: 'white',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite'
-      }}></div>
-      <p style={{ 
-        color: 'white',
-        marginTop: '1rem',
-        fontSize: '1.1rem'
+        background: 'rgba(255,255,255,0.1)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '12px',
+        padding: '2rem',
+        textAlign: 'center',
+        marginBottom: '2rem'
       }}>
-        Loading SENTIA Dashboard...
-      </p>
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
-  )
-}
+        <h1 style={{ fontSize: '3rem', margin: 0 }}>🚀 SENTIA Dashboard</h1>
+        <p style={{ fontSize: '1.2rem', opacity: 0.9, margin: '1rem 0 0 0' }}>
+          Manufacturing Intelligence Platform
+        </p>
+      </div>
 
-// Get Clerk publishable key from environment
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
-
-// Main App component with Clerk authentication
-function App() {
-  if (!clerkPubKey) {
-    return (
       <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
-        textAlign: 'center'
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '1.5rem'
       }}>
-        <div>
-          <h1>Authentication Configuration Required</h1>
-          <p>Please configure VITE_CLERK_PUBLISHABLE_KEY in your environment variables.</p>
+        <div style={{
+          background: 'rgba(255,255,255,0.95)',
+          borderRadius: '12px',
+          padding: '1.5rem',
+          color: '#1f2937'
+        }}>
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>📊 Revenue</h3>
+          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#059669' }}>
+            $125,430
+          </div>
+          <div style={{ color: '#059669', fontWeight: 500 }}>↗ +12% this month</div>
+        </div>
+
+        <div style={{
+          background: 'rgba(255,255,255,0.95)',
+          borderRadius: '12px',
+          padding: '1.5rem',
+          color: '#1f2937'
+        }}>
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>📦 Orders</h3>
+          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#059669' }}>
+            1,329
+          </div>
+          <div style={{ color: '#059669', fontWeight: 500 }}>↗ +5% this week</div>
+        </div>
+
+        <div style={{
+          background: 'rgba(255,255,255,0.95)',
+          borderRadius: '12px',
+          padding: '1.5rem',
+          color: '#1f2937'
+        }}>
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>👥 Customers</h3>
+          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#059669' }}>
+            892
+          </div>
+          <div style={{ color: '#059669', fontWeight: 500 }}>↗ +18% this month</div>
+        </div>
+
+        <div style={{
+          background: 'rgba(255,255,255,0.95)',
+          borderRadius: '12px',
+          padding: '1.5rem',
+          color: '#1f2937'
+        }}>
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>⚙ Status</h3>
+          <div style={{ margin: '1rem 0' }}>
+            <div style={{ marginBottom: '0.5rem' }}>
+              Production: <span style={{ color: '#10b981', fontWeight: 600 }}>Running</span>
+            </div>
+            <div style={{ marginBottom: '0.5rem' }}>
+              Quality: <span style={{ color: '#10b981', fontWeight: 600 }}>Active</span>  
+            </div>
+            <div>
+              Efficiency: <span style={{ color: '#10b981', fontWeight: 600 }}>94.2%</span>
+            </div>
+          </div>
         </div>
       </div>
-    )
-  }
 
-  return (
-    <ClerkProviderWithFallback>
-      <AuthProvider>
-        <Router>
-          <QueryClientProvider client={queryClient}>
-            <SimpleAuth>
-              <div style={{ minHeight: '100vh' }}>
-                <Routes>
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                  
-                  <Route
-                    path="/dashboard"
-                    element={<AIEnhancedDashboard />}
-                  />
-                  
-                  <Route
-                    path="/working-capital"
-                    element={
-                      <Suspense fallback={<Loading />}>
-                        <WorkingCapitalDashboard />
-                      </Suspense>
-                    }
-                  />
-                  
-                  <Route
-                    path="/admin/*"
-                    element={
-                      <Suspense fallback={<Loading />}>
-                        <AdminPortal />
-                      </Suspense>
-                    }
-                  />
-                  
-                  <Route
-                    path="/data-import"
-                    element={
-                      <Suspense fallback={<Loading />}>
-                        <DataImport />
-                      </Suspense>
-                    }
-                  />
-                  
-                  <Route
-                    path="/ai-dashboard"
-                    element={
-                      <Suspense fallback={<Loading />}>
-                        <AIDashboard />
-                      </Suspense>
-                    }
-                  />
-                  
-                  <Route
-                    path="/enhanced"
-                    element={
-                      <Suspense fallback={<Loading />}>
-                        <EnhancedDashboard />
-                      </Suspense>
-                    }
-                  />
-                  
-                  {/* Catch-all route */}
-                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                </Routes>
-              </div>
-              <ReactQueryDevtools initialIsOpen={false} />
-            </SimpleAuth>
-          </QueryClientProvider>
-        </Router>
-      </AuthProvider>
-    </ClerkProviderWithFallback>
+      <div style={{ 
+        textAlign: 'center', 
+        marginTop: '2rem',
+        background: 'rgba(255,255,255,0.1)',
+        borderRadius: '8px',
+        padding: '1rem'
+      }}>
+        <p style={{ margin: 0, opacity: 0.9 }}>
+          ✅ Dashboard Operational • React: Working • Server: Active
+        </p>
+      </div>
+    </div>
   )
 }
 

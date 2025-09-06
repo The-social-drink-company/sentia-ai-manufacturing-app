@@ -1,106 +1,89 @@
-import React from 'react'
-import './index.css'
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
+import './index.css';
+
+// Import components
+import Dashboard from './components/Dashboard';
+import AdminPanel from './components/AdminPanel';
+import WorkingCapital from './components/WorkingCapital';
+import LandingPage from './components/LandingPage';
+import LoadingSpinner from './components/LoadingSpinner';
+
+// Clerk configuration
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
+  if (!clerkPubKey) {
+    console.error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable");
+    return <div>Authentication configuration error. Please check environment setup.</div>;
+  }
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '2rem',
-      color: 'white'
-    }}>
-      <div style={{
-        background: 'rgba(255,255,255,0.1)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '12px',
-        padding: '2rem',
-        textAlign: 'center',
-        marginBottom: '2rem'
-      }}>
-        <h1 style={{ fontSize: '3rem', margin: 0 }}>🚀 SENTIA Dashboard</h1>
-        <p style={{ fontSize: '1.2rem', opacity: 0.9, margin: '1rem 0 0 0' }}>
-          Manufacturing Intelligence Platform
-        </p>
-      </div>
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <header className="bg-white shadow-sm border-b">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center py-4">
+                  <div className="flex items-center space-x-4">
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      🚀 SENTIA Dashboard
+                    </h1>
+                    <span className="text-sm text-gray-500">Manufacturing Intelligence Platform</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4">
+                    <SignedIn>
+                      <UserButton />
+                    </SignedIn>
+                    <SignedOut>
+                      <SignInButton>
+                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                          Sign In
+                        </button>
+                      </SignInButton>
+                    </SignedOut>
+                  </div>
+                </div>
+              </div>
+            </header>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '1.5rem'
-      }}>
-        <div style={{
-          background: 'rgba(255,255,255,0.95)',
-          borderRadius: '12px',
-          padding: '1.5rem',
-          color: '#1f2937'
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>📊 Revenue</h3>
-          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#059669' }}>
-            $125,430
+            {/* Main Content */}
+            <main>
+              <SignedOut>
+                <LandingPage />
+              </SignedOut>
+              
+              <SignedIn>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/admin" element={<AdminPanel />} />
+                    <Route path="/working-capital" element={<WorkingCapital />} />
+                  </Routes>
+                </Suspense>
+              </SignedIn>
+            </main>
           </div>
-          <div style={{ color: '#059669', fontWeight: 500 }}>↗ +12% this month</div>
-        </div>
-
-        <div style={{
-          background: 'rgba(255,255,255,0.95)',
-          borderRadius: '12px',
-          padding: '1.5rem',
-          color: '#1f2937'
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>📦 Orders</h3>
-          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#059669' }}>
-            1,329
-          </div>
-          <div style={{ color: '#059669', fontWeight: 500 }}>↗ +5% this week</div>
-        </div>
-
-        <div style={{
-          background: 'rgba(255,255,255,0.95)',
-          borderRadius: '12px',
-          padding: '1.5rem',
-          color: '#1f2937'
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>👥 Customers</h3>
-          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#059669' }}>
-            892
-          </div>
-          <div style={{ color: '#059669', fontWeight: 500 }}>↗ +18% this month</div>
-        </div>
-
-        <div style={{
-          background: 'rgba(255,255,255,0.95)',
-          borderRadius: '12px',
-          padding: '1.5rem',
-          color: '#1f2937'
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem' }}>⚙ Status</h3>
-          <div style={{ margin: '1rem 0' }}>
-            <div style={{ marginBottom: '0.5rem' }}>
-              Production: <span style={{ color: '#10b981', fontWeight: 600 }}>Running</span>
-            </div>
-            <div style={{ marginBottom: '0.5rem' }}>
-              Quality: <span style={{ color: '#10b981', fontWeight: 600 }}>Active</span>  
-            </div>
-            <div>
-              Efficiency: <span style={{ color: '#10b981', fontWeight: 600 }}>94.2%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ 
-        textAlign: 'center', 
-        marginTop: '2rem',
-        background: 'rgba(255,255,255,0.1)',
-        borderRadius: '8px',
-        padding: '1rem'
-      }}>
-        <p style={{ margin: 0, opacity: 0.9 }}>
-          ✅ Dashboard Operational • React: Working • Server: Active
-        </p>
-      </div>
-    </div>
-  )
+        </Router>
+        <Toaster position="top-right" />
+      </QueryClientProvider>
+    </ClerkProvider>
+  );
 }
 
-export default App
+export default App;

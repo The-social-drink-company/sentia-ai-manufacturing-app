@@ -1,6 +1,8 @@
 // Live Data Service - ONLY REAL DATA FROM EXTERNAL SOURCES
 // NO MOCK DATA ALLOWED - USER REQUIREMENT
 
+import { logInfo, logWarn, logError } from '../lib/logger.js';
+
 class LiveDataService {
   constructor() {
     this.initialized = false
@@ -10,7 +12,7 @@ class LiveDataService {
 
   async initialize() {
     if (this.initialized) return
-    console.log('Initializing Live Data Service - REAL DATA ONLY')
+    logInfo('Live Data Service initialization started', { mode: 'real_data_only' })
     this.initialized = true
   }
 
@@ -41,7 +43,7 @@ class LiveDataService {
       const apiKey = process.env.UNLEASHED_API_KEY
       
       if (!apiId || !apiKey) {
-        console.log('Unleashed API credentials not configured')
+        logWarn('Unleashed API credentials not configured', { service: 'unleashed' })
         return null
       }
 
@@ -55,7 +57,11 @@ class LiveDataService {
       })
 
       if (!ordersResponse.ok) {
-        console.log('Unleashed API request failed:', ordersResponse.status)
+        logError('Unleashed API request failed', null, { 
+          service: 'unleashed',
+          endpoint: 'SalesOrders',
+          statusCode: ordersResponse.status 
+        })
         return null
       }
 
@@ -72,7 +78,7 @@ class LiveDataService {
       return unleashedData
 
     } catch (error) {
-      console.log('Unleashed API error - using fallback:', error.message)
+      logError('Unleashed API error - using fallback', error, { service: 'unleashed' })
       return null
     }
   }
@@ -98,7 +104,7 @@ class LiveDataService {
       return amazonData
 
     } catch (error) {
-      console.log('Amazon API error:', error.message)
+      logError('Amazon API error', error, { service: 'amazon' })
       return null
     }
   }
@@ -114,7 +120,7 @@ class LiveDataService {
       const shopUrl = process.env.SHOPIFY_UK_SHOP_URL
 
       if (!apiKey || !accessToken || !shopUrl) {
-        console.log('Shopify API credentials not configured')
+        logWarn('Shopify API credentials not configured', { service: 'shopify' })
         return null
       }
 
@@ -127,7 +133,11 @@ class LiveDataService {
       })
 
       if (!ordersResponse.ok) {
-        console.log('Shopify API request failed:', ordersResponse.status)
+        logError('Shopify API request failed', null, {
+          service: 'shopify',
+          endpoint: 'orders',
+          statusCode: ordersResponse.status
+        })
         return null
       }
 
@@ -144,7 +154,7 @@ class LiveDataService {
       return shopifyData
 
     } catch (error) {
-      console.log('Shopify API error:', error.message)
+      logError('Shopify API error', error, { service: 'shopify' })
       return null
     }
   }
@@ -191,7 +201,7 @@ class LiveDataService {
       }
 
     } catch (error) {
-      console.error('Dashboard KPI calculation error:', error)
+      logError('Dashboard KPI calculation failed', error, { operation: 'kpi_calculation' })
       return {
         totalRevenue: '£0',
         totalOrders: 0,
@@ -222,7 +232,7 @@ class LiveDataService {
         lastUpdated: new Date().toISOString()
       }
     } catch (error) {
-      console.error('Manufacturing metrics error:', error)
+      logError('Manufacturing metrics calculation failed', error, { operation: 'manufacturing_metrics' })
       return null
     }
   }
@@ -240,7 +250,7 @@ class LiveDataService {
         lastUpdated: new Date().toISOString()
       }
     } catch (error) {
-      console.error('Financial data error:', error)
+      logError('Financial data calculation failed', error, { operation: 'financial_data' })
       return null
     }
   }
@@ -268,7 +278,7 @@ class LiveDataService {
         lastUpdated: new Date().toISOString()
       }
     } catch (error) {
-      console.error('Inventory data error:', error)
+      logError('Inventory data calculation failed', error, { operation: 'inventory_data' })
       return null
     }
   }
@@ -313,7 +323,7 @@ class LiveDataService {
       }
 
     } catch (error) {
-      console.error('Sales analytics error:', error)
+      logError('Sales analytics calculation failed', error, { operation: 'sales_analytics' })
       return null
     }
   }
@@ -325,7 +335,7 @@ const liveDataService = new LiveDataService()
 // Auto-initialize
 if (typeof window !== 'undefined') {
   liveDataService.initialize().catch(error => {
-    console.error('Failed to initialize Live Data Service:', error)
+    logError('Live Data Service initialization failed', error, { service: 'live_data' })
   })
 }
 

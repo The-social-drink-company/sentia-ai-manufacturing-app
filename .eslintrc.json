@@ -58,7 +58,7 @@
     "Intl": "readonly"
   },
   "rules": {
-    "no-console": "off",
+    "no-console": "error",
     "no-unused-vars": ["warn", { 
       "args": "none",
       "varsIgnorePattern": "^_",
@@ -136,10 +136,9 @@
       }
     },
     {
-      "files": ["dist/**/*.js", "build/**/*.js"],
+      "files": ["database/**/*.js", "scripts/**/*.js", "src/lib/devLog.js", "**/*.config.js"],
       "rules": {
-        "no-unused-vars": "off",
-        "no-undef": "off"
+        "no-console": "off"
       }
     }
   ]

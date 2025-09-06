@@ -1,5 +1,6 @@
 
 // Service Worker Registration for Sentia Dashboard
+import { devLog } from '../lib/devLog';
 export const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
     try {
@@ -15,10 +16,10 @@ export const registerServiceWorker = async () => {
         });
       });
       
-      console.log('Service Worker registered successfully');
+      devLog.log('Service Worker registered successfully');
       return registration;
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
+      devLog.error('Service Worker registration failed:', error);
     }
   }
 };

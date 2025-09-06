@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 // Removed Clerk import to fix Application Error
 import axios from 'axios'
+import { logError, logInfo } from '../../lib/logger'
 
 function PolicyManagement({ hasManagementAccess = false }) {
   // Mock auth for demo mode
@@ -32,7 +33,7 @@ function PolicyManagement({ hasManagementAccess = false }) {
       setArPolicies(arResponse.data.data || [])
       setApPolicies(apResponse.data.data || [])
     } catch (err) {
-      console.error('Policy fetch error:', err)
+      logError('Policy fetch error', err, { component: 'PolicyManagement' })
       setError(err.response?.data?.error || err.message)
     } finally {
       setLoading(false)
@@ -53,9 +54,9 @@ function PolicyManagement({ hasManagementAccess = false }) {
       setEditingPolicy(null)
       
       // Show success message (you could implement a toast here)
-      console.log('AR Policy updated successfully')
+      logInfo('AR Policy updated successfully', { component: 'PolicyManagement', policy: policyData })
     } catch (err) {
-      console.error('AR Policy update error:', err)
+      logError('AR Policy update error', err, { component: 'PolicyManagement', policy: policyData })
       setError(err.response?.data?.error || err.message)
     } finally {
       setLoading(false)

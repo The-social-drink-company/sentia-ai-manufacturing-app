@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 // Removed Clerk import to fix Application Error
 import axios from 'axios'
+import { logError } from '../../lib/logger'
 
 function KPIDashboard() {
   // Mock auth for demo mode
@@ -21,7 +22,7 @@ function KPIDashboard() {
       const response = await axios.get(`/api/working-capital/kpis/trends?months=${timeframe}`, { headers })
       setKpiData(response.data.data)
     } catch (err) {
-      console.error('KPI fetch error:', err)
+      logError('KPI fetch error', err, { component: 'KPIDashboard', timeframe })
       setError(err.response?.data?.error || err.message)
     } finally {
       setLoading(false)

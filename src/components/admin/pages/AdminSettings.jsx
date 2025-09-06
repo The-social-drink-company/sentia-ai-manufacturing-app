@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { logInfo } from '../../../lib/logger'
 import {
   Cog6ToothIcon,
   ShieldCheckIcon,
@@ -256,7 +257,7 @@ const AdminSettings = () => {
     mutationFn: async ({ category, key, value }) => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
-      console.log(`Updating ${category}.${key} to:`, value)
+      logInfo('Settings updated', { component: 'AdminSettings', category, key, value })
       return { success: true }
     },
     onSuccess: () => {

@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { logError } from '../lib/logger';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -22,10 +23,12 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught error:', error, errorInfo);
-    }
+    // Log error with structured logging
+    logError('ErrorBoundary caught error', error, { 
+      component: 'ErrorBoundary',
+      errorInfo: errorInfo?.componentStack,
+      errorCount: this.state.errorCount + 1
+    });
     
     // Update state with error details
     this.setState(prevState => ({

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { CheckCircle, XCircle, AlertCircle, Eye, EyeOff, Shield } from 'lucide-react'
+import { logError } from '../../lib/logger'
 
 export default function PasswordPolicyChecker({ 
   password, 
@@ -22,7 +23,7 @@ export default function PasswordPolicyChecker({
           setPolicy(data.policy)
         }
       } catch (error) {
-        console.error('Failed to fetch password policy:', error)
+        logError('Failed to fetch password policy', error, { component: 'PasswordPolicyChecker' })
       } finally {
         setLoading(false)
       }

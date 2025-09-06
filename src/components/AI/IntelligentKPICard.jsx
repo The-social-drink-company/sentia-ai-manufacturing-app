@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
+import { logError, devLog } from '../../lib/logger';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -75,7 +76,7 @@ const IntelligentKPICard = ({
         ].slice(0, 3));
       }
     } catch (error) {
-      console.error('Failed to analyze metric:', error);
+      logError('Failed to analyze metric', error, { component: 'IntelligentKPICard', metric: metric?.name });
     } finally {
       setIsLoading(false);
     }
@@ -288,7 +289,7 @@ const IntelligentKPICard = ({
             <button
               onClick={() => {
                 // Open detailed view
-                console.log('Open detailed view for', metric.name);
+                devLog.log('Open detailed view for', metric.name);
               }}
               className="flex-1 px-3 py-2 text-xs font-medium text-gray-600 bg-gray-50 rounded hover:bg-gray-100"
             >

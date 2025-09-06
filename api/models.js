@@ -4,7 +4,7 @@
 
 import express from 'express';
 import { modelRegistry } from '../services/models/modelRegistry.js';
-import { logInfo, logError } from '../services/observability/structuredLogger.js';
+import { logError } from '../services/observability/structuredLogger.js';
 
 const router = express.Router();
 

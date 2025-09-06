@@ -3,6 +3,8 @@
  * Implements lazy loading, code splitting, and performance monitoring
  */
 
+import { devLog } from '../lib/devLog';
+
 // Web Vitals monitoring - disabled to prevent import errors
 export const measureWebVitals = (onPerfEntry) => {
   // Web vitals monitoring temporarily disabled
@@ -17,10 +19,10 @@ export const measureWebVitals = (onPerfEntry) => {
         getLCP(onPerfEntry);
         getTTFB(onPerfEntry);
       }).catch(() => {
-        console.warn('web-vitals not available');
+        devLog.warn('web-vitals not available');
       });
     } catch (err) {
-      console.warn('web-vitals not available, skipping performance monitoring');
+      devLog.warn('web-vitals not available, skipping performance monitoring');
     }
   }
   */
@@ -32,7 +34,7 @@ export const createPerformanceObserver = () => {
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         // Log to analytics or monitoring service
-        console.debug('Performance Entry:', {
+        devLog.log('Performance Entry:', {
           name: entry.name,
           type: entry.entryType,
           duration: entry.duration,
@@ -129,7 +131,7 @@ export const detectMemoryLeaks = () => {
       const percentUsed = (usedHeapSize / limit) * 100;
       
       if (percentUsed > 90) {
-        console.warn('High memory usage detected:', {
+        devLog.warn('High memory usage detected:', {
           used: `${(usedHeapSize / 1048576).toFixed(2)} MB`,
           total: `${(totalHeapSize / 1048576).toFixed(2)} MB`,
           limit: `${(limit / 1048576).toFixed(2)} MB`,
@@ -271,7 +273,7 @@ export const perfMeasure = (name, startMark, endMark) => {
       const measure = performance.getEntriesByName(name, 'measure')[0];
       return measure ? measure.duration : null;
     } catch (e) {
-      console.error('Performance measurement failed:', e);
+      devLog.error('Performance measurement failed:', e);
       return null;
     }
   }

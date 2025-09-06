@@ -10,6 +10,7 @@ import {
   CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
+import { logError } from '../../lib/logger';
 
 const PredictiveAnalyticsDashboard = ({ 
   data = [],
@@ -65,7 +66,7 @@ const PredictiveAnalyticsDashboard = ({
         ...(dashboardInsights?.opportunities || [])
       ].slice(0, 5));
     } catch (error) {
-      console.error('Predictive analysis failed:', error);
+      logError('Predictive analysis failed', error, { component: 'PredictiveAnalyticsDashboard' });
     } finally {
       setIsLoading(false);
     }

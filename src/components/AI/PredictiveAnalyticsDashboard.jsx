@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import { Line, Bar, Scatter } from 'react-chartjs-2';
 import {
   ChartBarIcon,
@@ -65,7 +65,7 @@ const PredictiveAnalyticsDashboard = ({
         ...(dashboardInsights?.opportunities || [])
       ].slice(0, 5));
     } catch (error) {
-      console.error('Predictive analysis failed:', error);
+      devLog.error('Predictive analysis failed:', error);
     } finally {
       setIsLoading(false);
     }

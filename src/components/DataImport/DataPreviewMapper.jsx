@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, useMemo } from 'react';
 import { Eye, ArrowRight, Settings, AlertCircle, CheckCircle, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -102,7 +102,7 @@ const DataPreviewMapper = ({
         onError && onError(data);
       }
     } catch (error) {
-      console.error('Preview fetch error:', error);
+      devLog.error('Preview fetch error:', error);
       setError('Failed to load preview');
       onError && onError(error);
     } finally {

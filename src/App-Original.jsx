@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -108,7 +108,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('App Error:', error, errorInfo);
+    devLog.error('App Error:', error, errorInfo);
   }
 
   render() {
@@ -134,8 +134,8 @@ class ErrorBoundary extends React.Component {
 
 // Main App Component - Demo Mode (No Authentication)
 function App() {
-  console.log('App rendering - Demo Mode Version')
-  console.log('Environment:', import.meta.env.MODE)
+  devLog.log('App rendering - Demo Mode Version')
+  devLog.log('Environment:', import.meta.env.MODE)
   
   // Always run in demo mode for now
   return (

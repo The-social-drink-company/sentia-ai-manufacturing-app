@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   UserIcon,
@@ -343,9 +343,9 @@ const AdminUsers = () => {
       queryClient.invalidateQueries(['admin', 'users'])
       setIsModalOpen(false)
       
-      console.log('User saved:', userData)
+      devLog.log('User saved:', userData)
     } catch (error) {
-      console.error('Error saving user:', error)
+      devLog.error('Error saving user:', error)
     }
   }
 
@@ -359,9 +359,9 @@ const AdminUsers = () => {
       await new Promise(resolve => setTimeout(resolve, 500))
       
       queryClient.invalidateQueries(['admin', 'users'])
-      console.log(`User ${userId} status changed to ${newStatus}`)
+      devLog.log(`User ${userId} status changed to ${newStatus}`)
     } catch (error) {
-      console.error('Error updating user status:', error)
+      devLog.error('Error updating user status:', error)
     }
   }
 
@@ -374,10 +374,10 @@ const AdminUsers = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
       
-      console.log(`Password reset sent for user ${userId}`)
+      devLog.log(`Password reset sent for user ${userId}`)
       // Show success notification
     } catch (error) {
-      console.error('Error sending password reset:', error)
+      devLog.error('Error sending password reset:', error)
     }
   }
 

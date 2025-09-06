@@ -1,8 +1,8 @@
-import React from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React from 'react'
 
 function App() {
-  console.log('App component is rendering')
-  console.log('Clerk key:', import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)
+  devLog.log('App component is rendering')
+  devLog.log('Clerk key:', import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)
   
   return (
     <div style={{ padding: '20px', backgroundColor: '#f0f0f0', minHeight: '100vh' }}>

@@ -1,4 +1,4 @@
-import React from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React from 'react'
 import './App.css'
 
 // Simple fallback dashboard without complex dependencies
@@ -69,13 +69,13 @@ function FallbackDashboard() {
 }
 
 function App() {
-  console.log('App-fixed.jsx is rendering')
+  devLog.log('App-fixed.jsx is rendering')
   
   // Check for Clerk but don't fail if it's not available
   const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
   
   if (!clerkPubKey) {
-    console.log('Clerk not configured, showing fallback dashboard')
+    devLog.log('Clerk not configured, showing fallback dashboard')
     return <FallbackDashboard />
   }
   

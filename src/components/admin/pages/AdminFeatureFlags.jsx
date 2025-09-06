@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   FlagIcon,
@@ -337,7 +337,7 @@ const AdminFeatureFlags = () => {
     mutationFn: async ({ flagId, enabled }) => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
-      console.log(`Toggling flag ${flagId} to ${enabled}`)
+      devLog.log(`Toggling flag ${flagId} to ${enabled}`)
       return { success: true }
     },
     onSuccess: () => {
@@ -349,7 +349,7 @@ const AdminFeatureFlags = () => {
     mutationFn: async ({ flagId, percentage }) => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
-      console.log(`Updating rollout for flag ${flagId} to ${percentage}%`)
+      devLog.log(`Updating rollout for flag ${flagId} to ${percentage}%`)
       return { success: true }
     },
     onSuccess: () => {
@@ -377,9 +377,9 @@ const AdminFeatureFlags = () => {
       queryClient.invalidateQueries(['admin', 'feature-flags'])
       setIsModalOpen(false)
       
-      console.log('Feature flag saved:', flagData)
+      devLog.log('Feature flag saved:', flagData)
     } catch (error) {
-      console.error('Error saving feature flag:', error)
+      devLog.error('Error saving feature flag:', error)
     }
   }
 

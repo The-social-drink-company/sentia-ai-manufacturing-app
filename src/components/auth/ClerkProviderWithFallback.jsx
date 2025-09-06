@@ -1,4 +1,4 @@
-/**
+import { devLog } from '../lib/devLog.js';\n/**
  * ClerkProvider with Fallback UI
  * Handles authentication states and provides fallback when Clerk is not available
  */
@@ -86,7 +86,7 @@ const ClerkProviderWithFallback = ({ children }) => {
         const configuration = clerkConfig.getConfig ? clerkConfig.getConfig() : null;
         
         if (!configuration || !configuration.publishableKey) {
-          console.warn('[ClerkProvider] No publishable key found, running without authentication');
+          devLog.warn('[ClerkProvider] No publishable key found, running without authentication');
           setClerkError('No authentication configuration');
           return;
         }
@@ -102,7 +102,7 @@ const ClerkProviderWithFallback = ({ children }) => {
           setClerkError('Failed to initialize authentication');
         }
       } catch (error) {
-        console.error('[ClerkProvider] Initialization error:', error);
+        devLog.error('[ClerkProvider] Initialization error:', error);
         setClerkError(error.message);
       }
     };
@@ -120,7 +120,7 @@ const ClerkProviderWithFallback = ({ children }) => {
 
   // Clerk initialization failed - show fallback
   if (clerkError) {
-    console.warn('[ClerkProvider] Using fallback mode:', clerkError);
+    devLog.warn('[ClerkProvider] Using fallback mode:', clerkError);
     return (
       <ErrorBoundary>
         <ClerkFallback>{children}</ClerkFallback>
@@ -178,7 +178,7 @@ export const useClerkAuth = () => {
           isFallback: false
         });
       } catch (error) {
-        console.error('[useClerkAuth] Error getting auth state:', error);
+        devLog.error('[useClerkAuth] Error getting auth state:', error);
         setAuthState({
           isLoaded: true,
           isSignedIn: false,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import { Upload, BarChart3, Clock, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 
 const DataImportDashboard = () => {
@@ -26,7 +26,7 @@ const DataImportDashboard = () => {
         setImportHistory(data.jobs);
       }
     } catch (error) {
-      console.error('Failed to fetch import history:', error);
+      devLog.error('Failed to fetch import history:', error);
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ const DataImportDashboard = () => {
         setQueueStats(data.stats);
       }
     } catch (error) {
-      console.error('Failed to fetch queue stats:', error);
+      devLog.error('Failed to fetch queue stats:', error);
     }
   };
 
@@ -91,7 +91,7 @@ const DataImportDashboard = () => {
         }
       }
     } catch (error) {
-      console.error('Failed to start validation:', error);
+      devLog.error('Failed to start validation:', error);
     }
   };
 

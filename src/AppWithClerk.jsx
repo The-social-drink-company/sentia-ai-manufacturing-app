@@ -1,10 +1,10 @@
-import React from 'react'
+import { devLog } from '../lib/devLog.js';\nimport React from 'react'
 import { ClerkProvider, SignIn, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 function AppWithClerk() {
-  console.log('Clerk Publishable Key:', clerkPubKey ? 'Found' : 'Missing')
+  devLog.log('Clerk Publishable Key:', clerkPubKey ? 'Found' : 'Missing')
   
   // First check if Clerk key exists
   if (!clerkPubKey) {

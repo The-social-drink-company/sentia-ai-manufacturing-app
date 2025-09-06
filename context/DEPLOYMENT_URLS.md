@@ -18,7 +18,7 @@
 
 ## Development Environment
 - **Main URL:** https://sentiadeploy.financeflo.ai
-- **Railway URL:** https://sentia-manufacturing-dashboard-development.up.railway.app
+- **Railway URL:** https://daring-reflection-development.up.railway.app
 - **Health Check:** https://sentiadeploy.financeflo.ai/health
 - **Port:** 8080
 - **Branch:** development
@@ -42,7 +42,7 @@
 
 #### Development Health Checks:
 - **Custom Domain:** https://sentiadeploy.financeflo.ai/health
-- **Railway Domain:** https://sentia-manufacturing-dashboard-development.up.railway.app/health
+- **Railway Domain:** https://daring-reflection-development.up.railway.app/health
 - **Alternative Endpoint:** https://sentiadeploy.financeflo.ai/healthz
 
 ---
@@ -193,7 +193,7 @@ If main URLs don't work, try these alternatives:
 ### Direct Railway URLs:
 - **Production:** https://web-production-1f10.up.railway.app
 - **Testing:** https://courageous-insight-testing.up.railway.app
-- **Development:** https://sentia-manufacturing-dashboard-development.up.railway.app
+- **Development:** https://daring-reflection-development.up.railway.app
 
 ### Railway Logs:
 - Access via Railway dashboard for each environment

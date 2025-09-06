@@ -155,7 +155,7 @@ scripts/               # Utility scripts
 
 ### Auto-Deployment (Railway)
 All branches auto-deploy with corresponding Neon PostgreSQL databases:
-- development → dev.sentia-manufacturing.railway.app
+- development → daring-reflection-development.up.railway.app
 - test → test.sentia-manufacturing.railway.app
 - production → web-production-1f10.up.railway.app
 

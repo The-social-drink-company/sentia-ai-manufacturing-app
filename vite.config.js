@@ -31,43 +31,80 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    emptyOutDir: true, // Clear dist folder before build
-    sourcemap: process.env.NODE_ENV !== 'production', // Only generate sourcemaps in dev
-    minify: 'esbuild',
+    emptyOutDir: true,
+    sourcemap: false, // Disable sourcemaps in production for smaller size
+    minify: 'terser', // Better minification
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.logs in production
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace']
+      }
+    },
     target: 'es2020',
-    chunkSizeWarningLimit: 1000,
-    // Railway-specific build optimizations
-    cssCodeSplit: true, // Split CSS for better caching
-    assetsInlineLimit: 4096, // Inline small assets as base64
+    chunkSizeWarningLimit: 1500,
+    cssCodeSplit: true,
+    assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Split vendor libraries into separate chunks
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
-          'vendor-charts': ['recharts'],
-          'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
-          'vendor-data': ['@tanstack/react-query', 'axios'],
-          'vendor-dnd': ['react-grid-layout', '@dnd-kit/core', '@dnd-kit/sortable']
+        manualChunks(id) {
+          // Optimized chunking strategy
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('recharts') || id.includes('d3')) {
+              return 'charts';
+            }
+            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
+              return 'ui-components';
+            }
+            if (id.includes('@tanstack') || id.includes('axios')) {
+              return 'data-fetching';
+            }
+            if (id.includes('react-grid-layout') || id.includes('@dnd-kit')) {
+              return 'drag-drop';
+            }
+            if (id.includes('@clerk')) {
+              return 'auth';
+            }
+            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
+              return 'utils';
+            }
+            return 'vendor';
+          }
+          // Separate large page components
+          if (id.includes('src/pages/Dashboard')) {
+            return 'dashboard';
+          }
+          if (id.includes('src/pages/WorkingCapital')) {
+            return 'working-capital';
+          }
+          if (id.includes('src/components/widgets')) {
+            return 'widgets';
+          }
         },
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId
-            ? chunkInfo.facadeModuleId.split('/').pop().replace(/\.[jt]sx?$/, '')
-            : 'chunk';
-          return `js/${facadeModuleId}-[hash].js`;
-        },
-        entryFileNames: 'js/[name]-[hash].js',
+        chunkFileNames: 'js/[name]-[hash:8].js',
+        entryFileNames: 'js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
           const ext = info[info.length - 1];
           if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(assetInfo.name)) {
-            return `images/[name]-[hash].${ext}`;
+            return `images/[name]-[hash:8].${ext}`;
           }
           if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name)) {
-            return `fonts/[name]-[hash].${ext}`;
+            return `fonts/[name]-[hash:8].${ext}`;
           }
-          return `assets/[name]-[hash].${ext}`;
+          if (/\.css$/i.test(assetInfo.name)) {
+            return `css/[name]-[hash:8].${ext}`;
+          }
+          return `assets/[name]-[hash:8].${ext}`;
         }
+      },
+      // Tree-shake unused code
+      treeshake: {
+        preset: 'recommended',
+        propertyReadSideEffects: false
       }
     }
   },

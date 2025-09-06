@@ -48,7 +48,9 @@
       "WebFetch(domain:sentia-manufacturing-dashboard-development.up.railway.app)",
       "Bash(set RAILWAY_TOKEN=a24be746-9bb6-4e4b-984d-597a4d42a20c)",
       "Bash(railway link:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(start http://localhost:59588)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

@@ -68,7 +68,9 @@
       "Bash(pm2 stop:*)",
       "Bash(pm2 delete:*)",
       "Bash(timeout:*)",
-      "Bash(pm2 start:*)"
+      "Bash(pm2 start:*)",
+      "Bash(flyctl:*)",
+      "Bash(C:UsersUser.flybinflyctl.exe --version)"
     ],
     "deny": [],
     "ask": []

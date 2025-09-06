@@ -68,13 +68,13 @@ button:focus-visible {
   }
 }
 
-/* Import Tailwind CSS */
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-
-/* Import custom animations */
+/* Import custom animations first */
 @import './components/ui/animations.css';
+
+/* Import Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Enhanced micro-interactions and animations */
 @layer components {

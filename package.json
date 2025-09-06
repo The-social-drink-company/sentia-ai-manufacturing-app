@@ -38,7 +38,13 @@
     "db:migrate:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
-    "railway:setup": "node scripts/setup-railway-env.js"
+    "railway:setup": "node scripts/setup-railway-env.js",
+    "railway:deploy": "node scripts/railway-deploy.js",
+    "railway:verify": "node scripts/verify-deployments.js",
+    "deploy:all": "npm run railway:setup && npm run railway:deploy && npm run railway:verify",
+    "deploy:dev": "node scripts/railway-deploy.js development",
+    "deploy:test": "node scripts/railway-deploy.js testing",
+    "deploy:prod": "node scripts/railway-deploy.js production"
   },
   "dependencies": {
     "@clerk/backend": "^2.12.0",

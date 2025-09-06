@@ -1,4 +1,6 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../lib/devLog.js';
+
+/**
  * ClerkProvider with Fallback UI
  * Handles authentication states and provides fallback when Clerk is not available
  */

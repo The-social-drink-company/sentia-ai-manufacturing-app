@@ -46,9 +46,18 @@ class AutonomousOrchestrator {
       console.log(`\\n📌 Processing: ${branch}`);
       
       try {
+        // Stash any uncommitted changes first
+        await execAsync('git stash push -m "Autonomous agent stash"').catch(() => {});
+        
         // Switch to branch
         await execAsync(`git checkout ${branch}`);
         await execAsync(`git pull origin ${branch}`).catch(() => {});
+        
+        // Pop stash if we're back on production (where changes were made)
+        if (branch === 'production') {
+          await execAsync('git stash pop').catch(() => {});
+        }
+        
         console.log(`✅ Switched to ${branch}`);
 
         // Apply fixes directly

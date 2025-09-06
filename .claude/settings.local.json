@@ -74,7 +74,9 @@
       "Bash(git fetch:*)",
       "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_test_placeholder)",
       "Bash(set VITE_API_BASE_URL=https://sentia-manufacturing-dashboard.fly.dev/api)",
-      "WebFetch(domain:sentia-manufacturing-dashboard-production.up.railway.app)"
+      "WebFetch(domain:sentia-manufacturing-dashboard-production.up.railway.app)",
+      "Bash(railway variables set:*)",
+      "Bash(railway variables:*)"
     ],
     "deny": [],
     "ask": []

@@ -16,11 +16,20 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Install dev dependencies for building
+RUN npm install --only=dev --ignore-scripts
+
 # Install Prisma CLI globally
 RUN npm install -g prisma
 
 # Generate Prisma client
 RUN npx prisma generate
+
+# Set environment variables for build
+ENV NODE_ENV=production
+ENV VITE_API_BASE_URL="https://sentia-manufacturing-dashboard.fly.dev/api"
+ENV VITE_APP_NAME="Sentia Manufacturing Dashboard"
+ENV VITE_APP_VERSION="1.0.0"
 
 # Build the application
 RUN npm run build

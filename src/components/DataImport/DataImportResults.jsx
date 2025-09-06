@@ -1,4 +1,4 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect, useMemo } from 'react';
+import { devLog } from '../../lib/devLog.js';\nimport React, { useState, useEffect, useMemo } from 'react';
 import { 
   CheckCircle, 
   AlertTriangle, 

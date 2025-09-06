@@ -1,4 +1,4 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../../lib/devLog.js';\n/**
  * Enhanced Data Import Dashboard - Prompt 4 Implementation
  * 
  * Features:

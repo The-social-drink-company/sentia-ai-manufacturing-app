@@ -1,4 +1,4 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
+import { devLog } from '../../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
 import {

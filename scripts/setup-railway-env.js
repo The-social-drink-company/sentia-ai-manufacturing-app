@@ -1,33 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Railway Environment Setup Script
- * Sets up environment variables and configurations for all three Railway environments
+ * Railway Environment Variable Fix Script
+ * Fixes malformed environment variables causing deployment failures
  */
 
-import { execSync } from 'child_process';
-import fs from 'fs';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
-const environments = {
-  development: {
-    domain: 'dev.sentia-manufacturing.railway.app',
-    nodeEnv: 'development',
-    clerkPublishableKey: 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk',
-    clerkSecretKey: 'sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx'
-  },
-  testing: {
-    domain: 'test.sentia-manufacturing.railway.app', 
-    nodeEnv: 'test',
-    clerkPublishableKey: 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk',
-    clerkSecretKey: 'sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx'
-  },
-  production: {
-    domain: 'sentia-manufacturing.railway.app',
-    nodeEnv: 'production',
-    clerkPublishableKey: 'pk_live_YOUR_PRODUCTION_PUBLISHABLE_KEY',
-    clerkSecretKey: 'sk_live_YOUR_PRODUCTION_SECRET_KEY'
-  }
-};
+const execAsync = promisify(exec);
 
 class RailwayEnvironmentSetup {
   async checkPrerequisites() {

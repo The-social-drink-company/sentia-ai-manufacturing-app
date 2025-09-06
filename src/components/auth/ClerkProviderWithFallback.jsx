@@ -1,4 +1,4 @@
-import { devLog } from '../lib/devLog.js';
+import { devLog } from '../../lib/devLog.js';
 
 /**
  * ClerkProvider with Fallback UI

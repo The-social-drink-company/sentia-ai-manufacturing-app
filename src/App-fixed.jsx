@@ -1,4 +1,4 @@
-import { devLog } from '../lib/devLog.js';\nimport React from 'react'
+import { devLog } from './lib/devLog.js';\nimport React from 'react'
 import './App.css'
 
 // Simple fallback dashboard without complex dependencies

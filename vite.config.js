@@ -5,7 +5,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   // Critical: Set base path for Railway deployment
-  base: './', // Ensures relative paths work on Railway
+  base: '/', // Use absolute paths for proper routing
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -19,7 +19,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
+    port: 5173,
     host: true, // Needed for Docker
     proxy: {
       '/api': {
@@ -31,14 +31,15 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
     emptyOutDir: true,
-    sourcemap: false, // Disable sourcemaps in production for smaller size
+    sourcemap: true, // Enable for debugging production issues
     minify: 'terser', // Better minification
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console.logs in production
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace']
+        // Keep console.log for production debugging
+        pure_funcs: ['console.debug', 'console.trace']
       }
     },
     target: 'es2020',
@@ -47,59 +48,7 @@ export default defineConfig({
     assetsInlineLimit: 8192, // Increased for better performance
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // Optimized chunking strategy
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            if (id.includes('recharts') || id.includes('d3')) {
-              return 'charts';
-            }
-            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
-              return 'ui-components';
-            }
-            if (id.includes('@tanstack') || id.includes('axios')) {
-              return 'data-fetching';
-            }
-            if (id.includes('react-grid-layout') || id.includes('@dnd-kit')) {
-              return 'drag-drop';
-            }
-            if (id.includes('@clerk')) {
-              return 'auth';
-            }
-            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
-              return 'utils';
-            }
-            return 'vendor';
-          }
-          // Separate large page components
-          if (id.includes('src/pages/Dashboard')) {
-            return 'dashboard';
-          }
-          if (id.includes('src/pages/WorkingCapital')) {
-            return 'working-capital';
-          }
-          if (id.includes('src/components/widgets')) {
-            return 'widgets';
-          }
-        },
-        chunkFileNames: 'js/[name]-[hash:8].js',
-        entryFileNames: 'js/[name]-[hash:8].js',
-        assetFileNames: (assetInfo) => {
-          const info = assetInfo.name.split('.');
-          const ext = info[info.length - 1];
-          if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(assetInfo.name)) {
-            return `images/[name]-[hash:8].${ext}`;
-          }
-          if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name)) {
-            return `fonts/[name]-[hash:8].${ext}`;
-          }
-          if (/\.css$/i.test(assetInfo.name)) {
-            return `css/[name]-[hash:8].${ext}`;
-          }
-          return `assets/[name]-[hash:8].${ext}`;
-        }
+        manualChunks: undefined // Prevent chunking issues for debugging
       },
       // Tree-shake unused code
       treeshake: {

@@ -10,7 +10,7 @@ import { aiForecasting } from './aiForecasting';
 
 class SmartInventoryService {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    this.baseURL = process.env.API_BASE_URL || 'http://localhost:5000/api';
     this.initialized = false;
     this.inventoryData = new Map();
     this.suppliers = new Map();

@@ -5,8 +5,8 @@ import { shopifyUK, shopifyEU, shopifyUSA, shopifyUtils } from './shopifyApi'
 // AI-Powered Demand Forecasting Service
 class AIForecastingService {
   constructor() {
-    this.openaiApiKey = import.meta.env.VITE_OPENAI_API_KEY
-    this.claudeApiKey = import.meta.env.VITE_CLAUDE_API_KEY
+    this.openaiApiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY
+    this.claudeApiKey = process.env.CLAUDE_API_KEY || process.env.VITE_CLAUDE_API_KEY
     this.apiBaseUrl = 'https://api.openai.com/v1'
     
     this.client = axios.create({

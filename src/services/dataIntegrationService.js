@@ -8,7 +8,7 @@ import { mcpService } from './mcpService';
 
 class DataIntegrationService {
   constructor() {
-    this.apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+    this.apiBaseUrl = process.env.API_BASE_URL || '/api';
     this.cachedData = new Map();
     this.uploadedData = new Map();
   }

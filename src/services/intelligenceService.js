@@ -7,7 +7,7 @@ import { mcpService } from './mcpService';
 
 class IntelligenceService {
   constructor() {
-    this.mcpBaseUrl = import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-server.railway.app';
+    this.mcpBaseUrl = process.env.MCP_SERVER_URL || 'https://sentia-mcp-server.railway.app';
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
   }

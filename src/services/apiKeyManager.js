@@ -15,31 +15,31 @@ class ApiKeyManager {
     // In production, keys should come from secure backend
     // Never store actual keys in frontend code
     this.keys.set('unleashed', {
-      endpoint: import.meta.env.VITE_UNLEASHED_API_ENDPOINT,
+      endpoint: process.env.UNLEASHED_API_ENDPOINT,
       keyRef: 'unleashed_api_key', // Reference to backend key storage
       status: 'ready'
     })
 
     this.keys.set('amazon', {
-      endpoint: import.meta.env.VITE_AMAZON_API_ENDPOINT,
+      endpoint: process.env.AMAZON_API_ENDPOINT,
       keyRef: 'amazon_sp_api_key',
       status: 'ready'
     })
 
     this.keys.set('shopify', {
-      endpoint: import.meta.env.VITE_SHOPIFY_API_ENDPOINT,
+      endpoint: process.env.SHOPIFY_API_ENDPOINT,
       keyRef: 'shopify_api_key',
       status: 'ready'
     })
 
     this.keys.set('openai', {
-      endpoint: import.meta.env.VITE_OPENAI_API_ENDPOINT,
+      endpoint: process.env.OPENAI_API_ENDPOINT,
       keyRef: 'openai_api_key',
       status: 'ready'
     })
 
     this.keys.set('claude', {
-      endpoint: import.meta.env.VITE_CLAUDE_API_ENDPOINT,
+      endpoint: process.env.CLAUDE_API_ENDPOINT,
       keyRef: 'claude_api_key',
       status: 'ready'
     })
@@ -67,7 +67,7 @@ class ApiKeyManager {
   // Make authenticated API request through backend proxy
   async makeAuthenticatedRequest(service, path, options = {}) {
     const config = this.getApiConfig(service)
-    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+    const backendUrl = process.env.API_BASE_URL || 'http://localhost:5000/api'
 
     try {
       const response = await fetch(`${backendUrl}/proxy/${service}${path}`, {
@@ -99,7 +99,7 @@ class ApiKeyManager {
     for (const [service, config] of this.keys) {
       try {
         // Validate through backend
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/validate-key`, {
+        const response = await fetch(`${process.env.API_BASE_URL}/api/validate-key`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ service, keyRef: config.keyRef }),
@@ -125,7 +125,7 @@ class ApiKeyManager {
   // Rotate API key (admin only)
   async rotateApiKey(service) {
     // This should only be callable by admins
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/rotate-key`, {
+    const response = await fetch(`${process.env.API_BASE_URL}/api/rotate-key`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ service }),
@@ -141,7 +141,7 @@ class ApiKeyManager {
 
   // Get API usage statistics
   async getApiUsageStats(service) {
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/usage-stats/${service}`, {
+    const response = await fetch(`${process.env.API_BASE_URL}/api/usage-stats/${service}`, {
       credentials: 'include'
     })
 
@@ -154,7 +154,7 @@ class ApiKeyManager {
 
   // Check rate limits
   async checkRateLimits(service) {
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/rate-limits/${service}`, {
+    const response = await fetch(`${process.env.API_BASE_URL}/api/rate-limits/${service}`, {
       credentials: 'include'
     })
 

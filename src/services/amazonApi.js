@@ -4,10 +4,10 @@ import axios from 'axios'
 class AmazonSPAPIService {
   constructor() {
     this.baseURL = 'https://sellingpartnerapi-eu.amazon.com'
-    this.clientId = import.meta.env.VITE_AMAZON_SP_API_CLIENT_ID
-    this.clientSecret = import.meta.env.VITE_AMAZON_SP_API_CLIENT_SECRET
-    this.refreshToken = import.meta.env.VITE_AMAZON_SP_API_REFRESH_TOKEN
-    this.marketplaceId = import.meta.env.VITE_AMAZON_UK_MARKETPLACE_ID || 'A1F83G8C2ARO7P'
+    this.clientId = process.env.AMAZON_SP_API_CLIENT_ID || process.env.VITE_AMAZON_SP_API_CLIENT_ID
+    this.clientSecret = process.env.AMAZON_SP_API_CLIENT_SECRET || process.env.VITE_AMAZON_SP_API_CLIENT_SECRET
+    this.refreshToken = process.env.AMAZON_SP_API_REFRESH_TOKEN || process.env.VITE_AMAZON_SP_API_REFRESH_TOKEN
+    this.marketplaceId = process.env.AMAZON_UK_MARKETPLACE_ID || process.env.VITE_AMAZON_UK_MARKETPLACE_ID || 'A1F83G8C2ARO7P'
     
     // Access token cache
     this.accessToken = null

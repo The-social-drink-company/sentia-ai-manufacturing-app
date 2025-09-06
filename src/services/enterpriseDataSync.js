@@ -170,7 +170,7 @@ class EnterpriseDataSyncService {
 
   // Initialize Server-Sent Events for real-time updates
   initializeSSE() {
-    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+    const API_BASE = process.env.API_BASE_URL || 'http://localhost:5000/api'
     
     try {
       this.eventSource = new EventSource(`${API_BASE}/events`)

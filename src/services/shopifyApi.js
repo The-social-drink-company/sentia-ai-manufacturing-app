@@ -6,19 +6,19 @@ class ShopifyAPIService {
     // Multi-region support
     this.regions = {
       UK: {
-        apiKey: import.meta.env.VITE_SHOPIFY_UK_API_KEY,
-        password: import.meta.env.VITE_SHOPIFY_UK_ACCESS_TOKEN,
-        shopUrl: import.meta.env.VITE_SHOPIFY_UK_SHOP_URL || 'your-uk-store.myshopify.com'
+        apiKey: process.env.SHOPIFY_UK_API_KEY,
+        password: process.env.SHOPIFY_UK_ACCESS_TOKEN,
+        shopUrl: process.env.SHOPIFY_UK_SHOP_URL || 'your-uk-store.myshopify.com'
       },
       EU: {
-        apiKey: import.meta.env.VITE_SHOPIFY_EU_API_KEY,
-        password: import.meta.env.VITE_SHOPIFY_EU_ACCESS_TOKEN,
-        shopUrl: import.meta.env.VITE_SHOPIFY_EU_SHOP_URL || 'your-eu-store.myshopify.com'
+        apiKey: process.env.SHOPIFY_EU_API_KEY,
+        password: process.env.SHOPIFY_EU_ACCESS_TOKEN,
+        shopUrl: process.env.SHOPIFY_EU_SHOP_URL || 'your-eu-store.myshopify.com'
       },
       USA: {
-        apiKey: import.meta.env.VITE_SHOPIFY_USA_API_KEY,
-        password: import.meta.env.VITE_SHOPIFY_USA_ACCESS_TOKEN,
-        shopUrl: import.meta.env.VITE_SHOPIFY_USA_SHOP_URL || 'your-usa-store.myshopify.com'
+        apiKey: process.env.SHOPIFY_USA_API_KEY,
+        password: process.env.SHOPIFY_USA_ACCESS_TOKEN,
+        shopUrl: process.env.SHOPIFY_USA_SHOP_URL || 'your-usa-store.myshopify.com'
       }
     }
     

@@ -11,4 +11,4 @@ restartPolicyMaxRetries = 3
 
 [[services]]
 name = "web"
-port = 3000
+port = 5000

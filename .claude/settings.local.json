@@ -41,7 +41,10 @@
       "Bash(start http://localhost:3000)",
       "Bash(set PORT=5001)",
       "Bash(start http://localhost:3001)",
-      "Bash(railway status:*)"
+      "Bash(railway status:*)",
+      "Read(//c/Projects/**)",
+      "Bash(sed:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

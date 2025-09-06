@@ -1,7 +1,7 @@
 // Real Data Service - Connects to actual external APIs
 // NO MOCK DATA - Only real production data
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+const API_BASE = process.env.API_BASE_URL || 'http://localhost:5000/api'
 
 // Fetch real-time KPI data from backend
 export const fetchRealKPIs = async () => {

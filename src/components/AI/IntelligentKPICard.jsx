@@ -2,7 +2,7 @@ import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react';
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
-import { logError, devLog } from '../../lib/logger';
+import { logError } from '../../lib/logger';
 import {
   Chart as ChartJS,
   CategoryScale,

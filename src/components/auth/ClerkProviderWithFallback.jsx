@@ -88,22 +88,10 @@ const ClerkProviderWithFallback = ({ children }) => {
         const clerkConfig = window.clerkConfig || {};
         const configuration = clerkConfig.getConfig ? clerkConfig.getConfig() : null;
         
-        if (!configuration || !configuration.publishableKey) {
-          logWarn('No publishable key found, running without authentication', { component: 'ClerkProvider' });
-          setClerkError('No authentication configuration');
-          return;
-        }
-
-        setConfig(configuration);
-        
-        // Initialize Clerk
-        const initialized = await clerkConfig.initialize();
-        
-        if (initialized) {
-          setClerkReady(true);
-        } else {
-          setClerkError('Failed to initialize authentication');
-        }
+        // Force fallback mode for local development
+        logWarn('Forcing fallback mode for local development', { component: 'ClerkProvider' });
+        setClerkError('Local development - using fallback mode');
+        return;
       } catch (error) {
         logError('ClerkProvider initialization error', error, { component: 'ClerkProvider' });
         setClerkError(error.message);

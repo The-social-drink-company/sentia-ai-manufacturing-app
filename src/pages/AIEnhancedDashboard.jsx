@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { useAIRealTimeData, useAIForecasting, useMaintenanceAlerts, useQualityInspections } from '../hooks/useAIRealTimeData';
-import MCPConnectionStatus from '../components/ai/MCPConnectionStatus';
-import MLForecastingPanel from '../components/ai/MLForecastingPanel';
-import DigitalTwin3D from '../components/ai/DigitalTwin3D';
+import MCPConnectionStatus from '../components/AI/MCPConnectionStatus';
+import MLForecastingPanel from '../components/AI/MLForecastingPanel';
+import DigitalTwin3D from '../components/AI/DigitalTwin3D';
 import { 
   CpuChipIcon, 
   ChartBarIcon, 

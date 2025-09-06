@@ -10,7 +10,7 @@
 
 ## Testing Environment
 - **Main URL:** https://sentiatest.financeflo.ai
-- **Railway URL:** https://courageous-insight-testing.up.railway.app
+- **Railway URL:** https://sentia-manufacturing-dashboard-testing.up.railway.app
 - **Health Check:** https://sentiatest.financeflo.ai/health
 - **Port:** 8080
 - **Branch:** test
@@ -37,7 +37,7 @@
 
 #### Testing Health Checks:
 - **Custom Domain:** https://sentiatest.financeflo.ai/health
-- **Railway Domain:** https://courageous-insight-testing.up.railway.app/health
+- **Railway Domain:** https://sentia-manufacturing-dashboard-testing.up.railway.app/health
 - **Alternative Endpoint:** https://sentiatest.financeflo.ai/healthz
 
 #### Development Health Checks:
@@ -192,7 +192,7 @@ If main URLs don't work, try these alternatives:
 
 ### Direct Railway URLs:
 - **Production:** https://web-production-1f10.up.railway.app
-- **Testing:** https://courageous-insight-testing.up.railway.app
+- **Testing:** https://sentia-manufacturing-dashboard-testing.up.railway.app
 - **Development:** https://daring-reflection-development.up.railway.app
 
 ### Railway Logs:

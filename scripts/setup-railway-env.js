@@ -76,7 +76,7 @@ class RailwayEnvironmentSetup {
     let successCount = 0;
     for (const [key, value] of Object.entries(variables)) {
       try {
-        execSync(`railway variables set ${key}="${value}"`, { stdio: 'pipe' });
+        execSync(`railway variables --set "${key}=${value}"`, { stdio: 'pipe' });
         console.log(`  ✅ Set ${key}`);
         successCount++;
       } catch (error) {

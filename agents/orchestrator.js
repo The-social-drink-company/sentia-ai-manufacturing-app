@@ -131,8 +131,28 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       await execAsync(`git push origin ${branch}`);
       
       console.log(`✅ Committed and pushed to ${branch}`);
+
+      // Trigger Railway deployment
+      await this.triggerRailwayDeploy(branch);
+      
     } catch (error) {
       console.error(`❌ Commit failed: ${error.message}`);
+    }
+  }
+
+  async triggerRailwayDeploy(branch) {
+    try {
+      console.log(`🚀 Triggering Railway deployment for ${branch}...`);
+      
+      // Use Railway CLI to trigger redeploy
+      const serviceName = `sentia-manufacturing-dashboard-${branch}`;
+      await execAsync(`railway service ${serviceName}`).catch(() => {});
+      await execAsync('railway up --detach').catch(() => {});
+      
+      console.log(`✅ Railway deployment triggered for ${branch}`);
+      
+    } catch (error) {
+      console.warn(`⚠️ Railway deployment trigger failed: ${error.message}`);
     }
   }
 

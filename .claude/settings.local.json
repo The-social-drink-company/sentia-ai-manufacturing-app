@@ -83,7 +83,8 @@
       "Bash(git cherry-pick:*)",
       "Bash(pkill:*)",
       "WebFetch(domain:daring-reflection-development.up.railway.app)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(npx prisma generate:*)"
     ],
     "deny": [],
     "ask": []

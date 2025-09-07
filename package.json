@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "vite",
-    "dev:server": "nodemon server.js",
+    "dev:server": "nodemon server/index.js",
     "dev:internal": "concurrently \"npm run dev:server\" \"npm run dev:client\" --names \"server,client\" --prefix-colors \"blue,green\"",
     "prebuild": "rimraf node_modules/.cache dist",
     "build": "vite build",

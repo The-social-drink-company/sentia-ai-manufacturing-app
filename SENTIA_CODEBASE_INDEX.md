@@ -1,6 +1,5 @@
 # Sentia Manufacturing Dashboard - Comprehensive Codebase Index
 
-<<<<<<< HEAD
 ## Project Overview
 
 The Sentia Manufacturing Dashboard is an enterprise-grade manufacturing intelligence platform built with a modern full-stack architecture. It provides real-time manufacturing insights, working capital management, AI-powered forecasting, and comprehensive business intelligence through a responsive web dashboard.
@@ -447,7 +446,7 @@ Built on Radix UI primitives with Tailwind styling:
 - **Error Tracking**: Comprehensive error handling and logging
 
 This comprehensive index represents the complete Sentia Manufacturing Dashboard codebase as of September 2025, documenting over 200 source files, 50+ services, and enterprise-grade manufacturing intelligence capabilities.
-=======
+
 ## Overview
 
 The Sentia Manufacturing Dashboard is an enterprise-grade manufacturing intelligence platform built with modern full-stack technologies. It provides real-time manufacturing insights, AI-powered forecasting, working capital management, and comprehensive business intelligence capabilities.
@@ -1528,4 +1527,3 @@ import { utilityFunction } from '../utils' // Utility imports
 - **Development Tools**: React DevTools and Clerk Dashboard
 
 This comprehensive codebase index provides developers with everything needed to navigate, understand, and contribute to the Sentia Manufacturing Dashboard. It serves as the definitive reference for this enterprise-grade manufacturing intelligence platform.
->>>>>>> 320fc348c3f5d778596ec72fe2dbced535701ad7

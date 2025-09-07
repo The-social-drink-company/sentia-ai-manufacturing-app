@@ -313,12 +313,19 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     for (const [envName, env] of Object.entries(this.environments)) {
       try {
         const healthUrl = `${env.url}/api/health`;
+        
+        // Use AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
         const response = await fetch(healthUrl, { 
-          timeout: 10000,
+          signal: controller.signal,
           headers: {
             'User-Agent': 'Enterprise-Autonomous-Deployment-Agent/1.0'
           }
         });
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
           const data = await response.json();
@@ -340,7 +347,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
           status: 'error', 
           error: error.message 
         };
-        await this.log('error', `${envName} environment check failed`, { error: error.message });
+        await this.log('warn', `${envName} environment check failed`, { error: error.message });
       }
     }
 
@@ -350,12 +357,17 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   async verifyLocalhost() {
     try {
       // Check if localhost:3000 is responding
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
       const response = await fetch('http://localhost:3000', { 
-        timeout: 5000,
+        signal: controller.signal,
         headers: {
           'User-Agent': 'Enterprise-Autonomous-Deployment-Agent/1.0'
         }
       });
+      
+      clearTimeout(timeoutId);
       
       if (response.ok) {
         await this.log('info', 'localhost:3000 healthy');
@@ -365,7 +377,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         return { status: 'unhealthy', httpStatus: response.status };
       }
     } catch (error) {
-      await this.log('error', 'localhost:3000 check failed', { error: error.message });
+      await this.log('warn', 'localhost:3000 check failed', { error: error.message });
       return { status: 'error', error: error.message };
     }
   }

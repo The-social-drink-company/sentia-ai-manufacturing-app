@@ -84,7 +84,9 @@ const DigitalTwin3D = ({ digitalTwinData = {}, className = "" }) => {
 
     return () => {
       if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+        if (typeof window !== 'undefined' && window.cancelAnimationFrame) {
+          window.cancelAnimationFrame(animationRef.current);
+        }
       }
     };
   }, [isRunning]);

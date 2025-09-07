@@ -1,15 +1,15 @@
 {
-  "timestamp": "2025-09-07T10:04:01.704Z",
+  "timestamp": "2025-09-07T15:05:42.280Z",
   "failedTests": [
     {
       "testName": "WHATIF_ANALYSIS_COMPREHENSIVE",
       "result": "fail",
-      "duration": 51.327800000000025,
-      "timestamp": "2025-09-07T10:04:01.589Z",
+      "duration": 17.237199999999916,
+      "timestamp": "2025-09-07T15:05:42.207Z",
       "error": {
-        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m401\u001b[39m",
-        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m401\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:494:37\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:489:5",
-        "type": "ExpectError"
+        "message": "apiRequestContext.get: connect ECONNREFUSED 127.0.0.1:5000\nCall log:\n\u001b[2m  - → GET http://127.0.0.1:5000/api/analytics/whatif-analysis/initialize\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n",
+        "stack": "apiRequestContext.get: connect ECONNREFUSED 127.0.0.1:5000\nCall log:\n\u001b[2m  - → GET http://127.0.0.1:5000/api/analytics/whatif-analysis/initialize\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\n    at testFunction (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:493:42)\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:13)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:489:26",
+        "type": "Error"
       },
       "screenshot": null,
       "context": {
@@ -20,17 +20,17 @@
         },
         "userAgent": "Playwright Test Agent",
         "memoryUsage": {
-          "rss": 152875008,
-          "heapTotal": 104624128,
-          "heapUsed": 43440576,
-          "external": 4020051,
-          "arrayBuffers": 106134
+          "rss": 137957376,
+          "heapTotal": 61472768,
+          "heapUsed": 36901040,
+          "external": 3978193,
+          "arrayBuffers": 75019
         }
       }
     }
   ],
   "failurePatterns": {
-    "UNKNOWN": 1
+    "SERVER_ERROR": 1
   },
   "triggerSelfHealing": true
 }

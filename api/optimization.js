@@ -6,14 +6,18 @@
 import express from 'express';
 import { logError } from '../services/observability/structuredLogger.js';
 import OptimizationService from '../services/optimization/OptimizationService.js';
+import { getLeadTimeConfig, getRegionLeadTimeDays } from '../src/config/global.js';
 import MultiWarehouseService from '../services/optimization/MultiWarehouseService.js';
 import WorkingCapitalService from '../services/optimization/WorkingCapitalService.js';
+import WorkingCapitalFinanceService from '../src/services/finance/workingCapital.js';
 import DiagnosticsService from '../services/optimization/DiagnosticsService.js';
 import CFOReportingService from '../services/optimization/CFOReportingService.js';
 import JobManagerService from '../services/optimization/JobManagerService.js';
-import { logError } from '../services/logger.js';
 
 const router = express.Router();
+
+// Service instances
+const workingCapitalFinanceService = new WorkingCapitalFinanceService();
 
 // Feature flags
 const FEATURE_MULTI_WH = process.env.FEATURE_MULTI_WAREHOUSE === 'true' || false;
@@ -36,7 +40,9 @@ router.post('/sku/optimize', async (req, res) => {
     if (!sku || !sku.skuId) {
       return res.status(400).json({ 
         error: 'Missing required SKU data',
-        required: ['skuId', 'annualDemand', 'demandMean', 'demandStdDev', 'leadTimeDays', 'unitCost']
+        required: ['skuId', 'annualDemand', 'demandMean', 'demandStdDev', 'unitCost'],
+        optional: ['leadTimeDays', 'region'],
+        note: 'leadTimeDays will use FinanceFlo regional defaults if not provided. region defaults to UK.'
       });
     }
 
@@ -781,6 +787,130 @@ router.use((error, req, res, next) => {
     message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred',
     timestamp: new Date().toISOString()
   });
+});
+
+// ========================================
+// FINANCEFLO MULTI-CURRENCY WORKING CAPITAL
+// ========================================
+
+/**
+ * POST /api/optimization/working-capital/multi-region
+ * FinanceFlo multi-region working capital projection with FX consolidation
+ */
+router.post('/working-capital/multi-region', async (req, res) => {
+  try {
+    const {
+      horizonMonths = 12,
+      startMonth = new Date().toISOString().slice(0, 7), // YYYY-MM format
+      regions = ['UK', 'EU', 'USA'],
+      scenarios = ['baseline', 'optimistic', 'pessimistic']
+    } = req.body;
+
+    const params = {
+      horizonMonths,
+      startMonth: new Date(startMonth + '-01'), // Convert to Date object
+      regions,
+      scenarios
+    };
+
+    const results = await workingCapitalFinanceService.projectMultiRegion(params);
+
+    res.json({
+      success: true,
+      type: 'multi_region_working_capital_projection',
+      ...results,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    logError('Multi-region working capital projection failed', error);
+    res.status(500).json({
+      error: 'Multi-region working capital projection failed',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
+ * GET /api/optimization/working-capital/fx-status
+ * Get foreign exchange service status for health monitoring
+ */
+router.get('/working-capital/fx-status', async (req, res) => {
+  try {
+    const fxStatus = workingCapitalFinanceService.getFXStatus();
+    
+    res.json({
+      success: true,
+      fxService: fxStatus,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    logError('FX status check failed', error);
+    res.status(500).json({
+      error: 'Failed to get FX status',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// ========================================
+// FINANCEFLO LEAD TIME CONFIGURATION
+// ========================================
+
+/**
+ * GET /api/optimization/lead-times
+ * Get FinanceFlo regional lead time specifications
+ */
+router.get('/lead-times', async (req, res) => {
+  try {
+    const { region } = req.query;
+
+    if (region) {
+      // Get specific region configuration
+      const regionConfig = getLeadTimeConfig(region.toUpperCase());
+      if (!regionConfig) {
+        return res.status(404).json({
+          error: 'Region not supported',
+          supportedRegions: ['UK', 'EU', 'USA']
+        });
+      }
+
+      res.json({
+        success: true,
+        region: region.toUpperCase(),
+        leadTimeConfig: regionConfig,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      // Get all regions configuration
+      const allRegions = {
+        UK: getLeadTimeConfig('UK'),
+        EU: getLeadTimeConfig('EU'),
+        USA: getLeadTimeConfig('USA')
+      };
+
+      res.json({
+        success: true,
+        leadTimeConfigurations: allRegions,
+        specification: {
+          UK: 'FinanceFlo Spec: 2-4 weeks (14-28 days), medium variability',
+          EU: 'FinanceFlo Spec: 3-5 weeks (21-35 days), high variability',
+          USA: 'FinanceFlo Spec: 4-8 weeks (28-56 days), high variability'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    logError('Lead time configuration error', error);
+    res.status(500).json({
+      error: 'Failed to retrieve lead time configuration',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 export default router;

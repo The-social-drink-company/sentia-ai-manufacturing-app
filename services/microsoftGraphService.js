@@ -1,5 +1,5 @@
 import { Client } from '@microsoft/microsoft-graph-client';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 class MicrosoftGraphService {
   constructor() {
@@ -112,20 +112,20 @@ class MicrosoftGraphService {
       const buffer = Buffer.concat(chunks);
       
       // Parse Excel file
-      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(buffer);
       const result = {};
       
       // Process each worksheet
-      workbook.SheetNames.forEach(sheetName => {
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-          header: 1,
-          defval: null 
+      workbook.worksheets.forEach(worksheet => {
+        const jsonData = [];
+        worksheet.eachRow((row, rowNumber) => {
+          jsonData.push(row.values.slice(1)); // slice(1) because ExcelJS uses 1-based indexing
         });
         
         // Skip empty sheets
         if (jsonData.length > 0) {
-          result[sheetName] = {
+          result[worksheet.name] = {
             headers: jsonData[0] || [],
             data: jsonData.slice(1).filter(row => row.some(cell => cell !== null && cell !== ''))
           };

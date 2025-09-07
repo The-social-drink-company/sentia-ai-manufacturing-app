@@ -1,23 +1,3588 @@
 {
-  "timestamp": "2025-09-07T10:00:31.940Z",
+  "timestamp": "2025-09-07T15:04:00.618Z",
   "testType": "whatif_analysis",
   "summary": {
-    "totalSliderTests": 0,
-    "passedSliderTests": 0,
-    "sliderSuccessRate": null,
-    "avgCalculationTime": null,
-    "avgConfidence": null,
-    "totalScenarios": 0,
-    "performanceTests": 1
+    "totalSliderTests": 40,
+    "passedSliderTests": 40,
+    "sliderSuccessRate": 100,
+    "avgCalculationTime": 4.414317500000007,
+    "avgConfidence": 0.8490770164404727,
+    "totalScenarios": 4,
+    "performanceTests": 6
   },
-  "sliderInteractions": [],
-  "scenarios": [],
+  "sliderInteractions": [
+    {
+      "timestamp": "2025-09-07T15:03:55.247Z",
+      "category": "rawMaterials",
+      "parameter": "availability",
+      "value": 60,
+      "calculationTime": 15.774900000000002,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:55.365Z",
+      "category": "rawMaterials",
+      "parameter": "availability",
+      "value": 75,
+      "calculationTime": 6.997100000000046,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:55.475Z",
+      "category": "rawMaterials",
+      "parameter": "availability",
+      "value": 90,
+      "calculationTime": 4.886700000000019,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:55.585Z",
+      "category": "rawMaterials",
+      "parameter": "availability",
+      "value": 100,
+      "calculationTime": 3.8560999999999694,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:55.696Z",
+      "category": "rawMaterials",
+      "parameter": "deliveryTime",
+      "value": 10,
+      "calculationTime": 3.9812999999999192,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:55.808Z",
+      "category": "rawMaterials",
+      "parameter": "deliveryTime",
+      "value": 21,
+      "calculationTime": 4.102000000000089,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:55.921Z",
+      "category": "rawMaterials",
+      "parameter": "deliveryTime",
+      "value": 35,
+      "calculationTime": 3.6324999999999363,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.030Z",
+      "category": "rawMaterials",
+      "parameter": "deliveryTime",
+      "value": 50,
+      "calculationTime": 3.6272999999998774,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.840566037735849,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.144Z",
+      "category": "rawMaterials",
+      "parameter": "costInflation",
+      "value": -5,
+      "calculationTime": 6.184999999999945,
+      "workingCapital": 13015584.089954339,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.253Z",
+      "category": "rawMaterials",
+      "parameter": "costInflation",
+      "value": 0,
+      "calculationTime": 3.156600000000026,
+      "workingCapital": 12867531.896621006,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.363Z",
+      "category": "rawMaterials",
+      "parameter": "costInflation",
+      "value": 10,
+      "calculationTime": 3.253099999999904,
+      "workingCapital": 12571427.509954339,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.477Z",
+      "category": "rawMaterials",
+      "parameter": "costInflation",
+      "value": 20,
+      "calculationTime": 4.931600000000344,
+      "workingCapital": 12275323.123287674,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.598Z",
+      "category": "manufacturing",
+      "parameter": "capacity",
+      "value": 70,
+      "calculationTime": 12.098899999999958,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.714Z",
+      "category": "manufacturing",
+      "parameter": "capacity",
+      "value": 85,
+      "calculationTime": 4.4365999999999985,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.826Z",
+      "category": "manufacturing",
+      "parameter": "capacity",
+      "value": 100,
+      "calculationTime": 5.08159999999998,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:56.935Z",
+      "category": "manufacturing",
+      "parameter": "capacity",
+      "value": 115,
+      "calculationTime": 3.3402000000000953,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.043Z",
+      "category": "manufacturing",
+      "parameter": "efficiency",
+      "value": 75,
+      "calculationTime": 5.922899999999572,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.159Z",
+      "category": "manufacturing",
+      "parameter": "efficiency",
+      "value": 85,
+      "calculationTime": 4.234000000000378,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.274Z",
+      "category": "manufacturing",
+      "parameter": "efficiency",
+      "value": 92,
+      "calculationTime": 3.4025000000001455,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.384Z",
+      "category": "manufacturing",
+      "parameter": "efficiency",
+      "value": 96,
+      "calculationTime": 3.3438999999998487,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.505Z",
+      "category": "manufacturing",
+      "parameter": "leadTime",
+      "value": 5,
+      "calculationTime": 3.0288000000000466,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.615Z",
+      "category": "manufacturing",
+      "parameter": "leadTime",
+      "value": 7,
+      "calculationTime": 3.0356000000001586,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.725Z",
+      "category": "manufacturing",
+      "parameter": "leadTime",
+      "value": 14,
+      "calculationTime": 4.108099999999922,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.836Z",
+      "category": "manufacturing",
+      "parameter": "leadTime",
+      "value": 18,
+      "calculationTime": 2.938100000000304,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.8277777777777777,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:57.947Z",
+      "category": "sales",
+      "parameter": "growthRate",
+      "value": -10,
+      "calculationTime": 3.476100000000315,
+      "workingCapital": 10221010.475856164,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.060Z",
+      "category": "sales",
+      "parameter": "growthRate",
+      "value": 5,
+      "calculationTime": 4.496099999999842,
+      "workingCapital": 11924512.221832193,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.169Z",
+      "category": "sales",
+      "parameter": "growthRate",
+      "value": 15,
+      "calculationTime": 3.306500000000142,
+      "workingCapital": 13060180.052482877,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.281Z",
+      "category": "sales",
+      "parameter": "growthRate",
+      "value": 30,
+      "calculationTime": 4.144800000000032,
+      "workingCapital": 14763681.798458904,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.391Z",
+      "category": "sales",
+      "parameter": "seasonalityFactor",
+      "value": 0.8,
+      "calculationTime": 4.522299999999632,
+      "workingCapital": 10395875.195616439,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.500Z",
+      "category": "sales",
+      "parameter": "seasonalityFactor",
+      "value": 1,
+      "calculationTime": 2.9431000000004133,
+      "workingCapital": 11316178.136986304,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.612Z",
+      "category": "sales",
+      "parameter": "seasonalityFactor",
+      "value": 1.3,
+      "calculationTime": 4.626499999999396,
+      "workingCapital": 13599703.29123288,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.720Z",
+      "category": "sales",
+      "parameter": "seasonalityFactor",
+      "value": 1.8,
+      "calculationTime": 3.4182999999993626,
+      "workingCapital": 18101803.542602744,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.831Z",
+      "category": "financing",
+      "parameter": "interestRate",
+      "value": 3,
+      "calculationTime": 3.615600000000086,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:58.950Z",
+      "category": "financing",
+      "parameter": "interestRate",
+      "value": 6,
+      "calculationTime": 2.9970000000002983,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:59.066Z",
+      "category": "financing",
+      "parameter": "interestRate",
+      "value": 9,
+      "calculationTime": 3.5615999999999985,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:59.177Z",
+      "category": "financing",
+      "parameter": "interestRate",
+      "value": 12,
+      "calculationTime": 4.100800000000163,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:59.289Z",
+      "category": "financing",
+      "parameter": "creditLimit",
+      "value": 3,
+      "calculationTime": 2.917500000000473,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:59.399Z",
+      "category": "financing",
+      "parameter": "creditLimit",
+      "value": 5,
+      "calculationTime": 2.8479999999999563,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:59.519Z",
+      "category": "financing",
+      "parameter": "creditLimit",
+      "value": 10,
+      "calculationTime": 3.085900000000038,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.85,
+      "passed": true
+    },
+    {
+      "timestamp": "2025-09-07T15:03:59.630Z",
+      "category": "financing",
+      "parameter": "creditLimit",
+      "value": 15,
+      "calculationTime": 3.157199999999648,
+      "workingCapital": 12719479.703287672,
+      "confidence": 0.8447368421052631,
+      "passed": true
+    }
+  ],
+  "scenarios": [
+    [
+      "High Growth - High Risk",
+      {
+        "parameters": {
+          "sales": {
+            "growthRate": 35
+          },
+          "manufacturing": {
+            "capacity": 115
+          },
+          "rawMaterials": {
+            "availability": 70,
+            "deliveryTime": 45
+          },
+          "financing": {
+            "interestRate": 12
+          }
+        },
+        "results": {
+          "id": "scenario_1757257439893",
+          "calculatedAt": "2025-09-07T15:03:59.893Z",
+          "parameters": {
+            "rawMaterials": {
+              "availability": 70,
+              "deliveryTime": 45,
+              "costInflation": 5,
+              "supplierReliability": 90,
+              "bufferStock": 21
+            },
+            "manufacturing": {
+              "capacity": 115,
+              "efficiency": 88,
+              "leadTime": 7,
+              "qualityRate": 97,
+              "laborCost": 8,
+              "energyCost": 15
+            },
+            "shipping": {
+              "deliveryTime": 5,
+              "shippingCost": 12,
+              "reliabilityRate": 95,
+              "expeditedOption": 10
+            },
+            "sales": {
+              "growthRate": 35,
+              "seasonalityFactor": 1.2,
+              "priceElasticity": -1.2,
+              "marketPenetration": 13.8
+            },
+            "inventory": {
+              "targetStockDays": 45,
+              "safetyStockLevel": 14,
+              "turnoverTarget": 8,
+              "obsolescenceRate": 3
+            },
+            "financing": {
+              "interestRate": 12,
+              "creditLimit": 5,
+              "cashReserveRatio": 10,
+              "paymentTerms": 30
+            }
+          },
+          "marketAnalysis": {
+            "UK": {
+              "market": "UK",
+              "currency": "GBP",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 1350000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 2,
+                  "sales": 1889999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 3,
+                  "sales": 2025000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 4,
+                  "sales": 1889999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 5,
+                  "sales": 1889999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 6,
+                  "sales": 2025000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 7,
+                  "sales": 1889999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 8,
+                  "sales": 1350000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 9,
+                  "sales": 1350000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 10,
+                  "sales": 1889999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 11,
+                  "sales": 2025000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 12,
+                  "sales": 1889999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                }
+              ],
+              "production": {
+                "required": 24392045.454545453,
+                "capacityUtilization": 0.42420948616600795,
+                "efficiency": 0.88,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 7888387.499999999,
+                "availability": 0.7,
+                "constraint": true,
+                "cost": 7888387.499999999
+              },
+              "inventory": {
+                "target": 1587821.917808219,
+                "safety": 493989.04109589034,
+                "total": 2081810.9589041094,
+                "turnover": 10.310734463276837
+              },
+              "workingCapital": {
+                "net": 2873516.609589041,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 1821219.2337328764,
+                    "inventory": 1457267.6712328766,
+                    "receivables": 1350000,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 3360488.494006849,
+                    "inventory": 2456536.931506849,
+                    "receivables": 1889999.9999999998,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 3745305.8090753425,
+                    "inventory": 2706354.2465753425,
+                    "receivables": 2025000,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 3360488.494006849,
+                    "inventory": 2456536.931506849,
+                    "receivables": 1889999.9999999998,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 3360488.494006849,
+                    "inventory": 2456536.931506849,
+                    "receivables": 1889999.9999999998,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 3745305.8090753425,
+                    "inventory": 2706354.2465753425,
+                    "receivables": 2025000,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 3360488.494006849,
+                    "inventory": 2456536.931506849,
+                    "receivables": 1889999.9999999998,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 1821219.2337328764,
+                    "inventory": 1457267.6712328766,
+                    "receivables": 1350000,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 1821219.2337328764,
+                    "inventory": 1457267.6712328766,
+                    "receivables": 1350000,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 3360488.494006849,
+                    "inventory": 2456536.931506849,
+                    "receivables": 1889999.9999999998,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 3745305.8090753425,
+                    "inventory": 2706354.2465753425,
+                    "receivables": 2025000,
+                    "payables": 986048.4374999999
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 3360488.494006849,
+                    "inventory": 2456536.931506849,
+                    "receivables": 1889999.9999999998,
+                    "payables": 986048.4374999999
+                  }
+                ],
+                "max": 3745305.8090753425,
+                "components": {
+                  "inventory": 2081810.9589041094,
+                  "receivables": 1764246.5753424657,
+                  "payables": 972540.9246575341
+                }
+              },
+              "workingCapitalRequired": 3745305.8090753425,
+              "borrowingRequired": 2245305.8090753425,
+              "financing": {
+                "borrowingRequired": 2245305.8090753425,
+                "creditUtilization": 0.4490611618150685,
+                "interestRate": 0.12,
+                "annualInterestCost": 269436.6970890411,
+                "availableCash": 1500000,
+                "creditLimit": 5000000
+              },
+              "risks": [
+                {
+                  "type": "supply_chain",
+                  "severity": "medium",
+                  "description": "Raw materials availability below optimal levels",
+                  "probability": 0.6
+                }
+              ]
+            },
+            "USA": {
+              "market": "USA",
+              "currency": "USD",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 4195800,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 2,
+                  "sales": 4495500,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 3,
+                  "sales": 4195800,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 4,
+                  "sales": 4195800,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 5,
+                  "sales": 4495500,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 6,
+                  "sales": 4195800,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 7,
+                  "sales": 1873125.0000000002,
+                  "seasonalFactor": 0.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 8,
+                  "sales": 1873125.0000000002,
+                  "seasonalFactor": 0.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 9,
+                  "sales": 4195800,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 10,
+                  "sales": 4495500,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 11,
+                  "sales": 4495500,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 12,
+                  "sales": 4195800,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                }
+              ],
+              "production": {
+                "required": 53298920.45454545,
+                "capacityUtilization": 0.9269377470355732,
+                "efficiency": 0.88,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 17236870.875,
+                "availability": 0.7,
+                "constraint": true,
+                "cost": 17236870.875
+              },
+              "inventory": {
+                "target": 3469540.684931507,
+                "safety": 1079412.6575342466,
+                "total": 4548953.342465754,
+                "turnover": 10.310734463276836
+              },
+              "workingCapital": {
+                "net": 6609475.00479452,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 7744117.462859589,
+                    "inventory": 5367764.944109589,
+                    "receivables": 4195800,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 8589691.863955481,
+                    "inventory": 5913639.34520548,
+                    "receivables": 4495500,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 7744117.462859589,
+                    "inventory": 5367764.944109589,
+                    "receivables": 4195800,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 7744117.462859589,
+                    "inventory": 5367764.944109589,
+                    "receivables": 4195800,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 8589691.863955481,
+                    "inventory": 5913639.34520548,
+                    "receivables": 4495500,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 7744117.462859589,
+                    "inventory": 5367764.944109589,
+                    "receivables": 4195800,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 2328154.189982877,
+                    "inventory": 2274476.671232877,
+                    "receivables": 1873125.0000000002,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 2328154.189982877,
+                    "inventory": 2274476.671232877,
+                    "receivables": 1873125.0000000002,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 7744117.462859589,
+                    "inventory": 5367764.944109589,
+                    "receivables": 4195800,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 8589691.863955481,
+                    "inventory": 5913639.34520548,
+                    "receivables": 4495500,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 8589691.863955481,
+                    "inventory": 5913639.34520548,
+                    "receivables": 4495500,
+                    "payables": 1819447.48125
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 7744117.462859589,
+                    "inventory": 5367764.944109589,
+                    "receivables": 4195800,
+                    "payables": 1819447.48125
+                  }
+                ],
+                "max": 8589691.863955481,
+                "components": {
+                  "inventory": 4548953.342465754,
+                  "receivables": 3855045.2054794524,
+                  "payables": 1794523.543150685
+                }
+              },
+              "workingCapitalRequired": 8589691.863955481,
+              "borrowingRequired": 6389691.863955481,
+              "financing": {
+                "borrowingRequired": 6389691.863955481,
+                "creditUtilization": 1.2779383727910962,
+                "interestRate": 0.12,
+                "annualInterestCost": 766763.0236746577,
+                "availableCash": 2200000,
+                "creditLimit": 5000000
+              },
+              "risks": [
+                {
+                  "type": "financial",
+                  "severity": "critical",
+                  "description": "Credit utilization approaching maximum limits",
+                  "probability": 0.9
+                },
+                {
+                  "type": "supply_chain",
+                  "severity": "medium",
+                  "description": "Raw materials availability below optimal levels",
+                  "probability": 0.6
+                }
+              ]
+            },
+            "EUROPE": {
+              "market": "EUROPE",
+              "currency": "EUR",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 708750,
+                  "seasonalFactor": 0.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 2,
+                  "sales": 708750,
+                  "seasonalFactor": 0.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 3,
+                  "sales": 1587599.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 4,
+                  "sales": 1701000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 5,
+                  "sales": 1587599.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 6,
+                  "sales": 1587599.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 7,
+                  "sales": 1701000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 8,
+                  "sales": 1587599.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 9,
+                  "sales": 1701000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 10,
+                  "sales": 1587599.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 11,
+                  "sales": 1587599.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 12,
+                  "sales": 1701000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                }
+              ],
+              "production": {
+                "required": 20167159.09090909,
+                "capacityUtilization": 0.3507332015810277,
+                "efficiency": 0.88,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 6522059.25,
+                "availability": 0.7,
+                "constraint": true,
+                "cost": 6522059.25
+              },
+              "inventory": {
+                "target": 1312799.1780821916,
+                "safety": 408426.41095890413,
+                "total": 1721225.5890410957,
+                "turnover": 10.310734463276837
+              },
+              "workingCapital": {
+                "net": 2250721.2575342464,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 627287.5695205479,
+                    "inventory": 860612.7945205478,
+                    "receivables": 708750,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 627287.5695205479,
+                    "inventory": 860612.7945205478,
+                    "receivables": 708750,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 2676570.9700684925,
+                    "inventory": 2031046.1950684928,
+                    "receivables": 1587599.9999999998,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 2996518.040753424,
+                    "inventory": 2237593.2657534243,
+                    "receivables": 1701000,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 2676570.9700684925,
+                    "inventory": 2031046.1950684928,
+                    "receivables": 1587599.9999999998,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 2676570.9700684925,
+                    "inventory": 2031046.1950684928,
+                    "receivables": 1587599.9999999998,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 2996518.040753424,
+                    "inventory": 2237593.2657534243,
+                    "receivables": 1701000,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 2676570.9700684925,
+                    "inventory": 2031046.1950684928,
+                    "receivables": 1587599.9999999998,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 2996518.040753424,
+                    "inventory": 2237593.2657534243,
+                    "receivables": 1701000,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 2676570.9700684925,
+                    "inventory": 2031046.1950684928,
+                    "receivables": 1587599.9999999998,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 2676570.9700684925,
+                    "inventory": 2031046.1950684928,
+                    "receivables": 1587599.9999999998,
+                    "payables": 942075.225
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 2996518.040753424,
+                    "inventory": 2237593.2657534243,
+                    "receivables": 1701000,
+                    "payables": 942075.225
+                  }
+                ],
+                "max": 2996518.040753424,
+                "components": {
+                  "inventory": 1721225.5890410957,
+                  "receivables": 1458665.7534246575,
+                  "payables": 929170.0849315069
+                }
+              },
+              "workingCapitalRequired": 2996518.040753424,
+              "borrowingRequired": 1696518.0407534242,
+              "financing": {
+                "borrowingRequired": 1696518.0407534242,
+                "creditUtilization": 0.33930360815068483,
+                "interestRate": 0.12,
+                "annualInterestCost": 203582.1648904109,
+                "availableCash": 1300000,
+                "creditLimit": 5000000
+              },
+              "risks": [
+                {
+                  "type": "supply_chain",
+                  "severity": "medium",
+                  "description": "Raw materials availability below optimal levels",
+                  "probability": 0.6
+                }
+              ]
+            }
+          },
+          "overallImpact": {
+            "financial": {
+              "totalSales": 86115150,
+              "grossProfit": 30312532.800000004,
+              "netProfit": 16155478.414345894,
+              "totalWorkingCapital": 15331515.713784248,
+              "totalBorrowingRequired": 10331515.713784248,
+              "totalInterestCost": 1239781.8856541098,
+              "roi": 105.37430685878526,
+              "workingCapitalTurnover": 5.616871260978825
+            },
+            "operational": {
+              "averageCapacityUtilization": 56.72934782608697,
+              "hasCapacityConstraints": false,
+              "hasRawMaterialConstraints": true,
+              "overallEfficiency": 88
+            },
+            "comparison": {
+              "salesVsBaseline": 102.6238823529412,
+              "workingCapitalVsBaseline": 13.56678306506851,
+              "profitVsBaseline": 164.8439084318999
+            }
+          },
+          "insights": {
+            "summary": [
+              {
+                "type": "positive",
+                "category": "financial",
+                "title": "Excellent ROI Scenario",
+                "description": "This scenario delivers 105.4% ROI on working capital"
+              }
+            ],
+            "opportunities": [
+              {
+                "type": "market",
+                "title": "Market Prioritization",
+                "description": "EUROPE offers the best ROI at 148.1%",
+                "recommendation": "Focus initial expansion efforts on EUROPE market"
+              }
+            ],
+            "risks": [
+              {
+                "type": "financing",
+                "severity": "high",
+                "title": "USA Credit Utilization Risk",
+                "description": "USA market requires 127.8% of available credit",
+                "impact": "Limited financial flexibility for unexpected demands"
+              },
+              {
+                "type": "operational",
+                "severity": "medium",
+                "title": "USA Capacity Constraint",
+                "description": "USA production running at 92.7% capacity",
+                "impact": "May struggle to meet demand spikes or handle quality issues"
+              }
+            ],
+            "recommendations": [
+              {
+                "priority": "medium",
+                "category": "financial",
+                "action": "Secure additional financing",
+                "description": "Arrange 10.3M in additional credit facilities",
+                "impact": "Ensures adequate working capital for scenario execution",
+                "investment": "Annual interest cost: $1240K"
+              }
+            ]
+          },
+          "workingCapitalSummary": {
+            "totalRequired": 15331515.713784248,
+            "totalBorrowingRequired": 10331515.713784248,
+            "byMarket": {
+              "UK": {
+                "workingCapital": 3745305.8090753425,
+                "borrowing": 2245305.8090753425
+              },
+              "USA": {
+                "workingCapital": 8589691.863955481,
+                "borrowing": 6389691.863955481
+              },
+              "EUROPE": {
+                "workingCapital": 2996518.040753424,
+                "borrowing": 1696518.0407534242
+              }
+            }
+          },
+          "confidence": 0.85
+        },
+        "processingTime": 3.7554000000000087,
+        "timestamp": "2025-09-07T15:03:59.898Z"
+      }
+    ],
+    [
+      "Cost Optimization - Conservative",
+      {
+        "parameters": {
+          "sales": {
+            "growthRate": 5
+          },
+          "manufacturing": {
+            "capacity": 85,
+            "efficiency": 95
+          },
+          "rawMaterials": {
+            "availability": 95,
+            "costInflation": -5
+          },
+          "financing": {
+            "interestRate": 4
+          }
+        },
+        "results": {
+          "id": "scenario_1757257439901",
+          "calculatedAt": "2025-09-07T15:03:59.901Z",
+          "parameters": {
+            "rawMaterials": {
+              "availability": 95,
+              "deliveryTime": 21,
+              "costInflation": -5,
+              "supplierReliability": 90,
+              "bufferStock": 21
+            },
+            "manufacturing": {
+              "capacity": 85,
+              "efficiency": 95,
+              "leadTime": 7,
+              "qualityRate": 97,
+              "laborCost": 8,
+              "energyCost": 15
+            },
+            "shipping": {
+              "deliveryTime": 5,
+              "shippingCost": 12,
+              "reliabilityRate": 95,
+              "expeditedOption": 10
+            },
+            "sales": {
+              "growthRate": 5,
+              "seasonalityFactor": 1.2,
+              "priceElasticity": -1.2,
+              "marketPenetration": 13.8
+            },
+            "inventory": {
+              "targetStockDays": 45,
+              "safetyStockLevel": 14,
+              "turnoverTarget": 8,
+              "obsolescenceRate": 3
+            },
+            "financing": {
+              "interestRate": 4,
+              "creditLimit": 5,
+              "cashReserveRatio": 10,
+              "paymentTerms": 30
+            }
+          },
+          "marketAnalysis": {
+            "UK": {
+              "market": "UK",
+              "currency": "GBP",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 1050000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 2,
+                  "sales": 1469999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 3,
+                  "sales": 1575000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 4,
+                  "sales": 1469999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 5,
+                  "sales": 1469999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 6,
+                  "sales": 1575000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 7,
+                  "sales": 1469999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 8,
+                  "sales": 1050000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 9,
+                  "sales": 1050000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 10,
+                  "sales": 1469999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 11,
+                  "sales": 1575000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 12,
+                  "sales": 1469999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                }
+              ],
+              "production": {
+                "required": 17573684.210526317,
+                "capacityUtilization": 0.41349845201238394,
+                "efficiency": 0.95,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 5551087.5,
+                "availability": 0.95,
+                "constraint": false,
+                "cost": 5551087.5
+              },
+              "inventory": {
+                "target": 1234972.602739726,
+                "safety": 384213.69863013696,
+                "total": 1619186.3013698629,
+                "turnover": 10.310734463276837
+              },
+              "workingCapital": {
+                "net": 2306997.431506849,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 1489544.4734589038,
+                    "inventory": 1133430.4109589038,
+                    "receivables": 1050000,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 2686753.8981164377,
+                    "inventory": 1910639.8356164382,
+                    "receivables": 1469999.9999999998,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 2986056.254280822,
+                    "inventory": 2104942.191780822,
+                    "receivables": 1575000,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 2686753.8981164377,
+                    "inventory": 1910639.8356164382,
+                    "receivables": 1469999.9999999998,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 2686753.8981164377,
+                    "inventory": 1910639.8356164382,
+                    "receivables": 1469999.9999999998,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 2986056.254280822,
+                    "inventory": 2104942.191780822,
+                    "receivables": 1575000,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 2686753.8981164377,
+                    "inventory": 1910639.8356164382,
+                    "receivables": 1469999.9999999998,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 1489544.4734589038,
+                    "inventory": 1133430.4109589038,
+                    "receivables": 1050000,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 1489544.4734589038,
+                    "inventory": 1133430.4109589038,
+                    "receivables": 1050000,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 2686753.8981164377,
+                    "inventory": 1910639.8356164382,
+                    "receivables": 1469999.9999999998,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 2986056.254280822,
+                    "inventory": 2104942.191780822,
+                    "receivables": 1575000,
+                    "payables": 693885.9375
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 2686753.8981164377,
+                    "inventory": 1910639.8356164382,
+                    "receivables": 1469999.9999999998,
+                    "payables": 693885.9375
+                  }
+                ],
+                "max": 2986056.254280822,
+                "components": {
+                  "inventory": 1619186.3013698629,
+                  "receivables": 1372191.7808219178,
+                  "payables": 684380.6506849315
+                }
+              },
+              "workingCapitalRequired": 2986056.254280822,
+              "borrowingRequired": 1486056.254280822,
+              "financing": {
+                "borrowingRequired": 1486056.254280822,
+                "creditUtilization": 0.2972112508561644,
+                "interestRate": 0.04,
+                "annualInterestCost": 59442.250171232874,
+                "availableCash": 1500000,
+                "creditLimit": 5000000
+              },
+              "risks": []
+            },
+            "USA": {
+              "market": "USA",
+              "currency": "USD",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 3263400,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 2,
+                  "sales": 3496500.0000000005,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 3,
+                  "sales": 3263400,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 4,
+                  "sales": 3263400,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 5,
+                  "sales": 3496500.0000000005,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 6,
+                  "sales": 3263400,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 7,
+                  "sales": 1456875.0000000002,
+                  "seasonalFactor": 0.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 8,
+                  "sales": 1456875.0000000002,
+                  "seasonalFactor": 0.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 9,
+                  "sales": 3263400,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 10,
+                  "sales": 3496500.0000000005,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 11,
+                  "sales": 3496500.0000000005,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 12,
+                  "sales": 3263400,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                }
+              ],
+              "production": {
+                "required": 38400157.89473684,
+                "capacityUtilization": 0.9035331269349846,
+                "efficiency": 0.95,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 12129649.875,
+                "availability": 0.95,
+                "constraint": false,
+                "cost": 12129649.875
+              },
+              "inventory": {
+                "target": 2698531.6438356163,
+                "safety": 839543.1780821917,
+                "total": 3538074.821917808,
+                "turnover": 10.310734463276836
+              },
+              "workingCapital": {
+                "net": 5273630.451369863,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 6157976.358613012,
+                    "inventory": 4174928.289863013,
+                    "receivables": 3263400,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 6815645.337243151,
+                    "inventory": 4599497.26849315,
+                    "receivables": 3496500.0000000005,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 6157976.358613012,
+                    "inventory": 4174928.289863013,
+                    "receivables": 3263400,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 6157976.358613012,
+                    "inventory": 4174928.289863013,
+                    "receivables": 3263400,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 6815645.337243151,
+                    "inventory": 4599497.26849315,
+                    "receivables": 3496500.0000000005,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 6157976.358613012,
+                    "inventory": 4174928.289863013,
+                    "receivables": 3263400,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 1945560.4797089042,
+                    "inventory": 1769037.410958904,
+                    "receivables": 1456875.0000000002,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 1945560.4797089042,
+                    "inventory": 1769037.410958904,
+                    "receivables": 1456875.0000000002,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 6157976.358613012,
+                    "inventory": 4174928.289863013,
+                    "receivables": 3263400,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 6815645.337243151,
+                    "inventory": 4599497.26849315,
+                    "receivables": 3496500.0000000005,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 6815645.337243151,
+                    "inventory": 4599497.26849315,
+                    "receivables": 3496500.0000000005,
+                    "payables": 1280351.9312500001
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 6157976.358613012,
+                    "inventory": 4174928.289863013,
+                    "receivables": 3263400,
+                    "payables": 1280351.9312500001
+                  }
+                ],
+                "max": 6815645.337243151,
+                "components": {
+                  "inventory": 3538074.821917808,
+                  "receivables": 2998368.493150685,
+                  "payables": 1262812.8636986301
+                }
+              },
+              "workingCapitalRequired": 6815645.337243151,
+              "borrowingRequired": 4615645.337243151,
+              "financing": {
+                "borrowingRequired": 4615645.337243151,
+                "creditUtilization": 0.9231290674486302,
+                "interestRate": 0.04,
+                "annualInterestCost": 184625.81348972605,
+                "availableCash": 2200000,
+                "creditLimit": 5000000
+              },
+              "risks": [
+                {
+                  "type": "financial",
+                  "severity": "critical",
+                  "description": "Credit utilization approaching maximum limits",
+                  "probability": 0.9
+                }
+              ]
+            },
+            "EUROPE": {
+              "market": "EUROPE",
+              "currency": "EUR",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 551250,
+                  "seasonalFactor": 0.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 2,
+                  "sales": 551250,
+                  "seasonalFactor": 0.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 3,
+                  "sales": 1234799.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 4,
+                  "sales": 1323000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 5,
+                  "sales": 1234799.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 6,
+                  "sales": 1234799.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 7,
+                  "sales": 1323000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 8,
+                  "sales": 1234799.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 9,
+                  "sales": 1323000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 10,
+                  "sales": 1234799.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 11,
+                  "sales": 1234799.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 12,
+                  "sales": 1323000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                }
+              ],
+              "production": {
+                "required": 14529789.47368421,
+                "capacityUtilization": 0.34187739938080497,
+                "efficiency": 0.95,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 4589597.25,
+                "availability": 0.95,
+                "constraint": false,
+                "cost": 4589597.25
+              },
+              "inventory": {
+                "target": 1021066.0273972603,
+                "safety": 317664.9863013699,
+                "total": 1338731.0136986303,
+                "turnover": 10.310734463276836
+              },
+              "workingCapital": {
+                "net": 1819388.3917808223,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 557673.681849315,
+                    "inventory": 669365.5068493151,
+                    "receivables": 551250,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 557673.681849315,
+                    "inventory": 669365.5068493151,
+                    "receivables": 551250,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 2151560.7711643833,
+                    "inventory": 1579702.5961643837,
+                    "receivables": 1234799.9999999998,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 2400408.492808219,
+                    "inventory": 1740350.3178082195,
+                    "receivables": 1323000,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 2151560.7711643833,
+                    "inventory": 1579702.5961643837,
+                    "receivables": 1234799.9999999998,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 2151560.7711643833,
+                    "inventory": 1579702.5961643837,
+                    "receivables": 1234799.9999999998,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 2400408.492808219,
+                    "inventory": 1740350.3178082195,
+                    "receivables": 1323000,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 2151560.7711643833,
+                    "inventory": 1579702.5961643837,
+                    "receivables": 1234799.9999999998,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 2400408.492808219,
+                    "inventory": 1740350.3178082195,
+                    "receivables": 1323000,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 2151560.7711643833,
+                    "inventory": 1579702.5961643837,
+                    "receivables": 1234799.9999999998,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 2151560.7711643833,
+                    "inventory": 1579702.5961643837,
+                    "receivables": 1234799.9999999998,
+                    "payables": 662941.8250000001
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 2400408.492808219,
+                    "inventory": 1740350.3178082195,
+                    "receivables": 1323000,
+                    "payables": 662941.8250000001
+                  }
+                ],
+                "max": 2400408.492808219,
+                "components": {
+                  "inventory": 1338731.0136986303,
+                  "receivables": 1134517.808219178,
+                  "payables": 653860.4301369863
+                }
+              },
+              "workingCapitalRequired": 2400408.492808219,
+              "borrowingRequired": 1100408.492808219,
+              "financing": {
+                "borrowingRequired": 1100408.492808219,
+                "creditUtilization": 0.2200816985616438,
+                "interestRate": 0.04,
+                "annualInterestCost": 44016.339712328765,
+                "availableCash": 1300000,
+                "creditLimit": 5000000
+              },
+              "risks": []
+            }
+          },
+          "overallImpact": {
+            "financial": {
+              "totalSales": 66978450,
+              "grossProfit": 25451811,
+              "netProfit": 15116959.096626712,
+              "totalWorkingCapital": 12202110.084332192,
+              "totalBorrowingRequired": 7202110.084332192,
+              "totalInterestCost": 288084.4033732877,
+              "roi": 123.88807339180833,
+              "workingCapitalTurnover": 5.4890875051194605
+            },
+            "operational": {
+              "averageCapacityUtilization": 55.29696594427244,
+              "hasCapacityConstraints": false,
+              "hasRawMaterialConstraints": false,
+              "overallEfficiency": 95
+            },
+            "comparison": {
+              "salesVsBaseline": 57.59635294117646,
+              "workingCapitalVsBaseline": -9.613999375317094,
+              "profitVsBaseline": 147.81900158404446
+            }
+          },
+          "insights": {
+            "summary": [
+              {
+                "type": "positive",
+                "category": "financial",
+                "title": "Excellent ROI Scenario",
+                "description": "This scenario delivers 123.9% ROI on working capital"
+              }
+            ],
+            "opportunities": [
+              {
+                "type": "market",
+                "title": "Market Prioritization",
+                "description": "EUROPE offers the best ROI at 143.8%",
+                "recommendation": "Focus initial expansion efforts on EUROPE market"
+              }
+            ],
+            "risks": [
+              {
+                "type": "financing",
+                "severity": "high",
+                "title": "USA Credit Utilization Risk",
+                "description": "USA market requires 92.3% of available credit",
+                "impact": "Limited financial flexibility for unexpected demands"
+              },
+              {
+                "type": "operational",
+                "severity": "medium",
+                "title": "USA Capacity Constraint",
+                "description": "USA production running at 90.4% capacity",
+                "impact": "May struggle to meet demand spikes or handle quality issues"
+              }
+            ],
+            "recommendations": [
+              {
+                "priority": "medium",
+                "category": "financial",
+                "action": "Secure additional financing",
+                "description": "Arrange 7.2M in additional credit facilities",
+                "impact": "Ensures adequate working capital for scenario execution",
+                "investment": "Annual interest cost: $288K"
+              }
+            ]
+          },
+          "workingCapitalSummary": {
+            "totalRequired": 12202110.084332192,
+            "totalBorrowingRequired": 7202110.084332192,
+            "byMarket": {
+              "UK": {
+                "workingCapital": 2986056.254280822,
+                "borrowing": 1486056.254280822
+              },
+              "USA": {
+                "workingCapital": 6815645.337243151,
+                "borrowing": 4615645.337243151
+              },
+              "EUROPE": {
+                "workingCapital": 2400408.492808219,
+                "borrowing": 1100408.492808219
+              }
+            }
+          },
+          "confidence": 0.85
+        },
+        "processingTime": 3.771600000000035,
+        "timestamp": "2025-09-07T15:03:59.907Z"
+      }
+    ],
+    [
+      "Crisis Scenario - Low Availability",
+      {
+        "parameters": {
+          "sales": {
+            "growthRate": -15
+          },
+          "manufacturing": {
+            "capacity": 70,
+            "efficiency": 80
+          },
+          "rawMaterials": {
+            "availability": 55,
+            "deliveryTime": 50,
+            "costInflation": 20
+          },
+          "financing": {
+            "interestRate": 14
+          }
+        },
+        "results": {
+          "id": "scenario_1757257439910",
+          "calculatedAt": "2025-09-07T15:03:59.910Z",
+          "parameters": {
+            "rawMaterials": {
+              "availability": 55,
+              "deliveryTime": 50,
+              "costInflation": 20,
+              "supplierReliability": 90,
+              "bufferStock": 21
+            },
+            "manufacturing": {
+              "capacity": 70,
+              "efficiency": 80,
+              "leadTime": 7,
+              "qualityRate": 97,
+              "laborCost": 8,
+              "energyCost": 15
+            },
+            "shipping": {
+              "deliveryTime": 5,
+              "shippingCost": 12,
+              "reliabilityRate": 95,
+              "expeditedOption": 10
+            },
+            "sales": {
+              "growthRate": -15,
+              "seasonalityFactor": 1.2,
+              "priceElasticity": -1.2,
+              "marketPenetration": 13.8
+            },
+            "inventory": {
+              "targetStockDays": 45,
+              "safetyStockLevel": 14,
+              "turnoverTarget": 8,
+              "obsolescenceRate": 3
+            },
+            "financing": {
+              "interestRate": 14,
+              "creditLimit": 5,
+              "cashReserveRatio": 10,
+              "paymentTerms": 30
+            }
+          },
+          "marketAnalysis": {
+            "UK": {
+              "market": "UK",
+              "currency": "GBP",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 850000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 2,
+                  "sales": 1189999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 3,
+                  "sales": 1275000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 4,
+                  "sales": 1189999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 5,
+                  "sales": 1189999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 6,
+                  "sales": 1275000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 7,
+                  "sales": 1189999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 8,
+                  "sales": 850000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 9,
+                  "sales": 850000,
+                  "seasonalFactor": 0.8,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 10,
+                  "sales": 1189999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 11,
+                  "sales": 1275000,
+                  "seasonalFactor": 1.2,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 12,
+                  "sales": 1189999.9999999998,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "GBP"
+                }
+              ],
+              "production": {
+                "required": 16893750,
+                "capacityUtilization": 0.4826785714285714,
+                "efficiency": 0.8,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 5676300,
+                "availability": 0.55,
+                "constraint": true,
+                "cost": 5676300
+              },
+              "inventory": {
+                "target": 999739.7260273972,
+                "safety": 311030.13698630134,
+                "total": 1310769.8630136985,
+                "turnover": 10.310734463276837
+              },
+              "workingCapital": {
+                "net": 1721773.9726027395,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 1058001.4041095888,
+                    "inventory": 917538.9041095888,
+                    "receivables": 850000,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 2027170.938356164,
+                    "inventory": 1546708.4383561641,
+                    "receivables": 1189999.9999999998,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 2269463.321917808,
+                    "inventory": 1704000.8219178081,
+                    "receivables": 1275000,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 2027170.938356164,
+                    "inventory": 1546708.4383561641,
+                    "receivables": 1189999.9999999998,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 2027170.938356164,
+                    "inventory": 1546708.4383561641,
+                    "receivables": 1189999.9999999998,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 2269463.321917808,
+                    "inventory": 1704000.8219178081,
+                    "receivables": 1275000,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 2027170.938356164,
+                    "inventory": 1546708.4383561641,
+                    "receivables": 1189999.9999999998,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 1058001.4041095888,
+                    "inventory": 917538.9041095888,
+                    "receivables": 850000,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 1058001.4041095888,
+                    "inventory": 917538.9041095888,
+                    "receivables": 850000,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 2027170.938356164,
+                    "inventory": 1546708.4383561641,
+                    "receivables": 1189999.9999999998,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 2269463.321917808,
+                    "inventory": 1704000.8219178081,
+                    "receivables": 1275000,
+                    "payables": 709537.5
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 2027170.938356164,
+                    "inventory": 1546708.4383561641,
+                    "receivables": 1189999.9999999998,
+                    "payables": 709537.5
+                  }
+                ],
+                "max": 2269463.321917808,
+                "components": {
+                  "inventory": 1310769.8630136985,
+                  "receivables": 1110821.9178082193,
+                  "payables": 699817.8082191781
+                }
+              },
+              "workingCapitalRequired": 2269463.321917808,
+              "borrowingRequired": 769463.3219178081,
+              "financing": {
+                "borrowingRequired": 769463.3219178081,
+                "creditUtilization": 0.15389266438356164,
+                "interestRate": 0.14,
+                "annualInterestCost": 107724.86506849315,
+                "availableCash": 1500000,
+                "creditLimit": 5000000
+              },
+              "risks": [
+                {
+                  "type": "supply_chain",
+                  "severity": "medium",
+                  "description": "Raw materials availability below optimal levels",
+                  "probability": 0.6
+                }
+              ]
+            },
+            "USA": {
+              "market": "USA",
+              "currency": "USD",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 2641799.9999999995,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 2,
+                  "sales": 2830500,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 3,
+                  "sales": 2641799.9999999995,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 4,
+                  "sales": 2641799.9999999995,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 5,
+                  "sales": 2830500,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 6,
+                  "sales": 2641799.9999999995,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 7,
+                  "sales": 1179375,
+                  "seasonalFactor": 0.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 8,
+                  "sales": 1179375,
+                  "seasonalFactor": 0.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 9,
+                  "sales": 2641799.9999999995,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                },
+                {
+                  "month": 10,
+                  "sales": 2830500,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 11,
+                  "sales": 2830500,
+                  "seasonalFactor": 1.2,
+                  "currency": "USD"
+                },
+                {
+                  "month": 12,
+                  "sales": 2641799.9999999995,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "USD"
+                }
+              ],
+              "production": {
+                "required": 36914437.5,
+                "capacityUtilization": 1.0546982142857142,
+                "efficiency": 0.8,
+                "constraint": true
+              },
+              "rawMaterials": {
+                "totalNeeded": 12403251,
+                "availability": 0.55,
+                "constraint": true,
+                "cost": 12403251
+              },
+              "inventory": {
+                "target": 2184525.6164383558,
+                "safety": 679630.1917808218,
+                "total": 2864155.8082191776,
+                "turnover": 10.310734463276837
+              },
+              "workingCapital": {
+                "net": 4000109.1287671234,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 4712271.803698629,
+                    "inventory": 3379703.8536986294,
+                    "receivables": 2641799.9999999995,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 5244670.500684931,
+                    "inventory": 3723402.550684931,
+                    "receivables": 2830500,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 4712271.803698629,
+                    "inventory": 3379703.8536986294,
+                    "receivables": 2641799.9999999995,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 4712271.803698629,
+                    "inventory": 3379703.8536986294,
+                    "receivables": 2641799.9999999995,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 5244670.500684931,
+                    "inventory": 3723402.550684931,
+                    "receivables": 2830500,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 4712271.803698629,
+                    "inventory": 3379703.8536986294,
+                    "receivables": 2641799.9999999995,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 1302220.8541095888,
+                    "inventory": 1432077.9041095888,
+                    "receivables": 1179375,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 1302220.8541095888,
+                    "inventory": 1432077.9041095888,
+                    "receivables": 1179375,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 4712271.803698629,
+                    "inventory": 3379703.8536986294,
+                    "receivables": 2641799.9999999995,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 5244670.500684931,
+                    "inventory": 3723402.550684931,
+                    "receivables": 2830500,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 5244670.500684931,
+                    "inventory": 3723402.550684931,
+                    "receivables": 2830500,
+                    "payables": 1309232.05
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 4712271.803698629,
+                    "inventory": 3379703.8536986294,
+                    "receivables": 2641799.9999999995,
+                    "payables": 1309232.05
+                  }
+                ],
+                "max": 5244670.500684931,
+                "components": {
+                  "inventory": 2864155.8082191776,
+                  "receivables": 2427250.684931507,
+                  "payables": 1291297.3643835615
+                }
+              },
+              "workingCapitalRequired": 5244670.500684931,
+              "borrowingRequired": 3044670.500684931,
+              "financing": {
+                "borrowingRequired": 3044670.500684931,
+                "creditUtilization": 0.6089341001369862,
+                "interestRate": 0.14,
+                "annualInterestCost": 426253.87009589036,
+                "availableCash": 2200000,
+                "creditLimit": 5000000
+              },
+              "risks": [
+                {
+                  "type": "operational",
+                  "severity": "high",
+                  "description": "Capacity utilization exceeds safe operating levels",
+                  "probability": 0.8
+                },
+                {
+                  "type": "supply_chain",
+                  "severity": "medium",
+                  "description": "Raw materials availability below optimal levels",
+                  "probability": 0.6
+                }
+              ]
+            },
+            "EUROPE": {
+              "market": "EUROPE",
+              "currency": "EUR",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 446250,
+                  "seasonalFactor": 0.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 2,
+                  "sales": 446250,
+                  "seasonalFactor": 0.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 3,
+                  "sales": 999599.9999999999,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 4,
+                  "sales": 1071000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 5,
+                  "sales": 999599.9999999999,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 6,
+                  "sales": 999599.9999999999,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 7,
+                  "sales": 1071000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 8,
+                  "sales": 999599.9999999999,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 9,
+                  "sales": 1071000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 10,
+                  "sales": 999599.9999999999,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 11,
+                  "sales": 999599.9999999999,
+                  "seasonalFactor": 1.1199999999999999,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 12,
+                  "sales": 1071000,
+                  "seasonalFactor": 1.2,
+                  "currency": "EUR"
+                }
+              ],
+              "production": {
+                "required": 13967625,
+                "capacityUtilization": 0.399075,
+                "efficiency": 0.8,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 4693121.999999999,
+                "availability": 0.55,
+                "constraint": true,
+                "cost": 4693121.999999999
+              },
+              "inventory": {
+                "target": 826577.2602739726,
+                "safety": 257157.36986301368,
+                "total": 1083734.6301369863,
+                "turnover": 10.310734463276837
+              },
+              "workingCapital": {
+                "net": 1333544.6465753426,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 310221.9150684932,
+                    "inventory": 541867.3150684931,
+                    "receivables": 446250,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 310221.9150684932,
+                    "inventory": 541867.3150684931,
+                    "receivables": 446250,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 1600511.4635616434,
+                    "inventory": 1278806.8635616438,
+                    "receivables": 999599.9999999998,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 1801959.6191780823,
+                    "inventory": 1408855.0191780822,
+                    "receivables": 1071000,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 1600511.4635616434,
+                    "inventory": 1278806.8635616438,
+                    "receivables": 999599.9999999998,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 1600511.4635616434,
+                    "inventory": 1278806.8635616438,
+                    "receivables": 999599.9999999998,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 1801959.6191780823,
+                    "inventory": 1408855.0191780822,
+                    "receivables": 1071000,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 1600511.4635616434,
+                    "inventory": 1278806.8635616438,
+                    "receivables": 999599.9999999998,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 1801959.6191780823,
+                    "inventory": 1408855.0191780822,
+                    "receivables": 1071000,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 1600511.4635616434,
+                    "inventory": 1278806.8635616438,
+                    "receivables": 999599.9999999998,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 1600511.4635616434,
+                    "inventory": 1278806.8635616438,
+                    "receivables": 999599.9999999998,
+                    "payables": 677895.3999999999
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 1801959.6191780823,
+                    "inventory": 1408855.0191780822,
+                    "receivables": 1071000,
+                    "payables": 677895.3999999999
+                  }
+                ],
+                "max": 1801959.6191780823,
+                "components": {
+                  "inventory": 1083734.6301369863,
+                  "receivables": 918419.1780821919,
+                  "payables": 668609.1616438355
+                }
+              },
+              "workingCapitalRequired": 1801959.6191780823,
+              "borrowingRequired": 501959.6191780823,
+              "financing": {
+                "borrowingRequired": 501959.6191780823,
+                "creditUtilization": 0.10039192383561646,
+                "interestRate": 0.14,
+                "annualInterestCost": 70274.34668493153,
+                "availableCash": 1300000,
+                "creditLimit": 5000000
+              },
+              "risks": [
+                {
+                  "type": "supply_chain",
+                  "severity": "medium",
+                  "description": "Raw materials availability below optimal levels",
+                  "probability": 0.6
+                }
+              ]
+            }
+          },
+          "overallImpact": {
+            "financial": {
+              "totalSales": 54220650,
+              "grossProfit": 17350608.000000004,
+              "netProfit": 8613257.41815069,
+              "totalWorkingCapital": 9316093.441780822,
+              "totalBorrowingRequired": 4316093.441780821,
+              "totalInterestCost": 604253.0818493151,
+              "roi": 92.45567868095812,
+              "workingCapitalTurnover": 5.820105856477479
+            },
+            "operational": {
+              "averageCapacityUtilization": 64.54839285714286,
+              "hasCapacityConstraints": true,
+              "hasRawMaterialConstraints": true,
+              "overallEfficiency": 80
+            },
+            "comparison": {
+              "salesVsBaseline": 27.577999999999992,
+              "workingCapitalVsBaseline": -30.99190043125317,
+              "profitVsBaseline": 41.200941281158855
+            }
+          },
+          "insights": {
+            "summary": [
+              {
+                "type": "positive",
+                "category": "financial",
+                "title": "Excellent ROI Scenario",
+                "description": "This scenario delivers 92.5% ROI on working capital"
+              }
+            ],
+            "opportunities": [
+              {
+                "type": "market",
+                "title": "Market Prioritization",
+                "description": "EUROPE offers the best ROI at 155.0%",
+                "recommendation": "Focus initial expansion efforts on EUROPE market"
+              }
+            ],
+            "risks": [
+              {
+                "type": "operational",
+                "severity": "medium",
+                "title": "USA Capacity Constraint",
+                "description": "USA production running at 105.5% capacity",
+                "impact": "May struggle to meet demand spikes or handle quality issues"
+              }
+            ],
+            "recommendations": [
+              {
+                "priority": "high",
+                "category": "operational",
+                "action": "Increase manufacturing capacity",
+                "description": "Consider expanding production capacity or improving efficiency to meet projected demand",
+                "impact": "Reduces delivery risk and improves customer satisfaction",
+                "investment": "Medium to High"
+              },
+              {
+                "priority": "medium",
+                "category": "financial",
+                "action": "Secure additional financing",
+                "description": "Arrange 4.3M in additional credit facilities",
+                "impact": "Ensures adequate working capital for scenario execution",
+                "investment": "Annual interest cost: $604K"
+              }
+            ]
+          },
+          "workingCapitalSummary": {
+            "totalRequired": 9316093.441780822,
+            "totalBorrowingRequired": 4316093.441780821,
+            "byMarket": {
+              "UK": {
+                "workingCapital": 2269463.321917808,
+                "borrowing": 769463.3219178081
+              },
+              "USA": {
+                "workingCapital": 5244670.500684931,
+                "borrowing": 3044670.500684931
+              },
+              "EUROPE": {
+                "workingCapital": 1801959.6191780823,
+                "borrowing": 501959.6191780823
+              }
+            }
+          },
+          "confidence": 0.8051814223512337
+        },
+        "processingTime": 4.276600000000144,
+        "timestamp": "2025-09-07T15:03:59.915Z"
+      }
+    ],
+    [
+      "Optimal Conditions",
+      {
+        "parameters": {
+          "sales": {
+            "growthRate": 20,
+            "seasonalityFactor": 1.5
+          },
+          "manufacturing": {
+            "capacity": 100,
+            "efficiency": 96
+          },
+          "rawMaterials": {
+            "availability": 98,
+            "deliveryTime": 10,
+            "costInflation": 2
+          },
+          "financing": {
+            "interestRate": 3.5
+          }
+        },
+        "results": {
+          "id": "scenario_1757257439917",
+          "calculatedAt": "2025-09-07T15:03:59.917Z",
+          "parameters": {
+            "rawMaterials": {
+              "availability": 98,
+              "deliveryTime": 10,
+              "costInflation": 2,
+              "supplierReliability": 90,
+              "bufferStock": 21
+            },
+            "manufacturing": {
+              "capacity": 100,
+              "efficiency": 96,
+              "leadTime": 7,
+              "qualityRate": 97,
+              "laborCost": 8,
+              "energyCost": 15
+            },
+            "shipping": {
+              "deliveryTime": 5,
+              "shippingCost": 12,
+              "reliabilityRate": 95,
+              "expeditedOption": 10
+            },
+            "sales": {
+              "growthRate": 20,
+              "seasonalityFactor": 1.5,
+              "priceElasticity": -1.2,
+              "marketPenetration": 13.8
+            },
+            "inventory": {
+              "targetStockDays": 45,
+              "safetyStockLevel": 14,
+              "turnoverTarget": 8,
+              "obsolescenceRate": 3
+            },
+            "financing": {
+              "interestRate": 3.5,
+              "creditLimit": 5,
+              "cashReserveRatio": 10,
+              "paymentTerms": 30
+            }
+          },
+          "marketAnalysis": {
+            "UK": {
+              "market": "UK",
+              "currency": "GBP",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 750000,
+                  "seasonalFactor": 0.5,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 2,
+                  "sales": 1950000,
+                  "seasonalFactor": 1.3,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 3,
+                  "sales": 2250000,
+                  "seasonalFactor": 1.5,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 4,
+                  "sales": 1950000,
+                  "seasonalFactor": 1.3,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 5,
+                  "sales": 1950000,
+                  "seasonalFactor": 1.3,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 6,
+                  "sales": 2250000,
+                  "seasonalFactor": 1.5,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 7,
+                  "sales": 1950000,
+                  "seasonalFactor": 1.3,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 8,
+                  "sales": 750000,
+                  "seasonalFactor": 0.5,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 9,
+                  "sales": 750000,
+                  "seasonalFactor": 0.5,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 10,
+                  "sales": 1950000,
+                  "seasonalFactor": 1.3,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 11,
+                  "sales": 2250000,
+                  "seasonalFactor": 1.5,
+                  "currency": "GBP"
+                },
+                {
+                  "month": 12,
+                  "sales": 1950000,
+                  "seasonalFactor": 1.3,
+                  "currency": "GBP"
+                }
+              ],
+              "production": {
+                "required": 21562500,
+                "capacityUtilization": 0.43125,
+                "efficiency": 0.96,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 7389900,
+                "availability": 0.98,
+                "constraint": false,
+                "cost": 7389900
+              },
+              "inventory": {
+                "target": 1531232.8767123288,
+                "safety": 476383.5616438356,
+                "total": 2007616.4383561644,
+                "turnover": 10.310734463276836
+              },
+              "workingCapital": {
+                "net": 2797902.7397260275,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 1231594.006849315,
+                    "inventory": 1405331.506849315,
+                    "receivables": 750000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 3395249.897260274,
+                    "inventory": 2368987.397260274,
+                    "receivables": 1950000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 3936163.8698630137,
+                    "inventory": 2609901.3698630137,
+                    "receivables": 2250000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 3395249.897260274,
+                    "inventory": 2368987.397260274,
+                    "receivables": 1950000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 3395249.897260274,
+                    "inventory": 2368987.397260274,
+                    "receivables": 1950000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 3936163.8698630137,
+                    "inventory": 2609901.3698630137,
+                    "receivables": 2250000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 3395249.897260274,
+                    "inventory": 2368987.397260274,
+                    "receivables": 1950000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 1231594.006849315,
+                    "inventory": 1405331.506849315,
+                    "receivables": 750000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 1231594.006849315,
+                    "inventory": 1405331.506849315,
+                    "receivables": 750000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 3395249.897260274,
+                    "inventory": 2368987.397260274,
+                    "receivables": 1950000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 3936163.8698630137,
+                    "inventory": 2609901.3698630137,
+                    "receivables": 2250000,
+                    "payables": 923737.5
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 3395249.897260274,
+                    "inventory": 2368987.397260274,
+                    "receivables": 1950000,
+                    "payables": 923737.5
+                  }
+                ],
+                "max": 3936163.8698630137,
+                "components": {
+                  "inventory": 2007616.4383561644,
+                  "receivables": 1701369.8630136987,
+                  "payables": 911083.5616438356
+                }
+              },
+              "workingCapitalRequired": 3936163.8698630137,
+              "borrowingRequired": 2436163.8698630137,
+              "financing": {
+                "borrowingRequired": 2436163.8698630137,
+                "creditUtilization": 0.48723277397260273,
+                "interestRate": 0.035,
+                "annualInterestCost": 85265.73544520549,
+                "availableCash": 1500000,
+                "creditLimit": 5000000
+              },
+              "risks": []
+            },
+            "USA": {
+              "market": "USA",
+              "currency": "USD",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 4329000,
+                  "seasonalFactor": 1.3,
+                  "currency": "USD"
+                },
+                {
+                  "month": 2,
+                  "sales": 4995000,
+                  "seasonalFactor": 1.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 3,
+                  "sales": 4329000,
+                  "seasonalFactor": 1.3,
+                  "currency": "USD"
+                },
+                {
+                  "month": 4,
+                  "sales": 4329000,
+                  "seasonalFactor": 1.3,
+                  "currency": "USD"
+                },
+                {
+                  "month": 5,
+                  "sales": 4995000,
+                  "seasonalFactor": 1.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 6,
+                  "sales": 4329000,
+                  "seasonalFactor": 1.3,
+                  "currency": "USD"
+                },
+                {
+                  "month": 7,
+                  "sales": 1665000,
+                  "seasonalFactor": 0.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 8,
+                  "sales": 1665000,
+                  "seasonalFactor": 0.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 9,
+                  "sales": 4329000,
+                  "seasonalFactor": 1.3,
+                  "currency": "USD"
+                },
+                {
+                  "month": 10,
+                  "sales": 4995000,
+                  "seasonalFactor": 1.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 11,
+                  "sales": 4995000,
+                  "seasonalFactor": 1.5,
+                  "currency": "USD"
+                },
+                {
+                  "month": 12,
+                  "sales": 4329000,
+                  "seasonalFactor": 1.3,
+                  "currency": "USD"
+                }
+              ],
+              "production": {
+                "required": 51337500,
+                "capacityUtilization": 1.02675,
+                "efficiency": 0.96,
+                "constraint": true
+              },
+              "rawMaterials": {
+                "totalNeeded": 17594388,
+                "availability": 0.98,
+                "constraint": false,
+                "cost": 17594388
+              },
+              "inventory": {
+                "target": 3645665.753424657,
+                "safety": 1134207.123287671,
+                "total": 4779872.876712328,
+                "turnover": 10.310734463276837
+              },
+              "workingCapital": {
+                "net": 6998868.098630136,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 8112064.5945205465,
+                    "inventory": 5640249.994520547,
+                    "receivables": 4329000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 9351649.339726025,
+                    "inventory": 6213834.739726027,
+                    "receivables": 4995000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 8112064.5945205465,
+                    "inventory": 5640249.994520547,
+                    "receivables": 4329000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 8112064.5945205465,
+                    "inventory": 5640249.994520547,
+                    "receivables": 4329000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 9351649.339726025,
+                    "inventory": 6213834.739726027,
+                    "receivables": 4995000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 8112064.5945205465,
+                    "inventory": 5640249.994520547,
+                    "receivables": 4329000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 2197751.0383561635,
+                    "inventory": 2389936.438356164,
+                    "receivables": 1665000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 2197751.0383561635,
+                    "inventory": 2389936.438356164,
+                    "receivables": 1665000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 8112064.5945205465,
+                    "inventory": 5640249.994520547,
+                    "receivables": 4329000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 9351649.339726025,
+                    "inventory": 6213834.739726027,
+                    "receivables": 4995000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 9351649.339726025,
+                    "inventory": 6213834.739726027,
+                    "receivables": 4995000,
+                    "payables": 1857185.4000000001
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 8112064.5945205465,
+                    "inventory": 5640249.994520547,
+                    "receivables": 4329000,
+                    "payables": 1857185.4000000001
+                  }
+                ],
+                "max": 9351649.339726025,
+                "components": {
+                  "inventory": 4779872.876712328,
+                  "receivables": 4050739.726027397,
+                  "payables": 1831744.5041095892
+                }
+              },
+              "workingCapitalRequired": 9351649.339726025,
+              "borrowingRequired": 7151649.339726025,
+              "financing": {
+                "borrowingRequired": 7151649.339726025,
+                "creditUtilization": 1.430329867945205,
+                "interestRate": 0.035,
+                "annualInterestCost": 250307.7268904109,
+                "availableCash": 2200000,
+                "creditLimit": 5000000
+              },
+              "risks": [
+                {
+                  "type": "operational",
+                  "severity": "high",
+                  "description": "Capacity utilization exceeds safe operating levels",
+                  "probability": 0.8
+                },
+                {
+                  "type": "financial",
+                  "severity": "critical",
+                  "description": "Credit utilization approaching maximum limits",
+                  "probability": 0.9
+                }
+              ]
+            },
+            "EUROPE": {
+              "market": "EUROPE",
+              "currency": "EUR",
+              "salesForecast": [
+                {
+                  "month": 1,
+                  "sales": 630000,
+                  "seasonalFactor": 0.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 2,
+                  "sales": 630000,
+                  "seasonalFactor": 0.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 3,
+                  "sales": 1638000,
+                  "seasonalFactor": 1.3,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 4,
+                  "sales": 1890000,
+                  "seasonalFactor": 1.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 5,
+                  "sales": 1638000,
+                  "seasonalFactor": 1.3,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 6,
+                  "sales": 1638000,
+                  "seasonalFactor": 1.3,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 7,
+                  "sales": 1890000,
+                  "seasonalFactor": 1.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 8,
+                  "sales": 1638000,
+                  "seasonalFactor": 1.3,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 9,
+                  "sales": 1890000,
+                  "seasonalFactor": 1.5,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 10,
+                  "sales": 1638000,
+                  "seasonalFactor": 1.3,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 11,
+                  "sales": 1638000,
+                  "seasonalFactor": 1.3,
+                  "currency": "EUR"
+                },
+                {
+                  "month": 12,
+                  "sales": 1890000,
+                  "seasonalFactor": 1.5,
+                  "currency": "EUR"
+                }
+              ],
+              "production": {
+                "required": 19425000,
+                "capacityUtilization": 0.3885,
+                "efficiency": 0.96,
+                "constraint": false
+              },
+              "rawMaterials": {
+                "totalNeeded": 6657336,
+                "availability": 0.98,
+                "constraint": false,
+                "cost": 6657336
+              },
+              "inventory": {
+                "target": 1379441.095890411,
+                "safety": 429159.45205479447,
+                "total": 1808600.5479452054,
+                "turnover": 10.310734463276837
+              },
+              "workingCapital": {
+                "net": 2392870.487671233,
+                "seasonal": [
+                  {
+                    "month": 1,
+                    "workingCapital": 572685.0739726026,
+                    "inventory": 904300.2739726027,
+                    "receivables": 630000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 2,
+                    "workingCapital": 572685.0739726026,
+                    "inventory": 904300.2739726027,
+                    "receivables": 630000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 3,
+                    "workingCapital": 2810533.4465753427,
+                    "inventory": 2134148.6465753424,
+                    "receivables": 1638000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 4,
+                    "workingCapital": 3279565.512328767,
+                    "inventory": 2351180.712328767,
+                    "receivables": 1890000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 5,
+                    "workingCapital": 2810533.4465753427,
+                    "inventory": 2134148.6465753424,
+                    "receivables": 1638000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 6,
+                    "workingCapital": 2810533.4465753427,
+                    "inventory": 2134148.6465753424,
+                    "receivables": 1638000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 7,
+                    "workingCapital": 3279565.512328767,
+                    "inventory": 2351180.712328767,
+                    "receivables": 1890000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 8,
+                    "workingCapital": 2810533.4465753427,
+                    "inventory": 2134148.6465753424,
+                    "receivables": 1638000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 9,
+                    "workingCapital": 3279565.512328767,
+                    "inventory": 2351180.712328767,
+                    "receivables": 1890000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 10,
+                    "workingCapital": 2810533.4465753427,
+                    "inventory": 2134148.6465753424,
+                    "receivables": 1638000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 11,
+                    "workingCapital": 2810533.4465753427,
+                    "inventory": 2134148.6465753424,
+                    "receivables": 1638000,
+                    "payables": 961615.2
+                  },
+                  {
+                    "month": 12,
+                    "workingCapital": 3279565.512328767,
+                    "inventory": 2351180.712328767,
+                    "receivables": 1890000,
+                    "payables": 961615.2
+                  }
+                ],
+                "max": 3279565.512328767,
+                "components": {
+                  "inventory": 1808600.5479452054,
+                  "receivables": 1532712.3287671234,
+                  "payables": 948442.3890410959
+                }
+              },
+              "workingCapitalRequired": 3279565.512328767,
+              "borrowingRequired": 1979565.5123287672,
+              "financing": {
+                "borrowingRequired": 1979565.5123287672,
+                "creditUtilization": 0.39591310246575345,
+                "interestRate": 0.035,
+                "annualInterestCost": 69284.79293150686,
+                "availableCash": 1300000,
+                "creditLimit": 5000000
+              },
+              "risks": []
+            }
+          },
+          "overallImpact": {
+            "financial": {
+              "totalSales": 88632000,
+              "grossProfit": 34034688,
+              "netProfit": 20335029.744732875,
+              "totalWorkingCapital": 16567378.721917804,
+              "totalBorrowingRequired": 11567378.721917804,
+              "totalInterestCost": 404858.2552671233,
+              "roi": 122.74138284670622,
+              "workingCapitalTurnover": 5.34979018031044
+            },
+            "operational": {
+              "averageCapacityUtilization": 61.550000000000004,
+              "hasCapacityConstraints": true,
+              "hasRawMaterialConstraints": false,
+              "overallEfficiency": 96
+            },
+            "comparison": {
+              "salesVsBaseline": 108.54588235294118,
+              "workingCapitalVsBaseline": 22.72132386605781,
+              "profitVsBaseline": 233.36114335627664
+            }
+          },
+          "insights": {
+            "summary": [
+              {
+                "type": "positive",
+                "category": "financial",
+                "title": "Excellent ROI Scenario",
+                "description": "This scenario delivers 122.7% ROI on working capital"
+              }
+            ],
+            "opportunities": [
+              {
+                "type": "market",
+                "title": "Market Prioritization",
+                "description": "EUROPE offers the best ROI at 142.2%",
+                "recommendation": "Focus initial expansion efforts on EUROPE market"
+              }
+            ],
+            "risks": [
+              {
+                "type": "financing",
+                "severity": "high",
+                "title": "USA Credit Utilization Risk",
+                "description": "USA market requires 143.0% of available credit",
+                "impact": "Limited financial flexibility for unexpected demands"
+              },
+              {
+                "type": "operational",
+                "severity": "medium",
+                "title": "USA Capacity Constraint",
+                "description": "USA production running at 102.7% capacity",
+                "impact": "May struggle to meet demand spikes or handle quality issues"
+              }
+            ],
+            "recommendations": [
+              {
+                "priority": "high",
+                "category": "operational",
+                "action": "Increase manufacturing capacity",
+                "description": "Consider expanding production capacity or improving efficiency to meet projected demand",
+                "impact": "Reduces delivery risk and improves customer satisfaction",
+                "investment": "Medium to High"
+              },
+              {
+                "priority": "medium",
+                "category": "financial",
+                "action": "Secure additional financing",
+                "description": "Arrange 11.6M in additional credit facilities",
+                "impact": "Ensures adequate working capital for scenario execution",
+                "investment": "Annual interest cost: $405K"
+              }
+            ]
+          },
+          "workingCapitalSummary": {
+            "totalRequired": 16567378.721917804,
+            "totalBorrowingRequired": 11567378.721917804,
+            "byMarket": {
+              "UK": {
+                "workingCapital": 3936163.8698630137,
+                "borrowing": 2436163.8698630137
+              },
+              "USA": {
+                "workingCapital": 9351649.339726025,
+                "borrowing": 7151649.339726025
+              },
+              "EUROPE": {
+                "workingCapital": 3279565.512328767,
+                "borrowing": 1979565.5123287672
+              }
+            }
+          },
+          "confidence": 0.85
+        },
+        "processingTime": 4.045000000000073,
+        "timestamp": "2025-09-07T15:03:59.923Z"
+      }
+    ]
+  ],
   "performanceMetrics": [
     {
+      "operation": "initialization",
+      "duration": 28.85680000000002,
+      "success": true,
+      "timestamp": "2025-09-07T15:03:55.191Z"
+    },
+    {
+      "operation": "market_analysis_UK",
+      "duration": 3.4143999999996595,
+      "success": true,
+      "timestamp": "2025-09-07T15:03:59.759Z"
+    },
+    {
+      "operation": "market_analysis_USA",
+      "duration": 3.8269000000000233,
+      "success": true,
+      "timestamp": "2025-09-07T15:03:59.768Z"
+    },
+    {
+      "operation": "market_analysis_EUROPE",
+      "duration": 3.4182999999993626,
+      "success": true,
+      "timestamp": "2025-09-07T15:03:59.779Z"
+    },
+    {
+      "operation": "working_capital_breakdown",
+      "duration": 5.051799999999275,
+      "success": true,
+      "timestamp": "2025-09-07T15:03:59.851Z"
+    },
+    {
       "operation": "concurrent_load_test",
-      "duration": 90.88169999999991,
-      "success": false,
-      "timestamp": "2025-09-07T10:00:31.654Z"
+      "duration": 27.977700000000368,
+      "success": true,
+      "timestamp": "2025-09-07T15:04:00.468Z"
     }
   ],
   "clientRequirementsMet": true,

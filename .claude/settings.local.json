@@ -96,7 +96,14 @@
       "Bash(VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk npm run build)",
       "Bash(set PORT=3000)",
       "Bash(start http://localhost:8080)",
-      "Bash(start http://localhost:61086)"
+      "Bash(start http://localhost:61086)",
+      "Read(//c/Users/User/Downloads/**)",
+      "Bash(npm cache:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npm uninstall:*)",
+      "Read(//c//**)",
+      "Bash(where npm)",
+      "Bash(npm:*)"
     ],
     "deny": [],
     "ask": []

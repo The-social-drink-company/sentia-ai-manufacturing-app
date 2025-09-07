@@ -9,8 +9,8 @@ import { performance } from 'perf_hooks';
 
 // Test configuration for What-If Analysis
 const WHATIF_TEST_CONFIG = {
-  baseURL: 'http://localhost:3000',
-  apiURL: 'http://localhost:5000/api',
+  baseURL: 'http://127.0.0.1:3000',
+  apiURL: 'http://127.0.0.1:5000/api',
   timeout: 30000,
   markets: ['UK', 'USA', 'EUROPE'],
   sliderTestDelay: 500, // ms delay for real-time updates
@@ -161,7 +161,8 @@ test.describe('What-If Analysis - Critical Client Requirements', () => {
           
           try {
             const response = await request.post(`${WHATIF_TEST_CONFIG.apiURL}/analytics/whatif-analysis/calculate`, {
-              data: { parameters: testParameters }
+              data: JSON.stringify({ parameters: testParameters }),
+              headers: { 'Content-Type': 'application/json' }
             });
             
             const calculationTime = performance.now() - startTime;
@@ -373,7 +374,8 @@ test.describe('What-If Analysis - Critical Client Requirements', () => {
       
       try {
         const response = await request.post(`${WHATIF_TEST_CONFIG.apiURL}/analytics/whatif-analysis/calculate`, {
-          data: { parameters: scenario.parameters }
+          data: JSON.stringify({ parameters: scenario.parameters }),
+          headers: { 'Content-Type': 'application/json' }
         });
         
         const processingTime = performance.now() - startTime;
@@ -431,7 +433,8 @@ test.describe('What-If Analysis - Critical Client Requirements', () => {
       
       try {
         const response = await request.post(`${WHATIF_TEST_CONFIG.apiURL}/analytics/whatif-analysis/calculate`, {
-          data: { parameters }
+          data: JSON.stringify({ parameters }),
+          headers: { 'Content-Type': 'application/json' }
         });
         
         const processingTime = performance.now() - startTime;
@@ -489,7 +492,8 @@ test.describe('What-If Analysis - Critical Client Requirements', () => {
       
       try {
         const response = await request.post(`${WHATIF_TEST_CONFIG.apiURL}/analytics/whatif-analysis/calculate`, {
-          data: { parameters }
+          data: JSON.stringify({ parameters }),
+          headers: { 'Content-Type': 'application/json' }
         });
         
         expect(response.status()).toBe(200);

@@ -13,8 +13,8 @@ import { WhatIfAnalysisTestTracker, WHATIF_TEST_CONFIG } from './whatif-analysis
 
 // Test configuration
 const TEST_CONFIG = {
-  baseURL: 'http://localhost:3000',
-  apiURL: 'http://localhost:5000/api',
+  baseURL: 'http://127.0.0.1:3000',
+  apiURL: 'http://127.0.0.1:5000/api',
   timeout: 30000,
   retries: 3,
   screenshots: true,
@@ -510,7 +510,8 @@ test.describe('Critical Client Requirements - What-If Analysis', () => {
       
       const startTime = performance.now();
       const calcResponse = await request.post(`${TEST_CONFIG.apiURL}/analytics/whatif-analysis/calculate`, {
-        data: { parameters: testParameters }
+        data: JSON.stringify({ parameters: testParameters }),
+        headers: { 'Content-Type': 'application/json' }
       });
       const calculationTime = performance.now() - startTime;
       
@@ -573,7 +574,8 @@ test.describe('Critical Client Requirements - What-If Analysis', () => {
       // Test 6: Interest rate impact validation
       const highInterestParams = { ...testParameters, financing: { ...testParameters.financing, interestRate: 12.0 } };
       const highRateResponse = await request.post(`${TEST_CONFIG.apiURL}/analytics/whatif-analysis/calculate`, {
-        data: { parameters: highInterestParams }
+        data: JSON.stringify({ parameters: highInterestParams }),
+        headers: { 'Content-Type': 'application/json' }
       });
       
       expect(highRateResponse.status()).toBe(200);

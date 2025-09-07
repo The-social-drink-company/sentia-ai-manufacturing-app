@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "avgDuration": 9.064100000000016,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_health",
+      "result": "pass",
+      "duration": 17.03469999999993,
+      "timestamp": "2025-09-07T14:50:10.912Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 140050432,
+          "heapTotal": 61468672,
+          "heapUsed": 36816840,
+          "external": 3983823,
+          "arrayBuffers": 80456
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_users",
+      "result": "pass",
+      "duration": 4.961800000000039,
+      "timestamp": "2025-09-07T14:50:10.968Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 148946944,
+          "heapTotal": 66973696,
+          "heapUsed": 39244168,
+          "external": 3984063,
+          "arrayBuffers": 80096
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_system-stats",
+      "result": "pass",
+      "duration": 5.195800000000077,
+      "timestamp": "2025-09-07T14:50:11.008Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 153591808,
+          "heapTotal": 104460288,
+          "heapUsed": 40663312,
+          "external": 3992890,
+          "arrayBuffers": 88923
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

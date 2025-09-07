@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+// import { useUser } from '@clerk/clerk-react'; // Disabled - using fallback auth
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, Users, Package, Activity, 
@@ -13,7 +13,8 @@ import QualityTrendsChart from './charts/QualityTrendsChart';
 import RealTimeProductionChart from './charts/RealTimeProductionChart';
 
 const Dashboard = () => {
-  const { user } = useUser();
+  // const { user } = useUser(); // Disabled - using fallback auth
+  const user = null; // Fallback user state
   const [refreshTime, setRefreshTime] = useState(new Date());
 
   // Fetch real Shopify data

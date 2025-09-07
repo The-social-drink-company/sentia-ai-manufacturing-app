@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "avgDuration": 7.043033333332763,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_health",
+      "result": "pass",
+      "duration": 11.238099999999577,
+      "timestamp": "2025-09-07T15:04:00.653Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 317980672,
+          "heapTotal": 246022144,
+          "heapUsed": 133917624,
+          "external": 4920782,
+          "arrayBuffers": 1017415
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_users",
+      "result": "pass",
+      "duration": 5.357999999999265,
+      "timestamp": "2025-09-07T15:04:00.701Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 318119936,
+          "heapTotal": 246022144,
+          "heapUsed": 141944272,
+          "external": 4933821,
+          "arrayBuffers": 1029854
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_system-stats",
+      "result": "pass",
+      "duration": 4.532999999999447,
+      "timestamp": "2025-09-07T15:04:00.732Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 318119936,
+          "heapTotal": 246022144,
+          "heapUsed": 149927000,
+          "external": 4946820,
+          "arrayBuffers": 1042853
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

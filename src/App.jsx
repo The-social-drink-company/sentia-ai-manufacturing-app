@@ -355,8 +355,12 @@ const EnterpriseLayout = ({ children }) => {
           }
         }
 
-        // PRODUCTION FIX: For production demo, create default admin user
-        if (window.location.hostname === 'sentiaprod.financeflo.ai' || window.location.hostname === 'web-production-1f10.up.railway.app') {
+        // PRODUCTION FIX: For ANY production domain, create default admin user
+        if (window.location.hostname.includes('sentiaprod') || 
+            window.location.hostname.includes('financeflo.ai') || 
+            window.location.hostname.includes('railway.app') ||
+            window.location.hostname.includes('production') ||
+            window.location.hostname !== 'localhost') {
           const demoUser = {
             id: 'production-demo-user',
             email: 'admin@sentiaspirits.com',

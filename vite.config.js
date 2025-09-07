@@ -34,27 +34,35 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     emptyOutDir: true,
-    sourcemap: true, // Enable for debugging production issues
+    sourcemap: process.env.NODE_ENV === 'development', // Only in development
     minify: 'terser', // Better minification
     terserOptions: {
       compress: {
         drop_debugger: true,
-        // Keep console.log for production debugging
-        pure_funcs: ['console.debug', 'console.trace']
+        drop_console: process.env.NODE_ENV === 'production', // Remove console logs in production
+        pure_funcs: ['console.debug', 'console.trace', 'console.info']
       }
     },
     target: 'es2020',
-    chunkSizeWarningLimit: 1000, // Reduced for better bundle analysis
+    chunkSizeWarningLimit: 500, // More aggressive bundle size monitoring
     cssCodeSplit: true,
-    assetsInlineLimit: 8192, // Increased for better performance
+    assetsInlineLimit: 4096, // Optimize for smaller inline assets
     rollupOptions: {
       output: {
-        manualChunks: undefined // Prevent chunking issues for debugging
+        // Optimize chunk splitting for better caching
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          clerk: ['@clerk/clerk-react'],
+          query: ['@tanstack/react-query'],
+          charts: ['recharts', 'chart.js'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs']
+        }
       },
-      // Tree-shake unused code
+      // Aggressive tree-shaking
       treeshake: {
         preset: 'recommended',
-        propertyReadSideEffects: false
+        propertyReadSideEffects: false,
+        unknownGlobalSideEffects: false
       }
     }
   },

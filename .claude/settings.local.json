@@ -132,7 +132,8 @@
       "Bash(start real-client-users-tested.html)",
       "Bash(echo:*)",
       "Bash(start test-production-login.html)",
-      "Bash(set PORT=3002)"
+      "Bash(set PORT=3002)",
+      "Bash($env:PORT=3002)"
     ],
     "deny": [],
     "ask": []

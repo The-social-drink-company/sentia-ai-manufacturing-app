@@ -142,34 +142,49 @@ const Sidebar = () => {
       ]
     },
     {
-      section: 'Planning',
+      section: 'Planning & Analytics',
       items: [
         {
-          to: '/dashboard/forecasts',
+          to: '/forecasting',
           icon: PresentationChartLineIcon,
-          label: 'Forecasts',
+          label: 'Demand Forecasting',
           shortcut: 'G F',
           permission: 'forecast.view'
         },
         {
-          to: '/dashboard/inventory',
+          to: '/inventory',
           icon: CubeIcon,
-          label: 'Inventory',
+          label: 'Inventory Management',
           shortcut: 'G I',
           permission: 'stock.view',
           badge: alertCounts.stockLow > 0 ? alertCounts.stockLow : null
         },
         {
-          to: '/dashboard/capacity',
+          to: '/production',
           icon: TruckIcon,
-          label: 'Capacity',
-          permission: 'capacity.view',
+          label: 'Production Tracking',
+          shortcut: 'G P',
+          permission: 'production.view',
           badge: alertCounts.capacityIssues > 0 ? alertCounts.capacityIssues : null
+        },
+        {
+          to: '/quality',
+          icon: BeakerIcon,
+          label: 'Quality Control',
+          shortcut: 'G Q',
+          permission: 'quality.view'
+        },
+        {
+          to: '/ai-analytics',
+          icon: BeakerIcon,
+          label: 'AI Analytics',
+          shortcut: 'G AI',
+          permission: 'analytics.view'
         }
       ]
     },
     {
-      section: 'Financial',
+      section: 'Financial Management',
       items: [
         {
           to: '/working-capital',
@@ -186,26 +201,28 @@ const Sidebar = () => {
           permission: 'analytics.view'
         },
         {
-          to: '/dashboard/reports',
+          to: '/analytics',
           icon: ChartBarIcon,
-          label: 'Reports',
+          label: 'Financial Reports',
+          shortcut: 'G R',
           permission: 'reports.generate'
         }
       ]
     },
     {
-      section: 'Operations',
+      section: 'Data Management',
       items: [
         {
           to: '/data-import',
           icon: DocumentArrowUpIcon,
           label: 'Data Import',
+          shortcut: 'G D',
           permission: 'import.view'
         },
         {
           to: '/templates',
           icon: DocumentArrowUpIcon,
-          label: 'Templates',
+          label: 'Import Templates',
           permission: 'import.view'
         }
       ]

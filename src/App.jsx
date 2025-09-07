@@ -398,6 +398,7 @@ function App() {
             <Route path="/auth/signup" element={<SimpleSignUp />} />
             <Route path="/auth/microsoft/callback" element={<MicrosoftCallbackPage />} />
             <Route path="/dashboard" element={<EnterpriseLayout><SimpleDashboard /></EnterpriseLayout>} />
+            <Route path="/dashboard/*" element={<EnterpriseLayout><SimpleDashboard /></EnterpriseLayout>} />
             <Route path="/working-capital" element={<EnterpriseLayout><WorkingCapital /></EnterpriseLayout>} />
             <Route path="/what-if" element={<EnterpriseLayout><WhatIfAnalysis /></EnterpriseLayout>} />
             <Route path="/admin" element={<EnterpriseLayout><AdminPanel /></EnterpriseLayout>} />
@@ -406,7 +407,7 @@ function App() {
             <Route path="/inventory" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
             <Route path="/production" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
             <Route path="/quality" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<SimpleSignIn />} />
             <Route path="*" element={<div className="text-center py-20">Page not found</div>} />
           </Routes>
         </Suspense>

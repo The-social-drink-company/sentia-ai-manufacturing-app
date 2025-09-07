@@ -1,0 +1,42 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "avgDuration": 36.99390000000017,
+    "passRate": 0
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_shopify_orders",
+      "result": "fail",
+      "duration": 36.99390000000017,
+      "timestamp": "2025-09-07T16:45:49.597Z",
+      "error": {
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m500\u001b[39m\nReceived:   \u001b[31m500\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m500\u001b[39m\nReceived:   \u001b[31m500\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:228:35\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:218:7",
+        "type": "ExpectError"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139005952,
+          "heapTotal": 60948480,
+          "heapUsed": 38207232,
+          "external": 3984731,
+          "arrayBuffers": 81736
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "SERVER_ERROR": 1
+  },
+  "performanceMetrics": []
+}

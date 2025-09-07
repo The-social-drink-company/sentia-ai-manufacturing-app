@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "avgDuration": 12.739233333333308,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_POST__api_quality_test_submit",
+      "result": "pass",
+      "duration": 22.02800000000002,
+      "timestamp": "2025-09-07T16:45:31.193Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 138731520,
+          "heapTotal": 60948480,
+          "heapUsed": 38610336,
+          "external": 3981794,
+          "arrayBuffers": 77867
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_quality_batch_approve",
+      "result": "pass",
+      "duration": 8.026799999999866,
+      "timestamp": "2025-09-07T16:45:31.288Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 144154624,
+          "heapTotal": 66977792,
+          "heapUsed": 40989472,
+          "external": 3983638,
+          "arrayBuffers": 79671
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_quality_alert_resolve",
+      "result": "pass",
+      "duration": 8.162900000000036,
+      "timestamp": "2025-09-07T16:45:31.378Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 149721088,
+          "heapTotal": 102891520,
+          "heapUsed": 40307632,
+          "external": 3989967,
+          "arrayBuffers": 86000
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

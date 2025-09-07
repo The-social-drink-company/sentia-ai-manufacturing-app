@@ -103,7 +103,10 @@
       "Bash(npm uninstall:*)",
       "Read(//c//**)",
       "Bash(where npm)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(set AUTONOMOUS_SCHEDULER_MODE=railway)",
+      "Bash(railway up:*)",
+      "Bash(railway service:*)"
     ],
     "deny": [],
     "ask": []

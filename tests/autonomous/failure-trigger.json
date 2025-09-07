@@ -1,14 +1,14 @@
 {
-  "timestamp": "2025-09-07T16:03:44.028Z",
+  "timestamp": "2025-09-07T16:46:12.999Z",
   "failedTests": [
     {
-      "testName": "UI_BTN__data_testid__refresh_dashboard__",
+      "testName": "UI_NAV_Dashboard_Navigation",
       "result": "fail",
-      "duration": 5156.739500000001,
-      "timestamp": "2025-09-07T16:03:43.706Z",
+      "duration": 10231.5741,
+      "timestamp": "2025-09-07T16:46:12.000Z",
       "error": {
-        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('[data-testid=\"refresh-dashboard\"]')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"refresh-dashboard\"]')\u001b[22m\n",
-        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('[data-testid=\"refresh-dashboard\"]')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"refresh-dashboard\"]')\u001b[22m\n\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:297:30\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:290:7",
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:268:52\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:264:7",
         "type": "ExpectError"
       },
       "screenshot": {
@@ -4277,11 +4277,11 @@
         },
         "userAgent": "Playwright Test Agent",
         "memoryUsage": {
-          "rss": 160718848,
-          "heapTotal": 107159552,
-          "heapUsed": 44688752,
-          "external": 9364493,
-          "arrayBuffers": 5459815
+          "rss": 112967680,
+          "heapTotal": 38137856,
+          "heapUsed": 31424616,
+          "external": 4051391,
+          "arrayBuffers": 146713
         }
       }
     }

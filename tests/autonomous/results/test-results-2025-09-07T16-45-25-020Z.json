@@ -1,0 +1,65 @@
+{
+  "summary": {
+    "total": 2,
+    "passed": 1,
+    "failed": 1,
+    "avgDuration": 22.406450000000063,
+    "passRate": 50
+  },
+  "results": [
+    {
+      "testName": "API_POST__api_production_control",
+      "result": "pass",
+      "duration": 31.505100000000084,
+      "timestamp": "2025-09-07T16:45:24.902Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139137024,
+          "heapTotal": 61210624,
+          "heapUsed": 38919928,
+          "external": 3982117,
+          "arrayBuffers": 78190
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_production_metrics",
+      "result": "fail",
+      "duration": 13.307800000000043,
+      "timestamp": "2025-09-07T16:45:25.020Z",
+      "error": {
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m500\u001b[39m\nReceived:   \u001b[31m500\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m500\u001b[39m\nReceived:   \u001b[31m500\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:228:35\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:218:7",
+        "type": "ExpectError"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 145195008,
+          "heapTotal": 66715648,
+          "heapUsed": 41165480,
+          "external": 3983739,
+          "arrayBuffers": 80704
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "SERVER_ERROR": 1
+  },
+  "performanceMetrics": []
+}

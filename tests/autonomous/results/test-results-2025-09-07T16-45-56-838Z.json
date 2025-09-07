@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "avgDuration": 29.60480000000007,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_POST__api_data_upload",
+      "result": "pass",
+      "duration": 29.60480000000007,
+      "timestamp": "2025-09-07T16:45:56.837Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139321344,
+          "heapTotal": 61210624,
+          "heapUsed": 36395472,
+          "external": 3984935,
+          "arrayBuffers": 81008
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

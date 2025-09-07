@@ -29,6 +29,11 @@ import AIAnalyticsDashboard from './components/AI/AIAnalyticsDashboard';
 import DemandForecasting from './components/forecasting/DemandForecasting';
 import WhatIfAnalysis from './components/analytics/WhatIfAnalysis';
 import TestMonitorDashboard from './pages/TestMonitorDashboard';
+import Analytics from './components/analytics/Analytics';
+import Templates from './components/templates/Templates';
+import Settings from './components/settings/Settings';
+import SystemHealth from './components/system/SystemHealth';
+import Experimental from './components/experimental/Experimental';
 
 // Layout components
 import EnterpriseLayout from './components/layout/EnterpriseLayout';
@@ -153,6 +158,46 @@ function App() {
                         <AuthGuard>
                           <EnterpriseLayout>
                             <WhatIfAnalysis />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/analytics" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <Analytics />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/templates" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <Templates />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/settings" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <Settings />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/system/health" element={
+                        <AuthGuard requiredRole="admin">
+                          <EnterpriseLayout>
+                            <SystemHealth />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/experimental" element={
+                        <AuthGuard requiredRole="admin">
+                          <EnterpriseLayout>
+                            <Experimental />
                           </EnterpriseLayout>
                         </AuthGuard>
                       } />

@@ -11,6 +11,8 @@ import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import express from 'express';
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,9 +28,12 @@ class AutonomousScheduler {
     this.healthCheckInterval = null;
     this.logFile = path.join(__dirname, 'logs', 'scheduler.log');
     this.startTime = Date.now();
+    this.isRailwayMode = process.env.AUTONOMOUS_SCHEDULER_MODE === 'railway';
+    this.healthServer = null;
     
     this.ensureLogDirectory();
     this.setupHealthReporting();
+    this.setupHealthEndpoint();
     this.startScheduler();
   }
 
@@ -45,7 +50,8 @@ class AutonomousScheduler {
     const timestamp = new Date().toISOString();
     const logEntry = `[${timestamp}] [${level}] ${message}\\n`;
     
-    console.log(`[SCHEDULER] ${message}`);
+    // Use ASCII-compatible logging for Railway
+    console.log(`[SCHEDULER-${level}] ${message}`);
     
     try {
       await fs.appendFile(this.logFile, logEntry);
@@ -59,6 +65,61 @@ class AutonomousScheduler {
     this.healthCheckInterval = setInterval(async () => {
       await this.reportHealthStatus();
     }, 120000);
+  }
+
+  setupHealthEndpoint() {
+    if (!this.isRailwayMode) {
+      this.log('Skipping health endpoint setup - not in Railway mode');
+      return;
+    }
+
+    const app = express();
+    app.use(cors());
+    app.use(express.json());
+
+    // Health check endpoint for Railway
+    app.get('/health', async (req, res) => {
+      const status = await this.reportHealthStatus();
+      const httpStatus = status.healthy ? 200 : 503;
+      
+      res.status(httpStatus).json({
+        service: 'autonomous-test-agent',
+        status: status.healthy ? 'healthy' : 'unhealthy',
+        uptime: status.uptime,
+        executionCount: status.executionCount,
+        consecutiveFailures: status.consecutiveFailures,
+        lastExecution: status.lastExecution,
+        nextRun: status.nextRun,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    // Status endpoint with detailed metrics
+    app.get('/status', async (req, res) => {
+      const status = await this.reportHealthStatus();
+      res.json({
+        ...status,
+        service: 'autonomous-test-agent',
+        version: '1.0.0',
+        environment: process.env.NODE_ENV || 'development'
+      });
+    });
+
+    // Logs endpoint
+    app.get('/logs', async (req, res) => {
+      try {
+        const logContent = await fs.readFile(this.logFile, 'utf8');
+        const lines = logContent.split('\\n').slice(-100); // Last 100 lines
+        res.json({ logs: lines.filter(line => line.trim()) });
+      } catch (error) {
+        res.status(500).json({ error: 'Could not read logs', message: error.message });
+      }
+    });
+
+    const port = process.env.TEST_AGENT_PORT || 6001;
+    this.healthServer = app.listen(port, '0.0.0.0', () => {
+      this.log(`Health endpoint server running on port ${port}`);
+    });
   }
 
   startScheduler() {
@@ -78,7 +139,8 @@ class AutonomousScheduler {
       this.executeTestCycle();
     }, 5000);
 
-    this.log('Scheduler initialized - will run every 5 minutes with enhanced failure recovery');
+    const mode = this.isRailwayMode ? 'RAILWAY' : 'LOCAL';
+    this.log(`Scheduler initialized in ${mode} mode - will run every 5 minutes with enhanced failure recovery`);
   }
 
   isInBackoffPeriod() {

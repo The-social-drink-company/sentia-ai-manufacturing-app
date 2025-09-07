@@ -1,0 +1,42 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "avgDuration": 661.3128,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "PERFORMANCE_PAGE_LOAD",
+      "result": "pass",
+      "duration": 661.3128,
+      "timestamp": "2025-09-07T16:04:55.546Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 167895040,
+          "heapTotal": 77438976,
+          "heapUsed": 47666824,
+          "external": 14480737,
+          "arrayBuffers": 10576810
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": [
+    {
+      "metric": "page_load_time",
+      "value": 659.3440999999999,
+      "timestamp": "2025-09-07T16:04:55.546Z"
+    }
+  ]
+}

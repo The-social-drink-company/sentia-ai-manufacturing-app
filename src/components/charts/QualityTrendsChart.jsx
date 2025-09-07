@@ -20,15 +20,27 @@ ChartJS.register(
 );
 
 const QualityTrendsChart = ({ data = [], height = 300 }) => {
-  // Generate mock data if none provided
-  const mockData = data.length > 0 ? data : generateMockQualityData();
+  // Only use REAL data - no mock data allowed
+  const realData = data.length > 0 ? data : [];
+
+  // If no real data available, show empty state
+  if (realData.length === 0) {
+    return (
+      <div className="w-full flex items-center justify-center" style={{ height: `${height}px` }}>
+        <div className="text-center text-gray-500">
+          <p>No quality data available</p>
+          <p className="text-sm">Connect to real-time data source</p>
+        </div>
+      </div>
+    );
+  }
 
   const chartData = {
-    labels: mockData.map(item => item.period),
+    labels: realData.map(item => item.period),
     datasets: [
       {
         label: 'Pass Rate (%)',
-        data: mockData.map(item => item.passRate),
+        data: realData.map(item => item.passRate),
         backgroundColor: 'rgba(16, 185, 129, 0.8)',
         borderColor: 'rgb(16, 185, 129)',
         borderWidth: 1,
@@ -36,7 +48,7 @@ const QualityTrendsChart = ({ data = [], height = 300 }) => {
       },
       {
         label: 'Tests Conducted',
-        data: mockData.map(item => item.testsCount),
+        data: realData.map(item => item.testsCount),
         backgroundColor: 'rgba(59, 130, 246, 0.8)',
         borderColor: 'rgb(59, 130, 246)',
         borderWidth: 1,
@@ -44,7 +56,7 @@ const QualityTrendsChart = ({ data = [], height = 300 }) => {
       },
       {
         label: 'Failed Tests',
-        data: mockData.map(item => item.failedTests),
+        data: realData.map(item => item.failedTests),
         backgroundColor: 'rgba(239, 68, 68, 0.8)',
         borderColor: 'rgb(239, 68, 68)',
         borderWidth: 1,
@@ -140,15 +152,6 @@ const QualityTrendsChart = ({ data = [], height = 300 }) => {
   );
 };
 
-function generateMockQualityData() {
-  const periods = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'];
-  
-  return periods.map(period => ({
-    period,
-    passRate: 95 + Math.random() * 5,
-    testsCount: Math.floor(80 + Math.random() * 40),
-    failedTests: Math.floor(Math.random() * 8)
-  }));
-}
+// Mock data generation function removed - only use real data
 
 export default QualityTrendsChart;

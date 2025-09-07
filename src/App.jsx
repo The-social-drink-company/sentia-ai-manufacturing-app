@@ -12,6 +12,11 @@ import WorkingCapital from './components/WorkingCapital';
 import LandingPage from './components/LandingPage';
 import LoadingSpinner from './components/LoadingSpinner';
 
+// Manufacturing components
+import ProductionTracking from './components/Manufacturing/ProductionTracking';
+import QualityControl from './components/Manufacturing/QualityControl';
+import InventoryManagement from './components/Manufacturing/InventoryManagement';
+
 // Clerk configuration
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const queryClient = new QueryClient({
@@ -74,6 +79,9 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/admin" element={<AdminPanel />} />
                     <Route path="/working-capital" element={<WorkingCapital />} />
+                    <Route path="/production" element={<ProductionTracking />} />
+                    <Route path="/quality" element={<QualityControl />} />
+                    <Route path="/inventory" element={<InventoryManagement />} />
                   </Routes>
                 </Suspense>
               </SignedIn>

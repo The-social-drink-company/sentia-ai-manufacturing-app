@@ -127,19 +127,26 @@ const Dashboard = () => {
         </div>
 
         {/* Navigation Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
           <NavigationCard
-            title="Admin Panel"
-            description="User management, system settings, and configuration"
-            icon={<Settings className="w-8 h-8" />}
-            link="/admin"
+            title="Production Tracking"
+            description="Real-time production line monitoring and control"
+            icon={<Activity className="w-8 h-8" />}
+            link="/production"
             color="blue"
           />
           <NavigationCard
-            title="Analytics"
-            description="Detailed reports, forecasting, and business intelligence"
-            icon={<BarChart3 className="w-8 h-8" />}
-            link="/analytics"
+            title="Quality Control"
+            description="Quality testing, batch monitoring, and compliance"
+            icon={<Settings className="w-8 h-8" />}
+            link="/quality"
+            color="green"
+          />
+          <NavigationCard
+            title="Inventory Management"
+            description="Stock tracking, alerts, and supply chain optimization"
+            icon={<Package className="w-8 h-8" />}
+            link="/inventory"
             color="purple"
           />
           <NavigationCard
@@ -147,7 +154,25 @@ const Dashboard = () => {
             description="Financial management, cash flow, and optimization"
             icon={<LineChart className="w-8 h-8" />}
             link="/working-capital"
-            color="green"
+            color="emerald"
+          />
+        </div>
+
+        {/* Admin Navigation */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <NavigationCard
+            title="Admin Panel"
+            description="User management, system settings, and configuration"
+            icon={<Settings className="w-8 h-8" />}
+            link="/admin"
+            color="gray"
+          />
+          <NavigationCard
+            title="Analytics"
+            description="Detailed reports, forecasting, and business intelligence"
+            icon={<BarChart3 className="w-8 h-8" />}
+            link="/analytics"
+            color="indigo"
           />
         </div>
 
@@ -294,7 +319,10 @@ const NavigationCard = ({ title, description, icon, link, color }) => {
   const colorClasses = {
     blue: 'bg-blue-50 hover:bg-blue-100 text-blue-600',
     purple: 'bg-purple-50 hover:bg-purple-100 text-purple-600',
-    green: 'bg-green-50 hover:bg-green-100 text-green-600'
+    green: 'bg-green-50 hover:bg-green-100 text-green-600',
+    emerald: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-600',
+    gray: 'bg-gray-50 hover:bg-gray-100 text-gray-600',
+    indigo: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
   };
 
   return (

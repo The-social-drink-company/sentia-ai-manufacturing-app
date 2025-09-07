@@ -1,8 +1,11 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
+import { SSEProvider } from './context/SSEProvider';
+import { setupGlobalErrorHandling } from './utils/errorHandling';
+import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
 
 // Import components
@@ -34,6 +37,11 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  // Setup global error handling
+  useEffect(() => {
+    setupGlobalErrorHandling();
+  }, []);
+
   if (!clerkPubKey) {
     console.error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable");
     return <div>Authentication configuration error. Please check environment setup.</div>;
@@ -42,6 +50,8 @@ function App() {
   return (
     <ClerkProvider publishableKey={clerkPubKey}>
       <QueryClientProvider client={queryClient}>
+        <SSEProvider>
+        <ErrorBoundary>
         <Router>
           <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -98,6 +108,8 @@ function App() {
           </div>
         </Router>
         <Toaster position="top-right" />
+        </ErrorBoundary>
+        </SSEProvider>
       </QueryClientProvider>
     </ClerkProvider>
   );

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
+import { useSSE, useSSEEvent } from '../../hooks/useSSE';
+import { QueryWrapper, CardSkeleton, LoadingSpinner } from '../LoadingStates';
+import { handleAsyncError, showErrorToast } from '../../utils/errorHandling';
 import {
   Play, Pause, StopCircle, AlertTriangle, CheckCircle,
   TrendingUp, TrendingDown, Clock, Settings, RefreshCw,
@@ -9,24 +12,108 @@ import {
 
 const ProductionTracking = () => {
   const { user } = useUser();
+  const queryClient = useQueryClient();
   const [selectedLine, setSelectedLine] = useState('all');
   const [timeRange, setTimeRange] = useState('today');
+  const [liveUpdates, setLiveUpdates] = useState(true);
 
-  // Fetch production data from API
-  const { data: productionData, isLoading, refetch } = useQuery({
+  // Setup SSE connection for real-time updates
+  const sseConnection = useSSE({
+    endpoint: '/api/events/production',
+    enabled: liveUpdates,
+    onConnect: () => {
+      console.log('Production SSE connected');
+    },
+    onError: (error) => {
+      console.error('Production SSE error:', error);
+    }
+  });
+
+  // Listen for production line status updates
+  useSSEEvent('production.line.status', (data) => {
+    queryClient.setQueryData(['production-data', selectedLine, timeRange], (oldData) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        lines: oldData.lines.map(line => 
+          line.id === data.lineId 
+            ? { ...line, ...data.updates }
+            : line
+        )
+      };
+    });
+  }, [selectedLine, timeRange]);
+
+  // Listen for quality alerts
+  useSSEEvent('production.quality.alert', (data) => {
+    queryClient.setQueryData(['production-data', selectedLine, timeRange], (oldData) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        qualityAlerts: [data, ...oldData.qualityAlerts.slice(0, 4)]
+      };
+    });
+  }, [selectedLine, timeRange]);
+
+  // Listen for batch status updates
+  useSSEEvent('production.batch.status', (data) => {
+    queryClient.setQueryData(['production-data', selectedLine, timeRange], (oldData) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        currentBatches: oldData.currentBatches.map(batch =>
+          batch.id === data.batchId
+            ? { ...batch, ...data.updates }
+            : batch
+        )
+      };
+    });
+  }, [selectedLine, timeRange]);
+
+  // Listen for overall metrics updates
+  useSSEEvent('production.metrics.updated', (data) => {
+    queryClient.setQueryData(['production-data', selectedLine, timeRange], (oldData) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        ...data.metrics
+      };
+    });
+  }, [selectedLine, timeRange]);
+
+  // Fetch production data from API with error handling
+  const { data: productionData, isLoading, refetch, isError, error } = useQuery({
     queryKey: ['production-data', selectedLine, timeRange],
     queryFn: async () => {
-      const response = await fetch(`/api/production/status?line=${selectedLine}&range=${timeRange}`, {
-        headers: {
-          'Authorization': `Bearer ${await user?.getToken()}`
+      return handleAsyncError(async () => {
+        const response = await fetch(`/api/production/status?line=${selectedLine}&range=${timeRange}`, {
+          headers: {
+            'Authorization': `Bearer ${await user?.getToken()}`
+          }
+        });
+        if (!response.ok) {
+          // Fallback to mock data for API failures
+          console.warn('Production API unavailable, using mock data');
+          return mockProductionData;
         }
-      });
-      if (!response.ok) {
+        return response.json();
+      }, (error) => {
+        console.warn('Production data fetch failed, using mock data:', error.message);
         return mockProductionData;
-      }
-      return response.json();
+      });
     },
-    refetchInterval: 10000, // Refresh every 10 seconds
+    refetchInterval: liveUpdates ? 30000 : 10000,
+    staleTime: liveUpdates ? 25000 : 5000,
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error?.status === 401) return false;
+      return failureCount < 2;
+    },
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const data = productionData || mockProductionData;
@@ -61,6 +148,30 @@ const ProductionTracking = () => {
                 <option value="week">This Week</option>
                 <option value="month">This Month</option>
               </select>
+              
+              {/* Real-time status indicator */}
+              <div className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg">
+                <div className={`w-2 h-2 rounded-full ${
+                  sseConnection.isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+                }`}></div>
+                <span className="text-sm text-gray-600">
+                  {sseConnection.isConnected ? 'Live' : 'Offline'}
+                </span>
+              </div>
+
+              {/* Live updates toggle */}
+              <button
+                onClick={() => setLiveUpdates(!liveUpdates)}
+                className={`flex items-center px-4 py-2 border rounded-lg transition-colors ${
+                  liveUpdates 
+                    ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
+                    : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                {liveUpdates ? 'Live Updates On' : 'Live Updates Off'}
+              </button>
+
               <button
                 onClick={() => refetch()}
                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -73,40 +184,49 @@ const ProductionTracking = () => {
         </div>
 
         {/* Production Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <ProductionCard
-            title="Overall Efficiency"
-            value={`${data.overallEfficiency}%`}
-            change={`+${data.efficiencyChange}%`}
-            trend="up"
-            icon={<Target className="w-6 h-6" />}
-            color="blue"
-          />
-          <ProductionCard
-            title="Units Produced"
-            value={data.unitsProduced.toLocaleString()}
-            change={`+${data.unitsChange}`}
-            trend="up"
-            icon={<BarChart3 className="w-6 h-6" />}
-            color="green"
-          />
-          <ProductionCard
-            title="Quality Rate"
-            value={`${data.qualityRate}%`}
-            change={`+${data.qualityChange}%`}
-            trend="up"
-            icon={<CheckCircle className="w-6 h-6" />}
-            color="emerald"
-          />
-          <ProductionCard
-            title="Downtime"
-            value={`${data.downtimeMinutes}min`}
-            change={`-${data.downtimeChange}min`}
-            trend="up"
-            icon={<Clock className="w-6 h-6" />}
-            color="red"
-          />
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <ProductionCard
+              title="Overall Efficiency"
+              value={`${data.overallEfficiency}%`}
+              change={`+${data.efficiencyChange}%`}
+              trend="up"
+              icon={<Target className="w-6 h-6" />}
+              color="blue"
+            />
+            <ProductionCard
+              title="Units Produced"
+              value={data.unitsProduced.toLocaleString()}
+              change={`+${data.unitsChange}`}
+              trend="up"
+              icon={<BarChart3 className="w-6 h-6" />}
+              color="green"
+            />
+            <ProductionCard
+              title="Quality Rate"
+              value={`${data.qualityRate}%`}
+              change={`+${data.qualityChange}%`}
+              trend="up"
+              icon={<CheckCircle className="w-6 h-6" />}
+              color="emerald"
+            />
+            <ProductionCard
+              title="Downtime"
+              value={`${data.downtimeMinutes}min`}
+              change={`-${data.downtimeChange}min`}
+              trend="up"
+              icon={<Clock className="w-6 h-6" />}
+              color="red"
+            />
+          </div>
+        )}
 
         {/* Production Lines Status */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

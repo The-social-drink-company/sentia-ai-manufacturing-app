@@ -723,7 +723,7 @@ async function fetchShopifyOrders() {
 }
 
 // Enterprise working capital calculation using direct Xero integration
-
+async function calculateWorkingCapitalFromFinancials() {
   // Fallback to uploaded financial data if Xero unavailable
   if (manufacturingData.financials && manufacturingData.financials.length > 0) {
     const financial = manufacturingData.financials[manufacturingData.financials.length - 1];

@@ -1,16 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
+import { useSSE, useSSEEvent } from '../../hooks/useSSE';
 import {
   CheckCircle, XCircle, AlertTriangle, Clock,
   TrendingUp, TrendingDown, Target, TestTube,
-  Microscope, Shield, FileCheck, BarChart3
+  Microscope, Shield, FileCheck, BarChart3,
+  RefreshCw, Zap
 } from 'lucide-react';
 
 const QualityControl = () => {
   const { user } = useUser();
+  const queryClient = useQueryClient();
   const [selectedBatch, setSelectedBatch] = useState('all');
   const [testType, setTestType] = useState('all');
+  const [liveUpdates, setLiveUpdates] = useState(true);
+
+  // Setup SSE connection for real-time quality updates
+  const sseConnection = useSSE({
+    endpoint: '/api/events/quality',
+    enabled: liveUpdates
+  });
+
+  // Listen for test result updates
+  useSSEEvent('quality.test.result', (data) => {
+    queryClient.setQueryData(['quality-data', selectedBatch, testType], (oldData) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        activeTests: oldData.activeTests.map(test =>
+          test.id === data.testId
+            ? { ...test, ...data.result }
+            : test
+        ),
+        passRate: data.newPassRate || oldData.passRate,
+        totalTests: data.totalTests || oldData.totalTests
+      };
+    });
+  }, [selectedBatch, testType]);
+
+  // Listen for new quality alerts
+  useSSEEvent('quality.alert.new', (data) => {
+    queryClient.setQueryData(['quality-data', selectedBatch, testType], (oldData) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        alerts: [data, ...oldData.alerts.slice(0, 9)]
+      };
+    });
+  }, [selectedBatch, testType]);
+
+  // Listen for batch status changes
+  useSSEEvent('quality.batch.status', (data) => {
+    queryClient.setQueryData(['quality-data', selectedBatch, testType], (oldData) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        batchStatus: oldData.batchStatus.map(batch =>
+          batch.id === data.batchId
+            ? { ...batch, ...data.updates }
+            : batch
+        )
+      };
+    });
+  }, [selectedBatch, testType]);
 
   const { data: qualityData, isLoading, refetch } = useQuery({
     queryKey: ['quality-data', selectedBatch, testType],
@@ -25,7 +81,8 @@ const QualityControl = () => {
       }
       return response.json();
     },
-    refetchInterval: 15000,
+    refetchInterval: liveUpdates ? 60000 : 15000,
+    staleTime: liveUpdates ? 50000 : 10000,
   });
 
   const data = qualityData || mockQualityData;
@@ -61,10 +118,35 @@ const QualityControl = () => {
                 <option value="microbiological">Microbiological</option>
                 <option value="physical">Physical Properties</option>
               </select>
+              
+              {/* Real-time status indicator */}
+              <div className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg">
+                <div className={`w-2 h-2 rounded-full ${
+                  sseConnection.isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+                }`}></div>
+                <span className="text-sm text-gray-600">
+                  {sseConnection.isConnected ? 'Live' : 'Offline'}
+                </span>
+              </div>
+
+              {/* Live updates toggle */}
+              <button
+                onClick={() => setLiveUpdates(!liveUpdates)}
+                className={`flex items-center px-4 py-2 border rounded-lg transition-colors ${
+                  liveUpdates 
+                    ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100'
+                    : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                {liveUpdates ? 'Live Updates On' : 'Live Updates Off'}
+              </button>
+
               <button
                 onClick={() => refetch()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
+                <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
               </button>
             </div>

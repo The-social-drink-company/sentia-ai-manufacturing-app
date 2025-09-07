@@ -1,12 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import EnhancedDashboard from './pages/EnhancedDashboard';
-import WorkingCapital from './components/WorkingCapital';
-import WhatIfAnalysis from './components/analytics/WhatIfAnalysis';
-import AdminPanel from './pages/AdminPanel';
-import Header from './components/layout/Header';
-import Sidebar from './components/layout/Sidebar';
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import './index.css';
+
+// Get Clerk publishable key with fallback
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk';
 
 // Enterprise Layout with Full Navigation
 const EnterpriseLayout = ({ children }) => {
@@ -23,102 +21,131 @@ const EnterpriseLayout = ({ children }) => {
   );
 };
 
-// NUCLEAR SOLUTION: 100% OPEN ACCESS - NO AUTHENTICATION BARRIERS
+// Protected Layout Wrapper
+const ProtectedLayout = ({ children, requireAdmin = false, requiredRole = null }) => {
+  return (
+    <SignedIn>
+      <ProtectedRoute requireAdmin={requireAdmin} requiredRole={requiredRole}>
+        <EnterpriseLayout>
+          {children}
+        </EnterpriseLayout>
+      </ProtectedRoute>
+    </SignedIn>
+  );
+};
+
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          {/* FULL ENTERPRISE DASHBOARD - ALL FEATURES */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* WORKING CAPITAL - FULL ACCESS */}
-          <Route 
-            path="/working-capital" 
-            element={
-              <EnterpriseLayout>
-                <WorkingCapital />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* WHAT-IF ANALYSIS - FULL ACCESS */}
-          <Route 
-            path="/what-if" 
-            element={
-              <EnterpriseLayout>
-                <WhatIfAnalysis />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* ADMIN PANEL - FULL ACCESS */}
-          <Route 
-            path="/admin" 
-            element={
-              <EnterpriseLayout>
-                <AdminPanel />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* ALL OTHER ENTERPRISE ROUTES - FULL ACCESS */}
-          <Route 
-            path="/analytics" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          <Route 
-            path="/forecasting" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          <Route 
-            path="/inventory" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          <Route 
-            path="/production" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          <Route 
-            path="/quality" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* ROOT PATH - REDIRECT TO DASHBOARD */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          
-          {/* 404 HANDLER - REDIRECT TO DASHBOARD */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </div>
-    </Router>
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <AuthProvider>
+        <Router>
+          <div className="App">
+            <Routes>
+              {/* FULL ENTERPRISE DASHBOARD - AUTHENTICATED ACCESS */}
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedLayout>
+                    <EnhancedDashboard />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* WORKING CAPITAL - MANAGER+ ACCESS */}
+              <Route 
+                path="/working-capital" 
+                element={
+                  <ProtectedLayout requiredRole="manager">
+                    <WorkingCapital />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* WHAT-IF ANALYSIS - MANAGER+ ACCESS */}
+              <Route 
+                path="/what-if" 
+                element={
+                  <ProtectedLayout requiredRole="manager">
+                    <WhatIfAnalysis />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* ADMIN PANEL - ADMIN ONLY */}
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedLayout requireAdmin={true}>
+                    <AdminPanel />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* ANALYTICS - AUTHENTICATED ACCESS */}
+              <Route 
+                path="/analytics" 
+                element={
+                  <ProtectedLayout>
+                    <EnhancedDashboard />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* FORECASTING - AUTHENTICATED ACCESS */}
+              <Route 
+                path="/forecasting" 
+                element={
+                  <ProtectedLayout>
+                    <EnhancedDashboard />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* INVENTORY - AUTHENTICATED ACCESS */}
+              <Route 
+                path="/inventory" 
+                element={
+                  <ProtectedLayout>
+                    <EnhancedDashboard />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* PRODUCTION - AUTHENTICATED ACCESS */}
+              <Route 
+                path="/production" 
+                element={
+                  <ProtectedLayout>
+                    <EnhancedDashboard />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* QUALITY - AUTHENTICATED ACCESS */}
+              <Route 
+                path="/quality" 
+                element={
+                  <ProtectedLayout>
+                    <EnhancedDashboard />
+                  </ProtectedLayout>
+                } 
+              />
+              
+              {/* PUBLIC LANDING PAGE */}
+              <Route path="/" element={<LandingPage />} />
+              
+              {/* 404 HANDLER - REDIRECT TO DASHBOARD */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+            
+            {/* Redirect unauthenticated users to sign in */}
+            <SignedOut>
+              <RedirectToSignIn />
+            </SignedOut>
+          </div>
+        </Router>
+      </AuthProvider>
+    </ClerkProvider>
   );
 }
 

@@ -5,7 +5,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleSignIn = () => {
-    navigate('/auth/signin');
+    navigate('/dashboard');
   };
 
   return (

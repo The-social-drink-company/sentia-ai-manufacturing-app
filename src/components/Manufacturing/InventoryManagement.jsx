@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
 import { CardSkeleton } from '../LoadingStates';
+import { LineChart, DoughnutChart, inventoryColors } from '../charts';
 import {
   Package, TrendingUp, TrendingDown, AlertTriangle,
   Plus, Minus, Search, Upload,

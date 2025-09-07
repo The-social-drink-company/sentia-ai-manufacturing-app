@@ -14,7 +14,8 @@ import {
   PresentationChartLineIcon,
   TruckIcon,
   ExclamationTriangleIcon,
-  BeakerIcon
+  BeakerIcon,
+  AdjustmentsHorizontalIcon as SlidersIcon
 } from '@heroicons/react/24/outline'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
@@ -176,6 +177,13 @@ const Sidebar = () => {
           label: 'Working Capital',
           shortcut: 'G W',
           permission: 'workingcapital.view'
+        },
+        {
+          to: '/what-if',
+          icon: SlidersIcon,
+          label: 'What-If Analysis',
+          shortcut: 'G A',
+          permission: 'analytics.view'
         },
         {
           to: '/dashboard/reports',

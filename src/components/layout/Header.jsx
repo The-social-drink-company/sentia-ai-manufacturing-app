@@ -512,6 +512,7 @@ const Header = () => {
   useHotkeys('g f', () => navigate('/dashboard/forecasts'), { enableOnFormTags: false })
   useHotkeys('g i', () => navigate('/dashboard/inventory'), { enableOnFormTags: false })
   useHotkeys('g w', () => navigate('/working-capital'), { enableOnFormTags: false })
+  useHotkeys('g a', () => navigate('/what-if'), { enableOnFormTags: false })
   useHotkeys('shift+/', () => {
     // Show help modal
     devLog.log('Show help')

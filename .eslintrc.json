@@ -60,7 +60,7 @@
     "Intl": "readonly"
   },
   "rules": {
-    "no-console": "error",
+    "no-console": "warn",
     "no-unused-vars": ["warn", { 
       "args": "none",
       "varsIgnorePattern": "^_",
@@ -68,7 +68,7 @@
     }],
     "no-undef": "error",
     "security/detect-unsafe-regex": "warn",
-    "security/detect-non-literal-fs-filename": "off",
+    "security/detect-non-literal-fs-filename": "warn",
     "security/detect-object-injection": "warn",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",

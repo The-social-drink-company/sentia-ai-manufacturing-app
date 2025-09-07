@@ -25,6 +25,7 @@ import InventoryManagement from './components/Manufacturing/InventoryManagement'
 import FileImportSystem from './components/DataImport/FileImportSystem';
 import AIAnalyticsDashboard from './components/AI/AIAnalyticsDashboard';
 import DemandForecasting from './components/forecasting/DemandForecasting';
+import WhatIfAnalysis from './components/analytics/WhatIfAnalysis';
 
 // Layout components
 import EnterpriseLayout from './components/layout/EnterpriseLayout';
@@ -102,6 +103,7 @@ function App() {
                     <Route path="/ai-analytics" element={<AIAnalyticsDashboard />} />
                     <Route path="/forecasting" element={<DemandForecasting />} />
                     <Route path="/analytics" element={<AIAnalyticsDashboard />} />
+                    <Route path="/what-if" element={<WhatIfAnalysis />} />
                   </Routes>
                 </Suspense>
               </EnterpriseLayout>

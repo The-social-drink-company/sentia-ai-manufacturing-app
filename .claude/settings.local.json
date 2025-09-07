@@ -121,7 +121,8 @@
       "Bash(start http://localhost:3000/test-auth-flow.html)",
       "Bash(set RAILWAY_TOKEN=02e0c7f6-9ca1-4355-af52-ee9eec0b3545)",
       "Bash(railway logs:*)",
-      "WebFetch(domain:splendid-warmth-development.up.railway.app)"
+      "WebFetch(domain:splendid-warmth-development.up.railway.app)",
+      "Bash(gh pr merge:*)"
     ],
     "deny": [],
     "ask": []

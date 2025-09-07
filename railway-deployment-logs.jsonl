@@ -101,3 +101,7 @@
 {"timestamp":"2025-09-07T11:05:43.256Z","level":"INFO","message":"Starting deployment to production"}
 {"timestamp":"2025-09-07T11:05:43.437Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
 {"timestamp":"2025-09-07T11:05:43.643Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T11:10:43.662Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T11:10:43.980Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T11:10:43.996Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T11:10:44.011Z","level":"INFO","message":"Starting deployment to development"}

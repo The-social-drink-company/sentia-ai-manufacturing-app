@@ -2153,32 +2153,7 @@ function calculateProductionStatus() {
   return getEnhancedProductionData();
 }
 
-// Update quality control to use real data
-function getQualityControlData(batch = 'all', testType = 'all') {
-  if (!manufacturingData.quality || manufacturingData.quality.length === 0) {
-    throw new Error('No quality data available. Please import quality control data to view dashboard.');
-  }
-  
-  let qualityRecords = manufacturingData.quality;
-  
-  // Filter by batch if specified
-  if (batch !== 'all') {
-    qualityRecords = qualityRecords.filter(record => {
-      const batchId = record.batch_id || record['Batch ID'] || record.batch;
-      return batchId === batch;
-    });
-  }
-  
-  // Filter by test type if specified  
-  if (testType !== 'all') {
-    qualityRecords = qualityRecords.filter(record => {
-      const category = record.category || record.Category || record.test_type || '';
-      return category.toLowerCase() === testType.toLowerCase();
-    });
-  }
-  
-  return calculateQualityMetricsFromData(qualityRecords);
-}
+// Update quality control to use real data - function already defined above
 
 function calculateQualityMetricsFromData(records) {
   const totalTests = records.length;

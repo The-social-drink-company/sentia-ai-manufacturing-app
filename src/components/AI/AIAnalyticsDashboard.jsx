@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
 import {
   Brain, TrendingUp, AlertTriangle, Target,
-  BarChart3, PieChart, Zap, Settings,
-  Play, Pause, RefreshCw, Download
+  BarChart3, Zap,
+  Play, RefreshCw, Download
 } from 'lucide-react';
 
 const AIAnalyticsDashboard = () => {
@@ -12,7 +12,7 @@ const AIAnalyticsDashboard = () => {
   const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);
 
-  const { data: aiData, isLoading, refetch } = useQuery({
+  const { data: aiData, refetch } = useQuery({
     queryKey: ['ai-analytics', selectedModel],
     queryFn: async () => {
       const response = await fetch(`/api/ai/analytics?model=${selectedModel}`, {
@@ -88,6 +88,7 @@ const AIAnalyticsDashboard = () => {
         refetch();
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Analysis failed:', error);
     } finally {
       setIsRunningAnalysis(false);

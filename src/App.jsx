@@ -4,6 +4,7 @@ import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from '@c
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { SSEProvider } from './context/SSEProvider';
+import { MicrosoftAuthProvider } from './contexts/MicrosoftAuthContext';
 import { setupGlobalErrorHandling } from './utils/errorHandling';
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
@@ -43,6 +44,7 @@ function App() {
   }, []);
 
   if (!clerkPubKey) {
+    // eslint-disable-next-line no-console
     console.error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable");
     return <div>Authentication configuration error. Please check environment setup.</div>;
   }
@@ -50,6 +52,7 @@ function App() {
   return (
     <ClerkProvider publishableKey={clerkPubKey}>
       <QueryClientProvider client={queryClient}>
+        <MicrosoftAuthProvider>
         <SSEProvider>
         <ErrorBoundary>
         <Router>
@@ -110,6 +113,7 @@ function App() {
         <Toaster position="top-right" />
         </ErrorBoundary>
         </SSEProvider>
+        </MicrosoftAuthProvider>
       </QueryClientProvider>
     </ClerkProvider>
   );

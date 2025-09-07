@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
 import { useSSE, useSSEEvent } from '../../hooks/useSSE';
+import { CardSkeleton } from '../LoadingStates';
 import {
   CheckCircle, XCircle, AlertTriangle, Clock,
-  TrendingUp, TrendingDown, Target, TestTube,
-  Microscope, Shield, FileCheck, BarChart3,
+  TrendingUp, TrendingDown, TestTube,
+  Microscope, FileCheck, BarChart3,
   RefreshCw, Zap
 } from 'lucide-react';
 
@@ -68,7 +69,7 @@ const QualityControl = () => {
     });
   }, [selectedBatch, testType]);
 
-  const { data: qualityData, isLoading, refetch } = useQuery({
+  const { data: qualityData, isLoading, refetch, isError, error } = useQuery({
     queryKey: ['quality-data', selectedBatch, testType],
     queryFn: async () => {
       const response = await fetch(`/api/quality/dashboard?batch=${selectedBatch}&test=${testType}`, {
@@ -77,15 +78,22 @@ const QualityControl = () => {
         }
       });
       if (!response.ok) {
-        return mockQualityData;
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch quality data');
       }
       return response.json();
     },
     refetchInterval: liveUpdates ? 60000 : 15000,
     staleTime: liveUpdates ? 50000 : 10000,
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error?.status === 401) return false;
+      return failureCount < 2;
+    },
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const data = qualityData || mockQualityData;
+  const data = qualityData;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -153,6 +161,43 @@ const QualityControl = () => {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+          </div>
+        ) : isError || !data ? (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <AlertTriangle className="w-16 h-16 mx-auto text-orange-500 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {isError ? 'Unable to Load Quality Data' : 'No Quality Control Data Available'}
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              {isError 
+                ? `Error: ${error?.message || 'Failed to fetch quality control data from server'}`
+                : 'No quality control data has been imported yet. Please import your QC test data to get started.'
+              }
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => window.location.href = '/data-import'}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Import Quality Data
+              </button>
+              <button
+                onClick={() => refetch()}
+                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Quality Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <QualityMetric
@@ -200,6 +245,8 @@ const QualityControl = () => {
           <QualityAlerts alerts={data.alerts} />
           <TestSchedule schedule={data.testSchedule} />
         </div>
+        </>
+        )}
       </div>
     </div>
   );
@@ -292,7 +339,7 @@ const TestResults = ({ results }) => {
   );
 };
 
-const QualityTrends = ({ trends }) => {
+const QualityTrends = ({ trends: _trends }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Quality Trends</h3>
@@ -409,105 +456,5 @@ const TestSchedule = ({ schedule }) => {
   );
 };
 
-// Mock data for development
-const mockQualityData = {
-  overallPassRate: 98.7,
-  passRateChange: 0.5,
-  testsCompleted: 147,
-  testsCompletedChange: 12,
-  pendingTests: 8,
-  pendingTestsChange: 3,
-  failedTests: 2,
-  failedTestsChange: 1,
-  recentTests: [
-    {
-      id: 'QC-001',
-      testName: 'pH Analysis',
-      batchId: '2024-001',
-      status: 'passed',
-      result: '6.8',
-      specification: '6.5-7.2',
-      technician: 'Sarah Johnson',
-      completedAt: '2 hours ago'
-    },
-    {
-      id: 'QC-002',
-      testName: 'Microbiological Count',
-      batchId: '2024-002',
-      status: 'passed',
-      result: '<10 CFU/ml',
-      specification: '<100 CFU/ml',
-      technician: 'Mike Brown',
-      completedAt: '4 hours ago'
-    },
-    {
-      id: 'QC-003',
-      testName: 'Alcohol Content',
-      batchId: '2024-001',
-      status: 'failed',
-      result: '12.8%',
-      specification: '12.0-12.5%',
-      technician: 'Lisa Davis',
-      completedAt: '6 hours ago'
-    }
-  ],
-  activeBatches: [
-    {
-      id: '2024-001',
-      product: 'GABA Red 500ml',
-      qcStatus: 'testing',
-      testsCompleted: 3,
-      totalTests: 5
-    },
-    {
-      id: '2024-002',
-      product: 'GABA Clear 500ml',
-      qcStatus: 'approved',
-      testsCompleted: 4,
-      totalTests: 4
-    },
-    {
-      id: '2024-003',
-      product: 'GABA Red 250ml',
-      qcStatus: 'pending',
-      testsCompleted: 1,
-      totalTests: 5
-    }
-  ],
-  alerts: [
-    {
-      title: 'Alcohol Content Out of Spec',
-      description: 'Batch 2024-001 alcohol content exceeds upper specification limit',
-      severity: 'high',
-      time: '15 minutes ago'
-    },
-    {
-      title: 'pH Test Delayed',
-      description: 'pH testing for Batch 2024-003 is 2 hours behind schedule',
-      severity: 'medium',
-      time: '1 hour ago'
-    }
-  ],
-  testSchedule: [
-    {
-      testName: 'Microbiological Analysis',
-      batchId: '2024-003',
-      priority: 'urgent',
-      scheduledTime: 'Today 3:00 PM'
-    },
-    {
-      testName: 'Chemical Stability',
-      batchId: '2024-004',
-      priority: 'high',
-      scheduledTime: 'Tomorrow 9:00 AM'
-    },
-    {
-      testName: 'Sensory Evaluation',
-      batchId: '2024-002',
-      priority: 'normal',
-      scheduledTime: 'Tomorrow 2:00 PM'
-    }
-  ]
-};
 
 export default QualityControl;

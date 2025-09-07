@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
 import { useSSE, useSSEEvent } from '../../hooks/useSSE';
-import { QueryWrapper, CardSkeleton, LoadingSpinner } from '../LoadingStates';
-import { handleAsyncError, showErrorToast } from '../../utils/errorHandling';
+import { CardSkeleton } from '../LoadingStates';
+import { showErrorToast } from '../../utils/errorHandling';
 import {
   Play, Pause, StopCircle, AlertTriangle, CheckCircle,
   TrendingUp, TrendingDown, Clock, Settings, RefreshCw,
@@ -89,22 +89,16 @@ const ProductionTracking = () => {
   const { data: productionData, isLoading, refetch, isError, error } = useQuery({
     queryKey: ['production-data', selectedLine, timeRange],
     queryFn: async () => {
-      return handleAsyncError(async () => {
-        const response = await fetch(`/api/production/status?line=${selectedLine}&range=${timeRange}`, {
-          headers: {
-            'Authorization': `Bearer ${await user?.getToken()}`
-          }
-        });
-        if (!response.ok) {
-          // Fallback to mock data for API failures
-          console.warn('Production API unavailable, using mock data');
-          return mockProductionData;
+      const response = await fetch(`/api/production/status?line=${selectedLine}&range=${timeRange}`, {
+        headers: {
+          'Authorization': `Bearer ${await user?.getToken()}`
         }
-        return response.json();
-      }, (error) => {
-        console.warn('Production data fetch failed, using mock data:', error.message);
-        return mockProductionData;
       });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch production data');
+      }
+      return response.json();
     },
     refetchInterval: liveUpdates ? 30000 : 10000,
     staleTime: liveUpdates ? 25000 : 5000,
@@ -171,7 +165,7 @@ const ProductionTracking = () => {
     }
   };
 
-  const data = productionData || mockProductionData;
+  const data = productionData;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -245,6 +239,33 @@ const ProductionTracking = () => {
             <CardSkeleton />
             <CardSkeleton />
             <CardSkeleton />
+          </div>
+        ) : isError || !data ? (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <AlertTriangle className="w-16 h-16 mx-auto text-orange-500 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {isError ? 'Unable to Load Production Data' : 'No Production Data Available'}
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              {isError 
+                ? `Error: ${error?.message || 'Failed to fetch production data from server'}`
+                : 'No production data has been imported yet. Please import your production data to get started.'
+              }
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => window.location.href = '/data-import'}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Import Production Data
+              </button>
+              <button
+                onClick={() => refetch()}
+                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -409,7 +430,7 @@ const ProductionLineStatus = ({ data }) => {
   );
 };
 
-const ProductionTrends = ({ data }) => {
+const ProductionTrends = ({ data: _data }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Production Trends</h3>
@@ -425,7 +446,6 @@ const ProductionTrends = ({ data }) => {
 };
 
 const CurrentBatches = ({ batches, onBatchUpdate }) => {
-  const [selectedBatch, setSelectedBatch] = useState(null);
 
   const handleStatusChange = (batchId, newStatus) => {
     if (onBatchUpdate) {
@@ -594,73 +614,5 @@ const MaintenanceSchedule = ({ schedule }) => {
   );
 };
 
-// Mock data for development
-const mockProductionData = {
-  overallEfficiency: 94.2,
-  efficiencyChange: 2.3,
-  unitsProduced: 18750,
-  unitsChange: 1250,
-  qualityRate: 98.7,
-  qualityChange: 0.5,
-  downtimeMinutes: 23,
-  downtimeChange: 15,
-  lines: [
-    {
-      id: 'line-a',
-      name: 'Line A - GABA Red Production',
-      status: 'running',
-      efficiency: 96.3,
-      outputRate: 2450,
-      target: 2500
-    },
-    {
-      id: 'line-b',
-      name: 'Line B - GABA Clear Production',
-      status: 'running',
-      efficiency: 92.1,
-      outputRate: 2100,
-      target: 2300
-    },
-    {
-      id: 'line-c',
-      name: 'Line C - Packaging',
-      status: 'paused',
-      efficiency: 0,
-      outputRate: 0,
-      target: 1800
-    }
-  ],
-  currentBatches: [
-    { id: '2024-001', product: 'GABA Red 500ml', status: 'processing', completion: 75 },
-    { id: '2024-002', product: 'GABA Clear 500ml', status: 'quality-check', completion: 100 },
-    { id: '2024-003', product: 'GABA Red 250ml', status: 'completed', completion: 100 }
-  ],
-  qualityAlerts: [
-    {
-      title: 'pH Level Warning',
-      description: 'Batch 2024-001 pH level is slightly outside optimal range',
-      time: '5 minutes ago'
-    },
-    {
-      title: 'Temperature Alert',
-      description: 'Line B temperature sensor reporting anomaly',
-      time: '12 minutes ago'
-    }
-  ],
-  maintenanceSchedule: [
-    {
-      equipment: 'Tank Mixer #3',
-      type: 'Preventive Maintenance',
-      priority: 'high',
-      scheduled: 'Tomorrow 2:00 PM'
-    },
-    {
-      equipment: 'Conveyor Belt B2',
-      type: 'Belt Replacement',
-      priority: 'medium',
-      scheduled: 'Friday 10:00 AM'
-    }
-  ]
-};
 
 export default ProductionTracking;

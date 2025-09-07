@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
+import { CardSkeleton } from '../LoadingStates';
 import {
   Package, TrendingUp, TrendingDown, AlertTriangle,
-  Plus, Minus, Search, Filter, Download, Upload,
-  BarChart3, PieChart, Clock, RefreshCw, Warehouse
+  Plus, Minus, Search, Upload,
+  BarChart3, PieChart, RefreshCw
 } from 'lucide-react';
 
 const InventoryManagement = () => {
@@ -13,7 +14,7 @@ const InventoryManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
 
-  const { data: inventoryData, isLoading, refetch } = useQuery({
+  const { data: inventoryData, isLoading, refetch, isError, error } = useQuery({
     queryKey: ['inventory-data', selectedCategory, searchTerm, sortBy],
     queryFn: async () => {
       const response = await fetch(`/api/inventory/dashboard?category=${selectedCategory}&search=${searchTerm}&sort=${sortBy}`, {
@@ -22,14 +23,21 @@ const InventoryManagement = () => {
         }
       });
       if (!response.ok) {
-        return mockInventoryData;
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch inventory data');
       }
       return response.json();
     },
     refetchInterval: 30000,
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error?.status === 401) return false;
+      return failureCount < 2;
+    },
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const data = inventoryData || mockInventoryData;
+  const data = inventoryData;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -102,6 +110,43 @@ const InventoryManagement = () => {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+          </div>
+        ) : isError || !data ? (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <AlertTriangle className="w-16 h-16 mx-auto text-orange-500 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {isError ? 'Unable to Load Inventory Data' : 'No Inventory Data Available'}
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              {isError 
+                ? `Error: ${error?.message || 'Failed to fetch inventory data from server'}`
+                : 'No inventory data has been imported yet. Please import your inventory data to get started.'
+              }
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => window.location.href = '/data-import'}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Import Inventory Data
+              </button>
+              <button
+                onClick={() => refetch()}
+                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Inventory Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <InventoryMetric
@@ -154,6 +199,8 @@ const InventoryManagement = () => {
           <MovementHistory movements={data.recentMovements} />
           <StockForecast forecast={data.forecast} />
         </div>
+        </>
+        )}
       </div>
     </div>
   );
@@ -392,7 +439,7 @@ const MovementHistory = ({ movements }) => {
   );
 };
 
-const StockForecast = ({ forecast }) => {
+const StockForecast = ({ forecast: _forecast }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Stock Forecast</h3>
@@ -407,104 +454,5 @@ const StockForecast = ({ forecast }) => {
   );
 };
 
-// Mock data for development
-const mockInventoryData = {
-  totalItems: 1247,
-  totalItemsChange: 23,
-  totalValue: 2840000,
-  totalValueChange: 12.5,
-  lowStockItems: 8,
-  lowStockChange: 3,
-  outOfStockItems: 2,
-  outOfStockChange: 1,
-  items: [
-    {
-      id: '1',
-      name: 'GABA Powder',
-      sku: 'RAW-GABA-001',
-      category: 'Raw Materials',
-      currentStock: 250,
-      unit: 'kg',
-      unitPrice: 125.50,
-      status: 'In Stock'
-    },
-    {
-      id: '2',
-      name: '500ml Glass Bottles',
-      sku: 'PKG-BTL-500',
-      category: 'Packaging',
-      currentStock: 15,
-      unit: 'units',
-      unitPrice: 2.45,
-      status: 'Low Stock'
-    },
-    {
-      id: '3',
-      name: 'Natural Flavoring',
-      sku: 'RAW-FLAV-001',
-      category: 'Raw Materials',
-      currentStock: 0,
-      unit: 'L',
-      unitPrice: 89.99,
-      status: 'Out of Stock'
-    },
-    {
-      id: '4',
-      name: 'GABA Red 500ml',
-      sku: 'FIN-GRED-500',
-      category: 'Finished Goods',
-      currentStock: 1250,
-      unit: 'bottles',
-      unitPrice: 24.99,
-      status: 'In Stock'
-    }
-  ],
-  alerts: [
-    {
-      title: 'Critical Stock Level',
-      description: '500ml Glass Bottles below minimum threshold (15 units)',
-      severity: 'high'
-    },
-    {
-      title: 'Out of Stock',
-      description: 'Natural Flavoring completely depleted',
-      severity: 'high'
-    },
-    {
-      title: 'Reorder Recommended',
-      description: 'GABA Powder approaching reorder point',
-      severity: 'medium'
-    }
-  ],
-  distribution: [
-    { name: 'Raw Materials', percentage: 45, value: 1278000, color: '#3B82F6' },
-    { name: 'Packaging', percentage: 20, value: 568000, color: '#10B981' },
-    { name: 'Finished Goods', percentage: 30, value: 852000, color: '#F59E0B' },
-    { name: 'Chemicals', percentage: 5, value: 142000, color: '#EF4444' }
-  ],
-  recentMovements: [
-    {
-      item: 'GABA Powder',
-      type: 'in',
-      quantity: '50 kg',
-      reason: 'Purchase order received',
-      timestamp: '2 hours ago'
-    },
-    {
-      item: 'GABA Red 500ml',
-      type: 'out',
-      quantity: '200 bottles',
-      reason: 'Production batch #2024-001',
-      timestamp: '4 hours ago'
-    },
-    {
-      item: '500ml Glass Bottles',
-      type: 'out',
-      quantity: '500 units',
-      reason: 'Production line A',
-      timestamp: '6 hours ago'
-    }
-  ]
-};
 
 export default InventoryManagement;

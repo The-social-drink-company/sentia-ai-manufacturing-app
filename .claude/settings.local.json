@@ -125,7 +125,8 @@
       "Bash(gh pr merge:*)",
       "WebFetch(domain:splendid-warmth-testing.up.railway.app)",
       "WebFetch(domain:splendid-warmth-production.up.railway.app)",
-      "WebFetch(domain:sentiaprod.financeflo.ai)"
+      "WebFetch(domain:sentiaprod.financeflo.ai)",
+      "Bash(start https://sentiaprod.financeflo.ai/dashboard)"
     ],
     "deny": [],
     "ask": []

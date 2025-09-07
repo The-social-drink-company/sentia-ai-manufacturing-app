@@ -74,7 +74,7 @@ const SimpleSignIn = () => {
         // Redirect to dashboard
         window.location.href = '/dashboard';
       } else {
-        setError('Invalid credentials. Try: admin@sentiaspirits.com / demo123');
+        setError('Invalid credentials. Try: paul.roberts@sentiaspirits.com / sentia2024 or david.orren@gabalabs.com / gaba2024');
       }
     } catch (error) {
       setError(`Demo error: ${error.message}`);

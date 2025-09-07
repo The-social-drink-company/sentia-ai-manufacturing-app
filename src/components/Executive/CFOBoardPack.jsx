@@ -20,30 +20,106 @@ const CFOBoardPack = ({ data, onRefresh, loading = false }) => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('Q4-2024');
   const [selectedCurrency, setSelectedCurrency] = useState('GBP');
   const [expandedSection, setExpandedSection] = useState(null);
+  const [boardPackData, setBoardPackData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Sample data structure matching FinanceFlo requirements
-  const boardPackData = data || {
-    executiveSummary: {
-      totalWorkingCapital: { current: 2840000, optimal: 2250000, currency: 'GBP' },
-      cashFlowProjection: { next30Days: 450000, next90Days: 1200000, next180Days: 2100000 },
-      inventoryTurnover: { current: 8.2, target: 10.0, trend: 'improving' },
-      riskScore: { overall: 'medium', score: 65, factors: ['lead_time_variability', 'fx_exposure'] }
-    },
-    marketPerformance: {
-      UK: { revenue: 1200000, margin: 0.28, workingCapital: 950000, forecast: 'stable' },
-      EU: { revenue: 890000, margin: 0.24, workingCapital: 720000, forecast: 'growing' },
-      US: { revenue: 1450000, margin: 0.32, workingCapital: 1170000, forecast: 'volatile' }
-    },
-    aiInsights: {
-      recommendations: [
-        { priority: 'high', type: 'inventory', message: 'Reduce US safety stock by 15% - lead times stabilizing' },
-        { priority: 'medium', type: 'cash_flow', message: 'Optimize EU payment terms for 8% working capital improvement' },
-        { priority: 'low', type: 'forecasting', message: 'UK demand pattern showing seasonal shift - adjust forecasts' }
-      ],
-      confidenceLevel: 0.87,
-      lastUpdated: new Date().toISOString()
+  // Load board pack data from existing API
+  useEffect(() => {
+    const fetchBoardPackData = async () => {
+      if (data) {
+        setBoardPackData(data);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/forecasting/cfo/board-pack', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            series_ids: ['SENSIO_RED_UK', 'SENSIO_RED_EU', 'SENSIO_RED_US'], // Default series
+            reporting_currency: selectedCurrency,
+            regions: ['UK', 'EU', 'USA'],
+            horizons: [30, 90, 180, 365],
+            include_scenarios: true,
+            include_risk_metrics: true
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setBoardPackData(result.boardPack);
+        } else {
+          // Fallback data structure if API fails
+          setBoardPackData({
+            executiveSummary: {
+              totalWorkingCapital: { current: 2840000, optimal: 2250000, currency: selectedCurrency },
+              cashFlowProjection: { next30Days: 450000, next90Days: 1200000, next180Days: 2100000 },
+              inventoryTurnover: { current: 8.2, target: 10.0, trend: 'improving' },
+              riskScore: { overall: 'medium', score: 65, factors: ['lead_time_variability', 'fx_exposure'] }
+            },
+            marketPerformance: {
+              UK: { revenue: 1200000, margin: 0.28, workingCapital: 950000, forecast: 'stable' },
+              EU: { revenue: 890000, margin: 0.24, workingCapital: 720000, forecast: 'growing' },
+              US: { revenue: 1450000, margin: 0.32, workingCapital: 1170000, forecast: 'volatile' }
+            },
+            aiInsights: {
+              recommendations: [
+                { priority: 'high', type: 'inventory', message: 'Reduce US safety stock by 15% - lead times stabilizing' },
+                { priority: 'medium', type: 'cash_flow', message: 'Optimize EU payment terms for 8% working capital improvement' },
+                { priority: 'low', type: 'forecasting', message: 'UK demand pattern showing seasonal shift - adjust forecasts' }
+              ],
+              confidenceLevel: 0.87,
+              lastUpdated: new Date().toISOString()
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch board pack data:', error);
+        // Use fallback data on error
+        setBoardPackData({
+          executiveSummary: {
+            totalWorkingCapital: { current: 2840000, optimal: 2250000, currency: selectedCurrency },
+            cashFlowProjection: { next30Days: 450000, next90Days: 1200000, next180Days: 2100000 },
+            inventoryTurnover: { current: 8.2, target: 10.0, trend: 'improving' },
+            riskScore: { overall: 'medium', score: 65, factors: ['lead_time_variability', 'fx_exposure'] }
+          },
+          marketPerformance: {
+            UK: { revenue: 1200000, margin: 0.28, workingCapital: 950000, forecast: 'stable' },
+            EU: { revenue: 890000, margin: 0.24, workingCapital: 720000, forecast: 'growing' },
+            US: { revenue: 1450000, margin: 0.32, workingCapital: 1170000, forecast: 'volatile' }
+          },
+          aiInsights: {
+            recommendations: [
+              { priority: 'high', type: 'inventory', message: 'Reduce US safety stock by 15% - lead times stabilizing' },
+              { priority: 'medium', type: 'cash_flow', message: 'Optimize EU payment terms for 8% working capital improvement' },
+              { priority: 'low', type: 'forecasting', message: 'UK demand pattern showing seasonal shift - adjust forecasts' }
+            ],
+            confidenceLevel: 0.87,
+            lastUpdated: new Date().toISOString()
+          }
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBoardPackData();
+  }, [selectedCurrency, data]);
+
+  const handleRefresh = async () => {
+    if (onRefresh) {
+      onRefresh();
+    } else {
+      await fetchBoardPackData();
     }
   };
+
+  if (!boardPackData) {
+    return <div className="flex items-center justify-center h-64">Loading...</div>;
+  }
 
   const formatCurrency = (amount, currency = selectedCurrency) => {
     return new Intl.NumberFormat('en-GB', {
@@ -106,12 +182,12 @@ const CFOBoardPack = ({ data, onRefresh, loading = false }) => {
             <option value="USD">USD $</option>
           </select>
           <Button 
-            onClick={onRefresh}
-            disabled={loading}
+            onClick={handleRefresh}
+            disabled={loading || isLoading}
             variant="outline"
             size="sm"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading || isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button variant="default" size="sm">

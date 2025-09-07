@@ -128,7 +128,11 @@
       "WebFetch(domain:sentiaprod.financeflo.ai)",
       "Bash(start http://localhost:3002)",
       "Bash(start https://sentiaprod.financeflo.ai)",
-      "Bash(start http://localhost:3002/test-auth-credentials.html)"
+      "Bash(start http://localhost:3002/test-auth-credentials.html)",
+      "Bash(start real-client-users-tested.html)",
+      "Bash(echo:*)",
+      "Bash(start test-production-login.html)",
+      "Bash(set PORT=3002)"
     ],
     "deny": [],
     "ask": []

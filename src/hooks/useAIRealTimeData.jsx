@@ -1,13 +1,14 @@
 import { devLog } from '../lib/devLog.js';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAuth } from '@clerk/clerk-react';
+// Removed Clerk dependency - using next-auth only
 
 /**
  * Custom hook for real-time AI system data via Server-Sent Events
  * Provides live updates from all AI subsystems
  */
 export const useAIRealTimeData = (options = {}) => {
-  const { getToken } = useAuth();
+  // Mock auth token for now - replace with next-auth
+  const getToken = () => null;
   const [data, setData] = useState({
     mcp: { status: 'initializing', connections: [] },
     forecasting: { predictions: [], confidence: 0 },

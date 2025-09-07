@@ -368,7 +368,7 @@ app.get('/api/health', async (req, res) => {
         ai_analytics: aiHealth
       },
       integrations: {
-        clerk: !!process.env.CLERK_SECRET_KEY,
+        nextauth: !!process.env.NEXTAUTH_SECRET,
         shopify: !!(process.env.SHOPIFY_UK_SHOP_URL && process.env.SHOPIFY_UK_ACCESS_TOKEN),
         xero: xeroHealth.status === 'connected',
         neon_database: aiHealth.status === 'connected'
@@ -717,11 +717,21 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    // Get real users from Clerk
-    const clerkUsers = await clerkClient.users.getUserList({ limit: 100 });
+    // Get real users from database
+    const realUsers = await prisma.user.findMany({
+      take: 100,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        isActive: true
+      }
+    });
     
-    // Map to real user data with Sentia-specific roles
-    const realUsers = clerkUsers.data.map(user => {
+    // Map to user data with Sentia-specific roles
+    const mappedUsers = realUsers.map(user => {
       const email = user.emailAddresses[0]?.emailAddress;
       let role = 'user';
       

@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "avgDuration": 13.794299999999566,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_health",
+      "result": "pass",
+      "duration": 13.794299999999566,
+      "timestamp": "2025-09-07T18:40:15.030Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 305840128,
+          "heapTotal": 240418816,
+          "heapUsed": 114220640,
+          "external": 4709583,
+          "arrayBuffers": 806216
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

@@ -1,11 +1,11 @@
 {
-  "timestamp": "2025-09-07T17:13:41.857Z",
+  "timestamp": "2025-09-07T18:43:38.920Z",
   "failedTests": [
     {
       "testName": "SECURITY_AUTH_REQUIRED",
       "result": "fail",
-      "duration": 30.514499999999998,
-      "timestamp": "2025-09-07T17:13:41.743Z",
+      "duration": 15.162699999999859,
+      "timestamp": "2025-09-07T18:43:38.841Z",
       "error": {
         "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m401\u001b[39m\nReceived: \u001b[31m200\u001b[39m",
         "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m401\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:458:35\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:449:5",
@@ -20,11 +20,11 @@
         },
         "userAgent": "Playwright Test Agent",
         "memoryUsage": {
-          "rss": 139448320,
-          "heapTotal": 61210624,
-          "heapUsed": 36548912,
-          "external": 3987400,
-          "arrayBuffers": 84417
+          "rss": 152571904,
+          "heapTotal": 103153664,
+          "heapUsed": 46699640,
+          "external": 4017680,
+          "arrayBuffers": 114657
         }
       }
     }

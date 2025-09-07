@@ -1,7 +1,12 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
-import ManufacturingDashboard from './components/dashboard/ManufacturingDashboard';
+import EnhancedDashboard from './pages/EnhancedDashboard';
+import WorkingCapital from './components/WorkingCapital';
+import WhatIfAnalysis from './components/analytics/WhatIfAnalysis';
+import AdminPanel from './pages/AdminPanel';
+import Header from './components/layout/Header';
+import Sidebar from './components/layout/Sidebar';
 import MicrosoftCallbackPage from './pages/auth/MicrosoftCallbackPage';
 import './index.css';
 
@@ -287,8 +292,8 @@ const SimpleSignUp = () => {
   );
 };
 
-// Simple dashboard for authenticated users
-const SimpleDashboard = () => {
+// Enterprise Layout Wrapper for authenticated pages
+const EnterpriseLayout = ({ children }) => {
   const [user, setUser] = React.useState(null);
   const [session, setSession] = React.useState(null);
 
@@ -328,30 +333,26 @@ const SimpleDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">Sentia Manufacturing Dashboard</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {user.name}</span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Enterprise Sidebar Navigation */}
+      <Sidebar />
       
-      {/* Load the original manufacturing dashboard */}
-      <ManufacturingDashboard />
+      <div className="flex-1 flex flex-col">
+        {/* Enterprise Header with all buttons and navigation */}
+        <Header user={user} onLogout={handleLogout} />
+        
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </div>
     </div>
   );
+};
+
+// Simple dashboard for authenticated users
+const SimpleDashboard = () => {
+  return <EnhancedDashboard />;
 };
 
 function App() {
@@ -363,9 +364,16 @@ function App() {
             <Route path="/auth/signin" element={<SimpleSignIn />} />
             <Route path="/auth/signup" element={<SimpleSignUp />} />
             <Route path="/auth/microsoft/callback" element={<MicrosoftCallbackPage />} />
-            <Route path="/dashboard" element={<SimpleDashboard />} />
+            <Route path="/dashboard" element={<EnterpriseLayout><SimpleDashboard /></EnterpriseLayout>} />
+            <Route path="/working-capital" element={<EnterpriseLayout><WorkingCapital /></EnterpriseLayout>} />
+            <Route path="/what-if" element={<EnterpriseLayout><WhatIfAnalysis /></EnterpriseLayout>} />
+            <Route path="/admin" element={<EnterpriseLayout><AdminPanel /></EnterpriseLayout>} />
+            <Route path="/analytics" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/forecasting" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/inventory" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/production" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/quality" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
             <Route path="/" element={<LandingPage />} />
-            {/* Original professional landing page restored */}
             <Route path="*" element={<div className="text-center py-20">Page not found</div>} />
           </Routes>
         </Suspense>

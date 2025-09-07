@@ -1,412 +1,412 @@
 {
-  "timestamp": "2025-09-07T17:10:24.395Z",
+  "timestamp": "2025-09-07T18:40:14.987Z",
   "testType": "whatif_analysis",
   "summary": {
     "totalSliderTests": 40,
     "passedSliderTests": 40,
     "sliderSuccessRate": 100,
-    "avgCalculationTime": 7.302319999999992,
+    "avgCalculationTime": 8.204674999999906,
     "avgConfidence": 0.8490770164404727,
     "totalScenarios": 4,
-    "performanceTests": 5
+    "performanceTests": 6
   },
   "sliderInteractions": [
     {
-      "timestamp": "2025-09-07T17:10:18.064Z",
+      "timestamp": "2025-09-07T18:40:08.720Z",
       "category": "rawMaterials",
       "parameter": "availability",
       "value": 60,
-      "calculationTime": 29.182600000000093,
+      "calculationTime": 8.732599999999366,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:18.179Z",
+      "timestamp": "2025-09-07T18:40:08.860Z",
       "category": "rawMaterials",
       "parameter": "availability",
       "value": 75,
-      "calculationTime": 6.009299999999939,
+      "calculationTime": 12.360599999999977,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:18.295Z",
+      "timestamp": "2025-09-07T18:40:09.005Z",
       "category": "rawMaterials",
       "parameter": "availability",
       "value": 90,
-      "calculationTime": 5.85329999999999,
+      "calculationTime": 24.349999999999454,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:18.414Z",
+      "timestamp": "2025-09-07T18:40:09.138Z",
       "category": "rawMaterials",
       "parameter": "availability",
       "value": 100,
-      "calculationTime": 5.0896000000000186,
+      "calculationTime": 10.946100000000115,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:18.533Z",
+      "timestamp": "2025-09-07T18:40:09.268Z",
       "category": "rawMaterials",
       "parameter": "deliveryTime",
       "value": 10,
-      "calculationTime": 5.3659999999999854,
+      "calculationTime": 13.02769999999964,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:18.651Z",
+      "timestamp": "2025-09-07T18:40:09.396Z",
       "category": "rawMaterials",
       "parameter": "deliveryTime",
       "value": 21,
-      "calculationTime": 8.32549999999992,
+      "calculationTime": 6.839099999999235,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:18.825Z",
+      "timestamp": "2025-09-07T18:40:09.513Z",
       "category": "rawMaterials",
       "parameter": "deliveryTime",
       "value": 35,
-      "calculationTime": 40.897699999999986,
+      "calculationTime": 7.080400000000736,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:18.945Z",
+      "timestamp": "2025-09-07T18:40:09.637Z",
       "category": "rawMaterials",
       "parameter": "deliveryTime",
       "value": 50,
-      "calculationTime": 5.959500000000389,
+      "calculationTime": 8.069100000000617,
       "workingCapital": 12719479.703287672,
       "confidence": 0.840566037735849,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:19.063Z",
+      "timestamp": "2025-09-07T18:40:09.763Z",
       "category": "rawMaterials",
       "parameter": "costInflation",
       "value": -5,
-      "calculationTime": 6.041400000000067,
+      "calculationTime": 9.349600000000464,
       "workingCapital": 13015584.089954339,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:19.180Z",
+      "timestamp": "2025-09-07T18:40:09.879Z",
       "category": "rawMaterials",
       "parameter": "costInflation",
       "value": 0,
-      "calculationTime": 6.414900000000216,
+      "calculationTime": 7.09479999999985,
       "workingCapital": 12867531.896621006,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:19.295Z",
+      "timestamp": "2025-09-07T18:40:09.994Z",
       "category": "rawMaterials",
       "parameter": "costInflation",
       "value": 10,
-      "calculationTime": 4.534900000000107,
+      "calculationTime": 5.913800000000265,
       "workingCapital": 12571427.509954339,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:19.434Z",
+      "timestamp": "2025-09-07T18:40:10.112Z",
       "category": "rawMaterials",
       "parameter": "costInflation",
       "value": 20,
-      "calculationTime": 4.466399999999794,
+      "calculationTime": 7.2051000000001295,
       "workingCapital": 12275323.123287674,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:19.563Z",
+      "timestamp": "2025-09-07T18:40:10.229Z",
       "category": "manufacturing",
       "parameter": "capacity",
       "value": 70,
-      "calculationTime": 7.106700000000274,
+      "calculationTime": 6.5515000000004875,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:19.682Z",
+      "timestamp": "2025-09-07T18:40:10.344Z",
       "category": "manufacturing",
       "parameter": "capacity",
       "value": 85,
-      "calculationTime": 6.115699999999833,
+      "calculationTime": 6.276100000000042,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:19.799Z",
+      "timestamp": "2025-09-07T18:40:10.460Z",
       "category": "manufacturing",
       "parameter": "capacity",
       "value": 100,
-      "calculationTime": 4.09230000000025,
+      "calculationTime": 6.740200000000186,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:19.914Z",
+      "timestamp": "2025-09-07T18:40:10.577Z",
       "category": "manufacturing",
       "parameter": "capacity",
       "value": 115,
-      "calculationTime": 5.3202000000001135,
+      "calculationTime": 7.48909999999978,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.027Z",
+      "timestamp": "2025-09-07T18:40:10.703Z",
       "category": "manufacturing",
       "parameter": "efficiency",
       "value": 75,
-      "calculationTime": 5.338500000000295,
+      "calculationTime": 9.078800000000228,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.142Z",
+      "timestamp": "2025-09-07T18:40:10.817Z",
       "category": "manufacturing",
       "parameter": "efficiency",
       "value": 85,
-      "calculationTime": 6.2280000000000655,
+      "calculationTime": 8.205699999999524,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.256Z",
+      "timestamp": "2025-09-07T18:40:10.934Z",
       "category": "manufacturing",
       "parameter": "efficiency",
       "value": 92,
-      "calculationTime": 6.24160000000029,
+      "calculationTime": 7.140800000000127,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.379Z",
+      "timestamp": "2025-09-07T18:40:11.058Z",
       "category": "manufacturing",
       "parameter": "efficiency",
       "value": 96,
-      "calculationTime": 6.036399999999958,
+      "calculationTime": 8.503200000000106,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.499Z",
+      "timestamp": "2025-09-07T18:40:11.183Z",
       "category": "manufacturing",
       "parameter": "leadTime",
       "value": 5,
-      "calculationTime": 4.947899999999663,
+      "calculationTime": 6.371599999999489,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.620Z",
+      "timestamp": "2025-09-07T18:40:11.296Z",
       "category": "manufacturing",
       "parameter": "leadTime",
       "value": 7,
-      "calculationTime": 5.771200000000135,
+      "calculationTime": 6.365799999999581,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.742Z",
+      "timestamp": "2025-09-07T18:40:11.410Z",
       "category": "manufacturing",
       "parameter": "leadTime",
       "value": 14,
-      "calculationTime": 5.989999999999782,
+      "calculationTime": 7.215799999999945,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.861Z",
+      "timestamp": "2025-09-07T18:40:11.537Z",
       "category": "manufacturing",
       "parameter": "leadTime",
       "value": 18,
-      "calculationTime": 5.383499999999913,
+      "calculationTime": 5.6924999999992,
       "workingCapital": 12719479.703287672,
       "confidence": 0.8277777777777777,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:20.985Z",
+      "timestamp": "2025-09-07T18:40:11.662Z",
       "category": "sales",
       "parameter": "growthRate",
       "value": -10,
-      "calculationTime": 4.533499999999549,
+      "calculationTime": 5.460900000000038,
       "workingCapital": 10221010.475856164,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:21.111Z",
+      "timestamp": "2025-09-07T18:40:11.779Z",
       "category": "sales",
       "parameter": "growthRate",
       "value": 5,
-      "calculationTime": 13.36160000000018,
+      "calculationTime": 6.42660000000069,
       "workingCapital": 11924512.221832193,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:21.226Z",
+      "timestamp": "2025-09-07T18:40:11.904Z",
       "category": "sales",
       "parameter": "growthRate",
       "value": 15,
-      "calculationTime": 4.110099999999875,
+      "calculationTime": 5.970100000000457,
       "workingCapital": 13060180.052482877,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:21.351Z",
+      "timestamp": "2025-09-07T18:40:12.034Z",
       "category": "sales",
       "parameter": "growthRate",
       "value": 30,
-      "calculationTime": 4.900499999999738,
+      "calculationTime": 11.322200000000521,
       "workingCapital": 14763681.798458904,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:21.472Z",
+      "timestamp": "2025-09-07T18:40:12.166Z",
       "category": "sales",
       "parameter": "seasonalityFactor",
       "value": 0.8,
-      "calculationTime": 5.901800000000549,
+      "calculationTime": 12.257200000000012,
       "workingCapital": 10395875.195616439,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:21.583Z",
+      "timestamp": "2025-09-07T18:40:12.300Z",
       "category": "sales",
       "parameter": "seasonalityFactor",
       "value": 1,
-      "calculationTime": 4.838799999999537,
+      "calculationTime": 7.276599999999235,
       "workingCapital": 11316178.136986304,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:21.702Z",
+      "timestamp": "2025-09-07T18:40:12.429Z",
       "category": "sales",
       "parameter": "seasonalityFactor",
       "value": 1.3,
-      "calculationTime": 4.271099999999933,
+      "calculationTime": 7.815099999999802,
       "workingCapital": 13599703.29123288,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:21.819Z",
+      "timestamp": "2025-09-07T18:40:12.547Z",
       "category": "sales",
       "parameter": "seasonalityFactor",
       "value": 1.8,
-      "calculationTime": 5.69800000000032,
+      "calculationTime": 6.787800000000061,
       "workingCapital": 18101803.542602744,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:21.941Z",
+      "timestamp": "2025-09-07T18:40:12.679Z",
       "category": "financing",
       "parameter": "interestRate",
       "value": 3,
-      "calculationTime": 6.618099999999686,
+      "calculationTime": 7.314300000000003,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:22.060Z",
+      "timestamp": "2025-09-07T18:40:12.804Z",
       "category": "financing",
       "parameter": "interestRate",
       "value": 6,
-      "calculationTime": 6.02139999999963,
+      "calculationTime": 5.904399999999441,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:22.176Z",
+      "timestamp": "2025-09-07T18:40:12.928Z",
       "category": "financing",
       "parameter": "interestRate",
       "value": 9,
-      "calculationTime": 6.566799999999603,
+      "calculationTime": 5.9284999999999854,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:22.300Z",
+      "timestamp": "2025-09-07T18:40:13.045Z",
       "category": "financing",
       "parameter": "interestRate",
       "value": 12,
-      "calculationTime": 5.410600000000159,
+      "calculationTime": 6.126199999998789,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:22.415Z",
+      "timestamp": "2025-09-07T18:40:13.168Z",
       "category": "financing",
       "parameter": "creditLimit",
       "value": 3,
-      "calculationTime": 5.499399999999696,
+      "calculationTime": 7.209999999999127,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:22.528Z",
+      "timestamp": "2025-09-07T18:40:13.290Z",
       "category": "financing",
       "parameter": "creditLimit",
       "value": 5,
-      "calculationTime": 4.3213000000005195,
+      "calculationTime": 11.74159999999938,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:22.646Z",
+      "timestamp": "2025-09-07T18:40:13.409Z",
       "category": "financing",
       "parameter": "creditLimit",
       "value": 10,
-      "calculationTime": 5.704399999999623,
+      "calculationTime": 6.258200000000215,
       "workingCapital": 12719479.703287672,
       "confidence": 0.85,
       "passed": true
     },
     {
-      "timestamp": "2025-09-07T17:10:22.779Z",
+      "timestamp": "2025-09-07T18:40:13.529Z",
       "category": "financing",
       "parameter": "creditLimit",
       "value": 15,
-      "calculationTime": 7.622299999999996,
+      "calculationTime": 7.787299999999959,
       "workingCapital": 12719479.703287672,
       "confidence": 0.8447368421052631,
       "passed": true
@@ -432,8 +432,8 @@
           }
         },
         "results": {
-          "id": "scenario_1757265023288",
-          "calculatedAt": "2025-09-07T17:10:23.288Z",
+          "id": "scenario_1757270413947",
+          "calculatedAt": "2025-09-07T18:40:13.947Z",
           "parameters": {
             "rawMaterials": {
               "availability": 70,
@@ -1197,8 +1197,8 @@
           },
           "confidence": 0.85
         },
-        "processingTime": 6.945800000000418,
-        "timestamp": "2025-09-07T17:10:23.297Z"
+        "processingTime": 6.141099999998914,
+        "timestamp": "2025-09-07T18:40:13.954Z"
       }
     ],
     [
@@ -1221,8 +1221,8 @@
           }
         },
         "results": {
-          "id": "scenario_1757265023300",
-          "calculatedAt": "2025-09-07T17:10:23.300Z",
+          "id": "scenario_1757270413959",
+          "calculatedAt": "2025-09-07T18:40:13.959Z",
           "parameters": {
             "rawMaterials": {
               "availability": 95,
@@ -1966,8 +1966,8 @@
           },
           "confidence": 0.85
         },
-        "processingTime": 4.866700000000492,
-        "timestamp": "2025-09-07T17:10:23.307Z"
+        "processingTime": 7.63720000000103,
+        "timestamp": "2025-09-07T18:40:13.967Z"
       }
     ],
     [
@@ -1991,8 +1991,8 @@
           }
         },
         "results": {
-          "id": "scenario_1757265023310",
-          "calculatedAt": "2025-09-07T17:10:23.310Z",
+          "id": "scenario_1757270413970",
+          "calculatedAt": "2025-09-07T18:40:13.970Z",
           "parameters": {
             "rawMaterials": {
               "availability": 55,
@@ -2757,8 +2757,8 @@
           },
           "confidence": 0.8051814223512337
         },
-        "processingTime": 4.881199999999808,
-        "timestamp": "2025-09-07T17:10:23.318Z"
+        "processingTime": 5.296700000000783,
+        "timestamp": "2025-09-07T18:40:13.977Z"
       }
     ],
     [
@@ -2783,8 +2783,8 @@
           }
         },
         "results": {
-          "id": "scenario_1757265023322",
-          "calculatedAt": "2025-09-07T17:10:23.322Z",
+          "id": "scenario_1757270413980",
+          "calculatedAt": "2025-09-07T18:40:13.980Z",
           "parameters": {
             "rawMaterials": {
               "availability": 98,
@@ -3542,41 +3542,47 @@
           },
           "confidence": 0.85
         },
-        "processingTime": 6.577900000000227,
-        "timestamp": "2025-09-07T17:10:23.329Z"
+        "processingTime": 4.694400000000314,
+        "timestamp": "2025-09-07T18:40:13.988Z"
       }
     ]
   ],
   "performanceMetrics": [
     {
-      "operation": "market_analysis_UK",
-      "duration": 6.170600000000377,
+      "operation": "initialization",
+      "duration": 20.47900000000027,
       "success": true,
-      "timestamp": "2025-09-07T17:10:23.025Z"
+      "timestamp": "2025-09-07T18:40:08.640Z"
+    },
+    {
+      "operation": "market_analysis_UK",
+      "duration": 5.038799999998446,
+      "success": true,
+      "timestamp": "2025-09-07T18:40:13.704Z"
     },
     {
       "operation": "market_analysis_USA",
-      "duration": 4.035499999999956,
+      "duration": 4.593999999999141,
       "success": true,
-      "timestamp": "2025-09-07T17:10:23.044Z"
+      "timestamp": "2025-09-07T18:40:13.726Z"
     },
     {
       "operation": "market_analysis_EUROPE",
-      "duration": 6.22229999999945,
+      "duration": 4.537900000001173,
       "success": true,
-      "timestamp": "2025-09-07T17:10:23.066Z"
+      "timestamp": "2025-09-07T18:40:13.743Z"
     },
     {
       "operation": "working_capital_breakdown",
-      "duration": 5.1667999999999665,
+      "duration": 4.690699999999197,
       "success": true,
-      "timestamp": "2025-09-07T17:10:23.220Z"
+      "timestamp": "2025-09-07T18:40:13.871Z"
     },
     {
       "operation": "concurrent_load_test",
-      "duration": 56.64310000000023,
-      "success": false,
-      "timestamp": "2025-09-07T17:10:24.106Z"
+      "duration": 49.560199999999895,
+      "success": true,
+      "timestamp": "2025-09-07T18:40:14.742Z"
     }
   ],
   "clientRequirementsMet": true,

@@ -108,7 +108,20 @@
       "Bash(railway up:*)",
       "Bash(railway service:*)",
       "Bash(dir railway-mcp.json nixpacks-mcp.toml)",
-      "Bash(set PORT=5002)"
+      "Bash(set PORT=5002)",
+      "Bash($env:PORT=5002)",
+      "Bash(set PORT=7000)",
+      "Bash(start http://localhost:3001/auth/signup)",
+      "Bash(start http://localhost:3000/auth/signin)",
+      "Bash(start http://localhost:3001/auth/signin)",
+      "Bash(start http://localhost:3001/test)",
+      "Bash(start http://localhost:3001/)",
+      "Bash(set MCP_SERVER_PORT=6003)",
+      "Bash(set PORT=5003)",
+      "Bash(start http://localhost:3000/test-auth-flow.html)",
+      "Bash(set RAILWAY_TOKEN=02e0c7f6-9ca1-4355-af52-ee9eec0b3545)",
+      "Bash(railway logs:*)",
+      "WebFetch(domain:splendid-warmth-development.up.railway.app)"
     ],
     "deny": [],
     "ask": []

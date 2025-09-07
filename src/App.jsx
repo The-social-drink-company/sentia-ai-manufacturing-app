@@ -26,6 +26,9 @@ import FileImportSystem from './components/DataImport/FileImportSystem';
 import AIAnalyticsDashboard from './components/AI/AIAnalyticsDashboard';
 import DemandForecasting from './components/forecasting/DemandForecasting';
 
+// Layout components
+import EnterpriseLayout from './components/layout/EnterpriseLayout';
+
 // Clerk configuration
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const queryClient = new QueryClient({
@@ -57,40 +60,35 @@ function App() {
         <ErrorBoundary>
         <Router>
           <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow-sm border-b">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center py-4">
-                  <div className="flex items-center space-x-4">
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                      🚀 SENTIA Dashboard
-                    </h1>
-                    <span className="text-sm text-gray-500">Manufacturing Intelligence Platform</span>
-                  </div>
-                  
-                  <div className="flex items-center space-x-4">
-                    <SignedIn>
-                      <UserButton />
-                    </SignedIn>
-                    <SignedOut>
+            {/* Signed Out - Landing Page */}
+            <SignedOut>
+              {/* Simple header for signed out users */}
+              <header className="bg-white shadow-sm border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-between items-center py-4">
+                    <div className="flex items-center space-x-4">
+                      <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        🚀 SENTIA Dashboard
+                      </h1>
+                      <span className="text-sm text-gray-500">Manufacturing Intelligence Platform</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4">
                       <SignInButton>
                         <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                           Sign In
                         </button>
                       </SignInButton>
-                    </SignedOut>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </header>
-
-            {/* Main Content */}
-            <main>
-              <SignedOut>
-                <LandingPage />
-              </SignedOut>
-              
-              <SignedIn>
+              </header>
+              <LandingPage />
+            </SignedOut>
+            
+            {/* Signed In - Enterprise Layout with Navigation */}
+            <SignedIn>
+              <EnterpriseLayout>
                 <Suspense fallback={<LoadingSpinner />}>
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
@@ -106,8 +104,8 @@ function App() {
                     <Route path="/analytics" element={<AIAnalyticsDashboard />} />
                   </Routes>
                 </Suspense>
-              </SignedIn>
-            </main>
+              </EnterpriseLayout>
+            </SignedIn>
           </div>
         </Router>
         <Toaster position="top-right" />

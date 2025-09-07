@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 
 const TestMonitorDashboard = () => {
   const [schedulerStatus, setSchedulerStatus] = useState(null);
-  const [testResults, setTestResults] = useState([]);
+  const [, setTestResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

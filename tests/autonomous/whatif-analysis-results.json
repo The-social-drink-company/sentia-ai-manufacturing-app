@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-07T09:50:30.155Z",
+  "timestamp": "2025-09-07T10:00:31.940Z",
   "testType": "whatif_analysis",
   "summary": {
     "totalSliderTests": 0,
@@ -15,9 +15,9 @@
   "performanceMetrics": [
     {
       "operation": "concurrent_load_test",
-      "duration": 355.8362999999997,
+      "duration": 90.88169999999991,
       "success": false,
-      "timestamp": "2025-09-07T09:50:30.052Z"
+      "timestamp": "2025-09-07T10:00:31.654Z"
     }
   ],
   "clientRequirementsMet": true,

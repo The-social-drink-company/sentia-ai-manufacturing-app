@@ -36,6 +36,7 @@ agent-*.cjs
 tests/
 **/*.test.js
 **/*.spec.js
+**/tests/**/*
 
 # Backup and debug files
 src/App-*.jsx

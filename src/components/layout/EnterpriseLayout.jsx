@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { UserButton } from '@clerk/clerk-react';
@@ -8,7 +8,6 @@ import {
   BellIcon,
   ChevronRightIcon,
   HomeIcon,
-  XMarkIcon,
   CommandLineIcon
 } from '@heroicons/react/24/outline';
 import { useAuthRole } from '../../hooks/useAuthRole';

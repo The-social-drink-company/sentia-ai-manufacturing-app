@@ -1,0 +1,5 @@
+{"timestamp":"2025-09-07T10:24:15.489Z","level":"INFO","message":"Railway Deployment Monitor started"}
+{"timestamp":"2025-09-07T10:24:15.499Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T10:24:15.887Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T10:24:15.894Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T10:24:15.898Z","level":"INFO","message":"Starting deployment to development"}

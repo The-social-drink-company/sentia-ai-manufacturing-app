@@ -89,9 +89,11 @@ function App() {
             </SignedOut>
             
             {/* Public Test Monitor Route - No Auth Required */}
-            <Routes>
-              <Route path="/test-monitor" element={<TestMonitorDashboard />} />
-            </Routes>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                <Route path="/test-monitor" element={<TestMonitorDashboard />} />
+              </Routes>
+            </Suspense>
             
             {/* Signed In - Enterprise Layout with Navigation */}
             <SignedIn>

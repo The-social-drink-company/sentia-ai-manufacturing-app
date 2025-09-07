@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { ClerkProvider, SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { SSEProvider } from './context/SSEProvider';
@@ -26,6 +26,7 @@ import FileImportSystem from './components/DataImport/FileImportSystem';
 import AIAnalyticsDashboard from './components/AI/AIAnalyticsDashboard';
 import DemandForecasting from './components/forecasting/DemandForecasting';
 import WhatIfAnalysis from './components/analytics/WhatIfAnalysis';
+import TestMonitorDashboard from './pages/TestMonitorDashboard';
 
 // Layout components
 import EnterpriseLayout from './components/layout/EnterpriseLayout';
@@ -104,6 +105,7 @@ function App() {
                     <Route path="/forecasting" element={<DemandForecasting />} />
                     <Route path="/analytics" element={<AIAnalyticsDashboard />} />
                     <Route path="/what-if" element={<WhatIfAnalysis />} />
+                    <Route path="/test-monitor" element={<TestMonitorDashboard />} />
                   </Routes>
                 </Suspense>
               </EnterpriseLayout>

@@ -45,7 +45,11 @@
     "deploy:all": "npm run railway:setup && npm run railway:deploy && npm run railway:verify",
     "deploy:dev": "node scripts/railway-deploy.js development",
     "deploy:test": "node scripts/railway-deploy.js testing",
-    "deploy:prod": "node scripts/railway-deploy.js production"
+    "deploy:prod": "node scripts/railway-deploy.js production",
+    "railway:autonomous:setup": "node scripts/railway-autonomous-setup.js setup",
+    "railway:autonomous:deploy": "node scripts/railway-autonomous-setup.js deploy",
+    "railway:autonomous:status": "node scripts/railway-autonomous-setup.js status",
+    "autonomous:activate": "node scripts/railway-autonomous-setup.js"
   },
   "dependencies": {
     "@azure/msal-browser": "^4.22.0",
@@ -141,9 +145,15 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/generator": "^7.28.3",
+    "@babel/parser": "^7.28.4",
+    "@babel/traverse": "^7.28.4",
+    "@babel/types": "^7.28.4",
     "@commitlint/cli": "^18.4.0",
     "@commitlint/config-conventional": "^18.4.0",
     "@eslint/js": "^9.34.0",
+    "@faker-js/faker": "^10.0.0",
     "@playwright/test": "^1.40.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.4.0",

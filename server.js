@@ -732,26 +732,12 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
     
     // Map to user data with Sentia-specific roles
     const mappedUsers = realUsers.map(user => {
-      const email = user.emailAddresses[0]?.emailAddress;
-      let role = 'user';
-      
-      // Assign real roles based on actual Sentia users
-      if (email === 'paul.roberts@sentiaspirits.com' || 
-          email === 'david.orren@gabalabs.com' || 
-          email === 'daniel.kenny@sentiaspirits.com') {
-        role = 'admin';
-      } else if (email === 'marta.haczek@gabalabs.com' ||
-                 email === 'matt.coulshed@gabalabs.com' ||
-                 email === 'jaron.reid@gabalabs.com') {
-        role = 'user';
-      }
-      
       return {
         id: user.id,
         name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User',
-        email: email,
-        role: role,
-        status: user.banned ? 'banned' : 'active',
+        email: user.email,
+        role: user.role || 'user',
+        status: user.isActive ? 'active' : 'inactive',
         lastLogin: user.lastSignInAt ? new Date(user.lastSignInAt).toLocaleDateString() : 'Never',
         createdAt: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'
       };

@@ -1,8 +1,8 @@
 import React from 'react';
-import { signIn, signOut, useSession } from 'next-auth/react';
+
 
 export function SignInButton() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = ();
 
   if (status === 'loading') {
     return (
@@ -44,7 +44,7 @@ export function SignInButton() {
 
   return (
     <button
-      onClick={() => signIn('azure-ad', { callbackUrl: '/dashboard' })}
+      onClick={() => ('azure-ad', { callbackUrl: '/dashboard' })}
       className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
     >
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">

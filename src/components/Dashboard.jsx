@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, Users, Package, Activity, 
@@ -13,7 +13,7 @@ import QualityTrendsChart from './charts/QualityTrendsChart';
 import RealTimeProductionChart from './charts/RealTimeProductionChart';
 
 const Dashboard = () => {
-  const { data: session } = useSession();
+  const { data: session } = ();
   const user = session?.user;
   const [refreshTime, setRefreshTime] = useState(new Date());
 

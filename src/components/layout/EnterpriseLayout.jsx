@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useSession, signOut } from 'next-auth/react';
+
 import {
   Bars3Icon,
   MagnifyingGlassIcon,

@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import { SessionProvider } from 'next-auth/react'; // Temporarily disabled - causing blank screen
+// 
 // import { AuthProvider } from './components/AuthProvider'; // Temporarily disabled
 // import { SignInButton } from './components/SignInButton'; // Temporarily disabled
 import './index.css';

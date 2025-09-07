@@ -11,10 +11,10 @@ import {
   DevicePhoneMobileIcon,
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
-import { useSession } from 'next-auth/react';
+
 
 const Settings = () => {
-  const { data: session } = useSession();
+  const { data: session } = ();
   const [activeTab, setActiveTab] = useState('profile');
   const [settings, setSettings] = useState({
     profile: {

@@ -5,8 +5,12 @@ import { Link } from 'react-router-dom';
 import { 
   TrendingUp, Users, Package, Activity, 
   ArrowUpRight, ArrowDownRight, RefreshCw,
-  BarChart3, PieChart, LineChart, Settings
+  BarChart3, PieChart, LineChart, Settings, Upload
 } from 'lucide-react';
+
+// Import chart components
+import QualityTrendsChart from './charts/QualityTrendsChart';
+import RealTimeProductionChart from './charts/RealTimeProductionChart';
 
 const Dashboard = () => {
   const { user } = useUser();
@@ -126,6 +130,21 @@ const Dashboard = () => {
           <RecentActivity />
         </div>
 
+        {/* Real-time Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Real-time Production Chart */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-semibold mb-6">Production Line Efficiency</h3>
+            <RealTimeProductionChart height={300} />
+          </div>
+          
+          {/* Quality Trends Chart */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-semibold mb-6">Quality Control Trends</h3>
+            <QualityTrendsChart height={300} />
+          </div>
+        </div>
+
         {/* Navigation Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
           <NavigationCard
@@ -158,7 +177,32 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Admin Navigation */}
+        {/* Advanced Analytics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <NavigationCard
+            title="AI Analytics"
+            description="Machine learning insights and predictive analytics"
+            icon={<BarChart3 className="w-8 h-8" />}
+            link="/ai-analytics"
+            color="indigo"
+          />
+          <NavigationCard
+            title="Demand Forecasting"
+            description="AI-powered demand predictions and market analysis"
+            icon={<TrendingUp className="w-8 h-8" />}
+            link="/forecasting"
+            color="cyan"
+          />
+          <NavigationCard
+            title="Data Import"
+            description="Upload and process manufacturing data files"
+            icon={<Upload className="w-8 h-8" />}
+            link="/data-import"
+            color="orange"
+          />
+        </div>
+
+        {/* System Administration */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <NavigationCard
             title="Admin Panel"
@@ -172,7 +216,7 @@ const Dashboard = () => {
             description="Detailed reports, forecasting, and business intelligence"
             icon={<BarChart3 className="w-8 h-8" />}
             link="/analytics"
-            color="indigo"
+            color="slate"
           />
         </div>
 
@@ -322,7 +366,10 @@ const NavigationCard = ({ title, description, icon, link, color }) => {
     green: 'bg-green-50 hover:bg-green-100 text-green-600',
     emerald: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-600',
     gray: 'bg-gray-50 hover:bg-gray-100 text-gray-600',
-    indigo: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
+    indigo: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600',
+    cyan: 'bg-cyan-50 hover:bg-cyan-100 text-cyan-600',
+    orange: 'bg-orange-50 hover:bg-orange-100 text-orange-600',
+    slate: 'bg-slate-50 hover:bg-slate-100 text-slate-600'
   };
 
   return (

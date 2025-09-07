@@ -17,6 +17,11 @@ import ProductionTracking from './components/Manufacturing/ProductionTracking';
 import QualityControl from './components/Manufacturing/QualityControl';
 import InventoryManagement from './components/Manufacturing/InventoryManagement';
 
+// Advanced components
+import FileImportSystem from './components/DataImport/FileImportSystem';
+import AIAnalyticsDashboard from './components/AI/AIAnalyticsDashboard';
+import DemandForecasting from './components/forecasting/DemandForecasting';
+
 // Clerk configuration
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const queryClient = new QueryClient({
@@ -82,6 +87,10 @@ function App() {
                     <Route path="/production" element={<ProductionTracking />} />
                     <Route path="/quality" element={<QualityControl />} />
                     <Route path="/inventory" element={<InventoryManagement />} />
+                    <Route path="/data-import" element={<FileImportSystem />} />
+                    <Route path="/ai-analytics" element={<AIAnalyticsDashboard />} />
+                    <Route path="/forecasting" element={<DemandForecasting />} />
+                    <Route path="/analytics" element={<AIAnalyticsDashboard />} />
                   </Routes>
                 </Suspense>
               </SignedIn>

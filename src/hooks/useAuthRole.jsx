@@ -1,5 +1,6 @@
-import { useSession } from 'next-auth/react'
+
 import { useMemo } from 'react'
+import { useUser } from '@clerk/clerk-react'
 
 // Role hierarchy for permission checking
 const ROLE_HIERARCHY = {
@@ -108,7 +109,10 @@ const ROLE_FEATURES = {
 }
 
 export const useAuthRole = () => {
-  const { data: session, status } = useSession()
+  // NUCLEAR: BRUTAL Clerk integration
+  const { user, isLoaded } = useUser()
+  const status = isLoaded ? (user ? 'authenticated' : 'unauthenticated') : 'loading'
+  const session = { user }
   
   const authData = useMemo(() => {
     if (status === 'loading' || status === 'unauthenticated' || !session?.user) {

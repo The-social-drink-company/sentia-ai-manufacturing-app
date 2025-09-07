@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signIn, getSession } from '../../services/authService';
+import { , getSession } from '../../services/authService';
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const SignInPage = () => {
   const handleMicrosoftSignIn = async () => {
     setIsLoading(true);
     try {
-      const result = await signIn('microsoft', { 
+      const result = await ('microsoft', { 
         callbackUrl: '/dashboard',
         redirect: false 
       });
@@ -46,7 +46,7 @@ const SignInPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const result = await signIn('credentials', {
+      const result = await ('credentials', {
         email,
         password,
         redirect: false,

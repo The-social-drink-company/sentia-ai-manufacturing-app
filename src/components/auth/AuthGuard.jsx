@@ -1,10 +1,10 @@
 import React from 'react';
-import { useSession } from 'next-auth/react';
+
 import { Navigate } from 'react-router-dom';
 import LoadingSpinner from '../LoadingSpinner';
 
 const AuthGuard = ({ children, requiredRole = null }) => {
-  const { data: session, status } = useSession();
+  const { data: session, status } = ();
 
   if (status === 'loading') {
     return <LoadingSpinner />;

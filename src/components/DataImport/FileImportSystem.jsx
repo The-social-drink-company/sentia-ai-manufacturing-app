@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+
 import {
   Upload, File, X, CheckCircle, AlertTriangle,
   Download, RefreshCw, Database, FileSpreadsheet,
@@ -10,7 +10,7 @@ import {
 import toast from 'react-hot-toast';
 
 const FileImportSystem = () => {
-  const { data: session } = useSession();
+  const { data: session } = ();
   const user = session?.user;
   const [selectedDataType, setSelectedDataType] = useState('production');
   const [uploadProgress, setUploadProgress] = useState({});

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+
 import { 
   Users, Settings, Database, Activity, AlertTriangle,
   Plus, Edit, Trash2, Save, X, Search, Filter,
@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import AdminUsers from './admin/pages/AdminUsers';
 
 const AdminPanel = () => {
-  const { data: session } = useSession();
+  const { data: session } = ();
   const user = session?.user;
   const [activeTab, setActiveTab] = useState('users');
   const queryClient = useQueryClient();

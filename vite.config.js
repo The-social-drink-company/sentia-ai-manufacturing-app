@@ -55,8 +55,8 @@ export default defineConfig({
           vendor: ['react', 'react-dom', 'react-router-dom'],
           // Data fetching
           query: ['@tanstack/react-query'],
-          // Authentication
-          auth: ['next-auth'],
+          // Authentication - Clerk
+          auth: ['@clerk/clerk-react'],
           // Charts and visualization
           charts: ['recharts'],
           // Utilities

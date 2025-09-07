@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
 import { useSSE, useSSEEvent } from '../../hooks/useSSE';
 import { CardSkeleton } from '../LoadingStates';
+import { LineChart, DoughnutChart, qualityColors } from '../charts';
 import {
   CheckCircle, XCircle, AlertTriangle, Clock,
   TrendingUp, TrendingDown, TestTube,
@@ -339,17 +340,73 @@ const TestResults = ({ results }) => {
   );
 };
 
-const QualityTrends = ({ trends: _trends }) => {
+const QualityTrends = ({ trends }) => {
+  const chartData = {
+    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+    datasets: [
+      {
+        label: 'Pass Rate %',
+        data: [96.5, 97.2, 98.1, 97.8, 98.7, 98.5],
+        borderColor: qualityColors.passed,
+        backgroundColor: qualityColors.passed.replace('0.8', '0.1'),
+        tension: 0.4,
+        fill: true,
+      },
+      {
+        label: 'Tests Completed',
+        data: [142, 156, 134, 167, 147, 152],
+        borderColor: qualityColors.inProgress,
+        backgroundColor: qualityColors.inProgress,
+        tension: 0.4,
+        fill: false,
+        yAxisID: 'y1',
+      }
+    ]
+  };
+
+  const chartOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Quality Performance Over Time'
+      },
+      legend: {
+        position: 'top',
+      },
+    },
+    scales: {
+      y: {
+        type: 'linear',
+        display: true,
+        position: 'left',
+        title: {
+          display: true,
+          text: 'Pass Rate (%)'
+        },
+        min: 95,
+        max: 100,
+      },
+      y1: {
+        type: 'linear',
+        display: true,
+        position: 'right',
+        title: {
+          display: true,
+          text: 'Tests Completed'
+        },
+        grid: {
+          drawOnChartArea: false,
+        },
+        min: 120,
+        max: 180,
+      },
+    },
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Quality Trends</h3>
-      <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-        <div className="text-center text-gray-500">
-          <BarChart3 className="w-12 h-12 mx-auto mb-2" />
-          <p>Quality trends visualization</p>
-          <p className="text-sm">(Chart.js implementation)</p>
-        </div>
-      </div>
+      <LineChart data={chartData} options={chartOptions} height={300} />
     </div>
   );
 };

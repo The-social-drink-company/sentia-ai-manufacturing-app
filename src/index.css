@@ -1,4 +1,9 @@
-/* Import custom animations first */
+/* Import Tailwind CSS first - all @import rules must come before other CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import custom animations */
 @import './components/ui/animations.css';
 
 :root {
@@ -70,11 +75,6 @@ button:focus-visible {
     color: #213547;
   }
 }
-
-/* Import Tailwind CSS */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* Enhanced micro-interactions and animations */
 @layer components {

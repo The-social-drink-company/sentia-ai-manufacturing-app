@@ -410,16 +410,6 @@ try {
 - NEVER proactively create documentation files unless explicitly requested
 - NEVER add Unicode characters in console output - use ASCII alternatives only
 - Always check existing code patterns and follow the established architecture
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
 ### Pre-Development Checklist
 1. **Check ESLint configuration** - Ensure proper exclusions and globals

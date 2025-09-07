@@ -21,24 +21,16 @@ if (fs.existsSync(distPath)) {
   console.log('Dist contents:', fs.readdirSync(distPath));
 }
 
-<<<<<<< HEAD
-=======
 // Simplest possible static serving
->>>>>>> development
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
 });
 
-<<<<<<< HEAD
-app.use(express.static(distPath));
-
-=======
 // Serve static files
 app.use(express.static(distPath));
 
 // Catch all for SPA
->>>>>>> development
 app.get('*', (req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });

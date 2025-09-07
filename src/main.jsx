@@ -40,7 +40,7 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AppTest />
+    <App />
   </React.StrictMode>,
 )
 

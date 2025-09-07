@@ -5,6 +5,22 @@
  */
 
 /**
+ * Get environment mode for browser or Node.js context
+ * @returns {string} Environment mode
+ */
+const getEnvironmentMode = () => {
+  // Browser environment (Vite)
+  if (typeof import !== 'undefined' && import.meta && import.meta.env) {
+    return import.meta.env.MODE;
+  }
+  // Node.js environment fallback
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.NODE_ENV;
+  }
+  return 'production'; // Safe default
+};
+
+/**
  * Environment-aware development logger
  * Only logs in development environment, silent in production
  */
@@ -14,7 +30,7 @@ export const devLog = {
    * @param {...any} args - Arguments to log
    */
   log: (...args) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.log('[DEV]', ...args);
     }
   },

@@ -488,9 +488,135 @@ app.get('/api/analytics/ai-insights', authenticateUser, async (req, res) => {
   }
 });
 
+// Enhanced Production Tracking APIs
 app.get('/api/production/status', authenticateUser, (req, res) => {
-  const status = calculateProductionStatus();
+  const { line, range } = req.query;
+  const status = calculateEnhancedProductionStatus(line, range);
   res.json(status);
+});
+
+app.post('/api/production/control', authenticateUser, async (req, res) => {
+  try {
+    const { lineId, action } = req.body;
+    
+    // Simulate production line control
+    const result = await controlProductionLine(lineId, action);
+    
+    // Send SSE update for line status change
+    sendSSEEvent('production.line.status', {
+      lineId,
+      updates: {
+        status: result.status,
+        lastUpdated: new Date().toISOString()
+      }
+    });
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Production control error:', error);
+    res.status(500).json({ error: 'Failed to control production line' });
+  }
+});
+
+app.get('/api/production/metrics', authenticateUser, (req, res) => {
+  const { range } = req.query;
+  const metrics = calculateProductionMetrics(range);
+  res.json(metrics);
+});
+
+app.get('/api/production/batches', authenticateUser, (req, res) => {
+  const batches = getCurrentBatches();
+  res.json(batches);
+});
+
+app.post('/api/production/batch/update', authenticateUser, async (req, res) => {
+  try {
+    const { batchId, updates } = req.body;
+    
+    const updatedBatch = await updateBatchStatus(batchId, updates);
+    
+    // Send SSE update for batch status change
+    sendSSEEvent('production.batch.status', {
+      batchId,
+      updates: updatedBatch
+    });
+    
+    res.json(updatedBatch);
+  } catch (error) {
+    console.error('Batch update error:', error);
+    res.status(500).json({ error: 'Failed to update batch status' });
+  }
+});
+
+// Enhanced Quality Control APIs
+app.get('/api/quality/dashboard', authenticateUser, (req, res) => {
+  const { batch, test } = req.query;
+  const qualityData = getQualityControlData(batch, test);
+  res.json(qualityData);
+});
+
+app.post('/api/quality/test/submit', authenticateUser, async (req, res) => {
+  try {
+    const { testData } = req.body;
+    const result = await submitTestResult(testData);
+    
+    // Send SSE update for test result
+    sendSSEEvent('quality.test.result', {
+      testId: testData.testId,
+      result,
+      newPassRate: calculateNewPassRate()
+    });
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Test submission error:', error);
+    res.status(500).json({ error: 'Failed to submit test result' });
+  }
+});
+
+app.post('/api/quality/batch/approve', authenticateUser, async (req, res) => {
+  try {
+    const { batchId, approvalData } = req.body;
+    const result = await approveBatch(batchId, approvalData);
+    
+    // Send SSE update for batch status change
+    sendSSEEvent('quality.batch.status', {
+      batchId,
+      updates: result
+    });
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Batch approval error:', error);
+    res.status(500).json({ error: 'Failed to approve batch' });
+  }
+});
+
+app.post('/api/quality/alert/resolve', authenticateUser, async (req, res) => {
+  try {
+    const { alertId, resolution } = req.body;
+    const result = await resolveQualityAlert(alertId, resolution);
+    res.json(result);
+  } catch (error) {
+    console.error('Alert resolution error:', error);
+    res.status(500).json({ error: 'Failed to resolve alert' });
+  }
+});
+
+app.get('/api/quality/tests/schedule', authenticateUser, (req, res) => {
+  const schedule = getTestSchedule();
+  res.json(schedule);
+});
+
+app.post('/api/quality/test/schedule', authenticateUser, async (req, res) => {
+  try {
+    const { testData } = req.body;
+    const result = await scheduleTest(testData);
+    res.json(result);
+  } catch (error) {
+    console.error('Test scheduling error:', error);
+    res.status(500).json({ error: 'Failed to schedule test' });
+  }
 });
 
 // Forecasting APIs (Neon Vector Database AI)
@@ -853,42 +979,252 @@ async function calculateRealTrendsWithAI() {
   }));
 }
 
-function calculateProductionStatus() {
+// Enhanced Production Status Calculation
+function calculateEnhancedProductionStatus(line = 'all', range = 'today') {
+  let productionLines = getProductionLineData();
+  let metrics = calculateOverallProductionMetrics(range);
+  
+  // Filter by specific line if requested
+  if (line !== 'all') {
+    productionLines = productionLines.filter(l => l.id === line);
+  }
+  
+  return {
+    overallEfficiency: metrics.efficiency,
+    efficiencyChange: metrics.efficiencyChange,
+    unitsProduced: metrics.unitsProduced,
+    unitsChange: metrics.unitsChange,
+    qualityRate: metrics.qualityRate,
+    qualityChange: metrics.qualityChange,
+    downtimeMinutes: metrics.downtimeMinutes,
+    downtimeChange: metrics.downtimeChange,
+    lines: productionLines,
+    currentBatches: getCurrentBatches(),
+    qualityAlerts: getQualityAlerts(),
+    maintenanceSchedule: getMaintenanceSchedule(),
+    trends: getProductionTrends(range),
+    dataSource: manufacturingData.production.length > 0 ? 'uploaded_file' : 'simulated',
+    lastUpdated: new Date().toISOString()
+  };
+}
+
+function getProductionLineData() {
   if (manufacturingData.production.length > 0) {
     const latest = manufacturingData.production[manufacturingData.production.length - 1];
     
-    return {
-      lineA: {
-        status: latest.lineA_status || latest['Line A Status'] || 'Running',
-        efficiency: parseFloat(latest.lineA_efficiency || latest['Line A Efficiency'] || 94.2),
-        units: parseInt(latest.lineA_units || latest['Line A Units'] || 2450)
+    return [
+      {
+        id: 'line-a',
+        name: 'Line A - GABA Red Production',
+        status: latest.lineA_status || latest['Line A Status'] || 'running',
+        efficiency: parseFloat(latest.lineA_efficiency || latest['Line A Efficiency'] || 96.3),
+        outputRate: parseInt(latest.lineA_units || latest['Line A Units'] || 2450),
+        target: 2500,
+        currentProduct: 'GABA Red 500ml'
       },
-      qualityControl: {
-        status: latest.qc_status || latest['QC Status'] || 'Active',
-        passRate: parseFloat(latest.qc_rate || latest['QC Rate'] || 98.7)
+      {
+        id: 'line-b', 
+        name: 'Line B - GABA Clear Production',
+        status: latest.lineB_status || latest['Line B Status'] || 'running',
+        efficiency: parseFloat(latest.lineB_efficiency || latest['Line B Efficiency'] || 92.1),
+        outputRate: parseInt(latest.lineB_units || latest['Line B Units'] || 2100),
+        target: 2300,
+        currentProduct: 'GABA Clear 500ml'
       },
-      maintenance: {
-        status: latest.maintenance_status || latest['Maintenance Status'] || 'Scheduled',
-        nextService: latest.next_service || latest['Next Service'] || '2 hours'
-      },
-      inventory: {
-        status: latest.inventory_status || latest['Inventory Status'] || 'Optimal',
-        level: parseInt(latest.inventory_level || latest['Inventory Level'] || 2450)
-      },
-      dataSource: 'uploaded_file',
-      lastUpdated: manufacturingData.lastUpdated
-    };
+      {
+        id: 'line-c',
+        name: 'Line C - Packaging',
+        status: latest.lineC_status || latest['Line C Status'] || 'paused',
+        efficiency: parseFloat(latest.lineC_efficiency || latest['Line C Efficiency'] || 0),
+        outputRate: parseInt(latest.lineC_units || latest['Line C Units'] || 0),
+        target: 1800,
+        currentProduct: 'Mixed Packaging'
+      }
+    ];
   }
   
-  // Fallback status
+  // Fallback simulated data
+  return [
+    {
+      id: 'line-a',
+      name: 'Line A - GABA Red Production',
+      status: 'running',
+      efficiency: 96.3,
+      outputRate: 2450,
+      target: 2500,
+      currentProduct: 'GABA Red 500ml'
+    },
+    {
+      id: 'line-b',
+      name: 'Line B - GABA Clear Production', 
+      status: 'running',
+      efficiency: 92.1,
+      outputRate: 2100,
+      target: 2300,
+      currentProduct: 'GABA Clear 500ml'
+    },
+    {
+      id: 'line-c',
+      name: 'Line C - Packaging',
+      status: 'maintenance',
+      efficiency: 0,
+      outputRate: 0,
+      target: 1800,
+      currentProduct: 'Mixed Packaging'
+    }
+  ];
+}
+
+function calculateOverallProductionMetrics(range) {
+  const lines = getProductionLineData();
+  
+  // Calculate overall metrics
+  const totalOutput = lines.reduce((sum, line) => sum + line.outputRate, 0);
+  const totalTarget = lines.reduce((sum, line) => sum + line.target, 0);
+  const avgEfficiency = lines.reduce((sum, line) => sum + line.efficiency, 0) / lines.length;
+  
   return {
-    lineA: { status: 'Running', efficiency: 94.2, units: 2450 },
-    qualityControl: { status: 'Active', passRate: 98.7 },
-    maintenance: { status: 'Scheduled', nextService: '2 hours' },
-    inventory: { status: 'Optimal', level: 2450 },
-    dataSource: 'estimated',
-    lastUpdated: new Date().toISOString()
+    efficiency: Math.round(avgEfficiency * 10) / 10,
+    efficiencyChange: 2.3,
+    unitsProduced: totalOutput * (range === 'today' ? 8 : range === 'week' ? 40 : 160), // simulate daily/weekly/monthly
+    unitsChange: 1250,
+    qualityRate: 98.7,
+    qualityChange: 0.5,
+    downtimeMinutes: lines.filter(l => l.status !== 'running').length * 30,
+    downtimeChange: 15
   };
+}
+
+function getCurrentBatches() {
+  return [
+    { 
+      id: '2024-001', 
+      product: 'GABA Red 500ml', 
+      status: 'processing', 
+      completion: Math.floor(Math.random() * 30) + 70,
+      startTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      estimatedCompletion: new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString()
+    },
+    { 
+      id: '2024-002', 
+      product: 'GABA Clear 500ml', 
+      status: 'quality-check', 
+      completion: 100,
+      startTime: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+      estimatedCompletion: new Date(Date.now() + 0.5 * 60 * 60 * 1000).toISOString()
+    },
+    { 
+      id: '2024-003', 
+      product: 'GABA Red 250ml', 
+      status: 'completed', 
+      completion: 100,
+      startTime: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      estimatedCompletion: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
+    }
+  ];
+}
+
+function getQualityAlerts() {
+  return [
+    {
+      id: 'qa-001',
+      title: 'pH Level Warning',
+      description: 'Batch 2024-001 pH level is slightly outside optimal range (7.2 vs 7.0 target)',
+      severity: 'medium',
+      lineId: 'line-a',
+      batchId: '2024-001',
+      time: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+      status: 'open'
+    },
+    {
+      id: 'qa-002',
+      title: 'Temperature Alert',
+      description: 'Line B temperature sensor reporting anomaly (52°C vs 50°C target)',
+      severity: 'high',
+      lineId: 'line-b',
+      time: new Date(Date.now() - 12 * 60 * 1000).toISOString(),
+      status: 'investigating'
+    }
+  ];
+}
+
+function getMaintenanceSchedule() {
+  return [
+    {
+      id: 'maint-001',
+      equipment: 'Tank Mixer #3',
+      type: 'Preventive Maintenance',
+      priority: 'high',
+      scheduled: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      estimatedDuration: '2 hours',
+      lineId: 'line-a'
+    },
+    {
+      id: 'maint-002',
+      equipment: 'Conveyor Belt B2',
+      type: 'Belt Replacement',
+      priority: 'medium',
+      scheduled: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+      estimatedDuration: '4 hours',
+      lineId: 'line-b'
+    },
+    {
+      id: 'maint-003',
+      equipment: 'Packaging Unit C1',
+      type: 'Sensor Calibration',
+      priority: 'low',
+      scheduled: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      estimatedDuration: '1 hour',
+      lineId: 'line-c'
+    }
+  ];
+}
+
+async function controlProductionLine(lineId, action) {
+  // Simulate production line control
+  const validActions = ['start', 'pause', 'stop', 'reset'];
+  if (!validActions.includes(action)) {
+    throw new Error('Invalid action');
+  }
+  
+  const statusMap = {
+    'start': 'running',
+    'pause': 'paused', 
+    'stop': 'stopped',
+    'reset': 'running'
+  };
+  
+  // Simulate delay for control action
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  return {
+    lineId,
+    status: statusMap[action],
+    action,
+    timestamp: new Date().toISOString(),
+    success: true
+  };
+}
+
+async function updateBatchStatus(batchId, updates) {
+  // Simulate batch status update
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  return {
+    batchId,
+    ...updates,
+    lastUpdated: new Date().toISOString(),
+    success: true
+  };
+}
+
+function calculateProductionMetrics(range = 'today') {
+  return calculateOverallProductionMetrics(range);
+}
+
+// Legacy function for backward compatibility
+function calculateProductionStatus() {
+  return calculateEnhancedProductionStatus();
 }
 
 // Demand forecasting is now handled by aiAnalyticsService

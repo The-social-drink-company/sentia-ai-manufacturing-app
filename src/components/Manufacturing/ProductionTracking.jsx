@@ -116,6 +116,61 @@ const ProductionTracking = () => {
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
+  // Handle production line control
+  const handleLineControl = async (lineId, action) => {
+    try {
+      const response = await fetch('/api/production/control', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await user?.getToken()}`
+        },
+        body: JSON.stringify({ lineId, action })
+      });
+
+      if (!response.ok) {
+        throw new Error('Control action failed');
+      }
+
+      const result = await response.json();
+      
+      // Update will come through SSE, but we can show immediate feedback
+      console.log(`${action} action successful for ${lineId}:`, result);
+      
+      // Optionally trigger a manual refetch for immediate update
+      refetch();
+    } catch (error) {
+      console.error('Production line control error:', error);
+      showErrorToast(`Failed to ${action} production line`);
+    }
+  };
+
+  // Handle batch status updates  
+  const handleBatchUpdate = async (batchId, updates) => {
+    try {
+      const response = await fetch('/api/production/batch/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await user?.getToken()}`
+        },
+        body: JSON.stringify({ batchId, updates })
+      });
+
+      if (!response.ok) {
+        throw new Error('Batch update failed');
+      }
+
+      const result = await response.json();
+      console.log(`Batch ${batchId} updated:`, result);
+      
+      refetch();
+    } catch (error) {
+      console.error('Batch update error:', error);
+      showErrorToast('Failed to update batch status');
+    }
+  };
+
   const data = productionData || mockProductionData;
 
   return (
@@ -236,7 +291,7 @@ const ProductionTracking = () => {
 
         {/* Real-time Monitoring */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <CurrentBatches batches={data.currentBatches} />
+          <CurrentBatches batches={data.currentBatches} onBatchUpdate={handleBatchUpdate} />
           <QualityAlerts alerts={data.qualityAlerts} />
           <MaintenanceSchedule schedule={data.maintenanceSchedule} />
         </div>
@@ -296,13 +351,25 @@ const ProductionLineStatus = ({ data }) => {
                 <h4 className="font-medium text-gray-900">{line.name}</h4>
               </div>
               <div className="flex items-center space-x-2">
-                <button className="p-1 text-green-600 hover:bg-green-50 rounded">
+                <button 
+                  onClick={() => handleLineControl(line.id, 'start')}
+                  disabled={line.status === 'running'}
+                  className="p-1 text-green-600 hover:bg-green-50 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <Play className="w-4 h-4" />
                 </button>
-                <button className="p-1 text-yellow-600 hover:bg-yellow-50 rounded">
+                <button 
+                  onClick={() => handleLineControl(line.id, 'pause')}
+                  disabled={line.status === 'paused'}
+                  className="p-1 text-yellow-600 hover:bg-yellow-50 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <Pause className="w-4 h-4" />
                 </button>
-                <button className="p-1 text-red-600 hover:bg-red-50 rounded">
+                <button 
+                  onClick={() => handleLineControl(line.id, 'stop')}
+                  disabled={line.status === 'stopped'}
+                  className="p-1 text-red-600 hover:bg-red-50 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <StopCircle className="w-4 h-4" />
                 </button>
               </div>
@@ -357,30 +424,121 @@ const ProductionTrends = ({ data }) => {
   );
 };
 
-const CurrentBatches = ({ batches }) => {
+const CurrentBatches = ({ batches, onBatchUpdate }) => {
+  const [selectedBatch, setSelectedBatch] = useState(null);
+
+  const handleStatusChange = (batchId, newStatus) => {
+    if (onBatchUpdate) {
+      onBatchUpdate(batchId, { status: newStatus });
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'processing': return 'bg-blue-100 text-blue-800';
+      case 'quality-check': return 'bg-yellow-100 text-yellow-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'failed': return 'bg-red-100 text-red-800';
+      case 'paused': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatTime = (isoString) => {
+    return new Date(isoString).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      <h3 className="text-lg font-semibold mb-6">Current Batches</h3>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold">Current Batches</h3>
+        <span className="text-sm text-gray-500">{batches.length} active</span>
+      </div>
       <div className="space-y-3">
         {batches.map((batch) => (
-          <div key={batch.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <div>
-              <div className="font-medium text-gray-900">Batch #{batch.id}</div>
-              <div className="text-sm text-gray-500">{batch.product}</div>
-            </div>
-            <div className="text-right">
-              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                batch.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                batch.status === 'quality-check' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-green-100 text-green-800'
-              }`}>
-                {batch.status.replace('-', ' ').toUpperCase()}
+          <div key={batch.id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors">
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex-1">
+                <div className="flex items-center space-x-2">
+                  <div className="font-medium text-gray-900">Batch #{batch.id}</div>
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(batch.status)}`}>
+                    {batch.status.replace('-', ' ').toUpperCase()}
+                  </div>
+                </div>
+                <div className="text-sm text-gray-500 mt-1">{batch.product}</div>
               </div>
-              <div className="text-sm text-gray-500 mt-1">{batch.completion}% complete</div>
+              
+              {/* Batch Controls */}
+              <div className="flex items-center space-x-1 ml-2">
+                {batch.status === 'processing' && (
+                  <button
+                    onClick={() => handleStatusChange(batch.id, 'quality-check')}
+                    className="p-1 text-yellow-600 hover:bg-yellow-50 rounded text-xs"
+                    title="Move to Quality Check"
+                  >
+                    <CheckCircle className="w-3 h-3" />
+                  </button>
+                )}
+                {batch.status === 'quality-check' && (
+                  <>
+                    <button
+                      onClick={() => handleStatusChange(batch.id, 'completed')}
+                      className="p-1 text-green-600 hover:bg-green-50 rounded text-xs"
+                      title="Mark as Completed"
+                    >
+                      <CheckCircle className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange(batch.id, 'failed')}
+                      className="p-1 text-red-600 hover:bg-red-50 rounded text-xs"
+                      title="Mark as Failed"
+                    >
+                      <AlertTriangle className="w-3 h-3" />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
+            
+            {/* Progress Bar */}
+            <div className="mb-2">
+              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                <span>Progress</span>
+                <span>{batch.completion}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    batch.status === 'completed' ? 'bg-green-500' :
+                    batch.status === 'failed' ? 'bg-red-500' :
+                    'bg-blue-500'
+                  }`}
+                  style={{ width: `${batch.completion}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            {/* Timing Information */}
+            {batch.startTime && (
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>Started: {formatTime(batch.startTime)}</span>
+                {batch.estimatedCompletion && batch.status !== 'completed' && (
+                  <span>ETA: {formatTime(batch.estimatedCompletion)}</span>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
+      
+      {batches.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          <div className="text-sm">No active batches</div>
+        </div>
+      )}
     </div>
   );
 };

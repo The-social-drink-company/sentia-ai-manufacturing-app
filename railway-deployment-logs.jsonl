@@ -275,3 +275,13 @@
 {"timestamp":"2025-09-07T12:22:51.093Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
 {"timestamp":"2025-09-07T12:22:51.108Z","level":"WARN","message":"development needs redeployment"}
 {"timestamp":"2025-09-07T12:22:51.120Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T12:22:57.713Z","level":"SUCCESS","message":"Deployed to development"}
+{"timestamp":"2025-09-07T12:22:57.856Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding","authentication"]}
+{"timestamp":"2025-09-07T12:22:57.872Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T12:22:57.884Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T12:22:58.018Z","level":"ERROR","message":"Failed to deploy to test","error":"Command failed: git checkout test\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T12:22:58.307Z","level":"STATUS","message":"production deployment status","branch":"production","url":"https://sentia-manufacturing-dashboard-production.up.railway.app","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding","authentication"]}
+{"timestamp":"2025-09-07T12:22:58.333Z","level":"WARN","message":"production needs redeployment"}
+{"timestamp":"2025-09-07T12:22:58.355Z","level":"INFO","message":"Starting deployment to production"}
+{"timestamp":"2025-09-07T12:22:58.524Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T12:22:58.713Z","level":"INFO","message":"Deployment cycle completed"}

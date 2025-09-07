@@ -88,6 +88,11 @@ function App() {
               <LandingPage />
             </SignedOut>
             
+            {/* Public Test Monitor Route - No Auth Required */}
+            <Routes>
+              <Route path="/test-monitor" element={<TestMonitorDashboard />} />
+            </Routes>
+            
             {/* Signed In - Enterprise Layout with Navigation */}
             <SignedIn>
               <EnterpriseLayout>
@@ -105,7 +110,6 @@ function App() {
                     <Route path="/forecasting" element={<DemandForecasting />} />
                     <Route path="/analytics" element={<AIAnalyticsDashboard />} />
                     <Route path="/what-if" element={<WhatIfAnalysis />} />
-                    <Route path="/test-monitor" element={<TestMonitorDashboard />} />
                   </Routes>
                 </Suspense>
               </EnterpriseLayout>

@@ -21,6 +21,7 @@ database/
 scripts/
 
 # Agent-generated files (problematic linting)
+agents/
 *-agent.js
 *-agent.cjs
 agent-*.js
@@ -31,10 +32,18 @@ agent-*.cjs
 # Generated files
 *.min.js
 
-# Test files (different environment)
+# Test files (different environment) 
 tests/
 **/*.test.js
 **/*.spec.js
+
+# Backup and debug files
+src/App-*.jsx
+src/*-backup*.jsx
+src/*-debug*.jsx
+src/*-Original*.jsx
+src/MinimalApp.jsx
+src/TestDashboard.jsx
 
 # Configuration files (different environments)
 vite.config.js

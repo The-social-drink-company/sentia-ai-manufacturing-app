@@ -1,15 +1,15 @@
 {
-  "timestamp": "2025-09-07T09:40:43.711Z",
+  "timestamp": "2025-09-07T09:54:59.166Z",
   "failedTests": [
     {
       "testName": "WHATIF_ANALYSIS_COMPREHENSIVE",
       "result": "fail",
-      "duration": 344.5533999999998,
-      "timestamp": "2025-09-07T09:40:43.645Z",
+      "duration": 51.30880000000025,
+      "timestamp": "2025-09-07T09:54:59.040Z",
       "error": {
-        "message": "apiRequestContext.get: connect ECONNREFUSED ::1:5000\nCall log:\n\u001b[2m  - → GET http://localhost:5000/api/analytics/whatif-analysis/initialize\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n",
-        "stack": "apiRequestContext.get: connect ECONNREFUSED ::1:5000\nCall log:\n\u001b[2m  - → GET http://localhost:5000/api/analytics/whatif-analysis/initialize\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\n    at testFunction (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:493:42)\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:13)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:489:26",
-        "type": "Error"
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m401\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m401\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:494:37\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:489:5",
+        "type": "ExpectError"
       },
       "screenshot": null,
       "context": {
@@ -20,17 +20,16 @@
         },
         "userAgent": "Playwright Test Agent",
         "memoryUsage": {
-          "rss": 166666240,
-          "heapTotal": 110637056,
-          "heapUsed": 54768624,
-          "external": 11328891,
-          "arrayBuffers": 7414832
+          "rss": 163012608,
+          "heapTotal": 109166592,
+          "heapUsed": 53917968,
+          "external": 9252679,
+          "arrayBuffers": 5338762
         }
       }
     }
   ],
   "failurePatterns": {
-    "SERVER_ERROR": 1
+    "UNKNOWN": 1
   },
-  "triggerSelfHealing": true
-}
+  "triggerSelfHealing": t

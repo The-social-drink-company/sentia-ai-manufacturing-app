@@ -221,3 +221,11 @@
 {"timestamp":"2025-09-07T11:57:12.668Z","level":"INFO","message":"Starting deployment to production"}
 {"timestamp":"2025-09-07T11:57:12.815Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
 {"timestamp":"2025-09-07T11:57:13.010Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T12:02:13.039Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T12:02:13.324Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T12:02:13.342Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T12:02:13.354Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T12:02:15.914Z","level":"ERROR","message":"Failed to deploy to development","error":"Command failed: git pull origin development\nFrom https://github.com/The-social-drink-company/sentia-manufacturing-dashboard\n * branch            development -> FETCH_HEAD\nwarning: fetch updated the current branch head.\nfast-forwarding your working tree from\ncommit 281f38c439c9c0609135554551a00b8986543251.\nerror: The following untracked working tree files would be overwritten by merge:\n\tdeployment-marker-production.txt\nPlease move or remove them before you merge.\nAborting\nfatal: Cannot fast-forward your working tree.\nAfter making sure that you saved anything precious from\n$ git diff 281f38c439c9c0609135554551a00b8986543251\noutput, run\n$ git reset --hard\nto recover.\n"}
+{"timestamp":"2025-09-07T12:02:16.059Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding","authentication"]}
+{"timestamp":"2025-09-07T12:02:16.077Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T12:02:16.089Z","level":"INFO","message":"Starting deployment to test"}

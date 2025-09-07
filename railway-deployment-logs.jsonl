@@ -207,3 +207,7 @@
 {"timestamp":"2025-09-07T11:51:55.595Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
 {"timestamp":"2025-09-07T11:51:55.610Z","level":"WARN","message":"development needs redeployment"}
 {"timestamp":"2025-09-07T11:51:55.623Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T11:57:04.389Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T11:57:04.698Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T11:57:04.720Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T11:57:04.734Z","level":"INFO","message":"Starting deployment to development"}

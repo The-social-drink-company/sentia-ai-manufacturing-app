@@ -27,102 +27,149 @@ const EnterpriseLayout = ({ children }) => {
   );
 };
 
-// BRUTAL APP COMPONENT - NO AUTHENTICATION REQUIRED
+// Protected Routes Component  
+const ProtectedRoute = ({ children }) => {
+  const { isSignedIn, isLoaded } = useUser();
+  
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+  
+  if (!isSignedIn) {
+    return <RedirectToSignIn />;
+  }
+  
+  return children;
+};
+
+// NUCLEAR APP COMPONENT WITH CLERK AUTHENTICATION + FULL DASHBOARD ACCESS
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          {/* FULL ENTERPRISE DASHBOARD - IMMEDIATE ACCESS */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <Router>
+        <div className="App">
+          {/* SIGNED IN USERS GET FULL ENTERPRISE ACCESS */}
+          <SignedIn>
+            <Routes>
+              {/* FULL ENTERPRISE DASHBOARD - ALL FEATURES */}
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <EnhancedDashboard />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* WORKING CAPITAL - FULL ACCESS */}
+              <Route 
+                path="/working-capital" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <WorkingCapital />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* WHAT-IF ANALYSIS - FULL ACCESS */}
+              <Route 
+                path="/what-if" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <WhatIfAnalysis />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* ADMIN PANEL - FULL ACCESS */}
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <AdminPanel />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* ALL OTHER ENTERPRISE ROUTES - FULL ACCESS */}
+              <Route 
+                path="/analytics" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <EnhancedDashboard />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/forecasting" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <EnhancedDashboard />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/inventory" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <EnhancedDashboard />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/production" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <EnhancedDashboard />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/quality" 
+                element={
+                  <ProtectedRoute>
+                    <EnterpriseLayout>
+                      <EnhancedDashboard />
+                    </EnterpriseLayout>
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* ROOT PATH - REDIRECT TO DASHBOARD */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              
+              {/* 404 HANDLER - REDIRECT TO DASHBOARD */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </SignedIn>
           
-          {/* WORKING CAPITAL - IMMEDIATE ACCESS */}
-          <Route 
-            path="/working-capital" 
-            element={
-              <EnterpriseLayout>
-                <WorkingCapital />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* WHAT-IF ANALYSIS - IMMEDIATE ACCESS */}
-          <Route 
-            path="/what-if" 
-            element={
-              <EnterpriseLayout>
-                <WhatIfAnalysis />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* ADMIN PANEL - IMMEDIATE ACCESS */}
-          <Route 
-            path="/admin" 
-            element={
-              <EnterpriseLayout>
-                <AdminPanel />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* ALL OTHER ENTERPRISE ROUTES - IMMEDIATE ACCESS */}
-          <Route 
-            path="/analytics" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          <Route 
-            path="/forecasting" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          <Route 
-            path="/inventory" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          <Route 
-            path="/production" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          <Route 
-            path="/quality" 
-            element={
-              <EnterpriseLayout>
-                <EnhancedDashboard />
-              </EnterpriseLayout>
-            } 
-          />
-          
-          {/* ROOT PATH - REDIRECT TO DASHBOARD */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          
-          {/* 404 HANDLER - REDIRECT TO DASHBOARD */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </div>
-    </Router>
+          {/* SIGNED OUT USERS - CLERK AUTHENTICATION */}
+          <SignedOut>
+            <RedirectToSignIn />
+          </SignedOut>
+        </div>
+      </Router>
+    </ClerkProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import { devLog } from '../lib/devLog.js';
+import { devLog } from '../../lib/devLog.js';
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -118,7 +118,7 @@ const InventoryOptimizer = ({ data, onOptimize, loading = false }) => {
           });
         }
       } catch (error) {
-        console.error('Failed to load inventory data:', error);
+        devLog.error('Failed to load inventory data:', error);
       }
     };
 
@@ -181,13 +181,13 @@ const InventoryOptimizer = ({ data, onOptimize, loading = false }) => {
               } else if (status.status === 'FAILED') {
                 clearInterval(pollInterval);
                 setIsOptimizing(false);
-                console.error('Optimization failed:', status.error);
+                devLog.error('Optimization failed:', status.error);
               }
             }
           } catch (error) {
             clearInterval(pollInterval);
             setIsOptimizing(false);
-            console.error('Error polling job status:', error);
+            devLog.error('Error polling job status:', error);
           }
         }, 1000);
 
@@ -199,11 +199,11 @@ const InventoryOptimizer = ({ data, onOptimize, loading = false }) => {
 
       } else {
         setIsOptimizing(false);
-        console.error('Failed to create optimization job');
+        devLog.error('Failed to create optimization job');
       }
     } catch (error) {
       setIsOptimizing(false);
-      console.error('Optimization error:', error);
+      devLog.error('Optimization error:', error);
     }
 
     if (onOptimize) {

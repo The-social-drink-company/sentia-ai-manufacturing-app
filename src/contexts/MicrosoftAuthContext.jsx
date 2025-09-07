@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { createContext, useContext, useState, useEffect } from 'react';
 import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
 import { MsalProvider, useMsal, useAccount, useIsAuthenticated } from '@azure/msal-react';
 
@@ -74,7 +74,7 @@ const MicrosoftAuthContextProvider = ({ children }) => {
         return response;
       }
     } catch (error) {
-      console.error('Microsoft login error:', error);
+      devLog.error('Microsoft login error:', error);
       setError(error.message);
       throw error;
     } finally {
@@ -121,7 +121,7 @@ const MicrosoftAuthContextProvider = ({ children }) => {
       });
       setAccessToken(null);
     } catch (error) {
-      console.error('Microsoft logout error:', error);
+      devLog.error('Microsoft logout error:', error);
       setError(error.message);
     } finally {
       setIsLoading(false);

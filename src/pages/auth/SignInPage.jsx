@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { , getSession } from '../../services/authService';
 
@@ -29,13 +29,13 @@ const SignInPage = () => {
       });
       
       if (result?.error) {
-        console.error('Microsoft sign in error:', result.error);
+        devLog.error('Microsoft sign in error:', result.error);
         alert('Microsoft sign in failed. Please try again.');
       } else if (result?.ok) {
         navigate('/dashboard');
       }
     } catch (error) {
-      console.error('Microsoft sign in error:', error);
+      devLog.error('Microsoft sign in error:', error);
       alert('Microsoft sign in failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -54,13 +54,13 @@ const SignInPage = () => {
       });
       
       if (result?.error) {
-        console.error('Sign in error:', result.error);
+        devLog.error('Sign in error:', result.error);
         alert('Sign in failed. Please check your credentials.');
       } else if (result?.ok) {
         navigate('/dashboard');
       }
     } catch (error) {
-      console.error('Credentials sign in error:', error);
+      devLog.error('Credentials sign in error:', error);
     } finally {
       setIsLoading(false);
     }

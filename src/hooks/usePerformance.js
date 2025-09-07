@@ -1,4 +1,4 @@
-/**
+import { devLog } from '../lib/devLog.js';\n/**
  * Performance optimization hooks and utilities
  * Provides memoization, debouncing, throttling, and performance monitoring
  */
@@ -83,7 +83,7 @@ export const usePerformanceMonitor = (componentName) => {
       
       if (process.env.NODE_ENV === 'development') {
         if (renderTime.current > 16) { // Longer than one frame (60fps)
-          console.warn(
+          devLog.warn(
             `[Performance] ${componentName} took ${renderTime.current.toFixed(2)}ms to render (render #${renderCount.current})`
           );
         }
@@ -95,7 +95,7 @@ export const usePerformanceMonitor = (componentName) => {
     return () => {
       if (process.env.NODE_ENV === 'development') {
         const lifetime = Date.now() - mounted.current;
-        console.log(
+        devLog.log(
           `[Performance] ${componentName} unmounted after ${lifetime}ms and ${renderCount.current} renders`
         );
       }

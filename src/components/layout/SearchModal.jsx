@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import {
@@ -128,7 +128,7 @@ const SearchModal = ({ isOpen, onClose }) => {
       id: 'export-data', 
       title: 'Export Data', 
       description: 'Export dashboard data to Excel/CSV',
-      action: () => console.log('Export data'), 
+      action: () => devLog.log('Export data'), 
       icon: DocumentIcon, 
       type: 'action',
       keywords: ['export', 'download', 'csv', 'excel', 'data']
@@ -146,7 +146,7 @@ const SearchModal = ({ isOpen, onClose }) => {
       id: 'toggle-theme', 
       title: 'Toggle Dark Mode', 
       description: 'Switch between light and dark theme',
-      action: () => console.log('Toggle theme'), 
+      action: () => devLog.log('Toggle theme'), 
       icon: CogIcon, 
       type: 'action',
       keywords: ['theme', 'dark', 'light', 'mode', 'appearance']

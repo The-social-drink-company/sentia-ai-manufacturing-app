@@ -126,7 +126,14 @@
       "WebFetch(domain:splendid-warmth-testing.up.railway.app)",
       "WebFetch(domain:splendid-warmth-production.up.railway.app)",
       "WebFetch(domain:sentiaprod.financeflo.ai)",
-      "Bash(start https://sentiaprod.financeflo.ai/dashboard)"
+      "Bash(start https://sentiaprod.financeflo.ai/dashboard)",
+      "Bash(echo $VITE_CLERK_PUBLISHABLE_KEY)",
+      "Bash(cat:*)",
+      "Bash(start https://web-production-1f10.up.railway.app/dashboard)",
+      "Bash(start https://sentiaprod.financeflo.ai/dashboard?fallback=true)",
+      "Bash(start https://web-production-1f10.up.railway.app/dashboard?fallback=true)",
+      "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk)",
+      "Bash(start http://localhost:3002)"
     ],
     "deny": [],
     "ask": []

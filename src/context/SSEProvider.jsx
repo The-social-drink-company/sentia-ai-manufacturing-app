@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSSE } from '../hooks/useSSE';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -42,7 +42,7 @@ export const SSEProvider = ({ children }) => {
       handleGlobalSSEEvent(eventType, data, queryClient);
     },
     onError: (error) => {
-      console.error('Global SSE connection error:', error);
+      devLog.error('Global SSE connection error:', error);
     }
   });
 
@@ -133,7 +133,7 @@ const handleGlobalSSEEvent = (eventType, data, queryClient) => {
     default:
       // Log unknown events for debugging
       if (process.env.NODE_ENV === 'development') {
-        console.log('Unhandled SSE event:', eventType, data);
+        devLog.log('Unhandled SSE event:', eventType, data);
       }
       break;
   }

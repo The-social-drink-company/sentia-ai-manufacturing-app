@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
@@ -74,7 +74,7 @@ const SystemHealth = () => {
         // Update with real data from API
       }));
     } catch (error) {
-      console.error('Failed to refresh system status:', error);
+      devLog.error('Failed to refresh system status:', error);
     } finally {
       setIsRefreshing(false);
     }

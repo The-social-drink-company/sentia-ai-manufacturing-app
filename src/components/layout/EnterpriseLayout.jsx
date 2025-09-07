@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -91,7 +91,7 @@ const EnterpriseLayout = ({ children }) => {
 
   useHotkeys('ctrl+/', () => {
     // Show keyboard shortcuts help
-    console.log('Keyboard shortcuts help');
+    devLog.log('Keyboard shortcuts help');
   }, { enableOnFormTags: false });
 
   // Get page title and description

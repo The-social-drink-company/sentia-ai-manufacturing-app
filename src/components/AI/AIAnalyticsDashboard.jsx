@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -90,7 +90,7 @@ const AIAnalyticsDashboard = () => {
       }
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Analysis failed:', error);
+      devLog.error('Analysis failed:', error);
     } finally {
       setIsRunningAnalysis(false);
     }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import {
   BellIcon,
@@ -275,7 +275,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                             markAsRead(notification.id);
                             if (notification.actionUrl) {
                               // Would navigate to the URL
-                              console.log('Navigate to:', notification.actionUrl);
+                              devLog.log('Navigate to:', notification.actionUrl);
                             }
                           }}
                         >

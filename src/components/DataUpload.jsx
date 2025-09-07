@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { Upload, FileText, CheckCircle, AlertCircle, X } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -88,7 +88,7 @@ const DataUpload = ({ onClose }) => {
       toast.success(`Successfully uploaded ${result.recordCount} records!`);
       
     } catch (error) {
-      console.error('Upload error:', error);
+      devLog.error('Upload error:', error);
       toast.error(error.message || 'Failed to upload file');
     } finally {
       setUploading(false);

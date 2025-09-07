@@ -3367,20 +3367,15 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
 // app.use('/api/financeflo', financeFloRoutes); // Temporarily disabled due to import issues
 
 // Serve static files (must be after ALL API routes)
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, 'dist'), {
+  maxAge: '1d',
+  etag: false
+}));
 
 // Catch all for SPA (must be ABSOLUTELY LAST route)
 app.get('*', (req, res) => {
-  // In development, let Vite handle the frontend
-  if (process.env.NODE_ENV !== 'production') {
-    res.json({ 
-      message: 'Development mode: Frontend served by Vite at http://localhost:3000',
-      api: 'Backend API running on this port',
-      health: '/api/health'
-    });
-  } else {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-  }
+  // Always serve the React app in production
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Error handling middleware

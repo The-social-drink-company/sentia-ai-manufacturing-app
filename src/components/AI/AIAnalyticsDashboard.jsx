@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+
 import {
   Brain, TrendingUp, AlertTriangle, Target,
   BarChart3, Zap,
@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const AIAnalyticsDashboard = () => {
-  const { data: session } = useSession();
+  const { data: session } = ();
   const user = session?.user;
   const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);

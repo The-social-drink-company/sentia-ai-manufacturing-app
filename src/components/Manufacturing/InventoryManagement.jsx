@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+
 import { CardSkeleton } from '../LoadingStates';
 import { LineChart, DoughnutChart, inventoryColors } from '../charts';
 import {
@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 const InventoryManagement = () => {
-  const { data: session } = useSession();
+  const { data: session } = ();
   const user = session?.user;
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');

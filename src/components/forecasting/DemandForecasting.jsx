@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+
 import {
   TrendingUp, Calendar, Target, Settings,
   Play, Download, RefreshCw, BarChart3,
@@ -9,7 +9,7 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 
 const DemandForecasting = () => {
-  const { data: session } = useSession();
+  const { data: session } = ();
   const user = session?.user;
   const [forecastPeriod, setForecastPeriod] = useState('30');
   const [selectedProducts, setSelectedProducts] = useState(['all']);

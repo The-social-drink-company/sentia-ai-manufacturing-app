@@ -19,9 +19,9 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
+    port: process.env.PORT || 3002,
     host: true, // Needed for Docker
-    strictPort: true, // Fail if port 3000 is unavailable
+    strictPort: false, // Allow dynamic port selection
     proxy: {
       '/api': {
         target: 'http://localhost:5001',

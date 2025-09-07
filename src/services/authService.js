@@ -1,5 +1,5 @@
 // Authentication service for Vite/React app
-// This replaces NextAuth.js which is designed for Next.js apps
+// Using Clerk for authentication instead of NextAuth
 
 class AuthService {
   constructor() {
@@ -50,7 +50,7 @@ class AuthService {
   }
 
   // Sign in with email and password
-  async signInWithCredentials(email, password) {
+  async WithCredentials(email, password) {
     try {
       const response = await fetch(`${this.baseUrl}/api/auth/signin`, {
         method: 'POST',
@@ -83,7 +83,7 @@ class AuthService {
   }
 
   // Sign in with Microsoft OAuth
-  async signInWithMicrosoft() {
+  async WithMicrosoft() {
     try {
       // Redirect to Microsoft OAuth endpoint
       window.location.href = `${this.baseUrl}/api/auth/microsoft`;
@@ -156,14 +156,14 @@ const authService = new AuthService();
 export default authService;
 
 // Convenience functions for backwards compatibility with NextAuth.js style
-export const signIn = async (provider, options = {}) => {
+export const  = async (provider, options = {}) => {
   if (provider === 'credentials') {
-    return await authService.signInWithCredentials(
+    return await authService.WithCredentials(
       options.email, 
       options.password
     );
   } else if (provider === 'microsoft') {
-    return await authService.signInWithMicrosoft();
+    return await authService.WithMicrosoft();
   }
   
   return { error: 'Unknown provider' };
@@ -173,5 +173,5 @@ export const signOut = () => authService.signOut();
 
 export const getSession = () => authService.getSession();
 
-// useSession hook will be defined in a separate hook file to avoid React import issues
+//  hook will be defined in a separate hook file to avoid React import issues
 export { authService };

@@ -10,7 +10,7 @@ export default function UserButton() {
         },
       }}
       showName={true}
-      signInUrl="/sign-in"
+      Url="/sign-in"
     />
   )
 }

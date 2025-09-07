@@ -5,6 +5,28 @@
  */
 
 /**
+ * Get environment mode for browser or Node.js context
+ * @returns {string} Environment mode
+ */
+const getEnvironmentMode = () => {
+  try {
+    // Browser environment (Vite) - check for import.meta
+    if (typeof window !== 'undefined' && import.meta && import.meta.env) {
+      return import.meta.env.MODE;
+    }
+  } catch (e) {
+    // Fallback if import.meta is not available
+  }
+  
+  // Node.js environment fallback
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.NODE_ENV;
+  }
+  
+  return 'production'; // Safe default
+};
+
+/**
  * Environment-aware development logger
  * Only logs in development environment, silent in production
  */
@@ -14,7 +36,7 @@ export const devLog = {
    * @param {...any} args - Arguments to log
    */
   log: (...args) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.log('[DEV]', ...args);
     }
   },
@@ -24,7 +46,7 @@ export const devLog = {
    * @param {...any} args - Arguments to log
    */
   info: (...args) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.info('[DEV]', ...args);
     }
   },
@@ -34,7 +56,7 @@ export const devLog = {
    * @param {...any} args - Arguments to log
    */
   warn: (...args) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.warn('[DEV]', ...args);
     }
   },
@@ -44,7 +66,7 @@ export const devLog = {
    * @param {...any} args - Arguments to log
    */
   error: (...args) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.error('[DEV]', ...args);
     }
   },
@@ -54,7 +76,7 @@ export const devLog = {
    * @param {...any} args - Arguments to log
    */
   debug: (...args) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.debug('[DEV]', ...args);
     }
   },
@@ -64,7 +86,7 @@ export const devLog = {
    * @param {any} data - Data to display in table format
    */
   table: (data) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.table(data);
     }
   },
@@ -74,7 +96,7 @@ export const devLog = {
    * @param {string} label - Group label
    */
   group: (label) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.group(`[DEV] ${label}`);
     }
   },
@@ -83,7 +105,7 @@ export const devLog = {
    * Development-only group end
    */
   groupEnd: () => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.groupEnd();
     }
   },
@@ -93,7 +115,7 @@ export const devLog = {
    * @param {string} label - Timer label
    */
   time: (label) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.time(`[DEV] ${label}`);
     }
   },
@@ -103,7 +125,7 @@ export const devLog = {
    * @param {string} label - Timer label
    */
   timeEnd: (label) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.timeEnd(`[DEV] ${label}`);
     }
   },
@@ -115,7 +137,7 @@ export const devLog = {
    * @param {Object} props - Component props/data
    */
   component: (component, lifecycle, props = {}) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.log(`[DEV] ${component} - ${lifecycle}`, props);
     }
   },
@@ -127,7 +149,7 @@ export const devLog = {
    * @param {Object} data - Request/response data
    */
   api: (method, endpoint, data = {}) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.log(`[DEV] API ${method} ${endpoint}`, data);
     }
   },
@@ -139,7 +161,7 @@ export const devLog = {
    * @param {any} newValue - New value
    */
   stateChange: (state, oldValue, newValue) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getEnvironmentMode() === 'development') {
       console.log(`[DEV] State: ${state}`, {
         from: oldValue,
         to: newValue
@@ -149,23 +171,46 @@ export const devLog = {
 };
 
 /**
+ * Get environment variable for browser or Node.js context
+ * @param {string} key - Environment variable key
+ * @returns {string} Environment variable value
+ */
+const getEnvironmentVariable = (key) => {
+  try {
+    // Browser environment (Vite)
+    if (typeof window !== 'undefined' && import.meta && import.meta.env) {
+      return import.meta.env[key];
+    }
+  } catch (e) {
+    // Fallback if import.meta is not available
+  }
+  
+  // Node.js environment fallback
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key];
+  }
+  
+  return undefined;
+};
+
+/**
  * Conditional console logging based on feature flags
  * @param {string} feature - Feature flag name
  * @returns {Object} Conditional logger
  */
 export const featureLog = (feature) => ({
   log: (...args) => {
-    if (process.env.NODE_ENV === 'development' && process.env[`FEATURE_DEBUG_${feature.toUpperCase()}`] === 'true') {
+    if (getEnvironmentMode() === 'development' && getEnvironmentVariable(`FEATURE_DEBUG_${feature.toUpperCase()}`) === 'true') {
       console.log(`[${feature}]`, ...args);
     }
   },
   warn: (...args) => {
-    if (process.env.NODE_ENV === 'development' && process.env[`FEATURE_DEBUG_${feature.toUpperCase()}`] === 'true') {
+    if (getEnvironmentMode() === 'development' && getEnvironmentVariable(`FEATURE_DEBUG_${feature.toUpperCase()}`) === 'true') {
       console.warn(`[${feature}]`, ...args);
     }
   },
   error: (...args) => {
-    if (process.env.NODE_ENV === 'development' && process.env[`FEATURE_DEBUG_${feature.toUpperCase()}`] === 'true') {
+    if (getEnvironmentMode() === 'development' && getEnvironmentVariable(`FEATURE_DEBUG_${feature.toUpperCase()}`) === 'true') {
       console.error(`[${feature}]`, ...args);
     }
   }

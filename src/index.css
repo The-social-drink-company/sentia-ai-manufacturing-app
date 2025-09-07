@@ -1,10 +1,10 @@
-/* Import Tailwind CSS first - all @import rules must come before other CSS */
+/* Import custom animations first - all @import rules must come before other CSS */
+@import './components/ui/animations.css';
+
+/* Import Tailwind CSS */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import custom animations */
-@import './components/ui/animations.css';
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

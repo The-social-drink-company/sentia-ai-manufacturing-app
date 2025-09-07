@@ -81,7 +81,12 @@
       "Bash(pm2 restart:*)",
       "Bash(npm run test:coverage:*)",
       "Bash(git cherry-pick:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "WebFetch(domain:daring-reflection-development.up.railway.app)",
+      "Bash(npx vite:*)",
+      "Bash(npx prisma generate:*)",
+      "WebFetch(domain:sentia-manufacturing-dashboard-testing.up.railway.app)",
+      "WebFetch(domain:web-production-1f10.up.railway.app)"
     ],
     "deny": [],
     "ask": []

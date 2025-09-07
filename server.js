@@ -2843,13 +2843,6 @@ function generateForecastPredictions() {
   return predictions;
 }
 
-// Serve static files (must be after API routes)
-app.use(express.static(path.join(__dirname, 'dist')));
-
-// Catch all for SPA (must be last)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
 
 // Autonomous Testing System API Endpoints
 let autonomousScheduler = null; // Global scheduler instance
@@ -2990,6 +2983,14 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
   }));
   
   res.json(deployments);
+});
+
+// Serve static files (must be after ALL API routes)
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Catch all for SPA (must be ABSOLUTELY LAST route)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Error handling middleware

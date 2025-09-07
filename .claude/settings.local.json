@@ -89,7 +89,8 @@
       "WebFetch(domain:web-production-1f10.up.railway.app)",
       "Bash(netstat:*)",
       "Bash(git rev-parse:*)",
-      "Bash(npm start)"
+      "Bash(npm start)",
+      "Bash(railway environment:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignUpPage = () => {
@@ -69,7 +69,7 @@ const SignUpPage = () => {
         setError(data.error || 'Registration failed');
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      devLog.error('Registration error:', error);
       setError('Registration failed. Please try again.');
     } finally {
       setIsLoading(false);

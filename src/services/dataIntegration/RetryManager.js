@@ -1,4 +1,4 @@
-// Advanced Retry Management System with Exponential Backoff
+import { devLog } from '../lib/devLog.js';\n// Advanced Retry Management System with Exponential Backoff
 // Handles transient failures with intelligent retry strategies
 
 export class RetryManager {
@@ -136,7 +136,7 @@ export class RetryManager {
   // Logging methods
   logRetryAttempt(error, attempt, delay, context) {
     if (typeof console !== 'undefined') {
-      console.warn(`[RetryManager] Attempt ${attempt + 1} failed, retrying in ${delay}ms`, {
+      devLog.warn(`[RetryManager] Attempt ${attempt + 1} failed, retrying in ${delay}ms`, {
         error: error.message,
         context,
         status: error.status
@@ -146,7 +146,7 @@ export class RetryManager {
   
   logRetrySuccess(attempts, context, totalTime) {
     if (typeof console !== 'undefined') {
-      console.info(`[RetryManager] Success after ${attempts} retries in ${totalTime}ms`, {
+      devLog.log(`[RetryManager] Success after ${attempts} retries in ${totalTime}ms`, {
         context
       });
     }
@@ -154,7 +154,7 @@ export class RetryManager {
   
   logRetrySkipped(error, attempt, context) {
     if (typeof console !== 'undefined') {
-      console.info(`[RetryManager] Not retrying error at attempt ${attempt + 1}`, {
+      devLog.log(`[RetryManager] Not retrying error at attempt ${attempt + 1}`, {
         error: error.message,
         context,
         status: error.status
@@ -164,7 +164,7 @@ export class RetryManager {
   
   logRetryExhausted(error, attempts, context) {
     if (typeof console !== 'undefined') {
-      console.error(`[RetryManager] All ${attempts + 1} attempts failed`, {
+      devLog.error(`[RetryManager] All ${attempts + 1} attempts failed`, {
         error: error.message,
         context,
         status: error.status

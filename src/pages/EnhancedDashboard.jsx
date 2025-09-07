@@ -1,15 +1,59 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { 
+  TrendingUpIcon, 
+  CogIcon, 
+  ChartBarIcon,
+  BoltIcon,
+  CpuChipIcon,
+  BeakerIcon,
+  BanknotesIcon,
+  ArrowTrendingUpIcon,
+  ShieldCheckIcon,
+  CloudIcon
+} from '@heroicons/react/24/outline';
 
-// Fallback enhanced dashboard component
+// Import AI and MCP components
+import AIAnalyticsDashboard from '../components/AI/AIAnalyticsDashboard';
+import MCPConnectionStatus from '../components/AI/MCPConnectionStatus';
+import { mcpService } from '../services/mcpService';
+import { useSSE } from '../hooks/useSSE';
+
 export default function EnhancedDashboard() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedView, setSelectedView] = useState('overview');
+
+  // Real-time data connection
+  const { data: realtimeData, isConnected } = useSSE('/api/kpis/realtime');
+
+  // MCP Service health check
+  const { data: mcpHealth } = useQuery({
+    queryKey: ['mcp-health'],
+    queryFn: () => mcpService.checkHealth(),
+    refetchInterval: 30000, // Check every 30 seconds
+  });
+
+  // Fetch dashboard data
+  const { data: dashboardData, refetch } = useQuery({
+    queryKey: ['dashboard-data', selectedView],
+    queryFn: async () => {
+      const response = await fetch('/api/dashboard/overview');
+      if (!response.ok) {
+        // Use fallback data if API not available
+        return mockDashboardData;
+      }
+      return response.json();
+    },
+    refetchInterval: 15000,
+  });
 
   useEffect(() => {
-    // Simulate loading and then show dashboard
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 1200);
 
     return () => clearTimeout(timer);
   }, []);
@@ -19,7 +63,8 @@ export default function EnhancedDashboard() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Sentia Dashboard...</p>
+          <p className="mt-4 text-gray-600">Initializing Sentia Enterprise Platform...</p>
+          <p className="mt-2 text-sm text-gray-500">Loading AI Analytics & MCP Integration</p>
         </div>
       </div>
     );
@@ -41,6 +86,11 @@ export default function EnhancedDashboard() {
         </div>
       </div>
     );
+  }
+
+  // Render AI Analytics view
+  if (selectedView === 'ai-analytics') {
+    return <AIAnalyticsDashboard />;
   }
 
   return (

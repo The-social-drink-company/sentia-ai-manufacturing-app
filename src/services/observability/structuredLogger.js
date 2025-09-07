@@ -1,4 +1,4 @@
-// Structured Logging System for Enterprise Applications
+import { devLog } from '../lib/devLog.js';\n// Structured Logging System for Enterprise Applications
 // Provides consistent, searchable, and actionable log output
 
 class StructuredLogger {
@@ -140,13 +140,13 @@ class StructuredLogger {
     
     switch (logEntry.level) {
       case 'ERROR':
-        console.error(consoleMessage);
+        devLog.error(consoleMessage);
         break;
       case 'WARN':
-        console.warn(consoleMessage);
+        devLog.warn(consoleMessage);
         break;
       case 'INFO':
-        console.info(consoleMessage);
+        devLog.log(consoleMessage);
         break;
       case 'DEBUG':
         console.debug(consoleMessage);
@@ -155,7 +155,7 @@ class StructuredLogger {
         console.trace(consoleMessage);
         break;
       default:
-        console.log(consoleMessage);
+        devLog.log(consoleMessage);
     }
   }
   

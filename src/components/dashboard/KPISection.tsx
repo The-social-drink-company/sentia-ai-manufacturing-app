@@ -104,29 +104,54 @@ export const KPISection: React.FC<KPISectionProps> = ({
     return () => unsubscribe(subscriptionId);
   }, [activeMarket?.id, subscribe, unsubscribe]);
 
-  // Generate KPI metrics from data
+  // Generate KPI metrics from REAL data only
   const generateKPIMetrics = (revenue: any, performance: any): KPIMetric[] => {
-    const mockData = {
-      workingCapital: { current: 2500000, previous: 2300000, target: 2800000 },
-      revenue: { current: revenue?.total || 15600000, previous: 14200000, target: 16000000 },
-      grossMargin: { current: 0.34, previous: 0.32, target: 0.35 },
-      inventoryTurnover: { current: 8.2, previous: 7.8, target: 9.0 },
-      cashConversionCycle: { current: 45, previous: 52, target: 40 },
-      forecastAccuracy: { current: 0.87, previous: 0.84, target: 0.90 }
+    // Use ONLY real data from API - no mock data allowed
+    const realData = {
+      workingCapital: { 
+        current: performance?.workingCapital?.current || 0, 
+        previous: performance?.workingCapital?.previous || 0, 
+        target: performance?.workingCapital?.target || 0 
+      },
+      revenue: { 
+        current: revenue?.total || 0, 
+        previous: revenue?.previous || 0, 
+        target: revenue?.target || 0 
+      },
+      grossMargin: { 
+        current: performance?.grossMargin?.current || 0, 
+        previous: performance?.grossMargin?.previous || 0, 
+        target: performance?.grossMargin?.target || 0 
+      },
+      inventoryTurnover: { 
+        current: performance?.inventoryTurnover?.current || 0, 
+        previous: performance?.inventoryTurnover?.previous || 0, 
+        target: performance?.inventoryTurnover?.target || 0 
+      },
+      cashConversionCycle: { 
+        current: performance?.cashConversionCycle?.current || 0, 
+        previous: performance?.cashConversionCycle?.previous || 0, 
+        target: performance?.cashConversionCycle?.target || 0 
+      },
+      forecastAccuracy: { 
+        current: performance?.forecastAccuracy?.current || 0, 
+        previous: performance?.forecastAccuracy?.previous || 0, 
+        target: performance?.forecastAccuracy?.target || 0 
+      }
     };
 
     return [
       {
         id: 'working-capital',
         label: 'Total Working Capital',
-        value: mockData.workingCapital.current,
-        previousValue: mockData.workingCapital.previous,
-        target: mockData.workingCapital.target,
+        value: realData.workingCapital.current,
+        previousValue: realData.workingCapital.previous,
+        target: realData.workingCapital.target,
         unit: 'GBP',
         format: 'currency',
-        trend: mockData.workingCapital.current > mockData.workingCapital.previous ? 'up' : 'down',
-        changePercent: ((mockData.workingCapital.current - mockData.workingCapital.previous) / mockData.workingCapital.previous) * 100,
-        status: mockData.workingCapital.current >= mockData.workingCapital.target * 0.95 ? 'excellent' : 'good',
+        trend: realData.workingCapital.current > realData.workingCapital.previous ? 'up' : 'down',
+        changePercent: realData.workingCapital.previous > 0 ? ((realData.workingCapital.current - realData.workingCapital.previous) / realData.workingCapital.previous) * 100 : 0,
+        status: realData.workingCapital.target > 0 && realData.workingCapital.current >= realData.workingCapital.target * 0.95 ? 'excellent' : 'good',
         icon: DollarSign,
         description: '30-day trend shows steady growth in available capital',
         lastUpdated: new Date(),

@@ -1,6 +1,12 @@
 {
-  "timestamp": "2025-09-07T22:49:42.887Z",
-  "failedTests": [
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "avgDuration": 19.008199999999988,
+    "passRate": 0
+  },
+  "results": [
     {
       "testName": "WHATIF_ANALYSIS_COMPREHENSIVE",
       "result": "fail",
@@ -32,5 +38,5 @@
   "failurePatterns": {
     "SERVER_ERROR": 1
   },
-  "triggerSelfHealing": true
+  "performanceMetrics": []
 }

@@ -24,12 +24,20 @@ const SimpleSignIn = () => {
   const [error, setError] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
-  // Demo users for client meeting
+  // Real users for client meeting
   const demoUsers = {
-    'admin@sentiaspirits.com': { password: 'demo123', role: 'admin', name: 'Admin User' },
-    'manager@sentiaspirits.com': { password: 'demo123', role: 'manager', name: 'Production Manager' },
-    'operator@sentiaspirits.com': { password: 'demo123', role: 'operator', name: 'Floor Operator' },
-    'demo@demo.com': { password: 'demo', role: 'admin', name: 'Demo User' }
+    // Real Sentia Team
+    'paul.roberts@sentiaspirits.com': { password: 'sentia2024', role: 'admin', name: 'Paul Roberts' },
+    'daniel.kenny@sentiaspirits.com': { password: 'sentia2024', role: 'admin', name: 'Daniel Kenny' },
+    
+    // Real Gaba Labs Team  
+    'david.orren@gabalabs.com': { password: 'gaba2024', role: 'admin', name: 'David Orren' },
+    'marta.haczek@gabalabs.com': { password: 'gaba2024', role: 'user', name: 'Marta Haczek' },
+    'matt.coulshed@gabalabs.com': { password: 'gaba2024', role: 'user', name: 'Matt Coulshed' },
+    'jaron.reid@gabalabs.com': { password: 'gaba2024', role: 'user', name: 'Jaron Reid' },
+    
+    // Demo fallback
+    'demo@demo.com': { password: 'demo', role: 'admin', name: 'Quick Demo' }
   };
 
   const handleSubmit = async (e) => {
@@ -83,13 +91,13 @@ const SimpleSignIn = () => {
             Sign in to your account
           </h2>
           
-          {/* Demo Credentials for Client Meeting */}
+          {/* Real User Credentials for Client Meeting */}
           <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
-            <div className="text-sm font-medium">Demo Credentials:</div>
+            <div className="text-sm font-medium">Client Meeting Credentials:</div>
             <div className="text-xs mt-1">
-              <div>Admin: admin@sentiaspirits.com / demo123</div>
-              <div>Manager: manager@sentiaspirits.com / demo123</div>
-              <div>Quick Demo: demo@demo.com / demo</div>
+              <div><strong>Sentia:</strong> paul.roberts@sentiaspirits.com / sentia2024</div>
+              <div><strong>Gaba Labs:</strong> david.orren@gabalabs.com / gaba2024</div>
+              <div><strong>Quick Demo:</strong> demo@demo.com / demo</div>
             </div>
           </div>
 

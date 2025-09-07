@@ -1,6 +1,12 @@
 {
-  "timestamp": "2025-09-07T22:50:04.188Z",
-  "failedTests": [
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "avgDuration": 2124.035,
+    "passRate": 0
+  },
+  "results": [
     {
       "testName": "REALTIME_SSE_CONNECTION",
       "result": "fail",
@@ -32,5 +38,5 @@
   "failurePatterns": {
     "UNKNOWN": 1
   },
-  "triggerSelfHealing": true
+  "performanceMetrics": []
 }

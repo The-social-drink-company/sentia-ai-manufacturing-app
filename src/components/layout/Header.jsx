@@ -24,7 +24,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { ShareButton } from '../ui/ShareButton'
 import { Menu, Transition } from '@headlessui/react'
-// Removed Clerk dependency - using next-auth only
+// NUCLEAR: BRUTAL Clerk integration restored
+import { useUser, UserButton, SignOutButton } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
 import { useSSE } from '../../hooks/useSSE'
@@ -456,6 +457,8 @@ const CurrencyControl = () => {
 
 const Header = () => {
   const navigate = useNavigate()
+  // NUCLEAR: BRUTAL Clerk user integration
+  const { user, isLoaded, isSignedIn } = useUser()
   const { 
     theme, 
     toggleTheme, 

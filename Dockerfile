@@ -25,7 +25,7 @@ RUN ls -la dist/
 RUN ls -la dist/assets/ || echo "No assets directory"
 RUN ls -la public/ || echo "No public directory"
 
-# Expose port
+# Railway auto-assigns port via PORT environment variable
 EXPOSE 8080
 
 # Start the server

@@ -342,20 +342,41 @@ const authenticateUser = async (req, res, next) => {
   next();
 };
 
-// Health check (enhanced with enterprise services status)
-app.get('/api/health', async (req, res) => {
+// Basic health check for Railway deployment (no external service dependencies)
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    version: '2.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    uptime: Math.floor(process.uptime()),
+    port: PORT
+  });
+});
+
+// Enhanced health check with external services (may timeout in Railway)
+app.get('/api/health/detailed', async (req, res) => {
   const startTime = Date.now();
   
   try {
-    const xeroHealth = await xeroService.healthCheck();
-    const aiHealth = await aiAnalyticsService.healthCheck();
+    // Use Promise.allSettled to avoid timeouts killing the health check
+    const [xeroResult, aiResult] = await Promise.allSettled([
+      Promise.race([
+        xeroService.healthCheck(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+      ]),
+      Promise.race([
+        aiAnalyticsService.healthCheck(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+      ])
+    ]);
+    
+    const xeroHealth = xeroResult.status === 'fulfilled' ? xeroResult.value : { status: 'timeout', message: 'Health check timed out' };
+    const aiHealth = aiResult.status === 'fulfilled' ? aiResult.value : { status: 'timeout', message: 'Health check timed out' };
     
     // System metrics
     const memoryUsage = process.memoryUsage();
-    const cpuUsage = process.cpuUsage();
     const uptime = process.uptime();
-    
-    // Performance metrics
     const responseTime = Date.now() - startTime;
     
     res.json({ 
@@ -387,7 +408,7 @@ app.get('/api/health', async (req, res) => {
       }
     });
   } catch (error) {
-    logError('Health check failed', { error: error.message, stack: error.stack });
+    logError('Detailed health check failed', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       status: 'unhealthy', 
       timestamp: new Date().toISOString(),

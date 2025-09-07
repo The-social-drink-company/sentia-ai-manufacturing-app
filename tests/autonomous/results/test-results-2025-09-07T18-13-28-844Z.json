@@ -1,0 +1,83 @@
+{
+  "summary": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "avgDuration": 708.9891,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "PERFORMANCE_PAGE_LOAD",
+      "result": "pass",
+      "duration": 1357.6345000000001,
+      "timestamp": "2025-09-07T18:13:28.539Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 156868608,
+          "heapTotal": 70942720,
+          "heapUsed": 44845832,
+          "external": 10124903,
+          "arrayBuffers": 6220976
+        }
+      }
+    },
+    {
+      "testName": "PERFORMANCE_API_RESPONSE",
+      "result": "pass",
+      "duration": 60.3436999999999,
+      "timestamp": "2025-09-07T18:13:28.844Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 152027136,
+          "heapTotal": 103940096,
+          "heapUsed": 38477376,
+          "external": 3995339,
+          "arrayBuffers": 91932
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": [
+    {
+      "metric": "page_load_time",
+      "value": 1353.9102999999998,
+      "timestamp": "2025-09-07T18:13:28.539Z"
+    },
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/health",
+      "value": 31.21459999999979,
+      "timestamp": "2025-09-07T18:13:28.823Z"
+    },
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/production/status",
+      "value": 7.404099999999744,
+      "timestamp": "2025-09-07T18:13:28.833Z"
+    },
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/analytics/kpis",
+      "value": 7.1284999999998035,
+      "timestamp": "2025-09-07T18:13:28.844Z"
+    }
+  ]
+}

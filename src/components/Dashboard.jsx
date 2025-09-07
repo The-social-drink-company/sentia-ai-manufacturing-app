@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+import { useSession } from 'next-auth/react';
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, Users, Package, Activity, 
@@ -13,7 +13,8 @@ import QualityTrendsChart from './charts/QualityTrendsChart';
 import RealTimeProductionChart from './charts/RealTimeProductionChart';
 
 const Dashboard = () => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [refreshTime, setRefreshTime] = useState(new Date());
 
   // Fetch real Shopify data
@@ -22,7 +23,7 @@ const Dashboard = () => {
     queryFn: async () => {
       const response = await fetch('/api/shopify/dashboard-data', {
         headers: {
-          'Authorization': `Bearer ${await user?.getToken()}`
+          'Authorization': `Bearer ${session?.accessToken || ''}`
         }
       });
       if (!response.ok) {
@@ -60,7 +61,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                Welcome back, {user?.firstName || 'User'}! 👋
+                Welcome back, {user?.name || 'User'}! 👋
               </h1>
               <p className="mt-2 text-gray-600">
                 Here's your manufacturing intelligence overview for today

@@ -7,7 +7,6 @@ const express = require('express');
 const { logError } = require('../services/observability/structuredLogger');
 const router = express.Router();
 const XeroService = require('../services/xeroService');
-const { logError } = require('../services/logger');
 
 // Initialize Xero service
 const xeroService = new XeroService();

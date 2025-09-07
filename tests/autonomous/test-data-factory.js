@@ -907,8 +907,8 @@ class TestDataFactory {
       api: this.generateAPITestData('normal'),
       // Test configuration
       testConfig: {
-        baseURL: 'http://localhost:3000',
-        apiURL: 'http://localhost:5000/api',
+        baseURL: 'http://127.0.0.1:3000',
+        apiURL: 'http://127.0.0.1:5000/api',
         testDuration: '60 minutes',
         expectedLoadTime: 3000,
         maxResponseTime: 500,

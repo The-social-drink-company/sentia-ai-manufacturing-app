@@ -7,6 +7,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import dbService from '../db/index.js';
 import { logInfo, logError, logWarn } from '../../../services/logger.js';
+import exchangeRateService from '../fx/exchangeRateService.js';
+import { getSupportedRegions } from '../../config/global.js';
 
 class WorkingCapitalService {
   constructor() {
@@ -35,8 +37,12 @@ class WorkingCapitalService {
     try {
       this.dbService = (await import('../db/index.js')).default;
       await this.dbService.initialize();
+      
+      // Initialize FX service for multi-currency support
+      await exchangeRateService.initialize();
+      
       this.isInitialized = true;
-      logInfo('Working Capital Service initialized successfully');
+      logInfo('Working Capital Service initialized successfully with multi-currency support');
     } catch (error) {
       logError('Failed to initialize Working Capital Service', error);
       throw error;
@@ -1381,6 +1387,194 @@ class WorkingCapitalService {
       }
       return total + (product.unitCost * 100); // Default purchase amount
     }, 0);
+  }
+
+  /**
+   * FinanceFlo Multi-Region Working Capital Consolidation
+   * Consolidates WC across UK/EU/USA markets with FX conversion
+   */
+  async projectMultiRegion(params) {
+    await this.initialize();
+    
+    try {
+      const {
+        horizonMonths = 12,
+        startMonth = new Date(),
+        regions = getSupportedRegions(), // ['UK', 'EU', 'USA']
+        scenarios = ['baseline', 'optimistic', 'pessimistic']
+      } = params;
+
+      const runId = uuidv4();
+      logInfo('Starting multi-region working capital projection', { 
+        runId, 
+        horizonMonths, 
+        regions, 
+        scenarios 
+      });
+
+      // Project each region separately
+      const regionResults = {};
+      for (const region of regions) {
+        const regionCurrency = exchangeRateService.getRegionCurrency(region);
+        
+        regionResults[region] = await this.project({
+          ...params,
+          currency: regionCurrency,
+          region,
+          horizonMonths,
+          startMonth,
+          scenarios
+        });
+      }
+
+      // Consolidate to GBP base currency
+      const consolidatedResults = exchangeRateService.consolidateWorkingCapital(
+        this.extractWCData(regionResults)
+      );
+
+      // Calculate cross-regional opportunities
+      const crossRegionalOpportunities = this.identifyCrossRegionalOpportunities(
+        regionResults,
+        consolidatedResults
+      );
+
+      // Calculate FinanceFlo target metrics (20-30% WC reduction)
+      const financeFloTargets = this.calculateFinanceFloTargets(consolidatedResults);
+
+      const multiRegionResults = {
+        runId,
+        type: 'multi_region_projection',
+        regions: regionResults,
+        consolidated: consolidatedResults,
+        crossRegionalOpportunities,
+        financeFloTargets,
+        exchangeRates: exchangeRateService.getAllRates(),
+        generatedAt: new Date()
+      };
+
+      return multiRegionResults;
+
+    } catch (error) {
+      logError('Multi-region working capital projection failed', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Extract working capital data for FX consolidation
+   */
+  extractWCData(regionResults) {
+    const wcData = {};
+    
+    Object.entries(regionResults).forEach(([region, results]) => {
+      const baseline = results.scenarios.baseline;
+      if (baseline && baseline.summary) {
+        wcData[region] = {
+          accountsReceivable: baseline.summary.avgAR || 0,
+          inventory: baseline.summary.avgInventory || 0,
+          accountsPayable: baseline.summary.avgAP || 0,
+          workingCapital: baseline.summary.avgWC || 0,
+          cashFlow: baseline.summary.totalCashFlow || 0
+        };
+      }
+    });
+
+    return wcData;
+  }
+
+  /**
+   * Identify cross-regional working capital optimization opportunities
+   */
+  identifyCrossRegionalOpportunities(regionResults, consolidatedResults) {
+    const opportunities = [];
+
+    // Cash pooling opportunity
+    let totalCash = 0;
+    let negativeRegions = [];
+    Object.entries(consolidatedResults.regions).forEach(([region, data]) => {
+      totalCash += data.converted.cashFlow;
+      if (data.converted.cashFlow < 0) {
+        negativeRegions.push(region);
+      }
+    });
+
+    if (totalCash > 0 && negativeRegions.length > 0) {
+      opportunities.push({
+        type: 'cash_pooling',
+        description: 'Cross-regional cash pooling to reduce borrowing costs',
+        estimatedSaving: Math.abs(totalCash * 0.05), // 5% borrowing cost saving
+        regions: negativeRegions,
+        priority: 'high'
+      });
+    }
+
+    // Payment terms harmonization
+    const paymentTerms = {};
+    Object.entries(regionResults).forEach(([region, results]) => {
+      const baseline = results.scenarios.baseline;
+      if (baseline && baseline.summary) {
+        paymentTerms[region] = baseline.summary.dso;
+      }
+    });
+
+    const maxDSO = Math.max(...Object.values(paymentTerms));
+    const minDSO = Math.min(...Object.values(paymentTerms));
+    
+    if (maxDSO - minDSO > 5) { // More than 5 days difference
+      opportunities.push({
+        type: 'payment_terms_harmonization',
+        description: 'Harmonize payment terms across regions to optimize cash flow',
+        estimatedSaving: (maxDSO - minDSO) * consolidatedResults.totals.accountsReceivable / 365 * 0.08,
+        regions: Object.keys(paymentTerms),
+        priority: 'medium'
+      });
+    }
+
+    return opportunities;
+  }
+
+  /**
+   * Calculate FinanceFlo target metrics (20-30% WC reduction)
+   */
+  calculateFinanceFloTargets(consolidatedResults) {
+    const current = consolidatedResults.totals;
+    
+    // Conservative 20% reduction target
+    const conservativeTarget = {
+      workingCapitalReduction: current.workingCapital * 0.20,
+      accountsReceivableTarget: current.accountsReceivable * 0.85, // 15% reduction
+      inventoryTarget: current.inventory * 0.80, // 20% reduction
+      accountsPayableTarget: current.accountsPayable * 1.10, // 10% increase (extend terms)
+      estimatedCashImpact: current.workingCapital * 0.20
+    };
+
+    // Aggressive 30% reduction target  
+    const aggressiveTarget = {
+      workingCapitalReduction: current.workingCapital * 0.30,
+      accountsReceivableTarget: current.accountsReceivable * 0.75, // 25% reduction
+      inventoryTarget: current.inventory * 0.70, // 30% reduction
+      accountsPayableTarget: current.accountsPayable * 1.20, // 20% increase
+      estimatedCashImpact: current.workingCapital * 0.30
+    };
+
+    return {
+      current: current,
+      conservative: conservativeTarget,
+      aggressive: aggressiveTarget,
+      recommendedTarget: 'conservative', // Start with conservative approach
+      implementation: {
+        phase1: 'Accounts Receivable optimization (0-3 months)',
+        phase2: 'Inventory level optimization (3-6 months)', 
+        phase3: 'Supplier payment term negotiations (6-12 months)'
+      }
+    };
+  }
+
+  /**
+   * Get FX service status for health checks
+   */
+  getFXStatus() {
+    return exchangeRateService.getStatus();
   }
 }
 

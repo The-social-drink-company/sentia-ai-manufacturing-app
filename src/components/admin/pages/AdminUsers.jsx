@@ -247,8 +247,46 @@ const AdminUsers = () => {
       await new Promise(resolve => setTimeout(resolve, 800))
       
       return [
+        // Requested Admin Users for Sentia Manufacturing Dashboard
         {
           id: 1,
+          email: 'daniel.kenny@sentiaspirits.com',
+          firstName: 'Daniel',
+          lastName: 'Kenny',
+          role: 'admin',
+          status: 'active',
+          lastLogin: '2025-09-07T15:00:00Z',
+          mfaEnabled: true,
+          loginCount: 1,
+          createdAt: '2025-09-07T15:00:00Z'
+        },
+        {
+          id: 2,
+          email: 'paul.roberts@sentiaspirits.com',
+          firstName: 'Paul',
+          lastName: 'Roberts',
+          role: 'admin',
+          status: 'active',
+          lastLogin: null,
+          mfaEnabled: true,
+          loginCount: 0,
+          createdAt: '2025-09-07T15:00:00Z'
+        },
+        {
+          id: 3,
+          email: 'david.orren@gabalabs.com',
+          firstName: 'David',
+          lastName: 'Orren',
+          role: 'admin',
+          status: 'active',
+          lastLogin: null,
+          mfaEnabled: true,
+          loginCount: 0,
+          createdAt: '2025-09-07T15:00:00Z'
+        },
+        // Existing system users
+        {
+          id: 4,
           email: 'john.admin@company.com',
           firstName: 'John',
           lastName: 'Administrator',
@@ -260,7 +298,7 @@ const AdminUsers = () => {
           createdAt: '2024-06-01T00:00:00Z'
         },
         {
-          id: 2,
+          id: 5,
           email: 'sarah.manager@company.com',
           firstName: 'Sarah',
           lastName: 'Johnson',
@@ -272,7 +310,7 @@ const AdminUsers = () => {
           createdAt: '2024-08-15T00:00:00Z'
         },
         {
-          id: 3,
+          id: 6,
           email: 'mike.operator@company.com',
           firstName: 'Mike',
           lastName: 'Wilson',
@@ -284,7 +322,7 @@ const AdminUsers = () => {
           createdAt: '2024-09-22T00:00:00Z'
         },
         {
-          id: 4,
+          id: 7,
           email: 'emma.viewer@company.com',
           firstName: 'Emma',
           lastName: 'Davis',
@@ -296,7 +334,7 @@ const AdminUsers = () => {
           createdAt: '2024-12-01T00:00:00Z'
         },
         {
-          id: 5,
+          id: 8,
           email: 'robert.pending@company.com',
           firstName: 'Robert',
           lastName: 'Brown',

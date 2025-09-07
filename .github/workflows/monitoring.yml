@@ -44,13 +44,9 @@ jobs:
     
     - name: Alert on failure
       if: failure()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: failure
-        channel: '#alerts'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        text: '${{ matrix.environment }} environment health check failed! 🚨'
-        fields: repo,message,commit,author,action,eventName,ref,workflow
+      run: |
+        echo "${{ matrix.environment }} environment health check failed!"
+        # Slack notification would be sent here if webhook configured
 
   backup:
     runs-on: ubuntu-latest
@@ -81,9 +77,6 @@ jobs:
         # aws s3 cp backups/ s3://sentia-backups/ --recursive
     
     - name: Backup notification
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        channel: '#ops'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        text: 'Daily backup completed'
+      run: |
+        echo "Daily backup completed with status: ${{ job.status }}"
+        # Slack notification would be sent here if webhook configured

@@ -4,7 +4,6 @@ import ForecastingService from '../services/forecasting/ForecastingService.js';
 import FeatureEngineeringService from '../services/forecasting/FeatureEngineeringService.js';
 import CFOWorkbenchService from '../services/forecasting/CFOWorkbenchService.js';
 import AccuracyDashboardService from '../services/forecasting/AccuracyDashboardService.js';
-import { logError } from '../services/logger.js';
 
 const router = express.Router();
 

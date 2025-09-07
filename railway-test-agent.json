@@ -1,0 +1,69 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm ci --no-cache",
+    "nixpacksConfigPath": "nixpacks-test-agent.toml"
+  },
+  "deploy": {
+    "startCommand": "node tests/autonomous/autonomous-scheduler.js",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "healthcheck": {
+      "command": "curl -f http://localhost:6001/health || exit 1",
+      "interval": "30s",
+      "timeout": "10s",
+      "retries": 3
+    }
+  },
+  "environments": {
+    "development": {
+      "variables": {
+        "NODE_ENV": "development",
+        "ENABLE_AUTONOMOUS_TESTING": "true",
+        "AUTONOMOUS_TEST_INTERVAL": "*/5 * * * *",
+        "AUTO_FIX_ENABLED": "true",
+        "AUTO_DEPLOY_ENABLED": "true",
+        "RAILWAY_AUTO_DEPLOY": "true",
+        "TEST_AGENT_PORT": "6001",
+        "MAIN_APP_URL": "https://sentia-manufacturing-dashboard-development.up.railway.app",
+        "MCP_SERVER_URL": "https://sentia-mcp-server-development.up.railway.app",
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "RAILWAY_TOKEN": "${RAILWAY_TOKEN}",
+        "AUTONOMOUS_SCHEDULER_MODE": "railway"
+      }
+    },
+    "testing": {
+      "variables": {
+        "NODE_ENV": "test",
+        "ENABLE_AUTONOMOUS_TESTING": "true",
+        "AUTONOMOUS_TEST_INTERVAL": "*/10 * * * *",
+        "AUTO_FIX_ENABLED": "true",
+        "AUTO_DEPLOY_ENABLED": "false",
+        "RAILWAY_AUTO_DEPLOY": "false",
+        "TEST_AGENT_PORT": "6001",
+        "MAIN_APP_URL": "https://sentia-manufacturing-dashboard-testing.up.railway.app",
+        "MCP_SERVER_URL": "https://sentia-mcp-server-testing.up.railway.app",
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "RAILWAY_TOKEN": "${RAILWAY_TOKEN}",
+        "AUTONOMOUS_SCHEDULER_MODE": "railway"
+      }
+    },
+    "production": {
+      "variables": {
+        "NODE_ENV": "production",
+        "ENABLE_AUTONOMOUS_TESTING": "true",
+        "AUTONOMOUS_TEST_INTERVAL": "*/15 * * * *",
+        "AUTO_FIX_ENABLED": "false",
+        "AUTO_DEPLOY_ENABLED": "false",
+        "RAILWAY_AUTO_DEPLOY": "false",
+        "TEST_AGENT_PORT": "6001",
+        "MAIN_APP_URL": "https://sentia-manufacturing-dashboard-production.up.railway.app",
+        "MCP_SERVER_URL": "https://sentia-mcp-server-production.up.railway.app",
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "RAILWAY_TOKEN": "${RAILWAY_TOKEN}",
+        "AUTONOMOUS_SCHEDULER_MODE": "railway"
+      }
+    }
+  }
+}

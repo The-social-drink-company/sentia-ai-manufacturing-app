@@ -1,12 +1,16 @@
 import { devLog } from '../lib/devLog.js';
 import React, { useState, useEffect } from 'react'
-import { useAuth, useUser } from '@clerk/clerk-react'
+// Temporarily disabled Clerk dependency 
+// import { useAuth, useUser } from '@clerk/clerk-react'
 import axios from 'axios'
 import '../styles/AdminPanel.css'
 
 function AdminPanel() {
-  const { getToken } = useAuth()
-  const { user } = useUser()
+  // Temporarily disabled Clerk hooks
+  // const { getToken } = useAuth()
+  // const { user } = useUser()
+  const getToken = () => null;
+  const user = { firstName: 'Admin' };
   const [users, setUsers] = useState([])
   const [invitations, setInvitations] = useState([])
   const [loading, setLoading] = useState(true)

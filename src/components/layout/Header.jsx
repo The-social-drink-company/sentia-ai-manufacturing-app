@@ -24,8 +24,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { ShareButton } from '../ui/ShareButton'
 import { Menu, Transition } from '@headlessui/react'
-// Temporarily remove Clerk dependency
-// import { UserButton } from '@clerk/clerk-react'
+// Removed Clerk dependency - using next-auth only
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
 import { useSSE } from '../../hooks/useSSE'
@@ -725,7 +724,7 @@ const Header = () => {
                 <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
                   {role}
                 </span>
-                {/* Temporary user avatar until Clerk is properly configured */}
+                {/* User avatar with next-auth */}
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                   {getUserDisplayName()?.charAt(0)?.toUpperCase() || 'U'}
                 </div>

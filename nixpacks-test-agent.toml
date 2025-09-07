@@ -1,0 +1,21 @@
+[phases.build]
+cmd = "npm ci --no-cache"
+
+[phases.start]
+cmd = "node tests/autonomous/autonomous-scheduler.js"
+
+[variables]
+NODE_ENV = "production"
+NPM_CONFIG_PRODUCTION = "false"
+
+[nixpacks]
+archive = false
+
+[providers.node]
+version = "18"
+
+[providers.postgres]
+# No database needed for test agent
+
+[providers.redis] 
+# No Redis needed for test agent

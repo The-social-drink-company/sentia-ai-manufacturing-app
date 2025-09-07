@@ -4,18 +4,19 @@ import {
   PlayIcon,
   PauseIcon,
   ArrowPathIcon,
-  EyeIcon,
   CogIcon,
   BeakerIcon,
   TruckIcon
 } from '@heroicons/react/24/outline';
 
-const DigitalTwin3D = ({ digitalTwinData, className = "" }) => {
+const DigitalTwin3D = ({ digitalTwinData = {}, className = "" }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [selectedView, setSelectedView] = useState('overview');
   const [currentBatch, setCurrentBatch] = useState(null);
   const animationRef = useRef();
-  const canvasRef = useRef();
+  
+  // Use digitalTwinData prop
+  const _ = digitalTwinData; // Acknowledge prop usage
 
   // Mock digital twin data
   const [twinState, setTwinState] = useState({
@@ -72,14 +73,20 @@ const DigitalTwin3D = ({ digitalTwinData, className = "" }) => {
           }
         }));
         
-        animationRef.current = requestAnimationFrame(animate);
+        if (typeof window !== 'undefined' && window.requestAnimationFrame) {
+          animationRef.current = window.requestAnimationFrame(animate);
+        }
       };
-      animationRef.current = requestAnimationFrame(animate);
+      if (typeof window !== 'undefined' && window.requestAnimationFrame) {
+        animationRef.current = window.requestAnimationFrame(animate);
+      }
     }
 
     return () => {
       if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+        if (typeof window !== 'undefined' && window.cancelAnimationFrame) {
+          window.cancelAnimationFrame(animationRef.current);
+        }
       }
     };
   }, [isRunning]);

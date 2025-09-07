@@ -70,18 +70,47 @@ const UsersTab = () => {
   const [showAddUser, setShowAddUser] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // Mock users data - in production, this would come from Clerk API
-  const mockUsers = [
-    { id: '1', name: 'John Smith', email: 'john@sentia.com', role: 'Admin', status: 'Active', lastLogin: '2025-01-06' },
-    { id: '2', name: 'Sarah Johnson', email: 'sarah@sentia.com', role: 'Manager', status: 'Active', lastLogin: '2025-01-05' },
-    { id: '3', name: 'Mike Wilson', email: 'mike@sentia.com', role: 'Operator', status: 'Active', lastLogin: '2025-01-06' },
-    { id: '4', name: 'Emily Davis', email: 'emily@sentia.com', role: 'Viewer', status: 'Pending', lastLogin: 'Never' }
-  ];
+  // Fetch REAL users from Clerk API - no mock data allowed
+  const { data: clerkUsers = [], isLoading, error } = useQuery({
+    queryKey: ['clerk-users'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${await user?.getToken?.()}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch users');
+      return response.json();
+    },
+    enabled: !!user
+  });
 
-  const filteredUsers = mockUsers.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = clerkUsers.filter(user =>
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Show loading state while fetching real user data
+  if (isLoading) {
+    return (
+      <div className="p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p>Loading real user data...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mt-2"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if API fails
+  if (error) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-red-600">Error loading users: {error.message}</p>
+        <p className="text-sm text-gray-500 mt-2">Please ensure Clerk API is properly configured</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">

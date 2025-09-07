@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUser } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, Users, Package, Activity, 
   ArrowUpRight, ArrowDownRight, RefreshCw,
-  BarChart3, PieChart, LineChart, Settings, Upload
+  BarChart3, LineChart, Settings, Upload
 } from 'lucide-react';
 
 // Import chart components

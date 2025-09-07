@@ -15,7 +15,7 @@ import {
   ShieldCheckIcon,
   CubeIcon,
   PresentationChartLineIcon,
-  CircuitBoardIcon,
+  CpuChipIcon,
   BanknotesIcon,
   DocumentArrowUpIcon
 } from '@heroicons/react/24/outline';
@@ -87,7 +87,7 @@ const SearchModal = ({ isOpen, onClose }) => {
       title: 'AI Analytics', 
       description: 'Advanced analytics and insights',
       url: '/ai-analytics', 
-      icon: CircuitBoardIcon, 
+      icon: CpuChipIcon, 
       type: 'page',
       keywords: ['analytics', 'ai', 'insights', 'machine learning', 'data'],
       permission: 'analytics.view'

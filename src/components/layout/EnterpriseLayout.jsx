@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { UserButton } from '@clerk/clerk-react';
@@ -8,7 +8,6 @@ import {
   BellIcon,
   ChevronRightIcon,
   HomeIcon,
-  XMarkIcon,
   CommandLineIcon
 } from '@heroicons/react/24/outline';
 import { useAuthRole } from '../../hooks/useAuthRole';
@@ -28,6 +27,7 @@ const breadcrumbMap = {
   '/forecasting': { label: 'Demand Forecasting', parent: '/dashboard' },
   '/ai-analytics': { label: 'AI Analytics', parent: '/dashboard' },
   '/working-capital': { label: 'Working Capital', parent: '/dashboard' },
+  '/what-if': { label: 'What-If Analysis', parent: '/dashboard' },
   '/data-import': { label: 'Data Import', parent: '/dashboard' },
   '/admin': { label: 'Admin Panel', parent: '/dashboard' },
   '/settings': { label: 'System Configuration', parent: '/admin' }
@@ -124,6 +124,10 @@ const EnterpriseLayout = ({ children }) => {
       '/working-capital': {
         title: 'Working Capital',
         description: 'Financial management and cash flow analysis'
+      },
+      '/what-if': {
+        title: 'What-If Analysis',
+        description: 'Interactive scenario modeling for working capital optimization'
       },
       '/data-import': {
         title: 'Data Import',

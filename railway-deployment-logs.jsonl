@@ -1,8 +1,107 @@
-{"timestamp":"2025-09-07T10:44:51.185Z","level":"INFO","message":"Starting deployment cycle"}
-{"timestamp":"2025-09-07T10:44:51.462Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
-{"timestamp":"2025-09-07T10:44:51.471Z","level":"WARN","message":"development needs redeployment"}
-{"timestamp":"2025-09-07T10:44:51.477Z","level":"INFO","message":"Starting deployment to development"}
-{"timestamp":"2025-09-07T10:44:51.678Z","level":"ERROR","message":"Failed to deploy to development","error":"Command failed: git checkout development\nerror: The following untracked working tree files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease move or remove them before you switch branches.\nAborting\n"}
-{"timestamp":"2025-09-07T10:44:51.809Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
-{"timestamp":"2025-09-07T10:44:51.815Z","level":"WARN","message":"test needs redeployment"}
-{"timestamp":"2025-09-07T10:44:51.824Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T10:24:15.489Z","level":"INFO","message":"Railway Deployment Monitor started"}
+{"timestamp":"2025-09-07T10:24:15.499Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T10:24:15.887Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T10:24:15.894Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T10:24:15.898Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T10:24:25.103Z","level":"SUCCESS","message":"Deployed to development"}
+{"timestamp":"2025-09-07T10:24:25.210Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:24:25.216Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T10:24:25.221Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T10:24:25.404Z","level":"ERROR","message":"Failed to deploy to test","error":"Command failed: git checkout test\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:24:25.719Z","level":"STATUS","message":"production deployment status","branch":"production","url":"https://sentia-manufacturing-dashboard-production.up.railway.app","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:24:25.724Z","level":"WARN","message":"production needs redeployment"}
+{"timestamp":"2025-09-07T10:24:25.729Z","level":"INFO","message":"Starting deployment to production"}
+{"timestamp":"2025-09-07T10:24:25.877Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:24:26.022Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T10:29:26.036Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T10:29:26.306Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T10:29:26.310Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T10:29:26.316Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T10:29:33.430Z","level":"SUCCESS","message":"Deployed to development"}
+{"timestamp":"2025-09-07T10:29:33.558Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:29:33.563Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T10:29:33.567Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T10:29:33.726Z","level":"ERROR","message":"Failed to deploy to test","error":"Command failed: git checkout test\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:29:34.017Z","level":"STATUS","message":"production deployment status","branch":"production","url":"https://sentia-manufacturing-dashboard-production.up.railway.app","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:29:34.022Z","level":"WARN","message":"production needs redeployment"}
+{"timestamp":"2025-09-07T10:29:34.029Z","level":"INFO","message":"Starting deployment to production"}
+{"timestamp":"2025-09-07T10:29:34.218Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:29:34.367Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T10:34:34.380Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T10:34:34.668Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T10:34:34.675Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T10:34:34.681Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T10:34:42.269Z","level":"SUCCESS","message":"Deployed to development"}
+{"timestamp":"2025-09-07T10:34:42.389Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:34:42.396Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T10:34:42.403Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T10:34:42.583Z","level":"ERROR","message":"Failed to deploy to test","error":"Command failed: git checkout test\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:34:42.840Z","level":"STATUS","message":"production deployment status","branch":"production","url":"https://sentia-manufacturing-dashboard-production.up.railway.app","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:34:42.847Z","level":"WARN","message":"production needs redeployment"}
+{"timestamp":"2025-09-07T10:34:42.854Z","level":"INFO","message":"Starting deployment to production"}
+{"timestamp":"2025-09-07T10:34:43.012Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:34:43.163Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T10:39:43.179Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T10:39:43.428Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T10:39:43.435Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T10:39:43.443Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T10:50:07.837Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T10:50:08.110Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T10:50:08.118Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T10:50:08.129Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T10:50:16.238Z","level":"SUCCESS","message":"Deployed to development"}
+{"timestamp":"2025-09-07T10:50:16.388Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:50:16.397Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T10:50:16.404Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T10:50:16.583Z","level":"ERROR","message":"Failed to deploy to test","error":"Command failed: git checkout test\nerror: Your local changes to the following files would be overwritten by checkout:\n\tplaywright-report/index.html\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:50:16.724Z","level":"STATUS","message":"production deployment status","branch":"production","url":"https://sentia-manufacturing-dashboard-production.up.railway.app","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:50:16.734Z","level":"WARN","message":"production needs redeployment"}
+{"timestamp":"2025-09-07T10:50:16.741Z","level":"INFO","message":"Starting deployment to production"}
+{"timestamp":"2025-09-07T10:50:17.093Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\tplaywright-report/index.html\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:50:17.317Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T10:55:17.342Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T10:55:17.651Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T10:55:17.664Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T10:55:17.674Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T10:55:25.096Z","level":"SUCCESS","message":"Deployed to development"}
+{"timestamp":"2025-09-07T10:55:25.231Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:55:25.250Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T10:55:25.259Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T10:55:25.428Z","level":"ERROR","message":"Failed to deploy to test","error":"Command failed: git checkout test\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:55:25.692Z","level":"STATUS","message":"production deployment status","branch":"production","url":"https://sentia-manufacturing-dashboard-production.up.railway.app","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T10:55:25.707Z","level":"WARN","message":"production needs redeployment"}
+{"timestamp":"2025-09-07T10:55:25.716Z","level":"INFO","message":"Starting deployment to production"}
+{"timestamp":"2025-09-07T10:55:25.883Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T10:55:26.060Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T11:00:26.086Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T11:00:26.404Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T11:00:26.417Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T11:00:26.427Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T11:00:33.428Z","level":"SUCCESS","message":"Deployed to development"}
+{"timestamp":"2025-09-07T11:00:33.604Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T11:00:33.616Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T11:00:33.629Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T11:00:33.857Z","level":"ERROR","message":"Failed to deploy to test","error":"Command failed: git checkout test\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T11:00:34.024Z","level":"STATUS","message":"production deployment status","branch":"production","url":"https://sentia-manufacturing-dashboard-production.up.railway.app","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T11:00:34.037Z","level":"WARN","message":"production needs redeployment"}
+{"timestamp":"2025-09-07T11:00:34.047Z","level":"INFO","message":"Starting deployment to production"}
+{"timestamp":"2025-09-07T11:00:34.303Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T11:00:34.475Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T11:05:34.502Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T11:05:34.791Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T11:05:34.802Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T11:05:34.812Z","level":"INFO","message":"Starting deployment to development"}
+{"timestamp":"2025-09-07T11:05:42.439Z","level":"SUCCESS","message":"Deployed to development"}
+{"timestamp":"2025-09-07T11:05:42.673Z","level":"STATUS","message":"test deployment status","branch":"test","url":"https://sentiatest.financeflo.ai","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T11:05:42.685Z","level":"WARN","message":"test needs redeployment"}
+{"timestamp":"2025-09-07T11:05:42.698Z","level":"INFO","message":"Starting deployment to test"}
+{"timestamp":"2025-09-07T11:05:42.993Z","level":"ERROR","message":"Failed to deploy to test","error":"Command failed: git checkout test\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T11:05:43.221Z","level":"STATUS","message":"production deployment status","branch":"production","url":"https://sentia-manufacturing-dashboard-production.up.railway.app","statusCode":200,"online":true,"responseTime":0,"hasContent":true,"features":["sentia-branding"]}
+{"timestamp":"2025-09-07T11:05:43.235Z","level":"WARN","message":"production needs redeployment"}
+{"timestamp":"2025-09-07T11:05:43.256Z","level":"INFO","message":"Starting deployment to production"}
+{"timestamp":"2025-09-07T11:05:43.437Z","level":"ERROR","message":"Failed to deploy to production","error":"Command failed: git checkout production\nerror: Your local changes to the following files would be overwritten by checkout:\n\trailway-deployment-logs.jsonl\nPlease commit your changes or stash them before you switch branches.\nAborting\n"}
+{"timestamp":"2025-09-07T11:05:43.643Z","level":"INFO","message":"Deployment cycle completed"}
+{"timestamp":"2025-09-07T11:10:43.662Z","level":"INFO","message":"Starting deployment cycle"}
+{"timestamp":"2025-09-07T11:10:43.980Z","level":"STATUS","message":"development deployment status","branch":"development","url":"https://sentia-manufacturing-dashboard-development.up.railway.app","statusCode":502,"online":false,"responseTime":0}
+{"timestamp":"2025-09-07T11:10:43.996Z","level":"WARN","message":"development needs redeployment"}
+{"timestamp":"2025-09-07T11:10:44.011Z","level":"INFO","message":"Starting deployment to development"}

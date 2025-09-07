@@ -104,139 +104,146 @@ export const KPISection: React.FC<KPISectionProps> = ({
     return () => unsubscribe(subscriptionId);
   }, [activeMarket?.id, subscribe, unsubscribe]);
 
-  // Generate KPI metrics from data
+  // Generate KPI metrics from REAL data only
   const generateKPIMetrics = (revenue: any, performance: any): KPIMetric[] => {
-    const mockData = {
-      workingCapital: { current: 2500000, previous: 2300000, target: 2800000 },
-      revenue: { current: revenue?.total || 15600000, previous: 14200000, target: 16000000 },
-      grossMargin: { current: 0.34, previous: 0.32, target: 0.35 },
-      inventoryTurnover: { current: 8.2, previous: 7.8, target: 9.0 },
-      cashConversionCycle: { current: 45, previous: 52, target: 40 },
-      forecastAccuracy: { current: 0.87, previous: 0.84, target: 0.90 }
+    // Use ONLY real data from API - no mock data allowed
+    const realData = {
+      workingCapital: { 
+        current: performance?.workingCapital?.current || 0, 
+        previous: performance?.workingCapital?.previous || 0, 
+        target: performance?.workingCapital?.target || 0 
+      },
+      revenue: { 
+        current: revenue?.total || 0, 
+        previous: revenue?.previous || 0, 
+        target: revenue?.target || 0 
+      },
+      grossMargin: { 
+        current: performance?.grossMargin?.current || 0, 
+        previous: performance?.grossMargin?.previous || 0, 
+        target: performance?.grossMargin?.target || 0 
+      },
+      inventoryTurnover: { 
+        current: performance?.inventoryTurnover?.current || 0, 
+        previous: performance?.inventoryTurnover?.previous || 0, 
+        target: performance?.inventoryTurnover?.target || 0 
+      },
+      cashConversionCycle: { 
+        current: performance?.cashConversionCycle?.current || 0, 
+        previous: performance?.cashConversionCycle?.previous || 0, 
+        target: performance?.cashConversionCycle?.target || 0 
+      },
+      forecastAccuracy: { 
+        current: performance?.forecastAccuracy?.current || 0, 
+        previous: performance?.forecastAccuracy?.previous || 0, 
+        target: performance?.forecastAccuracy?.target || 0 
+      }
     };
 
     return [
       {
         id: 'working-capital',
         label: 'Total Working Capital',
-        value: mockData.workingCapital.current,
-        previousValue: mockData.workingCapital.previous,
-        target: mockData.workingCapital.target,
+        value: realData.workingCapital.current,
+        previousValue: realData.workingCapital.previous,
+        target: realData.workingCapital.target,
         unit: 'GBP',
         format: 'currency',
-        trend: mockData.workingCapital.current > mockData.workingCapital.previous ? 'up' : 'down',
-        changePercent: ((mockData.workingCapital.current - mockData.workingCapital.previous) / mockData.workingCapital.previous) * 100,
-        status: mockData.workingCapital.current >= mockData.workingCapital.target * 0.95 ? 'excellent' : 'good',
+        trend: realData.workingCapital.current > realData.workingCapital.previous ? 'up' : 'down',
+        changePercent: realData.workingCapital.previous > 0 ? ((realData.workingCapital.current - realData.workingCapital.previous) / realData.workingCapital.previous) * 100 : 0,
+        status: realData.workingCapital.target > 0 && realData.workingCapital.current >= realData.workingCapital.target * 0.95 ? 'excellent' : 'good',
         icon: DollarSign,
         description: '30-day trend shows steady growth in available capital',
         lastUpdated: new Date(),
-        confidence: 95,
-        breakdown: [
-          { label: 'Current Assets', value: 3800000, change: 5.2 },
-          { label: 'Current Liabilities', value: 1300000, change: -2.1 },
-        ]
+        confidence: performance?.workingCapital?.confidence || 0,
+        breakdown: performance?.workingCapital?.breakdown || []
       },
       {
         id: 'revenue',
         label: `Revenue (${selectedPeriod})`,
-        value: mockData.revenue.current,
-        previousValue: mockData.revenue.previous,
-        target: mockData.revenue.target,
+        value: realData.revenue.current,
+        previousValue: realData.revenue.previous,
+        target: realData.revenue.target,
         unit: 'GBP',
         format: 'currency',
-        trend: mockData.revenue.current > mockData.revenue.previous ? 'up' : 'down',
-        changePercent: ((mockData.revenue.current - mockData.revenue.previous) / mockData.revenue.previous) * 100,
-        status: mockData.revenue.current >= mockData.revenue.target * 0.9 ? 'excellent' : 'good',
+        trend: realData.revenue.current > realData.revenue.previous ? 'up' : 'down',
+        changePercent: realData.revenue.previous > 0 ? ((realData.revenue.current - realData.revenue.previous) / realData.revenue.previous) * 100 : 0,
+        status: realData.revenue.target > 0 && realData.revenue.current >= realData.revenue.target * 0.9 ? 'excellent' : 'good',
         icon: BarChart3,
         description: `${selectedPeriod} performance tracking above expectations`,
         lastUpdated: new Date(),
-        confidence: 92,
-        breakdown: [
-          { label: 'Product Sales', value: 12400000, change: 8.5 },
-          { label: 'Service Revenue', value: 3200000, change: 12.3 },
-        ]
+        confidence: revenue?.confidence || 0,
+        breakdown: revenue?.breakdown || []
       },
       {
         id: 'gross-margin',
         label: 'Gross Margin',
-        value: mockData.grossMargin.current,
-        previousValue: mockData.grossMargin.previous,
-        target: mockData.grossMargin.target,
+        value: realData.grossMargin.current,
+        previousValue: realData.grossMargin.previous,
+        target: realData.grossMargin.target,
         unit: '%',
         format: 'percentage',
-        trend: mockData.grossMargin.current > mockData.grossMargin.previous ? 'up' : 'down',
-        changePercent: ((mockData.grossMargin.current - mockData.grossMargin.previous) / mockData.grossMargin.previous) * 100,
-        status: mockData.grossMargin.current >= mockData.grossMargin.target * 0.95 ? 'excellent' : 
-               mockData.grossMargin.current >= mockData.grossMargin.target * 0.85 ? 'good' : 'warning',
+        trend: realData.grossMargin.current > realData.grossMargin.previous ? 'up' : 'down',
+        changePercent: realData.grossMargin.previous > 0 ? ((realData.grossMargin.current - realData.grossMargin.previous) / realData.grossMargin.previous) * 100 : 0,
+        status: realData.grossMargin.target > 0 && realData.grossMargin.current >= realData.grossMargin.target * 0.95 ? 'excellent' : 
+               realData.grossMargin.target > 0 && realData.grossMargin.current >= realData.grossMargin.target * 0.85 ? 'good' : 'warning',
         icon: Target,
         description: 'Margin improvement driven by cost optimization',
         lastUpdated: new Date(),
-        confidence: 88,
-        breakdown: [
-          { label: 'Direct Costs', value: 0.66, change: -2.8 },
-          { label: 'Manufacturing', value: 0.58, change: -3.2 },
-        ]
+        confidence: performance?.grossMargin?.confidence || 0,
+        breakdown: performance?.grossMargin?.breakdown || []
       },
       {
         id: 'inventory-turnover',
         label: 'Inventory Turnover',
-        value: mockData.inventoryTurnover.current,
-        previousValue: mockData.inventoryTurnover.previous,
-        target: mockData.inventoryTurnover.target,
+        value: realData.inventoryTurnover.current,
+        previousValue: realData.inventoryTurnover.previous,
+        target: realData.inventoryTurnover.target,
         unit: 'x',
         format: 'ratio',
-        trend: mockData.inventoryTurnover.current > mockData.inventoryTurnover.previous ? 'up' : 'down',
-        changePercent: ((mockData.inventoryTurnover.current - mockData.inventoryTurnover.previous) / mockData.inventoryTurnover.previous) * 100,
-        status: mockData.inventoryTurnover.current >= mockData.inventoryTurnover.target * 0.9 ? 'excellent' : 'good',
+        trend: realData.inventoryTurnover.current > realData.inventoryTurnover.previous ? 'up' : 'down',
+        changePercent: realData.inventoryTurnover.previous > 0 ? ((realData.inventoryTurnover.current - realData.inventoryTurnover.previous) / realData.inventoryTurnover.previous) * 100 : 0,
+        status: realData.inventoryTurnover.target > 0 && realData.inventoryTurnover.current >= realData.inventoryTurnover.target * 0.9 ? 'excellent' : 'good',
         icon: Package,
         description: 'Efficient inventory management across markets',
         lastUpdated: new Date(),
-        confidence: 90,
-        breakdown: [
-          { label: 'Raw Materials', value: 12.5, change: 8.2 },
-          { label: 'Finished Goods', value: 6.8, change: 4.1 },
-        ]
+        confidence: performance?.inventoryTurnover?.confidence || 0,
+        breakdown: performance?.inventoryTurnover?.breakdown || []
       },
       {
         id: 'cash-conversion',
         label: 'Cash Conversion Cycle',
-        value: mockData.cashConversionCycle.current,
-        previousValue: mockData.cashConversionCycle.previous,
-        target: mockData.cashConversionCycle.target,
+        value: realData.cashConversionCycle.current,
+        previousValue: realData.cashConversionCycle.previous,
+        target: realData.cashConversionCycle.target,
         unit: 'days',
         format: 'days',
-        trend: mockData.cashConversionCycle.current < mockData.cashConversionCycle.previous ? 'up' : 'down', // Lower is better
-        changePercent: Math.abs(((mockData.cashConversionCycle.current - mockData.cashConversionCycle.previous) / mockData.cashConversionCycle.previous) * 100),
-        status: mockData.cashConversionCycle.current <= mockData.cashConversionCycle.target ? 'excellent' : 
-               mockData.cashConversionCycle.current <= mockData.cashConversionCycle.target * 1.15 ? 'good' : 'warning',
+        trend: realData.cashConversionCycle.current < realData.cashConversionCycle.previous ? 'up' : 'down', // Lower is better
+        changePercent: realData.cashConversionCycle.previous > 0 ? Math.abs(((realData.cashConversionCycle.current - realData.cashConversionCycle.previous) / realData.cashConversionCycle.previous) * 100) : 0,
+        status: realData.cashConversionCycle.target > 0 && realData.cashConversionCycle.current <= realData.cashConversionCycle.target ? 'excellent' : 
+               realData.cashConversionCycle.target > 0 && realData.cashConversionCycle.current <= realData.cashConversionCycle.target * 1.15 ? 'good' : 'warning',
         icon: Clock,
         description: 'Improved cash flow cycle timing',
         lastUpdated: new Date(),
-        confidence: 85,
-        breakdown: [
-          { label: 'Days Sales Outstanding', value: 28, change: -5.2 },
-          { label: 'Days Payable Outstanding', value: 35, change: 8.1 },
-        ]
+        confidence: performance?.cashConversionCycle?.confidence || 0,
+        breakdown: performance?.cashConversionCycle?.breakdown || []
       },
       {
         id: 'forecast-accuracy',
         label: 'Forecast Accuracy Score',
-        value: mockData.forecastAccuracy.current,
-        previousValue: mockData.forecastAccuracy.previous,
-        target: mockData.forecastAccuracy.target,
+        value: realData.forecastAccuracy.current,
+        previousValue: realData.forecastAccuracy.previous,
+        target: realData.forecastAccuracy.target,
         unit: '%',
         format: 'percentage',
-        trend: mockData.forecastAccuracy.current > mockData.forecastAccuracy.previous ? 'up' : 'down',
-        changePercent: ((mockData.forecastAccuracy.current - mockData.forecastAccuracy.previous) / mockData.forecastAccuracy.previous) * 100,
-        status: mockData.forecastAccuracy.current >= mockData.forecastAccuracy.target * 0.95 ? 'excellent' : 'good',
+        trend: realData.forecastAccuracy.current > realData.forecastAccuracy.previous ? 'up' : 'down',
+        changePercent: realData.forecastAccuracy.previous > 0 ? ((realData.forecastAccuracy.current - realData.forecastAccuracy.previous) / realData.forecastAccuracy.previous) * 100 : 0,
+        status: realData.forecastAccuracy.target > 0 && realData.forecastAccuracy.current >= realData.forecastAccuracy.target * 0.95 ? 'excellent' : 'good',
         icon: TrendingUp,
         description: 'AI-powered forecasting showing high accuracy',
         lastUpdated: new Date(),
-        confidence: 93,
-        breakdown: [
-          { label: 'Demand Forecast', value: 0.89, change: 4.2 },
-          { label: 'Revenue Forecast', value: 0.85, change: 2.8 },
-        ]
+        confidence: performance?.forecastAccuracy?.confidence || 0,
+        breakdown: performance?.forecastAccuracy?.breakdown || []
       }
     ];
   };

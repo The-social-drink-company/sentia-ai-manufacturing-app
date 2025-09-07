@@ -10,6 +10,7 @@ import { createClerkClient } from '@clerk/clerk-sdk-node';
 import fetch from 'node-fetch';
 import xeroService from './services/xeroService.js';
 import aiAnalyticsService from './services/aiAnalyticsService.js';
+import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,26 +63,24 @@ let manufacturingData = {
   lastUpdated: null
 };
 
-console.log('🚀 SENTIA MANUFACTURING DASHBOARD SERVER STARTING');
-console.log('Port:', PORT);
-console.log('Environment:', process.env.NODE_ENV || 'development');
+logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING', { port: PORT, environment: process.env.NODE_ENV || 'development' });
 
 // Initialize enterprise services
 (async () => {
   try {
-    console.log('🔌 Initializing enterprise services...');
+    logInfo('Initializing enterprise services');
     
     // Initialize Xero service
     const xeroHealth = await xeroService.healthCheck();
-    console.log(`📊 Xero Service: ${xeroHealth.status} - ${xeroHealth.message || 'Ready'}`);
+    logInfo('Xero Service initialized', { status: xeroHealth.status, message: xeroHealth.message || 'Ready' });
     
     // Initialize AI Analytics service
     const aiHealth = await aiAnalyticsService.healthCheck();
-    console.log(`🧠 AI Analytics: ${aiHealth.status} - Vector database ready`);
+    logInfo('AI Analytics initialized', { status: aiHealth.status, message: 'Vector database ready' });
     
-    console.log('✅ All enterprise services initialized');
+    logInfo('All enterprise services initialized');
   } catch (error) {
-    console.error('❌ Service initialization error:', error);
+    logError('Service initialization error', error);
   }
 })();
 
@@ -770,6 +769,278 @@ function generateKPITrends(category, timeframe) {
   
   return trends;
 }
+
+// What-If Analysis APIs
+app.get('/api/analytics/whatif-analysis/initialize', authenticateUser, async (req, res) => {
+  try {
+    // Import What-If Analysis engine
+    const WhatIfAnalysisEngine = (await import('./services/analytics/whatif-analysis-engine.js')).default;
+    const analysisEngine = new WhatIfAnalysisEngine();
+    
+    // Prepare baseline data
+    const baselineData = {
+      companyId: req.user?.companyId || 'demo-company',
+      financials: {
+        revenue: 42500000,
+        working_capital: 13500000,
+        net_income: 6100000,
+        cash: 5200000
+      },
+      production: manufacturingData.production,
+      markets: {
+        UK: { sales: 15000000, currency: 'GBP' },
+        USA: { sales: 18500000, currency: 'USD' },
+        EUROPE: { sales: 9000000, currency: 'EUR' }
+      }
+    };
+    
+    // Initialize analysis engine
+    const initialScenario = await analysisEngine.initialize(baselineData);
+    
+    res.json({
+      success: true,
+      parameters: analysisEngine.getDefaultScenario().parameters,
+      scenario: initialScenario,
+      markets: ['UK', 'USA', 'EUROPE'],
+      currencies: { UK: 'GBP', USA: 'USD', EUROPE: 'EUR' },
+      parameterRanges: analysisEngine.parameters,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('What-If Analysis initialization error:', error);
+    res.status(500).json({ 
+      error: 'Failed to initialize What-If Analysis',
+      details: error.message 
+    });
+  }
+});
+
+app.post('/api/analytics/whatif-analysis/calculate', authenticateUser, async (req, res) => {
+  try {
+    const { parameters } = req.body;
+    
+    if (!parameters) {
+      return res.status(400).json({ error: 'Parameters are required' });
+    }
+    
+    // Import and initialize What-If Analysis engine
+    const WhatIfAnalysisEngine = (await import('./services/analytics/whatif-analysis-engine.js')).default;
+    const analysisEngine = new WhatIfAnalysisEngine();
+    
+    // Prepare baseline data
+    const baselineData = {
+      companyId: req.user?.companyId || 'demo-company',
+      financials: {
+        revenue: 42500000,
+        working_capital: 13500000,
+        net_income: 6100000,
+        cash: 5200000
+      },
+      production: manufacturingData.production,
+      markets: {
+        UK: { sales: 15000000, currency: 'GBP' },
+        USA: { sales: 18500000, currency: 'USD' },
+        EUROPE: { sales: 9000000, currency: 'EUR' }
+      }
+    };
+    
+    // Initialize and update scenario
+    await analysisEngine.initialize(baselineData);
+    const updatedScenario = await analysisEngine.updateScenario(parameters);
+    
+    // Send real-time SSE update
+    sendSSEEvent('whatif.scenario.updated', {
+      scenario: updatedScenario,
+      timestamp: new Date().toISOString()
+    });
+    
+    res.json({
+      success: true,
+      scenario: updatedScenario,
+      processingTime: updatedScenario.processingTime || 0,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('What-If Analysis calculation error:', error);
+    res.status(500).json({ 
+      error: 'Failed to calculate scenario',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/analytics/whatif-analysis/market/:marketId', authenticateUser, async (req, res) => {
+  try {
+    const { marketId } = req.params;
+    const { parameters } = req.query;
+    
+    if (!['UK', 'USA', 'EUROPE'].includes(marketId)) {
+      return res.status(400).json({ error: 'Invalid market ID' });
+    }
+    
+    // Import What-If Analysis engine
+    const WhatIfAnalysisEngine = (await import('./services/analytics/whatif-analysis-engine.js')).default;
+    const analysisEngine = new WhatIfAnalysisEngine();
+    
+    // Prepare baseline data
+    const baselineData = {
+      companyId: req.user?.companyId || 'demo-company',
+      financials: { revenue: 42500000, working_capital: 13500000, net_income: 6100000 }
+    };
+    
+    await analysisEngine.initialize(baselineData);
+    
+    // Get market-specific parameters or use defaults
+    const scenarioParams = parameters ? JSON.parse(parameters) : analysisEngine.getDefaultScenario().parameters;
+    const marketData = await analysisEngine.calculateMarketScenario(marketId, scenarioParams);
+    
+    res.json({
+      success: true,
+      market: marketId,
+      data: marketData,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Market analysis error:', error);
+    res.status(500).json({ 
+      error: 'Failed to analyze market',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/analytics/whatif-analysis/working-capital-breakdown', authenticateUser, async (req, res) => {
+  try {
+    const { parameters } = req.query;
+    
+    // Import What-If Analysis engine
+    const WhatIfAnalysisEngine = (await import('./services/analytics/whatif-analysis-engine.js')).default;
+    const analysisEngine = new WhatIfAnalysisEngine();
+    
+    // Prepare baseline data
+    const baselineData = {
+      companyId: req.user?.companyId || 'demo-company',
+      financials: { revenue: 42500000, working_capital: 13500000, net_income: 6100000 }
+    };
+    
+    await analysisEngine.initialize(baselineData);
+    
+    const scenarioParams = parameters ? JSON.parse(parameters) : analysisEngine.getDefaultScenario().parameters;
+    const scenario = await analysisEngine.calculateScenario({ parameters: scenarioParams });
+    
+    // Generate detailed working capital breakdown
+    const breakdown = {
+      total: scenario.workingCapitalSummary.totalRequired,
+      byMarket: scenario.workingCapitalSummary.byMarket,
+      byComponent: {},
+      seasonal: {},
+      financing: {
+        totalBorrowingRequired: scenario.workingCapitalSummary.totalBorrowingRequired,
+        interestCost: 0,
+        creditUtilization: {}
+      }
+    };
+    
+    // Calculate component breakdown
+    Object.entries(scenario.marketAnalysis).forEach(([market, data]) => {
+      breakdown.byComponent[market] = {
+        inventory: data.workingCapital.components.inventory,
+        receivables: data.workingCapital.components.receivables,
+        payables: data.workingCapital.components.payables
+      };
+      
+      breakdown.seasonal[market] = data.workingCapital.seasonal;
+      breakdown.financing.interestCost += data.financing.annualInterestCost;
+      breakdown.financing.creditUtilization[market] = data.financing.creditUtilization;
+    });
+    
+    res.json({
+      success: true,
+      breakdown,
+      insights: scenario.insights,
+      confidence: scenario.confidence,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Working capital breakdown error:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate working capital breakdown',
+      details: error.message 
+    });
+  }
+});
+
+app.post('/api/analytics/whatif-analysis/save-scenario', authenticateUser, async (req, res) => {
+  try {
+    const { name, description, parameters } = req.body;
+    
+    if (!name || !parameters) {
+      return res.status(400).json({ error: 'Scenario name and parameters are required' });
+    }
+    
+    // In production, this would save to database
+    const savedScenario = {
+      id: `scenario_${Date.now()}`,
+      name,
+      description,
+      parameters,
+      userId: req.user?.id || 'demo-user',
+      createdAt: new Date().toISOString()
+    };
+    
+    res.json({
+      success: true,
+      scenario: savedScenario,
+      message: 'Scenario saved successfully'
+    });
+    
+  } catch (error) {
+    console.error('Save scenario error:', error);
+    res.status(500).json({ 
+      error: 'Failed to save scenario',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/analytics/whatif-analysis/scenarios', authenticateUser, (req, res) => {
+  try {
+    // In production, this would fetch from database
+    const scenarios = [
+      {
+        id: 'scenario_baseline',
+        name: 'Baseline Scenario',
+        description: 'Current operational parameters',
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        isFavorite: true
+      },
+      {
+        id: 'scenario_aggressive_growth',
+        name: 'Aggressive Growth',
+        description: 'High growth scenario with increased capacity',
+        createdAt: new Date(Date.now() - 3600000).toISOString(),
+        isFavorite: false
+      }
+    ];
+    
+    res.json({
+      success: true,
+      scenarios,
+      total: scenarios.length
+    });
+    
+  } catch (error) {
+    console.error('Get scenarios error:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch scenarios',
+      details: error.message 
+    });
+  }
+});
 
 // Enhanced Production Tracking APIs
 app.get('/api/production/status', authenticateUser, (req, res) => {

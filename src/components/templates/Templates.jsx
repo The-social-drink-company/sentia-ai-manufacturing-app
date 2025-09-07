@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
 import {
   DocumentArrowDownIcon,
   DocumentTextIcon,
@@ -128,7 +128,7 @@ const Templates = () => {
 
   const handleDownload = (templateId, templateName) => {
     // In a real implementation, this would trigger a file download
-    console.log(`Downloading template: ${templateName}`);
+    devLog.log(`Downloading template: ${templateName}`);
     // You could make an API call here to track downloads and serve the actual file
   };
 

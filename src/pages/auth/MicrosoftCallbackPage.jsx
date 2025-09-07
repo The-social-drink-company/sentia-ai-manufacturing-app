@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useEffect, useState } from 'react';
 import microsoftAuthService from '../../services/microsoftAuthService';
 
 const MicrosoftCallbackPage = () => {
@@ -25,11 +25,11 @@ const MicrosoftCallbackPage = () => {
           return;
         }
 
-        console.log('Processing Microsoft OAuth callback...');
+        devLog.log('Processing Microsoft OAuth callback...');
         setStatus('processing');
 
         const result = await microsoftAuthService.handleCallback(code, state);
-        console.log('Microsoft OAuth successful:', result);
+        devLog.log('Microsoft OAuth successful:', result);
 
         setStatus('success');
         
@@ -39,7 +39,7 @@ const MicrosoftCallbackPage = () => {
         }, 2000);
 
       } catch (error) {
-        console.error('Microsoft OAuth callback error:', error);
+        devLog.error('Microsoft OAuth callback error:', error);
         setError(error.message);
         setStatus('error');
       }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -176,7 +176,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
 
         setAnalyticsData(compiledAnalyticsData);
       } catch (error) {
-        console.error('Failed to load analytics data:', error);
+        devLog.error('Failed to load analytics data:', error);
         // Use fallback data
         setAnalyticsData(getDefaultAnalyticsData());
       } finally {

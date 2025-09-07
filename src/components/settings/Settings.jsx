@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import {
   UserCircleIcon,
   BellIcon,
@@ -79,7 +79,7 @@ const Settings = () => {
 
   const handleSave = () => {
     // In a real implementation, this would save to the backend
-    console.log('Saving settings:', settings);
+    devLog.log('Saving settings:', settings);
     // Show success toast
   };
 

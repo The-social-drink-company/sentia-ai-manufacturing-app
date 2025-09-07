@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -113,7 +113,7 @@ const AIForecastingInterface = ({ data, onForecast, onScenarioChange, loading = 
           });
         }
       } catch (error) {
-        console.error('Failed to load forecast data:', error);
+        devLog.error('Failed to load forecast data:', error);
         // Fallback to default structure
         setForecastData(getDefaultForecastData());
       }
@@ -168,11 +168,11 @@ const AIForecastingInterface = ({ data, onForecast, onScenarioChange, loading = 
                 clearInterval(pollInterval);
                 setIsForecasting(false);
                 setCurrentJobId(null);
-                console.error('Forecast job failed:', resultData.job.error);
+                devLog.error('Forecast job failed:', resultData.job.error);
               }
             }
           } catch (error) {
-            console.error('Error polling forecast results:', error);
+            devLog.error('Error polling forecast results:', error);
           }
         }, 2000);
 
@@ -185,11 +185,11 @@ const AIForecastingInterface = ({ data, onForecast, onScenarioChange, loading = 
 
       } else {
         setIsForecasting(false);
-        console.error('Failed to create forecast job');
+        devLog.error('Failed to create forecast job');
       }
     } catch (error) {
       setIsForecasting(false);
-      console.error('Forecast generation error:', error);
+      devLog.error('Forecast generation error:', error);
     }
 
     if (onForecast) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useSSE, useSSEEvent } from '../../hooks/useSSE';
@@ -24,10 +24,10 @@ const ProductionTracking = () => {
     endpoint: '/api/events/production',
     enabled: liveUpdates,
     onConnect: () => {
-      console.log('Production SSE connected');
+      devLog.log('Production SSE connected');
     },
     onError: (error) => {
-      console.error('Production SSE error:', error);
+      devLog.error('Production SSE error:', error);
     }
   });
 
@@ -131,12 +131,12 @@ const ProductionTracking = () => {
       const result = await response.json();
       
       // Update will come through SSE, but we can show immediate feedback
-      console.log(`${action} action successful for ${lineId}:`, result);
+      devLog.log(`${action} action successful for ${lineId}:`, result);
       
       // Optionally trigger a manual refetch for immediate update
       refetch();
     } catch (error) {
-      console.error('Production line control error:', error);
+      devLog.error('Production line control error:', error);
       showErrorToast(`Failed to ${action} production line`);
     }
   };
@@ -158,11 +158,11 @@ const ProductionTracking = () => {
       }
 
       const result = await response.json();
-      console.log(`Batch ${batchId} updated:`, result);
+      devLog.log(`Batch ${batchId} updated:`, result);
       
       refetch();
     } catch (error) {
-      console.error('Batch update error:', error);
+      devLog.error('Batch update error:', error);
       showErrorToast('Failed to update batch status');
     }
   };

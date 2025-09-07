@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -77,7 +77,7 @@ const CFOBoardPack = ({ data, onRefresh, loading = false }) => {
           });
         }
       } catch (error) {
-        console.error('Failed to fetch board pack data:', error);
+        devLog.error('Failed to fetch board pack data:', error);
         // Use fallback data on error
         setBoardPackData({
           executiveSummary: {

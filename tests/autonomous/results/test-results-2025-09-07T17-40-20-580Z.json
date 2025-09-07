@@ -1,0 +1,59 @@
+{
+  "summary": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "avgDuration": 7.464399999999841,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_health",
+      "result": "pass",
+      "duration": 8.5028999999995,
+      "timestamp": "2025-09-07T17:40:20.482Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 363380736,
+          "heapTotal": 245919744,
+          "heapUsed": 133758504,
+          "external": 4920324,
+          "arrayBuffers": 1016957
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_users",
+      "result": "pass",
+      "duration": 6.425900000000183,
+      "timestamp": "2025-09-07T17:40:20.580Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 363388928,
+          "heapTotal": 245919744,
+          "heapUsed": 141785160,
+          "external": 4933913,
+          "arrayBuffers": 1029946
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

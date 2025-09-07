@@ -1,6 +1,13 @@
 // Enterprise-grade Access Control System (RBAC + ABAC)
 
-import { User } from '@clerk/clerk-react';
+// Define User type to replace Clerk User
+export interface User {
+  id: string;
+  email?: string;
+  name?: string;
+  role?: string;
+  [key: string]: any;
+}
 
 // Role definitions
 export enum Role {

@@ -1,4 +1,4 @@
-import { useUser } from '@clerk/clerk-react'
+import { useSession } from 'next-auth/react'
 import { useMemo } from 'react'
 
 // Role hierarchy for permission checking
@@ -108,12 +108,12 @@ const ROLE_FEATURES = {
 }
 
 export const useAuthRole = () => {
-  const { user, isLoaded, isSignedIn } = useUser()
+  const { data: session, status } = useSession()
   
   const authData = useMemo(() => {
-    if (!isLoaded || !isSignedIn || !user) {
+    if (status === 'loading' || status === 'unauthenticated' || !session?.user) {
       return {
-        isLoading: !isLoaded,
+        isLoading: status === 'loading',
         isAuthenticated: false,
         user: null,
         role: null,
@@ -127,8 +127,9 @@ export const useAuthRole = () => {
       }
     }
 
-    // Get role from user metadata, default to viewer
-    const role = user.publicMetadata?.role || 'viewer'
+    // Get role from session user data, default to viewer
+    const user = session.user
+    const role = user.role || 'viewer'
     
     // Normalize role to lowercase
     const normalizedRole = role.toLowerCase()
@@ -175,15 +176,14 @@ export const useAuthRole = () => {
       
       // Get display name for user
       getUserDisplayName: () => {
-        return user.fullName || 
-               user.firstName || 
-               user.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 
+        return user.name || 
+               user.email?.split('@')[0] || 
                'Unknown User'
       },
       
       // Get user initials for avatar
       getUserInitials: () => {
-        const fullName = user.fullName || user.firstName || 'U'
+        const fullName = user.name || 'U'
         return fullName
           .split(' ')
           .map(name => name.charAt(0).toUpperCase())
@@ -197,7 +197,7 @@ export const useAuthRole = () => {
         return permissions.includes(permission)
       }
     }
-  }, [user, isLoaded, isSignedIn])
+  }, [session, status])
 
   return authData
 }

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm ci --no-cache",
+    "nixpacksConfigPath": "nixpacks-mcp.toml"
+  },
+  "deploy": {
+    "startCommand": "node mcp-server.js",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 5,
+    "healthcheck": {
+      "command": "curl -f http://localhost:6002/health || exit 1",
+      "interval": "30s",
+      "timeout": "10s",
+      "retries": 3
+    }
+  },
+  "environments": {
+    "development": {
+      "variables": {
+        "NODE_ENV": "development",
+        "MCP_SERVER_PORT": "6002",
+        "XERO_CLIENT_ID": "${XERO_CLIENT_ID}",
+        "XERO_CLIENT_SECRET": "${XERO_CLIENT_SECRET}",
+        "XERO_REDIRECT_URI": "https://sentia-mcp-server-development.up.railway.app/auth/xero/callback"
+      }
+    },
+    "testing": {
+      "variables": {
+        "NODE_ENV": "test",
+        "MCP_SERVER_PORT": "6002",
+        "XERO_CLIENT_ID": "${XERO_CLIENT_ID}",
+        "XERO_CLIENT_SECRET": "${XERO_CLIENT_SECRET}",
+        "XERO_REDIRECT_URI": "https://sentia-mcp-server-testing.up.railway.app/auth/xero/callback"
+      }
+    },
+    "production": {
+      "variables": {
+        "NODE_ENV": "production",
+        "MCP_SERVER_PORT": "6002",
+        "XERO_CLIENT_ID": "${XERO_CLIENT_ID}",
+        "XERO_CLIENT_SECRET": "${XERO_CLIENT_SECRET}",
+        "XERO_REDIRECT_URI": "https://sentia-mcp-server-production.up.railway.app/auth/xero/callback"
+      }
+    }
+  }
+}

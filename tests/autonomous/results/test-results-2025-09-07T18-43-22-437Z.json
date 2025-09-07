@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1,
+    "avgDuration": 2287.71655,
+    "passRate": 75
+  },
+  "results": [
+    {
+      "testName": "UI_RESPONSIVE_Desktop",
+      "result": "pass",
+      "duration": 186.4301999999998,
+      "timestamp": "2025-09-07T18:43:02.928Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "http://127.0.0.1:3000/",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 152064000,
+          "heapTotal": 105213952,
+          "heapUsed": 41320360,
+          "external": 4539672,
+          "arrayBuffers": 635177
+        }
+      }
+    },
+    {
+      "testName": "UI_RESPONSIVE_Tablet",
+      "result": "pass",
+      "duration": 198.52059999999983,
+      "timestamp": "2025-09-07T18:43:07.905Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "http://127.0.0.1:3000/",
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 170360832,
+          "heapTotal": 108556288,
+          "heapUsed": 47920232,
+          "external": 5161321,
+          "arrayBuffers": 1256786
+        }
+      }
+    },
+    {
+      "testName": "UI_RESPONSIVE_Mobile",
+      "result": "pass",
+      "duration": 215.85739999999896,
+      "timestamp": "2025-09-07T18:43:13.466Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "http://127.0.0.1:3000/",
+        "viewport": {
+          "width": 375,
+          "height": 667
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 189181952,
+          "heapTotal": 114966528,
+          "heapUsed": 41951376,
+          "external": 8452730,
+          "arrayBuffers": 4548012
+        }
+      }
+    },
+    {
+      "testName": "REALTIME_SSE_CONNECTION",
+      "result": "fail",
+      "duration": 8550.058,
+      "timestamp": "2025-09-07T18:43:22.437Z",
+      "error": {
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:375:28\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:360:5",
+        "type": "ExpectError"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "http://127.0.0.1:3000/",
+        "viewport": {
+          "width": 375,
+          "height": 667
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 207773696,
+          "heapTotal": 120614912,
+          "heapUsed": 72371368,
+          "external": 22107703,
+          "arrayBuffers": 18203806
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "UNKNOWN": 1
+  },
+  "performanceMetrics": []
+}

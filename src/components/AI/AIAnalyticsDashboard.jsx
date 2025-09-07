@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+import { useSession } from 'next-auth/react';
 import {
   Brain, TrendingUp, AlertTriangle, Target,
   BarChart3, Zap,
@@ -8,7 +8,8 @@ import {
 } from 'lucide-react';
 
 const AIAnalyticsDashboard = () => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);
 
@@ -17,7 +18,7 @@ const AIAnalyticsDashboard = () => {
     queryFn: async () => {
       const response = await fetch(`/api/ai/analytics?model=${selectedModel}`, {
         headers: {
-          'Authorization': `Bearer ${await user?.getToken()}`
+          'Authorization': `Bearer ${session?.accessToken || ''}`
         }
       });
       if (!response.ok) {

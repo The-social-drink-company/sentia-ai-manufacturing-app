@@ -1,7 +1,13 @@
 import React from 'react';
-import { SignInButton } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    navigate('/auth/signin');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
       <div className="relative min-h-screen flex items-center justify-center px-4">
@@ -55,14 +61,14 @@ const LandingPage = () => {
 
           {/* CTA Section */}
           <div className="space-y-4">
-            <SignInButton mode="modal">
-              <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200 text-lg shadow-lg">
+            <button 
+              onClick={handleSignIn}
+              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200 text-lg shadow-lg">
                 Access Dashboard
               </button>
-            </SignInButton>
             
             <p className="text-blue-200 text-sm">
-              Secure authentication powered by Clerk
+              Secure authentication powered by NextAuth.js
             </p>
           </div>
 

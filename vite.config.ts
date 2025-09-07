@@ -5,10 +5,13 @@ import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command, mode }) => ({
   plugins: [
     react(),
-    VitePWA({
+    // Only enable PWA/service worker in production builds to avoid dev-time SW cache issues
+    ...(mode === 'production' || command === 'build'
+      ? [
+          VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'icons/*.png'],
       manifest: {
@@ -107,7 +110,9 @@ export default defineConfig({
           }
         ]
       }
-    }),
+          })
+        ]
+      : []),
     visualizer({
       filename: './dist/stats.html',
       open: false,
@@ -206,9 +211,9 @@ export default defineConfig({
       '@tanstack/react-query',
       'recharts',
       '@heroicons/react/24/outline',
-      '@heroicons/react/24/solid'
-    ],
-    exclude: ['@clerk/clerk-react']
+      '@heroicons/react/24/solid',
+      'next-auth/react'
+    ]
   },
   server: {
     port: 3000,
@@ -225,4 +230,4 @@ export default defineConfig({
     port: 3000,
     host: true
   }
-});
+}));

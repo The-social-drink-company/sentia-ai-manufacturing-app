@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "avgDuration": 194.9903000000004,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "UI_RESPONSIVE_Desktop",
+      "result": "pass",
+      "duration": 194.9903000000004,
+      "timestamp": "2025-09-07T18:28:08.802Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "http://127.0.0.1:3000/",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 151154688,
+          "heapTotal": 104812544,
+          "heapUsed": 40364128,
+          "external": 4300984,
+          "arrayBuffers": 396489
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

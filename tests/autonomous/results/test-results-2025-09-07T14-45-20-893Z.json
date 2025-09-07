@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "avgDuration": 11.007699999999963,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_health",
+      "result": "pass",
+      "duration": 24.260999999999967,
+      "timestamp": "2025-09-07T14:45:20.793Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139845632,
+          "heapTotal": 61206528,
+          "heapUsed": 36712296,
+          "external": 3983823,
+          "arrayBuffers": 80456
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_users",
+      "result": "pass",
+      "duration": 5.123699999999872,
+      "timestamp": "2025-09-07T14:45:20.855Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 148414464,
+          "heapTotal": 66449408,
+          "heapUsed": 39741888,
+          "external": 3992455,
+          "arrayBuffers": 88488
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_system-stats",
+      "result": "pass",
+      "duration": 3.638400000000047,
+      "timestamp": "2025-09-07T14:45:20.893Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 153432064,
+          "heapTotal": 103936000,
+          "heapUsed": 40600040,
+          "external": 3992890,
+          "arrayBuffers": 88923
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

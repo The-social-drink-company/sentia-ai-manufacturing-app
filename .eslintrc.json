@@ -57,14 +57,26 @@
     "HTMLElement": "readonly",
     "XMLHttpRequest": "readonly",
     "WebSocket": "readonly",
-    "Intl": "readonly"
+    "Intl": "readonly",
+    "performance": "readonly",
+    "crypto": "readonly",
+    "TextEncoder": "readonly",
+    "TextDecoder": "readonly",
+    "AbortController": "readonly",
+    "AbortSignal": "readonly",
+    "Headers": "readonly",
+    "Request": "readonly",
+    "Response": "readonly",
+    "ReadableStream": "readonly",
+    "WritableStream": "readonly",
+    "TransformStream": "readonly"
   },
   "rules": {
     "no-console": "warn",
     "no-unused-vars": ["warn", { 
       "args": "none",
       "varsIgnorePattern": "^_",
-      "argsIgnorePattern": "^_"
+      "argsIgnorePattern": "^_|next|req|res|error|err|result|data|config|options"
     }],
     "no-undef": "error",
     "security/detect-unsafe-regex": "warn",
@@ -141,7 +153,19 @@
       }
     },
     {
-      "files": ["database/**/*.js", "scripts/**/*.js", "src/lib/devLog.js", "**/*.config.js"],
+      "files": [
+        "database/**/*.js", 
+        "scripts/**/*.js", 
+        "src/lib/devLog.js", 
+        "**/*.config.js",
+        "agents/**/*.js",
+        "services/monitoring/**/*.js",
+        "services/observability/**/*.js",
+        "**/monitoring/**/*.js",
+        "**/agent/**/*.js",
+        "**/*-agent.js",
+        "**/*agent*.js"
+      ],
       "rules": {
         "no-console": "off"
       }

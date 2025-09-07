@@ -1,0 +1,112 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1,
+    "avgDuration": 304.1616000000001,
+    "passRate": 66.66666666666666
+  },
+  "results": [
+    {
+      "testName": "PERFORMANCE_PAGE_LOAD",
+      "result": "pass",
+      "duration": 826.9081000000001,
+      "timestamp": "2025-09-07T18:28:38.611Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 158990336,
+          "heapTotal": 72015872,
+          "heapUsed": 46636152,
+          "external": 11592770,
+          "arrayBuffers": 7688843
+        }
+      }
+    },
+    {
+      "testName": "PERFORMANCE_API_RESPONSE",
+      "result": "pass",
+      "duration": 74.56919999999991,
+      "timestamp": "2025-09-07T18:28:39.340Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 153219072,
+          "heapTotal": 104202240,
+          "heapUsed": 38299352,
+          "external": 4003131,
+          "arrayBuffers": 99724
+        }
+      }
+    },
+    {
+      "testName": "SECURITY_AUTH_REQUIRED",
+      "result": "fail",
+      "duration": 11.007500000000164,
+      "timestamp": "2025-09-07T18:28:39.443Z",
+      "error": {
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m401\u001b[39m\nReceived: \u001b[31m200\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m401\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:458:35\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:449:5",
+        "type": "ExpectError"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 153370624,
+          "heapTotal": 104202240,
+          "heapUsed": 46487672,
+          "external": 4017480,
+          "arrayBuffers": 114457
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "UNKNOWN": 1
+  },
+  "performanceMetrics": [
+    {
+      "metric": "page_load_time",
+      "value": 821.8744999999999,
+      "timestamp": "2025-09-07T18:28:38.611Z"
+    },
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/health",
+      "value": 40.734100000000126,
+      "timestamp": "2025-09-07T18:28:39.313Z"
+    },
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/production/status",
+      "value": 13.946799999999712,
+      "timestamp": "2025-09-07T18:28:39.331Z"
+    },
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/analytics/kpis",
+      "value": 6.117499999999836,
+      "timestamp": "2025-09-07T18:28:39.340Z"
+    }
+  ]
+}

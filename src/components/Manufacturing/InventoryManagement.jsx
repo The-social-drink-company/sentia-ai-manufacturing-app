@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+import { useSession } from 'next-auth/react';
 import { CardSkeleton } from '../LoadingStates';
 import { LineChart, DoughnutChart, inventoryColors } from '../charts';
 import {
@@ -10,7 +10,8 @@ import {
 } from 'lucide-react';
 
 const InventoryManagement = () => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
@@ -20,7 +21,7 @@ const InventoryManagement = () => {
     queryFn: async () => {
       const response = await fetch(`/api/inventory/dashboard?category=${selectedCategory}&search=${searchTerm}&sort=${sortBy}`, {
         headers: {
-          'Authorization': `Bearer ${await user?.getToken()}`
+          'Authorization': `Bearer ${session?.accessToken || ''}`
         }
       });
       if (!response.ok) {

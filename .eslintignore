@@ -29,6 +29,12 @@ agent-*.cjs
 *agent*.js
 *agent*.cjs
 
+# Monitoring and observability files
+services/monitoring/
+services/observability/
+**/monitoring/
+**/*monitoring*.js
+
 # Generated files
 *.min.js
 

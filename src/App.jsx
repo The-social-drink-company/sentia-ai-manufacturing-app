@@ -1,177 +1,384 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ClerkProvider, SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'react-hot-toast';
-import { SSEProvider } from './context/SSEProvider';
-import { MicrosoftAuthProvider } from './contexts/MicrosoftAuthContext';
-import { setupGlobalErrorHandling } from './utils/errorHandling';
-import ErrorBoundary from './components/ErrorBoundary';
+import LandingPage from './components/LandingPage';
+import EnhancedDashboard from './pages/EnhancedDashboard';
+import WorkingCapital from './components/WorkingCapital';
+import WhatIfAnalysis from './components/analytics/WhatIfAnalysis';
+import AdminPanel from './pages/AdminPanel';
+import Header from './components/layout/Header';
+import Sidebar from './components/layout/Sidebar';
+import MicrosoftCallbackPage from './pages/auth/MicrosoftCallbackPage';
 import './index.css';
 
-// Import components
-import Dashboard from './components/Dashboard';
-import AdminPanel from './components/AdminPanel';
-import WorkingCapital from './components/WorkingCapital';
-import LandingPage from './components/LandingPage';
-import LoadingSpinner from './components/LoadingSpinner';
+// Simple loading spinner
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+  </div>
+);
 
-// Manufacturing components
-import ProductionTracking from './components/Manufacturing/ProductionTracking';
-import QualityControl from './components/Manufacturing/QualityControl';
-import InventoryManagement from './components/Manufacturing/InventoryManagement';
+// Simple sign in page with working authentication
+const SimpleSignIn = () => {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
 
-// Advanced components
-import FileImportSystem from './components/DataImport/FileImportSystem';
-import AIAnalyticsDashboard from './components/AI/AIAnalyticsDashboard';
-import DemandForecasting from './components/forecasting/DemandForecasting';
-import WhatIfAnalysis from './components/analytics/WhatIfAnalysis';
-import TestMonitorDashboard from './pages/TestMonitorDashboard';
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
-// Layout components
-import EnterpriseLayout from './components/layout/EnterpriseLayout';
+    try {
+      const response = await fetch('http://localhost:5001/api/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-// Clerk configuration
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+      const data = await response.json();
 
-function App() {
-  // Setup global error handling
-  useEffect(() => {
-    setupGlobalErrorHandling();
+      if (response.ok) {
+        // Store user data in localStorage (simple session management)
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('session', JSON.stringify({ 
+          token: data.accessToken, 
+          isAuthenticated: true,
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+        }));
+        
+        // Redirect to dashboard or home
+        window.location.href = '/dashboard';
+      } else {
+        setError(data.message || data.error || 'Sign in failed');
+      }
+    } catch (error) {
+      setError(`Network error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign in to your account
+          </h2>
+          {error && (
+            <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+        </div>
+        {/* Microsoft OAuth Option */}
+        <div className="mt-6">
+          <button
+            onClick={async () => {
+              const { default: microsoftAuthService } = await import('./services/microsoftAuthService');
+              await microsoftAuthService.redirectToLogin();
+            }}
+            className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <svg className="w-4 h-4 mr-2" viewBox="0 0 21 21">
+              <path fill="#f25022" d="M1 1h9v9H1z"/>
+              <path fill="#00a4ef" d="M11 1h9v9h-9z"/>
+              <path fill="#7fba00" d="M1 11h9v9H1z"/>
+              <path fill="#ffb900" d="M11 11h9v9h-9z"/>
+            </svg>
+            Sign in with Microsoft
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            </div>
+          </div>
+        </div>
+
+        <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="email" className="sr-only">Email address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Email address"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="sr-only">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Password"
+            />
+          </div>
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              {isLoading ? 'Signing In...' : 'Sign In'}
+            </button>
+          </div>
+        </form>
+        <div className="text-center">
+          <a href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
+            Don't have an account? Sign up
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Simple sign up page with working registration
+const SimpleSignUp = () => {
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [success, setSuccess] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch('http://localhost:5001/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess('Account created successfully! You can now sign in.');
+        
+        // Clear form
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPassword('');
+        
+        // Redirect to sign in after success
+        setTimeout(() => {
+          window.location.href = '/auth/signin';
+        }, 2000);
+      } else {
+        setError(data.message || data.error || 'Registration failed');
+      }
+    } catch (error) {
+      setError(`Network error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Create your account
+          </h2>
+          {error && (
+            <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+              {success}
+            </div>
+          )}
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="firstName" className="sr-only">First name</label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="First name"
+            />
+          </div>
+          <div>
+            <label htmlFor="lastName" className="sr-only">Last name</label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Last name"
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="sr-only">Email address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Email address"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="sr-only">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Password"
+            />
+          </div>
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              {isLoading ? 'Creating Account...' : 'Sign Up'}
+            </button>
+          </div>
+        </form>
+        <div className="text-center">
+          <a href="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
+            Already have an account? Sign in
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Enterprise Layout Wrapper for authenticated pages
+const EnterpriseLayout = ({ children }) => {
+  const [user, setUser] = React.useState(null);
+  const [session, setSession] = React.useState(null);
+
+  React.useEffect(() => {
+    // Check if user is authenticated
+    const userData = localStorage.getItem('user');
+    const sessionData = localStorage.getItem('session');
+    
+    if (userData && sessionData) {
+      const parsedUser = JSON.parse(userData);
+      const parsedSession = JSON.parse(sessionData);
+      
+      // Check if session is still valid
+      if (new Date(parsedSession.expires) > new Date()) {
+        setUser(parsedUser);
+        setSession(parsedSession);
+      } else {
+        // Session expired, redirect to login
+        localStorage.removeItem('user');
+        localStorage.removeItem('session');
+        window.location.href = '/auth/signin';
+      }
+    } else {
+      // No session, redirect to login
+      window.location.href = '/auth/signin';
+    }
   }, []);
 
-  if (!clerkPubKey) {
-    // eslint-disable-next-line no-console
-    console.warn("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable - using fallback authentication");
-    // Fallback authentication bypass for deployment
-    return (
-      <QueryClientProvider client={queryClient}>
-        <MicrosoftAuthProvider>
-          <SSEProvider>
-            <ErrorBoundary>
-              <Router>
-                <div className="min-h-screen bg-gray-50">
-                  {/* Fallback header without Clerk */}
-                  <header className="bg-white shadow-sm border-b">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                      <div className="flex justify-between items-center py-4">
-                        <div className="flex items-center space-x-4">
-                          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            🚀 SENTIA Dashboard
-                          </h1>
-                          <span className="text-sm text-gray-500">Manufacturing Intelligence Platform</span>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                          <span className="text-sm text-gray-500">Development Mode</span>
-                        </div>
-                      </div>
-                    </div>
-                  </header>
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/admin" element={<AdminPanel />} />
-                      <Route path="/working-capital" element={<WorkingCapital />} />
-                      <Route path="/production" element={<ProductionTracking />} />
-                      <Route path="/quality" element={<QualityControl />} />
-                      <Route path="/inventory" element={<InventoryManagement />} />
-                      <Route path="/data-import" element={<FileImportSystem />} />
-                      <Route path="/ai-analytics" element={<AIAnalyticsDashboard />} />
-                      <Route path="/forecasting" element={<DemandForecasting />} />
-                      <Route path="/analytics" element={<AIAnalyticsDashboard />} />
-                      <Route path="/what-if" element={<WhatIfAnalysis />} />
-                      <Route path="/test-monitor" element={<TestMonitorDashboard />} />
-                    </Routes>
-                  </Suspense>
-                </div>
-              </Router>
-              <Toaster position="top-right" />
-            </ErrorBoundary>
-          </SSEProvider>
-        </MicrosoftAuthProvider>
-      </QueryClientProvider>
-    );
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('session');
+    window.location.href = '/';
+  };
+
+  if (!user || !session) {
+    return <LoadingSpinner />;
   }
 
   return (
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <QueryClientProvider client={queryClient}>
-        <MicrosoftAuthProvider>
-        <SSEProvider>
-        <ErrorBoundary>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            {/* Signed Out - Landing Page */}
-            <SignedOut>
-              {/* Simple header for signed out users */}
-              <header className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="flex justify-between items-center py-4">
-                    <div className="flex items-center space-x-4">
-                      <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        🚀 SENTIA Dashboard
-                      </h1>
-                      <span className="text-sm text-gray-500">Manufacturing Intelligence Platform</span>
-                    </div>
-                    
-                    <div className="flex items-center space-x-4">
-                      <SignInButton>
-                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                          Sign In
-                        </button>
-                      </SignInButton>
-                    </div>
-                  </div>
-                </div>
-              </header>
-              <LandingPage />
-            </SignedOut>
-            
-            {/* Public Test Monitor Route - No Auth Required */}
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
-                <Route path="/test-monitor" element={<TestMonitorDashboard />} />
-              </Routes>
-            </Suspense>
-            
-            {/* Signed In - Enterprise Layout with Navigation */}
-            <SignedIn>
-              <EnterpriseLayout>
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/admin" element={<AdminPanel />} />
-                    <Route path="/working-capital" element={<WorkingCapital />} />
-                    <Route path="/production" element={<ProductionTracking />} />
-                    <Route path="/quality" element={<QualityControl />} />
-                    <Route path="/inventory" element={<InventoryManagement />} />
-                    <Route path="/data-import" element={<FileImportSystem />} />
-                    <Route path="/ai-analytics" element={<AIAnalyticsDashboard />} />
-                    <Route path="/forecasting" element={<DemandForecasting />} />
-                    <Route path="/analytics" element={<AIAnalyticsDashboard />} />
-                    <Route path="/what-if" element={<WhatIfAnalysis />} />
-                  </Routes>
-                </Suspense>
-              </EnterpriseLayout>
-            </SignedIn>
-          </div>
-        </Router>
-        <Toaster position="top-right" />
-        </ErrorBoundary>
-        </SSEProvider>
-        </MicrosoftAuthProvider>
-      </QueryClientProvider>
-    </ClerkProvider>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Enterprise Sidebar Navigation */}
+      <Sidebar />
+      
+      <div className="flex-1 flex flex-col">
+        {/* Enterprise Header with all buttons and navigation */}
+        <Header user={user} onLogout={handleLogout} />
+        
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+// Simple dashboard for authenticated users
+const SimpleDashboard = () => {
+  return <EnhancedDashboard />;
+};
+
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen">
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/auth/signin" element={<SimpleSignIn />} />
+            <Route path="/auth/signup" element={<SimpleSignUp />} />
+            <Route path="/auth/microsoft/callback" element={<MicrosoftCallbackPage />} />
+            <Route path="/dashboard" element={<EnterpriseLayout><SimpleDashboard /></EnterpriseLayout>} />
+            <Route path="/working-capital" element={<EnterpriseLayout><WorkingCapital /></EnterpriseLayout>} />
+            <Route path="/what-if" element={<EnterpriseLayout><WhatIfAnalysis /></EnterpriseLayout>} />
+            <Route path="/admin" element={<EnterpriseLayout><AdminPanel /></EnterpriseLayout>} />
+            <Route path="/analytics" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/forecasting" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/inventory" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/production" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/quality" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="*" element={<div className="text-center py-20">Page not found</div>} />
+          </Routes>
+        </Suspense>
+      </div>
+    </Router>
   );
 }
 

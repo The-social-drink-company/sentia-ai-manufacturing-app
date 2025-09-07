@@ -106,7 +106,9 @@
       "Bash(npm:*)",
       "Bash(set AUTONOMOUS_SCHEDULER_MODE=railway)",
       "Bash(railway up:*)",
-      "Bash(railway service:*)"
+      "Bash(railway service:*)",
+      "Bash(dir railway-mcp.json nixpacks-mcp.toml)",
+      "Bash(set PORT=5002)"
     ],
     "deny": [],
     "ask": []

@@ -1,7 +1,13 @@
 import React from 'react';
-import { signIn } from 'next-auth/react';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    navigate('/auth/signin');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
       <div className="relative min-h-screen flex items-center justify-center px-4">
@@ -56,13 +62,13 @@ const LandingPage = () => {
           {/* CTA Section */}
           <div className="space-y-4">
             <button 
-              onClick={() => signIn('azure-ad', { callbackUrl: '/dashboard' })}
+              onClick={handleSignIn}
               className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200 text-lg shadow-lg">
                 Access Dashboard
               </button>
             
             <p className="text-blue-200 text-sm">
-              Secure authentication powered by Microsoft Azure AD
+              Secure authentication powered by NextAuth.js
             </p>
           </div>
 

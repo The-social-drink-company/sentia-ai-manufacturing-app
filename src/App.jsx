@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { SessionProvider } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -12,31 +12,33 @@ import SignInPage from './pages/auth/SignInPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import './index.css';
 
-// Import components
-import Dashboard from './components/Dashboard';
-import AdminPanel from './components/AdminPanel';
-import WorkingCapital from './components/WorkingCapital';
+// Core components (loaded immediately)
 import LandingPage from './components/LandingPage';
 
-// Manufacturing components
-import ProductionTracking from './components/Manufacturing/ProductionTracking';
-import QualityControl from './components/Manufacturing/QualityControl';
-import InventoryManagement from './components/Manufacturing/InventoryManagement';
-
-// Advanced components
-import FileImportSystem from './components/DataImport/FileImportSystem';
-import AIAnalyticsDashboard from './components/AI/AIAnalyticsDashboard';
-import DemandForecasting from './components/forecasting/DemandForecasting';
-import WhatIfAnalysis from './components/analytics/WhatIfAnalysis';
-import TestMonitorDashboard from './pages/TestMonitorDashboard';
-import Analytics from './components/analytics/Analytics';
-import Templates from './components/templates/Templates';
-import Settings from './components/settings/Settings';
-import SystemHealth from './components/system/SystemHealth';
-import Experimental from './components/experimental/Experimental';
-
-// Layout components
+// Layout components (loaded immediately)
 import EnterpriseLayout from './components/layout/EnterpriseLayout';
+
+// Lazy-loaded components for better code splitting
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
+const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
+
+// Manufacturing components (lazy loaded)
+const ProductionTracking = lazy(() => import('./components/Manufacturing/ProductionTracking'));
+const QualityControl = lazy(() => import('./components/Manufacturing/QualityControl'));
+const InventoryManagement = lazy(() => import('./components/Manufacturing/InventoryManagement'));
+
+// Advanced components (lazy loaded)
+const FileImportSystem = lazy(() => import('./components/DataImport/FileImportSystem'));
+const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashboard'));
+const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'));
+const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
+const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'));
+const Analytics = lazy(() => import('./components/analytics/Analytics'));
+const Templates = lazy(() => import('./components/templates/Templates'));
+const Settings = lazy(() => import('./components/settings/Settings'));
+const SystemHealth = lazy(() => import('./components/system/SystemHealth'));
+const Experimental = lazy(() => import('./components/experimental/Experimental'));
 
 // Query client configuration
 const queryClient = new QueryClient({
@@ -73,14 +75,8 @@ function App() {
                       <Route path="/auth/signin" element={<SignInPage />} />
                       <Route path="/auth/error" element={<div>Authentication Error</div>} />
                       
-                      {/* Protected routes */}
-                      <Route path="/" element={
-                        <AuthGuard>
-                          <EnterpriseLayout>
-                            <LandingPage />
-                          </EnterpriseLayout>
-                        </AuthGuard>
-                      } />
+                      {/* Public landing page */}
+                      <Route path="/" element={<LandingPage />} />
                       
                       <Route path="/dashboard" element={
                         <AuthGuard>

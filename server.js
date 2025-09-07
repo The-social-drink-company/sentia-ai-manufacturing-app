@@ -16,6 +16,8 @@ import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
 // Import MCP Orchestrator for Anthropic Model Context Protocol integration
 import MCPOrchestrator from './services/mcp/mcpOrchestrator.js';
+// FinanceFlo routes temporarily disabled due to import issues
+// import financeFloRoutes from './api/financeflo.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -154,9 +156,19 @@ const authenticateUser = async (req, res, next) => {
 
 // Health check (enhanced with enterprise services status)
 app.get('/api/health', async (req, res) => {
+  const startTime = Date.now();
+  
   try {
     const xeroHealth = await xeroService.healthCheck();
     const aiHealth = await aiAnalyticsService.healthCheck();
+    
+    // System metrics
+    const memoryUsage = process.memoryUsage();
+    const cpuUsage = process.cpuUsage();
+    const uptime = process.uptime();
+    
+    // Performance metrics
+    const responseTime = Date.now() - startTime;
     
     res.json({ 
       status: 'healthy', 
@@ -172,13 +184,27 @@ app.get('/api/health', async (req, res) => {
         shopify: !!(process.env.SHOPIFY_UK_SHOP_URL && process.env.SHOPIFY_UK_ACCESS_TOKEN),
         xero: xeroHealth.status === 'connected',
         neon_database: aiHealth.status === 'connected'
+      },
+      system: {
+        uptime: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`,
+        memory: {
+          used: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
+          total: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)}MB`,
+          external: `${Math.round(memoryUsage.external / 1024 / 1024)}MB`
+        },
+        performance: {
+          responseTime: `${responseTime}ms`,
+          nodeVersion: process.version
+        }
       }
     });
   } catch (error) {
+    logError('Health check failed', { error: error.message, stack: error.stack });
     res.status(500).json({ 
       status: 'unhealthy', 
       timestamp: new Date().toISOString(),
-      error: error.message
+      error: error.message,
+      responseTime: `${Date.now() - startTime}ms`
     });
   }
 });
@@ -3065,12 +3091,24 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
   res.json(deployments);
 });
 
+// FinanceFlo Enhanced API Routes
+// app.use('/api/financeflo', financeFloRoutes); // Temporarily disabled due to import issues
+
 // Serve static files (must be after ALL API routes)
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Catch all for SPA (must be ABSOLUTELY LAST route)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  // In development, let Vite handle the frontend
+  if (process.env.NODE_ENV !== 'production') {
+    res.json({ 
+      message: 'Development mode: Frontend served by Vite at http://localhost:3000',
+      api: 'Backend API running on this port',
+      health: '/api/health'
+    });
+  } else {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  }
 });
 
 // Error handling middleware

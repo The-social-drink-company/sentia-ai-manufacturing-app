@@ -51,10 +51,18 @@ export default defineConfig({
       output: {
         // Optimize chunk splitting for better caching
         manualChunks: {
-          vendor: ['react', 'react-dom'],
+          // Core dependencies
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          // Data fetching
           query: ['@tanstack/react-query'],
-          charts: ['recharts', 'chart.js'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs']
+          // Authentication
+          auth: ['next-auth'],
+          // Charts and visualization
+          charts: ['recharts'],
+          // Utilities
+          utils: ['date-fns', 'clsx'],
+          // Icons
+          icons: ['@heroicons/react']
         }
       },
       // Aggressive tree-shaking

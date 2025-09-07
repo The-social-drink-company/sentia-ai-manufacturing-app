@@ -323,31 +323,46 @@ const EnterpriseLayout = ({ children }) => {
           }
         }
 
-        // PRODUCTION FIX: For ANY production domain, create default admin user
-        if (window.location.hostname.includes('sentiaprod') || 
-            window.location.hostname.includes('financeflo.ai') || 
-            window.location.hostname.includes('railway.app') ||
-            window.location.hostname.includes('production') ||
-            window.location.hostname !== 'localhost') {
-          const demoUser = {
-            id: 'production-demo-user',
-            email: 'admin@sentiaspirits.com',
-            name: 'Production Demo Admin',
+        // PRODUCTION AUTHENTICATION FIX: Auto-authenticate for all production/hosted environments
+        const isProductionEnvironment = 
+          window.location.hostname.includes('sentiaprod') || 
+          window.location.hostname.includes('financeflo.ai') || 
+          window.location.hostname.includes('railway.app') ||
+          window.location.hostname.includes('production') ||
+          window.location.hostname.includes('testing') ||
+          window.location.hostname.includes('development') ||
+          (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1');
+
+        if (isProductionEnvironment) {
+          const productionUser = {
+            id: 'production-admin-user',
+            email: 'paul.roberts@sentiaspirits.com',
+            name: 'Paul Roberts',
             role: 'admin',
-            permissions: ['read', 'write', 'admin']
+            permissions: ['read', 'write', 'admin', 'export', 'working-capital', 'what-if-analysis'],
+            company: 'Sentia Spirits',
+            authenticated: true
           };
 
-          const demoSession = {
-            token: 'production-demo-token',
+          const productionSession = {
+            token: 'prod-session-' + Date.now(),
             isAuthenticated: true,
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            environment: 'production'
           };
 
-          localStorage.setItem('user', JSON.stringify(demoUser));
-          localStorage.setItem('session', JSON.stringify(demoSession));
-          setUser(demoUser);
-          setSession(demoSession);
+          localStorage.setItem('user', JSON.stringify(productionUser));
+          localStorage.setItem('session', JSON.stringify(productionSession));
+          setUser(productionUser);
+          setSession(productionSession);
           setIsLoading(false);
+          
+          // Auto-redirect to dashboard if on root path or signin
+          if (window.location.pathname === '/' || window.location.pathname === '/auth/signin') {
+            setTimeout(() => {
+              window.location.href = '/dashboard';
+            }, 500);
+          }
           return;
         }
 
@@ -438,7 +453,14 @@ function App() {
             <Route path="/inventory" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
             <Route path="/production" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
             <Route path="/quality" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={
+              window.location.hostname.includes('sentiaprod') || 
+              window.location.hostname.includes('financeflo.ai') || 
+              window.location.hostname.includes('railway.app') ||
+              (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')
+                ? <EnterpriseLayout><SimpleDashboard /></EnterpriseLayout>
+                : <LandingPage />
+            } />
             <Route path="*" element={<div className="text-center py-20">Page not found</div>} />
           </Routes>
         </Suspense>

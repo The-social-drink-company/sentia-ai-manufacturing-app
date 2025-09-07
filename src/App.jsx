@@ -17,67 +17,46 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Demo sign in page with mock authentication for client meeting
+// Simple sign in page with working authentication
 const SimpleSignIn = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
-  // Real users for client meeting
-  const demoUsers = {
-    // Real Sentia Team
-    'paul.roberts@sentiaspirits.com': { password: 'sentia2024', role: 'admin', name: 'Paul Roberts' },
-    'daniel.kenny@sentiaspirits.com': { password: 'sentia2024', role: 'admin', name: 'Daniel Kenny' },
-    
-    // Real Gaba Labs Team  
-    'david.orren@gabalabs.com': { password: 'gaba2024', role: 'admin', name: 'David Orren' },
-    'marta.haczek@gabalabs.com': { password: 'gaba2024', role: 'user', name: 'Marta Haczek' },
-    'matt.coulshed@gabalabs.com': { password: 'gaba2024', role: 'user', name: 'Matt Coulshed' },
-    'jaron.reid@gabalabs.com': { password: 'gaba2024', role: 'user', name: 'Jaron Reid' },
-    
-    // Demo fallback
-    'demo@demo.com': { password: 'demo', role: 'admin', name: 'Quick Demo' }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    // Simulate API delay for realism
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     try {
-      const user = demoUsers[email];
-      
-      if (user && user.password === password) {
-        // Mock successful authentication
-        const mockUser = {
-          id: Math.random().toString(36),
-          email: email,
-          name: user.name,
-          role: user.role,
-          permissions: ['read', 'write', 'admin'] // Full permissions for demo
-        };
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+      const response = await fetch(`${apiUrl}/api/auth/signin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-        const mockSession = {
-          token: 'demo-token-' + Date.now(),
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store user data in localStorage (simple session management)
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('session', JSON.stringify({ 
+          token: data.accessToken, 
           isAuthenticated: true,
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-        };
-
-        // Store demo user data
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        localStorage.setItem('session', JSON.stringify(mockSession));
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+        }));
         
-        // Redirect to dashboard
+        // Redirect to dashboard or home
         window.location.href = '/dashboard';
       } else {
-        setError('Invalid credentials. Try: paul.roberts@sentiaspirits.com / sentia2024 or david.orren@gabalabs.com / gaba2024');
+        setError(data.message || data.error || 'Sign in failed');
       }
     } catch (error) {
-      setError(`Demo error: ${error.message}`);
+      setError(`Network error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -90,17 +69,6 @@ const SimpleSignIn = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
-          
-          {/* Real User Credentials for Client Meeting */}
-          <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
-            <div className="text-sm font-medium">Client Meeting Credentials:</div>
-            <div className="text-xs mt-1">
-              <div><strong>Sentia:</strong> paul.roberts@sentiaspirits.com / sentia2024</div>
-              <div><strong>Gaba Labs:</strong> david.orren@gabalabs.com / gaba2024</div>
-              <div><strong>Quick Demo:</strong> demo@demo.com / demo</div>
-            </div>
-          </div>
-
           {error && (
             <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
               {error}
@@ -355,12 +323,8 @@ const EnterpriseLayout = ({ children }) => {
           }
         }
 
-        // PRODUCTION FIX: For ANY production domain, create default admin user
-        if (window.location.hostname.includes('sentiaprod') || 
-            window.location.hostname.includes('financeflo.ai') || 
-            window.location.hostname.includes('railway.app') ||
-            window.location.hostname.includes('production') ||
-            window.location.hostname !== 'localhost') {
+        // PRODUCTION FIX: For production demo, create default admin user
+        if (window.location.hostname === 'sentiaprod.financeflo.ai' || window.location.hostname === 'web-production-1f10.up.railway.app') {
           const demoUser = {
             id: 'production-demo-user',
             email: 'admin@sentiaspirits.com',
@@ -408,7 +372,6 @@ const EnterpriseLayout = ({ children }) => {
   };
 
   if (isLoading) {
-    // Show loading while initializing auth
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -420,7 +383,6 @@ const EnterpriseLayout = ({ children }) => {
   }
 
   if (!user || !session) {
-    // Show loading while redirecting to signin
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -464,7 +426,6 @@ function App() {
             <Route path="/auth/signup" element={<SimpleSignUp />} />
             <Route path="/auth/microsoft/callback" element={<MicrosoftCallbackPage />} />
             <Route path="/dashboard" element={<EnterpriseLayout><SimpleDashboard /></EnterpriseLayout>} />
-            <Route path="/dashboard/*" element={<EnterpriseLayout><SimpleDashboard /></EnterpriseLayout>} />
             <Route path="/working-capital" element={<EnterpriseLayout><WorkingCapital /></EnterpriseLayout>} />
             <Route path="/what-if" element={<EnterpriseLayout><WhatIfAnalysis /></EnterpriseLayout>} />
             <Route path="/admin" element={<EnterpriseLayout><AdminPanel /></EnterpriseLayout>} />
@@ -473,7 +434,7 @@ function App() {
             <Route path="/inventory" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
             <Route path="/production" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
             <Route path="/quality" element={<EnterpriseLayout><EnhancedDashboard /></EnterpriseLayout>} />
-            <Route path="/" element={<SimpleSignIn />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="*" element={<div className="text-center py-20">Page not found</div>} />
           </Routes>
         </Suspense>
@@ -482,4 +443,4 @@ function App() {
   );
 }
 
-export default App; // FORCE RAILWAY REDEPLOY
+export default App;

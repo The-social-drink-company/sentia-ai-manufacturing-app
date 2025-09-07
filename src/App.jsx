@@ -119,8 +119,8 @@ const EmergencyDashboard = () => {
 
 // Main App Component with HEALTHY CLERK AUTHENTICATION
 function App() {
-  // Only use fallback if Clerk key is completely missing (emergency only)
-  const shouldUseFallback = (!clerkPubKey || clerkPubKey === 'undefined') && window.location.search.includes('fallback');
+  // Use fallback if fallback parameter is present OR if Clerk key is missing
+  const shouldUseFallback = window.location.search.includes('fallback') || (!clerkPubKey || clerkPubKey === 'undefined');
   
   if (shouldUseFallback) {
     return (

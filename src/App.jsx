@@ -117,10 +117,10 @@ const EmergencyDashboard = () => {
   );
 };
 
-// Main App Component with BULLETPROOF FALLBACK
+// Main App Component with HEALTHY CLERK AUTHENTICATION
 function App() {
-  // PRODUCTION FALLBACK - Always show dashboard if environment issues
-  const shouldUseFallback = isProduction || !clerkPubKey || clerkPubKey === 'undefined' || window.location.search.includes('fallback');
+  // Only use fallback if Clerk key is completely missing (emergency only)
+  const shouldUseFallback = (!clerkPubKey || clerkPubKey === 'undefined') && window.location.search.includes('fallback');
   
   if (shouldUseFallback) {
     return (
@@ -185,7 +185,7 @@ function App() {
     );
   }
 
-  // DEVELOPMENT MODE WITH CLERK
+  // PRODUCTION-READY CLERK AUTHENTICATION FOR ALL ENVIRONMENTS
   return (
     <ErrorBoundary>
       <ClerkProvider publishableKey={clerkPubKey}>

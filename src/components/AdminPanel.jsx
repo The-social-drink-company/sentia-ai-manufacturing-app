@@ -30,7 +30,7 @@ const AdminPanel = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
           <p className="mt-2 text-gray-600">
-            System administration and user management for {user?.firstName || 'Administrator'}
+            System administration and user management for {user?.name || 'Administrator'}
           </p>
         </div>
 

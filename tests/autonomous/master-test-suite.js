@@ -603,16 +603,7 @@ test.describe('Critical Client Requirements - What-If Analysis', () => {
       console.log('✅ Enterprise-level decision support: WORKING');
       
       // Record successful test
-      tracker.recordResult('whatif_analysis_comprehensive', 'pass', calculationTime, {
-        markets: markets.length,
-        parametersValidated: Object.keys(testParameters).length,
-        realTimeCalculation: calculationTime < 2000,
-        workingCapitalCalculated: true,
-        multiMarketAnalysis: true,
-        seasonalAnalysis: true,
-        borrowingCalculations: true,
-        clientRequirementsMet: true
-      });
+      tracker.recordTest('whatif_analysis_comprehensive', 'pass', calculationTime, null, null);
       
       return {
         success: true,

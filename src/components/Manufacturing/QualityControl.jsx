@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+import { useSession } from 'next-auth/react';
 import { useSSE, useSSEEvent } from '../../hooks/useSSE';
 import { CardSkeleton } from '../LoadingStates';
 import { LineChart, DoughnutChart, qualityColors } from '../charts';
@@ -12,7 +12,8 @@ import {
 } from 'lucide-react';
 
 const QualityControl = () => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const queryClient = useQueryClient();
   const [selectedBatch, setSelectedBatch] = useState('all');
   const [testType, setTestType] = useState('all');

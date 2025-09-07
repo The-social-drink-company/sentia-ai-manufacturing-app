@@ -212,9 +212,8 @@ export default defineConfig(({ command, mode }) => ({
       'recharts',
       '@heroicons/react/24/outline',
       '@heroicons/react/24/solid',
-      '@clerk/clerk-react'
-    ],
-    // Do not exclude Clerk so it can be pre-bundled in dev
+      'next-auth/react'
+    ]
   },
   server: {
     port: 3000,

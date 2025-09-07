@@ -1,30 +1,30 @@
 {
-  "timestamp": "2025-09-07T15:21:23.905Z",
+  "timestamp": "2025-09-07T15:46:18.446Z",
   "failedTests": [
     {
-      "testName": "SECURITY_AUTH_REQUIRED",
+      "testName": "UI_NAV_Dashboard_Navigation",
       "result": "fail",
-      "duration": 7.969500000000153,
-      "timestamp": "2025-09-07T15:21:23.857Z",
+      "duration": 7928.4334,
+      "timestamp": "2025-09-07T15:46:18.362Z",
       "error": {
-        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m401\u001b[39m\nReceived: \u001b[31m200\u001b[39m",
-        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m401\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:458:35\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:449:5",
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: visible\nReceived: <element(s) not found>\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: visible\nReceived: <element(s) not found>\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:268:52\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:264:7",
         "type": "ExpectError"
       },
       "screenshot": null,
       "context": {
-        "url": "unknown",
+        "url": "http://127.0.0.1:3000/",
         "viewport": {
-          "width": 1920,
-          "height": 1080
+          "width": 1280,
+          "height": 720
         },
         "userAgent": "Playwright Test Agent",
         "memoryUsage": {
-          "rss": 146690048,
-          "heapTotal": 66977792,
-          "heapUsed": 43789808,
-          "external": 4004256,
-          "arrayBuffers": 101233
+          "rss": 117510144,
+          "heapTotal": 39710720,
+          "heapUsed": 34583448,
+          "external": 4018968,
+          "arrayBuffers": 115425
         }
       }
     }

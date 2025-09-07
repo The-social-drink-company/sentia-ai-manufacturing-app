@@ -7,24 +7,23 @@ process.env.NODE_ENV = 'test'
 process.env.VITE_API_URL = 'http://localhost:5000/api'
 process.env.VITE_CLERK_PUBLISHABLE_KEY = 'test-key'
 
-// Mock Clerk
-vi.mock('@clerk/clerk-react', () => ({
-  useUser: vi.fn(() => ({
-    isSignedIn: true,
-    user: {
-      id: 'test-user',
-      firstName: 'Test',
-      lastName: 'User',
-      emailAddresses: [{ emailAddress: 'test@example.com' }],
-      getToken: vi.fn(() => Promise.resolve('test-token'))
-    }
+// Mock NextAuth instead of Clerk
+vi.mock('next-auth/react', () => ({
+  useSession: vi.fn(() => ({
+    data: {
+      user: {
+        id: 'test-user',
+        name: 'Test User',
+        email: 'test@example.com',
+        role: 'admin'
+      },
+      accessToken: 'test-token'
+    },
+    status: 'authenticated'
   })),
-  ClerkProvider: ({ children }) => children,
-  SignInButton: ({ children }) => children,
-  SignUpButton: ({ children }) => children,
-  UserButton: () => React.createElement('div', { 'data-testid': 'user-button' }, 'User'),
-  SignedIn: ({ children }) => children,
-  SignedOut: ({ children }) => React.createElement('div', { 'data-testid': 'signed-out' })
+  SessionProvider: ({ children }) => children,
+  signIn: vi.fn(),
+  signOut: vi.fn()
 }))
 
 // Mock TanStack Query

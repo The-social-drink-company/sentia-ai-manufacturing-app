@@ -52,7 +52,6 @@ export default defineConfig({
         // Optimize chunk splitting for better caching
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          clerk: ['@clerk/clerk-react'],
           query: ['@tanstack/react-query'],
           charts: ['recharts', 'chart.js'],
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs']

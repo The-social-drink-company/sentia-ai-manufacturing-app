@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+import { useSession } from 'next-auth/react';
 import {
   TrendingUp, Calendar, Target, Settings,
   Play, Download, RefreshCw, BarChart3,
@@ -9,7 +9,8 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 
 const DemandForecasting = () => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [forecastPeriod, setForecastPeriod] = useState('30');
   const [selectedProducts, setSelectedProducts] = useState(['all']);
   const [analysisType, setAnalysisType] = useState('demand');
@@ -19,7 +20,7 @@ const DemandForecasting = () => {
     queryFn: async () => {
       const response = await fetch(`/api/forecasting/demand?period=${forecastPeriod}&products=${selectedProducts.join(',')}&type=${analysisType}`, {
         headers: {
-          'Authorization': `Bearer ${await user?.getToken()}`
+          'Authorization': `Bearer ${session?.accessToken || ''}`
         }
       });
       if (!response.ok) {

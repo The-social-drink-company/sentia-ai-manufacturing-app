@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+import { useSession } from 'next-auth/react';
 import { 
   TrendingUp, TrendingDown, DollarSign, Calendar,
   CreditCard, Banknote, PieChart, BarChart3,
@@ -10,7 +10,8 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
 
 const WorkingCapital = () => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [selectedPeriod, setSelectedPeriod] = useState('3months');
   const [refreshTime, setRefreshTime] = useState(new Date());
 

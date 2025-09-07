@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { UserButton } from '@clerk/clerk-react';
+import { useSession, signOut } from 'next-auth/react';
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
@@ -235,7 +235,12 @@ const EnterpriseLayout = ({ children }) => {
               )}
 
               {/* User Button */}
-              <UserButton />
+              <button 
+                onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </header>

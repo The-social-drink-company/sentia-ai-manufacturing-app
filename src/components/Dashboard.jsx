@@ -23,7 +23,7 @@ const Dashboard = () => {
     queryFn: async () => {
       const response = await fetch('/api/shopify/dashboard-data', {
         headers: {
-          'Authorization': `Bearer ${await user?.getToken()}`
+          'Authorization': `Bearer ${session?.accessToken || ''}`
         }
       });
       if (!response.ok) {
@@ -61,7 +61,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                Welcome back, {user?.firstName || 'User'}! 👋
+                Welcome back, {user?.name || 'User'}! 👋
               </h1>
               <p className="mt-2 text-gray-600">
                 Here's your manufacturing intelligence overview for today

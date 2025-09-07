@@ -1,5 +1,5 @@
 import React from 'react';
-import { SignInButton } from '@clerk/clerk-react';
+import { signIn } from 'next-auth/react';
 
 const LandingPage = () => {
   return (
@@ -55,14 +55,14 @@ const LandingPage = () => {
 
           {/* CTA Section */}
           <div className="space-y-4">
-            <SignInButton mode="modal">
-              <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200 text-lg shadow-lg">
+            <button 
+              onClick={() => signIn('azure-ad', { callbackUrl: '/dashboard' })}
+              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200 text-lg shadow-lg">
                 Access Dashboard
               </button>
-            </SignInButton>
             
             <p className="text-blue-200 text-sm">
-              Secure authentication powered by Clerk
+              Secure authentication powered by Microsoft Azure AD
             </p>
           </div>
 

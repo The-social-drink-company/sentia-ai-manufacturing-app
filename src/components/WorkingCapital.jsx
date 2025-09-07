@@ -4,49 +4,104 @@ import { useUser } from '@clerk/clerk-react';
 import { 
   TrendingUp, TrendingDown, DollarSign, Calendar,
   CreditCard, Banknote, PieChart, BarChart3,
-  RefreshCw, Download, Settings, AlertTriangle
+  RefreshCw, Download, Settings, AlertTriangle,
+  Upload, FileSpreadsheet
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
 
 const WorkingCapital = () => {
   const { user } = useUser();
   const [selectedPeriod, setSelectedPeriod] = useState('3months');
   const [refreshTime, setRefreshTime] = useState(new Date());
 
-  // Mock working capital data - in production would come from Xero/accounting APIs
-  const workingCapitalData = {
-    currentRatio: 2.4,
-    quickRatio: 1.8,
-    cashConversionCycle: 45,
-    workingCapital: 2400000,
-    trends: {
-      cash: [
-        { month: 'Jul', amount: 1200000 },
-        { month: 'Aug', amount: 1350000 },
-        { month: 'Sep', amount: 1500000 },
-        { month: 'Oct', amount: 1450000 },
-        { month: 'Nov', amount: 1650000 },
-        { month: 'Dec', amount: 1800000 }
-      ],
-      accountsReceivable: 1800000,
-      accountsPayable: 950000,
-      inventory: 1200000
+  // Query for real working capital data
+  const { data: workingCapitalData, isLoading, isError } = useQuery({
+    queryKey: ['workingCapital', selectedPeriod],
+    queryFn: async () => {
+      const response = await fetch(`/api/financial/working-capital?period=${selectedPeriod}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch working capital data');
+      }
+      return response.json();
     },
-    projections: [
-      { week: 'W1', projected: 1800000, actual: 1850000 },
-      { week: 'W2', projected: 1850000, actual: 1820000 },
-      { week: 'W3', projected: 1900000, actual: null },
-      { week: 'W4', projected: 1950000, actual: null },
-      { week: 'W5', projected: 2000000, actual: null },
-      { week: 'W6', projected: 2050000, actual: null },
-      { week: 'W7', projected: 2100000, actual: null },
-      { week: 'W8', projected: 2150000, actual: null }
-    ]
-  };
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 2
+  });
 
   const handleRefresh = () => {
     setRefreshTime(new Date());
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <h3 className="text-lg font-medium text-gray-900">Loading Working Capital Data</h3>
+          <p className="text-gray-600 mt-2">Fetching financial metrics and analytics...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !workingCapitalData) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <AlertTriangle className="w-16 h-16 mx-auto text-orange-500 mb-6" />
+            <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+              {isError ? 'Unable to Load Financial Data' : 'No Working Capital Data Available'}
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              We need financial data to provide working capital analysis. You can import data directly 
+              from Excel files or connect to live Microsoft 365 spreadsheets using your Microsoft credentials.
+            </p>
+            
+            <div className="flex justify-center space-x-4">
+              <button 
+                onClick={() => window.location.href = '/data-import'}
+                className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Upload className="w-5 h-5 mr-2" />
+                Import Financial Data
+              </button>
+              
+              <button 
+                onClick={() => window.location.href = '/data-import?source=microsoft'}
+                className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <FileSpreadsheet className="w-5 h-5 mr-2" />
+                Connect Microsoft 365
+              </button>
+            </div>
+            
+            <div className="mt-8 text-left max-w-2xl mx-auto">
+              <h4 className="text-lg font-medium text-gray-900 mb-4">Required Financial Data:</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  Cash and cash equivalents balances
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  Accounts receivable aging reports
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  Accounts payable schedules
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  Inventory valuations and turnover data
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

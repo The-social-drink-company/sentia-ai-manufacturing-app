@@ -9,5 +9,36 @@
     "startCommand": "node server.js",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 3
+  },
+  "environments": {
+    "development": {
+      "variables": {
+        "NODE_ENV": "development",
+        "ENABLE_AUTONOMOUS_TESTING": "true",
+        "AUTONOMOUS_TEST_INTERVAL": "*/10 * * * *",
+        "AUTO_FIX_ENABLED": "true",
+        "AUTO_DEPLOY_ENABLED": "true",
+        "RAILWAY_AUTO_DEPLOY": "true"
+      }
+    },
+    "testing": {
+      "variables": {
+        "NODE_ENV": "test",
+        "ENABLE_AUTONOMOUS_TESTING": "true",
+        "AUTONOMOUS_TEST_INTERVAL": "*/10 * * * *",
+        "AUTO_FIX_ENABLED": "true",
+        "AUTO_DEPLOY_ENABLED": "false",
+        "RAILWAY_AUTO_DEPLOY": "false"
+      }
+    },
+    "production": {
+      "variables": {
+        "NODE_ENV": "production",
+        "ENABLE_AUTONOMOUS_TESTING": "false",
+        "AUTO_FIX_ENABLED": "false",
+        "AUTO_DEPLOY_ENABLED": "false",
+        "RAILWAY_AUTO_DEPLOY": "false"
+      }
+    }
   }
 }

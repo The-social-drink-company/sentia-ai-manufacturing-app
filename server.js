@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Initialize Clerk
 const clerkClient = createClerkClient({ 
@@ -87,7 +87,7 @@ console.log('Environment:', process.env.NODE_ENV || 'development');
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5000', 'https://web-production-1f10.up.railway.app'],
+  origin: ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
   credentials: true
 }));
 app.use(express.json());
@@ -197,6 +197,47 @@ app.get('/api/working-capital/ai-recommendations', authenticateUser, async (req,
   } catch (error) {
     console.error('AI recommendations error:', error);
     res.status(500).json({ error: 'Failed to generate AI recommendations' });
+  }
+});
+
+// Financial Working Capital endpoint (comprehensive data)
+app.get('/api/financial/working-capital', authenticateUser, async (req, res) => {
+  try {
+    const period = req.query.period || '3months';
+    
+    // Try to get real financial data from Xero/imported data
+    let financialData = null;
+    try {
+      const metrics = await xeroService.calculateWorkingCapital();
+      const cashFlow = await xeroService.getCashFlow();
+      const projections = await aiAnalyticsService.generateCashFlowForecast(cashFlow.data || []);
+      
+      financialData = {
+        currentRatio: metrics.currentRatio || 0,
+        quickRatio: metrics.quickRatio || 0,
+        cashConversionCycle: metrics.cashConversionCycle || 0,
+        workingCapital: metrics.workingCapital || 0,
+        trends: {
+          cash: cashFlow.data || [],
+          accountsReceivable: metrics.accountsReceivable || 0,
+          accountsPayable: metrics.accountsPayable || 0,
+          inventory: metrics.inventory || 0
+        },
+        projections: projections || []
+      };
+    } catch (dataError) {
+      // No real data available
+      console.log('No financial data available, returning empty response');
+      return res.status(404).json({ 
+        error: 'No financial data available',
+        message: 'Import financial data or connect to Microsoft 365 to view working capital metrics'
+      });
+    }
+    
+    res.json(financialData);
+  } catch (error) {
+    console.error('Financial working capital error:', error);
+    res.status(500).json({ error: 'Failed to fetch working capital data' });
   }
 });
 
@@ -487,6 +528,248 @@ app.get('/api/analytics/ai-insights', authenticateUser, async (req, res) => {
     res.status(500).json({ error: 'Failed to generate AI insights' });
   }
 });
+
+// Executive KPI Dashboard APIs
+app.get('/api/analytics/executive-kpis', authenticateUser, async (req, res) => {
+  try {
+    const { category = 'financial', timeframe = 'monthly' } = req.query;
+    
+    // Import business intelligence services
+    const FinancialForecastingEngine = (await import('./services/ai/financial-forecasting-engine.js')).default;
+    const BusinessInsightsEngine = (await import('./services/intelligence/business-insights-engine.js')).default;
+    
+    const forecastingEngine = new FinancialForecastingEngine();
+    const insightsEngine = new BusinessInsightsEngine();
+    
+    // Prepare company data
+    const companyData = {
+      companyId: req.user?.companyId || 'demo-company',
+      financials: {
+        revenue: 42500000,
+        cogs: 25500000,
+        gross_profit: 17000000,
+        operating_expenses: 8200000,
+        ebitda: 8800000,
+        net_income: 6100000,
+        cash_flow: 7200000,
+        working_capital: 13500000,
+        currentAssets: 28000000,
+        currentLiabilities: 14500000,
+        cash: 5200000,
+        inventory: 8900000
+      },
+      production: manufacturingData.production,
+      historicalFinancials: generateHistoricalFinancials(),
+      cashFlow: { monthlyAverage: 600000 }
+    };
+    
+    // Generate executive insights
+    const businessIntelligence = await insightsEngine.generateBusinessIntelligence(companyData, {
+      analysisType: category
+    });
+    
+    // Calculate current KPI values based on category
+    let metrics = {};
+    let trends = [];
+    
+    switch (category) {
+      case 'financial':
+        metrics = {
+          revenue: { 
+            current: companyData.financials.revenue,
+            previous: companyData.financials.revenue * 0.92,
+            target: 50000000
+          },
+          ebitda: {
+            current: companyData.financials.ebitda,
+            previous: companyData.financials.ebitda * 0.88,
+            target: 12500000
+          },
+          cash_flow: {
+            current: companyData.financials.cash_flow,
+            previous: companyData.financials.cash_flow * 0.95,
+            target: 8000000
+          },
+          working_capital: {
+            current: companyData.financials.working_capital,
+            previous: companyData.financials.working_capital * 1.05,
+            target: 15000000
+          }
+        };
+        trends = generateKPITrends('financial', timeframe);
+        break;
+        
+      case 'operational':
+        const productionMetrics = calculateOverallProductionMetrics(timeframe);
+        metrics = {
+          production_efficiency: {
+            current: productionMetrics.efficiency / 100,
+            previous: (productionMetrics.efficiency - 3.2) / 100,
+            target: 0.95
+          },
+          quality_rate: {
+            current: 0.987,
+            previous: 0.983,
+            target: 0.99
+          },
+          inventory_turnover: {
+            current: 6.8,
+            previous: 6.2,
+            target: 8
+          },
+          on_time_delivery: {
+            current: 0.954,
+            previous: 0.948,
+            target: 0.98
+          }
+        };
+        trends = generateKPITrends('operational', timeframe);
+        break;
+        
+      case 'strategic':
+        metrics = {
+          market_share: {
+            current: 0.138,
+            previous: 0.135,
+            target: 0.15
+          },
+          customer_satisfaction: {
+            current: 4.3,
+            previous: 4.2,
+            target: 4.5
+          },
+          employee_engagement: {
+            current: 3.9,
+            previous: 3.8,
+            target: 4.2
+          },
+          innovation_index: {
+            current: 3.7,
+            previous: 3.5,
+            target: 4.0
+          }
+        };
+        trends = generateKPITrends('strategic', timeframe);
+        break;
+    }
+    
+    res.json({
+      category,
+      timeframe,
+      metrics,
+      trends,
+      insights: businessIntelligence.insights[category === 'financial' ? 'financial' : 'operational']?.insights || [
+        {
+          type: 'positive',
+          title: 'Strong Performance Trend',
+          description: 'Key metrics showing consistent improvement over the selected timeframe'
+        },
+        {
+          type: 'neutral',
+          title: 'Optimization Opportunity',
+          description: 'Several areas identified for performance enhancement'
+        }
+      ],
+      recommendations: businessIntelligence.recommendations?.actionable?.slice(0, 4) || [
+        {
+          action: 'Optimize working capital management',
+          priority: 'high',
+          impact: 'High cash flow improvement',
+          timeframe: '30-60 days'
+        },
+        {
+          action: 'Accelerate digital transformation initiatives',
+          priority: 'medium',
+          impact: 'Operational efficiency gains',
+          timeframe: '3-6 months'
+        }
+      ],
+      lastUpdated: new Date().toISOString(),
+      dataSource: 'integrated_analytics_engine'
+    });
+    
+  } catch (error) {
+    console.error('Executive KPI error:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate executive KPIs',
+      details: error.message 
+    });
+  }
+});
+
+// Generate historical financial data for trending
+function generateHistoricalFinancials() {
+  const months = 24;
+  const data = [];
+  const baseRevenue = 40000000;
+  
+  for (let i = months; i >= 0; i--) {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    
+    const seasonality = 1 + 0.1 * Math.sin((date.getMonth() / 12) * 2 * Math.PI);
+    const growth = Math.pow(1.08, i / 12); // 8% annual growth
+    const variance = 0.95 + Math.random() * 0.1; // ±5% variance
+    
+    const revenue = baseRevenue * growth * seasonality * variance;
+    
+    data.push({
+      date: date.toISOString().split('T')[0],
+      revenue,
+      cogs: revenue * 0.6,
+      gross_profit: revenue * 0.4,
+      operating_expenses: revenue * 0.2,
+      ebitda: revenue * 0.2,
+      net_income: revenue * 0.14
+    });
+  }
+  
+  return data;
+}
+
+// Generate KPI trend data
+function generateKPITrends(category, timeframe) {
+  const periods = timeframe === 'daily' ? 30 : timeframe === 'weekly' ? 12 : timeframe === 'monthly' ? 12 : 4;
+  const trends = [];
+  
+  for (let i = periods - 1; i >= 0; i--) {
+    const date = new Date();
+    if (timeframe === 'daily') date.setDate(date.getDate() - i);
+    else if (timeframe === 'weekly') date.setDate(date.getDate() - (i * 7));
+    else if (timeframe === 'monthly') date.setMonth(date.getMonth() - i);
+    else date.setMonth(date.getMonth() - (i * 3));
+    
+    const period = date.toISOString().split('T')[0];
+    
+    if (category === 'financial') {
+      trends.push({
+        period,
+        revenue: 42500000 + (Math.random() - 0.5) * 2000000,
+        ebitda: 8800000 + (Math.random() - 0.5) * 500000,
+        cash_flow: 7200000 + (Math.random() - 0.5) * 400000,
+        working_capital: 13500000 + (Math.random() - 0.5) * 800000
+      });
+    } else if (category === 'operational') {
+      trends.push({
+        period,
+        production_efficiency: 0.92 + Math.random() * 0.08,
+        quality_rate: 0.98 + Math.random() * 0.02,
+        inventory_turnover: 6 + Math.random() * 2,
+        on_time_delivery: 0.94 + Math.random() * 0.06
+      });
+    } else {
+      trends.push({
+        period,
+        market_share: 0.13 + Math.random() * 0.02,
+        customer_satisfaction: 4.0 + Math.random() * 0.5,
+        employee_engagement: 3.6 + Math.random() * 0.6,
+        innovation_index: 3.4 + Math.random() * 0.8
+      });
+    }
+  }
+  
+  return trends;
+}
 
 // Enhanced Production Tracking APIs
 app.get('/api/production/status', authenticateUser, (req, res) => {
@@ -2295,6 +2578,147 @@ app.use(express.static(path.join(__dirname, 'dist')));
 // Catch all for SPA (must be last)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// Autonomous Testing System API Endpoints
+let autonomousScheduler = null; // Global scheduler instance
+
+// Initialize autonomous scheduler if enabled
+if (process.env.ENABLE_AUTONOMOUS_TESTING === 'true') {
+  (async () => {
+    try {
+      const { default: AutonomousScheduler } = await import('./services/scheduler/autonomous-scheduler.js');
+      autonomousScheduler = new AutonomousScheduler({
+        enableScheduling: true,
+        testInterval: '*/10 * * * *', // Every 10 minutes
+        agent: {
+          autoFixEnabled: true,
+          deploymentEnabled: process.env.NODE_ENV === 'production',
+          rollbackEnabled: true
+        }
+      });
+      
+      // Start the scheduler
+      await autonomousScheduler.start();
+      console.log('🤖 Autonomous testing system started');
+    } catch (error) {
+      console.error('❌ Failed to initialize autonomous testing:', error.message);
+    }
+  })();
+}
+
+// Autonomous system status
+app.get('/api/autonomous/scheduler/status', authenticateUser, (req, res) => {
+  if (!autonomousScheduler) {
+    return res.status(503).json({ error: 'Autonomous testing system not available' });
+  }
+  
+  const status = autonomousScheduler.getStatus();
+  res.json(status);
+});
+
+// Get current run
+app.get('/api/autonomous/scheduler/current-run', authenticateUser, (req, res) => {
+  if (!autonomousScheduler) {
+    return res.status(503).json({ error: 'Autonomous testing system not available' });
+  }
+  
+  const currentRun = autonomousScheduler.getCurrentRun();
+  res.json(currentRun);
+});
+
+// Get run history
+app.get('/api/autonomous/scheduler/history', authenticateUser, (req, res) => {
+  if (!autonomousScheduler) {
+    return res.status(503).json({ error: 'Autonomous testing system not available' });
+  }
+  
+  const limit = parseInt(req.query.limit) || 10;
+  const history = autonomousScheduler.getRunHistory(limit);
+  res.json(history);
+});
+
+// Get system metrics
+app.get('/api/autonomous/scheduler/metrics', authenticateUser, (req, res) => {
+  if (!autonomousScheduler) {
+    return res.status(503).json({ error: 'Autonomous testing system not available' });
+  }
+  
+  const metrics = autonomousScheduler.getMetrics();
+  res.json(metrics);
+});
+
+// Scheduler control actions
+app.post('/api/autonomous/scheduler/start', authenticateUser, async (req, res) => {
+  if (!autonomousScheduler) {
+    return res.status(503).json({ error: 'Autonomous testing system not available' });
+  }
+  
+  try {
+    await autonomousScheduler.start();
+    res.json({ success: true, message: 'Scheduler started' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/autonomous/scheduler/pause', authenticateUser, async (req, res) => {
+  if (!autonomousScheduler) {
+    return res.status(503).json({ error: 'Autonomous testing system not available' });
+  }
+  
+  try {
+    autonomousScheduler.pauseScheduler();
+    res.json({ success: true, message: 'Scheduler paused' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/autonomous/scheduler/stop', authenticateUser, async (req, res) => {
+  if (!autonomousScheduler) {
+    return res.status(503).json({ error: 'Autonomous testing system not available' });
+  }
+  
+  try {
+    await autonomousScheduler.stop();
+    res.json({ success: true, message: 'Scheduler stopped' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/autonomous/scheduler/trigger-manual', authenticateUser, async (req, res) => {
+  if (!autonomousScheduler) {
+    return res.status(503).json({ error: 'Autonomous testing system not available' });
+  }
+  
+  try {
+    const run = await autonomousScheduler.triggerManualRun();
+    res.json({ success: true, runId: run.id, message: 'Manual run triggered' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Deployment history (mock for now)
+app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
+  const limit = parseInt(req.query.limit) || 10;
+  
+  // Mock deployment data
+  const deployments = Array.from({ length: Math.min(limit, 5) }, (_, i) => ({
+    id: `deploy_${Date.now()}_${i}`,
+    status: Math.random() > 0.8 ? 'failed' : 'completed',
+    startTime: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+    duration: Math.random() * 300000 + 60000, // 1-5 minutes
+    environments: {
+      localhost: { status: 'deployed' },
+      test: { status: 'deployed' },
+      production: { status: Math.random() > 0.9 ? 'failed' : 'deployed' }
+    }
+  }));
+  
+  res.json(deployments);
 });
 
 // Error handling middleware

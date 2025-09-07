@@ -1,6 +1,8 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './components/LandingPage';
 import ManufacturingDashboard from './components/dashboard/ManufacturingDashboard';
+import MicrosoftCallbackPage from './pages/auth/MicrosoftCallbackPage';
 import './index.css';
 
 // Simple loading spinner
@@ -43,14 +45,12 @@ const SimpleSignIn = () => {
         }));
         
         // Redirect to dashboard or home
-        alert('Sign in successful!');
         window.location.href = '/dashboard';
       } else {
-        setError(data.message || 'Sign in failed');
+        setError(data.message || data.error || 'Sign in failed');
       }
     } catch (error) {
-      setError('Network error. Please try again.');
-      console.error('Sign in error:', error);
+      setError(`Network error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +69,37 @@ const SimpleSignIn = () => {
             </div>
           )}
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {/* Microsoft OAuth Option */}
+        <div className="mt-6">
+          <button
+            onClick={async () => {
+              const { default: microsoftAuthService } = await import('./services/microsoftAuthService');
+              await microsoftAuthService.redirectToLogin();
+            }}
+            className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <svg className="w-4 h-4 mr-2" viewBox="0 0 21 21">
+              <path fill="#f25022" d="M1 1h9v9H1z"/>
+              <path fill="#00a4ef" d="M11 1h9v9h-9z"/>
+              <path fill="#7fba00" d="M1 11h9v9H1z"/>
+              <path fill="#ffb900" d="M11 11h9v9h-9z"/>
+            </svg>
+            Sign in with Microsoft
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            </div>
+          </div>
+        </div>
+
+        <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="sr-only">Email address</label>
             <input
@@ -145,21 +175,22 @@ const SimpleSignUp = () => {
 
       if (response.ok) {
         setSuccess('Account created successfully! You can now sign in.');
+        
         // Clear form
         setFirstName('');
         setLastName('');
         setEmail('');
         setPassword('');
+        
         // Redirect to sign in after success
         setTimeout(() => {
           window.location.href = '/auth/signin';
         }, 2000);
       } else {
-        setError(data.message || 'Registration failed');
+        setError(data.message || data.error || 'Registration failed');
       }
     } catch (error) {
-      setError('Network error. Please try again.');
-      console.error('Registration error:', error);
+      setError(`Network error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -256,36 +287,6 @@ const SimpleSignUp = () => {
   );
 };
 
-// Simple landing page
-const SimpleLanding = () => (
-  <div className="min-h-screen bg-gray-50">
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-center">
-        <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
-          Sentia Manufacturing Dashboard
-        </h1>
-        <p className="mt-4 text-xl text-gray-600">
-          Welcome to the manufacturing dashboard
-        </p>
-        <div className="mt-8 space-x-4">
-          <a
-            href="/auth/signin"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Sign In
-          </a>
-          <a
-            href="/auth/signup"
-            className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-          >
-            Sign Up
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 // Simple dashboard for authenticated users
 const SimpleDashboard = () => {
   const [user, setUser] = React.useState(null);
@@ -347,36 +348,8 @@ const SimpleDashboard = () => {
         </div>
       </nav>
       
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Dashboard</h2>
-              <p className="text-gray-600 mb-6">You are successfully logged in!</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-medium text-gray-900">User Info</h3>
-                  <p className="mt-2 text-gray-600">Name: {user.name}</p>
-                  <p className="text-gray-600">Email: {user.email}</p>
-                  <p className="text-gray-600">Role: {user.role}</p>
-                </div>
-                
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-medium text-gray-900">Session Info</h3>
-                  <p className="mt-2 text-gray-600">Status: Active</p>
-                  <p className="text-gray-600">Expires: {new Date(session.expires).toLocaleDateString()}</p>
-                </div>
-                
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
-                  <p className="mt-2 text-gray-600">Dashboard features coming soon...</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+      {/* Load the original manufacturing dashboard */}
+      <ManufacturingDashboard />
     </div>
   );
 };
@@ -389,8 +362,10 @@ function App() {
           <Routes>
             <Route path="/auth/signin" element={<SimpleSignIn />} />
             <Route path="/auth/signup" element={<SimpleSignUp />} />
+            <Route path="/auth/microsoft/callback" element={<MicrosoftCallbackPage />} />
             <Route path="/dashboard" element={<SimpleDashboard />} />
-            <Route path="/" element={<SimpleLanding />} />
+            <Route path="/" element={<LandingPage />} />
+            {/* Original professional landing page restored */}
             <Route path="*" element={<div className="text-center py-20">Page not found</div>} />
           </Routes>
         </Suspense>

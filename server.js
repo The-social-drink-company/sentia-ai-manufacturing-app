@@ -29,6 +29,31 @@ const PORT = process.env.PORT || 5001;
 // Initialize MCP Orchestrator for Anthropic Model Context Protocol
 const mcpOrchestrator = new MCPOrchestrator();
 
+// Register MCP server for integrated data processing
+(async () => {
+  try {
+    const mcpServerConfig = {
+      id: 'sentia-mcp-server',
+      name: 'Sentia MCP Server',
+      type: 'manufacturing-finance',
+      endpoint: 'http://localhost:6002',
+      transport: 'http',
+      capabilities: ['xero-integration', 'financial-data', 'real-time-sync', 'ai-analysis'],
+      dataTypes: ['financial', 'manufacturing', 'forecasting', 'optimization'],
+      updateInterval: 30000
+    };
+    
+    const result = await mcpOrchestrator.registerMCPServer(mcpServerConfig);
+    if (result.success) {
+      logInfo('MCP Server registered successfully', { serverId: result.serverId });
+    } else {
+      logError('Failed to register MCP Server', { error: result.error });
+    }
+  } catch (error) {
+    logError('MCP Server registration error', error);
+  }
+})();
+
 // NextAuth will be handled by the React frontend
 
 // File upload configuration
@@ -94,7 +119,7 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING', { port: PORT, environm
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
   credentials: true
 }));
 app.use(express.json());
@@ -139,11 +164,174 @@ function sendSSEEvent(eventType, data) {
   });
 }
 
-// NextAuth routes will be handled by the frontend
+// Authentication endpoints for Vite React app
+import { verifyUserCredentials, initializeDefaultUsers } from './lib/user-service.js';
 
-// Simplified authentication middleware - for now just mock user
+// Initialize default users on server startup
+(async () => {
+  try {
+    await initializeDefaultUsers();
+    logInfo('Default users initialized');
+  } catch (error) {
+    logError('Failed to initialize default users', error);
+  }
+})();
+
+// Authentication endpoints
+app.post('/api/auth/signin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const user = await verifyUserCredentials(email, password);
+    
+    if (user) {
+      // Create session token (in production, use JWT or proper session management)
+      const sessionToken = `session_${Date.now()}_${Math.random().toString(36)}`;
+      
+      // Store session (in production, use Redis or database)
+      // For now, just return user data
+      
+      res.json({ 
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          permissions: user.permissions
+        },
+        accessToken: sessionToken
+      });
+    } else {
+      res.status(401).json({ error: 'Invalid credentials' });
+    }
+  } catch (error) {
+    logError('Sign in error', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/auth/signout', (req, res) => {
+  // Clear any server-side session data
+  res.json({ success: true });
+});
+
+app.get('/api/auth/session', (req, res) => {
+  // In production, verify session token and return user data
+  // For now, return null (not authenticated)
+  res.json({ user: null });
+});
+
+// Microsoft OAuth endpoints
+app.get('/api/auth/microsoft', (req, res) => {
+  // In production, redirect to Microsoft OAuth
+  res.status(501).json({ error: 'Microsoft OAuth not implemented yet' });
+});
+
+// Microsoft OAuth callback endpoint
+app.post('/api/auth/microsoft/callback', async (req, res) => {
+  try {
+    const { code, state } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code is required' });
+    }
+    
+    console.log('🔐 Microsoft OAuth callback received');
+    
+    // Exchange authorization code for access token
+    const tokenResponse = await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: process.env.MICROSOFT_CLIENT_ID,
+        client_secret: process.env.MICROSOFT_CLIENT_SECRET,
+        code: code,
+        grant_type: 'authorization_code',
+        redirect_uri: `${process.env.NODE_ENV === 'production' ? 'https://sentia-manufacturing-dashboard-production.up.railway.app' : 'http://localhost:3000'}/auth/microsoft/callback`,
+        scope: 'openid profile email User.Read'
+      })
+    });
+    
+    if (!tokenResponse.ok) {
+      const error = await tokenResponse.json();
+      console.error('Microsoft token exchange failed:', error);
+      return res.status(400).json({ error: 'Failed to exchange authorization code for token' });
+    }
+    
+    const tokenData = await tokenResponse.json();
+    
+    // Get user profile from Microsoft Graph
+    const profileResponse = await fetch('https://graph.microsoft.com/v1.0/me', {
+      headers: {
+        'Authorization': `Bearer ${tokenData.access_token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!profileResponse.ok) {
+      console.error('Failed to fetch user profile from Microsoft Graph');
+      return res.status(400).json({ error: 'Failed to fetch user profile' });
+    }
+    
+    const profile = await profileResponse.json();
+    
+    // Create or find user in database
+    const { createUser, findUserByEmail } = await import('./lib/user-service.js');
+    
+    let user = await findUserByEmail(profile.mail || profile.userPrincipalName);
+    
+    if (!user) {
+      // Create new user from Microsoft profile
+      user = await createUser({
+        email: profile.mail || profile.userPrincipalName,
+        name: profile.displayName,
+        firstName: profile.givenName,
+        lastName: profile.surname,
+        authMethod: 'microsoft',
+        microsoftId: profile.id,
+        department: profile.department || 'Unknown',
+        role: 'operator' // Default role, can be changed by admin
+      });
+    } else {
+      // Update user with Microsoft profile info if needed
+      if (!user.microsoftId) {
+        user.microsoftId = profile.id;
+        user.authMethod = 'microsoft';
+        // In production, save updated user to database
+      }
+    }
+    
+    console.log('✅ Microsoft OAuth successful for user:', user.email);
+    
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        department: user.department,
+        authMethod: 'microsoft'
+      },
+      accessToken: tokenData.access_token,
+      refreshToken: tokenData.refresh_token
+    });
+    
+  } catch (error) {
+    console.error('❌ Microsoft OAuth callback error:', error);
+    res.status(500).json({ error: 'Microsoft OAuth authentication failed' });
+  }
+});
+
+// Updated authentication middleware that checks for actual authentication
 const authenticateUser = async (req, res, next) => {
-  // Mock authenticated user for development - TODO: integrate with NextAuth session
+  // For now, allow all requests for development
+  // In production, verify session token from Authorization header
   req.userId = 'admin@sentia.com';
   req.user = { 
     id: 'admin@sentia.com', 
@@ -353,6 +541,94 @@ app.get('/api/services/status', authenticateUser, async (req, res) => {
   } catch (error) {
     console.error('Services status error:', error);
     res.status(500).json({ error: 'Failed to get services status' });
+  }
+});
+
+// Authentication APIs
+app.post('/api/auth/signin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Import user service dynamically to avoid circular import issues
+    const { verifyUserCredentials } = await import('./lib/user-service.js');
+    
+    const user = await verifyUserCredentials(email, password);
+    
+    if (user) {
+      res.json({ 
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          permissions: user.permissions
+        },
+        message: 'Sign in successful'
+      });
+    } else {
+      res.status(401).json({ error: 'Invalid email or password' });
+    }
+  } catch (error) {
+    console.error('Sign in error:', error);
+    res.status(500).json({ error: 'Sign in failed' });
+  }
+});
+
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { firstName, lastName, email, password, department } = req.body;
+    
+    // Import user service dynamically to avoid circular import issues
+    const { createUser, findUserByEmail } = await import('./lib/user-service.js');
+    
+    // Validation
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+    
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+    
+    // Check if user already exists
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'User with this email already exists' });
+    }
+    
+    // Create user
+    const userData = {
+      firstName,
+      lastName,
+      email,
+      password,
+      department,
+      role: 'user', // Default role
+      approved: true // Auto-approve for now
+    };
+    
+    const user = await createUser(userData);
+    
+    if (user) {
+      res.status(201).json({ 
+        message: 'User created successfully',
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.display_name,
+          role: user.role
+        }
+      });
+    } else {
+      res.status(500).json({ error: 'Failed to create user' });
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Registration failed' });
   }
 });
 

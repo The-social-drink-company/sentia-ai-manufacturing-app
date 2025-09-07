@@ -1,7 +1,6 @@
-import React from 'react';
-import { signIn, getSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { signIn, getSession } from '../../services/authService';
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -193,9 +192,22 @@ const SignInPage = () => {
               Secure authentication powered by NextAuth.js
             </p>
             {showCredentials && (
-              <p className="text-xs text-gray-400 mt-2">
-                Try: admin@sentia.com, test@sentia.com, or any admin email
-              </p>
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-400">
+                  Default accounts: admin@sentia.com (password: admin123)
+                </p>
+                <p className="text-xs text-gray-400">
+                  test@sentia.com (password: test123)
+                </p>
+                <p className="text-xs">
+                  <Link 
+                    to="/auth/signup" 
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Create new account
+                  </Link>
+                </p>
+              </div>
             )}
           </div>
         </div>

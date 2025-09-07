@@ -134,7 +134,8 @@
       "Bash(start test-production-login.html)",
       "Bash(set PORT=3002)",
       "Bash($env:PORT=3002)",
-      "Bash(start http://localhost:3004)"
+      "Bash(start http://localhost:3004)",
+      "Bash(start https://sentiaprod.financeflo.ai/dashboard)"
     ],
     "deny": [],
     "ask": []

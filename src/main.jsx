@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import AppEmergency from './AppEmergency.jsx'
+import App from './App.jsx'
 import './index.css'
 
 // Performance monitoring with web-vitals
@@ -40,7 +40,7 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AppEmergency />
+    <App />
   </React.StrictMode>,
 )
 

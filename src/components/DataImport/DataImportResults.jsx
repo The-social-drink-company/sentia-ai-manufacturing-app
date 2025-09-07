@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   CheckCircle, 
@@ -64,7 +65,7 @@ const DataImportResults = ({ importJobId, onRetry, onNewImport }) => {
         setError(jobData.error || resultsData.error || 'Failed to load import results');
       }
     } catch (error) {
-      console.error('Failed to fetch import results:', error);
+      devLog.error('Failed to fetch import results:', error);
       setError('Failed to fetch import results');
     } finally {
       setLoading(false);
@@ -417,7 +418,7 @@ const DataImportResults = ({ importJobId, onRetry, onNewImport }) => {
                           size=\"sm\"
                           onClick={() => {
                             // Show row details modal (implement as needed)
-                            console.log('Show row details:', result);
+                            devLog.log('Show row details:', result);
                           }}
                         >
                           <Eye className=\"h-3 w-3 mr-1\" />

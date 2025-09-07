@@ -90,3 +90,6 @@ scripts/add-master-admins.js
 admin_*.js
 /src/generated/prisma
 nul
+
+# Agent dashboard data
+agent-dashboard-data.json

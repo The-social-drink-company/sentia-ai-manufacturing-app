@@ -1,4 +1,4 @@
-// Enterprise API Key Management Service
+import { devLog } from '../lib/devLog.js';\n// Enterprise API Key Management Service
 // Secure handling of API keys and credentials
 
 class ApiKeyManager {
@@ -87,7 +87,7 @@ class ApiKeyManager {
 
       return await response.json()
     } catch (error) {
-      console.error(`API request to ${service} failed:`, error)
+      devLog.error(`API request to ${service} failed:`, error)
       throw error
     }
   }
@@ -189,7 +189,7 @@ const apiKeyManager = new ApiKeyManager()
 // Auto-initialize
 if (typeof window !== 'undefined') {
   apiKeyManager.initialize().catch(error => {
-    console.error('Failed to initialize API key manager:', error)
+    devLog.error('Failed to initialize API key manager:', error)
   })
 }
 

@@ -4,8 +4,10 @@
  */
 
 const express = require('express');
+const { logError } = require('../services/observability/structuredLogger');
 const router = express.Router();
 const XeroService = require('../services/xeroService');
+const { logError } = require('../services/logger');
 
 // Initialize Xero service
 const xeroService = new XeroService();
@@ -23,7 +25,7 @@ router.get('/auth', (req, res) => {
       message: 'Redirect user to this URL to authorize Xero access'
     });
   } catch (error) {
-    console.error('Xero auth error:', error);
+    logError('Xero auth error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -38,7 +40,7 @@ router.get('/auth', (req, res) => {
  */
 router.get('/callback', async (req, res) => {
   try {
-    const { code, state } = req.query;
+    const { code } = req.query;
     
     if (!code) {
       return res.status(400).json({
@@ -63,7 +65,7 @@ router.get('/callback', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Xero callback error:', error);
+    logError('Xero callback error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -96,7 +98,7 @@ router.get('/organizations', async (req, res) => {
       message: 'Successfully fetched organizations'
     });
   } catch (error) {
-    console.error('Xero organizations error:', error);
+    logError('Xero organizations error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -143,7 +145,7 @@ router.get('/contacts', async (req, res) => {
       message: 'Successfully fetched contacts'
     });
   } catch (error) {
-    console.error('Xero contacts error:', error);
+    logError('Xero contacts error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -185,7 +187,7 @@ router.post('/contacts', async (req, res) => {
       message: 'Successfully created/updated contact'
     });
   } catch (error) {
-    console.error('Xero contact creation error:', error);
+    logError('Xero contact creation error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -232,7 +234,7 @@ router.get('/invoices', async (req, res) => {
       message: 'Successfully fetched invoices'
     });
   } catch (error) {
-    console.error('Xero invoices error:', error);
+    logError('Xero invoices error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -274,7 +276,7 @@ router.post('/invoices', async (req, res) => {
       message: 'Successfully created invoice'
     });
   } catch (error) {
-    console.error('Xero invoice creation error:', error);
+    logError('Xero invoice creation error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -321,7 +323,7 @@ router.get('/items', async (req, res) => {
       message: 'Successfully fetched items'
     });
   } catch (error) {
-    console.error('Xero items error:', error);
+    logError('Xero items error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -363,7 +365,7 @@ router.post('/items', async (req, res) => {
       message: 'Successfully created/updated item'
     });
   } catch (error) {
-    console.error('Xero item creation error:', error);
+    logError('Xero item creation error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -392,7 +394,7 @@ router.get('/test', async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Xero test error:', error);
+    logError('Xero test error', error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -401,4 +403,4 @@ router.get('/test', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

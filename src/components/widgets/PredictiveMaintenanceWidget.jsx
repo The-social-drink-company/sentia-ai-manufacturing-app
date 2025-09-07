@@ -14,13 +14,14 @@ import {
 } from '@heroicons/react/24/outline';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Tooltip, Legend } from 'recharts';
 
-// Import service with error handling
-let predictiveMaintenanceService;
-try {
-  predictiveMaintenanceService = require('../../services/predictiveMaintenance').default;
-} catch (error) {
-  // Fallback mock service
-  predictiveMaintenanceService = {
+// Import service with error handling - use dynamic import
+const getPredictiveMaintenanceService = async () => {
+  try {
+    const serviceModule = await import('../../services/predictiveMaintenance');
+    return serviceModule.default || serviceModule;
+  } catch (error) {
+    // Return fallback mock service
+    return {
     getEquipmentHealthStatus: () => Promise.resolve({
       success: true,
       data: {
@@ -45,17 +46,21 @@ try {
         averageUptime: 94.2
       }
     })
-  };
-}
+    };
+  }
+};
 
-const PredictiveMaintenanceWidget = () => {
+const PredictiveMaintenanceWidget = React.memo(() => {
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedEquipment, setSelectedEquipment] = useState(null);
 
   // Fetch equipment health status
   const { data: healthData, isLoading: healthLoading, refetch: refetchHealth } = useQuery({
     queryKey: ['maintenance', 'health'],
-    queryFn: () => predictiveMaintenanceService.getEquipmentHealthStatus(),
+    queryFn: async () => {
+      const service = await getPredictiveMaintenanceService();
+      return service.getEquipmentHealthStatus();
+    },
     refetchInterval: 30000, // Refresh every 30 seconds
     staleTime: 25000
   });
@@ -63,7 +68,10 @@ const PredictiveMaintenanceWidget = () => {
   // Fetch maintenance predictions
   const { data: predictionsData, isLoading: predictionsLoading } = useQuery({
     queryKey: ['maintenance', 'predictions'],
-    queryFn: () => predictiveMaintenanceService.getMaintenancePredictions(),
+    queryFn: async () => {
+      const service = await getPredictiveMaintenanceService();
+      return service.getMaintenancePredictions();
+    },
     refetchInterval: 60000, // Refresh every minute
     staleTime: 55000
   });
@@ -71,7 +79,10 @@ const PredictiveMaintenanceWidget = () => {
   // Fetch AI insights
   const { data: aiInsights, isLoading: aiLoading } = useQuery({
     queryKey: ['maintenance', 'ai-insights'],
-    queryFn: () => predictiveMaintenanceService.generateAIInsights(),
+    queryFn: async () => {
+      const service = await getPredictiveMaintenanceService();
+      return service.generateAIInsights();
+    },
     refetchInterval: 300000, // Refresh every 5 minutes
     staleTime: 240000
   });
@@ -603,6 +614,6 @@ const PredictiveMaintenanceWidget = () => {
       )}
     </div>
   );
-};
+});
 
 export default PredictiveMaintenanceWidget;

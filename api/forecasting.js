@@ -1,8 +1,10 @@
 import express from 'express';
+import { logError } from '../services/observability/structuredLogger.js';
 import ForecastingService from '../services/forecasting/ForecastingService.js';
 import FeatureEngineeringService from '../services/forecasting/FeatureEngineeringService.js';
 import CFOWorkbenchService from '../services/forecasting/CFOWorkbenchService.js';
 import AccuracyDashboardService from '../services/forecasting/AccuracyDashboardService.js';
+import { logError } from '../services/logger.js';
 
 const router = express.Router();
 
@@ -107,7 +109,7 @@ router.post('/forecast', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Forecast API error:', error);
+    logError('Forecast API error', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message
@@ -134,7 +136,7 @@ router.get('/forecast/jobs/:jobId', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Job status API error:', error);
+    logError('Job status API error', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message
@@ -173,7 +175,7 @@ router.get('/forecast/jobs/:jobId/results', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Job results API error:', error);
+    logError('Job results API error', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message
@@ -212,7 +214,7 @@ router.post('/forecast/jobs/:jobId/cancel', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Job cancellation API error:', error);
+    logError('Job cancellation API error', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message
@@ -224,7 +226,7 @@ router.post('/forecast/jobs/:jobId/cancel', async (req, res) => {
 router.get('/forecast/series/:seriesId/diagnostics', async (req, res) => {
   try {
     const { seriesId } = req.params;
-    const { models = ['Ensemble'] } = req.query;
+    // Extract seriesId from params
 
     // Load time series data
     const timeSeriesData = await forecastingService.loadTimeSeriesData(seriesId);
@@ -267,7 +269,7 @@ router.get('/forecast/series/:seriesId/diagnostics', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Diagnostics API error:', error);
+    logError('Diagnostics API error', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message
@@ -320,7 +322,7 @@ router.post('/forecast/data-quality', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Data quality API error:', error);
+    logError('Data quality API error', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message
@@ -366,7 +368,7 @@ router.get('/forecast/models/:modelType/diagnostics', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Model diagnostics API error:', error);
+    logError('Model diagnostics API error', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message
@@ -546,7 +548,7 @@ router.post('/cfo/board-pack', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('CFO board pack generation error:', error);
+    logError('CFO board pack generation error', error);
     res.status(500).json({
       error: 'Failed to generate CFO board pack',
       message: error.message
@@ -584,7 +586,7 @@ router.post('/cfo/scenario-analysis', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Scenario analysis error:', error);
+    logError('Scenario analysis error', error);
     res.status(500).json({
       error: 'Failed to generate scenario analysis',
       message: error.message
@@ -618,7 +620,7 @@ router.get('/cfo/fx-rates', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('FX scenarios error:', error);
+    logError('FX scenarios error', error);
     res.status(500).json({
       error: 'Failed to generate FX scenarios',
       message: error.message
@@ -659,7 +661,7 @@ router.get('/cfo/regional-events', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Regional events error:', error);
+    logError('Regional events error', error);
     res.status(500).json({
       error: 'Failed to get regional events',
       message: error.message
@@ -699,7 +701,7 @@ router.post('/accuracy/dashboard', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Accuracy dashboard error:', error);
+    logError('Accuracy dashboard error', error);
     res.status(500).json({
       error: 'Failed to generate accuracy dashboard',
       message: error.message
@@ -743,7 +745,7 @@ router.get('/accuracy/model-performance', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Model performance error:', error);
+    logError('Model performance error', error);
     res.status(500).json({
       error: 'Failed to analyze model performance',
       message: error.message
@@ -765,7 +767,7 @@ router.get('/accuracy/trends', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Accuracy trends error:', error);
+    logError('Accuracy trends error', error);
     res.status(500).json({
       error: 'Failed to generate accuracy trends',
       message: error.message
@@ -815,7 +817,7 @@ router.post('/accuracy/update', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Accuracy update error:', error);
+    logError('Accuracy update error', error);
     res.status(500).json({
       error: 'Failed to update accuracy history',
       message: error.message

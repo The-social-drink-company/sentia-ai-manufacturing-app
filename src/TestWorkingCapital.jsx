@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -47,7 +48,7 @@ function TestWorkingCapital() {
         const data = await response.json()
         setWorkingCapitalData(data)
       } catch (error) {
-        console.error('Failed to fetch real working capital data:', error)
+        devLog.error('Failed to fetch real working capital data:', error)
       }
     }
     

@@ -1,3 +1,5 @@
+import { devLog } from '../../lib/devLog.js';
+
 /**
  * ClerkProvider with Fallback UI
  * Handles authentication states and provides fallback when Clerk is not available
@@ -7,6 +9,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { ClerkProvider, SignedIn, SignedOut, useAuth } from '@clerk/clerk-react';
 import clerkConfig from '../../services/auth/clerkConfig';
 import ErrorBoundary from '../ErrorBoundary';
+import { logWarn, logError } from '../../lib/logger';
 
 /**
  * Loading component during authentication initialization
@@ -85,24 +88,12 @@ const ClerkProviderWithFallback = ({ children }) => {
         const clerkConfig = window.clerkConfig || {};
         const configuration = clerkConfig.getConfig ? clerkConfig.getConfig() : null;
         
-        if (!configuration || !configuration.publishableKey) {
-          console.warn('[ClerkProvider] No publishable key found, running without authentication');
-          setClerkError('No authentication configuration');
-          return;
-        }
-
-        setConfig(configuration);
-        
-        // Initialize Clerk
-        const initialized = await clerkConfig.initialize();
-        
-        if (initialized) {
-          setClerkReady(true);
-        } else {
-          setClerkError('Failed to initialize authentication');
-        }
+        // Force fallback mode for local development
+        logWarn('Forcing fallback mode for local development', { component: 'ClerkProvider' });
+        setClerkError('Local development - using fallback mode');
+        return;
       } catch (error) {
-        console.error('[ClerkProvider] Initialization error:', error);
+        logError('ClerkProvider initialization error', error, { component: 'ClerkProvider' });
         setClerkError(error.message);
       }
     };
@@ -120,7 +111,7 @@ const ClerkProviderWithFallback = ({ children }) => {
 
   // Clerk initialization failed - show fallback
   if (clerkError) {
-    console.warn('[ClerkProvider] Using fallback mode:', clerkError);
+    logWarn('Using fallback mode', { clerkError, component: 'ClerkProvider' });
     return (
       <ErrorBoundary>
         <ClerkFallback>{children}</ClerkFallback>
@@ -178,7 +169,7 @@ export const useClerkAuth = () => {
           isFallback: false
         });
       } catch (error) {
-        console.error('[useClerkAuth] Error getting auth state:', error);
+        logError('Error getting auth state', error, { component: 'useClerkAuth' });
         setAuthState({
           isLoaded: true,
           isSignedIn: false,

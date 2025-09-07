@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react';
 import { Download, Upload, Trash2, Edit, Plus } from 'lucide-react';
 
@@ -18,7 +19,7 @@ const ImportTemplateManager = () => {
         setTemplates(data.templates);
       }
     } catch (error) {
-      console.error('Failed to fetch templates:', error);
+      devLog.error('Failed to fetch templates:', error);
     } finally {
       setLoading(false);
     }
@@ -36,7 +37,7 @@ const ImportTemplateManager = () => {
         a.click();
       }
     } catch (error) {
-      console.error('Failed to download template:', error);
+      devLog.error('Failed to download template:', error);
     }
   };
 
@@ -53,7 +54,7 @@ const ImportTemplateManager = () => {
         fetchTemplates();
       }
     } catch (error) {
-      console.error('Failed to delete template:', error);
+      devLog.error('Failed to delete template:', error);
     }
   };
 

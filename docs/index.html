@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentia Manufacturing Dashboard - Documentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://unpkg.com/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/lunr/lunr.js"></script>
+    <style>
+        .docs-content {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .sidebar-scrollable {
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        /* Custom scrollbar */
+        .docs-content::-webkit-scrollbar,
+        .search-results::-webkit-scrollbar,
+        .sidebar-scrollable::-webkit-scrollbar {
+            width: 6px;
+        }
+        .docs-content::-webkit-scrollbar-track,
+        .search-results::-webkit-scrollbar-track,
+        .sidebar-scrollable::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .docs-content::-webkit-scrollbar-thumb,
+        .search-results::-webkit-scrollbar-thumb,
+        .sidebar-scrollable::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .docs-content::-webkit-scrollbar-thumb:hover,
+        .search-results::-webkit-scrollbar-thumb:hover,
+        .sidebar-scrollable::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar -->
+        <aside class="w-80 bg-white shadow-sm border-r border-gray-200 flex flex-col">
+            <!-- Header -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">S</span>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-gray-900">Sentia</h1>
+                        <p class="text-sm text-gray-500">Documentation</p>
+                    </div>
+                </div>
+                
+                <!-- Search -->
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="search-input"
+                        placeholder="Search documentation..." 
+                        class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    >
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div id="search-results" class="hidden absolute z-50 w-72 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg search-results">
+                    <div id="search-results-content" class="p-2">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-4 sidebar-scrollable">
+                <div class="space-y-6">
+                    <!-- Getting Started -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Getting Started</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#overview" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Overview</a></li>
+                            <li><a href="#quick-start" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Quick Start</a></li>
+                            <li><a href="#installation" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Installation</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- User Documentation -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">User Guide</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#user-manual" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">User Manual</a></li>
+                            <li><a href="#feature-guides" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Feature Guides</a></li>
+                            <li><a href="#faq" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">FAQ</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Technical Documentation -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Technical</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#architecture" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Architecture</a></li>
+                            <li><a href="#api-reference" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">API Reference</a></li>
+                            <li><a href="#components" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Components</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Developer Documentation -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Developers</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#setup" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Setup Guide</a></li>
+                            <li><a href="#development-workflow" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Development Workflow</a></li>
+                            <li><a href="#testing" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Testing</a></li>
+                            <li><a href="#deployment" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Deployment</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Business Documentation -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Business</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#roi-analysis" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">ROI Analysis</a></li>
+                            <li><a href="#roadmap" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Product Roadmap</a></li>
+                            <li><a href="#training" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Training Materials</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Operations -->
+                    <div>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Operations</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#runbooks" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Runbooks</a></li>
+                            <li><a href="#security" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Security</a></li>
+                            <li><a href="#operations" class="nav-link block px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100">Operations Guide</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-200">
+                <p class="text-xs text-gray-500 text-center">Version 1.0.0 • Last updated January 2025</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 id="page-title" class="text-2xl font-bold text-gray-900">Welcome to Sentia Documentation</h2>
+                        <p id="page-subtitle" class="text-gray-600 mt-1">Comprehensive guides and references for the Sentia Manufacturing Dashboard</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="https://github.com/sentia-manufacturing/dashboard" class="text-gray-400 hover:text-gray-500">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                        </a>
+                        <button id="theme-toggle" class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="flex-1 px-8 py-6">
+                <div id="content" class="prose max-w-none docs-content">
+                    <!-- Default content -->
+                    <div id="welcome-content">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                            <h3 class="text-lg font-semibold text-blue-900 mb-2">🚀 Welcome to Sentia Manufacturing Dashboard</h3>
+                            <p class="text-blue-700">Your comprehensive business intelligence platform for manufacturing excellence. Get started with our guides or explore the technical documentation.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="loadDoc('user-manual')">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2">User Manual</h4>
+                                <p class="text-gray-600 text-sm">Complete guide for using the dashboard, managing working capital, and generating reports.</p>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="loadDoc('api-reference')">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2">API Reference</h4>
+                                <p class="text-gray-600 text-sm">Comprehensive API documentation with examples and integration guides.</p>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="loadDoc('setup')">
+                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2">Setup Guide</h4>
+                                <p class="text-gray-600 text-sm">Step-by-step instructions for setting up your development environment.</p>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="loadDoc('architecture')">
+                                <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2">Architecture</h4>
+                                <p class="text-gray-600 text-sm">System architecture overview, technology stack, and design patterns.</p>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="loadDoc('roi-analysis')">
+                                <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 00-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2">ROI Analysis</h4>
+                                <p class="text-gray-600 text-sm">Business value proposition and return on investment calculations.</p>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="loadDoc('faq')">
+                                <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-2">FAQ</h4>
+                                <p class="text-gray-600 text-sm">Frequently asked questions and troubleshooting guides.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Quick Links</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-2">For Users</h4>
+                                    <ul class="space-y-1 text-sm">
+                                        <li><a href="#user-manual" class="text-blue-600 hover:text-blue-700">Getting Started</a></li>
+                                        <li><a href="#feature-guides" class="text-blue-600 hover:text-blue-700">Dashboard Customization</a></li>
+                                        <li><a href="#feature-guides" class="text-blue-600 hover:text-blue-700">Working Capital Management</a></li>
+                                        <li><a href="#faq" class="text-blue-600 hover:text-blue-700">Troubleshooting</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-2">For Developers</h4>
+                                    <ul class="space-y-1 text-sm">
+                                        <li><a href="#setup" class="text-blue-600 hover:text-blue-700">Development Setup</a></li>
+                                        <li><a href="#api-reference" class="text-blue-600 hover:text-blue-700">API Integration</a></li>
+                                        <li><a href="#components" class="text-blue-600 hover:text-blue-700">Component Library</a></li>
+                                        <li><a href="#development-workflow" class="text-blue-600 hover:text-blue-700">Contributing</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Documentation mapping
+        const docs = {
+            'overview': { file: 'README.md', title: 'Overview', subtitle: 'Project overview and introduction' },
+            'user-manual': { file: 'user/USER_MANUAL.md', title: 'User Manual', subtitle: 'Complete guide for end users' },
+            'feature-guides': { file: 'user/FEATURE_GUIDES.md', title: 'Feature Guides', subtitle: 'Step-by-step feature tutorials' },
+            'faq': { file: 'user/FAQ.md', title: 'FAQ', subtitle: 'Frequently asked questions' },
+            'architecture': { file: 'technical/ARCHITECTURE.md', title: 'Architecture', subtitle: 'System architecture overview' },
+            'api-reference': { file: 'technical/API.md', title: 'API Reference', subtitle: 'Complete API documentation' },
+            'components': { file: 'technical/COMPONENTS.md', title: 'Components', subtitle: 'Component library documentation' },
+            'setup': { file: 'developer/SETUP.md', title: 'Setup Guide', subtitle: 'Development environment setup' },
+            'development-workflow': { file: 'developer/DEVELOPMENT_WORKFLOW.md', title: 'Development Workflow', subtitle: 'Development process and standards' },
+            'roi-analysis': { file: 'business/ROI_ANALYSIS.md', title: 'ROI Analysis', subtitle: 'Business value and return on investment' },
+            'runbooks': { file: 'RUNBOOKS.md', title: 'Runbooks', subtitle: 'Operational procedures and troubleshooting' },
+            'security': { file: 'SECURITY.md', title: 'Security', subtitle: 'Security policies and procedures' },
+            'operations': { file: 'OPERATIONS.md', title: 'Operations Guide', subtitle: 'System operations and maintenance' }
+        };
+
+        // Search index
+        let searchIndex;
+        let documents = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSearch();
+            setupEventListeners();
+            
+            // Load initial doc based on hash
+            const hash = window.location.hash.substring(1);
+            if (hash && docs[hash]) {
+                loadDoc(hash);
+            }
+        });
+
+        function setupEventListeners() {
+            // Navigation links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const docId = this.getAttribute('href').substring(1);
+                    loadDoc(docId);
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+            
+            searchInput.addEventListener('input', debounce(function() {
+                const query = this.value.trim();
+                if (query.length >= 2) {
+                    performSearch(query);
+                    searchResults.classList.remove('hidden');
+                } else {
+                    searchResults.classList.add('hidden');
+                }
+            }, 300));
+
+            // Hide search results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.add('hidden');
+                }
+            });
+
+            // Theme toggle
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+        }
+
+        async function initializeSearch() {
+            // Build search index
+            const indexData = [];
+            
+            for (const [key, doc] of Object.entries(docs)) {
+                try {
+                    const content = await fetchMarkdown(doc.file);
+                    indexData.push({
+                        id: key,
+                        title: doc.title,
+                        subtitle: doc.subtitle,
+                        content: content,
+                        url: `#${key}`
+                    });
+                } catch (error) {
+                    console.warn(`Failed to load ${doc.file} for search indexing:`, error);
+                }
+            }
+
+            documents = indexData;
+            
+            // Create Lunr index
+            searchIndex = lunr(function() {
+                this.ref('id');
+                this.field('title', { boost: 3 });
+                this.field('subtitle', { boost: 2 });
+                this.field('content');
+                
+                indexData.forEach(doc => {
+                    this.add(doc);
+                });
+            });
+        }
+
+        function performSearch(query) {
+            if (!searchIndex) return;
+
+            try {
+                const results = searchIndex.search(query);
+                displaySearchResults(results.slice(0, 10)); // Limit to top 10 results
+            } catch (error) {
+                console.error('Search error:', error);
+                displaySearchResults([]);
+            }
+        }
+
+        function displaySearchResults(results) {
+            const container = document.getElementById('search-results-content');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div class="p-2 text-sm text-gray-500">No results found</div>';
+                return;
+            }
+
+            const html = results.map(result => {
+                const doc = documents.find(d => d.id === result.ref);
+                if (!doc) return '';
+
+                return `
+                    <div class="p-2 hover:bg-gray-50 rounded cursor-pointer" onclick="loadDoc('${doc.id}')">
+                        <div class="font-medium text-sm text-gray-900">${doc.title}</div>
+                        <div class="text-xs text-gray-600 mt-1">${doc.subtitle}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        async function loadDoc(docId) {
+            if (!docs[docId]) return;
+
+            const doc = docs[docId];
+            
+            // Update page title and subtitle
+            document.getElementById('page-title').textContent = doc.title;
+            document.getElementById('page-subtitle').textContent = doc.subtitle;
+            
+            // Update active navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('bg-blue-100', 'text-blue-700');
+            });
+            
+            const activeLink = document.querySelector(`[href="#${docId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('bg-blue-100', 'text-blue-700');
+            }
+
+            // Update URL
+            window.history.pushState({}, '', `#${docId}`);
+
+            // Hide welcome content
+            const welcomeContent = document.getElementById('welcome-content');
+            if (welcomeContent) {
+                welcomeContent.style.display = 'none';
+            }
+
+            // Load and display content
+            try {
+                const content = await fetchMarkdown(doc.file);
+                const html = marked.parse(content);
+                document.getElementById('content').innerHTML = html;
+                
+                // Highlight code blocks
+                Prism.highlightAll();
+                
+                // Scroll to top
+                document.getElementById('content').scrollTop = 0;
+                
+            } catch (error) {
+                console.error('Error loading document:', error);
+                document.getElementById('content').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-red-900 mb-2">Error Loading Document</h3>
+                        <p class="text-red-700">Sorry, we couldn't load the requested documentation. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function fetchMarkdown(filename) {
+            // In a real implementation, you would fetch from your server
+            // For demo purposes, return sample content
+            const sampleContent = {
+                'README.md': `# Sentia Manufacturing Dashboard
+
+## Overview
+
+The Sentia Manufacturing Dashboard is a comprehensive business intelligence platform designed specifically for manufacturing companies. It provides real-time insights into financial performance, working capital management, and operational efficiency.
+
+## Key Features
+
+- **Real-time Dashboard**: Customizable widgets and KPI tracking
+- **Working Capital Management**: Cash flow forecasting and optimization
+- **Financial Analytics**: P&L, balance sheet, and ratio analysis
+- **Inventory Optimization**: Stock level monitoring and reorder management
+- **Mobile Access**: Full-featured mobile application
+- **Integrations**: Connect with QuickBooks, Shopify, Amazon, and more
+
+## Getting Started
+
+1. **Sign Up**: Create your account at https://sentia-manufacturing.com
+2. **Setup**: Configure your dashboard and connect data sources
+3. **Customize**: Add widgets and configure alerts
+4. **Analyze**: Start making data-driven decisions
+
+## Support
+
+- **Documentation**: https://docs.sentia-manufacturing.com
+- **Email**: support@sentia-manufacturing.com
+- **Phone**: +44 20 1234 5678`,
+
+                'user/USER_MANUAL.md': `# User Manual
+
+## Welcome to Sentia Manufacturing Dashboard
+
+This comprehensive guide will help you get the most out of your dashboard experience.
+
+## Table of Contents
+
+1. [Getting Started](#getting-started)
+2. [Dashboard Overview](#dashboard-overview)
+3. [Working Capital Management](#working-capital-management)
+4. [Reports & Analytics](#reports--analytics)
+
+## Getting Started
+
+### First Login
+
+1. Navigate to https://sentia-manufacturing.com
+2. Sign in with your credentials
+3. Complete the welcome tour
+4. Customize your dashboard
+
+### Navigation
+
+The main navigation includes:
+- **Dashboard**: Real-time business overview
+- **Working Capital**: Financial management tools
+- **Reports**: Analytics and reporting
+- **Settings**: User preferences and configuration`,
+
+                'technical/API.md': `# API Documentation
+
+## Authentication
+
+All API requests require authentication using JWT tokens:
+
+\`\`\`http
+Authorization: Bearer <jwt_token>
+\`\`\`
+
+## Base URL
+
+\`\`\`
+Production: https://api.sentia-manufacturing.com/v1
+Staging: https://staging-api.sentia-manufacturing.com/v1
+\`\`\`
+
+## Endpoints
+
+### Working Capital
+
+#### GET /working-capital/overview
+
+Returns working capital overview including current ratio, working capital amount, and trends.
+
+**Example Response:**
+
+\`\`\`json
+{
+  "success": true,
+  "data": {
+    "currentRatio": 2.5,
+    "workingCapital": 500000,
+    "cashConversionCycle": 45
+  }
+}
+\`\`\``,
+
+                'business/ROI_ANALYSIS.md': `# ROI Analysis & Business Value
+
+## Executive Summary
+
+The Sentia Manufacturing Dashboard delivers measurable business value through:
+
+- **5,218% ROI** over 3 years
+- **8.4-day payback period**
+- **£1.1M total benefits** for typical mid-size manufacturer
+
+## Investment Overview
+
+**Total 3-Year Investment: £21,064**
+
+- Software costs: £11,964
+- Implementation: £9,100
+
+**Total 3-Year Benefits: £1,120,020**
+
+- Working capital optimization: £124,800
+- Operational efficiency: £314,220
+- Inventory optimization: £381,000
+- Decision making speed: £300,000
+
+## Key Benefits
+
+### Working Capital Optimization
+- Reduce DSO from 75 to 60 days
+- Optimize DIO by 16%
+- Extend DPO by 20%
+- Free up £520,000 in cash
+
+### Operational Efficiency
+- Save 36 hours per week in manual processes
+- Reduce errors by 85%
+- Automate 95% of routine tasks`
+            };
+
+            return sampleContent[filename] || `# ${filename}
+
+Content for ${filename} would be loaded here in a real implementation.
+
+This is a demo showing how the documentation site would work with actual markdown files.`;
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function toggleTheme() {
+            // Theme toggle functionality would go here
+            console.log('Theme toggle clicked');
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(event) {
+            const hash = window.location.hash.substring(1);
+            if (hash && docs[hash]) {
+                loadDoc(hash);
+            }
+        });
+    </script>
+</body>
+</html>

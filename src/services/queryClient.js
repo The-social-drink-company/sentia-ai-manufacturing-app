@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import { QueryClient } from '@tanstack/react-query'
 
 // API-specific stale times based on data update frequency
@@ -123,7 +124,7 @@ export const queryClient = new QueryClient({
       retryDelay: 1000,
       // Global mutation error handling
       onError: (error, variables, context) => {
-        console.error('Mutation failed:', error, variables)
+        devLog.error('Mutation failed:', error, variables)
         // Could integrate with toast notification system here
       }
     }

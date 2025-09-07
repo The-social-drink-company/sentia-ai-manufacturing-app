@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 // Removed Clerk import to fix Application Error
 import axios from 'axios'
+import { logError } from '../../lib/logger'
 
 function CashFlowProjections() {
   // Mock auth for demo mode
@@ -29,7 +30,7 @@ function CashFlowProjections() {
 
       setProjectionData(response.data.data)
     } catch (err) {
-      console.error('Projection error:', err)
+      logError('Projection error', err, { component: 'CashFlowProjections' })
       setError(err.response?.data?.error || err.message)
     } finally {
       setLoading(false)

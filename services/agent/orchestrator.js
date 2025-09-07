@@ -5,12 +5,13 @@
 import { toolCatalog } from './toolCatalog.js';
 import { logInfo, logError, logDebug, logWarn } from '../observability/structuredLogger.js';
 import crypto from 'crypto';
+import { setTimeout } from 'timers';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export class AgentOrchestrator {
-  constructor(options = {}) {
+  constructor(_options = {}) {
     this.maxSteps = parseInt(process.env.AGENT_MAX_STEPS) || 12;
     this.runTimeout = parseInt(process.env.AGENT_RUN_TIMEOUT_MS) || 180000;
     this.toolRetryMax = parseInt(process.env.AGENT_TOOL_RETRY_MAX) || 2;
@@ -37,7 +38,7 @@ export class AgentOrchestrator {
     logInfo('Agent run started', { runId, goal, mode, scope });
 
     // Create run record
-    const run = await prisma.agentRuns.create({
+    const _run = await prisma.agentRuns.create({
       data: {
         id: runId,
         goal,

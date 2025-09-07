@@ -1,3 +1,4 @@
+import { devLog } from '../../../lib/devLog.js';
 import React, { useState, useEffect } from 'react'
 import { 
   GlobeAltIcon,
@@ -31,7 +32,7 @@ function AdminFX() {
         setFxSettings(data.settings || {})
       }
     } catch (error) {
-      console.error('Failed to fetch FX settings:', error)
+      devLog.error('Failed to fetch FX settings:', error)
     } finally {
       setLoading(false)
     }
@@ -67,7 +68,7 @@ function AdminFX() {
         setShowSettings(false)
       }
     } catch (error) {
-      console.error('Failed to update FX settings:', error)
+      devLog.error('Failed to update FX settings:', error)
     }
   }
 

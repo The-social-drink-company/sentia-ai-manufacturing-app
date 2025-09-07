@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 /**
  * Clerk Authentication Configuration for Railway Deployments
  * Handles environment-specific settings and fallback scenarios
@@ -104,7 +105,7 @@ class ClerkConfig {
    */
   getConfig() {
     if (!this.isConfigured()) {
-      console.warn('[ClerkConfig] Clerk publishable key not found');
+      devLog.warn('[ClerkConfig] Clerk publishable key not found');
       return null;
     }
     
@@ -172,7 +173,7 @@ class ClerkConfig {
         if (allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
-          console.warn(`[CORS] Blocked origin: ${origin}`);
+          devLog.warn(`[CORS] Blocked origin: ${origin}`);
           callback(new Error('Not allowed by CORS'));
         }
       },
@@ -203,7 +204,7 @@ class ClerkConfig {
       
       return response.ok;
     } catch (error) {
-      console.error('[ClerkConfig] Session validation failed:', error);
+      devLog.error('[ClerkConfig] Session validation failed:', error);
       return false;
     }
   }
@@ -262,7 +263,7 @@ class ClerkConfig {
    * Handle authentication errors gracefully
    */
   handleAuthError(error) {
-    console.error('[ClerkConfig] Authentication error:', error);
+    devLog.error('[ClerkConfig] Authentication error:', error);
     
     // Don't redirect on certain errors
     const nonRedirectErrors = [
@@ -294,7 +295,7 @@ class ClerkConfig {
     if (this.isInitialized) return true;
     
     if (!this.isConfigured()) {
-      console.warn('[ClerkConfig] Clerk not configured, running in public mode');
+      devLog.warn('[ClerkConfig] Clerk not configured, running in public mode');
       return false;
     }
     
@@ -309,11 +310,11 @@ class ClerkConfig {
         if (config) {
           await window.Clerk.load(config);
           this.isInitialized = true;
-          console.log('[ClerkConfig] Clerk initialized successfully');
+          devLog.log('[ClerkConfig] Clerk initialized successfully');
           return true;
         }
       } catch (error) {
-        console.error(`[ClerkConfig] Initialization attempt ${i + 1} failed:`, error);
+        devLog.error(`[ClerkConfig] Initialization attempt ${i + 1} failed:`, error);
         
         if (i === retries - 1) {
           this.handleAuthError(error);

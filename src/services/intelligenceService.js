@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 /**
  * Intelligence Service - Core AI Operations
  * Integrates with MCP Server on Railway for AI-powered features
@@ -41,7 +42,7 @@ class IntelligenceService {
       this.setCache(cacheKey, categorized);
       return categorized;
     } catch (error) {
-      console.error('Failed to generate dashboard insights:', error);
+      devLog.error('Failed to generate dashboard insights:', error);
       return this.getFallbackInsights(data);
     }
   }
@@ -85,7 +86,7 @@ class IntelligenceService {
         visualization: this.generateVisualizationConfig(prediction)
       };
     } catch (error) {
-      console.error('Failed to predict trends:', error);
+      devLog.error('Failed to predict trends:', error);
       return null;
     }
   }
@@ -121,7 +122,7 @@ class IntelligenceService {
 
       return { detected: [], severity: 'none' };
     } catch (error) {
-      console.error('Failed to detect anomalies:', error);
+      devLog.error('Failed to detect anomalies:', error);
       return { detected: [], severity: 'error' };
     }
   }
@@ -148,7 +149,7 @@ class IntelligenceService {
         timeline: this.estimateTimeline(prioritized)
       };
     } catch (error) {
-      console.error('Failed to generate optimizations:', error);
+      devLog.error('Failed to generate optimizations:', error);
       return { recommendations: [] };
     }
   }
@@ -183,7 +184,7 @@ class IntelligenceService {
         followUp: this.generateFollowUpQuestions(intent, relevantData)
       };
     } catch (error) {
-      console.error('Failed to process natural query:', error);
+      devLog.error('Failed to process natural query:', error);
       return {
         answer: "I couldn't process that query. Please try rephrasing or be more specific.",
         error: true
@@ -211,7 +212,7 @@ class IntelligenceService {
         nextSteps: summary.nextSteps
       };
     } catch (error) {
-      console.error('Failed to generate executive summary:', error);
+      devLog.error('Failed to generate executive summary:', error);
       return null;
     }
   }
@@ -238,7 +239,7 @@ class IntelligenceService {
         preventiveActions: prediction.preventiveActions
       };
     } catch (error) {
-      console.error('Failed to predict maintenance:', error);
+      devLog.error('Failed to predict maintenance:', error);
       return null;
     }
   }
@@ -267,7 +268,7 @@ class IntelligenceService {
         costImpact: this.calculateQualityCosts(analysis)
       };
     } catch (error) {
-      console.error('Failed to analyze quality:', error);
+      devLog.error('Failed to analyze quality:', error);
       return null;
     }
   }

@@ -2,7 +2,7 @@
 
 ## Production Environment
 - **Main URL:** https://sentiaprod.financeflo.ai
-- **Railway URL:** https://sentia-manufacturing-dashboard-production.up.railway.app
+- **Railway URL:** https://web-production-1f10.up.railway.app
 - **Health Check:** https://sentiaprod.financeflo.ai/health
 - **Port:** 8080
 - **Branch:** production
@@ -10,7 +10,7 @@
 
 ## Testing Environment
 - **Main URL:** https://sentiatest.financeflo.ai
-- **Railway URL:** https://courageous-insight-testing.up.railway.app
+- **Railway URL:** https://sentia-manufacturing-dashboard-testing.up.railway.app
 - **Health Check:** https://sentiatest.financeflo.ai/health
 - **Port:** 8080
 - **Branch:** test
@@ -18,7 +18,7 @@
 
 ## Development Environment
 - **Main URL:** https://sentiadeploy.financeflo.ai
-- **Railway URL:** https://sentia-manufacturing-dashboard-development.up.railway.app
+- **Railway URL:** https://daring-reflection-development.up.railway.app
 - **Health Check:** https://sentiadeploy.financeflo.ai/health
 - **Port:** 8080
 - **Branch:** development
@@ -32,17 +32,17 @@
 
 #### Production Health Checks:
 - **Custom Domain:** https://sentiaprod.financeflo.ai/health
-- **Railway Domain:** https://sentia-manufacturing-dashboard-production.up.railway.app/health
+- **Railway Domain:** https://web-production-1f10.up.railway.app/health
 - **Alternative Endpoint:** https://sentiaprod.financeflo.ai/healthz
 
 #### Testing Health Checks:
 - **Custom Domain:** https://sentiatest.financeflo.ai/health
-- **Railway Domain:** https://courageous-insight-testing.up.railway.app/health
+- **Railway Domain:** https://sentia-manufacturing-dashboard-testing.up.railway.app/health
 - **Alternative Endpoint:** https://sentiatest.financeflo.ai/healthz
 
 #### Development Health Checks:
 - **Custom Domain:** https://sentiadeploy.financeflo.ai/health
-- **Railway Domain:** https://sentia-manufacturing-dashboard-development.up.railway.app/health
+- **Railway Domain:** https://daring-reflection-development.up.railway.app/health
 - **Alternative Endpoint:** https://sentiadeploy.financeflo.ai/healthz
 
 ---
@@ -191,9 +191,9 @@ cache-control: no-cache
 If main URLs don't work, try these alternatives:
 
 ### Direct Railway URLs:
-- **Production:** https://sentia-manufacturing-dashboard-production.up.railway.app
-- **Testing:** https://courageous-insight-testing.up.railway.app
-- **Development:** https://sentia-manufacturing-dashboard-development.up.railway.app
+- **Production:** https://web-production-1f10.up.railway.app
+- **Testing:** https://sentia-manufacturing-dashboard-testing.up.railway.app
+- **Development:** https://daring-reflection-development.up.railway.app
 
 ### Railway Logs:
 - Access via Railway dashboard for each environment

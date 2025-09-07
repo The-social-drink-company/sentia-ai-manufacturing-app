@@ -1,6 +1,8 @@
 // Database configuration optimized for Railway + Neon PostgreSQL
 // Addresses connection timeouts and vector database performance
 
+import { logInfo, logWarn, logError } from '../services/observability/structuredLogger.js';
+
 export const databaseConfig = {
   // Neon PostgreSQL connection configuration
   connection: {
@@ -26,7 +28,6 @@ export const databaseConfig = {
     
     // Neon-specific optimizations
     application_name: `sentia-dashboard-${process.env.NODE_ENV || 'development'}`,
-    statement_timeout: 60000, // 1 minute
     query_timeout: 30000, // 30 seconds
     
     // Vector database optimizations
@@ -108,7 +109,6 @@ export const databaseConfig = {
       // Production SSL is required for Neon
       ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 15000,
-      statement_timeout: 120000, // 2 minutes for complex vector queries
     }
   }
 };
@@ -134,17 +134,19 @@ export const testConnection = async (pool) => {
     
     // Test basic connectivity
     const result = await client.query('SELECT NOW() as current_time, version() as pg_version');
-    console.log('✅ Database connected successfully');
-    console.log(`📅 Server time: ${result.rows[0].current_time}`);
-    console.log(`🗄️ PostgreSQL version: ${result.rows[0].pg_version.split(' ')[0]}`);
+    logInfo('Database connected successfully');
+    logInfo('Database server details', {
+      serverTime: result.rows[0].current_time,
+      postgresVersion: result.rows[0].pg_version.split(' ')[0]
+    });
     
     // Test vector extension if enabled
     if (databaseConfig.vector.enableExtension) {
       try {
         await client.query('SELECT extversion FROM pg_extension WHERE extname = $1', ['vector']);
-        console.log('🧮 Vector extension (pgvector) is available');
+        logInfo('Vector extension (pgvector) is available');
       } catch (vectorError) {
-        console.warn('⚠️  Vector extension not available:', vectorError.message);
+        logWarn('Vector extension not available', vectorError);
       }
     }
     
@@ -152,11 +154,14 @@ export const testConnection = async (pool) => {
     return true;
     
   } catch (error) {
-    console.error('❌ Database connection failed:', error.message);
-    console.error('🔧 Check your environment variables:');
-    console.error('   - DATABASE_URL or individual DB config variables');
-    console.error('   - SSL configuration for production');
-    console.error('   - Network connectivity to Neon');
+    logError('Database connection failed', {
+      error: error.message,
+      troubleshooting: [
+        'Check DATABASE_URL or individual DB config variables',
+        'Verify SSL configuration for production',
+        'Confirm network connectivity to Neon'
+      ]
+    });
     return false;
   }
 };

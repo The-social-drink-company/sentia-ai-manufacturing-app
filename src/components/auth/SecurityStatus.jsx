@@ -1,6 +1,8 @@
+import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
+import { logError } from '../../lib/logger'
 import { 
   Shield, 
   Clock, 
@@ -54,7 +56,7 @@ export default function SecurityStatus() {
         }
         
       } catch (error) {
-        console.error('Failed to fetch security data:', error)
+        logError('Failed to fetch security data', error, { component: 'SecurityStatus' })
         setError('Failed to load security information')
       } finally {
         setLoading(false)
@@ -82,7 +84,7 @@ export default function SecurityStatus() {
         throw new Error('Failed to revoke session')
       }
     } catch (error) {
-      console.error('Failed to revoke session:', error)
+      logError('Failed to revoke session', error, { component: 'SecurityStatus', sessionId })
       setError('Failed to revoke session')
     } finally {
       setActionLoading(false)
@@ -113,7 +115,7 @@ export default function SecurityStatus() {
         throw new Error('Failed to revoke sessions')
       }
     } catch (error) {
-      console.error('Failed to revoke sessions:', error)
+      logError('Failed to revoke sessions', error, { component: 'SecurityStatus' })
       setError('Failed to revoke sessions')
     } finally {
       setActionLoading(false)

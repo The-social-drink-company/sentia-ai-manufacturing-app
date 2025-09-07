@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import Redis from 'ioredis';
 
 class RedisCache {
@@ -23,23 +24,23 @@ class RedisCache {
       });
 
       this.client.on('connect', () => {
-        console.log('🔴 Redis connected');
+        devLog.log('🔴 Redis connected');
         this.isConnected = true;
       });
 
       this.client.on('error', (err) => {
-        console.error('❌ Redis error:', err);
+        devLog.error('❌ Redis error:', err);
         this.isConnected = false;
       });
 
       this.client.on('close', () => {
-        console.log('🔴 Redis connection closed');
+        devLog.log('🔴 Redis connection closed');
         this.isConnected = false;
       });
 
       await this.client.connect();
     } catch (error) {
-      console.error('❌ Redis connection failed:', error);
+      devLog.error('❌ Redis connection failed:', error);
       this.isConnected = false;
     }
   }
@@ -51,7 +52,7 @@ class RedisCache {
       const value = await this.client.get(key);
       return value ? JSON.parse(value) : null;
     } catch (error) {
-      console.error(`❌ Redis GET error for key ${key}:`, error);
+      devLog.error(`❌ Redis GET error for key ${key}:`, error);
       return null;
     }
   }
@@ -68,7 +69,7 @@ class RedisCache {
       }
       return true;
     } catch (error) {
-      console.error(`❌ Redis SET error for key ${key}:`, error);
+      devLog.error(`❌ Redis SET error for key ${key}:`, error);
       return false;
     }
   }
@@ -80,7 +81,7 @@ class RedisCache {
       await this.client.del(key);
       return true;
     } catch (error) {
-      console.error(`❌ Redis DEL error for key ${key}:`, error);
+      devLog.error(`❌ Redis DEL error for key ${key}:`, error);
       return false;
     }
   }
@@ -95,7 +96,7 @@ class RedisCache {
       }
       return true;
     } catch (error) {
-      console.error(`❌ Redis INVALIDATE error for pattern ${pattern}:`, error);
+      devLog.error(`❌ Redis INVALIDATE error for pattern ${pattern}:`, error);
       return false;
     }
   }
@@ -107,7 +108,7 @@ class RedisCache {
       const result = await this.client.exists(key);
       return result === 1;
     } catch (error) {
-      console.error(`❌ Redis EXISTS error for key ${key}:`, error);
+      devLog.error(`❌ Redis EXISTS error for key ${key}:`, error);
       return false;
     }
   }
@@ -118,7 +119,7 @@ class RedisCache {
     try {
       return await this.client.ttl(key);
     } catch (error) {
-      console.error(`❌ Redis TTL error for key ${key}:`, error);
+      devLog.error(`❌ Redis TTL error for key ${key}:`, error);
       return -1;
     }
   }
@@ -130,7 +131,7 @@ class RedisCache {
       await this.client.flushall();
       return true;
     } catch (error) {
-      console.error('❌ Redis FLUSHALL error:', error);
+      devLog.error('❌ Redis FLUSHALL error:', error);
       return false;
     }
   }

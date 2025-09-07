@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -491,19 +492,19 @@ const Header = () => {
   
   const handleExport = () => {
     // Implementation for export functionality
-    console.log('Export dashboard')
+    devLog.log('Export dashboard')
   }
   
   const handleSaveLayout = () => {
     const layoutData = generateShareableLayout()
     // Implementation for saving layout
-    console.log('Save layout', layoutData)
+    devLog.log('Save layout', layoutData)
   }
   
   const handleShare = () => {
     const layoutData = generateShareableLayout()
     // Implementation for sharing
-    console.log('Share dashboard', layoutData)
+    devLog.log('Share dashboard', layoutData)
   }
   
   // Keyboard shortcuts
@@ -513,7 +514,7 @@ const Header = () => {
   useHotkeys('g w', () => navigate('/working-capital'), { enableOnFormTags: false })
   useHotkeys('shift+/', () => {
     // Show help modal
-    console.log('Show help')
+    devLog.log('Show help')
   }, { enableOnFormTags: false })
   
   return (
@@ -663,7 +664,7 @@ const Header = () => {
               
               {/* Help */}
               <button
-                onClick={() => console.log('Show help')}
+                onClick={() => devLog.log('Show help')}
                 className="p-2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:text-gray-200"
                 title="Help (Shift+?)"
               >

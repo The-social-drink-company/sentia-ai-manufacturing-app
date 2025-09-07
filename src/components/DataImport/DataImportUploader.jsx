@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, AlertCircle, CheckCircle, X } from 'lucide-react';
@@ -100,7 +101,7 @@ const DataImportUploader = ({ onUploadComplete, onError }) => {
       xhr.send(formData);
 
     } catch (error) {
-      console.error('Upload error:', error);
+      devLog.error('Upload error:', error);
       setError(error.message || 'Upload failed');
       setUploadStatus('error');
       onError && onError(error);

@@ -1,127 +1,100 @@
 #!/usr/bin/env node
 
 /**
- * Railway Environment Setup Script
- * 
- * This script helps set up environment variables for Railway deployment
- * Run with: node scripts/setup-railway-env.js
+ * Railway Environment Variable Fix Script
+ * Fixes malformed environment variables causing deployment failures
  */
 
-import { execSync } from 'child_process';
-import readline from 'readline';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+const execAsync = promisify(exec);
 
-function question(prompt) {
-  return new Promise((resolve) => {
-    rl.question(prompt, resolve);
-  });
-}
+class RailwayEnvironmentSetup {
+  async checkPrerequisites() {
+    console.log('🔍 Checking prerequisites...');
+    
+    try {
+      execSync('railway --version', { stdio: 'pipe' });
+      console.log('✅ Railway CLI is installed');
+    } catch (error) {
+      console.error('❌ Railway CLI not found. Installing...');
+      execSync('npm install -g @railway/cli', { stdio: 'inherit' });
+    }
 
-async function main() {
-  console.log('🚀 Railway Environment Setup for Sentia Manufacturing Dashboard\n');
-  
-  console.log('This script will help you set up environment variables for Railway deployment.');
-  console.log('You will need:');
-  console.log('1. Clerk API keys (from https://dashboard.clerk.com)');
-  console.log('2. Database connection strings (from Neon or your database provider)');
-  console.log('3. Railway CLI installed (npm install -g @railway/cli)\n');
-  
-  const hasRailwayCli = await checkRailwayCli();
-  if (!hasRailwayCli) {
-    console.log('❌ Railway CLI not found. Please install it first:');
-    console.log('npm install -g @railway/cli');
-    console.log('Then run: railway login');
-    process.exit(1);
+    try {
+      const result = execSync('railway whoami', { stdio: 'pipe' });
+      console.log(`✅ Logged in as: ${result.toString().trim()}`);
+    } catch (error) {
+      console.error('❌ Not logged in to Railway. Please run: railway login');
+      process.exit(1);
+    }
+
+    try {
+      const result = execSync('railway status', { stdio: 'pipe' });
+      console.log(`✅ Railway project linked: ${result.toString().trim()}`);
+    } catch (error) {
+      console.error('❌ No Railway project linked. Please run: railway link');
+      process.exit(1);
+    }
   }
-  
-  console.log('✅ Railway CLI found\n');
-  
-  // Get environment selection
-  const environment = await question('Which environment? (development/test/production): ');
-  if (!['development', 'test', 'production'].includes(environment)) {
-    console.log('❌ Invalid environment. Must be development, test, or production');
-    process.exit(1);
+
+  async setupEnvironmentVariables(envName, env) {
+    console.log(`\n🔧 Setting up ${envName.toUpperCase()} environment...`);
+    
+    const variables = {
+      NODE_ENV: env.nodeEnv,
+      PORT: '3000',
+      VITE_CLERK_PUBLISHABLE_KEY: env.clerkPublishableKey,
+      CLERK_SECRET_KEY: env.clerkSecretKey,
+      DATABASE_URL: 'postgresql://neondb_owner:npg_2wXVD9gdintm@ep-shiny-dream-ab2zho2p-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+      CORS_ORIGINS: `https://${env.domain}`,
+      UNLEASHED_API_ID: 'd5313df6-db35-430c-a69e-ae27dffe0c5a',
+      UNLEASHED_API_KEY: '2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==',
+      LOG_LEVEL: 'info'
+    };
+
+    let successCount = 0;
+    for (const [key, value] of Object.entries(variables)) {
+      try {
+        execSync(`railway variables --set "${key}=${value}"`, { stdio: 'pipe' });
+        console.log(`  ✅ Set ${key}`);
+        successCount++;
+      } catch (error) {
+        console.error(`  ❌ Failed to set ${key}`);
+      }
+    }
+
+    console.log(`📊 ${successCount}/${Object.keys(variables).length} variables set successfully`);
+    return successCount === Object.keys(variables).length;
   }
-  
-  // Get Clerk keys
-  console.log('\n📋 Clerk Authentication Setup:');
-  const clerkPublishableKey = await question('Enter VITE_CLERK_PUBLISHABLE_KEY: ');
-  const clerkSecretKey = await question('Enter CLERK_SECRET_KEY: ');
-  
-  // Get database URL
-  console.log('\n🗄️ Database Setup:');
-  const databaseUrl = await question('Enter DATABASE_URL: ');
-  
-  // Get optional variables
-  console.log('\n🔧 Optional Configuration:');
-  const unleashedApiId = await question('Enter UNLEASHED_API_ID (optional, press Enter to skip): ');
-  const unleashedApiKey = await question('Enter UNLEASHED_API_KEY (optional, press Enter to skip): ');
-  
-  // Set CORS origins based on environment
-  const corsOrigins = getCorsOrigins(environment);
-  
-  // Prepare environment variables
-  const envVars = {
-    'VITE_CLERK_PUBLISHABLE_KEY': clerkPublishableKey,
-    'CLERK_SECRET_KEY': clerkSecretKey,
-    'DATABASE_URL': databaseUrl,
-    'NODE_ENV': 'production',
-    'PORT': '5000',
-    'CORS_ORIGINS': corsOrigins
-  };
-  
-  if (unleashedApiId) envVars['UNLEASHED_API_ID'] = unleashedApiId;
-  if (unleashedApiKey) envVars['UNLEASHED_API_KEY'] = unleashedApiKey;
-  
-  console.log('\n📝 Setting environment variables in Railway...');
-  
-  try {
-    // Set environment variables using Railway CLI
-    for (const [key, value] of Object.entries(envVars)) {
-      console.log(`Setting ${key}...`);
-      execSync(`railway variables set ${key}="${value}"`, { stdio: 'inherit' });
+
+  async setupAllEnvironments() {
+    console.log('🚀 Setting up all Railway environments...\n');
+    
+    await this.checkPrerequisites();
+    
+    const results = {};
+    for (const [envName, env] of Object.entries(environments)) {
+      const success = await this.setupEnvironmentVariables(envName, env);
+      results[envName] = success;
     }
     
-    console.log('\n✅ Environment variables set successfully!');
-    console.log('\n🚀 Next steps:');
-    console.log('1. Go to Railway dashboard and trigger a new deployment');
-    console.log('2. Check the deployment logs for any errors');
-    console.log('3. Test the application at your Railway URL');
-    console.log('4. Use /diagnostics endpoint to verify configuration');
+    console.log('\n📊 Setup Summary:');
+    for (const [env, success] of Object.entries(results)) {
+      const emoji = success ? '✅' : '❌';
+      const domain = environments[env].domain;
+      console.log(`${emoji} ${env.toUpperCase()}: https://${domain}`);
+    }
     
-  } catch (error) {
-    console.error('❌ Error setting environment variables:', error.message);
-    console.log('\nManual setup instructions:');
-    console.log('1. Go to Railway dashboard');
-    console.log('2. Select your service');
-    console.log('3. Go to Variables tab');
-    console.log('4. Add the following variables:');
-    console.log('\n' + Object.entries(envVars).map(([k, v]) => `${k}=${v}`).join('\n'));
-  }
-  
-  rl.close();
-}
-
-function getCorsOrigins(environment) {
-  const origins = {
-    development: 'https://sentiadeploy.financeflo.ai',
-    test: 'https://sentiatest.financeflo.ai',
-    production: 'https://sentiaprod.financeflo.ai'
-  };
-  return origins[environment];
-}
-
-async function checkRailwayCli() {
-  try {
-    execSync('railway --version', { stdio: 'pipe' });
-    return true;
-  } catch {
-    return false;
+    const successCount = Object.values(results).filter(s => s).length;
+    if (successCount === Object.keys(results).length) {
+      console.log('\n🎉 All environments configured successfully!');
+    } else {
+      console.log(`\n⚠️  ${successCount}/${Object.keys(results).length} environments configured`);
+    }
   }
 }
 
-main().catch(console.error);
+const setup = new RailwayEnvironmentSetup();
+setup.setupAllEnvironments().catch(console.error);

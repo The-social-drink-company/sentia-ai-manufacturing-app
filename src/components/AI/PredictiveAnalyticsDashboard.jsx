@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react';
 import { Line, Bar, Scatter } from 'react-chartjs-2';
 import {
@@ -10,6 +11,7 @@ import {
   CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
+import { logError } from '../../lib/logger';
 
 const PredictiveAnalyticsDashboard = ({ 
   data = [],
@@ -65,7 +67,7 @@ const PredictiveAnalyticsDashboard = ({
         ...(dashboardInsights?.opportunities || [])
       ].slice(0, 5));
     } catch (error) {
-      console.error('Predictive analysis failed:', error);
+      logError('Predictive analysis failed', error, { component: 'PredictiveAnalyticsDashboard' });
     } finally {
       setIsLoading(false);
     }

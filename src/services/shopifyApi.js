@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import axios from 'axios'
 
 // Shopify API integration service
@@ -93,7 +94,7 @@ class ShopifyAPIService {
         if (error.response?.status === 429) {
           retries++
           const waitTime = this.calculateBackoff(retries)
-          console.warn(`Shopify rate limit hit, waiting ${waitTime}ms before retry ${retries}`)
+          devLog.warn(`Shopify rate limit hit, waiting ${waitTime}ms before retry ${retries}`)
           await this.delay(waitTime)
           continue
         }
@@ -413,7 +414,7 @@ class ShopifyAPIService {
         }
       }
     } catch (error) {
-      console.error('Error generating Shopify KPIs:', error)
+      devLog.error('Error generating Shopify KPIs:', error)
       return {
         success: false,
         error: error.message,

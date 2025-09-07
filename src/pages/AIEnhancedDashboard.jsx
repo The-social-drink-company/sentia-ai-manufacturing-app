@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { useAIRealTimeData, useAIForecasting, useMaintenanceAlerts, useQualityInspections } from '../hooks/useAIRealTimeData';
@@ -87,7 +88,7 @@ const AIEnhancedDashboard = () => {
         throw new Error(data.error || 'Failed to initialize AI systems');
       }
     } catch (err) {
-      console.error('AI initialization error:', err);
+      devLog.error('AI initialization error:', err);
       setError(err.message);
     } finally {
       setIsInitializing(false);
@@ -141,7 +142,7 @@ const AIEnhancedDashboard = () => {
       }
 
     } catch (err) {
-      console.error('Dashboard loading error:', err);
+      devLog.error('Dashboard loading error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -175,7 +176,7 @@ const AIEnhancedDashboard = () => {
         }]);
       }
     } catch (err) {
-      console.error('Chat error:', err);
+      devLog.error('Chat error:', err);
       setChatHistory(prev => [...prev, { 
         role: 'assistant', 
         content: 'Sorry, I encountered an error processing your request.' 

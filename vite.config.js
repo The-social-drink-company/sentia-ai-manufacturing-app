@@ -5,7 +5,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   // Critical: Set base path for Railway deployment
-  base: './', // Ensures relative paths work on Railway
+  base: '/', // Use absolute paths for proper routing
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -19,11 +19,11 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
+    port: 5173,
     host: true, // Needed for Docker
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       }
@@ -31,43 +31,29 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    emptyOutDir: true, // Clear dist folder before build
-    sourcemap: process.env.NODE_ENV !== 'production', // Only generate sourcemaps in dev
-    minify: 'esbuild',
+    assetsDir: 'assets',
+    emptyOutDir: true,
+    sourcemap: true, // Enable for debugging production issues
+    minify: 'terser', // Better minification
+    terserOptions: {
+      compress: {
+        drop_debugger: true,
+        // Keep console.log for production debugging
+        pure_funcs: ['console.debug', 'console.trace']
+      }
+    },
     target: 'es2020',
-    chunkSizeWarningLimit: 1000,
-    // Railway-specific build optimizations
-    cssCodeSplit: true, // Split CSS for better caching
-    assetsInlineLimit: 4096, // Inline small assets as base64
+    chunkSizeWarningLimit: 1000, // Reduced for better bundle analysis
+    cssCodeSplit: true,
+    assetsInlineLimit: 8192, // Increased for better performance
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Split vendor libraries into separate chunks
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
-          'vendor-charts': ['recharts'],
-          'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
-          'vendor-data': ['@tanstack/react-query', 'axios'],
-          'vendor-dnd': ['react-grid-layout', '@dnd-kit/core', '@dnd-kit/sortable']
-        },
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId
-            ? chunkInfo.facadeModuleId.split('/').pop().replace(/\.[jt]sx?$/, '')
-            : 'chunk';
-          return `js/${facadeModuleId}-[hash].js`;
-        },
-        entryFileNames: 'js/[name]-[hash].js',
-        assetFileNames: (assetInfo) => {
-          const info = assetInfo.name.split('.');
-          const ext = info[info.length - 1];
-          if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(assetInfo.name)) {
-            return `images/[name]-[hash].${ext}`;
-          }
-          if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name)) {
-            return `fonts/[name]-[hash].${ext}`;
-          }
-          return `assets/[name]-[hash].${ext}`;
-        }
+        manualChunks: undefined // Prevent chunking issues for debugging
+      },
+      // Tree-shake unused code
+      treeshake: {
+        preset: 'recommended',
+        propertyReadSideEffects: false
       }
     }
   },

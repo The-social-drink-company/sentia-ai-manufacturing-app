@@ -4,6 +4,8 @@
  * NO MOCK DATA - Only real production data
  */
 
+import { logInfo, logWarn, logError } from '../lib/logger.js';
+
 import { mcpService } from './mcpService';
 
 class DataIntegrationService {
@@ -40,7 +42,7 @@ class DataIntegrationService {
         external: externalData
       });
     } catch (error) {
-      console.error('Failed to fetch metrics:', error);
+      logError('Failed to fetch current metrics', error, { operation: 'fetch_metrics' });
       throw new Error('No real data available. Please upload CSV/Excel file or connect to API.');
     }
   }
@@ -77,7 +79,7 @@ class DataIntegrationService {
       // Sort by date and remove duplicates
       return this.deduplicateAndSort(combinedHistory);
     } catch (error) {
-      console.error('Failed to fetch historical data:', error);
+      logError('Failed to fetch historical data', error, { operation: 'fetch_historical' });
       return [];
     }
   }
@@ -102,7 +104,7 @@ class DataIntegrationService {
         productCount: items.length
       };
     } catch (error) {
-      console.error('Xero fetch failed:', error);
+      logError('Xero data fetch failed', error, { service: 'xero' });
       return null;
     }
   }
@@ -126,7 +128,7 @@ class DataIntegrationService {
       const data = await response.json();
       return data.metrics || data;
     } catch (error) {
-      console.error('API fetch failed:', error);
+      logError('API fetch failed', error, { operation: 'api_fetch' });
       return null;
     }
   }
@@ -146,7 +148,7 @@ class DataIntegrationService {
         external.amazonRevenue = amazonData.revenue;
       }
     } catch (e) {
-      console.log('Amazon data not available');
+      logInfo('Amazon data not available', { service: 'amazon', reason: 'no_credentials' });
     }
 
     // Shopify
@@ -158,7 +160,7 @@ class DataIntegrationService {
         external.shopifyInventory = shopifyData.inventory;
       }
     } catch (e) {
-      console.log('Shopify data not available');
+      logInfo('Shopify data not available', { service: 'shopify', reason: 'no_credentials' });
     }
 
     // Unleashed
@@ -170,7 +172,7 @@ class DataIntegrationService {
         external.production = unleashedData.productionVolume;
       }
     } catch (e) {
-      console.log('Unleashed data not available');
+      logInfo('Unleashed data not available', { service: 'unleashed', reason: 'no_credentials' });
     }
 
     return Object.keys(external).length > 0 ? external : null;
@@ -484,7 +486,7 @@ class DataIntegrationService {
 
       return Object.values(dailyMetrics);
     } catch (error) {
-      console.error('Failed to fetch Xero historical data:', error);
+      logError('Failed to fetch Xero historical data', error, { service: 'xero', operation: 'historical_data' });
       return null;
     }
   }

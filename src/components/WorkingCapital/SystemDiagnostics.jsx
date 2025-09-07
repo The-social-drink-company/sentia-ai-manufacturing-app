@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 // Removed Clerk import to fix Application Error
 import axios from 'axios'
+import { logError } from '../../lib/logger'
 
 function SystemDiagnostics({ dashboardData }) {
   // Mock auth for demo mode
@@ -21,7 +22,7 @@ function SystemDiagnostics({ dashboardData }) {
       const response = await axios.get('/api/working-capital/diagnostics', { headers })
       setDiagnosticsData(response.data.data)
     } catch (err) {
-      console.error('Diagnostics refresh error:', err)
+      logError('Diagnostics refresh error', err, { component: 'SystemDiagnostics' })
       setError(err.response?.data?.error || err.message)
     } finally {
       setRefreshing(false)

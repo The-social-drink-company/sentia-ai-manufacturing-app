@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import React, { useState } from 'react'
 import UniversalWidgetWrapper from './UniversalWidgetWrapper'
 
@@ -44,7 +45,7 @@ const FixedPlanningWizard = () => {
         }, 3000)
       }
     } catch (error) {
-      console.log('Planning submission failed, saved locally')
+      devLog.log('Planning submission failed, saved locally')
     } finally {
       setLoading(false)
     }

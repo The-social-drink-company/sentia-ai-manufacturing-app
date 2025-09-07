@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import { useState, useEffect, useCallback } from 'react'
 
 // Custom hook for real-time data fetching with automatic refresh
@@ -26,7 +27,7 @@ export function useRealTimeData(endpoint, refreshInterval = 30000) {
     } catch (err) {
       setError(err.message)
       setLoading(false)
-      console.error(`Failed to fetch ${endpoint}:`, err)
+      devLog.error(`Failed to fetch ${endpoint}:`, err)
     }
   }, [endpoint, loading])
 

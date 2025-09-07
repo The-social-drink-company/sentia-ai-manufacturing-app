@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -135,7 +136,7 @@ function TestDashboard() {
           }
         };
       } catch (error) {
-        console.error('Failed to load real dashboard data:', error);
+        devLog.error('Failed to load real dashboard data:', error);
         throw new Error('Unable to load data from real sources. Please connect to APIs or upload data files.');
       }
     },
@@ -172,7 +173,7 @@ function TestDashboard() {
 
         return orders.slice(0, 10); // Return latest 10 orders
       } catch (error) {
-        console.error('Failed to fetch real orders:', error);
+        devLog.error('Failed to fetch real orders:', error);
         return null;
       }
     },

@@ -2,6 +2,7 @@
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
+import crypto from 'crypto';
 import { logger } from '../logging/logger.js';
 
 // Environment-specific security settings
@@ -147,7 +148,6 @@ export const exportLimiter = createRateLimiter({
 
 // Webhook signature verification
 export const verifyWebhookSignature = (secret, body, signature) => {
-  const crypto = require('crypto');
   const expectedSignature = crypto
     .createHmac('sha256', secret)
     .update(JSON.stringify(body))
@@ -208,7 +208,6 @@ export const sessionConfig = {
   },
   rolling: true, // Reset expiry on activity
   genid: () => {
-    const crypto = require('crypto');
     return crypto.randomBytes(32).toString('hex');
   }
 };

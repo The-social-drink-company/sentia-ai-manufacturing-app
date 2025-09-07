@@ -7,24 +7,34 @@ This document defines the key user workflows for the Sentia Manufacturing Dashbo
 ## User Roles & Permissions
 
 ### Role Hierarchy
-1. **ADMIN** - Full system access and user management
-2. **MANAGER** - Operational control and team oversight  
-3. **OPERATOR** - Daily operations and data entry
-4. **VIEWER** - Read-only dashboard access
+1. **ADMIN** - Full system access and user management ✅ IMPLEMENTED
+2. **MANAGER** - Operational control and team oversight ✅ IMPLEMENTED
+3. **OPERATOR** - Daily operations and data entry ✅ IMPLEMENTED
+4. **VIEWER** - Read-only dashboard access ✅ IMPLEMENTED
 
 ### Permission Matrix
 
-| Feature | ADMIN | MANAGER | OPERATOR | VIEWER |
-|---------|-------|---------|----------|--------|
-| View Dashboards | ✅ | ✅ | ✅ | ✅ |
-| Run Forecasts | ✅ | ✅ | ✅ | ❌ |
-| Optimize Stock | ✅ | ✅ | ✅ | ❌ |
-| Approve Purchase Orders | ✅ | ✅ | ❌ | ❌ |
-| Working Capital Analysis | ✅ | ✅ | ❌ | ❌ |
-| System Configuration | ✅ | ❌ | ❌ | ❌ |
-| User Management | ✅ | ❌ | ❌ | ❌ |
-| Export Data | ✅ | ✅ | ✅ | ✅ |
-| Save Layouts | ✅ | ✅ | ✅ | ❌ |
+| Feature | ADMIN | MANAGER | OPERATOR | VIEWER | Status |
+|---------|-------|---------|----------|--------|--------|
+| View Dashboards | ✅ | ✅ | ✅ | ✅ | ✅ IMPLEMENTED |
+| Run Forecasts | ✅ | ✅ | ✅ | ❌ | ✅ IMPLEMENTED |
+| Optimize Stock | ✅ | ✅ | ✅ | ❌ | ✅ IMPLEMENTED |
+| Approve Purchase Orders | ✅ | ✅ | ❌ | ❌ | ✅ IMPLEMENTED |
+| Working Capital Analysis | ✅ | ✅ | ❌ | ❌ | ✅ IMPLEMENTED |
+| System Configuration | ✅ | ❌ | ❌ | ❌ | ✅ IMPLEMENTED |
+| User Management | ✅ | ❌ | ❌ | ❌ | ✅ IMPLEMENTED |
+| Export Data | ✅ | ✅ | ✅ | ✅ | ✅ IMPLEMENTED |
+| Save Layouts | ✅ | ✅ | ✅ | ❌ | ✅ IMPLEMENTED |
+| Real-time Updates | ✅ | ✅ | ✅ | ✅ | ✅ IMPLEMENTED |
+| Mobile Access | ✅ | ✅ | ✅ | ✅ | ✅ IMPLEMENTED |
+| Admin Panel | ✅ | ❌ | ❌ | ❌ | ✅ IMPLEMENTED |
+
+### Enhanced Features (v1.1+)
+- **Drag-and-Drop Dashboard**: Customizable widget layouts ✅ IMPLEMENTED
+- **Dark/Light Themes**: User preference persistence ✅ IMPLEMENTED
+- **Keyboard Shortcuts**: Navigate with hotkeys (g+o, g+f, etc.) ✅ IMPLEMENTED
+- **Edit Mode**: In-place dashboard customization ✅ IMPLEMENTED
+- **Real-time Notifications**: Live alerts and updates ✅ IMPLEMENTED
 
 ## Core Workflows
 

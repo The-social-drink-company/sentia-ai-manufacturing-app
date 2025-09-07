@@ -3,6 +3,8 @@
  * Provides cross-branch access to Xero, OpenAI, and Anthropic services
  */
 
+import { logError, logApiCall } from '../lib/logger.js';
+
 const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://sentia-mcp-server.railway.app';
 const MCP_HEALTH_URL = process.env.MCP_HEALTH_URL || 'https://sentia-mcp-server.railway.app/health';
 
@@ -20,7 +22,7 @@ class MCPService {
       const response = await fetch(this.healthUrl);
       return await response.json();
     } catch (error) {
-      console.error('MCP Server health check failed:', error);
+      logError('MCP Server health check failed', error, { service: 'mcp', operation: 'health_check' });
       return { status: 'error', message: error.message };
     }
   }
@@ -33,7 +35,7 @@ class MCPService {
       const response = await fetch(`${this.baseUrl}/api/providers`);
       return await response.json();
     } catch (error) {
-      console.error('Failed to fetch providers:', error);
+      logError('Failed to fetch MCP providers', error, { service: 'mcp', operation: 'get_providers' });
       return { error: error.message };
     }
   }
@@ -47,7 +49,7 @@ class MCPService {
       const response = await fetch(`${this.baseUrl}/api/xero/contacts?${queryString}`);
       return await response.json();
     } catch (error) {
-      console.error('Failed to fetch Xero contacts:', error);
+      logError('Failed to fetch Xero contacts via MCP', error, { service: 'mcp', provider: 'xero', operation: 'get_contacts' });
       return { error: error.message };
     }
   }
@@ -58,7 +60,7 @@ class MCPService {
       const response = await fetch(`${this.baseUrl}/api/xero/invoices?${queryString}`);
       return await response.json();
     } catch (error) {
-      console.error('Failed to fetch Xero invoices:', error);
+      logError('Failed to fetch Xero invoices via MCP', error, { service: 'mcp', provider: 'xero', operation: 'get_invoices' });
       return { error: error.message };
     }
   }
@@ -68,7 +70,7 @@ class MCPService {
       const response = await fetch(`${this.baseUrl}/api/xero/items`);
       return await response.json();
     } catch (error) {
-      console.error('Failed to fetch Xero items:', error);
+      logError('Failed to fetch Xero items via MCP', error, { service: 'mcp', provider: 'xero', operation: 'get_items' });
       return { error: error.message };
     }
   }
@@ -84,7 +86,7 @@ class MCPService {
       });
       return await response.json();
     } catch (error) {
-      console.error('Failed to create Xero invoice:', error);
+      logError('Failed to create Xero invoice via MCP', error, { service: 'mcp', provider: 'xero', operation: 'create_invoice' });
       return { error: error.message };
     }
   }
@@ -103,7 +105,7 @@ class MCPService {
       });
       return await response.json();
     } catch (error) {
-      console.error('Failed to generate OpenAI text:', error);
+      logError('Failed to generate OpenAI text via MCP', error, { service: 'mcp', provider: 'openai', operation: 'generate_text' });
       return { error: error.message };
     }
   }
@@ -119,7 +121,7 @@ class MCPService {
       });
       return await response.json();
     } catch (error) {
-      console.error('Failed to analyze data with OpenAI:', error);
+      logError('Failed to analyze data with OpenAI via MCP', error, { service: 'mcp', provider: 'openai', operation: 'analyze_data' });
       return { error: error.message };
     }
   }
@@ -135,7 +137,7 @@ class MCPService {
       });
       return await response.json();
     } catch (error) {
-      console.error('Failed to create OpenAI embedding:', error);
+      logError('Failed to create OpenAI embedding via MCP', error, { service: 'mcp', provider: 'openai', operation: 'create_embedding' });
       return { error: error.message };
     }
   }
@@ -154,7 +156,7 @@ class MCPService {
       });
       return await response.json();
     } catch (error) {
-      console.error('Failed to analyze manufacturing with Anthropic:', error);
+      logError('Failed to analyze manufacturing with Anthropic via MCP', error, { service: 'mcp', provider: 'anthropic', operation: 'analyze_manufacturing' });
       return { error: error.message };
     }
   }
@@ -170,7 +172,7 @@ class MCPService {
       });
       return await response.json();
     } catch (error) {
-      console.error('Failed to optimize process with Anthropic:', error);
+      logError('Failed to optimize process with Anthropic via MCP', error, { service: 'mcp', provider: 'anthropic', operation: 'optimize_process' });
       return { error: error.message };
     }
   }
@@ -186,7 +188,7 @@ class MCPService {
       });
       return await response.json();
     } catch (error) {
-      console.error('Failed to generate insights with Anthropic:', error);
+      logError('Failed to generate insights with Anthropic via MCP', error, { service: 'mcp', provider: 'anthropic', operation: 'generate_insights' });
       return { error: error.message };
     }
   }

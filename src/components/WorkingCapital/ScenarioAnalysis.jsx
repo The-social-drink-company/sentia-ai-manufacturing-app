@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 // Removed Clerk import to fix Application Error
 import axios from 'axios'
+import { logError } from '../../lib/logger'
 
 function ScenarioAnalysis() {
   // Mock auth for demo mode
@@ -51,7 +52,7 @@ function ScenarioAnalysis() {
 
       setScenarioData(response.data.data)
     } catch (err) {
-      console.error('Scenario analysis error:', err)
+      logError('Scenario analysis error', err, { component: 'ScenarioAnalysis' })
       setError(err.response?.data?.error || err.message)
     } finally {
       setLoading(false)

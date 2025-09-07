@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import axios from 'axios'
 import { amazonSPAPI, amazonUtils } from './amazonApi'
 import { shopifyUK, shopifyEU, shopifyUSA, shopifyUtils } from './shopifyApi'
@@ -90,7 +91,7 @@ class AIForecastingService {
         dataQuality: this.assessDataQuality(historicalData.data)
       }
     } catch (error) {
-      console.error('AI Forecasting error:', error)
+      devLog.error('AI Forecasting error:', error)
       return {
         success: false,
         error: error.message,
@@ -387,7 +388,7 @@ Please provide a ${timeHorizon}-day forecast with ${Math.round(confidenceInterva
         }
       }
     } catch (error) {
-      console.error('Failed to parse AI forecast:', error)
+      devLog.error('Failed to parse AI forecast:', error)
       
       // Fallback to simple statistical forecast
       return this.generateFallbackForecast(historicalData, error.message)
@@ -517,7 +518,7 @@ Please provide a ${timeHorizon}-day forecast with ${Math.round(confidenceInterva
 
   generateFallbackForecast(historicalData, error) {
     // Simple moving average fallback
-    console.warn(`AI forecast failed: ${error}. Using fallback method.`)
+    devLog.warn(`AI forecast failed: ${error}. Using fallback method.`)
     
     const productData = Object.values(historicalData.demandData)[0]
     if (!productData) {

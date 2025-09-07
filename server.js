@@ -490,9 +490,18 @@ app.get('/api/analytics/ai-insights', authenticateUser, async (req, res) => {
 
 // Enhanced Production Tracking APIs
 app.get('/api/production/status', authenticateUser, (req, res) => {
-  const { line, range } = req.query;
-  const status = calculateEnhancedProductionStatus(line, range);
-  res.json(status);
+  try {
+    const { line, range } = req.query;
+    const status = getEnhancedProductionData(line, range);
+    res.json(status);
+  } catch (error) {
+    console.error('Production status error:', error);
+    res.status(400).json({ 
+      error: error.message,
+      requiresDataImport: true,
+      dataType: 'production'
+    });
+  }
 });
 
 app.post('/api/production/control', authenticateUser, async (req, res) => {
@@ -616,6 +625,319 @@ app.post('/api/quality/test/schedule', authenticateUser, async (req, res) => {
   } catch (error) {
     console.error('Test scheduling error:', error);
     res.status(500).json({ error: 'Failed to schedule test' });
+  }
+});
+
+// Enhanced Inventory Management APIs
+app.get('/api/inventory/dashboard', authenticateUser, (req, res) => {
+  const { category, search, sort } = req.query;
+  const inventoryData = getInventoryData(category, search, sort);
+  res.json(inventoryData);
+});
+
+app.post('/api/inventory/adjust', authenticateUser, async (req, res) => {
+  try {
+    const { itemId, adjustment, reason } = req.body;
+    const result = await adjustInventoryLevel(itemId, adjustment, reason);
+    
+    // Send SSE update for inventory change
+    sendSSEEvent('inventory.level.updated', {
+      itemId,
+      newLevel: result.newLevel,
+      adjustment: adjustment,
+      reason: reason,
+      timestamp: new Date().toISOString()
+    });
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Inventory adjustment error:', error);
+    res.status(500).json({ error: 'Failed to adjust inventory level' });
+  }
+});
+
+app.post('/api/inventory/add-item', authenticateUser, async (req, res) => {
+  try {
+    const { itemData } = req.body;
+    const result = await addInventoryItem(itemData);
+    
+    // Send SSE update for new item
+    sendSSEEvent('inventory.item.added', {
+      item: result
+    });
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Add inventory item error:', error);
+    res.status(500).json({ error: 'Failed to add inventory item' });
+  }
+});
+
+app.get('/api/inventory/movements', authenticateUser, (req, res) => {
+  const { itemId, limit } = req.query;
+  const movements = getInventoryMovements(itemId, parseInt(limit) || 50);
+  res.json(movements);
+});
+
+app.post('/api/inventory/reorder', authenticateUser, async (req, res) => {
+  try {
+    const { itemId, quantity, supplier } = req.body;
+    const result = await createReorderRequest(itemId, quantity, supplier);
+    
+    // Send SSE update for reorder request
+    sendSSEEvent('inventory.reorder.created', {
+      itemId,
+      quantity,
+      supplier,
+      orderId: result.orderId
+    });
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Reorder request error:', error);
+    res.status(500).json({ error: 'Failed to create reorder request' });
+  }
+});
+
+app.get('/api/inventory/alerts', authenticateUser, (req, res) => {
+  const alerts = getInventoryAlerts();
+  res.json(alerts);
+});
+
+app.post('/api/inventory/alert/resolve', authenticateUser, async (req, res) => {
+  try {
+    const { alertId, resolution } = req.body;
+    const result = await resolveInventoryAlert(alertId, resolution);
+    res.json(result);
+  } catch (error) {
+    console.error('Alert resolution error:', error);
+    res.status(500).json({ error: 'Failed to resolve alert' });
+  }
+});
+
+// Data Import APIs - Microsoft Graph Integration  
+app.post('/api/data/import/microsoft', authenticateUser, async (req, res) => {
+  try {
+    const { microsoftAccessToken, fileId, worksheetName, dataType, options } = req.body;
+    
+    // Import Microsoft Graph service
+    const { default: microsoftGraphService } = await import('./services/microsoftGraphService.js');
+    
+    // Download and parse Excel data
+    const excelData = await microsoftGraphService.downloadAndParseExcelFile(
+      microsoftAccessToken, 
+      fileId, 
+      options.isSharePoint, 
+      options.siteId
+    );
+    
+    // Process the specific worksheet
+    const worksheetData = excelData[worksheetName];
+    if (!worksheetData) {
+      return res.status(400).json({ error: `Worksheet '${worksheetName}' not found` });
+    }
+    
+    // Process manufacturing data
+    const processedData = microsoftGraphService.processManufacturingData(worksheetData, dataType);
+    
+    // Validate data structure
+    const requiredFields = getRequiredFields(dataType);
+    const validation = microsoftGraphService.validateManufacturingData(processedData, requiredFields);
+    
+    if (!validation.isValid && !options.skipValidation) {
+      return res.status(400).json({ 
+        error: 'Data validation failed', 
+        validation 
+      });
+    }
+    
+    // Store the imported data
+    const importResult = await storeImportedData(dataType, processedData, {
+      source: 'microsoft',
+      fileId,
+      worksheetName,
+      importedBy: req.user.id,
+      validation
+    });
+    
+    res.json({
+      success: true,
+      importResult,
+      validation,
+      recordsImported: processedData.length
+    });
+    
+  } catch (error) {
+    console.error('Microsoft import error:', error);
+    res.status(500).json({ error: 'Failed to import Microsoft data' });
+  }
+});
+
+app.post('/api/data/import/file', authenticateUser, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    
+    const { dataType } = req.body;
+    const file = req.file;
+    
+    // Parse uploaded Excel file
+    const { default: XLSX } = await import('xlsx');
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    
+    // Process first worksheet by default
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    
+    if (jsonData.length < 2) {
+      return res.status(400).json({ error: 'File must contain header row and at least one data row' });
+    }
+    
+    const worksheetData = {
+      headers: jsonData[0],
+      data: jsonData.slice(1).filter(row => row.some(cell => cell !== null && cell !== ''))
+    };
+    
+    // Import Microsoft Graph service for processing
+    const { default: microsoftGraphService } = await import('./services/microsoftGraphService.js');
+    const processedData = microsoftGraphService.processManufacturingData(worksheetData, dataType);
+    
+    // Validate data
+    const requiredFields = getRequiredFields(dataType);
+    const validation = microsoftGraphService.validateManufacturingData(processedData, requiredFields);
+    
+    if (!validation.isValid) {
+      return res.status(400).json({ 
+        error: 'Data validation failed', 
+        validation 
+      });
+    }
+    
+    // Store the imported data
+    const importResult = await storeImportedData(dataType, processedData, {
+      source: 'file',
+      filename: file.originalname,
+      importedBy: req.user.id,
+      validation
+    });
+    
+    res.json({
+      success: true,
+      importResult,
+      validation,
+      recordsImported: processedData.length
+    });
+    
+  } catch (error) {
+    console.error('File import error:', error);
+    res.status(500).json({ error: 'Failed to import file data' });
+  }
+});
+
+app.get('/api/data/microsoft/files', authenticateUser, async (req, res) => {
+  try {
+    const { microsoftAccessToken, includeSharePoint } = req.query;
+    
+    const { default: microsoftGraphService } = await import('./services/microsoftGraphService.js');
+    
+    let files = [];
+    
+    // Get OneDrive files
+    const oneDriveFiles = await microsoftGraphService.getOneDriveFiles(microsoftAccessToken);
+    files = files.concat(oneDriveFiles.map(file => ({ ...file, source: 'onedrive' })));
+    
+    // Get SharePoint files if requested
+    if (includeSharePoint === 'true') {
+      try {
+        const sites = await microsoftGraphService.getSharePointSites(microsoftAccessToken);
+        
+        for (const site of sites.slice(0, 5)) { // Limit to first 5 sites
+          const sharePointFiles = await microsoftGraphService.getSharePointExcelFiles(
+            microsoftAccessToken, 
+            site.id
+          );
+          
+          files = files.concat(sharePointFiles.map(file => ({ 
+            ...file, 
+            source: 'sharepoint',
+            siteName: site.name,
+            siteId: site.id 
+          })));
+        }
+      } catch (error) {
+        console.warn('SharePoint access limited:', error.message);
+      }
+    }
+    
+    res.json({ files });
+    
+  } catch (error) {
+    console.error('Error fetching Microsoft files:', error);
+    res.status(500).json({ error: 'Failed to fetch Microsoft files' });
+  }
+});
+
+app.post('/api/data/microsoft/worksheets', authenticateUser, async (req, res) => {
+  try {
+    const { microsoftAccessToken, fileId, isSharePoint, siteId } = req.body;
+    
+    const { default: microsoftGraphService } = await import('./services/microsoftGraphService.js');
+    const worksheets = await microsoftGraphService.getExcelWorksheets(
+      microsoftAccessToken, 
+      fileId, 
+      isSharePoint, 
+      siteId
+    );
+    
+    res.json({ worksheets });
+    
+  } catch (error) {
+    console.error('Error fetching worksheets:', error);
+    res.status(500).json({ error: 'Failed to fetch worksheets' });
+  }
+});
+
+app.post('/api/data/preview', authenticateUser, async (req, res) => {
+  try {
+    const { microsoftAccessToken, fileId, worksheetName, options } = req.body;
+    
+    const { default: microsoftGraphService } = await import('./services/microsoftGraphService.js');
+    const previewData = await microsoftGraphService.getExcelWorkbookData(
+      microsoftAccessToken,
+      fileId,
+      worksheetName,
+      options.isSharePoint,
+      options.siteId
+    );
+    
+    // Limit preview to specified number of rows
+    const previewRows = options.previewRows || 10;
+    const limitedData = {
+      ...previewData,
+      data: previewData.data.slice(0, previewRows)
+    };
+    
+    res.json({ 
+      preview: limitedData,
+      totalRows: previewData.data.length 
+    });
+    
+  } catch (error) {
+    console.error('Preview error:', error);
+    res.status(500).json({ error: 'Failed to generate preview' });
+  }
+});
+
+app.get('/api/data/import/history', authenticateUser, async (req, res) => {
+  try {
+    const { limit = 50 } = req.query;
+    const history = await getImportHistory(req.user.id, parseInt(limit));
+    res.json({ history });
+  } catch (error) {
+    console.error('Import history error:', error);
+    res.status(500).json({ error: 'Failed to fetch import history' });
   }
 });
 
@@ -1222,9 +1544,757 @@ function calculateProductionMetrics(range = 'today') {
   return calculateOverallProductionMetrics(range);
 }
 
+// Enhanced Quality Control Functions
+function getQualityControlData(batch = 'all', testType = 'all') {
+  const baseData = generateQualityBaseData();
+  
+  // Filter by batch if specified
+  if (batch !== 'all') {
+    baseData.activeBatches = baseData.activeBatches.filter(b => b.id === batch);
+    baseData.recentTests = baseData.recentTests.filter(t => t.batchId === batch);
+  }
+  
+  // Filter by test type if specified  
+  if (testType !== 'all') {
+    baseData.recentTests = baseData.recentTests.filter(t => 
+      t.category && t.category.toLowerCase() === testType.toLowerCase()
+    );
+  }
+  
+  return baseData;
+}
+
+function generateQualityBaseData() {
+  const currentTime = new Date();
+  
+  return {
+    overallPassRate: 98.7,
+    passRateChange: 0.5,
+    testsCompleted: Math.floor(Math.random() * 50) + 120,
+    testsCompletedChange: Math.floor(Math.random() * 20) + 5,
+    pendingTests: Math.floor(Math.random() * 10) + 5,
+    pendingTestsChange: Math.floor(Math.random() * 5) + 1,
+    failedTests: Math.floor(Math.random() * 5) + 1,
+    failedTestsChange: Math.floor(Math.random() * 3),
+    recentTests: [
+      {
+        id: 'QC-001',
+        testName: 'pH Analysis',
+        category: 'chemical',
+        batchId: '2024-001',
+        status: Math.random() > 0.1 ? 'passed' : 'failed',
+        result: (Math.random() * 1.4 + 6.3).toFixed(1),
+        specification: '6.5-7.2',
+        technician: 'Sarah Johnson',
+        completedAt: new Date(currentTime - Math.random() * 8 * 60 * 60 * 1000).toISOString(),
+        priority: 'high'
+      },
+      {
+        id: 'QC-002',
+        testName: 'Microbiological Count',
+        category: 'microbiological',
+        batchId: '2024-002',
+        status: Math.random() > 0.05 ? 'passed' : 'failed',
+        result: Math.random() > 0.9 ? Math.floor(Math.random() * 50) + ' CFU/ml' : '<10 CFU/ml',
+        specification: '<100 CFU/ml',
+        technician: 'Mike Brown',
+        completedAt: new Date(currentTime - Math.random() * 12 * 60 * 60 * 1000).toISOString(),
+        priority: 'high'
+      },
+      {
+        id: 'QC-003',
+        testName: 'Alcohol Content',
+        category: 'chemical',
+        batchId: '2024-001',
+        status: Math.random() > 0.15 ? 'passed' : 'failed',
+        result: (Math.random() * 1.0 + 11.8).toFixed(1) + '%',
+        specification: '12.0-12.5%',
+        technician: 'Lisa Davis',
+        completedAt: new Date(currentTime - Math.random() * 16 * 60 * 60 * 1000).toISOString(),
+        priority: 'medium'
+      },
+      {
+        id: 'QC-004',
+        testName: 'Viscosity Test',
+        category: 'physical',
+        batchId: '2024-003',
+        status: 'testing',
+        result: 'Pending',
+        specification: '1.2-1.8 cP',
+        technician: 'John Wilson',
+        completedAt: null,
+        priority: 'low'
+      }
+    ],
+    activeBatches: [
+      {
+        id: '2024-001',
+        product: 'GABA Red 500ml',
+        qcStatus: 'testing',
+        testsCompleted: Math.floor(Math.random() * 3) + 3,
+        totalTests: 6,
+        startDate: new Date(currentTime - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        priority: 'high'
+      },
+      {
+        id: '2024-002',
+        product: 'GABA Clear 500ml',
+        qcStatus: Math.random() > 0.3 ? 'approved' : 'testing',
+        testsCompleted: Math.floor(Math.random() * 2) + 4,
+        totalTests: 5,
+        startDate: new Date(currentTime - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        priority: 'medium'
+      },
+      {
+        id: '2024-003',
+        product: 'GABA Red 250ml',
+        qcStatus: 'pending',
+        testsCompleted: Math.floor(Math.random() * 2) + 1,
+        totalTests: 5,
+        startDate: new Date(currentTime - 0.5 * 24 * 60 * 60 * 1000).toISOString(),
+        priority: 'low'
+      }
+    ],
+    alerts: generateQualityAlerts(),
+    testSchedule: generateTestSchedule(),
+    trends: generateQualityTrends()
+  };
+}
+
+function generateQualityAlerts() {
+  const alerts = [
+    {
+      id: 'qa-alert-001',
+      title: 'pH Level Critical',
+      description: 'Batch 2024-001 pH level is outside acceptable range (7.8 vs 6.5-7.2)',
+      severity: 'high',
+      batchId: '2024-001',
+      time: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+      status: 'open',
+      category: 'chemical'
+    },
+    {
+      id: 'qa-alert-002',
+      title: 'Test Equipment Calibration Due',
+      description: 'pH meter #3 requires calibration - last calibrated 90 days ago',
+      severity: 'medium',
+      time: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      status: 'open',
+      category: 'equipment'
+    },
+    {
+      id: 'qa-alert-003',
+      title: 'Sample Storage Temperature',
+      description: 'Cold storage unit temperature exceeded limit (8°C vs <5°C)',
+      severity: 'medium',
+      time: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+      status: 'investigating',
+      category: 'storage'
+    }
+  ];
+  
+  return alerts.filter(() => Math.random() > 0.3); // Show random subset
+}
+
+function generateTestSchedule() {
+  const currentTime = new Date();
+  return [
+    {
+      id: 'sched-001',
+      testName: 'Microbiological Analysis',
+      category: 'microbiological',
+      batchId: '2024-003',
+      priority: 'urgent',
+      scheduledTime: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000).toISOString(),
+      estimatedDuration: '4 hours',
+      assignedTechnician: 'Mike Brown',
+      status: 'scheduled'
+    },
+    {
+      id: 'sched-002',
+      testName: 'Chemical Stability',
+      category: 'chemical',
+      batchId: '2024-004',
+      priority: 'high',
+      scheduledTime: new Date(currentTime.getTime() + 18 * 60 * 60 * 1000).toISOString(),
+      estimatedDuration: '2 hours',
+      assignedTechnician: 'Sarah Johnson',
+      status: 'scheduled'
+    },
+    {
+      id: 'sched-003',
+      testName: 'Sensory Evaluation',
+      category: 'physical',
+      batchId: '2024-002',
+      priority: 'normal',
+      scheduledTime: new Date(currentTime.getTime() + 26 * 60 * 60 * 1000).toISOString(),
+      estimatedDuration: '1 hour',
+      assignedTechnician: 'Lisa Davis',
+      status: 'scheduled'
+    }
+  ];
+}
+
+function generateQualityTrends() {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+  return months.map(month => ({
+    month,
+    passRate: Math.floor(Math.random() * 5) + 95,
+    testsCompleted: Math.floor(Math.random() * 50) + 100,
+    failureRate: Math.floor(Math.random() * 3) + 1,
+    avgTestTime: Math.floor(Math.random() * 30) + 60 // minutes
+  }));
+}
+
+async function submitTestResult(testData) {
+  // Simulate test result processing
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  const isPass = Math.random() > 0.15; // 85% pass rate
+  
+  return {
+    testId: testData.testId,
+    status: isPass ? 'passed' : 'failed',
+    result: testData.result,
+    specification: testData.specification,
+    technician: testData.technician,
+    completedAt: new Date().toISOString(),
+    confidence: Math.random() * 0.1 + 0.9, // 90-100% confidence
+    notes: testData.notes || '',
+    success: true
+  };
+}
+
+async function approveBatch(batchId, approvalData) {
+  // Simulate batch approval process
+  await new Promise(resolve => setTimeout(resolve, 800));
+  
+  return {
+    batchId,
+    status: 'approved',
+    approvedBy: approvalData.approvedBy,
+    approvalDate: new Date().toISOString(),
+    notes: approvalData.notes || '',
+    certificateNumber: `CERT-${batchId}-${Date.now()}`,
+    success: true
+  };
+}
+
+async function resolveQualityAlert(alertId, resolution) {
+  // Simulate alert resolution
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  return {
+    alertId,
+    status: 'resolved',
+    resolution: resolution.action,
+    resolvedBy: resolution.resolvedBy,
+    resolvedAt: new Date().toISOString(),
+    notes: resolution.notes || '',
+    success: true
+  };
+}
+
+function getTestSchedule() {
+  return generateTestSchedule();
+}
+
+async function scheduleTest(testData) {
+  // Simulate test scheduling
+  await new Promise(resolve => setTimeout(resolve, 600));
+  
+  return {
+    id: `sched-${Date.now()}`,
+    testName: testData.testName,
+    category: testData.category,
+    batchId: testData.batchId,
+    priority: testData.priority || 'normal',
+    scheduledTime: testData.scheduledTime,
+    estimatedDuration: testData.estimatedDuration || '2 hours',
+    assignedTechnician: testData.assignedTechnician,
+    status: 'scheduled',
+    createdAt: new Date().toISOString(),
+    success: true
+  };
+}
+
+function calculateNewPassRate() {
+  // Simulate pass rate calculation based on recent tests
+  return Math.floor(Math.random() * 5) + 95; // 95-100%
+}
+
+// Data Import and Storage Functions
+function getRequiredFields(dataType) {
+  const fieldMap = {
+    'production': ['date', 'line', 'product', 'quantity'],
+    'quality': ['batch_id', 'test_name', 'result'],
+    'inventory': ['item_name', 'sku', 'quantity'], 
+    'financial': ['date', 'account', 'amount']
+  };
+  
+  return fieldMap[dataType] || fieldMap['production'];
+}
+
+async function storeImportedData(dataType, processedData, metadata) {
+  const importRecord = {
+    id: `import_${Date.now()}`,
+    dataType,
+    recordCount: processedData.length,
+    source: metadata.source,
+    importedAt: new Date().toISOString(),
+    importedBy: metadata.importedBy,
+    validation: metadata.validation,
+    status: 'completed'
+  };
+  
+  // Store in manufacturingData based on type
+  if (!manufacturingData[dataType]) {
+    manufacturingData[dataType] = [];
+  }
+  
+  // Add import metadata to each record
+  const enrichedData = processedData.map(record => ({
+    ...record,
+    importId: importRecord.id,
+    importedAt: importRecord.importedAt
+  }));
+  
+  // Replace existing data or append based on data type
+  if (dataType === 'production' || dataType === 'quality') {
+    // For time-series data, append new records
+    manufacturingData[dataType] = [...manufacturingData[dataType], ...enrichedData];
+  } else {
+    // For master data like inventory, replace existing
+    manufacturingData[dataType] = enrichedData;
+  }
+  
+  // Update last updated timestamp
+  manufacturingData.lastUpdated = new Date().toISOString();
+  
+  // Store import history (in production, this would go to database)
+  if (!manufacturingData.importHistory) {
+    manufacturingData.importHistory = [];
+  }
+  manufacturingData.importHistory.unshift(importRecord);
+  
+  // Keep only last 100 import records
+  if (manufacturingData.importHistory.length > 100) {
+    manufacturingData.importHistory = manufacturingData.importHistory.slice(0, 100);
+  }
+  
+  console.log(`Stored ${enrichedData.length} ${dataType} records from ${metadata.source} import`);
+  
+  return importRecord;
+}
+
+async function getImportHistory(userId, limit = 50) {
+  if (!manufacturingData.importHistory) {
+    return [];
+  }
+  
+  return manufacturingData.importHistory
+    .filter(record => record.importedBy === userId)
+    .slice(0, limit)
+    .map(record => ({
+      ...record,
+      canDelete: record.status === 'completed'
+    }));
+}
+
+// Remove mock data fallbacks and enforce real data only
+function getEnhancedProductionData(line = 'all', range = 'today') {
+  // Check if we have real production data
+  if (!manufacturingData.production || manufacturingData.production.length === 0) {
+    throw new Error('No production data available. Please import production data to view dashboard.');
+  }
+  
+  let productionRecords = manufacturingData.production;
+  
+  // Filter by line if specified
+  if (line !== 'all') {
+    productionRecords = productionRecords.filter(record => {
+      const lineField = record.line || record.Line || record.production_line;
+      return lineField === line;
+    });
+  }
+  
+  // Filter by time range
+  const now = new Date();
+  let startDate;
+  
+  switch (range) {
+    case 'today':
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      break;
+    case 'week':
+      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      break;
+    case 'month':
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      break;
+    default:
+      startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  }
+  
+  const filteredRecords = productionRecords.filter(record => {
+    const recordDate = new Date(record.date || record.Date || record.production_date);
+    return recordDate >= startDate;
+  });
+  
+  // Calculate metrics from real data
+  const metrics = calculateRealProductionMetrics(filteredRecords);
+  const lines = extractProductionLines(filteredRecords);
+  
+  return {
+    ...metrics,
+    lines,
+    currentBatches: extractCurrentBatches(filteredRecords),
+    qualityAlerts: getQualityAlertsFromData(),
+    maintenanceSchedule: getMaintenanceFromData(),
+    trends: calculateProductionTrends(filteredRecords, range),
+    dataSource: 'imported_data',
+    lastUpdated: manufacturingData.lastUpdated,
+    recordCount: filteredRecords.length
+  };
+}
+
+function calculateRealProductionMetrics(records) {
+  if (records.length === 0) {
+    return {
+      overallEfficiency: 0,
+      efficiencyChange: 0,
+      unitsProduced: 0,
+      unitsChange: 0,
+      qualityRate: 0,
+      qualityChange: 0,
+      downtimeMinutes: 0,
+      downtimeChange: 0
+    };
+  }
+  
+  // Calculate efficiency
+  const efficiencyValues = records
+    .map(r => parseFloat(r.efficiency || r.Efficiency || r.line_efficiency || 0))
+    .filter(v => v > 0);
+  
+  const avgEfficiency = efficiencyValues.length > 0 
+    ? efficiencyValues.reduce((a, b) => a + b, 0) / efficiencyValues.length 
+    : 0;
+  
+  // Calculate total units produced
+  const totalUnits = records
+    .map(r => parseFloat(r.quantity || r.Quantity || r.units_produced || 0))
+    .reduce((a, b) => a + b, 0);
+  
+  // Calculate quality rate
+  const qualityValues = records
+    .map(r => parseFloat(r.quality_rate || r['Quality Rate'] || r.pass_rate || 0))
+    .filter(v => v > 0);
+    
+  const avgQuality = qualityValues.length > 0 
+    ? qualityValues.reduce((a, b) => a + b, 0) / qualityValues.length 
+    : 0;
+  
+  // Calculate downtime
+  const downtimeValues = records
+    .map(r => parseFloat(r.downtime || r.Downtime || r.downtime_minutes || 0))
+    .reduce((a, b) => a + b, 0);
+  
+  return {
+    overallEfficiency: Math.round(avgEfficiency * 10) / 10,
+    efficiencyChange: 0, // Would need historical comparison
+    unitsProduced: Math.round(totalUnits),
+    unitsChange: 0, // Would need historical comparison  
+    qualityRate: Math.round(avgQuality * 10) / 10,
+    qualityChange: 0, // Would need historical comparison
+    downtimeMinutes: Math.round(downtimeValues),
+    downtimeChange: 0 // Would need historical comparison
+  };
+}
+
+function extractProductionLines(records) {
+  const lineMap = new Map();
+  
+  records.forEach(record => {
+    const lineId = record.line || record.Line || record.production_line || 'unknown';
+    const lineName = record.line_name || record['Line Name'] || `Line ${lineId}`;
+    
+    if (!lineMap.has(lineId)) {
+      lineMap.set(lineId, {
+        id: lineId,
+        name: lineName,
+        status: 'running',
+        efficiency: 0,
+        outputRate: 0,
+        target: 0,
+        currentProduct: '',
+        recordCount: 0
+      });
+    }
+    
+    const line = lineMap.get(lineId);
+    line.recordCount++;
+    
+    // Aggregate data
+    const efficiency = parseFloat(record.efficiency || record.Efficiency || 0);
+    const output = parseFloat(record.quantity || record.Quantity || record.output_rate || 0);
+    const target = parseFloat(record.target || record.Target || record.target_quantity || 0);
+    
+    line.efficiency = ((line.efficiency * (line.recordCount - 1)) + efficiency) / line.recordCount;
+    line.outputRate += output;
+    line.target = Math.max(line.target, target);
+    line.currentProduct = record.product || record.Product || line.currentProduct;
+  });
+  
+  return Array.from(lineMap.values()).map(line => ({
+    ...line,
+    efficiency: Math.round(line.efficiency * 10) / 10,
+    outputRate: Math.round(line.outputRate),
+    target: Math.round(line.target)
+  }));
+}
+
+function extractCurrentBatches(records) {
+  const batchMap = new Map();
+  
+  records.forEach(record => {
+    const batchId = record.batch_id || record['Batch ID'] || record.batch || null;
+    if (!batchId) return;
+    
+    if (!batchMap.has(batchId)) {
+      batchMap.set(batchId, {
+        id: batchId,
+        product: record.product || record.Product || 'Unknown Product',
+        status: record.status || record.Status || 'processing',
+        completion: 0,
+        startTime: record.start_time || record['Start Time'] || new Date().toISOString(),
+        estimatedCompletion: record.estimated_completion || new Date().toISOString()
+      });
+    }
+    
+    const batch = batchMap.get(batchId);
+    const completion = parseFloat(record.completion || record.Completion || record['% Complete'] || 0);
+    batch.completion = Math.max(batch.completion, completion);
+  });
+  
+  return Array.from(batchMap.values());
+}
+
+function getQualityAlertsFromData() {
+  if (!manufacturingData.quality || manufacturingData.quality.length === 0) {
+    return [];
+  }
+  
+  // Extract recent quality issues from quality data
+  return manufacturingData.quality
+    .filter(record => {
+      const status = (record.status || record.Status || '').toLowerCase();
+      return status === 'failed' || status === 'fail' || status === 'alert';
+    })
+    .slice(0, 5)
+    .map(record => ({
+      id: `qa-${record.batch_id || 'unknown'}-${Date.now()}`,
+      title: record.test_name || record['Test Name'] || 'Quality Issue',
+      description: record.notes || record.Notes || `${record.test_name} failed specification`,
+      severity: 'high',
+      batchId: record.batch_id || record['Batch ID'],
+      time: record.test_date || record['Test Date'] || new Date().toISOString(),
+      status: 'open'
+    }));
+}
+
+function getMaintenanceFromData() {
+  // In a real implementation, this would come from maintenance data
+  // For now, return empty array since we're removing mock data
+  return [];
+}
+
+function calculateProductionTrends(records, range) {
+  if (records.length === 0) return [];
+  
+  // Group records by time period
+  const trends = [];
+  const sortedRecords = records.sort((a, b) => 
+    new Date(a.date || a.Date) - new Date(b.date || b.Date)
+  );
+  
+  // Simple trend calculation - would be more sophisticated in production
+  const timeGroups = new Map();
+  
+  sortedRecords.forEach(record => {
+    const date = new Date(record.date || record.Date);
+    const key = range === 'today' 
+      ? date.getHours() 
+      : range === 'week' 
+        ? date.getDay() 
+        : date.getDate();
+    
+    if (!timeGroups.has(key)) {
+      timeGroups.set(key, []);
+    }
+    timeGroups.get(key).push(record);
+  });
+  
+  Array.from(timeGroups.entries()).forEach(([key, groupRecords]) => {
+    const metrics = calculateRealProductionMetrics(groupRecords);
+    trends.push({
+      period: key,
+      efficiency: metrics.overallEfficiency,
+      production: metrics.unitsProduced,
+      quality: metrics.qualityRate
+    });
+  });
+  
+  return trends;
+}
+
 // Legacy function for backward compatibility
 function calculateProductionStatus() {
-  return calculateEnhancedProductionStatus();
+  return getEnhancedProductionData();
+}
+
+// Update quality control to use real data
+function getQualityControlData(batch = 'all', testType = 'all') {
+  if (!manufacturingData.quality || manufacturingData.quality.length === 0) {
+    throw new Error('No quality data available. Please import quality control data to view dashboard.');
+  }
+  
+  let qualityRecords = manufacturingData.quality;
+  
+  // Filter by batch if specified
+  if (batch !== 'all') {
+    qualityRecords = qualityRecords.filter(record => {
+      const batchId = record.batch_id || record['Batch ID'] || record.batch;
+      return batchId === batch;
+    });
+  }
+  
+  // Filter by test type if specified  
+  if (testType !== 'all') {
+    qualityRecords = qualityRecords.filter(record => {
+      const category = record.category || record.Category || record.test_type || '';
+      return category.toLowerCase() === testType.toLowerCase();
+    });
+  }
+  
+  return calculateQualityMetricsFromData(qualityRecords);
+}
+
+function calculateQualityMetricsFromData(records) {
+  const totalTests = records.length;
+  const passedTests = records.filter(r => 
+    (r.status || r.Status || '').toLowerCase() === 'passed' || 
+    (r.status || r.Status || '').toLowerCase() === 'pass'
+  ).length;
+  
+  const failedTests = records.filter(r => 
+    (r.status || r.Status || '').toLowerCase() === 'failed' || 
+    (r.status || r.Status || '').toLowerCase() === 'fail'
+  ).length;
+  
+  const pendingTests = totalTests - passedTests - failedTests;
+  
+  const overallPassRate = totalTests > 0 ? (passedTests / totalTests) * 100 : 0;
+  
+  return {
+    overallPassRate: Math.round(overallPassRate * 10) / 10,
+    passRateChange: 0, // Would need historical comparison
+    testsCompleted: totalTests,
+    testsCompletedChange: 0, // Would need historical comparison
+    pendingTests: pendingTests,
+    pendingTestsChange: 0, // Would need historical comparison
+    failedTests: failedTests,
+    failedTestsChange: 0, // Would need historical comparison
+    recentTests: records.slice(-10).map(formatQualityRecord),
+    activeBatches: extractActiveBatchesFromQuality(records),
+    alerts: getQualityAlertsFromData(),
+    testSchedule: [], // Would come from separate scheduling data
+    trends: calculateQualityTrends(records),
+    dataSource: 'imported_data',
+    lastUpdated: manufacturingData.lastUpdated
+  };
+}
+
+function formatQualityRecord(record) {
+  return {
+    id: record.id || `qc-${Date.now()}-${Math.random()}`,
+    testName: record.test_name || record['Test Name'] || 'Unknown Test',
+    category: record.category || record.Category || record.test_type || 'general',
+    batchId: record.batch_id || record['Batch ID'] || 'Unknown',
+    status: (record.status || record.Status || 'unknown').toLowerCase(),
+    result: record.result || record.Result || record.test_result || 'N/A',
+    specification: record.specification || record.Specification || record.spec || 'N/A',
+    technician: record.technician || record.Technician || record.tested_by || 'Unknown',
+    completedAt: record.test_date || record['Test Date'] || record.completed_at || new Date().toISOString(),
+    priority: record.priority || record.Priority || 'medium'
+  };
+}
+
+function extractActiveBatchesFromQuality(records) {
+  const batchMap = new Map();
+  
+  records.forEach(record => {
+    const batchId = record.batch_id || record['Batch ID'];
+    if (!batchId) return;
+    
+    if (!batchMap.has(batchId)) {
+      batchMap.set(batchId, {
+        id: batchId,
+        product: record.product || record.Product || 'Unknown Product',
+        qcStatus: 'testing',
+        testsCompleted: 0,
+        totalTests: 0,
+        startDate: new Date().toISOString(),
+        priority: 'medium'
+      });
+    }
+    
+    const batch = batchMap.get(batchId);
+    batch.totalTests++;
+    
+    const status = (record.status || record.Status || '').toLowerCase();
+    if (status === 'passed' || status === 'pass' || status === 'completed') {
+      batch.testsCompleted++;
+    }
+    
+    // Update QC status based on test results
+    if (batch.testsCompleted === batch.totalTests) {
+      batch.qcStatus = 'approved';
+    } else if (status === 'failed' || status === 'fail') {
+      batch.qcStatus = 'failed';
+    }
+  });
+  
+  return Array.from(batchMap.values());
+}
+
+function calculateQualityTrends(records) {
+  // Simple trend calculation - group by day and calculate pass rates
+  const dailyStats = new Map();
+  
+  records.forEach(record => {
+    const date = new Date(record.test_date || record['Test Date'] || Date.now());
+    const dayKey = date.toDateString();
+    
+    if (!dailyStats.has(dayKey)) {
+      dailyStats.set(dayKey, { total: 0, passed: 0 });
+    }
+    
+    const dayData = dailyStats.get(dayKey);
+    dayData.total++;
+    
+    const status = (record.status || record.Status || '').toLowerCase();
+    if (status === 'passed' || status === 'pass') {
+      dayData.passed++;
+    }
+  });
+  
+  return Array.from(dailyStats.entries()).map(([day, stats]) => ({
+    day,
+    passRate: stats.total > 0 ? (stats.passed / stats.total) * 100 : 0,
+    testsCompleted: stats.total,
+    failureRate: stats.total > 0 ? ((stats.total - stats.passed) / stats.total) * 100 : 0
+  }));
 }
 
 // Demand forecasting is now handled by aiAnalyticsService

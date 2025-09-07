@@ -4,6 +4,7 @@ import { useUser } from '@clerk/clerk-react';
 import { useSSE, useSSEEvent } from '../../hooks/useSSE';
 import { CardSkeleton } from '../LoadingStates';
 import { showErrorToast } from '../../utils/errorHandling';
+import { LineChart, BarChart, productionColors } from '../charts';
 import {
   Play, Pause, StopCircle, AlertTriangle, CheckCircle,
   TrendingUp, TrendingDown, Clock, Settings, RefreshCw,
@@ -430,17 +431,73 @@ const ProductionLineStatus = ({ data }) => {
   );
 };
 
-const ProductionTrends = ({ data: _data }) => {
+const ProductionTrends = ({ data }) => {
+  const chartData = {
+    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+    datasets: [
+      {
+        label: 'Efficiency %',
+        data: [88, 92, 94, 96, 95, 93, 94],
+        borderColor: productionColors.efficiency,
+        backgroundColor: productionColors.efficiency,
+        tension: 0.4,
+        fill: false,
+      },
+      {
+        label: 'Output Rate',
+        data: [2200, 2350, 2450, 2500, 2480, 2420, 2450],
+        borderColor: productionColors.output,
+        backgroundColor: productionColors.output,
+        tension: 0.4,
+        fill: false,
+        yAxisID: 'y1',
+      }
+    ]
+  };
+
+  const chartOptions = {
+    plugins: {
+      title: {
+        display: true,
+        text: 'Production Efficiency & Output Trends'
+      },
+      legend: {
+        position: 'top',
+      },
+    },
+    scales: {
+      y: {
+        type: 'linear',
+        display: true,
+        position: 'left',
+        title: {
+          display: true,
+          text: 'Efficiency (%)'
+        },
+        min: 80,
+        max: 100,
+      },
+      y1: {
+        type: 'linear',
+        display: true,
+        position: 'right',
+        title: {
+          display: true,
+          text: 'Output (units/hr)'
+        },
+        grid: {
+          drawOnChartArea: false,
+        },
+        min: 2000,
+        max: 2600,
+      },
+    },
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Production Trends</h3>
-      <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-        <div className="text-center text-gray-500">
-          <Activity className="w-12 h-12 mx-auto mb-2" />
-          <p>Real-time production chart</p>
-          <p className="text-sm">(Chart.js implementation)</p>
-        </div>
-      </div>
+      <LineChart data={chartData} options={chartOptions} height={300} />
     </div>
   );
 };

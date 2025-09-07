@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ManufacturingDashboard from './components/dashboard/ManufacturingDashboard';
 import './index.css';
 
 // Simple loading spinner

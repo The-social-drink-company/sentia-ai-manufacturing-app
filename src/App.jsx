@@ -1,12 +1,15 @@
 import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ClerkProvider, SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
+import { SessionProvider } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { SSEProvider } from './context/SSEProvider';
 import { MicrosoftAuthProvider } from './contexts/MicrosoftAuthContext';
 import { setupGlobalErrorHandling } from './utils/errorHandling';
 import ErrorBoundary from './components/ErrorBoundary';
+import AuthGuard from './components/auth/AuthGuard';
+import SignInPage from './pages/auth/SignInPage';
+import LoadingSpinner from './components/LoadingSpinner';
 import './index.css';
 
 // Import components
@@ -14,7 +17,6 @@ import Dashboard from './components/Dashboard';
 import AdminPanel from './components/AdminPanel';
 import WorkingCapital from './components/WorkingCapital';
 import LandingPage from './components/LandingPage';
-import LoadingSpinner from './components/LoadingSpinner';
 
 // Manufacturing components
 import ProductionTracking from './components/Manufacturing/ProductionTracking';
@@ -31,8 +33,7 @@ import TestMonitorDashboard from './pages/TestMonitorDashboard';
 // Layout components
 import EnterpriseLayout from './components/layout/EnterpriseLayout';
 
-// Clerk configuration
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+// Query client configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -48,130 +49,148 @@ function App() {
     setupGlobalErrorHandling();
   }, []);
 
-  if (!clerkPubKey) {
-    // eslint-disable-next-line no-console
-    console.warn("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable - using fallback authentication");
-    // Fallback authentication bypass for deployment
-    return (
+  return (
+    <SessionProvider
+      session={null}
+      basePath="/api/auth"
+      refetchInterval={5 * 60} // Refetch session every 5 minutes
+      refetchOnWindowFocus={true}
+    >
       <QueryClientProvider client={queryClient}>
         <MicrosoftAuthProvider>
           <SSEProvider>
             <ErrorBoundary>
               <Router>
-                <div className="min-h-screen bg-gray-50">
-                  {/* Fallback header without Clerk */}
-                  <header className="bg-white shadow-sm border-b">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                      <div className="flex justify-between items-center py-4">
-                        <div className="flex items-center space-x-4">
-                          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            🚀 SENTIA Dashboard
-                          </h1>
-                          <span className="text-sm text-gray-500">Manufacturing Intelligence Platform</span>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                          <span className="text-sm text-gray-500">Development Mode</span>
-                        </div>
-                      </div>
-                    </div>
-                  </header>
+                <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                   <Suspense fallback={<LoadingSpinner />}>
                     <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/admin" element={<AdminPanel />} />
-                      <Route path="/working-capital" element={<WorkingCapital />} />
-                      <Route path="/production" element={<ProductionTracking />} />
-                      <Route path="/quality" element={<QualityControl />} />
-                      <Route path="/inventory" element={<InventoryManagement />} />
-                      <Route path="/data-import" element={<FileImportSystem />} />
-                      <Route path="/ai-analytics" element={<AIAnalyticsDashboard />} />
-                      <Route path="/forecasting" element={<DemandForecasting />} />
-                      <Route path="/analytics" element={<AIAnalyticsDashboard />} />
-                      <Route path="/what-if" element={<WhatIfAnalysis />} />
-                      <Route path="/test-monitor" element={<TestMonitorDashboard />} />
+                      {/* Public routes */}
+                      <Route path="/auth/signin" element={<SignInPage />} />
+                      <Route path="/auth/error" element={<div>Authentication Error</div>} />
+                      
+                      {/* Protected routes */}
+                      <Route path="/" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <LandingPage />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+                      
+                      <Route path="/dashboard" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <Dashboard />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/admin" element={
+                        <AuthGuard requiredRole="admin">
+                          <EnterpriseLayout>
+                            <AdminPanel />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/working-capital" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <WorkingCapital />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/production" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <ProductionTracking />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/quality" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <QualityControl />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/inventory" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <InventoryManagement />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/data-import" element={
+                        <AuthGuard requiredRole="data_manager">
+                          <EnterpriseLayout>
+                            <FileImportSystem />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/ai-analytics" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <AIAnalyticsDashboard />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/forecasting" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <DemandForecasting />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/what-if" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <WhatIfAnalysis />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      <Route path="/test-monitor" element={
+                        <AuthGuard requiredRole="admin">
+                          <EnterpriseLayout>
+                            <TestMonitorDashboard />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
+
+                      {/* Fallback route */}
+                      <Route path="*" element={
+                        <AuthGuard>
+                          <EnterpriseLayout>
+                            <Dashboard />
+                          </EnterpriseLayout>
+                        </AuthGuard>
+                      } />
                     </Routes>
                   </Suspense>
+                  
+                  {/* Toast notifications */}
+                  <Toaster 
+                    position="top-right"
+                    toastOptions={{
+                      duration: 4000,
+                      className: 'dark:bg-gray-800 dark:text-white',
+                    }}
+                  />
                 </div>
               </Router>
-              <Toaster position="top-right" />
             </ErrorBoundary>
           </SSEProvider>
         </MicrosoftAuthProvider>
       </QueryClientProvider>
-    );
-  }
-
-  return (
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <QueryClientProvider client={queryClient}>
-        <MicrosoftAuthProvider>
-        <SSEProvider>
-        <ErrorBoundary>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            {/* Signed Out - Landing Page */}
-            <SignedOut>
-              {/* Simple header for signed out users */}
-              <header className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="flex justify-between items-center py-4">
-                    <div className="flex items-center space-x-4">
-                      <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        🚀 SENTIA Dashboard
-                      </h1>
-                      <span className="text-sm text-gray-500">Manufacturing Intelligence Platform</span>
-                    </div>
-                    
-                    <div className="flex items-center space-x-4">
-                      <SignInButton>
-                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                          Sign In
-                        </button>
-                      </SignInButton>
-                    </div>
-                  </div>
-                </div>
-              </header>
-              <LandingPage />
-            </SignedOut>
-            
-            {/* Public Test Monitor Route - No Auth Required */}
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
-                <Route path="/test-monitor" element={<TestMonitorDashboard />} />
-              </Routes>
-            </Suspense>
-            
-            {/* Signed In - Enterprise Layout with Navigation */}
-            <SignedIn>
-              <EnterpriseLayout>
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/admin" element={<AdminPanel />} />
-                    <Route path="/working-capital" element={<WorkingCapital />} />
-                    <Route path="/production" element={<ProductionTracking />} />
-                    <Route path="/quality" element={<QualityControl />} />
-                    <Route path="/inventory" element={<InventoryManagement />} />
-                    <Route path="/data-import" element={<FileImportSystem />} />
-                    <Route path="/ai-analytics" element={<AIAnalyticsDashboard />} />
-                    <Route path="/forecasting" element={<DemandForecasting />} />
-                    <Route path="/analytics" element={<AIAnalyticsDashboard />} />
-                    <Route path="/what-if" element={<WhatIfAnalysis />} />
-                  </Routes>
-                </Suspense>
-              </EnterpriseLayout>
-            </SignedIn>
-          </div>
-        </Router>
-        <Toaster position="top-right" />
-        </ErrorBoundary>
-        </SSEProvider>
-        </MicrosoftAuthProvider>
-      </QueryClientProvider>
-    </ClerkProvider>
+    </SessionProvider>
   );
 }
 

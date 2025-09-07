@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+import { useSession } from 'next-auth/react';
 import { 
   Users, Settings, Database, Activity, AlertTriangle,
   Plus, Edit, Trash2, Save, X, Search, Filter,
   Shield, Key, Globe, Server, Cpu, HardDrive
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import AdminUsers from './admin/pages/AdminUsers';
 
 const AdminPanel = () => {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [activeTab, setActiveTab] = useState('users');
   const queryClient = useQueryClient();
 
@@ -54,7 +56,7 @@ const AdminPanel = () => {
 
         {/* Tab Content */}
         <div className="bg-white shadow rounded-lg">
-          {activeTab === 'users' && <UsersTab />}
+          {activeTab === 'users' && <AdminUsers />}
           {activeTab === 'system' && <SystemTab />}
           {activeTab === 'database' && <DatabaseTab />}
           {activeTab === 'monitoring' && <MonitoringTab />}
@@ -65,145 +67,6 @@ const AdminPanel = () => {
   );
 };
 
-const UsersTab = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAddUser, setShowAddUser] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-
-  // Fetch REAL users from Clerk API - no mock data allowed
-  const { data: clerkUsers = [], isLoading, error } = useQuery({
-    queryKey: ['clerk-users'],
-    queryFn: async () => {
-      const response = await fetch('/api/admin/users', {
-        headers: {
-          'Authorization': `Bearer ${await user?.getToken?.()}`
-        }
-      });
-      if (!response.ok) throw new Error('Failed to fetch users');
-      return response.json();
-    },
-    enabled: !!user
-  });
-
-  const filteredUsers = clerkUsers.filter(user =>
-    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Show loading state while fetching real user data
-  if (isLoading) {
-    return (
-      <div className="p-6 flex items-center justify-center">
-        <div className="text-center">
-          <p>Loading real user data...</p>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mt-2"></div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show error state if API fails
-  if (error) {
-    return (
-      <div className="p-6 text-center">
-        <p className="text-red-600">Error loading users: {error.message}</p>
-        <p className="text-sm text-gray-500 mt-2">Please ensure Clerk API is properly configured</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">User Management</h2>
-        <button 
-          onClick={() => setShowAddUser(true)}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add User
-        </button>
-      </div>
-
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
-
-      {/* Users Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredUsers.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                    <div className="text-sm text-gray-500">{user.email}</div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    user.role === 'Admin' ? 'bg-purple-100 text-purple-800' :
-                    user.role === 'Manager' ? 'bg-blue-100 text-blue-800' :
-                    user.role === 'Operator' ? 'bg-green-100 text-green-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {user.role}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    user.status === 'Active' ? 'bg-green-100 text-green-800' :
-                    user.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {user.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {user.lastLogin}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={() => setSelectedUser(user)}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="text-red-600 hover:text-red-900">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
 
 const SystemTab = () => {
   const systemStats = {

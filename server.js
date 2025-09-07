@@ -8,10 +8,9 @@ import ExcelJS from 'exceljs';
 import csv from 'csv-parser';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-// import { createClerkClient } from '@clerk/clerk-sdk-node'; // Disabled - using NextAuth
 import fetch from 'node-fetch';
-// import NextAuth from 'next-auth';
-// import { authOptions } from './lib/auth-config.js'; // Temporarily disabled - working on auth config
+import NextAuth from 'next-auth';
+import { authOptions, getSession } from './lib/auth.js';
 import xeroService from './services/xeroService.js';
 import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
@@ -24,7 +23,7 @@ const PORT = process.env.PORT || 5000;
 // Server restarted
 
 // Initialize NextAuth handler
-// const authHandler = NextAuth(authOptions); // Temporarily disabled - working on auth config
+const authHandler = NextAuth(authOptions);
 
 // File upload configuration
 const storage = multer.diskStorage({
@@ -135,19 +134,24 @@ function sendSSEEvent(eventType, data) {
 }
 
 // NextAuth.js authentication routes
-// app.use('/api/auth', authHandler); // Temporarily disabled - working on auth config
+app.use('/api/auth/*', authHandler);
 
 // Authentication middleware for NextAuth
 const authenticateUser = async (req, res, next) => {
-  // For now, skip authentication in development
-  // In production, you would verify the session here
-  req.userId = 'demo-user';
-  req.user = { 
-    id: 'demo-user', 
-    email: 'admin@app.sentiaspirits.com', 
-    role: 'admin' 
-  };
-  next();
+  try {
+    const session = await getSession({ req });
+    
+    if (!session || !session.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    req.userId = session.user.id;
+    req.user = session.user;
+    next();
+  } catch (error) {
+    logError('Authentication middleware error', error);
+    return res.status(401).json({ error: 'Authentication failed' });
+  }
 };
 
 // Health check (enhanced with enterprise services status)

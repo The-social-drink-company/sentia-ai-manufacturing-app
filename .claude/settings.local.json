@@ -90,7 +90,13 @@
       "Bash(netstat:*)",
       "Bash(git rev-parse:*)",
       "Bash(npm start)",
-      "Bash(railway environment:*)"
+      "Bash(railway environment:*)",
+      "Bash(npx concurrently:*)",
+      "Bash(tasklist:*)",
+      "Bash(VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk npm run build)",
+      "Bash(set PORT=3000)",
+      "Bash(start http://localhost:8080)",
+      "Bash(start http://localhost:61086)"
     ],
     "deny": [],
     "ask": []

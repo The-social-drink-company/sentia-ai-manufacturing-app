@@ -17,46 +17,59 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Simple sign in page with working authentication
+// Demo sign in page with mock authentication for client meeting
 const SimpleSignIn = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
+  // Demo users for client meeting
+  const demoUsers = {
+    'admin@sentiaspirits.com': { password: 'demo123', role: 'admin', name: 'Admin User' },
+    'manager@sentiaspirits.com': { password: 'demo123', role: 'manager', name: 'Production Manager' },
+    'operator@sentiaspirits.com': { password: 'demo123', role: 'operator', name: 'Floor Operator' },
+    'demo@demo.com': { password: 'demo', role: 'admin', name: 'Demo User' }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
+    // Simulate API delay for realism
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     try {
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
-      const response = await fetch(`${apiUrl}/api/auth/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const user = demoUsers[email];
+      
+      if (user && user.password === password) {
+        // Mock successful authentication
+        const mockUser = {
+          id: Math.random().toString(36),
+          email: email,
+          name: user.name,
+          role: user.role,
+          permissions: ['read', 'write', 'admin'] // Full permissions for demo
+        };
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store user data in localStorage (simple session management)
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('session', JSON.stringify({ 
-          token: data.accessToken, 
+        const mockSession = {
+          token: 'demo-token-' + Date.now(),
           isAuthenticated: true,
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
-        }));
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        };
+
+        // Store demo user data
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        localStorage.setItem('session', JSON.stringify(mockSession));
         
-        // Redirect to dashboard or home
+        // Redirect to dashboard
         window.location.href = '/dashboard';
       } else {
-        setError(data.message || data.error || 'Sign in failed');
+        setError('Invalid credentials. Try: admin@sentiaspirits.com / demo123');
       }
     } catch (error) {
-      setError(`Network error: ${error.message}`);
+      setError(`Demo error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -69,6 +82,17 @@ const SimpleSignIn = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
+          
+          {/* Demo Credentials for Client Meeting */}
+          <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+            <div className="text-sm font-medium">Demo Credentials:</div>
+            <div className="text-xs mt-1">
+              <div>Admin: admin@sentiaspirits.com / demo123</div>
+              <div>Manager: manager@sentiaspirits.com / demo123</div>
+              <div>Quick Demo: demo@demo.com / demo</div>
+            </div>
+          </div>
+
           {error && (
             <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
               {error}

@@ -388,7 +388,7 @@ class AutonomousScheduler {
   async checkAndRestartServer() {
     try {
       // Check if server is responding
-      const response = await fetch('http://localhost:5000/api/health');
+      const response = await fetch('http://127.0.0.1:5000/api/health');
       
       if (response.ok) {
         this.log('Server is responding normally');

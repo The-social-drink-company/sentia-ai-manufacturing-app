@@ -80,7 +80,8 @@
       "Bash(railway variables:*)",
       "Bash(pm2 restart:*)",
       "Bash(npm run test:coverage:*)",
-      "Bash(git cherry-pick:*)"
+      "Bash(git cherry-pick:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

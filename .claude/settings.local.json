@@ -126,7 +126,8 @@
       "WebFetch(domain:splendid-warmth-testing.up.railway.app)",
       "WebFetch(domain:splendid-warmth-production.up.railway.app)",
       "WebFetch(domain:sentiaprod.financeflo.ai)",
-      "Bash(start https://sentiaprod.financeflo.ai/dashboard)"
+      "Bash(start https://sentiaprod.financeflo.ai/dashboard)",
+      "Bash(echo $VITE_CLERK_PUBLISHABLE_KEY)"
     ],
     "deny": [],
     "ask": []

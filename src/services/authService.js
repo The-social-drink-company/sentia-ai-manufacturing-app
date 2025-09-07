@@ -1,5 +1,5 @@
 // Authentication service for Vite/React app
-// This replaces NextAuth.js which is designed for Next.js apps
+// Using Clerk for authentication instead of NextAuth
 
 class AuthService {
   constructor() {

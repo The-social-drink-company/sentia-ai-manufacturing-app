@@ -212,7 +212,7 @@ export default defineConfig(({ command, mode }) => ({
       'recharts',
       '@heroicons/react/24/outline',
       '@heroicons/react/24/solid',
-      'next-auth/react'
+      '@clerk/react'
     ]
   },
   server: {

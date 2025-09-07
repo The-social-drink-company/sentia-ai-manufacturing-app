@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import App from './AppMinimalTest.jsx'
 import './index.css'
 
 // Performance monitoring with web-vitals

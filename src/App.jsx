@@ -167,7 +167,7 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <WorldClassEnterpriseDashboard />
+      <WorldClassDashboard />
     </ErrorBoundary>
   )
 }

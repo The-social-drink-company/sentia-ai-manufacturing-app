@@ -20,7 +20,7 @@ PORT=3000
 
 # Clerk Authentication (REQUIRED)
 CLERK_SECRET_KEY=sk_test_YOUR_CLERK_SECRET_KEY
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
 
 # Database - Neon PostgreSQL (REQUIRED)
 DATABASE_URL=postgresql://your-neon-database-url

@@ -108,8 +108,8 @@ class RailwayDeployer {
 
   getDefaultClerkKey(type) {
     const keys = {
-      publishable: 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk',
-      secret: 'sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx'
+      publishable: 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk',
+      secret: 'sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq'
     };
     return keys[type];
   }

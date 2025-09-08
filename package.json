@@ -33,7 +33,6 @@
     "deploy:pipeline": "node scripts/enterprise-deployment-automation.js",
     "typecheck": "tsc --noEmit",
     "quality": "npm run lint && npm run format:check && npm run typecheck",
-    "prepare": "husky",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:pull": "prisma db pull",

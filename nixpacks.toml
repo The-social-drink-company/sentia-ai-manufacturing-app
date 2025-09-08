@@ -16,7 +16,10 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "npm run build"
+  "npm run build",
+  "ls -la dist/",
+  "ls -la dist/assets/",
+  "cat dist/index.html"
 ]
 
 [start]

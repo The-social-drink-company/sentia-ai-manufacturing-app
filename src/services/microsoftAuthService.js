@@ -1,4 +1,4 @@
-/**
+import { devLog } from '../lib/devLog.js';\n/**
  * Microsoft OAuth Authentication Service
  * Implements Microsoft OAuth 2.0 for Azure AD authentication
  */
@@ -58,7 +58,7 @@ class MicrosoftAuthService {
    * Handle OAuth callback and exchange code for token
    */
   async handleCallback(code, state) {
-    console.log('🔐 Microsoft OAuth callback received');
+    devLog.log('🔐 Microsoft OAuth callback received');
     
     // Verify state to prevent CSRF attacks
     const storedState = localStorage.getItem('microsoft_oauth_state');
@@ -95,7 +95,7 @@ class MicrosoftAuthService {
 
       return data;
     } catch (error) {
-      console.error('Microsoft OAuth error:', error);
+      devLog.error('Microsoft OAuth error:', error);
       throw error;
     }
   }
@@ -118,7 +118,7 @@ class MicrosoftAuthService {
 
       return await response.json();
     } catch (error) {
-      console.error('Error fetching Microsoft user profile:', error);
+      devLog.error('Error fetching Microsoft user profile:', error);
       throw error;
     }
   }

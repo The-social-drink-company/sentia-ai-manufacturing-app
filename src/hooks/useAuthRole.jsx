@@ -3,6 +3,7 @@ import { useUser } from '@clerk/clerk-react';
 
 // Professional Clerk Authentication Hook
 export const useAuthRole = () => {
+  // Use real Clerk authentication only
   const { user, isLoaded, isSignedIn } = useUser();
 
   const authData = useMemo(() => {

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .error { color: red; font-weight: bold; }
+        .success { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="test">
+        <h1>🔍 Debug Test Page</h1>
+        <p>If you can see this, HTML is working ✅</p>
+        <button onclick="testJS()">Test JavaScript</button>
+        <div id="js-result"></div>
+        
+        <h2>Debug Steps:</h2>
+        <ol>
+            <li>Open Browser Console (F12) and check for errors</li>
+            <li>Go to: <a href="http://localhost:3002" target="_blank">http://localhost:3002</a></li>
+            <li>If blank, check console for React/JavaScript errors</li>
+            <li>Try: <a href="http://localhost:3002/dashboard" target="_blank">http://localhost:3002/dashboard</a></li>
+        </ol>
+        
+        <div id="app-check"></div>
+    </div>
+    
+    <script>
+        function testJS() {
+            document.getElementById('js-result').innerHTML = '<span class="success">JavaScript is working! ✅</span>';
+            console.log('JavaScript test successful');
+        }
+        
+        // Auto-test JavaScript on load
+        document.addEventListener('DOMContentLoaded', function() {
+            testJS();
+            
+            // Test if the main app is accessible
+            fetch('http://localhost:3002')
+                .then(response => response.text())
+                .then(data => {
+                    console.log('App response length:', data.length);
+                    const checkDiv = document.getElementById('app-check');
+                    if (data.includes('Vite') || data.includes('React')) {
+                        checkDiv.innerHTML = '<p class="success">✅ Main app server is responding</p>';
+                        console.log('Vite/React dev server is responding correctly');
+                    } else {
+                        checkDiv.innerHTML = '<p class="error">❌ Unexpected response from main app</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('app-check').innerHTML = '<p class="error">❌ Error accessing main app: ' + error.message + '</p>';
+                    console.error('Error accessing main app:', error);
+                });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "avgDuration": 30.84349999999995,
+    "passRate": 0
+  },
+  "results": [
+    {
+      "testName": "API_POST__api_production_control",
+      "result": "fail",
+      "duration": 30.84349999999995,
+      "timestamp": "2025-09-07T22:51:32.227Z",
+      "error": {
+        "message": "apiRequestContext.fetch: connect ECONNREFUSED 127.0.0.1:5000\nCall log:\n\u001b[2m  - → POST http://127.0.0.1:5000/api/api/production/control\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer test-token\u001b[22m\n",
+        "stack": "apiRequestContext.fetch: connect ECONNREFUSED 127.0.0.1:5000\nCall log:\n\u001b[2m  - → POST http://127.0.0.1:5000/api/api/production/control\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer test-token\u001b[22m\n\n    at testFunction (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:221:40)\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:13)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:218:28",
+        "type": "Error"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139399168,
+          "heapTotal": 60424192,
+          "heapUsed": 35932176,
+          "external": 3984275,
+          "arrayBuffers": 81197
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "SERVER_ERROR": 1
+  },
+  "performanceMetrics": []
+}

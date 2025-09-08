@@ -1,4 +1,4 @@
-// Authentication service for Vite/React app
+import { devLog } from '../lib/devLog.js';\n// Authentication service for Vite/React app
 // Using Clerk for authentication instead of NextAuth
 
 class AuthService {
@@ -77,7 +77,7 @@ class AuthService {
         return { error: data.error || 'Sign in failed' };
       }
     } catch (error) {
-      console.error('Sign in error:', error);
+      devLog.error('Sign in error:', error);
       return { error: 'Network error during sign in' };
     }
   }
@@ -89,7 +89,7 @@ class AuthService {
       window.location.href = `${this.baseUrl}/api/auth/microsoft`;
       return { ok: true };
     } catch (error) {
-      console.error('Microsoft sign in error:', error);
+      devLog.error('Microsoft sign in error:', error);
       return { error: 'Failed to initiate Microsoft sign in' };
     }
   }
@@ -103,7 +103,7 @@ class AuthService {
         credentials: 'include'
       });
     } catch (error) {
-      console.error('Sign out error:', error);
+      devLog.error('Sign out error:', error);
     }
     
     // Clear local session regardless of backend response

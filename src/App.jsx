@@ -1,12 +1,48 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
-import './index.css';
+import React, { Suspense, lazy } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ErrorBoundary } from 'react-error-boundary'
+import { Toaster } from 'react-hot-toast'
+import './index.css'
 
-// Get Clerk publishable key with fallback
-const clerkPubKey = 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk';
+// Layout Components
+import DashboardLayout from './components/layout/DashboardLayout'
+import { LoadingSpinner } from './components/LoadingStates'
+import ErrorBoundaryFallback from './components/ErrorBoundary'
 
-// Simple Landing Page Component
+// Lazy Load Pages for Performance
+const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
+const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
+const AdminPanel = lazy(() => import('./pages/AdminPanel'))
+const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'))
+const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'))
+const DataImportDashboard = lazy(() => import('./components/DataImport/DataImportDashboard'))
+const InventoryManagement = lazy(() => import('./components/inventory/InventoryManagement'))
+const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
+const QualityControl = lazy(() => import('./components/quality/QualityControl'))
+const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
+const Analytics = lazy(() => import('./components/analytics/Analytics'))
+
+console.log('Starting Sentia Enterprise Manufacturing Dashboard...')
+
+// Initialize React Query client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false,
+      retry: (failureCount, error) => {
+        if (error?.status === 404) return false
+        return failureCount < 3
+      }
+    }
+  }
+})
+
+// Landing Page Component
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
@@ -39,130 +75,235 @@ const LandingPage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-// Simple Dashboard Component
-const SimpleDashboard = () => {
+// Protected route wrapper
+const ProtectedRoute = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Sentia Manufacturing Dashboard</h1>
-          <p className="text-gray-600 mt-2">Enterprise Manufacturing Analytics & Control Center</p>
-        </div>
+    <>
+      <SignedIn>
+        {children}
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  )
+}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <div className="w-6 h-6 bg-blue-600 rounded"></div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Production Output</h3>
-                <p className="text-2xl font-bold text-gray-900">1,234</p>
-                <p className="text-sm text-green-600">↗ +12% from yesterday</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <div className="w-6 h-6 bg-green-600 rounded"></div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Efficiency Rate</h3>
-                <p className="text-2xl font-bold text-gray-900">94.2%</p>
-                <p className="text-sm text-green-600">↗ +2.1% from last week</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <div className="w-6 h-6 bg-yellow-600 rounded"></div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Quality Score</h3>
-                <p className="text-2xl font-bold text-gray-900">98.7%</p>
-                <p className="text-sm text-yellow-600">→ Stable</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <div className="w-6 h-6 bg-purple-600 rounded"></div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Active Orders</h3>
-                <p className="text-2xl font-bold text-gray-900">87</p>
-                <p className="text-sm text-blue-600">24 urgent priority</p>
-              </div>
+// Dashboard Route Component with Fallback Support
+const DashboardRoute = () => {
+  const [searchParams] = useSearchParams()
+  const fallback = searchParams.get('fallback')
+  
+  if (fallback === 'true') {
+    return <SimpleDashboard />
+  }
+  
+  return (
+    <ErrorBoundary 
+      FallbackComponent={({ error, resetErrorBoundary }) => (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Dashboard Error</h2>
+            <p className="text-gray-600 mb-4">Enterprise dashboard failed to load.</p>
+            <div className="flex space-x-3">
+              <button 
+                onClick={resetErrorBoundary}
+                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Retry
+              </button>
+              <button 
+                onClick={() => window.location.href = '/dashboard?fallback=true'}
+                className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              >
+                Simple Mode
+              </button>
             </div>
           </div>
         </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">System Status</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Authentication</span>
-              <span className="text-green-600 text-sm font-medium">✅ Active</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Database</span>
-              <span className="text-green-600 text-sm font-medium">✅ Connected</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">API Services</span>
-              <span className="text-green-600 text-sm font-medium">✅ Running</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Monitoring</span>
-              <span className="text-green-600 text-sm font-medium">✅ Online</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+      )}
+      onReset={() => window.location.reload()}
+    >
+      <EnterpriseEnhancedDashboard />
+    </ErrorBoundary>
+  )
+}
 
 function App() {
   return (
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <Router>
-        <div className="App">
-          <Routes>
-            {/* Protected Dashboard Route */}
-            <Route 
-              path="/dashboard" 
-              element={
-                <SignedIn>
-                  <SimpleDashboard />
-                </SignedIn>
-              } 
-            />
-            
-            {/* Public Landing Page */}
-            <Route path="/" element={<LandingPage />} />
-            
-            {/* Redirect to dashboard for any other route */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-          
-          {/* Redirect unauthenticated users to sign in */}
-          <SignedOut>
-            <RedirectToSignIn />
-          </SignedOut>
-        </div>
-      </Router>
-    </ClerkProvider>
-  );
+    <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+      <QueryClientProvider client={queryClient}>
+          <Router>
+            <div className="App">
+              <Routes>
+                {/* Public Landing Page */}
+                <Route path="/" element={<LandingPage />} />
+                
+                {/* Protected Routes with Layout */}
+                <Route 
+                  path="/dashboard/*" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Routes>
+                          <Route index element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <DashboardRoute />
+                            </Suspense>
+                          } />
+                          <Route path="basic" element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <SimpleDashboard />
+                            </Suspense>
+                          } />
+                        </Routes>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Enterprise Pages with Layout */}
+                <Route 
+                  path="/working-capital" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WorkingCapital />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/what-if" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WhatIfAnalysis />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/forecasting" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <DemandForecasting />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/inventory" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <InventoryManagement />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/production" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <ProductionTracking />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/quality" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <QualityControl />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/analytics" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <Analytics />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/data-import" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <DataImportDashboard />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/admin" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AdminPanel />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Redirect to dashboard for any other route */}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+              
+              {/* Global Toast Notifications */}
+              <Toaster 
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                }}
+              />
+            </div>
+          </Router>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ErrorBoundary>
+  )
 }
 
 export default App;

@@ -1,4 +1,4 @@
-import ExcelJS from 'exceljs';
+import { devLog } from '../lib/devLog.js';\nimport ExcelJS from 'exceljs';
 
 class DataImportService {
   constructor() {
@@ -26,7 +26,7 @@ class DataImportService {
 
       return await response.json();
     } catch (error) {
-      console.error('File import error:', error);
+      devLog.error('File import error:', error);
       throw error;
     }
   }
@@ -63,7 +63,7 @@ class DataImportService {
 
       return await response.json();
     } catch (error) {
-      console.error('Microsoft import error:', error);
+      devLog.error('Microsoft import error:', error);
       throw error;
     }
   }
@@ -88,7 +88,7 @@ class DataImportService {
 
       return await response.json();
     } catch (error) {
-      console.error('Error fetching Microsoft files:', error);
+      devLog.error('Error fetching Microsoft files:', error);
       throw error;
     }
   }
@@ -118,7 +118,7 @@ class DataImportService {
 
       return await response.json();
     } catch (error) {
-      console.error('Error fetching worksheets:', error);
+      devLog.error('Error fetching worksheets:', error);
       throw error;
     }
   }
@@ -153,7 +153,7 @@ class DataImportService {
 
       return await response.json();
     } catch (error) {
-      console.error('Preview error:', error);
+      devLog.error('Preview error:', error);
       throw error;
     }
   }
@@ -348,7 +348,7 @@ class DataImportService {
 
       return await response.json();
     } catch (error) {
-      console.error('Error fetching import history:', error);
+      devLog.error('Error fetching import history:', error);
       throw error;
     }
   }
@@ -369,7 +369,7 @@ class DataImportService {
 
       return await response.json();
     } catch (error) {
-      console.error('Error deleting imported data:', error);
+      devLog.error('Error deleting imported data:', error);
       throw error;
     }
   }

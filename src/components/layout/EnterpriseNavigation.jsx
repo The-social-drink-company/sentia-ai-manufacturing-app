@@ -625,7 +625,7 @@ const EnterpriseNavigation = () => {
             const SectionIcon = section.icon;
 
             return (
-              <div key={section.id} className="mb-4">
+              <motion.div key={section.id} className="mb-4">
                 {/* Section Header */}
                 <motion.button
                   onClick={() => !collapsed && toggleSection(section.id)}
@@ -833,7 +833,7 @@ const EnterpriseNavigation = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             );
           })}
         </motion.div>
@@ -896,7 +896,7 @@ const EnterpriseNavigation = () => {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

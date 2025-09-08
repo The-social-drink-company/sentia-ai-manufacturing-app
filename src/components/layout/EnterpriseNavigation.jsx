@@ -741,7 +741,7 @@ const EnterpriseNavigation = () => {
                             transition={{ duration: 0.2 }}
                           />
 
-                          <div className="flex items-center flex-1 relative z-10">
+                          <motion.div className="flex items-center flex-1 relative z-10">
                             <motion.div
                               animate={active ? { 
                                 scale: 1.1,
@@ -809,7 +809,7 @@ const EnterpriseNavigation = () => {
                                 </motion.div>
                               )}
                             </AnimatePresence>
-                          </div>
+                          </motion.div>
                           
                           {/* Active Indicator Line */}
                           {active && !collapsed && (

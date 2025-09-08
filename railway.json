@@ -1,12 +1,7 @@
 {
   "build": {
     "builder": "nixpacks",
-    "buildCommand": "npm run build",
-    "watchPatterns": [
-      "src/**/*",
-      "public/**/*",
-      "package.json"
-    ]
+    "buildCommand": "npm install && npm run build"
   },
   "deploy": {
     "startCommand": "node server.js",
@@ -118,7 +113,8 @@
         "VITE_ENABLE_CACHING": "true"
       },
       "domains": [
-        "web-production-1f10.up.railway.app"
+        "web-production-1f10.up.railway.app",
+        "sentiaprod.financeflo.ai"
       ],
       "serviceSettings": {
         "autoscaling": true,

@@ -84,13 +84,12 @@ console.log('Starting Sentia Enterprise Manufacturing Dashboard...', {
 // Get Clerk publishable key from environment
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-// Validate Clerk key exists
+// Handle missing Clerk key gracefully
 if (!clerkPubKey) {
-  console.error('VITE_CLERK_PUBLISHABLE_KEY is not set in environment variables')
-  throw new Error('Clerk publishable key is required')
+  console.warn('VITE_CLERK_PUBLISHABLE_KEY is not set - running in guest mode')
+} else {
+  console.log('Clerk key loaded:', clerkPubKey.substring(0, 20) + '...')
 }
-
-console.log('Clerk key loaded:', clerkPubKey.substring(0, 20) + '...')
 
 // Initialize React Query client
 const queryClient = new QueryClient({
@@ -171,6 +170,11 @@ const LandingPage = () => {
 
 // Protected route wrapper with guest access support
 const ProtectedRoute = ({ children, allowGuest = false }) => {
+  // If Clerk is not configured, always allow access
+  if (!clerkPubKey) {
+    return children
+  }
+  
   // Allow guest access for demo purposes
   if (allowGuest) {
     return children
@@ -228,9 +232,18 @@ const DashboardRoute = () => {
   )
 }
 
+// Fallback auth provider for when Clerk is not configured
+const FallbackAuthProvider = ({ children }) => {
+  return <div data-auth-provider="fallback">{children}</div>
+}
+
 function App() {
+  // Use ClerkProvider if key is available, otherwise use fallback
+  const AuthProvider = clerkPubKey ? ClerkProvider : FallbackAuthProvider
+  const authProps = clerkPubKey ? { publishableKey: clerkPubKey, afterSignOutUrl: "/" } : {}
+  
   return (
-    <ClerkProvider publishableKey={clerkPubKey} afterSignOutUrl="/">
+    <AuthProvider {...authProps}>
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
@@ -821,7 +834,7 @@ function App() {
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>
-    </ClerkProvider>
+    </AuthProvider>
   )
 }
 

@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { 
   BanknotesIcon, 
   ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
   ChartBarIcon,
   ExclamationTriangleIcon,
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
   InformationCircleIcon,
-  CurrencyPoundIcon,
   CalendarDaysIcon,
-  TrendingUpIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/outline'
 import EnhancedWorkingCapitalService from '../../services/EnhancedWorkingCapitalService'
@@ -21,14 +18,13 @@ const EnhancedWorkingCapital = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedPeriod, setSelectedPeriod] = useState(12)
-  const [showForecasts, setShowForecasts] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
   // Initialize service
   const [wcService] = useState(() => new EnhancedWorkingCapitalService())
 
   // Fetch working capital data
-  const fetchWorkingCapitalData = async () => {
+  const fetchWorkingCapitalData = useCallback(async () => {
     try {
       setRefreshing(true)
       setError(null)
@@ -36,22 +32,25 @@ const EnhancedWorkingCapital = () => {
       const data = await wcService.calculateWorkingCapitalRequirements({
         period: selectedPeriod,
         currency: 'GBP',
-        includeForecasts: showForecasts
+        includeForecasts: true
       })
       
       setWorkingCapitalData(data)
     } catch (err) {
       setError(err.message)
-      console.error('Working capital calculation failed:', err)
+      // Log error in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Working capital calculation failed:', err)
+      }
     } finally {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [selectedPeriod, wcService])
 
   useEffect(() => {
     fetchWorkingCapitalData()
-  }, [selectedPeriod, showForecasts])
+  }, [fetchWorkingCapitalData])
 
   // Auto-refresh every 5 minutes
   useEffect(() => {
@@ -65,19 +64,25 @@ const EnhancedWorkingCapital = () => {
   }, [loading, refreshing])
 
   const formatCurrency = (amount, decimals = 0) => {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP',
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals
-    }).format(amount)
+    if (typeof Intl !== 'undefined' && Intl.NumberFormat) {
+      return new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP',
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      }).format(amount)
+    }
+    return `£${amount.toLocaleString()}`
   }
 
   const formatNumber = (num, decimals = 1) => {
-    return new Intl.NumberFormat('en-GB', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals
-    }).format(num)
+    if (typeof Intl !== 'undefined' && Intl.NumberFormat) {
+      return new Intl.NumberFormat('en-GB', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      }).format(num)
+    }
+    return num.toFixed(decimals)
   }
 
   const getRiskColor = (level) => {
@@ -475,7 +480,7 @@ const EnhancedWorkingCapital = () => {
             )}
 
             {/* Working Capital Forecasts */}
-            {workingCapitalData.forecasts && showForecasts && (
+            {workingCapitalData.forecasts && (
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

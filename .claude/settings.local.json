@@ -226,7 +226,8 @@
       "Bash(start http://localhost:3004/ai-analytics)",
       "Bash(start http://localhost:3006/working-capital/enhanced)",
       "Bash(start http://localhost:3006/working-capital)",
-      "Bash(start http://localhost:3008/ai-analytics)"
+      "Bash(start http://localhost:3008/ai-analytics)",
+      "Bash(start http://localhost:3012/dashboard)"
     ],
     "deny": [],
     "ask": []

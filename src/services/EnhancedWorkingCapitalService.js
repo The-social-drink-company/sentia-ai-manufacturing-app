@@ -183,7 +183,7 @@ class EnhancedWorkingCapitalService {
         return data;
       }
     } catch (error) {
-      console.warn('AR API unavailable, using calculated estimates');
+      // AR API unavailable, using calculated estimates
     }
 
     // Fallback: Calculate from sales data if API unavailable
@@ -217,7 +217,7 @@ class EnhancedWorkingCapitalService {
         return data;
       }
     } catch (error) {
-      console.warn('Inventory API unavailable, using estimates');
+      // Inventory API unavailable, using estimates
     }
 
     // Fallback: Estimate inventory from production data
@@ -251,7 +251,7 @@ class EnhancedWorkingCapitalService {
         return data;
       }
     } catch (error) {
-      console.warn('AP API unavailable, using estimates');
+      // AP API unavailable, using estimates
     }
 
     // Fallback: Estimate from COGS
@@ -285,7 +285,7 @@ class EnhancedWorkingCapitalService {
         return data;
       }
     } catch (error) {
-      console.warn('Cash flow API unavailable, using estimates');
+      // Cash flow API unavailable, using estimates
     }
 
     // Fallback: Estimate cash position
@@ -318,7 +318,7 @@ class EnhancedWorkingCapitalService {
         return data;
       }
     } catch (error) {
-      console.warn('Sales API unavailable, using industry estimates');
+      // Sales API unavailable, using industry estimates
     }
 
     // Fallback: Manufacturing industry estimates (£40M annual revenue)
@@ -565,7 +565,7 @@ class EnhancedWorkingCapitalService {
         return data.count || 150; // fallback
       }
     } catch (error) {
-      console.warn('Employee count API unavailable');
+      // Employee count API unavailable
     }
     return 150; // Manufacturing company estimate
   }
@@ -578,7 +578,7 @@ class EnhancedWorkingCapitalService {
         return data.count || 3; // fallback
       }
     } catch (error) {
-      console.warn('Facility count API unavailable');
+      // Facility count API unavailable
     }
     return 3; // Multi-facility manufacturer estimate
   }

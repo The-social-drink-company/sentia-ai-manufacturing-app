@@ -11,7 +11,7 @@ const AdminLayout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="min-h-screen bg-primary flex">
       {/* Sidebar */}
       <AdminSidebar collapsed={sidebarCollapsed} />
       
@@ -24,7 +24,7 @@ const AdminLayout = () => {
         />
         
         {/* Page Content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900 p-6">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-primary p-6">
           <Outlet />
         </main>
       </div>

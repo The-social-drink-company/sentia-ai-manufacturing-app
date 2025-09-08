@@ -19,7 +19,8 @@ import {
   BeakerIcon,
   AdjustmentsHorizontalIcon as SlidersIcon,
   SparklesIcon,
-  CircleStackIcon
+  CircleStackIcon,
+  SignalIcon
 } from '@heroicons/react/24/outline'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
@@ -198,6 +199,13 @@ const Sidebar = () => {
           label: 'AI Analytics',
           shortcut: 'G A',
           permission: 'analytics.view'
+        },
+        {
+          to: '/monitoring',
+          icon: SignalIcon,
+          label: 'Real-Time Monitoring',
+          shortcut: 'G M',
+          permission: 'monitoring.view'
         }
       ]
     },

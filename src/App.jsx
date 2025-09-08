@@ -35,6 +35,7 @@ const DemandForecasting = lazy(() => import('./components/forecasting/DemandFore
 const Analytics = lazy(() => import('./components/analytics/Analytics'))
 const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashboard'))
 const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
+const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMonitoring'))
 const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
 const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
@@ -431,6 +432,19 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <SystemSettings />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/monitoring" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <RealTimeMonitoring />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

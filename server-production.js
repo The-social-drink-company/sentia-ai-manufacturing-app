@@ -118,6 +118,185 @@ app.get('/api/inventory/status', (req, res) => {
   });
 });
 
+// Real-time monitoring endpoints
+app.get('/api/monitoring/status', (req, res) => {
+  res.json({
+    productionLines: [
+      {
+        id: 'line-a',
+        name: 'GABA Red Production Line A',
+        status: 'running',
+        efficiency: 94.2,
+        currentBatch: 'B2025001',
+        temperature: 22.5,
+        pressure: 1.85,
+        speed: 1250,
+        targetSpeed: 1300,
+        lastMaintenance: '2025-09-06T10:00:00Z',
+        nextMaintenance: '2025-09-15T08:00:00Z',
+        operatorCount: 3,
+        alertLevel: 'normal'
+      },
+      {
+        id: 'line-b',
+        name: 'GABA Clear Production Line B',
+        status: 'warning',
+        efficiency: 87.8,
+        currentBatch: 'B2025002',
+        temperature: 24.2,
+        pressure: 1.92,
+        speed: 1100,
+        targetSpeed: 1200,
+        lastMaintenance: '2025-09-05T14:00:00Z',
+        nextMaintenance: '2025-09-12T09:00:00Z',
+        operatorCount: 2,
+        alertLevel: 'warning'
+      },
+      {
+        id: 'line-c',
+        name: 'Packaging Line C',
+        status: 'maintenance',
+        efficiency: 0,
+        currentBatch: null,
+        temperature: 20.1,
+        pressure: 0,
+        speed: 0,
+        targetSpeed: 800,
+        lastMaintenance: '2025-09-08T06:00:00Z',
+        nextMaintenance: '2025-09-08T16:00:00Z',
+        operatorCount: 1,
+        alertLevel: 'maintenance'
+      }
+    ],
+    equipment: [
+      {
+        id: 'mixer-001',
+        name: 'Primary Mixer',
+        type: 'mixer',
+        status: 'operational',
+        temperature: 65.2,
+        rpm: 150,
+        vibration: 0.5,
+        efficiency: 96.1,
+        lastService: '2025-09-01T00:00:00Z',
+        nextService: '2025-09-29T00:00:00Z'
+      },
+      {
+        id: 'bottler-001',
+        name: 'Bottling Unit #1',
+        type: 'bottler',
+        status: 'warning',
+        temperature: 18.5,
+        rpm: 300,
+        vibration: 1.2,
+        efficiency: 89.3,
+        lastService: '2025-08-28T00:00:00Z',
+        nextService: '2025-09-25T00:00:00Z'
+      },
+      {
+        id: 'conveyor-001',
+        name: 'Main Conveyor',
+        type: 'conveyor',
+        status: 'operational',
+        temperature: 22.0,
+        rpm: 45,
+        vibration: 0.3,
+        efficiency: 98.7,
+        lastService: '2025-09-03T00:00:00Z',
+        nextService: '2025-10-03T00:00:00Z'
+      }
+    ],
+    systemMetrics: {
+      overallEfficiency: 91.4,
+      activeAlerts: 3,
+      maintenanceItems: 2,
+      powerConsumption: 2847.5,
+      waterUsage: 1250.8,
+      totalOutput: 15420,
+      qualityScore: 97.2,
+      uptimePercentage: 94.8
+    },
+    alerts: [
+      {
+        id: 'alert-001',
+        type: 'warning',
+        severity: 'medium',
+        title: 'Temperature Variance - Line B',
+        message: 'Temperature reading 2.2°C above optimal range',
+        timestamp: new Date(Date.now() - 600000).toISOString(),
+        equipment: 'line-b',
+        acknowledged: false
+      },
+      {
+        id: 'alert-002',
+        type: 'maintenance',
+        severity: 'high',
+        title: 'Scheduled Maintenance Due',
+        message: 'Packaging Line C maintenance window started',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        equipment: 'line-c',
+        acknowledged: true
+      },
+      {
+        id: 'alert-003',
+        type: 'quality',
+        severity: 'low',
+        title: 'Quality Check Required',
+        message: 'Batch B2025001 requires final quality verification',
+        timestamp: new Date(Date.now() - 900000).toISOString(),
+        equipment: 'line-a',
+        acknowledged: false
+      }
+    ]
+  });
+});
+
+// Server-Sent Events endpoint for real-time monitoring
+app.get('/api/monitoring/stream', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Cache-Control'
+  });
+
+  // Send initial data
+  const sendData = () => {
+    const data = {
+      timestamp: new Date().toISOString(),
+      systemMetrics: {
+        overallEfficiency: 90 + Math.random() * 10,
+        activeAlerts: Math.floor(Math.random() * 5),
+        totalOutput: 15000 + Math.floor(Math.random() * 1000),
+        uptimePercentage: 90 + Math.random() * 10
+      },
+      alerts: [
+        {
+          id: `alert-${Date.now()}`,
+          type: Math.random() > 0.7 ? 'warning' : 'normal',
+          severity: Math.random() > 0.8 ? 'high' : 'low',
+          title: 'Live System Update',
+          message: `System status updated at ${new Date().toLocaleTimeString()}`,
+          timestamp: new Date().toISOString(),
+          acknowledged: false
+        }
+      ]
+    };
+    
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  // Send data every 5 seconds
+  sendData();
+  const interval = setInterval(sendData, 5000);
+
+  // Clean up on client disconnect
+  req.on('close', () => {
+    clearInterval(interval);
+  });
+});
+
 // Catch all handler - serve React app for any route not handled above
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));

@@ -9,10 +9,12 @@ import './index.css'
 
 // Layout Components
 import DashboardLayout from './components/layout/DashboardLayout'
+import WorldClassLayout from './components/layout/WorldClassLayout'
 import { LoadingSpinner } from './components/LoadingStates'
 import ErrorBoundaryFallback from './components/ErrorBoundary'
 
 // Lazy Load Pages for Performance
+const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'))
 const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
 const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
 const AdminPanel = lazy(() => import('./pages/AdminPanel'))

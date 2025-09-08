@@ -82,7 +82,8 @@ export default defineConfig({
       'recharts',
       'date-fns'
     ],
-    exclude: ['@testing-library/react']
+    exclude: ['@testing-library/react'],
+    force: true // Force rebuild of dependencies - replaces --force flag
   },
   define: {
     // Enable React Query devtools only in development

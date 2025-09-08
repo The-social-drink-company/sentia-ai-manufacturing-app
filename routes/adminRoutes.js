@@ -1,17 +1,9 @@
 import express from 'express';
-<<<<<<< HEAD
-import clerkBackend from '@clerk/backend';
-=======
->>>>>>> development
 import logger from '../services/logger.js';
 
-// Temporary admin routes without Clerk direct integration due to ES module conflicts
-// Using comprehensive enterprise demo data for client delivery
+// Enterprise admin routes for Sentia Manufacturing Dashboard
+// Temporary implementation without direct Clerk integration for Railway deployment
 const router = express.Router();
-<<<<<<< HEAD
-const clerk = clerkBackend.createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
-=======
->>>>>>> development
 
 // Simplified admin middleware for Railway deployment compatibility
 const adminMiddleware = async (req, res, next) => {

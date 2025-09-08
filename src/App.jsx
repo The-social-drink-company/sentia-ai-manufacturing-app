@@ -45,6 +45,7 @@ const SmartAutomation = lazy(() => import('./components/automation/SmartAutomati
 const AuditLogs = lazy(() => import('./components/admin/AuditLogs'))
 const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
 const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
+const UIShowcase = lazy(() => import('./components/ui/UIShowcase'))
 
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...', { 
@@ -537,6 +538,18 @@ function App() {
                           <TestMonitorDashboard />
                         </Suspense>
                       </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* UI Experience Showcase */}
+                <Route 
+                  path="/ui-showcase" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <UIShowcase />
+                      </Suspense>
                     </ProtectedRoute>
                   } 
                 />

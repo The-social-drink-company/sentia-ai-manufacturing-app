@@ -1,5 +1,6 @@
 /* Import custom animations first - all @import rules must come before other CSS */
 @import './components/ui/animations.css';
+@import './components/ui/enhanced-interactions.css';
 
 /* Import Tailwind CSS */
 @tailwind base;

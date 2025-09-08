@@ -3,7 +3,7 @@
     "builder": "dockerfile"
   },
   "deploy": {
-    "startCommand": "node test-server.js",
+    "startCommand": "node server.js",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",

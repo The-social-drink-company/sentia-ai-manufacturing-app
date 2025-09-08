@@ -167,16 +167,16 @@ function App() {
                   } 
                 />
                 
-                {/* Enterprise Pages with Layout */}
+                {/* Enterprise Pages with World-Class Layout */}
                 <Route 
                   path="/working-capital" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <WorkingCapital />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
@@ -185,11 +185,11 @@ function App() {
                   path="/what-if" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <WhatIfAnalysis />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
@@ -198,11 +198,11 @@ function App() {
                   path="/forecasting" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <DemandForecasting />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
@@ -211,11 +211,11 @@ function App() {
                   path="/inventory" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <InventoryManagement />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
@@ -224,11 +224,11 @@ function App() {
                   path="/production" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <ProductionTracking />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
@@ -237,11 +237,11 @@ function App() {
                   path="/quality" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <QualityControl />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
@@ -250,11 +250,11 @@ function App() {
                   path="/analytics" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <Analytics />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
@@ -263,11 +263,11 @@ function App() {
                   path="/data-import" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <DataImportDashboard />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
@@ -276,11 +276,11 @@ function App() {
                   path="/admin" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <AdminPanel />
                         </Suspense>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />

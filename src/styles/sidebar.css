@@ -1,27 +1,32 @@
 /* TRULY CONSERVATIVE SIDEBAR - NO BOXES, NO DECORATIONS */
 
-/* Sidebar container - clean and simple */
+/* Sidebar container - clean and simple with !important overrides */
 .sidebar-container {
-  width: 280px;
-  background-color: #f8f9fa;
-  border-right: 1px solid #dee2e6;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  width: 280px !important;
+  background-color: #f8f9fa !important;
+  border-right: 1px solid #dee2e6 !important;
+  height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .sidebar-container.collapsed {
   width: 60px;
 }
 
-/* Header - flat design */
+/* Header - flat design with !important overrides */
 .sidebar-header {
-  padding: 16px;
-  background-color: #f1f3f4;
-  border-bottom: 1px solid #dee2e6;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 16px !important;
+  background-color: #f1f3f4 !important;
+  border-bottom: 1px solid #dee2e6 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
 }
 
 .sidebar-title {
@@ -37,34 +42,42 @@
   margin: 0;
 }
 
-/* Navigation items - completely flat */
+/* Navigation items - completely flat with !important to override Tailwind */
 .nav-item {
-  display: flex;
-  align-items: center;
-  padding: 10px 16px;
-  text-decoration: none;
-  color: #3c4043;
-  font-size: 14px;
-  border: none;
-  background: none;
-  width: 100%;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 16px !important;
+  text-decoration: none !important;
+  color: #3c4043 !important;
+  font-size: 14px !important;
+  border: none !important;
+  background: none !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
 }
 
 .nav-item:hover {
-  background-color: #f1f3f4;
-  text-decoration: none;
+  background-color: #f1f3f4 !important;
+  text-decoration: none !important;
+  color: #3c4043 !important;
 }
 
 .nav-item-active {
-  background-color: #e8f0fe;
-  color: #1967d2;
-  border-left: 3px solid #1967d2;
+  background-color: #e8f0fe !important;
+  color: #1967d2 !important;
+  border-left: 3px solid #1967d2 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .nav-item-inactive {
-  border-left: 3px solid transparent;
+  border-left: 3px solid transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 /* Collapse button */
@@ -92,6 +105,44 @@
 /* Mobile overlay */
 .sidebar-overlay {
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* AGGRESSIVE OVERRIDES TO ELIMINATE ALL "BOXES" */
+.sidebar-container * {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Override any remaining Tailwind button/link styling */
+.sidebar-container button,
+.sidebar-container a {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+
+/* Force flat navigation items */
+.sidebar-container .nav-item,
+.sidebar-container .nav-item:hover,
+.sidebar-container .nav-item:focus,
+.sidebar-container .nav-item:active {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.sidebar-container .nav-item:hover {
+  background-color: #f1f3f4 !important;
+}
+
+.sidebar-container .nav-item-active,
+.sidebar-container .nav-item-active:hover,
+.sidebar-container .nav-item-active:focus {
+  background-color: #e8f0fe !important;
+  color: #1967d2 !important;
+  border-left: 3px solid #1967d2 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 /* Section headers */
@@ -137,21 +188,23 @@
   margin-top: 8px;
 }
 
-/* Sidebar brand */
+/* Sidebar brand with !important overrides */
 .sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 0 !important;
 }
 
 .sidebar-logo {
-  width: 32px;
-  height: 32px;
-  background-color: #1967d2;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 32px !important;
+  height: 32px !important;
+  background-color: #1967d2 !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
 }
 
 .sidebar-logo span {

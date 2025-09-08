@@ -24,13 +24,17 @@ const AIAnalyticsDashboard = () => {
         }
       });
       if (!response.ok) {
-        return mockAIData;
+        console.warn('AI Analytics API unavailable, using fallback data');
+        throw new Error('AI Analytics API unavailable');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('AI Analytics data loaded from API:', data);
+      return data;
     },
     refetchInterval: 30000,
   });
 
+  // Use real API data, fallback to mock only when API is unavailable
   const data = aiData || mockAIData;
 
   const aiModels = [

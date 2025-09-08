@@ -37,6 +37,7 @@ import { logInfo, logError, logWarn } from './services/observability/structuredL
 import MCPOrchestrator from './services/mcp/mcpOrchestrator.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -4160,6 +4161,9 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
 
 // FinanceFlo Enhanced API Routes
 // app.use('/api/financeflo', financeFloRoutes); // Temporarily disabled due to import issues
+
+// Admin API Routes for User Management
+app.use('/api/admin', adminRoutes);
 
 // Enterprise Manufacturing APIs - IMMEDIATELY IMPLEMENT MISSING ENDPOINTS
 

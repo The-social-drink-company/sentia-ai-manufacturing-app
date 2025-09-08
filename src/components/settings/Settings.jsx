@@ -1,4 +1,3 @@
-import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react';
 import {
   UserCircleIcon,

@@ -34,6 +34,15 @@ const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminM
 const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
 
+// Additional Enterprise Components
+const FinancialReports = lazy(() => import('./components/financial/FinancialReports'))
+const CostAnalysis = lazy(() => import('./components/financial/CostAnalysis'))
+const AIInsights = lazy(() => import('./components/AI/AIInsights'))
+const SmartAutomation = lazy(() => import('./components/automation/SmartAutomation'))
+const AuditLogs = lazy(() => import('./components/admin/AuditLogs'))
+const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
+const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
+
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...')
 
@@ -394,6 +403,113 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <AdminPanel />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Financial Management Routes */}
+                <Route 
+                  path="/financial-reports" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <FinancialReports />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/cost-analysis" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <CostAnalysis />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* AI & Integration Routes */}
+                <Route 
+                  path="/ai-insights" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AIInsights />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/automation" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <SmartAutomation />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/audit-logs" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AuditLogs />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Alternative Dashboard Routes */}
+                <Route 
+                  path="/dashboard/enhanced" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <EnhancedDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/dashboard/enterprise" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WorldClassEnterpriseDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/dashboard/test-monitor" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <TestMonitorDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

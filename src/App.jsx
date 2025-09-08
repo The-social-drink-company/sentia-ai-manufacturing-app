@@ -18,6 +18,7 @@ const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'))
 const WorldClassEnterpriseDashboard = lazy(() => import('./pages/WorldClassEnterpriseDashboard'))
 const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
 const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
+const WorkingEnterpriseDashboard = lazy(() => import('./pages/WorkingEnterpriseDashboard'))
 const AdminPanel = lazy(() => import('./pages/AdminPanel'))
 const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'))
 const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'))
@@ -167,7 +168,7 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <WorldClassDashboard />
+      <WorkingEnterpriseDashboard />
     </ErrorBoundary>
   )
 }

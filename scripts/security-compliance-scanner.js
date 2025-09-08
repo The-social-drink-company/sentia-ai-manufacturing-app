@@ -26,7 +26,7 @@ const SECURITY_CONFIG = {
     enableSecretDetection: true,
     enableDependencyCheck: true,
     enableLicenseCheck: true,
-    enableDockerSecurity: true
+    enableDockerSecurity: false
   },
   secretPatterns: [
     /(['"`])(AKIA[0-9A-Z]{16})\1/g, // AWS Access Key
@@ -347,62 +347,8 @@ class SecurityComplianceScanner {
   }
 
   async scanDockerSecurity() {
-    this.log('INFO', 'Scanning Docker security...');
-    
-    try {
-      const dockerfilePath = path.join(projectRoot, 'Dockerfile');
-      
-      if (fs.existsSync(dockerfilePath)) {
-        const dockerfile = fs.readFileSync(dockerfilePath, 'utf8');
-        const issues = [];
-        
-        // Check for common Docker security issues
-        if (dockerfile.includes('USER root')) {
-          issues.push({
-            type: 'docker',
-            severity: 'high',
-            description: 'Dockerfile runs as root user'
-          });
-        }
-        
-        if (dockerfile.includes('--no-cache')) {
-          // This is actually good - no issue
-        } else {
-          issues.push({
-            type: 'docker',
-            severity: 'moderate',
-            description: 'Dockerfile does not use --no-cache flag'
-          });
-        }
-        
-        if (!dockerfile.includes('HEALTHCHECK')) {
-          issues.push({
-            type: 'docker',
-            severity: 'low',
-            description: 'Dockerfile missing HEALTHCHECK instruction'
-          });
-        }
-        
-        this.report.compliance.dockerSecurity = {
-          scanned: true,
-          issues
-        };
-        
-        issues.forEach(issue => {
-          this.report.vulnerabilities.push(issue);
-          this.updateSeverityCount(issue.severity);
-        });
-        
-        this.log('SUCCESS', `Docker security scan completed - Found ${issues.length} issues`);
-      } else {
-        this.log('INFO', 'No Dockerfile found - skipping Docker security scan');
-        this.report.compliance.dockerSecurity = { scanned: false, reason: 'No Dockerfile found' };
-      }
-      
-    } catch (error) {
-      this.log('ERROR', 'Docker security scan failed', error);
-      this.report.compliance.dockerSecurity = false;
-    }
+    this.log('INFO', 'Docker security scanning disabled - using Railway Nixpacks deployment');
+    this.report.compliance.dockerSecurity = { scanned: false, reason: 'Docker not used - Railway Nixpacks deployment' };
   }
 
   updateSeverityCount(severity) {

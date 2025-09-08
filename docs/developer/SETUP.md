@@ -230,41 +230,26 @@ GRANT ALL PRIVILEGES ON DATABASE sentia_dashboard_dev TO sentia_dev;
 \q
 ```
 
-### Option 3: Docker PostgreSQL
+### Option 3: Native PostgreSQL Installation
 
 ```bash
-# Create docker-compose.yml for development
-cat > docker-compose.dev.yml << EOF
-version: '3.8'
-services:
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: sentia_dashboard_dev
-      POSTGRES_USER: sentia_dev
-      POSTGRES_PASSWORD: dev_password_123
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+# Windows (using Chocolatey)
+choco install postgresql
 
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+# macOS (using Homebrew)
+brew install postgresql
+brew services start postgresql
 
-volumes:
-  postgres_data:
-  redis_data:
-EOF
+# Ubuntu/Debian
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
 
-# Start services
-docker-compose -f docker-compose.dev.yml up -d
-
-# Verify services are running
-docker-compose -f docker-compose.dev.yml ps
+# Create development database
+sudo -u postgres createdb sentia_dashboard_dev
+sudo -u postgres createuser sentia_dev -P
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE sentia_dashboard_dev TO sentia_dev;"
 ```
 
 ---

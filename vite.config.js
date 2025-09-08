@@ -20,7 +20,7 @@ export default defineConfig({
   },
   server: {
     port: process.env.PORT || 3002,
-    host: true, // Needed for Docker
+    host: true, // Allow external connections
     strictPort: false, // Allow dynamic port selection
     proxy: {
       '/api': {

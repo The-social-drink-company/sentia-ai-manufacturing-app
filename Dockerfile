@@ -1,12 +1,22 @@
-FROM node:20
+FROM node:20-alpine
 
 WORKDIR /app
+
+# Install system dependencies for native modules
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    libc6-compat
 
 # Copy package files
 COPY package*.json ./
 
 # Install dependencies with clean npm cache
 RUN npm ci --production=false
+
+# Install platform-specific Rollup binary
+RUN npm install --save-optional @rollup/rollup-linux-x64-musl
 
 # Copy Prisma schema first
 COPY prisma ./prisma/

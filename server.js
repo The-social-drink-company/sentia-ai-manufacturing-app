@@ -45,33 +45,37 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 // Server restarted
 
-// Initialize MCP Orchestrator for Anthropic Model Context Protocol
+// Initialize MCP Orchestrator for Anthropic Model Context Protocol (disabled in production)
 const mcpOrchestrator = new MCPOrchestrator();
 
-// Register MCP server for integrated data processing
-(async () => {
-  try {
-    const mcpServerConfig = {
-      id: 'sentia-mcp-server',
-      name: 'Sentia MCP Server',
-      type: 'manufacturing-finance',
-      endpoint: 'http://localhost:6002',
-      transport: 'http',
-      capabilities: ['xero-integration', 'financial-data', 'real-time-sync', 'ai-analysis'],
-      dataTypes: ['financial', 'manufacturing', 'forecasting', 'optimization'],
-      updateInterval: 30000
-    };
-    
-    const result = await mcpOrchestrator.registerMCPServer(mcpServerConfig);
-    if (result.success) {
-      logInfo('MCP Server registered successfully', { serverId: result.serverId });
-    } else {
-      logError('Failed to register MCP Server', { error: result.error });
+// Register MCP server for integrated data processing (only in development)
+if (process.env.NODE_ENV === 'development') {
+  (async () => {
+    try {
+      const mcpServerConfig = {
+        id: 'sentia-mcp-server',
+        name: 'Sentia MCP Server',
+        type: 'manufacturing-finance',
+        endpoint: 'http://localhost:6002',
+        transport: 'http',
+        capabilities: ['xero-integration', 'financial-data', 'real-time-sync', 'ai-analysis'],
+        dataTypes: ['financial', 'manufacturing', 'forecasting', 'optimization'],
+        updateInterval: 30000
+      };
+      
+      const result = await mcpOrchestrator.registerMCPServer(mcpServerConfig);
+      if (result.success) {
+        logInfo('MCP Server registered successfully', { serverId: result.serverId });
+      } else {
+        logError('Failed to register MCP Server', { error: result.error });
+      }
+    } catch (error) {
+      logError('MCP Server registration error', error);
     }
-  } catch (error) {
-    logError('MCP Server registration error', error);
-  }
-})();
+  })();
+} else {
+  logInfo('MCP Server disabled in production environment');
+}
 
 // NextAuth will be handled by the React frontend
 
@@ -186,15 +190,40 @@ function sendSSEEvent(eventType, data) {
 // Authentication endpoints for Vite React app
 import { verifyUserCredentials, initializeDefaultUsers } from './lib/user-service.js';
 
-// Initialize default users on server startup
+// Test database connection and initialize default users on server startup
+import { testDatabaseConnection } from './lib/prisma.js';
+
+// Initialize database connection asynchronously (non-blocking)
 (async () => {
   try {
-    await initializeDefaultUsers();
-    logInfo('Default users initialized');
+    console.log('🔄 Testing database connection...');
+    
+    // Add timeout to prevent hanging
+    const connectionTest = Promise.race([
+      testDatabaseConnection(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timeout')), 10000))
+    ]);
+    
+    const isConnected = await connectionTest;
+    
+    if (isConnected) {
+      console.log('✅ Database connected, initializing default users...');
+      await initializeDefaultUsers();
+      logInfo('Default users initialized successfully');
+    } else {
+      console.error('❌ Database connection failed, skipping user initialization');
+      logError('Database connection failed during startup');
+    }
   } catch (error) {
+    console.error('❌ Server initialization error:', error.message);
+    console.log('⚠️  Server will continue without database initialization');
     logError('Failed to initialize default users', error);
+    // Don't throw - let server continue
   }
-})();
+})().catch(error => {
+  console.error('🚨 Database initialization completely failed:', error.message);
+  console.log('📡 Express server will still start...');
+});
 
 // Authentication endpoints
 app.post('/api/auth/signin', async (req, res) => {

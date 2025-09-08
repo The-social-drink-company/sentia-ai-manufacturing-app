@@ -7823,7 +7823,7 @@ app.use(express.static(staticPath, {
   etag: false
 }));
 
-// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
+// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes AND STATIC ASSETS
 app.get('*', (req, res) => {
   // Skip API routes - they should have been handled above
   if (req.path.startsWith('/api/')) {
@@ -7832,6 +7832,17 @@ app.get('*', (req, res) => {
       path: req.path,
       method: req.method 
     });
+  }
+  
+  // CRITICAL: Skip static assets - they should be handled by express.static
+  if (req.path.startsWith('/assets/') || 
+      req.path.endsWith('.js') || 
+      req.path.endsWith('.css') || 
+      req.path.endsWith('.ico') ||
+      req.path.endsWith('.png') || 
+      req.path.endsWith('.svg')) {
+    console.log(`[DEBUG] Static asset missed by express.static: ${req.path}`);
+    return res.status(404).send('Static asset not found');
   }
   
   // Debug logging for file serving

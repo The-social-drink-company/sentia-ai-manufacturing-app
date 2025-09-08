@@ -320,4 +320,45 @@ export const notifyInfo = (title, message, duration) => {
   notify({ type: 'info', title, message, duration })
 }
 
+// Custom hook for notifications
+export const useNotifications = () => {
+  const showSuccess = useCallback((title, message, duration) => {
+    notify({ type: 'success', title, message, duration })
+  }, [])
+
+  const showError = useCallback((title, message, duration) => {
+    notify({ type: 'error', title, message, duration })
+  }, [])
+
+  const showWarning = useCallback((title, message, duration) => {
+    notify({ type: 'warning', title, message, duration })
+  }, [])
+
+  const showInfo = useCallback((title, message, duration) => {
+    notify({ type: 'info', title, message, duration })
+  }, [])
+
+  const showMagic = useCallback((title, message, duration) => {
+    notify({ type: 'magic', title, message, duration })
+  }, [])
+
+  return {
+    showSuccess,
+    showError,
+    showWarning,
+    showInfo,
+    showMagic
+  }
+}
+
+// Context provider component
+export const NotificationProvider = ({ children }) => {
+  return (
+    <div>
+      {children}
+      <NotificationSystem />
+    </div>
+  )
+}
+
 export default NotificationSystem

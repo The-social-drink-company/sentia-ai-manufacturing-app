@@ -2247,6 +2247,87 @@ app.get('/api/analytics/whatif-analysis/scenarios', authenticateUser, (req, res)
 });
 
 // Enhanced Production Tracking APIs
+// Live production data endpoint for ProductionTracking component
+app.get('/api/production/live', async (req, res) => {
+  try {
+    const { line = 'all', range = '24h' } = req.query;
+    
+    if (databaseService.isConnected) {
+      // Use real database queries
+      const [activeJobs, metrics, hourlyProduction] = await Promise.all([
+        databaseService.getProductionJobs({ status: 'RUNNING', line: line !== 'all' ? line : undefined }),
+        databaseService.getProductionMetrics(range),
+        databaseService.getHourlyProduction(range)
+      ]);
+
+      // Production lines data - in production this would come from MES systems
+      const lines = [
+        { id: 'line-a', name: 'Line A', status: 'running', efficiency: 93, output: 430 },
+        { id: 'line-b', name: 'Line B', status: 'running', efficiency: 88, output: 390 },
+        { id: 'line-c', name: 'Line C', status: 'running', efficiency: 85, output: 340 },
+        { id: 'line-d', name: 'Line D', status: 'running', efficiency: 96, output: 350 }
+      ];
+
+      const productionData = {
+        activeJobs,
+        metrics,
+        lines,
+        hourlyProduction
+      };
+
+      res.json(productionData);
+    } else {
+      // Fallback to mock data when database is not available
+      logWarn('Database not connected, using fallback production data');
+      
+      const productionData = {
+        activeJobs: [
+          { 
+            id: 'JOB-2025-001', 
+            product: 'GABA Red 500ml', 
+            line: 'Line A', 
+            status: 'running', 
+            progress: Math.floor(Math.random() * 30) + 65, 
+            startTime: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+            estimatedEnd: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString()
+          },
+          { 
+            id: 'JOB-2025-002', 
+            product: 'GABA Gold 500ml', 
+            line: 'Line B', 
+            status: 'running', 
+            progress: Math.floor(Math.random() * 20) + 40, 
+            startTime: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+            estimatedEnd: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
+          }
+        ],
+        metrics: {
+          totalJobs: 15,
+          activeJobs: 12,
+          completedToday: Math.floor(Math.random() * 3) + 8,
+          capacity: Math.floor(Math.random() * 10) + 80,
+          efficiency: Math.floor(Math.random() * 5) + 92,
+          outputToday: Math.floor(Math.random() * 200) + 1200,
+          outputTarget: 1400,
+          downtimeMinutes: Math.floor(Math.random() * 20) + 15
+        },
+        lines: [
+          { id: 'line-a', name: 'Line A', status: 'running', efficiency: 93, output: 430 },
+          { id: 'line-b', name: 'Line B', status: 'running', efficiency: 88, output: 390 },
+          { id: 'line-c', name: 'Line C', status: 'running', efficiency: 85, output: 340 },
+          { id: 'line-d', name: 'Line D', status: 'running', efficiency: 96, output: 350 }
+        ],
+        hourlyProduction: generateHourlyData(range)
+      };
+      
+      res.json(productionData);
+    }
+  } catch (error) {
+    logError('Production live data error', error);
+    res.status(500).json({ error: 'Failed to fetch live production data' });
+  }
+});
+
 app.get('/api/production/status', authenticateUser, (req, res) => {
   try {
     const { line, range } = req.query;

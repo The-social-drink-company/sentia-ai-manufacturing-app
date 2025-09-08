@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-
+import { ChartJS } from '../../lib/chartSetup';
 import {
-  TrendingUp, Calendar, Target, Settings,
-  Play, Download, RefreshCw, BarChart3,
-  LineChart, PieChart, AlertCircle, CheckCircle
-} from 'lucide-react';
+  TrendingUpIcon as TrendingUp, 
+  CalendarIcon as Calendar, 
+  FlagIcon as Target, 
+  Cog6ToothIcon as Settings,
+  PlayIcon as Play, 
+  ArrowDownTrayIcon as Download, 
+  ArrowPathIcon as RefreshCw, 
+  ChartBarIcon as BarChart3,
+  ChartBarIcon as LineChart, 
+  ChartPieIcon as PieChart, 
+  ExclamationCircleIcon as AlertCircle, 
+  CheckCircleIcon as CheckCircle
+} from '@heroicons/react/24/outline';
 import { Line, Bar } from 'react-chartjs-2';
 
 const DemandForecasting = () => {

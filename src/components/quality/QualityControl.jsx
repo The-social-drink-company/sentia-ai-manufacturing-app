@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { CheckCircleIcon, ClockIcon, ExclamationTriangleIcon, BeakerIcon, DocumentCheckIcon, ChartBarIcon } from '@heroicons/react/24/outline'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts'
+import ChartErrorBoundary from '../charts/ChartErrorBoundary'
+import { ChartJS } from '../../lib/chartSetup'
 
 const QualityControl = () => {
   const [qualityData, setQualityData] = useState(null)
@@ -150,16 +152,18 @@ const QualityControl = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Quality Trend (7 days)</h2>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={mockQualityTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Area type="monotone" dataKey="passRate" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} name="Pass Rate %" />
-                <Area type="monotone" dataKey="defectRate" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.3} name="Defect Rate %" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={mockQualityTrend}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="passRate" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} name="Pass Rate %" />
+                  <Area type="monotone" dataKey="defectRate" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.3} name="Defect Rate %" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
 
@@ -168,24 +172,26 @@ const QualityControl = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Defect Types</h2>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={mockDefectTypes}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {mockDefectTypes.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={mockDefectTypes}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {mockDefectTypes.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
       </div>
@@ -197,16 +203,18 @@ const QualityControl = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Test Performance Today</h2>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={mockTestPerformance}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="hour" />
-                <YAxis />
-                <Tooltip />
-                <Area type="monotone" dataKey="completed" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} name="Completed" />
-                <Area type="monotone" dataKey="failed" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.6} name="Failed" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={mockTestPerformance}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="hour" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="completed" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} name="Completed" />
+                  <Area type="monotone" dataKey="failed" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.6} name="Failed" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
 

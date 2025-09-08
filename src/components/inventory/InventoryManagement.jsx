@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { CubeIcon, ExclamationTriangleIcon, TruckIcon, ClockIcon, ArrowUpIcon, ArrowDownIcon, PlusIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
+import ChartErrorBoundary from '../charts/ChartErrorBoundary'
+import { ChartJS } from '../../lib/chartSetup'
 
 const InventoryManagement = () => {
   const [inventoryData, setInventoryData] = useState(null)
@@ -191,16 +193,18 @@ const InventoryManagement = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Stock Movement (7 days)</h2>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={mockStockMovement}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="inbound" stroke="#10B981" strokeWidth={2} name="Inbound" />
-                <Line type="monotone" dataKey="outbound" stroke="#EF4444" strokeWidth={2} name="Outbound" />
-              </LineChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={mockStockMovement}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="inbound" stroke="#10B981" strokeWidth={2} name="Inbound" />
+                  <Line type="monotone" dataKey="outbound" stroke="#EF4444" strokeWidth={2} name="Outbound" />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
 
@@ -209,24 +213,26 @@ const InventoryManagement = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Category Breakdown</h2>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={mockCategoryBreakdown}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {mockCategoryBreakdown.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={mockCategoryBreakdown}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {mockCategoryBreakdown.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
       </div>
@@ -238,16 +244,18 @@ const InventoryManagement = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Warehouse Utilization</h2>
           </div>
           <div className="p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={mockWarehouseData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="location" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="capacity" fill="#E5E7EB" name="Capacity" />
-                <Bar dataKey="utilization" fill="#3B82F6" name="Utilization" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={mockWarehouseData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="location" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="capacity" fill="#E5E7EB" name="Capacity" />
+                  <Bar dataKey="utilization" fill="#3B82F6" name="Utilization" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
 

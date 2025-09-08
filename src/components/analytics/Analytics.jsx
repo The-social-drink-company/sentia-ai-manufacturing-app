@@ -12,6 +12,8 @@ import {
   FunnelIcon
 } from '@heroicons/react/24/outline';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
+import ChartErrorBoundary from '../charts/ChartErrorBoundary';
+import { ChartJS } from '../../lib/chartSetup';
 
 const Analytics = () => {
   const [analyticsData, setAnalyticsData] = useState(null)
@@ -235,22 +237,24 @@ const Analytics = () => {
             Revenue Trend
           </h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={mockRevenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => formatCurrency(value)} />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#3B82F6"
-                  fill="#3B82F6"
-                  fillOpacity={0.3}
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={mockRevenueData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => formatCurrency(value)} />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#3B82F6"
+                    fill="#3B82F6"
+                    fillOpacity={0.3}
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
 
@@ -260,19 +264,21 @@ const Analytics = () => {
             Profit Analysis
           </h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mockRevenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value, name) => [
-                  name === 'profit' ? formatCurrency(value) : `${value}%`,
-                  name === 'profit' ? 'Profit' : 'Margin'
-                ]} />
-                <Bar dataKey="profit" fill="#10B981" name="profit" />
-                <Bar dataKey="margin" fill="#F59E0B" name="margin" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={mockRevenueData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip formatter={(value, name) => [
+                    name === 'profit' ? formatCurrency(value) : `${value}%`,
+                    name === 'profit' ? 'Profit' : 'Margin'
+                  ]} />
+                  <Bar dataKey="profit" fill="#10B981" name="profit" />
+                  <Bar dataKey="margin" fill="#F59E0B" name="margin" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
       </div>
@@ -310,24 +316,26 @@ const Analytics = () => {
             <DocumentChartBarIcon className="h-5 w-5 text-gray-400" />
           </div>
           <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={mockCostBreakdown}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={70}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {mockCostBreakdown.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => `${value}%`} />
-              </PieChart>
-            </ResponsiveContainer>
+            <ChartErrorBoundary>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={mockCostBreakdown}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={70}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {mockCostBreakdown.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => `${value}%`} />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartErrorBoundary>
           </div>
         </div>
 

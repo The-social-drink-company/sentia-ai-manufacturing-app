@@ -104,7 +104,6 @@
   opacity: 0;
   transition: max-height 300ms ease-in-out, opacity 300ms ease-in-out;
 }
-
 /* Mobile responsive sidebar */
 @media (max-width: 768px) {
   .sidebar-mobile {
@@ -154,7 +153,7 @@
     transition: none !important;
   }
   
-  .badge-pulse {
+  .sidebar-badge-pulse {
     animation: none !important;
   }
 }

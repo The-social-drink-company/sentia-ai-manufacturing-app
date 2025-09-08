@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, UserButton } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -30,6 +30,17 @@ const Analytics = lazy(() => import('./components/analytics/Analytics'))
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...')
 
+// Get Clerk publishable key from environment
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+// Validate Clerk key exists
+if (!clerkPubKey) {
+  console.error('VITE_CLERK_PUBLISHABLE_KEY is not set in environment variables')
+  throw new Error('Clerk publishable key is required')
+}
+
+console.log('Clerk key loaded:', clerkPubKey.substring(0, 20) + '...')
+
 // Initialize React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +61,12 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
       <div className="relative min-h-screen flex items-center justify-center px-4">
+        {/* Background Effects */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-1/2 -right-1/2 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-1/2 -left-1/2 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
+        </div>
+
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
@@ -64,16 +81,36 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="space-y-4">
-            <a 
-              href="/dashboard"
-              className="inline-block px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200 text-lg shadow-lg">
-                Access Dashboard
-            </a>
-            
-            <p className="text-blue-200 text-sm">
-              Secure authentication powered by Clerk
-            </p>
+          {/* Authentication Section */}
+          <div className="space-y-6">
+            <SignedOut>
+              <div className="space-y-4">
+                <SignInButton mode="modal" redirectUrl="/dashboard">
+                  <button className="inline-block px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg shadow-lg hover:shadow-xl transform hover:scale-105">
+                    Sign In to Access Dashboard
+                  </button>
+                </SignInButton>
+                
+                <p className="text-blue-200 text-sm">
+                  Secure enterprise authentication powered by Clerk
+                </p>
+              </div>
+            </SignedOut>
+
+            <SignedIn>
+              <div className="space-y-4">
+                <a 
+                  href="/dashboard"
+                  className="inline-block px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg shadow-lg hover:shadow-xl transform hover:scale-105">
+                    Access Your Dashboard
+                </a>
+                
+                <div className="flex items-center justify-center space-x-4">
+                  <p className="text-blue-200 text-sm">Welcome back!</p>
+                  <UserButton afterSignOutUrl="/" />
+                </div>
+              </div>
+            </SignedIn>
           </div>
         </div>
       </div>
@@ -139,6 +176,7 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <QueryClientProvider client={queryClient}>
+        <ClerkProvider publishableKey={clerkPubKey}>
           <Router>
             <div className="App">
               <Routes>
@@ -303,6 +341,7 @@ function App() {
               />
             </div>
           </Router>
+        </ClerkProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ErrorBoundary>

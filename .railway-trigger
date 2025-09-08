@@ -1,0 +1,10 @@
+# Railway Auto-Deployment Trigger
+# This file triggers Railway deployments when modified
+# Updated: 2025-09-08T08:52:00Z
+
+DEPLOYMENT_CONFIG:
+- development: auto-deploy every 5 minutes on push
+- testing: auto-deploy on push to test branch  
+- production: auto-deploy on push to production branch
+
+LAST_UPDATE: 2025-09-08T08:52:00Z

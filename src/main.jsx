@@ -42,11 +42,28 @@ devLog.info('Clerk key length:', PUBLISHABLE_KEY.length);
 
 // Add global error handler
 window.addEventListener('error', (event) => {
-  devLog.error('Global error:', event.error)
+  devLog.error('Global error:', {
+    message: event.error?.message,
+    stack: event.error?.stack,
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno
+  })
 })
 
 window.addEventListener('unhandledrejection', (event) => {
-  devLog.error('Unhandled promise rejection:', event.reason)
+  devLog.error('Unhandled promise rejection:', {
+    reason: event.reason?.message || event.reason,
+    stack: event.reason?.stack,
+    promise: event.promise
+  })
+  
+  // Prevent the default behavior (logging to console)
+  if (event.reason?.message?.includes('background.bundle.js') || 
+      event.reason?.toString?.()?.includes('background.bundle.js')) {
+    devLog.warn('Suppressing browser extension error:', event.reason)
+    event.preventDefault()
+  }
 })
 
 ReactDOM.createRoot(document.getElementById('root')).render(

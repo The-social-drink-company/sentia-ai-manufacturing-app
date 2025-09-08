@@ -804,6 +804,67 @@ app.get('/api/production/optimization', (req, res) => {
   });
 });
 
+// Quality Management API endpoint
+app.get('/api/quality/dashboard', (req, res) => {
+  const { line = 'all', timeRange = '24h', category = 'all' } = req.query;
+  
+  res.json({
+    overview: {
+      overallQualityScore: 97.8 + (Math.random() - 0.5) * 2,
+      defectRate: 2.2 + (Math.random() - 0.5) * 0.8,
+      passRate: 97.8 + (Math.random() - 0.5) * 2,
+      totalTests: 1247 + Math.floor(Math.random() * 100),
+      passedTests: 1219 + Math.floor(Math.random() * 50),
+      failedTests: 28 + Math.floor(Math.random() * 20),
+      activeInspections: 15 + Math.floor(Math.random() * 10),
+      pendingReports: 8 + Math.floor(Math.random() * 15),
+      criticalIssues: 2 + Math.floor(Math.random() * 5),
+      trendDirection: Math.random() > 0.5 ? 'up' : 'down'
+    },
+    qualityTrend: Array.from({ length: 24 }, (_, i) => ({
+      hour: i,
+      qualityScore: 95 + Math.random() * 5,
+      defectRate: 1 + Math.random() * 3,
+      throughput: 85 + Math.random() * 15
+    })),
+    defectAnalysis: {
+      byCategory: [
+        { category: 'Surface Defects', count: 45, percentage: 35.7, trend: 'decreasing' },
+        { category: 'Dimensional Issues', count: 32, percentage: 25.4, trend: 'stable' },
+        { category: 'Material Flaws', count: 28, percentage: 22.2, trend: 'increasing' },
+        { category: 'Assembly Errors', count: 21, percentage: 16.7, trend: 'decreasing' }
+      ],
+      bySeverity: [
+        { severity: 'Critical', count: 8, color: '#ef4444' },
+        { severity: 'Major', count: 24, color: '#f97316' },
+        { severity: 'Minor', count: 94, color: '#eab308' }
+      ]
+    },
+    activeTests: [
+      { id: 'QT-001', product: 'Component A-150', stage: 'Final Inspection', progress: 85, status: 'in-progress' },
+      { id: 'QT-002', product: 'Assembly B-220', stage: 'Material Testing', progress: 45, status: 'in-progress' },
+      { id: 'QT-003', product: 'Part C-180', stage: 'Dimensional Check', progress: 92, status: 'review' }
+    ],
+    qualityAlerts: [
+      { id: 'QA-001', type: 'critical', message: 'Defect rate spike in Line 3', timestamp: new Date(Date.now() - 300000).toISOString() },
+      { id: 'QA-002', type: 'warning', message: 'Temperature variance in Oven 2', timestamp: new Date(Date.now() - 600000).toISOString() },
+      { id: 'QA-003', type: 'info', message: 'Quality audit scheduled for tomorrow', timestamp: new Date(Date.now() - 900000).toISOString() }
+    ],
+    complianceStatus: {
+      iso9001: { status: 'compliant', lastAudit: '2024-08-15', nextAudit: '2024-11-15' },
+      iso14001: { status: 'compliant', lastAudit: '2024-07-20', nextAudit: '2024-10-20' },
+      fda: { status: 'review-required', lastAudit: '2024-06-10', nextAudit: '2024-12-10' },
+      ce: { status: 'compliant', lastAudit: '2024-08-01', nextAudit: '2024-11-01' }
+    },
+    productQuality: [
+      { product: 'Component A-150', qualityScore: 98.2, tests: 156, defects: 3, trend: 'stable' },
+      { product: 'Assembly B-220', qualityScore: 96.8, tests: 142, defects: 5, trend: 'improving' },
+      { product: 'Part C-180', qualityScore: 97.5, tests: 128, defects: 3, trend: 'declining' },
+      { product: 'Module D-300', qualityScore: 99.1, tests: 98, defects: 1, trend: 'stable' }
+    ]
+  });
+});
+
 // Catch all handler - serve React app for any route not handled above
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));

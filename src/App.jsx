@@ -33,6 +33,7 @@ const AdvancedInventoryManagement = lazy(() => import('./components/inventory/Ad
 const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
 const ProductionOptimization = lazy(() => import('./components/production/ProductionOptimization'))
 const QualityControl = lazy(() => import('./components/quality/QualityControl'))
+const QualityManagementSystem = lazy(() => import('./components/quality/QualityManagementSystem'))
 const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
 const EnhancedAIForecasting = lazy(() => import('./components/forecasting/EnhancedAIForecasting'))
 const Analytics = lazy(() => import('./components/analytics/Analytics'))
@@ -382,7 +383,33 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
+                          <QualityManagementSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/quality/basic" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <QualityControl />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/quality/management" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <QualityManagementSystem />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

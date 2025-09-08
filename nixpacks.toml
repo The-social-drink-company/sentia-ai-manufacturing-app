@@ -19,7 +19,11 @@ cmds = [
   "npm run build",
   "ls -la dist/",
   "ls -la dist/assets/",
-  "cat dist/index.html"
+  "echo 'BUILD VERIFICATION: Checking index.html'",
+  "cat dist/index.html",
+  "echo 'BUILD VERIFICATION: Checking if React app built correctly'",
+  "find dist -name '*.js' | head -5",
+  "echo 'BUILD COMPLETED - NUCLEAR FIX APPLIED'"
 ]
 
 [start]

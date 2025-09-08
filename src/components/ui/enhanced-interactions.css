@@ -1,0 +1,416 @@
+/* Enhanced Micro-interactions for Deeply Satisfying User Experience */
+
+/* ========================================
+   PREMIUM BUTTON INTERACTIONS
+======================================== */
+
+@keyframes button-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes success-ripple {
+  0% { 
+    transform: scale(0); 
+    opacity: 0.8; 
+  }
+  50% { 
+    opacity: 0.4; 
+  }
+  100% { 
+    transform: scale(4); 
+    opacity: 0; 
+  }
+}
+
+@keyframes satisfaction-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4); 
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.8); 
+  }
+}
+
+.button-satisfying {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+  padding: 12px 24px;
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transform-style: preserve-3d;
+}
+
+.button-satisfying:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+}
+
+.button-satisfying:active {
+  animation: button-press 0.15s ease-out;
+}
+
+.button-satisfying::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  transition: all 0.6s ease;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.button-satisfying:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.button-success {
+  animation: satisfaction-glow 1.5s ease-in-out;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+/* ========================================
+   DELIGHTFUL CARD INTERACTIONS
+======================================== */
+
+@keyframes card-lift {
+  0% { transform: translateY(0) rotateX(0) rotateY(0); }
+  100% { transform: translateY(-8px) rotateX(2deg) rotateY(-1deg); }
+}
+
+@keyframes card-content-reveal {
+  0% { opacity: 0.8; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes magnetic-pull {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(4px); }
+}
+
+.card-delightful {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 24px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.card-delightful::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s ease;
+}
+
+.card-delightful:hover {
+  animation: card-lift 0.3s ease-out forwards;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.card-delightful:hover::before {
+  left: 100%;
+}
+
+.card-delightful:hover .card-content {
+  animation: card-content-reveal 0.3s ease-out 0.1s forwards;
+}
+
+/* ========================================
+   SATISFYING FORM INTERACTIONS
+======================================== */
+
+@keyframes input-focus-glow {
+  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+  100% { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+}
+
+@keyframes label-float {
+  0% { transform: translateY(0) scale(1); color: #9CA3AF; }
+  100% { transform: translateY(-24px) scale(0.85); color: #3B82F6; }
+}
+
+.input-delightful {
+  position: relative;
+  margin: 24px 0;
+}
+
+.input-delightful input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid #E5E7EB;
+  border-radius: 16px;
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.input-delightful input:focus {
+  outline: none;
+  border-color: #3B82F6;
+  animation: input-focus-glow 0.3s ease-out forwards;
+}
+
+.input-delightful label {
+  position: absolute;
+  left: 20px;
+  top: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  font-weight: 500;
+}
+
+.input-delightful input:focus + label,
+.input-delightful input:not(:placeholder-shown) + label {
+  animation: label-float 0.3s ease-out forwards;
+}
+
+/* ========================================
+   EMOTIONALLY ENGAGING LOADING STATES
+======================================== */
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.05); }
+}
+
+@keyframes breathing-glow {
+  0%, 100% { 
+    opacity: 0.6; 
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.05);
+    filter: blur(1px);
+  }
+}
+
+@keyframes progress-satisfaction {
+  0% { 
+    width: 0%; 
+    background: linear-gradient(90deg, #EF4444, #F97316);
+  }
+  50% { 
+    background: linear-gradient(90deg, #F97316, #EAB308);
+  }
+  100% { 
+    width: 100%; 
+    background: linear-gradient(90deg, #EAB308, #10B981);
+  }
+}
+
+.loading-delightful {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.loading-heart {
+  animation: heartbeat 1.5s ease-in-out infinite;
+  color: #EF4444;
+  font-size: 20px;
+}
+
+.loading-text {
+  font-weight: 500;
+  color: #374151;
+  animation: breathing-glow 2s ease-in-out infinite;
+}
+
+.progress-satisfying {
+  position: relative;
+  height: 6px;
+  background: rgba(229, 231, 235, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.progress-satisfying::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 10px;
+  animation: progress-satisfaction 3s ease-out forwards;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+}
+
+/* ========================================
+   JOYFUL SUCCESS FEEDBACK
+======================================== */
+
+@keyframes celebration-bounce {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  20% { transform: scale(1.2) rotate(90deg); opacity: 1; }
+  40% { transform: scale(0.9) rotate(180deg); }
+  60% { transform: scale(1.1) rotate(270deg); }
+  80% { transform: scale(0.95) rotate(360deg); }
+  100% { transform: scale(1) rotate(360deg); opacity: 1; }
+}
+
+@keyframes confetti-burst {
+  0% { transform: scale(0) rotateZ(0deg); opacity: 1; }
+  50% { transform: scale(1) rotateZ(180deg); }
+  100% { transform: scale(0.8) rotateZ(360deg); opacity: 0; }
+}
+
+@keyframes success-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.success-celebration {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  animation: celebration-bounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.success-celebration::before {
+  content: '✨';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 16px;
+  animation: confetti-burst 1s ease-out 0.3s;
+}
+
+.success-celebration::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  animation: success-pulse 1.5s ease-out 0.5s;
+}
+
+/* ========================================
+   PLAYFUL HOVER EFFECTS
+======================================== */
+
+@keyframes wiggle-excitement {
+  0%, 7% { transform: rotateZ(0); }
+  15% { transform: rotateZ(-5deg) scale(1.02); }
+  20% { transform: rotateZ(3deg) scale(1.02); }
+  25% { transform: rotateZ(-3deg) scale(1.01); }
+  30% { transform: rotateZ(2deg) scale(1.01); }
+  35% { transform: rotateZ(-1deg) scale(1); }
+  40%, 100% { transform: rotateZ(0) scale(1); }
+}
+
+@keyframes icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.interactive-delight:hover {
+  animation: wiggle-excitement 0.6s ease-in-out;
+}
+
+.icon-playful {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-playful:hover {
+  animation: icon-bounce 0.6s ease-in-out infinite;
+  color: #3B82F6;
+  transform: scale(1.1);
+}
+
+/* ========================================
+   SATISFYING SCROLL ANIMATIONS
+======================================== */
+
+@keyframes scroll-reveal {
+  0% { 
+    opacity: 0; 
+    transform: translateY(40px) rotateX(10deg); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) rotateX(0); 
+  }
+}
+
+.scroll-reveal {
+  animation: scroll-reveal 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   RESPONSIVE & ACCESSIBILITY
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .button-satisfying,
+  .card-delightful,
+  .input-delightful input,
+  .loading-heart,
+  .success-celebration,
+  .interactive-delight,
+  .icon-playful {
+    animation: none !important;
+    transition: opacity 0.2s ease !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .button-satisfying:active {
+    transform: scale(0.98);
+  }
+  
+  .card-delightful:active {
+    transform: scale(0.98);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .button-satisfying {
+    border: 2px solid currentColor;
+  }
+  
+  .card-delightful {
+    border: 2px solid currentColor;
+    background: white;
+  }
+}

@@ -1116,6 +1116,127 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
   }
 });
 
+// Admin API - Get invitations
+app.get('/api/admin/invitations', async (req, res) => {
+  try {
+    // Mock invitations data for demo
+    const invitations = [
+      {
+        id: 'inv-001',
+        email: 'john.doe@sentiaspirits.com',
+        role: 'manager',
+        status: 'pending',
+        invitedBy: 'admin@sentiaspirits.com',
+        invitedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        id: 'inv-002',
+        email: 'sarah.smith@sentiaspirits.com',
+        role: 'operator',
+        status: 'pending',
+        invitedBy: 'admin@sentiaspirits.com',
+        invitedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        expiresAt: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ];
+
+    res.json({ success: true, invitations });
+  } catch (error) {
+    console.error('Admin invitations error:', error);
+    res.status(500).json({ error: 'Failed to fetch invitations' });
+  }
+});
+
+// Admin API - Send invitation
+app.post('/api/admin/invite', async (req, res) => {
+  try {
+    const { email, role, invitedBy } = req.body;
+
+    if (!email || !role) {
+      return res.status(400).json({ error: 'Email and role are required' });
+    }
+
+    // In a real app, you'd integrate with Clerk's invitation API
+    // For demo, we'll simulate sending an invitation
+    const invitation = {
+      id: `inv-${Date.now()}`,
+      email,
+      role,
+      status: 'pending',
+      invitedBy: invitedBy || 'admin@sentiaspirits.com',
+      invitedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    };
+
+    res.json({
+      success: true,
+      message: 'Invitation sent successfully',
+      invitation
+    });
+  } catch (error) {
+    console.error('Admin invite error:', error);
+    res.status(500).json({ error: 'Failed to send invitation' });
+  }
+});
+
+// Admin API - Approve user
+app.post('/api/admin/users/:userId/approve', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // In a real app, update user status in Clerk and database
+    res.json({
+      success: true,
+      message: 'User approved successfully',
+      userId
+    });
+  } catch (error) {
+    console.error('Admin approve user error:', error);
+    res.status(500).json({ error: 'Failed to approve user' });
+  }
+});
+
+// Admin API - Revoke user access
+app.post('/api/admin/users/:userId/revoke', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // In a real app, deactivate user in Clerk and database
+    res.json({
+      success: true,
+      message: 'User access revoked successfully',
+      userId
+    });
+  } catch (error) {
+    console.error('Admin revoke user error:', error);
+    res.status(500).json({ error: 'Failed to revoke user access' });
+  }
+});
+
+// Admin API - Update user role
+app.post('/api/admin/users/:userId/role', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    if (!role) {
+      return res.status(400).json({ error: 'Role is required' });
+    }
+
+    // In a real app, update user role in Clerk metadata and database
+    res.json({
+      success: true,
+      message: 'User role updated successfully',
+      userId,
+      newRole: role
+    });
+  } catch (error) {
+    console.error('Admin update role error:', error);
+    res.status(500).json({ error: 'Failed to update user role' });
+  }
+});
+
 app.get('/api/admin/system-stats', authenticateUser, (req, res) => {
   const stats = {
     uptime: '99.9%',

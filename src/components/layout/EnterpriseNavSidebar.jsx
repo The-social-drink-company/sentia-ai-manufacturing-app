@@ -15,7 +15,9 @@ import {
 
 const EnterpriseNavSidebar = () => {
   const location = useLocation()
-  const { hasPermission } = useAuthRole()
+  
+  // Mock permission check for now - all items visible
+  const hasPermission = () => true
   
   const isActive = (path) => {
     return location.pathname === path || location.pathname.startsWith(path + '/')

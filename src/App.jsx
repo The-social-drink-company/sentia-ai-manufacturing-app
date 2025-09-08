@@ -216,11 +216,11 @@ function App() {
                   } 
                 />
                 
-                {/* Enterprise Pages with World-Class Layout */}
+                {/* Enterprise Pages with World-Class Layout - Guest Access Enabled */}
                 <Route 
                   path="/working-capital" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <WorkingCapital />
@@ -233,7 +233,7 @@ function App() {
                 <Route 
                   path="/what-if" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <WhatIfAnalysis />
@@ -246,7 +246,7 @@ function App() {
                 <Route 
                   path="/forecasting" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <DemandForecasting />
@@ -259,7 +259,7 @@ function App() {
                 <Route 
                   path="/inventory" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <InventoryManagement />
@@ -272,7 +272,7 @@ function App() {
                 <Route 
                   path="/production" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <ProductionTracking />
@@ -285,7 +285,7 @@ function App() {
                 <Route 
                   path="/quality" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <QualityControl />
@@ -298,7 +298,7 @@ function App() {
                 <Route 
                   path="/analytics" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <Analytics />
@@ -311,7 +311,7 @@ function App() {
                 <Route 
                   path="/data-import" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <DataImportDashboard />
@@ -324,7 +324,7 @@ function App() {
                 <Route 
                   path="/ai-analytics" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <AIAnalyticsDashboard />
@@ -337,7 +337,7 @@ function App() {
                 <Route 
                   path="/predictive-analytics" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <PredictiveAnalyticsDashboard />
@@ -350,7 +350,7 @@ function App() {
                 <Route 
                   path="/maintenance" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <MaintenanceManagement />
@@ -363,7 +363,7 @@ function App() {
                 <Route 
                   path="/mcp-status" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <MCPConnectionStatus />
@@ -376,7 +376,7 @@ function App() {
                 <Route 
                   path="/settings" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <SystemSettings />
@@ -389,7 +389,7 @@ function App() {
                 <Route 
                   path="/admin" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <AdminPanel />

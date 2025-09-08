@@ -1,12 +1,12 @@
-FROM node:20-alpine
+FROM node:20
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --production=false
+# Install dependencies with clean npm cache
+RUN npm ci --production=false
 
 # Copy Prisma schema first
 COPY prisma ./prisma/

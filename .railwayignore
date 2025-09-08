@@ -1,0 +1,23 @@
+# Force Railway to use Nixpacks instead of Docker
+Dockerfile*
+docker-compose*
+
+# Ignore development files
+*.log
+.env.local
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore build artifacts  
+dist/
+build/
+node_modules/.cache/
+.npm/
+.cache/
+
+# Ignore git
+.git/
+.gitignore

@@ -720,18 +720,129 @@ const Header = () => {
               </button>
               
               {/* User menu */}
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700 dark:text-gray-200 hidden sm:block">
-                  {getUserDisplayName()}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                  {role}
-                </span>
-                {/* User avatar with next-auth */}
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                  {getUserDisplayName()?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
-              </div>
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center space-x-2 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <span className="text-sm text-gray-700 dark:text-gray-200 hidden sm:block">
+                    {getUserDisplayName()}
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+                    {role}
+                  </span>
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                    {getUserDisplayName()?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <ChevronDownIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                </Menu.Button>
+
+                <Transition
+                  as={React.Fragment}
+                  enter="transition ease-out duration-200"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 dark:divide-gray-700 dark:ring-gray-600">
+                    <div className="px-4 py-3">
+                      <p className="text-sm text-gray-900 dark:text-white font-medium">
+                        {getUserDisplayName()}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {user?.emailAddresses?.[0]?.emailAddress || user?.email || 'No email'}
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        Role: {role}
+                      </p>
+                    </div>
+                    
+                    <div className="py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/profile"
+                            className={cn(
+                              active ? 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-700 dark:text-gray-300',
+                              'group flex items-center px-4 py-2 text-sm'
+                            )}
+                          >
+                            <Cog6ToothIcon className="mr-3 h-4 w-4 text-gray-400" />
+                            Profile Settings
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      
+                      {(hasPermission('admin.access') || role === 'admin') && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              to="/admin"
+                              className={cn(
+                                active ? 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-700 dark:text-gray-300',
+                                'group flex items-center px-4 py-2 text-sm'
+                              )}
+                            >
+                              <Cog6ToothIcon className="mr-3 h-4 w-4 text-gray-400" />
+                              Admin Panel
+                            </Link>
+                          )}
+                        </Menu.Item>
+                      )}
+                      
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/settings"
+                            className={cn(
+                              active ? 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-700 dark:text-gray-300',
+                              'group flex items-center px-4 py-2 text-sm'
+                            )}
+                          >
+                            <AdjustmentsHorizontalIcon className="mr-3 h-4 w-4 text-gray-400" />
+                            Settings
+                          </Link>
+                        )}
+                      </Menu.Item>
+                    </div>
+                    
+                    <div className="py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={() => {
+                              devLog.log('Show help modal')
+                              // Implement help modal here
+                            }}
+                            className={cn(
+                              active ? 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-700 dark:text-gray-300',
+                              'group flex w-full items-center px-4 py-2 text-sm'
+                            )}
+                          >
+                            <QuestionMarkCircleIcon className="mr-3 h-4 w-4 text-gray-400" />
+                            Help & Support
+                          </button>
+                        )}
+                      </Menu.Item>
+                      
+                      <Menu.Item>
+                        {({ active }) => (
+                          <SignOutButton redirectUrl="/">
+                            <button
+                              className={cn(
+                                active ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:text-red-100' : 'text-red-600 dark:text-red-400',
+                                'group flex w-full items-center px-4 py-2 text-sm'
+                              )}
+                            >
+                              <ArrowPathIcon className="mr-3 h-4 w-4 text-red-500" />
+                              Sign Out
+                            </button>
+                          </SignOutButton>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
             </div>
           </div>
         </div>

@@ -16,7 +16,13 @@ import {
   ShieldCheckIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ClockIcon
+  ClockIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  Squares2X2Icon,
+  EnvelopeIcon,
+  UserPlusIcon,
+  DocumentDuplicateIcon
 } from '@heroicons/react/24/outline'
 import { cn } from '../../../lib/utils'
 import { useAuthRole } from '../../../hooks/useAuthRole.jsx'
@@ -238,6 +244,9 @@ const AdminUsers = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [modalMode, setModalMode] = useState('create')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedUsers, setSelectedUsers] = useState(new Set())
+  const [showBulkActions, setShowBulkActions] = useState(false)
+  const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' })
 
   // Fetch users
   const { data: users, isLoading } = useQuery({
@@ -350,7 +359,7 @@ const AdminUsers = () => {
     refetchInterval: 30000
   })
 
-  // Filter users
+  // Filter and sort users
   const filteredUsers = users?.filter(user => {
     const matchesSearch = searchTerm === '' || 
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -361,6 +370,8 @@ const AdminUsers = () => {
     
     return matchesSearch && matchesRole && matchesStatus
   }) || []
+
+  const sortedUsers = sortUsers(filteredUsers, sortConfig)
 
   const handleCreateUser = () => {
     setSelectedUser(null)
@@ -419,6 +430,84 @@ const AdminUsers = () => {
     } catch (error) {
       logError('Error sending password reset', error, { component: 'AdminUsers', userId })
     }
+  }
+
+  const handleBulkAction = async (action) => {
+    if (!hasPermission('admin.users.edit')) return
+    
+    const userIds = Array.from(selectedUsers)
+    if (userIds.length === 0) return
+    
+    const actionText = {
+      'activate': 'activate',
+      'deactivate': 'deactivate',
+      'delete': 'delete',
+      'reset-password': 'send password reset emails to'
+    }[action]
+    
+    if (!confirm(`This will ${actionText} ${userIds.length} user(s). Continue?`)) return
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      queryClient.invalidateQueries(['admin', 'users'])
+      setSelectedUsers(new Set())
+      setShowBulkActions(false)
+      logInfo('Bulk action completed', { component: 'AdminUsers', action, userCount: userIds.length })
+    } catch (error) {
+      logError('Error performing bulk action', error, { component: 'AdminUsers', action })
+    }
+  }
+
+  const handleSelectUser = (userId) => {
+    setSelectedUsers(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(userId)) {
+        newSet.delete(userId)
+      } else {
+        newSet.add(userId)
+      }
+      return newSet
+    })
+  }
+
+  const handleSelectAll = () => {
+    if (selectedUsers.size === filteredUsers.length) {
+      setSelectedUsers(new Set())
+    } else {
+      setSelectedUsers(new Set(filteredUsers.map(user => user.id)))
+    }
+  }
+
+  const sortUsers = (users, config) => {
+    return [...users].sort((a, b) => {
+      let aValue = a[config.key]
+      let bValue = b[config.key]
+      
+      // Handle nested properties
+      if (config.key === 'name') {
+        aValue = `${a.firstName} ${a.lastName}`
+        bValue = `${b.firstName} ${b.lastName}`
+      }
+      
+      // Handle dates
+      if (config.key === 'lastLogin') {
+        aValue = aValue ? new Date(aValue) : new Date(0)
+        bValue = bValue ? new Date(bValue) : new Date(0)
+      }
+      
+      if (aValue < bValue) return config.direction === 'asc' ? -1 : 1
+      if (aValue > bValue) return config.direction === 'asc' ? 1 : -1
+      return 0
+    })
+  }
+
+  const handleSort = (key) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }))
   }
 
   const formatLastLogin = (lastLogin) => {
@@ -494,7 +583,7 @@ const AdminUsers = () => {
         )}
       </div>
 
-      {/* Filters */}
+      {/* Filters and Search */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex flex-wrap gap-4">
           <div className="flex-1 min-w-64">
@@ -502,7 +591,7 @@ const AdminUsers = () => {
               <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search users..."
+                placeholder="Search by name, email, or username..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -533,8 +622,82 @@ const AdminUsers = () => {
             <option value="suspended">Suspended</option>
             <option value="pending">Pending</option>
           </select>
+
+          <button
+            onClick={() => setShowBulkActions(!showBulkActions)}
+            className={cn(
+              "flex items-center space-x-2 px-3 py-2 border rounded-md transition-colors",
+              showBulkActions
+                ? "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
+                : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
+            )}
+          >
+            <Squares2X2Icon className="w-4 h-4" />
+            <span>Bulk Actions</span>
+          </button>
         </div>
       </div>
+
+      {/* Bulk Actions Toolbar */}
+      {showBulkActions && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 dark:bg-yellow-900/20 dark:border-yellow-800">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="text-sm">
+                <span className="font-medium text-yellow-800 dark:text-yellow-200">
+                  {selectedUsers.size} user(s) selected
+                </span>
+              </div>
+              
+              {selectedUsers.size > 0 && hasPermission('admin.users.edit') && (
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleBulkAction('activate')}
+                    className="px-3 py-1 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700"
+                  >
+                    Activate
+                  </button>
+                  <button
+                    onClick={() => handleBulkAction('deactivate')}
+                    className="px-3 py-1 text-xs font-medium bg-gray-600 text-white rounded hover:bg-gray-700"
+                  >
+                    Deactivate
+                  </button>
+                  <button
+                    onClick={() => handleBulkAction('reset-password')}
+                    className="px-3 py-1 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Reset Passwords
+                  </button>
+                  {hasPermission('admin.users.delete') && (
+                    <button
+                      onClick={() => handleBulkAction('delete')}
+                      className="px-3 py-1 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleSelectAll}
+                className="text-sm font-medium text-yellow-800 hover:text-yellow-900 dark:text-yellow-200 dark:hover:text-yellow-100"
+              >
+                {selectedUsers.size === sortedUsers.length ? 'Deselect All' : 'Select All'}
+              </button>
+              <button
+                onClick={() => setSelectedUsers(new Set())}
+                className="text-sm font-medium text-yellow-800 hover:text-yellow-900 dark:text-yellow-200 dark:hover:text-yellow-100"
+              >
+                Clear Selection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Users table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -542,17 +705,59 @@ const AdminUsers = () => {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  User
+                {showBulkActions && (
+                  <th className="px-6 py-3 text-left">
+                    <input
+                      type="checkbox"
+                      checked={selectedUsers.size === sortedUsers.length && sortedUsers.length > 0}
+                      onChange={handleSelectAll}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                  </th>
+                )}
+                <th className="px-6 py-3 text-left">
+                  <button
+                    onClick={() => handleSort('name')}
+                    className="flex items-center space-x-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <span>User</span>
+                    {sortConfig.key === 'name' && (
+                      sortConfig.direction === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />
+                    )}
+                  </button>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Role
+                <th className="px-6 py-3 text-left">
+                  <button
+                    onClick={() => handleSort('role')}
+                    className="flex items-center space-x-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <span>Role</span>
+                    {sortConfig.key === 'role' && (
+                      sortConfig.direction === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />
+                    )}
+                  </button>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status
+                <th className="px-6 py-3 text-left">
+                  <button
+                    onClick={() => handleSort('status')}
+                    className="flex items-center space-x-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <span>Status</span>
+                    {sortConfig.key === 'status' && (
+                      sortConfig.direction === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />
+                    )}
+                  </button>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Last Login
+                <th className="px-6 py-3 text-left">
+                  <button
+                    onClick={() => handleSort('lastLogin')}
+                    className="flex items-center space-x-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <span>Last Login</span>
+                    {sortConfig.key === 'lastLogin' && (
+                      sortConfig.direction === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   MFA
@@ -563,8 +768,18 @@ const AdminUsers = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredUsers.map((user) => (
+              {sortedUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  {showBulkActions && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.has(user.id)}
+                        onChange={() => handleSelectUser(user.id)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                    </td>
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 w-10 h-10">
@@ -653,7 +868,7 @@ const AdminUsers = () => {
           </table>
         </div>
 
-        {filteredUsers.length === 0 && (
+        {sortedUsers.length === 0 && (
           <div className="text-center py-12">
             <UserIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No users found</h3>

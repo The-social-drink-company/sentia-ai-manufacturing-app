@@ -15,7 +15,8 @@ import {
   ShareIcon,
   BookmarkIcon,
   SparklesIcon,
-  LightBulbIcon
+  LightBulbIcon,
+  Bars3Icon
 } from '@heroicons/react/24/outline';
 
 const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
@@ -24,6 +25,17 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const [notifications, setNotifications] = useState([
     { id: 1, type: 'success', title: 'Production Target Achieved', message: 'Bottling line exceeded daily target by 12%', time: '2 min ago', unread: true },
     { id: 2, type: 'warning', title: 'Inventory Alert', message: 'Raw materials below reorder point', time: '15 min ago', unread: true },
@@ -48,8 +60,8 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
   ];
 
   const headerVariants = {
-    collapsed: { paddingLeft: '5rem' },
-    expanded: { paddingLeft: '23rem' }
+    collapsed: { paddingLeft: isMobile ? '0' : '5rem' },
+    expanded: { paddingLeft: isMobile ? '0' : '23rem' }
   };
 
   const notificationVariants = {
@@ -78,8 +90,20 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 pointer-events-none" />
       
       <div className="flex items-center justify-between h-full px-8 relative z-10">
-        {/* Left Section - Breadcrumbs & Live Stats */}
+        {/* Left Section - Mobile Menu & Breadcrumbs & Live Stats */}
         <div className="flex items-center space-x-6">
+          {/* Mobile Menu Button */}
+          {isMobile && (
+            <motion.button
+              onClick={onToggleSidebar}
+              className="p-3 rounded-2xl bg-white/60 border border-gray-200/50 hover:bg-white/80 transition-all backdrop-blur-sm group"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Bars3Icon className="w-6 h-6 text-gray-700 group-hover:text-blue-600 transition-colors" />
+            </motion.button>
+          )}
+
           {/* Dynamic Breadcrumbs */}
           <motion.div 
             className="flex items-center space-x-3"
@@ -119,7 +143,7 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
         <div className="flex items-center space-x-4">
           {/* Global Search */}
           <motion.div 
-            className="relative hidden md:block"
+            className={`relative ${isMobile ? 'hidden' : 'hidden md:block'}`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

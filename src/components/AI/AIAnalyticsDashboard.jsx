@@ -218,6 +218,17 @@ const ModelResults = ({ data, selectedModel }) => {
     return titles[modelId] || 'Analysis Results';
   };
 
+  if (!data || typeof data !== 'object') {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h3 className="text-lg font-semibold mb-6">{getModelTitle(selectedModel)}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Loading analysis results...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">{getModelTitle(selectedModel)}</h3>
@@ -234,15 +245,15 @@ const ModelResults = ({ data, selectedModel }) => {
       {/* Key Metrics */}
       <div className="grid grid-cols-3 gap-4">
         <div className="text-center p-4 bg-blue-50 rounded-lg">
-          <div className="text-2xl font-bold text-blue-600">{data.confidence}%</div>
+          <div className="text-2xl font-bold text-blue-600">{data.confidence || 0}%</div>
           <div className="text-sm text-gray-600">Confidence Level</div>
         </div>
         <div className="text-center p-4 bg-green-50 rounded-lg">
-          <div className="text-2xl font-bold text-green-600">{data.predictions}</div>
+          <div className="text-2xl font-bold text-green-600">{data.predictions || 0}</div>
           <div className="text-sm text-gray-600">Predictions</div>
         </div>
         <div className="text-center p-4 bg-purple-50 rounded-lg">
-          <div className="text-2xl font-bold text-purple-600">{data.accuracy}%</div>
+          <div className="text-2xl font-bold text-purple-600">{data.accuracy || 0}%</div>
           <div className="text-sm text-gray-600">Model Accuracy</div>
         </div>
       </div>
@@ -251,6 +262,17 @@ const ModelResults = ({ data, selectedModel }) => {
 };
 
 const ModelInsights = ({ insights }) => {
+  if (!insights || !Array.isArray(insights)) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h3 className="text-lg font-semibold mb-6">Key Insights</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>No insights available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Key Insights</h3>
@@ -274,6 +296,17 @@ const ModelInsights = ({ insights }) => {
 };
 
 const ModelPerformance = ({ performance }) => {
+  if (!performance || typeof performance !== 'object') {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h3 className="text-lg font-semibold mb-6">Model Performance</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>No performance data available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Model Performance</h3>
@@ -302,6 +335,17 @@ const ModelPerformance = ({ performance }) => {
 };
 
 const AIRecommendations = ({ recommendations }) => {
+  if (!recommendations || !Array.isArray(recommendations)) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h3 className="text-lg font-semibold mb-6">AI Recommendations</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>No recommendations available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">AI Recommendations</h3>

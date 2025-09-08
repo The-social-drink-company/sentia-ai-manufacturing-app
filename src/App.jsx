@@ -33,6 +33,7 @@ const AdvancedInventoryManagement = lazy(() => import('./components/inventory/Ad
 const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
 const QualityControl = lazy(() => import('./components/quality/QualityControl'))
 const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
+const EnhancedAIForecasting = lazy(() => import('./components/forecasting/EnhancedAIForecasting'))
 const Analytics = lazy(() => import('./components/analytics/Analytics'))
 const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashboard'))
 const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
@@ -285,6 +286,19 @@ function App() {
                 
                 <Route 
                   path="/forecasting" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <EnhancedAIForecasting />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/forecasting/basic" 
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>

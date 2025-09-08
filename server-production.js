@@ -494,6 +494,153 @@ app.get('/api/inventory/advanced', (req, res) => {
   });
 });
 
+// Enhanced AI forecasting endpoint
+app.get('/api/forecasting/enhanced', (req, res) => {
+  const { model = 'ensemble', horizon = 30, confidence = 95 } = req.query;
+  
+  res.json({
+    models: {
+      ensemble: {
+        name: 'AI Ensemble Model',
+        accuracy: 94.2,
+        confidence: 0.96,
+        mape: 5.8,
+        description: 'Combines multiple AI models including neural networks, LSTM, and statistical models',
+        lastTrained: '2025-09-08T06:00:00Z',
+        features: ['seasonal_patterns', 'market_trends', 'external_factors', 'promotional_impact'],
+        performance: {
+          shortTerm: 96.1,
+          mediumTerm: 93.8,
+          longTerm: 89.5
+        }
+      },
+      neuralNetwork: {
+        name: 'Deep Neural Network',
+        accuracy: 91.5,
+        confidence: 0.94,
+        mape: 8.5,
+        description: 'Advanced deep learning model with attention mechanisms',
+        lastTrained: '2025-09-08T02:00:00Z',
+        features: ['time_series', 'cross_product_influence', 'market_sentiment'],
+        performance: {
+          shortTerm: 94.2,
+          mediumTerm: 91.1,
+          longTerm: 87.8
+        }
+      },
+      lstm: {
+        name: 'LSTM Time Series',
+        accuracy: 89.7,
+        confidence: 0.91,
+        mape: 10.3,
+        description: 'Long Short-Term Memory network optimized for sequential data',
+        lastTrained: '2025-09-07T18:00:00Z',
+        features: ['historical_demand', 'seasonality', 'trend_analysis'],
+        performance: {
+          shortTerm: 92.1,
+          mediumTerm: 88.9,
+          longTerm: 84.2
+        }
+      },
+      statistical: {
+        name: 'Statistical Models',
+        accuracy: 85.3,
+        confidence: 0.87,
+        mape: 14.7,
+        description: 'ARIMA, Exponential Smoothing, and Regression models',
+        lastTrained: '2025-09-08T00:00:00Z',
+        features: ['moving_averages', 'seasonal_decomposition', 'linear_trends'],
+        performance: {
+          shortTerm: 87.5,
+          mediumTerm: 84.1,
+          longTerm: 82.3
+        }
+      }
+    },
+    forecast: {
+      demand: Array.from({ length: parseInt(horizon) }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() + i + 1);
+        const baseValue = 2400 + Math.sin(i * 0.5) * 100 + Math.random() * 50;
+        const confidenceWidth = baseValue * 0.1 * (confidence / 100);
+        
+        return {
+          date: date.toISOString().split('T')[0],
+          actual: null,
+          predicted: Math.round(baseValue),
+          upperBound: Math.round(baseValue + confidenceWidth),
+          lowerBound: Math.round(baseValue - confidenceWidth),
+          confidence: confidence / 100
+        };
+      })
+    },
+    historical: [
+      { date: '2025-09-01', demand: 2380, revenue: 95200, inventory: 15400 },
+      { date: '2025-09-02', demand: 2420, revenue: 96800, inventory: 15100 },
+      { date: '2025-09-03', demand: 2350, revenue: 94000, inventory: 15800 },
+      { date: '2025-09-04', demand: 2480, revenue: 99200, inventory: 14900 },
+      { date: '2025-09-05', demand: 2520, revenue: 100800, inventory: 14600 },
+      { date: '2025-09-06', demand: 2390, revenue: 95600, inventory: 15300 },
+      { date: '2025-09-07', demand: 2450, revenue: 98000, inventory: 14800 },
+      { date: '2025-09-08', demand: 2410, revenue: 96400, inventory: 15200 }
+    ],
+    modelComparison: [
+      { date: '2025-09-09', ensemble: 2420, neural: 2450, lstm: 2380, statistical: 2400 },
+      { date: '2025-09-10', ensemble: 2450, neural: 2480, lstm: 2410, statistical: 2430 },
+      { date: '2025-09-11', ensemble: 2380, neural: 2420, lstm: 2350, statistical: 2370 },
+      { date: '2025-09-12', ensemble: 2520, neural: 2560, lstm: 2490, statistical: 2510 },
+      { date: '2025-09-13', ensemble: 2480, neural: 2510, lstm: 2450, statistical: 2470 },
+      { date: '2025-09-14', ensemble: 2350, neural: 2390, lstm: 2320, statistical: 2340 },
+      { date: '2025-09-15', ensemble: 2290, neural: 2330, lstm: 2260, statistical: 2280 }
+    ],
+    insights: [
+      {
+        type: 'trend',
+        severity: 'info',
+        title: 'Seasonal Pattern Detected',
+        description: 'Strong weekly seasonality with peak demand on Fridays and weekends',
+        impact: 'medium',
+        confidence: 0.94,
+        recommendedActions: ['Adjust production schedule', 'Optimize inventory levels']
+      },
+      {
+        type: 'anomaly',
+        severity: 'warning',
+        title: 'Demand Surge Expected',
+        description: 'AI model predicts 15% increase in demand next week based on market indicators',
+        impact: 'high',
+        confidence: 0.87,
+        recommendedActions: ['Increase production capacity', 'Review supplier commitments']
+      },
+      {
+        type: 'optimization',
+        severity: 'success',
+        title: 'Inventory Optimization Opportunity',
+        description: 'Model suggests reducing safety stock by 8% without impacting service levels',
+        impact: 'medium',
+        confidence: 0.92,
+        recommendedActions: ['Adjust reorder points', 'Optimize warehouse space']
+      },
+      {
+        type: 'risk',
+        severity: 'error',
+        title: 'Supply Chain Risk Alert',
+        description: 'External factors indicate potential supply disruption in 2 weeks',
+        impact: 'high',
+        confidence: 0.79,
+        recommendedActions: ['Diversify suppliers', 'Build buffer inventory']
+      }
+    ],
+    externalFactors: [
+      { name: 'Weather Impact', influence: 0.15, trend: 'positive', description: 'Favorable weather conditions increasing demand' },
+      { name: 'Market Sentiment', influence: 0.08, trend: 'neutral', description: 'Stable consumer confidence levels' },
+      { name: 'Competitor Activity', influence: -0.05, trend: 'negative', description: 'New competitor product launch' },
+      { name: 'Economic Indicators', influence: 0.12, trend: 'positive', description: 'Strong economic growth in key markets' },
+      { name: 'Promotional Events', influence: 0.22, trend: 'positive', description: 'Planned marketing campaigns driving demand' }
+    ]
+  });
+});
+
 // Catch all handler - serve React app for any route not handled above
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));

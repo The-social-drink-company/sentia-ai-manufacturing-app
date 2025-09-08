@@ -23,7 +23,6 @@ import {
 } from '@heroicons/react/24/outline'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
-import { cn } from '../../lib/utils'
 
 const SidebarItem = ({ 
   to, 
@@ -299,20 +298,17 @@ const Sidebar = () => {
         }}
       >
       {/* Sidebar Header */}
-      <div className={cn(
-        "sidebar-header flex items-center justify-between px-4 py-4",
-        sidebarCollapsed && "px-2"
-      )}>
+      <div className="sidebar-header">
         {!sidebarCollapsed && (
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-sm">S</span>
+          <div className="sidebar-brand">
+            <div className="sidebar-logo">
+              <span>S</span>
             </div>
-            <div>
-              <h2 className="sidebar-title text-base font-bold">
+            <div className="sidebar-text">
+              <h2 className="sidebar-title">
                 Sentia
               </h2>
-              <p className="sidebar-subtitle text-xs">
+              <p className="sidebar-subtitle">
                 Manufacturing Dashboard
               </p>
             </div>
@@ -324,16 +320,16 @@ const Sidebar = () => {
           title={sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
         >
           {sidebarCollapsed ? (
-            <ChevronRightIcon className="w-4 h-4" />
+            <ChevronRightIcon style={{width: '16px', height: '16px'}} />
           ) : (
-            <ChevronLeftIcon className="w-4 h-4" />
+            <ChevronLeftIcon style={{width: '16px', height: '16px'}} />
           )}
         </button>
       </div>
       
       {/* Navigation */}
-      <nav className="flex-1 py-6 overflow-y-auto custom-scrollbar">
-        <div className="space-y-2">
+      <nav className="sidebar-nav">
+        <div className="nav-sections">
           {navigationItems.map((section) => {
             const visibleItems = section.items.filter(item => 
               !item.permission || hasPermission(item.permission)
@@ -412,21 +408,21 @@ const Sidebar = () => {
       
       {/* Footer */}
       {!sidebarCollapsed && (
-        <div className="p-4 border-t sidebar-divider">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">Role:</span>
-              <span className="font-semibold text-gray-700 capitalize">
+        <div className="sidebar-footer">
+          <div className="sidebar-info">
+            <div className="info-row">
+              <span className="info-label">Role:</span>
+              <span className="info-value">
                 {role}
               </span>
             </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">Version:</span>
-              <span className="text-gray-600">v1.0.0</span>
+            <div className="info-row">
+              <span className="info-label">Version:</span>
+              <span className="info-value">v1.0.0</span>
             </div>
             {hasFeature('debugMode') && (
-              <div className="flex items-center space-x-1 text-xs text-amber-600 px-2 py-1">
-                <span className="w-1.5 h-1.5 bg-amber-500"></span>
+              <div className="debug-mode">
+                <span className="debug-indicator"></span>
                 <span>Debug Mode</span>
               </div>
             )}
@@ -436,11 +432,9 @@ const Sidebar = () => {
       
       {/* Collapsed state indicator */}
       {sidebarCollapsed && (
-        <div className="p-3 border-t sidebar-divider">
-          <div className="flex justify-center">
-            <span className="text-xs text-gray-500">
-              Ctrl+B
-            </span>
+        <div className="sidebar-footer-collapsed">
+          <div className="collapsed-hint">
+            <span>Ctrl+B</span>
           </div>
         </div>
       )}

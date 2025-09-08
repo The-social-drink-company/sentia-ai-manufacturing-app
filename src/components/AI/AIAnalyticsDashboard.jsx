@@ -75,7 +75,7 @@ const AIAnalyticsDashboard = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.accessToken || ''}`
+          'Authorization': `Bearer ${await getToken()}`
         },
         body: JSON.stringify({
           modelType: selectedModel,

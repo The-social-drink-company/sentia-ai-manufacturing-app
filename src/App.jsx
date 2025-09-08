@@ -1,32 +1,32 @@
-import React, { Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import React, { Suspense, lazy } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { Toaster } from 'react-hot-toast'
 import { ErrorBoundary } from 'react-error-boundary'
-
-// Import layout components
-import DashboardLayout from './components/layout/DashboardLayout'
-import LoadingSpinner from './components/LoadingSpinner'
-
-// Import page components (lazy loaded for better performance)
-const EnterpriseEnhancedDashboard = React.lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
-const ManufacturingDashboard = React.lazy(() => import('./components/dashboard/ManufacturingDashboard'))
-const AdminPanel = React.lazy(() => import('./pages/AdminPanel'))
-
-// Import analytical components
-const Analytics = React.lazy(() => import('./components/analytics/Analytics'))
-const WhatIfAnalysis = React.lazy(() => import('./components/analytics/WhatIfAnalysis'))
-
-// Import other components
-const WorkingCapital = React.lazy(() => import('./components/WorkingCapital/WorkingCapital'))
-const DataImportDashboard = React.lazy(() => import('./components/DataImport/DataImportDashboard'))
-
+import { Toaster } from 'react-hot-toast'
 import './index.css'
 
+// Layout Components
+import DashboardLayout from './components/layout/DashboardLayout'
+import { LoadingSpinner } from './components/LoadingStates'
+import ErrorBoundaryFallback from './components/ErrorBoundary'
+
+// Lazy Load Pages for Performance
+const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
+const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
+const AdminPanel = lazy(() => import('./pages/AdminPanel'))
+const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'))
+const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'))
+const DataImportDashboard = lazy(() => import('./components/DataImport/DataImportDashboard'))
+const InventoryManagement = lazy(() => import('./components/inventory/InventoryManagement'))
+const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
+const QualityControl = lazy(() => import('./components/quality/QualityControl'))
+const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
+const Analytics = lazy(() => import('./components/analytics/Analytics'))
+
 // Get Clerk publishable key with development bypass
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
 const useAuthBypass = import.meta.env.VITE_USE_AUTH_BYPASS === 'true'
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...')
@@ -38,7 +38,7 @@ const MockClerkProvider = ({ children }) => {
   return <>{children}</>
 }
 
-// Initialize React Query client with optimized settings for enterprise use
+// Initialize React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -46,79 +46,14 @@ const queryClient = new QueryClient({
       cacheTime: 10 * 60 * 1000, // 10 minutes
       refetchOnWindowFocus: false,
       retry: (failureCount, error) => {
-        // Don't retry on 4xx errors
-        if (error?.status >= 400 && error?.status < 500) return false
+        if (error?.status === 404) return false
         return failureCount < 3
-      },
-      // Enable background refetching for real-time data
-      refetchInterval: 30000, // 30 seconds
-      refetchIntervalInBackground: true
-    },
-    mutations: {
-      retry: 1,
+      }
     }
   }
 })
 
-// Error fallback component
-const ErrorFallback = ({ error, resetErrorBoundary }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-    <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-      <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 dark:bg-red-900 rounded-full mb-4">
-        <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </div>
-      <h1 className="text-xl font-semibold text-gray-900 dark:text-white text-center mb-2">
-        Something went wrong
-      </h1>
-      <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-        {error?.message || 'An unexpected error occurred'}
-      </p>
-      <div className="flex justify-center space-x-4">
-        <button
-          onClick={resetErrorBoundary}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          Try again
-        </button>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-600 dark:text-gray-200"
-        >
-          Reload page
-        </button>
-      </div>
-    </div>
-  </div>
-)
-
-// Loading component
-const PageLoader = () => (
-  <div className="flex items-center justify-center h-64">
-    <LoadingSpinner size="lg" />
-  </div>
-)
-
-// Protected route wrapper with bypass support
-const ProtectedRoute = ({ children }) => {
-  if (useAuthBypass) {
-    return children
-  }
-  
-  return (
-    <>
-      <SignedIn>
-        {children}
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </>
-  )
-}
-
-// Landing page component
+// Landing Page Component
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
@@ -154,74 +89,110 @@ const LandingPage = () => {
   )
 }
 
+// Protected route wrapper with bypass support
+const ProtectedRoute = ({ children }) => {
+  if (useAuthBypass) {
+    return children
+  }
+  
+  return (
+    <>
+      <SignedIn>
+        {children}
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  )
+}
+
+// Dashboard Route Component with Fallback Support
+const DashboardRoute = () => {
+  const [searchParams] = useSearchParams()
+  const fallback = searchParams.get('fallback')
+  
+  if (fallback === 'true') {
+    return <SimpleDashboard />
+  }
+  
+  return (
+    <ErrorBoundary 
+      FallbackComponent={({ error, resetErrorBoundary }) => (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Dashboard Error</h2>
+            <p className="text-gray-600 mb-4">Enterprise dashboard failed to load.</p>
+            <div className="flex space-x-3">
+              <button 
+                onClick={resetErrorBoundary}
+                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Retry
+              </button>
+              <button 
+                onClick={() => window.location.href = '/dashboard?fallback=true'}
+                className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              >
+                Simple Mode
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      onReset={() => window.location.reload()}
+    >
+      <EnterpriseEnhancedDashboard />
+    </ErrorBoundary>
+  )
+}
+
 function App() {
   // Choose provider based on bypass mode
   const AuthProvider = useAuthBypass ? MockClerkProvider : ClerkProvider
   const providerProps = useAuthBypass ? {} : { publishableKey: clerkPubKey }
 
   return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onError={(error, errorInfo) => {
-        console.error('Application error:', error, errorInfo)
-        // In production, send to error reporting service
-      }}
-    >
+    <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider {...providerProps}>
           <Router>
             <div className="App">
               <Routes>
-                {/* Public landing page */}
+                {/* Public Landing Page */}
                 <Route path="/" element={<LandingPage />} />
                 
-                {/* Protected dashboard routes */}
+                {/* Protected Routes with Layout */}
                 <Route 
-                  path="/dashboard" 
+                  path="/dashboard/*" 
                   element={
                     <ProtectedRoute>
                       <DashboardLayout>
-                        <Suspense fallback={<PageLoader />}>
-                          <ManufacturingDashboard />
-                        </Suspense>
+                        <Routes>
+                          <Route index element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <DashboardRoute />
+                            </Suspense>
+                          } />
+                          <Route path="basic" element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <SimpleDashboard />
+                            </Suspense>
+                          } />
+                        </Routes>
                       </DashboardLayout>
                     </ProtectedRoute>
                   } 
                 />
                 
+                {/* Enterprise Pages with Layout */}
                 <Route 
-                  path="/dashboard/basic" 
+                  path="/working-capital" 
                   element={
                     <ProtectedRoute>
                       <DashboardLayout>
-                        <Suspense fallback={<PageLoader />}>
-                          <ManufacturingDashboard />
-                        </Suspense>
-                      </DashboardLayout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/dashboard/enterprise" 
-                  element={
-                    <ProtectedRoute>
-                      <DashboardLayout>
-                        <Suspense fallback={<PageLoader />}>
-                          <EnterpriseEnhancedDashboard />
-                        </Suspense>
-                      </DashboardLayout>
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/analytics" 
-                  element={
-                    <ProtectedRoute>
-                      <DashboardLayout>
-                        <Suspense fallback={<PageLoader />}>
-                          <Analytics />
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WorkingCapital />
                         </Suspense>
                       </DashboardLayout>
                     </ProtectedRoute>
@@ -233,7 +204,7 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <DashboardLayout>
-                        <Suspense fallback={<PageLoader />}>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <WhatIfAnalysis />
                         </Suspense>
                       </DashboardLayout>
@@ -242,12 +213,64 @@ function App() {
                 />
                 
                 <Route 
-                  path="/working-capital" 
+                  path="/forecasting" 
                   element={
                     <ProtectedRoute>
                       <DashboardLayout>
-                        <Suspense fallback={<PageLoader />}>
-                          <WorkingCapital />
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <DemandForecasting />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/inventory" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <InventoryManagement />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/production" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <ProductionTracking />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/quality" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <QualityControl />
+                        </Suspense>
+                      </DashboardLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/analytics" 
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <Analytics />
                         </Suspense>
                       </DashboardLayout>
                     </ProtectedRoute>
@@ -259,7 +282,7 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <DashboardLayout>
-                        <Suspense fallback={<PageLoader />}>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <DataImportDashboard />
                         </Suspense>
                       </DashboardLayout>
@@ -268,21 +291,23 @@ function App() {
                 />
                 
                 <Route 
-                  path="/admin/*" 
+                  path="/admin" 
                   element={
                     <ProtectedRoute>
-                      <Suspense fallback={<PageLoader />}>
-                        <AdminPanel />
-                      </Suspense>
+                      <DashboardLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AdminPanel />
+                        </Suspense>
+                      </DashboardLayout>
                     </ProtectedRoute>
                   } 
                 />
                 
-                {/* Redirect unknown routes to dashboard for authenticated users */}
+                {/* Redirect to dashboard for any other route */}
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
               
-              {/* Global toast notifications */}
+              {/* Global Toast Notifications */}
               <Toaster 
                 position="top-right"
                 toastOptions={{
@@ -291,31 +316,15 @@ function App() {
                     background: '#363636',
                     color: '#fff',
                   },
-                  success: {
-                    duration: 3000,
-                    iconTheme: {
-                      primary: '#10b981',
-                      secondary: '#fff',
-                    },
-                  },
-                  error: {
-                    duration: 5000,
-                    iconTheme: {
-                      primary: '#ef4444',
-                      secondary: '#fff',
-                    },
-                  },
                 }}
               />
             </div>
           </Router>
         </AuthProvider>
-        
-        {/* React Query DevTools - only in development */}
-        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ErrorBoundary>
   )
 }
 
-export default App
+export default App;

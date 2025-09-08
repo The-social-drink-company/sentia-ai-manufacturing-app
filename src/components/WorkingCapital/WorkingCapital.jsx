@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { 
   BanknotesIcon, 
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   DocumentTextIcon,
   ChartBarIcon,
   CogIcon,
@@ -40,7 +40,7 @@ const WorkingCapital = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: ChartBarIcon },
-    { id: 'projections', label: 'Cash Flow', icon: TrendingUpIcon },
+    { id: 'projections', label: 'Cash Flow', icon: ArrowTrendingUpIcon },
     { id: 'scenarios', label: 'What-If Analysis', icon: DocumentTextIcon },
     { id: 'policies', label: 'Policies', icon: CogIcon },
     { id: 'diagnostics', label: 'Diagnostics', icon: ExclamationTriangleIcon }
@@ -83,7 +83,7 @@ const WorkingCapital = () => {
                 £{(workingCapitalData.current / 1000000).toFixed(2)}M
               </p>
               <div className="flex items-center mt-1">
-                <TrendingUpIcon className="w-4 h-4 text-green-500 mr-1" />
+                <ArrowTrendingUpIcon className="w-4 h-4 text-green-500 mr-1" />
                 <span className="text-sm text-green-600 dark:text-green-400">{workingCapitalData.trend}</span>
               </div>
             </div>
@@ -93,7 +93,7 @@ const WorkingCapital = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center">
             <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-              <TrendingUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <ArrowTrendingUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
             <div className="ml-4">
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Projected (30 days)</h3>

@@ -457,8 +457,11 @@ const CurrencyControl = () => {
 
 const Header = () => {
   const navigate = useNavigate()
-  // NUCLEAR: BRUTAL Clerk user integration
-  const { user, isLoaded, isSignedIn } = useUser()
+  // NUCLEAR: BRUTAL Clerk user integration with auth bypass support
+  const useAuthBypass = import.meta.env.VITE_USE_AUTH_BYPASS === 'true'
+  const { user, isLoaded, isSignedIn } = useAuthBypass 
+    ? { user: { firstName: 'Demo', lastName: 'User', emailAddresses: [{ emailAddress: 'demo@sentia.com' }] }, isLoaded: true, isSignedIn: true }
+    : useUser()
   const { 
     theme, 
     toggleTheme, 

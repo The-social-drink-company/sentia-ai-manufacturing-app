@@ -143,7 +143,15 @@
       "Bash(set VITE_API_BASE_URL=http://localhost:5001/api)",
       "Bash(start http://localhost:3009)",
       "Bash(copy:*)",
-      "Bash(start http://localhost:3002/test.html)"
+      "Bash(start http://localhost:3002/test.html)",
+      "Bash(start http://localhost:3002/test-simple.html)",
+      "Bash(start http://localhost:3002/?v=1)",
+      "Bash(start http://localhost:3002/dashboard?fallback=true)",
+      "Bash(clerk:*)",
+      "Bash(npx @clerk/cli:*)",
+      "Bash(npx @clerk/dev-cli:*)",
+      "Bash(railway:*)",
+      "Bash(npx @clerk/backend:*)"
     ],
     "deny": [],
     "ask": []

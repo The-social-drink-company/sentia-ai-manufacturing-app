@@ -25,25 +25,47 @@ function AdminPanel() {
   const fetchUsers = async () => {
     try {
       const token = await getToken()
-      const response = await axios.get('/api/admin/users', {
-        headers: { Authorization: `Bearer ${token}` }
+      if (!token) {
+        setError('Authentication token not available')
+        return
+      }
+      
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      const response = await axios.get(`${apiUrl}/admin/users`, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       })
       setUsers(response.data.users || [])
+      setError(null)
     } catch (err) {
       devLog.error('Error fetching users:', err)
-      setError('Failed to fetch users')
+      setError(err.response?.data?.message || 'Failed to fetch users')
     }
   }
 
   const fetchInvitations = async () => {
     try {
       const token = await getToken()
-      const response = await axios.get('/api/admin/invitations', {
-        headers: { Authorization: `Bearer ${token}` }
+      if (!token) {
+        devLog.warn('No token available for fetching invitations')
+        return
+      }
+      
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      const response = await axios.get(`${apiUrl}/admin/invitations`, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       })
       setInvitations(response.data.invitations || [])
     } catch (err) {
       devLog.error('Error fetching invitations:', err)
+      if (err.response?.status !== 404) {
+        setError(err.response?.data?.message || 'Failed to fetch invitations')
+      }
     } finally {
       setLoading(false)
     }
@@ -56,12 +78,21 @@ function AdminPanel() {
     try {
       setInviteLoading(true)
       const token = await getToken()
-      await axios.post('/api/admin/invite', {
+      if (!token) {
+        alert('Authentication token not available')
+        return
+      }
+      
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      await axios.post(`${apiUrl}/admin/invite`, {
         email: inviteEmail.trim(),
         role: inviteRole,
         invitedBy: user.id
       }, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       })
       
       setInviteEmail('')
@@ -79,8 +110,17 @@ function AdminPanel() {
   const approveUser = async (userId) => {
     try {
       const token = await getToken()
-      await axios.post(`/api/admin/users/${userId}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+      if (!token) {
+        alert('Authentication token not available')
+        return
+      }
+      
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      await axios.post(`${apiUrl}/admin/users/${userId}/approve`, {}, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       })
       fetchUsers()
       alert('User approved successfully!')
@@ -93,8 +133,17 @@ function AdminPanel() {
   const revokeUser = async (userId) => {
     try {
       const token = await getToken()
-      await axios.post(`/api/admin/users/${userId}/revoke`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+      if (!token) {
+        alert('Authentication token not available')
+        return
+      }
+      
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      await axios.post(`${apiUrl}/admin/users/${userId}/revoke`, {}, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       })
       fetchUsers()
       alert('User access revoked successfully!')
@@ -107,8 +156,17 @@ function AdminPanel() {
   const deleteInvitation = async (invitationId) => {
     try {
       const token = await getToken()
-      await axios.delete(`/api/admin/invitations/${invitationId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      if (!token) {
+        alert('Authentication token not available')
+        return
+      }
+      
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      await axios.delete(`${apiUrl}/admin/invitations/${invitationId}`, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       })
       fetchInvitations()
       alert('Invitation deleted successfully!')
@@ -116,6 +174,35 @@ function AdminPanel() {
       devLog.error('Error deleting invitation:', err)
       alert('Failed to delete invitation: ' + (err.response?.data?.error || err.message))
     }
+  }
+
+  // Show loading while authentication is loading
+  if (!authLoaded || !userLoaded) {
+    return (
+      <div className="admin-loading">
+        <div className="spinner">Loading authentication...</div>
+      </div>
+    )
+  }
+
+  // Check if user is authenticated
+  if (!user) {
+    return (
+      <div className="admin-error">
+        <h2>Authentication Required</h2>
+        <p>Please sign in to access the admin panel.</p>
+      </div>
+    )
+  }
+
+  // Check if user has admin privileges
+  if (user?.publicMetadata?.role !== 'admin' && user?.publicMetadata?.role !== 'super_admin') {
+    return (
+      <div className="admin-error">
+        <h2>Access Denied</h2>
+        <p>You do not have administrator privileges to access this panel.</p>
+      </div>
+    )
   }
 
   if (loading) {

@@ -8,14 +8,12 @@ nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = [
-  "rm -rf node_modules/.cache || true",
   "rm -rf .npm || true", 
   "npm ci --no-cache --prefer-offline=false"
 ]
 
 [phases.build]
 cmds = [
-  "rm -rf node_modules/.cache || true",
   "npm run build"
 ]
 

@@ -47,6 +47,18 @@ const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
 const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 const UIShowcase = lazy(() => import('./components/ui/UIShowcase'))
 
+// Enhanced Admin System Components
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
+const AdminOverview = lazy(() => import('./components/admin/pages/AdminOverview'))
+const AdminUsers = lazy(() => import('./components/admin/pages/AdminUsers'))
+const AdminAPI = lazy(() => import('./components/admin/pages/AdminAPI'))
+const AdminSettings = lazy(() => import('./components/admin/pages/AdminSettings'))
+const AdminLogs = lazy(() => import('./components/admin/pages/AdminLogs'))
+const AdminErrors = lazy(() => import('./components/admin/pages/AdminErrors'))
+const AdminFeatureFlags = lazy(() => import('./components/admin/pages/AdminFeatureFlags'))
+const AdminIntegrations = lazy(() => import('./components/admin/pages/AdminIntegrations'))
+const AdminWebhooks = lazy(() => import('./components/admin/pages/AdminWebhooks'))
+
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...', { 
   deploymentTime: new Date().toISOString(), 
@@ -422,18 +434,75 @@ function App() {
                   } 
                 />
                 
+                {/* Enhanced Admin System with Nested Routes */}
                 <Route 
-                  path="/admin" 
+                  path="/admin/*" 
                   element={
                     <ProtectedRoute allowGuest={true}>
-                      <WorldClassLayout>
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <AdminPanel />
-                        </Suspense>
-                      </WorldClassLayout>
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <AdminLayout />
+                      </Suspense>
                     </ProtectedRoute>
-                  } 
-                />
+                  }
+                >
+                  <Route index element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminOverview />
+                    </Suspense>
+                  } />
+                  <Route path="users" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminUsers />
+                    </Suspense>
+                  } />
+                  <Route path="api" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminAPI />
+                    </Suspense>
+                  } />
+                  <Route path="settings" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminSettings />
+                    </Suspense>
+                  } />
+                  <Route path="logs" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminLogs />
+                    </Suspense>
+                  } />
+                  <Route path="errors" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminErrors />
+                    </Suspense>
+                  } />
+                  <Route path="feature-flags" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminFeatureFlags />
+                    </Suspense>
+                  } />
+                  <Route path="integrations" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminIntegrations />
+                    </Suspense>
+                  } />
+                  <Route path="webhooks" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminWebhooks />
+                    </Suspense>
+                  } />
+                  <Route path="maintenance" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <MaintenanceManagement />
+                    </Suspense>
+                  } />
+                  
+                  {/* Legacy Admin Panel Route for Backward Compatibility */}
+                  <Route path="legacy" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminPanel />
+                    </Suspense>
+                  } />
+                </Route>
                 
                 {/* Financial Management Routes */}
                 <Route 

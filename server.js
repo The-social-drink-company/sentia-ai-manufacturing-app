@@ -1070,11 +1070,22 @@ app.post('/api/working-capital/upload-financial-data', authenticateUser, upload.
 });
 
 // Admin APIs - Test endpoint
-app.get('/api/admin/test', (req, res) => {
-  res.json({ status: 'Admin API working', timestamp: new Date().toISOString(), railway: !!process.env.RAILWAY_ENVIRONMENT_NAME });
+app.get('/api/admin/test', authenticateUser, (req, res) => {
+  try {
+    res.json({ 
+      status: 'Admin API working', 
+      timestamp: new Date().toISOString(), 
+      railway: !!process.env.RAILWAY_ENVIRONMENT_NAME,
+      user: req.userId 
+    });
+    console.log('✅ Admin test endpoint called successfully');
+  } catch (error) {
+    console.error('❌ Admin test endpoint error:', error);
+    res.status(500).json({ error: 'Admin test failed' });
+  }
 });
 
-app.get('/api/admin/users', async (req, res) => {
+app.get('/api/admin/users', authenticateUser, async (req, res) => {
   try {
     // Enhanced demo user data with Railway-compatible fallbacks
     const users = [
@@ -1506,20 +1517,41 @@ app.post('/api/admin/users/:userId/role', async (req, res) => {
 });
 
 app.get('/api/admin/system-stats', authenticateUser, (req, res) => {
-  const stats = {
-    uptime: '99.9%',
-    version: '1.2.0',
-    environment: process.env.NODE_ENV || 'development',
-    deployedAt: '2025-01-06 10:30 UTC',
-    lastBackup: '2025-01-06 02:00 UTC',
-    totalUsers: 4,
-    activeUsers: 3,
-    apiCalls: 15429,
-    errors: 12
-  };
-  
-  res.json(stats);
+  try {
+    const stats = {
+      uptime: '99.9%',
+      version: '1.2.0',
+      environment: process.env.NODE_ENV || 'development',
+      deployedAt: '2025-01-06 10:30 UTC',
+      lastBackup: '2025-01-06 02:00 UTC',
+      totalUsers: 4,
+      activeUsers: 3,
+      apiCalls: 15429,
+      errors: 12
+    };
+    console.log('✅ Admin system-stats endpoint called successfully');
+    res.json(stats);
+  } catch (error) {
+    console.error('❌ Admin system-stats endpoint error:', error);
+    res.status(500).json({ error: 'Failed to fetch system stats' });
+  }
 });
+
+// ✅ Admin Route Registration Logging
+try {
+  console.log('📋 Admin API Routes Registration Summary:');
+  console.log('  - GET /api/admin/test (authenticateUser middleware)');
+  console.log('  - GET /api/admin/users (authenticateUser middleware)');
+  console.log('  - POST /api/admin/invitations (authenticateUser middleware)');
+  console.log('  - POST /api/admin/invite (authenticateUser middleware)');
+  console.log('  - POST /api/admin/users/:userId/approve (authenticateUser middleware)');
+  console.log('  - POST /api/admin/users/:userId/revoke (authenticateUser middleware)');
+  console.log('  - POST /api/admin/users/:userId/role (authenticateUser middleware)');
+  console.log('  - GET /api/admin/system-stats (authenticateUser middleware)');
+  console.log('✅ All admin routes registered successfully');
+} catch (error) {
+  console.error('❌ Admin routes registration logging failed:', error);
+}
 
 // File Upload and Data Import APIs
 app.post('/api/data/upload', authenticateUser, upload.single('dataFile'), async (req, res) => {

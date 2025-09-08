@@ -4,7 +4,8 @@ import SatisfyingButton from './SatisfyingButton';
 import DelightfulCard from './DelightfulCard';
 import SatisfyingInput from './SatisfyingInput';
 import { LoadingSpinner, HeartbeatLoader, ProgressSatisfaction, AIThinkingLoader, SuccessCelebration } from './LoadingStates';
-import { useNotifications, NotificationProvider } from './NotificationSystem';
+import { useNotifications, NotificationProvider } from './NotificationSystem'
+import ThemeSelector from './ThemeSelector';
 import { 
   SparklesIcon, 
   HeartIcon, 
@@ -73,7 +74,7 @@ const UIShowcaseContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+    <div className="min-h-screen bg-primary p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -81,17 +82,22 @@ const UIShowcaseContent = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-primary mb-4">
             ✨ Sentia UI Experience Showcase
           </h1>
-          <p className="text-lg text-gray-600">
-            Deeply satisfying user interface components designed to create joy and emotional engagement
+          <p className="text-lg text-secondary mb-6">
+            Deeply satisfying user interface components designed for optimal eye comfort and emotional engagement
           </p>
+          
+          {/* Theme Selection */}
+          <div className="flex justify-center mb-8">
+            <ThemeSelector variant="cards" />
+          </div>
         </motion.div>
 
         {/* Button Showcase */}
         <DelightfulCard className="mb-8" gradient="premium" glow>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
             <SparklesIcon className="w-6 h-6" />
             Satisfying Buttons
           </h2>

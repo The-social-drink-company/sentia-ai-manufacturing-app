@@ -1,79 +1,130 @@
-/* Enterprise Sidebar Styles - Professional Light Theme */
+/* Conservative Professional Sidebar - Microsoft Office Style */
 
-/* Force professional light sidebar styling to override dark mode */
+/* Clean, minimal sidebar container */
 .sidebar-container {
-  background-color: #ffffff !important;
-  border-right: 1px solid #e5e7eb !important;
+  background-color: #fafafa !important;
+  border-right: 1px solid #e1e5e9 !important;
 }
 
 .dark .sidebar-container {
-  background-color: #f8fafc !important;
-  border-right: 1px solid #d1d5db !important;
+  background-color: #fafafa !important;
+  border-right: 1px solid #e1e5e9 !important;
 }
 
+/* Simple flat header - no gradients */
 .sidebar-header {
-  background: linear-gradient(to right, #eff6ff, #e0e7ff) !important;
-  border-bottom: 1px solid #d1d5db !important;
+  background-color: #f5f5f5 !important;
+  border-bottom: 1px solid #e1e5e9 !important;
 }
 
 .dark .sidebar-header {
-  background: linear-gradient(to right, #eff6ff, #e0e7ff) !important;
-  border-bottom: 1px solid #d1d5db !important;
+  background-color: #f5f5f5 !important;
+  border-bottom: 1px solid #e1e5e9 !important;
 }
 
+/* Professional typography */
 .sidebar-title {
-  color: #111827 !important;
+  color: #2d3748 !important;
+  font-weight: 600 !important;
 }
 
 .dark .sidebar-title {
-  color: #1f2937 !important;
+  color: #2d3748 !important;
 }
 
 .sidebar-subtitle {
-  color: #6b7280 !important;
+  color: #718096 !important;
+  font-weight: 400 !important;
 }
 
 .dark .sidebar-subtitle {
-  color: #6b7280 !important;
+  color: #718096 !important;
 }
 
+/* Remove all rounded corners and boxes from menu items */
 .sidebar-item {
-  color: #374151 !important;
+  color: #4a5568 !important;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 8px 16px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background-color 0.15s ease !important;
 }
 
+/* Simple hover state - just background color change */
 .sidebar-item:hover {
-  background-color: #f3f4f6 !important;
-  color: #1f2937 !important;
+  background-color: #edf2f7 !important;
+  color: #2d3748 !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
-.dark .sidebar-item {
-  color: #374151 !important;
+/* Active state - simple left border indicator */
+.sidebar-item.active {
+  background-color: #e2e8f0 !important;
+  color: #2b6cb0 !important;
+  border-left: 3px solid #3182ce !important;
+  font-weight: 600 !important;
 }
 
-.dark .sidebar-item:hover {
-  background-color: #e0f2fe !important;
-  color: #1f2937 !important;
+.dark .sidebar-item,
+.dark .sidebar-item:hover,
+.dark .sidebar-item.active {
+  color: #4a5568 !important;
+  background-color: #edf2f7 !important;
 }
 
+/* Remove all decorative elements */
+.sidebar-badge {
+  display: none !important;
+}
+
+.sidebar-shortcut {
+  display: none !important;
+}
+
+/* Simple overlay */
 .sidebar-overlay {
-  background-color: rgba(71, 85, 105, 0.2) !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Remove all dark backgrounds and borders */
-.dark .sidebar-footer,
-.dark .sidebar-divider {
-  background: linear-gradient(to right, #eff6ff, #e0e7ff) !important;
-  border-color: #d1d5db !important;
+/* Conservative collapse button */
+.sidebar-collapse-btn {
+  color: #718096 !important;
+  background: none !important;
+  border: none !important;
+  padding: 8px !important;
 }
 
-.dark .sidebar-collapse-btn {
-  color: #6b7280 !important;
-  background-color: transparent !important;
+.sidebar-collapse-btn:hover {
+  color: #4a5568 !important;
+  background-color: #f7fafc !important;
 }
 
-.dark .sidebar-collapse-btn:hover {
-  color: #374151 !important;
-  background-color: #f3f4f6 !important;
+/* Remove section dividers styling */
+.sidebar-divider {
+  border-color: #e2e8f0 !important;
+  background: none !important;
+}
+
+/* Navigation sections */
+.sidebar-section {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.sidebar-section-header {
+  color: #a0aec0 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 16px 16px 8px 16px !important;
+  margin: 0 !important;
+  background: none !important;
 }
 
 /* Custom Scrollbar for Sidebar */

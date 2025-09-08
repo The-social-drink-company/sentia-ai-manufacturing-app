@@ -6,6 +6,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Toaster } from 'react-hot-toast'
 import './index.css'
+import './styles/themes.css'
+import ThemeProvider from './components/ui/ThemeProvider'
 
 // Import Chart.js setup early to ensure registration
 import './lib/chartSetup'
@@ -222,7 +224,8 @@ function App() {
     <ClerkProvider publishableKey={clerkPubKey} afterSignOutUrl="/">
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
-          <Router>
+          <ThemeProvider>
+            <Router>
             <div className="App">
               <Routes>
                 {/* Public Landing Page */}
@@ -639,7 +642,8 @@ function App() {
                 }}
               />
             </div>
-          </Router>
+            </Router>
+          </ThemeProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>

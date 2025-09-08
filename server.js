@@ -7842,6 +7842,17 @@ app.get('*', (req, res) => {
       req.path.endsWith('.png') || 
       req.path.endsWith('.svg')) {
     console.log(`[DEBUG] Static asset missed by express.static: ${req.path}`);
+    
+    // EMERGENCY FIX: Try to serve the file directly
+    const assetPath = path.join(__dirname, 'dist', req.path);
+    console.log(`[DEBUG] Trying to serve asset directly: ${assetPath}`);
+    console.log(`[DEBUG] Asset exists:`, fs.existsSync(assetPath));
+    
+    if (fs.existsSync(assetPath)) {
+      console.log(`[DEBUG] Serving asset directly: ${req.path}`);
+      return res.sendFile(assetPath);
+    }
+    
     return res.status(404).send('Static asset not found');
   }
   

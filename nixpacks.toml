@@ -2,7 +2,8 @@
 NODE_ENV = "production"
 NIXPACKS_NO_CACHE = "1"
 NPM_CONFIG_CACHE = "/tmp/.npm"
-# Force rebuild to fix server.js deployment issue - 2025-09-08
+# Force rebuild to fix HTML serving issue - 2025-09-08 19:30
+# Issue: Built index.html is correct but server only serves partial content
 
 [phases.setup]
 nixPkgs = ["nodejs_20"]

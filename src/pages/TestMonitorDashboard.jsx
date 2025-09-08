@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../lib/devLog.js';
+/**
  * Test Monitor Dashboard - Real-time Autonomous Testing & Healing Monitoring
  */
 

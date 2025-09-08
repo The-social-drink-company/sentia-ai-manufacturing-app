@@ -44,7 +44,7 @@ const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
 const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 
 
-console.log('Starting Sentia Enterprise Manufacturing Dashboard...', { deploymentTime: new Date().toISOString(), continuousDeployment: true })
+console.log('Starting Sentia Enterprise Manufacturing Dashboard...', { deploymentTime: new Date().toISOString(), continuousDeployment: true, cycle: 2, status: 'active' })
 
 // Get Clerk publishable key from environment
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY

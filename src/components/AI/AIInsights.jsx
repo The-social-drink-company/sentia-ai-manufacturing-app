@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LightBulbIcon,
   SparklesIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ChartBarIcon,
@@ -108,7 +108,7 @@ const AIInsights = () => {
       timeline: '6-8 weeks',
       actions: ['Scale citrus production', 'Secure additional raw materials', 'Optimize flavor mixing ratios'],
       timestamp: '6 hours ago',
-      icon: TrendingUpIcon,
+      icon: ArrowTrendingUpIcon,
       color: 'purple'
     }
   ]

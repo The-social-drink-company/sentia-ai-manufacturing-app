@@ -97,6 +97,10 @@ const forecastingService = new ForecastingService({
 
 logInfo('Forecasting service initialized');
 
+// Initialize live data sync service
+const liveDataSyncService = new LiveDataSyncService(databaseService);
+logInfo('Live Data Sync Service initialized');
+
 // NextAuth will be handled by the React frontend
 
 // File upload configuration
@@ -2643,6 +2647,109 @@ app.get('/api/forecasting/models', (req, res) => {
   }
 });
 
+// Live Data Sources Integration API Endpoints
+app.get('/api/integration/sync/status', async (req, res) => {
+  try {
+    const status = liveDataSyncService.getSyncStatus();
+    res.json({
+      success: true,
+      status,
+      metadata: {
+        generatedAt: new Date().toISOString(),
+        version: '1.0.0'
+      }
+    });
+  } catch (error) {
+    logError('Failed to get sync status', error);
+    res.status(500).json({ error: 'Failed to get sync status' });
+  }
+});
+
+app.post('/api/integration/sync/start', async (req, res) => {
+  try {
+    const { frequency = 900000 } = req.body; // Default 15 minutes
+    
+    await liveDataSyncService.startPeriodicSync(frequency);
+    
+    res.json({
+      success: true,
+      message: 'Periodic data sync started',
+      frequency: frequency / 1000 + 's',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logError('Failed to start data sync', error);
+    res.status(500).json({ error: 'Failed to start data sync' });
+  }
+});
+
+app.post('/api/integration/sync/stop', async (req, res) => {
+  try {
+    await liveDataSyncService.stopPeriodicSync();
+    
+    res.json({
+      success: true,
+      message: 'Periodic data sync stopped',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logError('Failed to stop data sync', error);
+    res.status(500).json({ error: 'Failed to stop data sync' });
+  }
+});
+
+app.post('/api/integration/sync/force', async (req, res) => {
+  try {
+    const results = await liveDataSyncService.performFullSync();
+    
+    res.json({
+      success: results.success,
+      results,
+      message: results.success ? 'Full sync completed successfully' : 'Full sync completed with errors',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logError('Failed to perform full sync', error);
+    res.status(500).json({ error: 'Failed to perform full sync' });
+  }
+});
+
+app.post('/api/integration/sync/service/:serviceName', async (req, res) => {
+  try {
+    const { serviceName } = req.params;
+    const results = await liveDataSyncService.forceSyncService(serviceName);
+    
+    res.json({
+      success: true,
+      service: serviceName,
+      results,
+      message: `${serviceName} sync completed`,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logError(`Failed to sync ${req.params.serviceName}`, error);
+    res.status(500).json({ error: `Failed to sync ${req.params.serviceName}` });
+  }
+});
+
+app.post('/api/integration/reconnect/:serviceName', async (req, res) => {
+  try {
+    const { serviceName } = req.params;
+    const status = await liveDataSyncService.reconnectService(serviceName);
+    
+    res.json({
+      success: true,
+      service: serviceName,
+      status,
+      message: `${serviceName} reconnection attempted`,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logError(`Failed to reconnect ${req.params.serviceName}`, error);
+    res.status(500).json({ error: `Failed to reconnect ${req.params.serviceName}` });
+  }
+});
+
 app.get('/api/production/status', authenticateUser, (req, res) => {
   try {
     const { line, range } = req.query;
@@ -4964,5 +5071,20 @@ app.listen(PORT, '0.0.0.0', async () => {
     console.log(`🔮 Forecasting API available at /api/forecasting/`);
   } else {
     console.log(`⚠️ Database connection failed - using fallback data`);
+  }
+
+  // Initialize live data sync service
+  const syncInitialized = await liveDataSyncService.initialize();
+  if (syncInitialized) {
+    console.log(`🔄 Live Data Sync Service initialized`);
+    console.log(`🌐 Integration API available at /api/integration/`);
+    
+    // Start automatic periodic sync if database is connected
+    if (dbConnected) {
+      await liveDataSyncService.startPeriodicSync(15 * 60 * 1000); // 15 minutes
+      console.log(`⚡ Automatic data sync started (15min intervals)`);
+    }
+  } else {
+    console.log(`⚠️ Live Data Sync Service initialization failed`);
   }
 });

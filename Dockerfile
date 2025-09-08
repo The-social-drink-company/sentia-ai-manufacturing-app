@@ -17,8 +17,11 @@ RUN npx prisma generate
 # Copy rest of source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application with error handling
+RUN npm run build || (echo "Build failed, checking for common issues..." && \
+    npm ls vite && \
+    npm ls @rollup/rollup-linux-x64-gnu && \
+    exit 1)
 
 # After build - verify dist directory structure
 RUN ls -la dist/

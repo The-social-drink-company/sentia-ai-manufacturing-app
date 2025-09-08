@@ -4,7 +4,7 @@ import SatisfyingButton from './SatisfyingButton';
 import DelightfulCard from './DelightfulCard';
 import SatisfyingInput from './SatisfyingInput';
 import { LoadingSpinner, HeartbeatLoader, ProgressSatisfaction, AIThinkingLoader, SuccessCelebration } from './LoadingStates';
-import { useNotifications, NotificationProvider } from './NotificationSystem';
+import { NotificationSystem, notify, notifySuccess, notifyWarning, notifyError, notifyInfo } from './NotificationSystem';
 import { 
   SparklesIcon, 
   HeartIcon, 
@@ -23,7 +23,10 @@ const UIShowcaseContent = () => {
   const [loading, setLoading] = useState(false);
   const [buttonSuccess, setButtonSuccess] = useState(false);
   
-  const { showSuccess: notifySuccess, showInfo, showWarning, showError, showMagic } = useNotifications();
+  const showInfo = (title, message) => notifyInfo(title, message, 5000);
+  const showWarning = (title, message) => notifyWarning(title, message, 5000);
+  const showError = (title, message) => notifyError(title, message, 5000);
+  const showMagic = (title, message) => notify({ type: 'magic', title, message, duration: 5000 });
 
   const handleProgressDemo = () => {
     setProgress(0);
@@ -249,9 +252,10 @@ const UIShowcaseContent = () => {
 
 const UIShowcase = () => {
   return (
-    <NotificationProvider>
+    <>
       <UIShowcaseContent />
-    </NotificationProvider>
+      <NotificationSystem />
+    </>
   );
 };
 

@@ -15,8 +15,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies with production false to include dev dependencies for build
-RUN npm ci --no-cache --production=false
+# Install dependencies and fix rollup module issues
+RUN rm -rf package-lock.json node_modules && npm install
 
 # Generate Prisma client
 RUN npx prisma generate
@@ -24,8 +24,8 @@ RUN npx prisma generate
 # Copy source code
 COPY . .
 
-# Build the React frontend
-RUN npm run build
+# Build the React frontend with rollup fix
+RUN npm rebuild && npm run build
 
 # Set environment variables
 ENV NODE_ENV=production

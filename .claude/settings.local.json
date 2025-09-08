@@ -73,7 +73,7 @@
       "Bash(flyctl:*)",
       "Bash(C:UsersUser.flybinflyctl.exe --version)",
       "Bash(git fetch:*)",
-      "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_test_placeholder)",
+      "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk)",
       "Bash(set VITE_API_BASE_URL=https://sentia-manufacturing-dashboard.fly.dev/api)",
       "WebFetch(domain:sentia-manufacturing-dashboard-production.up.railway.app)",
       "Bash(railway variables set:*)",

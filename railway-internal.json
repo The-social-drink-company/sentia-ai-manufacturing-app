@@ -25,11 +25,11 @@
         "VITE_LIVE_UPDATES": "true",
         "VITE_APP_TITLE": "Sentia Manufacturing Dashboard - Internal",
         "VITE_APP_VERSION": "2.0.0-internal",
-        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
         "VITE_API_BASE_URL": "https://vivacious-prosperity-internal.up.railway.app/api",
         "PORT": "3000",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        "CLERK_SECRET_KEY": "sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx"
+        "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq"
       }
     }
   },
@@ -48,11 +48,11 @@
         "VITE_LIVE_UPDATES": "true",
         "VITE_APP_TITLE": "Sentia Manufacturing Dashboard - Internal",
         "VITE_APP_VERSION": "2.0.0-internal",
-        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
         "VITE_API_BASE_URL": "https://vivacious-prosperity-internal.up.railway.app/api",
         "PORT": "3000",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        "CLERK_SECRET_KEY": "sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx"
+        "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq"
       }
     }
   ]

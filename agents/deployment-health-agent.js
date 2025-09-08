@@ -239,8 +239,8 @@ router.get('/health', (req, res) => {
       const envTemplate = `# Sentia Manufacturing Dashboard Environment Variables
 
 # Authentication
-VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
 
 # Database
 DATABASE_URL=postgresql://user:password@host:5432/database

@@ -169,7 +169,9 @@
       "Bash(set PORT=3013)",
       "Bash(start http://localhost:3005/what-if)",
       "Bash(start http://localhost:3005/working-capital)",
-      "Bash(gh pr checkout:*)"
+      "Bash(gh pr checkout:*)",
+      "Bash(start https://sentia-manufacturing-dashboard-testing.up.railway.app)",
+      "Bash(start https://web-production-1f10.up.railway.app)"
     ],
     "deny": [],
     "ask": []

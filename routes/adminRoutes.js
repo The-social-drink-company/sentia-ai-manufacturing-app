@@ -1,5 +1,6 @@
 import express from 'express';
-import { createClerkClient } from '@clerk/backend';
+import pkg from '@clerk/backend';
+const { createClerkClient } = pkg;
 import logger from '../services/logger.js';
 
 const router = express.Router();

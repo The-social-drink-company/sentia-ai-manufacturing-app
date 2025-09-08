@@ -93,3 +93,4 @@ nul
 
 # Agent dashboard data
 agent-dashboard-data.json
+Dockerfile*

@@ -1,1 +1,2 @@
-trigger deployment
+CRITICAL: Force complete rebuild - ClerkProvider duplicate fix
+$(date)

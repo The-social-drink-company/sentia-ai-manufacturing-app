@@ -4,10 +4,18 @@ import { useQuery } from '@tanstack/react-query';
 import { useUser, useAuth } from '@clerk/clerk-react';
 
 import {
-  Brain, TrendingUp, AlertTriangle, Target,
-  BarChart3, Zap,
-  Play, RefreshCw, Download
-} from 'lucide-react';
+  CpuChipIcon as Brain, 
+  ArrowTrendingUpIcon as TrendingUp, 
+  ExclamationTriangleIcon as AlertTriangle, 
+  ViewfinderCircleIcon as Target,
+  ChartBarIcon as BarChart3, 
+  BoltIcon as Zap,
+  PlayIcon as Play, 
+  ArrowPathIcon as RefreshCw, 
+  ArrowDownTrayIcon as Download
+} from '@heroicons/react/24/outline';
+import ChartErrorBoundary from '../charts/ChartErrorBoundary';
+import { ChartJS } from '../../lib/chartSetup';
 
 const AIAnalyticsDashboard = () => {
   const { user } = useUser();

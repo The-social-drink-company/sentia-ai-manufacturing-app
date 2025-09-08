@@ -7,6 +7,9 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { Toaster } from 'react-hot-toast'
 import './index.css'
 
+// Import Chart.js setup early to ensure registration
+import './lib/chartSetup'
+
 // Layout Components
 import DashboardLayout from './components/layout/DashboardLayout'
 import WorldClassLayout from './components/layout/WorldClassLayout'
@@ -329,6 +332,19 @@ function App() {
                 
                 <Route 
                   path="/data-import" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <DataImportDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/templates" 
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>

@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
+import { ChartJS } from '../../lib/chartSetup'
 import { Line, Bar, Doughnut } from 'react-chartjs-2'
 import {
-  PlayCircle, PauseCircle, StopCircle, Settings,
-  TrendingUp, AlertTriangle, CheckCircle, Clock,
-  Activity, BarChart3, RefreshCw, Download, Plus
-} from 'lucide-react'
+  PlayCircleIcon as PlayCircle, 
+  PauseCircleIcon as PauseCircle, 
+  StopCircleIcon as StopCircle, 
+  Cog6ToothIcon as Settings,
+  TrendingUpIcon as TrendingUp, 
+  ExclamationTriangleIcon as AlertTriangle, 
+  CheckCircleIcon as CheckCircle, 
+  ClockIcon as Clock,
+  ChartBarIcon as Activity, 
+  ChartBarIcon as BarChart3, 
+  ArrowPathIcon as RefreshCw, 
+  ArrowDownTrayIcon as Download, 
+  PlusIcon as Plus
+} from '@heroicons/react/24/outline'
 
 const ProductionTracking = () => {
   const [selectedLine, setSelectedLine] = useState('all')

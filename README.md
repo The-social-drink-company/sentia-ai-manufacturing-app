@@ -28,7 +28,7 @@ A modern, full-stack manufacturing planning and scheduling system built with Rea
 - **Railway** - Cloud deployment platform
 - **Neon PostgreSQL** - Serverless database with vector support
 - **GitHub** - Version control with automated deployments
-- **Docker** - Containerized deployment
+- **Railway + Nixpacks** - Automated deployment with zero configuration
 
 **Security & Monitoring:**
 - **ESLint** - Code linting with security rules
@@ -84,7 +84,6 @@ sentia-manufacturing-dashboard/
 - Node.js 18+ and npm
 - Git
 - Railway CLI (for deployment)
-- Docker (optional, for containerized development)
 
 ### 1. Clone and Setup
 

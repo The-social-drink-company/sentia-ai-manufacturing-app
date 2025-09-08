@@ -191,7 +191,7 @@ scripts/               # Utility scripts
 - **Primary**: Neon PostgreSQL with connection pooling
 - **ORM**: Prisma for type-safe database operations
 - **Migrations**: Prisma migrations for schema management
-- **Development**: Automatic database setup with Docker fallback
+- **Development**: Automatic database setup with local PostgreSQL
 
 ### Key Data Models
 - **Users**: Authentication and role management

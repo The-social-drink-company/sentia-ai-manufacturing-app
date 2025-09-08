@@ -166,7 +166,7 @@ class RailwayHealthMonitor {
     // Add recommendations based on results
     if (this.errors.length > 0) {
       report.recommendations.push('Review Railway deployment logs for failed environments');
-      report.recommendations.push('Check Dockerfile configuration and build process');
+      report.recommendations.push('Check Nixpacks configuration and build process');
       report.recommendations.push('Verify environment variables are properly set');
     }
 

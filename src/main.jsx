@@ -30,10 +30,6 @@ try {
 devLog.info('Starting Sentia Manufacturing Dashboard...');
 devLog.info('Environment:', import.meta.env.MODE);
 devLog.info('API Base URL:', import.meta.env.VITE_API_BASE_URL || 'Default');
-devLog.info('Raw env var:', import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
-devLog.info('Raw env var length:', import.meta.env.VITE_CLERK_PUBLISHABLE_KEY?.length);
-devLog.info('ACTUAL Clerk key loaded:', PUBLISHABLE_KEY);
-devLog.info('Clerk key length:', PUBLISHABLE_KEY.length);
 
 // Add global error handler
 window.addEventListener('error', (event) => {

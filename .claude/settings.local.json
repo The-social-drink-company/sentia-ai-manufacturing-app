@@ -215,7 +215,18 @@
       "Bash(start http://localhost:3002/working-capital)",
       "Bash(set VITE_API_BASE_URL=http://localhost:5003/api)",
       "Bash(start http://localhost:3002/dashboard)",
-      "Bash(start http://localhost:3003/dashboard/enterprise)"
+      "Bash(start http://localhost:3003/dashboard/enterprise)",
+      "Bash(start http://localhost:3004/dashboard/enterprise)",
+      "Bash(start https://web-production-1f10.up.railway.app/ai-analytics)",
+      "Bash(start http://localhost:3007/ai-analytics)",
+      "Bash(start http://localhost:3012/working-capital)",
+      "Bash(start http://localhost:3004/api-status)",
+      "Bash(start https://sentiaprod.financeflo.ai/dashboard/enterprise)",
+      "Bash(start https://courageous-insight-testing.up.railway.app/ai-analytics)",
+      "Bash(start http://localhost:3004/ai-analytics)",
+      "Bash(start http://localhost:3006/working-capital/enhanced)",
+      "Bash(start http://localhost:3006/working-capital)",
+      "Bash(start http://localhost:3008/ai-analytics)"
     ],
     "deny": [],
     "ask": []

@@ -14,6 +14,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 import { ChartJS } from '../../lib/chartSetup';
+import { formatCurrency, formatPercentage } from '../../utils/formatters';
 
 const Analytics = () => {
   const [analyticsData, setAnalyticsData] = useState(null)
@@ -30,7 +31,6 @@ const Analytics = () => {
           const data = await response.json()
           setAnalyticsData(data)
         } else {
-          // No fallback data - only use real API data
           console.error('Failed to fetch analytics data - API returned non-OK status')
           setAnalyticsData(null)
         }
@@ -70,17 +70,36 @@ const Analytics = () => {
       <div className="max-w-7xl mx-auto p-6">
         <div className="text-center py-12">
           <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No Analytics Data Available</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Please ensure your analytics API is connected and returning real business data.
+          <h3 className="mt-2 text-lg font-medium text-gray-900">Analytics API Not Available</h3>
+          <p className="mt-2 text-sm text-gray-500">
+            The analytics API endpoint <code className="bg-gray-100 px-2 py-1 rounded text-xs">/api/analytics/overview</code> is not responding.
           </p>
-          <div className="mt-6">
+          <p className="mt-1 text-sm text-gray-500">
+            This could be due to:
+          </p>
+          <ul className="mt-2 text-sm text-gray-500 text-left max-w-md mx-auto">
+            <li>• Backend server not running (port conflicts)</li>
+            <li>• Database connection issues</li>
+            <li>• Missing API route implementation</li>
+            <li>• Authentication or permission issues</li>
+          </ul>
+          
+          <div className="mt-6 space-y-3">
             <button
               onClick={() => window.location.reload()}
               className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
               Retry Connection
             </button>
+            
+            <div>
+              <a
+                href="/api-status" 
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Check API Status
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -99,7 +118,8 @@ const Analytics = () => {
   };
 
   const formatPercentage = (value) => {
-    return `${value.toFixed(1)}%`;
+    // Percentages should be integers - no decimals
+    return `${Math.round(value)}%`;
   };
 
   const renderMetricCard = (title, icon, current, previous, change, isPercentage = false, isCurrency = false) => {
@@ -126,7 +146,7 @@ const Analytics = () => {
               <span className={`ml-1 text-sm font-medium ${
                 isPositive ? 'text-green-600' : 'text-red-600'
               }`}>
-                {Math.abs(change).toFixed(1)}%
+                {Math.round(Math.abs(change))}%
               </span>
               <span className="ml-1 text-sm text-gray-500">vs last {timeRange.slice(0, -2)}</span>
             </div>

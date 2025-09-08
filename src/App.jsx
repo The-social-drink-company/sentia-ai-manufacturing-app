@@ -27,6 +27,7 @@ const WorkingEnterpriseDashboard = lazy(() => import('./pages/WorkingEnterpriseD
 const AdminPanel = lazy(() => import('./pages/AdminPanel'))
 const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'))
 const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'))
+const EnhancedWorkingCapital = lazy(() => import('./components/WorkingCapital/EnhancedWorkingCapital'))
 const DataImportDashboard = lazy(() => import('./components/DataImport/DataImportDashboard'))
 const InventoryManagement = lazy(() => import('./components/inventory/InventoryManagement'))
 const AdvancedInventoryManagement = lazy(() => import('./components/inventory/AdvancedInventoryManagement'))
@@ -43,6 +44,7 @@ const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMo
 const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
 const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
+const APIStatusDiagnostic = lazy(() => import('./components/diagnostics/APIStatusDiagnostic'))
 
 // Additional Enterprise Components
 const FinancialReports = lazy(() => import('./components/financial/FinancialReports'))
@@ -276,6 +278,19 @@ function App() {
                 />
                 
                 <Route 
+                  path="/working-capital/enhanced" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <EnhancedWorkingCapital />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
                   path="/what-if" 
                   element={
                     <ProtectedRoute allowGuest={true}>
@@ -464,6 +479,19 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <AIAnalyticsDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/api-status" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <APIStatusDiagnostic />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

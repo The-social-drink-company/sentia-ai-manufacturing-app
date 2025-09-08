@@ -123,14 +123,16 @@ function KPIDashboard() {
     if (value === null || value === undefined) return 'N/A'
     
     if (kpiName === 'facility_utilization') {
-      return `${(value * 100).toFixed(1)}%`
+      // Percentages should be integers - no decimals
+      return `${Math.round(value * 100)}%`
     }
     
     if (['inv_turnover', 'wc_turnover'].includes(kpiName)) {
       return `${value.toFixed(1)}x`
     }
     
-    return `${value.toFixed(1)} days`
+    // Days should be integers - no decimals
+    return `${Math.round(value)} days`
   }
 
   const getLatestKPIs = () => {

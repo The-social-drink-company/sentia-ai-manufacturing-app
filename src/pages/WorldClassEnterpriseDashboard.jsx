@@ -464,8 +464,8 @@ const WorldClassEnterpriseDashboard = () => {
         revenue: 40000000,
         workingCapital: 5470000,
         cashPosition: 3200000,
-        operatingMargin: 25.8,
-        productionEfficiency: 92.3,
+        operatingMargin: 26,
+        productionEfficiency: 92,
         
         // Financial metrics
         receivables: 4930000,
@@ -478,23 +478,23 @@ const WorldClassEnterpriseDashboard = () => {
         
         // Operational metrics
         productionCapacity: 85,
-        qualityScore: 98.2,
-        downtime: 3.5,
+        qualityScore: 98,
+        downtime: 4,
         inventoryTurnover: 12.2,
-        supplierReliability: 96.5,
+        supplierReliability: 97,
         
         // Forecasting
         projectedRevenue: 42000000,
-        revenueGrowth: 5.0,
-        forecastMAPE: 8.5,
+        revenueGrowth: 5,
+        forecastMAPE: 9,
         forecastConfidence: 87,
         
         // Risk factors
         overallRisk: 'Medium',
         riskFactors: [
-          { category: 'Supply Chain', level: 'Low', impact: 2.5 },
-          { category: 'Market Volatility', level: 'Medium', impact: 5.2 },
-          { category: 'Operational', level: 'Low', impact: 1.8 }
+          { category: 'Supply Chain', level: 'Low', impact: 3 },
+          { category: 'Market Volatility', level: 'Medium', impact: 5 },
+          { category: 'Operational', level: 'Low', impact: 2 }
         ],
         
         // Current section context
@@ -503,14 +503,18 @@ const WorldClassEnterpriseDashboard = () => {
       };
 
       // Export in selected format
-      await exportService.exportDashboardData(exportData, format, {
+      const result = await exportService.exportDashboardData(exportData, format, {
         filename: `sentia-dashboard-${activeSection}-${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : format}`,
         user: 'Enterprise User',
         timeframe: '12M',
         currency: 'GBP'
       });
 
-      console.log('Dashboard data exported successfully');
+      if (result && result.success) {
+        console.log(`Export successful: ${result.filename} (${result.format}, ${result.size} bytes)`);
+      } else {
+        throw new Error(result?.error || 'Export failed');
+      }
       
     } catch (error) {
       console.error('Export failed:', error);

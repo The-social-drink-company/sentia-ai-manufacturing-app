@@ -3,7 +3,7 @@
  * Supports JSON, CSV, Excel, and PDF formats
  */
 
-export class ExportService {
+class ExportService {
   constructor() {
     this.exportFormats = ['json', 'csv', 'excel', 'pdf'];
     this.dateEngine = null;
@@ -14,6 +14,10 @@ export class ExportService {
    */
   async exportDashboardData(dashboardData, format = 'json', options = {}) {
     try {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Exporting dashboard data:', { format, options, dataKeys: Object.keys(dashboardData || {}) });
+      }
+      
       const exportData = await this.prepareExportData(dashboardData, options);
       
       switch (format.toLowerCase()) {
@@ -30,6 +34,7 @@ export class ExportService {
       }
     } catch (error) {
       console.error('Export failed:', error);
+      alert(`Export failed: ${error.message}`);
       throw new Error(`Export failed: ${error.message}`);
     }
   }
@@ -204,46 +209,70 @@ export class ExportService {
    * Export as JSON file
    */
   exportAsJSON(data, filename) {
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    this.downloadFile(blob, filename || `dashboard-export-${this.getTimestamp()}.json`);
-    return { success: true, format: 'json', size: blob.size };
+    try {
+      const jsonString = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const finalFilename = filename || `dashboard-export-${this.getTimestamp()}.json`;
+      const success = this.downloadFile(blob, finalFilename);
+      return { success, format: 'json', size: blob.size, filename: finalFilename };
+    } catch (error) {
+      console.error('JSON export failed:', error);
+      return { success: false, format: 'json', error: error.message };
+    }
   }
 
   /**
    * Export as CSV file
    */
   exportAsCSV(data, filename) {
-    // Flatten data for CSV export
-    const csvData = this.flattenDataForCSV(data);
-    const csvString = this.convertToCSV(csvData);
-    const blob = new Blob([csvString], { type: 'text/csv' });
-    this.downloadFile(blob, filename || `dashboard-export-${this.getTimestamp()}.csv`);
-    return { success: true, format: 'csv', size: blob.size };
+    try {
+      // Flatten data for CSV export
+      const csvData = this.flattenDataForCSV(data);
+      const csvString = this.convertToCSV(csvData);
+      const blob = new Blob([csvString], { type: 'text/csv' });
+      const finalFilename = filename || `dashboard-export-${this.getTimestamp()}.csv`;
+      const success = this.downloadFile(blob, finalFilename);
+      return { success, format: 'csv', size: blob.size, filename: finalFilename };
+    } catch (error) {
+      console.error('CSV export failed:', error);
+      return { success: false, format: 'csv', error: error.message };
+    }
   }
 
   /**
    * Export as Excel file (using CSV format for simplicity)
    */
   exportAsExcel(data, filename) {
-    // For now, export as CSV with .xlsx extension
-    // In production, you'd use a library like xlsx or exceljs
-    const csvData = this.flattenDataForCSV(data);
-    const csvString = this.convertToCSV(csvData);
-    const blob = new Blob([csvString], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    this.downloadFile(blob, filename || `dashboard-export-${this.getTimestamp()}.xlsx`);
-    return { success: true, format: 'excel', size: blob.size };
+    try {
+      // For now, export as CSV with .xlsx extension
+      // In production, you'd use a library like xlsx or exceljs
+      const csvData = this.flattenDataForCSV(data);
+      const csvString = this.convertToCSV(csvData);
+      const blob = new Blob([csvString], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const finalFilename = filename || `dashboard-export-${this.getTimestamp()}.xlsx`;
+      const success = this.downloadFile(blob, finalFilename);
+      return { success, format: 'excel', size: blob.size, filename: finalFilename };
+    } catch (error) {
+      console.error('Excel export failed:', error);
+      return { success: false, format: 'excel', error: error.message };
+    }
   }
 
   /**
    * Export as PDF file
    */
   exportAsPDF(data, filename) {
-    // Create a simplified PDF-like text document
-    const pdfContent = this.formatDataForPDF(data);
-    const blob = new Blob([pdfContent], { type: 'application/pdf' });
-    this.downloadFile(blob, filename || `dashboard-report-${this.getTimestamp()}.txt`);
-    return { success: true, format: 'pdf', size: blob.size };
+    try {
+      // Create a simplified PDF-like text document
+      const pdfContent = this.formatDataForPDF(data);
+      const blob = new Blob([pdfContent], { type: 'text/plain' });
+      const finalFilename = filename || `dashboard-report-${this.getTimestamp()}.txt`;
+      const success = this.downloadFile(blob, finalFilename);
+      return { success, format: 'pdf', size: blob.size, filename: finalFilename };
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      return { success: false, format: 'pdf', error: error.message };
+    }
   }
 
   /**
@@ -375,14 +404,31 @@ export class ExportService {
    * Trigger file download
    */
   downloadFile(blob, filename) {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    try {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Downloading file:', filename, 'Size:', blob.size, 'bytes');
+      }
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up after a short delay to ensure download starts
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+      
+      return true;
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Download failed. Your browser may be blocking the download.');
+      return false;
+    }
   }
 
   /**

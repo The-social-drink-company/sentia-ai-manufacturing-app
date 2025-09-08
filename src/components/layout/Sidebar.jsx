@@ -75,7 +75,7 @@ const SidebarItem = ({
           <span className="font-medium truncate">{label}</span>
           <div className="flex items-center space-x-1.5 ml-2">
             {badge && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 sidebar-badge-pulse">
                 {badge}
               </span>
             )}
@@ -485,7 +485,8 @@ const Sidebar = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }
 

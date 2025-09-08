@@ -1,14 +1,23 @@
 # Production Dockerfile for Sentia Manufacturing Dashboard
 FROM node:20-alpine
 
+# Install build dependencies for Alpine Linux (needed for Rollup)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    libc6-compat
+
 # Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (needed for build)
-RUN npm ci --no-cache
+# Clear npm cache and install dependencies with fresh lockfile
+RUN npm cache clean --force && \
+    rm -rf node_modules && \
+    npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -16,8 +25,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Remove dev dependencies after build
-RUN npm ci --only=production --no-cache
+# Remove dev dependencies after build (keep production dependencies)
+RUN npm prune --production
 
 # Set production environment
 ENV NODE_ENV=production

@@ -200,7 +200,9 @@
       "Bash(start http://localhost:3006/dashboard)",
       "Bash(start https://web-production-1f10.up.railway.app/production)",
       "Bash(start https://web-production-1f10.up.railway.app/quality)",
-      "Bash(start https://web-production-1f10.up.railway.app/forecasting)"
+      "Bash(start https://web-production-1f10.up.railway.app/forecasting)",
+      "Bash(set VITE_API_BASE_URL=http://localhost:5002/api)",
+      "Bash(start http://localhost:3003/automation)"
     ],
     "deny": [],
     "ask": []

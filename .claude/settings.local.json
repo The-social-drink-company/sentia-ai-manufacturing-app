@@ -71,7 +71,21 @@
       "Bash(git remote add:*)",
       "Bash(git pull:*)",
       "Bash(git reset:*)",
-      "Bash(git clean:*)"
+      "Bash(git clean:*)",
+      "Bash(git branch:*)",
+      "Bash(start http://localhost:3009)",
+      "Bash(cmd /c:*)",
+      "Bash(start http://localhost:3011)",
+      "Bash(start https://sentiatest.financeflo.ai/dashboard)",
+      "WebFetch(domain:sentia-manufacturing-dashboard-production.up.railway.app)",
+      "Bash(PORT=5050 npm run dev:server)",
+      "Bash(start http://localhost:5002/admin)",
+      "Bash(start http://localhost:3002)",
+      "Bash(timeout:*)",
+      "Bash(start https://sentiaprod.financeflo.ai/dashboard)",
+      "WebFetch(domain:sentiaprod.financeflo.ai)",
+      "Bash(start https://sentiaprod.financeflo.ai)",
+      "Read(//c/Projects/**)"
     ],
     "deny": [],
     "ask": []

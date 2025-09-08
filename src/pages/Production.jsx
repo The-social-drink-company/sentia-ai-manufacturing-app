@@ -25,9 +25,10 @@ import {
 } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import ChartErrorBoundary from '../components/charts/ChartErrorBoundary';
+import RealTimeProductionMonitor from '../components/production/RealTimeProductionMonitor';
 
 const Production = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('realtime');
   const [selectedLine, setSelectedLine] = useState('all');
   const [timeRange, setTimeRange] = useState('today');
 
@@ -446,6 +447,7 @@ const Production = () => {
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="-mb-px flex space-x-8 px-6">
             {[
+              { id: 'realtime', label: 'Real-Time Monitor', icon: BoltIcon },
               { id: 'overview', label: 'Production Overview', icon: ChartBarIcon },
               { id: 'lines', label: 'Production Lines', icon: TruckIcon },
               { id: 'quality', label: 'Quality Metrics', icon: BeakerIcon },
@@ -469,6 +471,12 @@ const Production = () => {
         </div>
 
         <div className="p-6">
+          {activeTab === 'realtime' && (
+            <div className="space-y-6">
+              <RealTimeProductionMonitor />
+            </div>
+          )}
+
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Hourly Production Chart */}

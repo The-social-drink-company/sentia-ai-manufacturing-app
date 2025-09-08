@@ -26,9 +26,10 @@ import {
 } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import ChartErrorBoundary from '../components/charts/ChartErrorBoundary';
+import QualityControlMonitor from '../components/quality/QualityControlMonitor';
 
 const Quality = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('realtime');
   const [selectedInspection, setSelectedInspection] = useState(null);
   const [timeRange, setTimeRange] = useState('week');
   const [productFilter, setProductFilter] = useState('all');
@@ -539,11 +540,12 @@ const Quality = () => {
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="-mb-px flex space-x-8 px-6">
             {[
+              { id: 'realtime', label: 'Live Monitor', icon: BeakerIcon },
               { id: 'dashboard', label: 'Quality Dashboard', icon: ChartBarIcon },
-              { id: 'inspections', label: 'Product Inspections', icon: BeakerIcon },
-              { id: 'tests', label: 'Quality Tests', icon: ClipboardDocumentCheckIcon },
+              { id: 'inspections', label: 'Product Inspections', icon: ClipboardDocumentCheckIcon },
+              { id: 'tests', label: 'Quality Tests', icon: DocumentTextIcon },
               { id: 'defects', label: 'Defect Analysis', icon: ExclamationTriangleIcon },
-              { id: 'actions', label: 'Corrective Actions', icon: DocumentTextIcon },
+              { id: 'actions', label: 'Corrective Actions', icon: AdjustmentsHorizontalIcon },
               { id: 'compliance', label: 'Compliance', icon: FlagIcon }
             ].map((tab) => (
               <button
@@ -563,6 +565,10 @@ const Quality = () => {
         </div>
 
         <div className="p-6">
+          {activeTab === 'realtime' && (
+            <QualityControlMonitor />
+          )}
+
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
               {/* Quality Trends Chart */}

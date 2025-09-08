@@ -37,11 +37,7 @@ import { logInfo, logError, logWarn } from './services/observability/structuredL
 import MCPOrchestrator from './services/mcp/mcpOrchestrator.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
-<<<<<<< HEAD
-// import adminRoutes from './routes/adminRoutes.js'; // CRITICAL: Temporarily disabled due to Clerk ES module import issue
-=======
 import adminRoutes from './routes/adminRoutes.js';
->>>>>>> origin/test
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

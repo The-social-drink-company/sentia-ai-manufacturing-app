@@ -1,12 +1,13 @@
 // Environment variable loading - prioritize Railway environment first
 import dotenv from 'dotenv';
 
-// Force production mode for Railway production deployment
-// Railway production runs on port 8080, development uses different ports
-if (process.env.PORT === '8080' || process.env.RAILWAY_SERVICE_NAME?.includes('production')) {
+// FORCE PRODUCTION MODE - Railway deployments should always be production
+// Override Railway's default NODE_ENV=development setting
+if (process.env.PORT) {
+  const originalEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = 'production';
   process.env.RAILWAY_ENVIRONMENT = 'production';
-  console.log('🚀 PRODUCTION MODE FORCED - Railway Port 8080 detected');
+  console.log(`🚀 PRODUCTION MODE FORCED - Railway deployment (was: ${originalEnv})`);
 }
 
 // Only load .env file if we're not in Railway (Railway provides vars directly)
@@ -1205,6 +1206,13 @@ app.get('/api/admin/test', authenticateUser, (req, res) => {
 app.get('/api/admin/users', authenticateUser, async (req, res) => {
   console.log('🔍 Admin users endpoint called - Environment:', process.env.NODE_ENV);
   try {
+    console.log('✅ Admin users - starting data assembly');
+    
+    // Simulate potential error sources
+    if (!Array.isArray) throw new Error('Array.isArray not available');
+    if (!Date.now) throw new Error('Date.now not available');
+    
+    console.log('✅ Admin users - basic checks passed');
     // Enhanced demo user data with Railway-compatible fallbacks
     const users = [
       {
@@ -3711,6 +3719,225 @@ app.get('/api/production/cache/stats', authenticateUser, (req, res) => {
     
   } catch (error) {
     logError('Failed to get production cache stats', error);
+    res.status(500).json({ 
+      error: 'Failed to get cache stats',
+      message: error.message
+    });
+  }
+});
+
+// Automation API endpoints
+app.get('/api/automation/overview', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default' } = req.query;
+    
+    logInfo('Automation overview requested', { companyId });
+    
+    const overview = await automationController.getAutomationOverview(companyId);
+    
+    res.json({
+      success: true,
+      data: overview,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get automation overview', error);
+    res.status(500).json({ 
+      error: 'Failed to get automation overview',
+      message: error.message
+    });
+  }
+});
+
+app.post('/api/automation/process/:processId/:action', authenticateUser, async (req, res) => {
+  try {
+    const { processId, action } = req.params;
+    
+    logInfo('Process control action requested', { processId, action });
+    
+    // Validate action
+    const validActions = ['start', 'pause', 'stop', 'reset'];
+    if (!validActions.includes(action)) {
+      return res.status(400).json({ 
+        error: 'Invalid action',
+        message: `Action must be one of: ${validActions.join(', ')}`
+      });
+    }
+    
+    const result = await automationController.controlProcess(processId, action);
+    
+    res.json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to control process', { processId: req.params.processId, action: req.params.action, error: error.message });
+    res.status(500).json({ 
+      error: 'Failed to control process',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/automation/process/:processId', authenticateUser, async (req, res) => {
+  try {
+    const { processId } = req.params;
+    
+    logInfo('Process details requested', { processId });
+    
+    const process = await automationController.getProcess(processId);
+    
+    res.json({
+      success: true,
+      data: process,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get process details', { processId: req.params.processId, error: error.message });
+    res.status(404).json({ 
+      error: 'Process not found',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/automation/processes', authenticateUser, async (req, res) => {
+  try {
+    const { status, templateId } = req.query;
+    
+    logInfo('All processes requested', { status, templateId });
+    
+    let processes = await automationController.getAllProcesses();
+    
+    // Filter by status if specified
+    if (status) {
+      processes = processes.filter(p => p.status === status);
+    }
+    
+    // Filter by template if specified
+    if (templateId) {
+      processes = processes.filter(p => p.template && p.template.id === templateId);
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        processes,
+        totalCount: processes.length,
+        statusBreakdown: processes.reduce((acc, p) => {
+          acc[p.status] = (acc[p.status] || 0) + 1;
+          return acc;
+        }, {})
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get all processes', error);
+    res.status(500).json({ 
+      error: 'Failed to get processes',
+      message: error.message
+    });
+  }
+});
+
+app.post('/api/automation/process', authenticateUser, async (req, res) => {
+  try {
+    const { templateId, name, priority, lineId, options = {} } = req.body;
+    
+    if (!templateId) {
+      return res.status(400).json({ 
+        error: 'Template ID is required',
+        message: 'Must specify a process template to create new process'
+      });
+    }
+    
+    logInfo('Create process requested', { templateId, name, priority, lineId });
+    
+    const result = await automationController.createProcess(templateId, {
+      name,
+      priority,
+      lineId,
+      ...options
+    });
+    
+    res.status(201).json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to create process', error);
+    res.status(500).json({ 
+      error: 'Failed to create process',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/automation/templates', authenticateUser, (req, res) => {
+  try {
+    logInfo('Process templates requested');
+    
+    const templates = Object.entries(automationController.processTemplates).map(([id, template]) => ({
+      id,
+      ...template
+    }));
+    
+    res.json({
+      success: true,
+      data: {
+        templates,
+        totalCount: templates.length
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get process templates', error);
+    res.status(500).json({ 
+      error: 'Failed to get process templates',
+      message: error.message
+    });
+  }
+});
+
+app.delete('/api/automation/cache', authenticateUser, (req, res) => {
+  try {
+    automationController.clearCache();
+    
+    res.json({
+      success: true,
+      message: 'Automation cache cleared',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to clear automation cache', error);
+    res.status(500).json({ 
+      error: 'Failed to clear cache',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/automation/cache/stats', authenticateUser, (req, res) => {
+  try {
+    const stats = automationController.getCacheStats();
+    
+    res.json({
+      success: true,
+      data: stats,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get automation cache stats', error);
     res.status(500).json({ 
       error: 'Failed to get cache stats',
       message: error.message

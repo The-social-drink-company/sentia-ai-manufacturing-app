@@ -58,9 +58,7 @@ window.addEventListener('unhandledrejection', (event) => {
 })
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <App />
 )
 
 devLog.info('Sentia Manufacturing Dashboard rendered successfully');

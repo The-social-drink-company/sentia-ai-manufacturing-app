@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState, useEffect } from 'react';
+import { devLog } from '../../lib/devLog.js';
+import React, { useState, useEffect } from 'react';
 import {
   UserCircleIcon,
   BellIcon,
@@ -14,7 +15,8 @@ import {
 
 
 const Settings = () => {
-  const { data: session } = ();
+  // const { data: session } = useSession(); // Remove broken hook for now
+  const session = null;
   const [activeTab, setActiveTab] = useState('profile');
   const [settings, setSettings] = useState({
     profile: {

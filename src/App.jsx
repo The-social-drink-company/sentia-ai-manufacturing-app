@@ -28,6 +28,11 @@ const ProductionTracking = lazy(() => import('./components/production/Production
 const QualityControl = lazy(() => import('./components/quality/QualityControl'))
 const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
 const Analytics = lazy(() => import('./components/analytics/Analytics'))
+const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashboard'))
+const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
+const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
+const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
+const SystemSettings = lazy(() => import('./components/settings/Settings'))
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...')
 
@@ -305,6 +310,71 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <DataImportDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/ai-analytics" 
+                  element={
+                    <ProtectedRoute>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AIAnalyticsDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/predictive-analytics" 
+                  element={
+                    <ProtectedRoute>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <PredictiveAnalyticsDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/maintenance" 
+                  element={
+                    <ProtectedRoute>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <MaintenanceManagement />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/mcp-status" 
+                  element={
+                    <ProtectedRoute>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <MCPConnectionStatus />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/settings" 
+                  element={
+                    <ProtectedRoute>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <SystemSettings />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

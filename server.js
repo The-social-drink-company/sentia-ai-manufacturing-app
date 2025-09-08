@@ -487,7 +487,7 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      version: '2.0.0',
+      version: '2.0.1-FORCE-DEPLOY',
       environment: process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
       port: PORT,

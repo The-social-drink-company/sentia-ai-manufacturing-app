@@ -1,1 +1,0 @@
-import{j as s}from"./query-CJR12TOn.js";import"./vendor-BPOA5ME_.js";const e=()=>s.jsxs("div",{className:"p-6 bg-white rounded-lg shadow",children:[s.jsx("h2",{className:"text-xl font-semibold mb-4",children:"Cost Analysis"}),s.jsx("div",{className:"text-center py-8 text-gray-500",children:s.jsx("p",{children:"Cost analysis will be displayed here."})})]});export{e as default};

@@ -1,6 +1,13 @@
 // Environment variable loading - prioritize Railway environment first
 import dotenv from 'dotenv';
 
+// Force production mode if deployed on Railway production domain
+if (process.env.RAILWAY_STATIC_URL?.includes('production') || 
+    process.env.RAILWAY_PUBLIC_DOMAIN?.includes('sentia-manufacturing-dashboard-production')) {
+  process.env.NODE_ENV = 'production';
+  process.env.RAILWAY_ENVIRONMENT = 'production';
+}
+
 // Only load .env file if we're not in Railway (Railway provides vars directly)
 if (!process.env.RAILWAY_ENVIRONMENT) {
   dotenv.config();
@@ -184,7 +191,15 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [API FIX DEPLOYMENT]', {
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
+  origin: [
+    'http://localhost:3000', 
+    'http://localhost:3001', 
+    'http://localhost:5000', 
+    'http://localhost:5177',
+    'https://web-production-1f10.up.railway.app',
+    'https://sentia-manufacturing-dashboard-production.up.railway.app',
+    'https://sentiaprod.financeflo.ai'
+  ],
   credentials: true
 }));
 app.use(express.json());

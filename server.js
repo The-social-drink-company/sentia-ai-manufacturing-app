@@ -3948,29 +3948,7 @@ app.get('/api/forecasting/demand', (req, res) => {
   });
 });
 
-// Production Tracking API
-app.get('/api/production/overview', (req, res) => {
-  res.json({
-    status: 'success',
-    kpis: {
-      totalProduction: 12847,
-      efficiency: 94.2,
-      downtime: 0.8,
-      qualityScore: 98.7,
-      activeJobs: 15,
-      completedJobs: 127
-    },
-    activeJobs: Array.from({ length: 5 }, (_, i) => ({
-      id: `JOB-${2024000 + i}`,
-      product: `Sentia Premium ${i + 1}`,
-      status: ['Running', 'Setup', 'Quality Check'][Math.floor(Math.random() * 3)],
-      progress: Math.floor(Math.random() * 100),
-      estimatedCompletion: new Date(Date.now() + Math.random() * 24 * 60 * 60 * 1000).toISOString(),
-      priority: ['High', 'Medium', 'Low'][Math.floor(Math.random() * 3)]
-    })),
-    lastUpdated: new Date().toISOString()
-  });
-});
+// Production Tracking API - Duplicate removed to fix routing conflict
 
 // Quality Control API
 app.get('/api/quality/overview', (req, res) => {

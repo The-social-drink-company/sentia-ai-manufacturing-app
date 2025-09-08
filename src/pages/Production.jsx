@@ -36,13 +36,9 @@ const Production = () => {
     queryKey: ['production', selectedLine, timeRange],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/production/overview', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            productionLine: selectedLine,
-            timeRange: timeRange
-          })
+        const response = await fetch(`/api/production/overview?line=${selectedLine}&range=${timeRange}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
         });
         if (response.ok) {
           return await response.json();
@@ -55,6 +51,45 @@ const Production = () => {
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10000 // Real-time updates every 10 seconds
   });
+
+  // Fetch personnel data for production
+  const { data: personnel } = useQuery({
+    queryKey: ['personnel-production'],
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/personnel/for-task/production_operator');
+        if (response.ok) {
+          const result = await response.json();
+          return result.data || [];
+        }
+      } catch (error) {
+        console.error('Error fetching personnel:', error);
+      }
+      return [];
+    },
+    staleTime: 5 * 60 * 1000
+  });
+
+  // Helper function to get real personnel name or fallback
+  const getOperatorName = (index = 0) => {
+    if (personnel && personnel.length > 0) {
+      const person = personnel[index % personnel.length];
+      return person.display_name || person.full_name || `${person.first_name} ${person.last_name}`;
+    }
+    return 'Production Operator';
+  };
+
+  // Helper for maintenance/supervisor roles
+  const getSupervisorName = (index = 0) => {
+    if (personnel && personnel.length > 0) {
+      const supervisors = personnel.filter(p => p.role === 'manager' || p.role === 'admin');
+      if (supervisors.length > 0) {
+        const person = supervisors[index % supervisors.length];
+        return person.display_name || person.full_name || `${person.first_name} ${person.last_name}`;
+      }
+    }
+    return 'Production Supervisor';
+  };
 
   const mockProductionData = {
     overview: {
@@ -82,7 +117,7 @@ const Production = () => {
         oee: 82.1,
         startTime: '2025-09-08T06:00:00Z',
         estimatedCompletion: '2025-09-08T18:30:00Z',
-        operator: 'Sarah Johnson',
+        operator: getOperatorName(0),
         lastMaintenance: '2025-09-07T22:00:00Z'
       },
       {
@@ -97,7 +132,7 @@ const Production = () => {
         oee: 79.3,
         startTime: '2025-09-08T07:15:00Z',
         estimatedCompletion: '2025-09-08T17:45:00Z',
-        operator: 'Mike Chen',
+        operator: getOperatorName(1),
         lastMaintenance: '2025-09-06T20:00:00Z'
       },
       {
@@ -112,7 +147,7 @@ const Production = () => {
         oee: 0,
         startTime: '2025-09-08T08:00:00Z',
         estimatedCompletion: '2025-09-08T10:00:00Z',
-        operator: 'Maintenance Team',
+        operator: getSupervisorName(0),
         lastMaintenance: '2025-09-08T08:00:00Z'
       },
       {
@@ -127,7 +162,7 @@ const Production = () => {
         oee: 65.8,
         startTime: '2025-09-08T06:30:00Z',
         estimatedCompletion: '2025-09-08T19:00:00Z',
-        operator: 'Quality Team',
+        operator: getOperatorName(2),
         lastMaintenance: '2025-09-05T18:00:00Z'
       },
       {

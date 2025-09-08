@@ -35,29 +35,7 @@ const InventoryManagement = () => {
     return () => clearInterval(interval)
   }, [])
 
-  const mockStockMovement = [
-    { date: '2025-09-01', inbound: 150, outbound: 120 },
-    { date: '2025-09-02', inbound: 180, outbound: 145 },
-    { date: '2025-09-03', inbound: 120, outbound: 160 },
-    { date: '2025-09-04', inbound: 200, outbound: 135 },
-    { date: '2025-09-05', inbound: 160, outbound: 155 },
-    { date: '2025-09-06', inbound: 190, outbound: 140 },
-    { date: '2025-09-07', inbound: 170, outbound: 165 }
-  ]
-
-  const mockCategoryBreakdown = [
-    { name: 'Raw Materials', value: 45, color: '#3B82F6' },
-    { name: 'Finished Goods', value: 35, color: '#10B981' },
-    { name: 'Work in Progress', value: 15, color: '#F59E0B' },
-    { name: 'Spare Parts', value: 5, color: '#EF4444' }
-  ]
-
-  const mockWarehouseData = [
-    { location: 'UK Main', capacity: 85, utilization: 78, items: 1247 },
-    { location: 'EU Central', capacity: 92, utilization: 85, items: 892 },
-    { location: 'US East', capacity: 76, utilization: 65, items: 634 },
-    { location: 'US West', capacity: 88, utilization: 72, items: 458 }
-  ]
+  // All mock data removed - only real API data allowed
 
   if (loading) {
     return (

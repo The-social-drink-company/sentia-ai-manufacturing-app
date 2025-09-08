@@ -29,39 +29,8 @@ const ProductionTracking = () => {
     queryFn: async () => {
       const response = await fetch(`/api/production/live?line=${selectedLine}&range=${timeRange}`)
       if (!response.ok) {
-        // Fallback to mock data if API unavailable
-        return {
-          activeJobs: [
-            { id: 'JOB-2025-001', product: 'Sentia Red', line: 'Line A', status: 'running', progress: 65, startTime: '2025-09-08T06:00:00Z', estimatedEnd: '2025-09-08T14:30:00Z' },
-            { id: 'JOB-2025-002', product: 'Sentia Gold', line: 'Line B', status: 'running', progress: 42, startTime: '2025-09-08T08:15:00Z', estimatedEnd: '2025-09-08T16:45:00Z' },
-            { id: 'JOB-2025-003', product: 'Sentia Blue', line: 'Line C', status: 'paused', progress: 78, startTime: '2025-09-08T05:30:00Z', estimatedEnd: '2025-09-08T13:00:00Z' }
-          ],
-          metrics: {
-            totalJobs: 15,
-            activeJobs: 12,
-            completedToday: 8,
-            capacity: 87.3,
-            efficiency: 94.2,
-            outputToday: 1247,
-            outputTarget: 1400,
-            downtimeMinutes: 23
-          },
-          lines: [
-            { id: 'line-a', name: 'Line A', status: 'running', efficiency: 96.1, output: 456 },
-            { id: 'line-b', name: 'Line B', status: 'running', efficiency: 91.8, output: 423 },
-            { id: 'line-c', name: 'Line C', status: 'maintenance', efficiency: 0, output: 0 },
-            { id: 'line-d', name: 'Line D', status: 'running', efficiency: 98.5, output: 368 }
-          ],
-          hourlyProduction: [
-            { hour: '06:00', target: 58, actual: 52 },
-            { hour: '07:00', target: 58, actual: 61 },
-            { hour: '08:00', target: 58, actual: 55 },
-            { hour: '09:00', target: 58, actual: 59 },
-            { hour: '10:00', target: 58, actual: 62 },
-            { hour: '11:00', target: 58, actual: 45 },
-            { hour: '12:00', target: 58, actual: 58 }
-          ]
-        }
+        // No fallback data - only use real API data
+        throw new Error('Production API unavailable - no mock data allowed')
       }
       return response.json()
     },

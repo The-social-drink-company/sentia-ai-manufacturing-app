@@ -37,15 +37,9 @@ const Forecasting = () => {
     queryKey: ['forecasting', forecastHorizon, selectedModel, seasonality],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/forecasting/demand', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            horizon: forecastHorizon,
-            model: selectedModel,
-            seasonality,
-            confidenceLevel: parseFloat(confidenceLevel) / 100
-          })
+        const response = await fetch(`/api/forecasting/demand?horizon=${forecastHorizon}&model=${selectedModel}&seasonality=${seasonality}&confidenceLevel=${parseFloat(confidenceLevel) / 100}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
         });
         if (response.ok) {
           return await response.json();

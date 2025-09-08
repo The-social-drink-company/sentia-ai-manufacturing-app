@@ -38,13 +38,9 @@ const Quality = () => {
     queryKey: ['quality', timeRange, productFilter],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/quality/overview', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            timeRange: timeRange,
-            productFilter: productFilter
-          })
+        const response = await fetch(`/api/quality/overview?timeRange=${timeRange}&productFilter=${productFilter}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
         });
         if (response.ok) {
           return await response.json();
@@ -57,6 +53,33 @@ const Quality = () => {
     staleTime: 2 * 60 * 1000,
     refetchInterval: 30000
   });
+
+  // Fetch personnel data
+  const { data: personnel } = useQuery({
+    queryKey: ['personnel-quality-control'],
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/personnel/for-task/quality_control');
+        if (response.ok) {
+          const result = await response.json();
+          return result.data || [];
+        }
+      } catch (error) {
+        console.error('Error fetching personnel:', error);
+      }
+      return [];
+    },
+    staleTime: 5 * 60 * 1000
+  });
+
+  // Helper function to get real personnel name or fallback
+  const getInspectorName = (index = 0) => {
+    if (personnel && personnel.length > 0) {
+      const person = personnel[index % personnel.length];
+      return person.display_name || person.full_name || `${person.first_name} ${person.last_name}`;
+    }
+    return 'Quality Inspector';
+  };
 
   const mockQualityData = {
     overview: {
@@ -158,7 +181,7 @@ const Quality = () => {
         targetValue: '0.5%',
         actualValue: '0.51%',
         tolerance: '±0.05%',
-        inspector: 'Dr. Sarah Wilson',
+        inspector: getInspectorName(0),
         completedAt: '2025-09-08T14:30:00Z',
         duration: 45,
         notes: 'Within acceptable range'
@@ -174,7 +197,7 @@ const Quality = () => {
         targetValue: '<10 CFU/ml',
         actualValue: 'Testing...',
         tolerance: 'Zero tolerance',
-        inspector: 'Mike Chen',
+        inspector: getInspectorName(1),
         completedAt: null,
         duration: null,
         notes: '48-hour incubation in progress'
@@ -206,7 +229,7 @@ const Quality = () => {
         targetValue: '100% seal integrity',
         actualValue: '94% pass rate',
         tolerance: '≥98%',
-        inspector: 'Tom Johnson',
+        inspector: getInspectorName(2),
         completedAt: '2025-09-08T11:45:00Z',
         duration: 20,
         notes: '6% of samples showed minor seal defects. Batch quarantined.'
@@ -222,7 +245,7 @@ const Quality = () => {
         targetValue: '24-hour adhesion',
         actualValue: 'Pending...',
         tolerance: 'Pass/Fail',
-        inspector: 'Lisa Park',
+        inspector: getInspectorName(3),
         completedAt: null,
         duration: null,
         notes: 'Scheduled for tomorrow morning'
@@ -275,7 +298,7 @@ const Quality = () => {
         inspectionType: 'Incoming Material',
         product: 'GABA Extract Premium',
         scheduledTime: '2025-09-09T08:00:00Z',
-        inspector: 'Quality Team A',
+        inspector: getInspectorName(0),
         status: 'Scheduled',
         estimatedDuration: 60,
         priority: 'High'
@@ -285,7 +308,7 @@ const Quality = () => {
         inspectionType: 'In-Process Check',
         product: 'Sentia Red Production Line',
         scheduledTime: '2025-09-09T10:30:00Z',
-        inspector: 'Sarah Johnson',
+        inspector: getInspectorName(1),
         status: 'Scheduled',
         estimatedDuration: 30,
         priority: 'Medium'
@@ -295,7 +318,7 @@ const Quality = () => {
         inspectionType: 'Final Product',
         product: 'Sentia Gold Batch SG-2025-035',
         scheduledTime: '2025-09-09T14:00:00Z',
-        inspector: 'Dr. Sarah Wilson',
+        inspector: getInspectorName(0),
         status: 'Scheduled',
         estimatedDuration: 120,
         priority: 'High'

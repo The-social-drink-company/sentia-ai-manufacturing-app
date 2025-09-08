@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   BeakerIcon,
   CheckCircleIcon,
@@ -26,37 +27,58 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 
 const QualityManagementSystem = () => {
-  const [qualityData, setQualityData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [selectedTimeRange, setSelectedTimeRange] = useState('daily');
   const [selectedProduct, setSelectedProduct] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   const [newTestVisible, setNewTestVisible] = useState(false);
+  const [personnelData, setPersonnelData] = useState(null);
 
-  useEffect(() => {
-    const fetchQualityData = async () => {
+  // Fetch quality data with real-time updates
+  const { data: qualityData, isLoading, refetch } = useQuery({
+    queryKey: ['quality-management', selectedTimeRange, selectedProduct],
+    queryFn: async () => {
       try {
         const response = await fetch(`/api/quality/management?range=${selectedTimeRange}&product=${selectedProduct}`);
         if (response.ok) {
-          const data = await response.json();
-          setQualityData(data);
-        } else {
-          setQualityData(mockQualityData);
+          return await response.json();
         }
       } catch (error) {
         console.error('Error fetching quality data:', error);
-        setQualityData(mockQualityData);
-      } finally {
-        setLoading(false);
       }
-    };
+      return mockQualityData;
+    },
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 30000
+  });
 
-    fetchQualityData();
-    const interval = setInterval(fetchQualityData, 30000);
-    return () => clearInterval(interval);
-  }, [selectedTimeRange, selectedProduct]);
+  // Fetch personnel data
+  const { data: personnel } = useQuery({
+    queryKey: ['personnel-quality'],
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/personnel/for-task/quality_inspector');
+        if (response.ok) {
+          const result = await response.json();
+          return result.data || [];
+        }
+      } catch (error) {
+        console.error('Error fetching personnel:', error);
+      }
+      return [];
+    },
+    staleTime: 5 * 60 * 1000
+  });
+
+  // Helper function to get real personnel name or fallback
+  const getAssignedPersonnel = (index = 0) => {
+    if (personnel && personnel.length > 0) {
+      const person = personnel[index % personnel.length];
+      return person.display_name || person.full_name || `${person.first_name} ${person.last_name}`;
+    }
+    return 'Quality Inspector';
+  };
 
   const mockQualityData = {
     overview: {
@@ -96,7 +118,7 @@ const QualityManagementSystem = () => {
         testType: 'Chemical Analysis',
         status: 'in_progress',
         priority: 'high',
-        assignedTo: 'Dr. Sarah Johnson',
+        assignedTo: getAssignedPersonnel(0),
         startTime: '2025-09-08T09:30:00Z',
         estimatedCompletion: '2025-09-08T11:30:00Z',
         progress: 65,
@@ -110,7 +132,7 @@ const QualityManagementSystem = () => {
         testType: 'Microbiological',
         status: 'pending',
         priority: 'medium',
-        assignedTo: 'Dr. Michael Chen',
+        assignedTo: getAssignedPersonnel(1),
         startTime: '2025-09-08T10:00:00Z',
         estimatedCompletion: '2025-09-08T14:00:00Z',
         progress: 0,
@@ -124,7 +146,7 @@ const QualityManagementSystem = () => {
         testType: 'Physical Properties',
         status: 'completed',
         priority: 'low',
-        assignedTo: 'Dr. Emily Rodriguez',
+        assignedTo: getAssignedPersonnel(2),
         startTime: '2025-09-08T08:00:00Z',
         estimatedCompletion: '2025-09-08T09:00:00Z',
         progress: 100,
@@ -142,7 +164,7 @@ const QualityManagementSystem = () => {
         product: 'GABA Red 500ml',
         batch: 'B2025-089',
         timestamp: '2025-09-08T10:15:00Z',
-        assignedTo: 'Dr. Sarah Johnson',
+        assignedTo: getAssignedPersonnel(0),
         status: 'investigating',
         actionRequired: 'Immediate batch review and potential recall assessment'
       },
@@ -286,7 +308,7 @@ const QualityManagementSystem = () => {
     });
   };
 
-  if (loading) {
+  if (isLoading && !qualityData) {
     return (
       <div className="max-w-7xl mx-auto p-6">
         <div className="animate-pulse">

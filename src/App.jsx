@@ -54,6 +54,7 @@ const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
 const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 const UIShowcase = lazy(() => import('./components/ui/UIShowcase'))
 const UserPreferences = lazy(() => import('./pages/UserPreferences'))
+const MobileFloor = lazy(() => import('./pages/MobileFloor'))
 
 // Enhanced Admin System Components
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
@@ -754,6 +755,18 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <Suspense fallback={<LoadingSpinner />}>
                         <UIShowcase />
+                      </Suspense>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Mobile Manufacturing Floor Interface */}
+                <Route 
+                  path="/mobile" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <MobileFloor />
                       </Suspense>
                     </ProtectedRoute>
                   } 

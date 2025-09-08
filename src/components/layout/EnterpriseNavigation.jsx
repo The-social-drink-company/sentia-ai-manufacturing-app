@@ -637,7 +637,7 @@ const EnterpriseNavigation = () => {
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
-                  <div className="flex items-center relative">
+                  <motion.div className="flex items-center relative">
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       transition={{ duration: 0.2 }}
@@ -681,7 +681,7 @@ const EnterpriseNavigation = () => {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </div>
+                  </motion.div>
                   <AnimatePresence>
                     {!collapsed && section.expandable && (
                       <motion.div

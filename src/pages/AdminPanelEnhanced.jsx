@@ -18,7 +18,7 @@ import {
   KeyIcon,
   BellIcon
 } from '@heroicons/react/24/outline';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';\nimport PersonnelManagement from '../components/admin/PersonnelManagement';
 
 const AdminPanelEnhanced = () => {
   const { getToken, isLoaded: authLoaded } = useAuth();
@@ -311,6 +311,7 @@ const AdminPanelEnhanced = () => {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: ChartBarIcon },
     { id: 'users', label: 'Users', icon: UserGroupIcon },
+    { id: 'personnel', label: 'Personnel', icon: UserPlusIcon },
     { id: 'system', label: 'System Health', icon: ServerIcon },
     { id: 'security', label: 'Security', icon: ShieldCheckIcon },
     { id: 'settings', label: 'Settings', icon: CogIcon },
@@ -702,6 +703,10 @@ const AdminPanelEnhanced = () => {
                 </div>
               </div>
             </div>
+          )}
+
+          {activeTab === 'personnel' && (
+            <PersonnelManagement />
           )}
 
           {activeTab === 'audit' && (

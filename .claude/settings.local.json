@@ -206,7 +206,16 @@
       "Bash(start https://sentiaprod.financeflo.ai/admin)",
       "Bash(echo $PORT)",
       "Bash(start http://localhost:5001)",
-      "Bash(start https://sentiaprod.financeflo.ai)"
+      "Bash(start https://sentiaprod.financeflo.ai)",
+      "Bash(start https://web-production-1f10.up.railway.app/mobile)",
+      "Bash(start http://localhost:5002/mobile)",
+      "Bash(set PORT=5005)",
+      "Bash(start http://localhost:5005)",
+      "Bash(start http://localhost:5001/working-capital)",
+      "Bash(start http://localhost:3002/working-capital)",
+      "Bash(set VITE_API_BASE_URL=http://localhost:5003/api)",
+      "Bash(start http://localhost:3002/dashboard)",
+      "Bash(start http://localhost:3003/dashboard/enterprise)"
     ],
     "deny": [],
     "ask": []

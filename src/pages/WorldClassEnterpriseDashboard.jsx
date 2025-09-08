@@ -17,6 +17,7 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+import ExportService from '../services/ExportService';
 
 // Import actual components
 import WorkingCapital from '../components/WorkingCapital/WorkingCapital';
@@ -135,18 +136,42 @@ const EnterpriseKPICard = ({ title, value, change, trend, icon: Icon, descriptio
   </motion.div>
 );
 
-const QuickActionButton = ({ icon: Icon, title, description, color, section, onNavigate }) => (
-  <button 
-    onClick={() => onNavigate(section)}
-    className={`flex items-center space-x-3 p-4 bg-${color}-50 rounded-lg hover:bg-${color}-100 transition-colors w-full`}
-  >
-    <Icon className={`w-6 h-6 text-${color}-600`} />
-    <div className="text-left">
-      <p className="font-medium text-gray-900">{title}</p>
-      <p className="text-sm text-gray-600">{description}</p>
-    </div>
-  </button>
-);
+const QuickActionButton = ({ icon: Icon, title, description, color, section, onNavigate }) => {
+  const getButtonClasses = (color) => {
+    const colorMap = {
+      blue: 'bg-blue-50 hover:bg-blue-100',
+      green: 'bg-green-50 hover:bg-green-100', 
+      purple: 'bg-purple-50 hover:bg-purple-100',
+      red: 'bg-red-50 hover:bg-red-100',
+      yellow: 'bg-yellow-50 hover:bg-yellow-100'
+    };
+    return colorMap[color] || 'bg-gray-50 hover:bg-gray-100';
+  };
+
+  const getIconClasses = (color) => {
+    const colorMap = {
+      blue: 'text-blue-600',
+      green: 'text-green-600',
+      purple: 'text-purple-600', 
+      red: 'text-red-600',
+      yellow: 'text-yellow-600'
+    };
+    return colorMap[color] || 'text-gray-600';
+  };
+
+  return (
+    <button 
+      onClick={() => onNavigate(section)}
+      className={`flex items-center space-x-3 p-4 rounded-lg transition-colors w-full ${getButtonClasses(color)}`}
+    >
+      <Icon className={`w-6 h-6 ${getIconClasses(color)}`} />
+      <div className="text-left">
+        <p className="font-medium text-gray-900">{title}</p>
+        <p className="text-sm text-gray-600">{description}</p>
+      </div>
+    </button>
+  );
+};
 
 const ExecutiveDashboard = ({ dashboardData, onNavigate }) => (
   <div className="space-y-8">
@@ -287,7 +312,7 @@ const ExecutiveDashboard = ({ dashboardData, onNavigate }) => (
   </div>
 );
 
-const WorldClassEnterpriseHeader = ({ activeSection }) => (
+const WorldClassEnterpriseHeader = ({ activeSection, onExport, onSave, exportLoading, showExportMenu, setShowExportMenu }) => (
   <div className="bg-white border-b border-gray-200 px-6 py-4">
     <div className="flex items-center justify-between">
       <div>
@@ -311,11 +336,61 @@ const WorldClassEnterpriseHeader = ({ activeSection }) => (
         </p>
       </div>
       <div className="flex items-center space-x-4">
-        <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <DocumentTextIcon className="w-4 h-4" />
-          <span>Export</span>
-        </button>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+        <div className="relative export-menu-container">
+          <button 
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            disabled={exportLoading}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <DocumentTextIcon className={`w-4 h-4 ${exportLoading ? 'animate-spin' : ''}`} />
+            <span>{exportLoading ? 'Exporting...' : 'Export'}</span>
+            {!exportLoading && (
+              <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            )}
+          </button>
+          
+          {showExportMenu && !exportLoading && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+              <div className="py-1" role="menu">
+                <button 
+                  onClick={() => onExport('json')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  role="menuitem"
+                >
+                  Export as JSON
+                </button>
+                <button 
+                  onClick={() => onExport('csv')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  role="menuitem"
+                >
+                  Export as CSV
+                </button>
+                <button 
+                  onClick={() => onExport('excel')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  role="menuitem"
+                >
+                  Export as Excel
+                </button>
+                <button 
+                  onClick={() => onExport('pdf')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  role="menuitem"
+                >
+                  Export as PDF Report
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <button 
+          onClick={onSave}
+          className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
           <CheckCircleIcon className="w-4 h-4" />
           <span>Save</span>
         </button>
@@ -361,6 +436,116 @@ const WorldClassEnterpriseDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [exportService] = useState(() => new ExportService());
+  const [exportLoading, setExportLoading] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showExportMenu && !event.target.closest('.export-menu-container')) {
+        setShowExportMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showExportMenu]);
+
+  // Export functionality with format selection
+  const handleExport = async (format = 'json') => {
+    try {
+      setExportLoading(true);
+      setShowExportMenu(false);
+      
+      // Collect comprehensive dashboard data for export
+      const exportData = {
+        // Executive summary
+        revenue: 40000000,
+        workingCapital: 5470000,
+        cashPosition: 3200000,
+        operatingMargin: 25.8,
+        productionEfficiency: 92.3,
+        
+        // Financial metrics
+        receivables: 4930000,
+        inventory: 2740000,
+        payables: 2200000,
+        dso: 45,
+        dio: 30,
+        dpo: 60,
+        ccc: 15,
+        
+        // Operational metrics
+        productionCapacity: 85,
+        qualityScore: 98.2,
+        downtime: 3.5,
+        inventoryTurnover: 12.2,
+        supplierReliability: 96.5,
+        
+        // Forecasting
+        projectedRevenue: 42000000,
+        revenueGrowth: 5.0,
+        forecastMAPE: 8.5,
+        forecastConfidence: 87,
+        
+        // Risk factors
+        overallRisk: 'Medium',
+        riskFactors: [
+          { category: 'Supply Chain', level: 'Low', impact: 2.5 },
+          { category: 'Market Volatility', level: 'Medium', impact: 5.2 },
+          { category: 'Operational', level: 'Low', impact: 1.8 }
+        ],
+        
+        // Current section context
+        activeSection: activeSection,
+        exportTimestamp: new Date().toISOString()
+      };
+
+      // Export in selected format
+      await exportService.exportDashboardData(exportData, format, {
+        filename: `sentia-dashboard-${activeSection}-${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : format}`,
+        user: 'Enterprise User',
+        timeframe: '12M',
+        currency: 'GBP'
+      });
+
+      console.log('Dashboard data exported successfully');
+      
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  // Save functionality 
+  const handleSave = () => {
+    try {
+      const saveData = {
+        activeSection,
+        dashboardState: dashboardData,
+        lastSaved: new Date().toISOString()
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('sentiaManufacturingDashboardState', JSON.stringify(saveData));
+      console.log('Dashboard state saved successfully');
+      
+      // Show success feedback
+      const button = event.target.closest('button');
+      const originalText = button.querySelector('span').textContent;
+      button.querySelector('span').textContent = 'Saved!';
+      setTimeout(() => {
+        button.querySelector('span').textContent = originalText;
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Save failed:', error);
+      alert('Save failed. Please try again.');
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -414,7 +599,14 @@ const WorldClassEnterpriseDashboard = () => {
         setActiveSection={setActiveSection}
       />
       <div className="flex-1">
-        <WorldClassEnterpriseHeader activeSection={activeSection} />
+        <WorldClassEnterpriseHeader 
+          activeSection={activeSection} 
+          onExport={handleExport}
+          onSave={handleSave}
+          exportLoading={exportLoading}
+          showExportMenu={showExportMenu}
+          setShowExportMenu={setShowExportMenu}
+        />
         <main className="p-6">
           <AnimatePresence mode="wait">
             <WorldClassEnterpriseContent 

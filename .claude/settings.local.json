@@ -163,7 +163,8 @@
       "Bash(docker:*)",
       "Bash(start \"Docker Desktop\" \"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe\")",
       "Bash(where:*)",
-      "Bash(\"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe\")"
+      "Bash(\"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe\")",
+      "Bash(start http://localhost:3011)"
     ],
     "deny": [],
     "ask": []

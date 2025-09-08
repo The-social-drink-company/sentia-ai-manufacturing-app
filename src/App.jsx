@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
-import { SignedIn, SignedOut, RedirectToSignIn, SignInButton, UserButton } from '@clerk/clerk-react'
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, UserButton } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -195,8 +195,9 @@ const DashboardRoute = () => {
 
 function App() {
   return (
-    <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-      <QueryClientProvider client={queryClient}>
+    <ClerkProvider publishableKey={clerkPubKey} afterSignOutUrl="/">
+      <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+        <QueryClientProvider client={queryClient}>
           <Router>
             <div className="App">
               <Routes>
@@ -533,9 +534,10 @@ function App() {
               />
             </div>
           </Router>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </ErrorBoundary>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </ClerkProvider>
   )
 }
 

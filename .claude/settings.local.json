@@ -176,7 +176,9 @@
       "Bash(start https://sentia-manufacturing-dashboard-testing.up.railway.app/what-if)",
       "Bash(start https://sentia-manufacturing-dashboard-testing.up.railway.app/working-capital)",
       "Bash(start https://web-production-1f10.up.railway.app/what-if)",
-      "Bash(start https://web-production-1f10.up.railway.app/working-capital)"
+      "Bash(start https://web-production-1f10.up.railway.app/working-capital)",
+      "Bash(gh pr list:*)",
+      "Bash(git branch:*)"
     ],
     "deny": [],
     "ask": []

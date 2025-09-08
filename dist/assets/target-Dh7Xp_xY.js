@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:dist/assets/target-Dh7Xp_xY.js
-import{k as c}from"./index-DMJLC5EN.js";const r=c("Target",[["circle",{cx:"12",cy:"12",r:"10",key:"1mglay"}],["circle",{cx:"12",cy:"12",r:"6",key:"1vlfrh"}],["circle",{cx:"12",cy:"12",r:"2",key:"1c9p78"}]]);export{r as T};
-========
-import{k as c}from"./index-lhuSU9ie.js";const r=c("Target",[["circle",{cx:"12",cy:"12",r:"10",key:"1mglay"}],["circle",{cx:"12",cy:"12",r:"6",key:"1vlfrh"}],["circle",{cx:"12",cy:"12",r:"2",key:"1c9p78"}]]);export{r as T};
->>>>>>>> origin/production:dist/assets/target-BHtEhfS-.js

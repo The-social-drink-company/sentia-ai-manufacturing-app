@@ -68,9 +68,7 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-      <App />
-    </ClerkProvider>
+    <App />
   </React.StrictMode>,
 )
 

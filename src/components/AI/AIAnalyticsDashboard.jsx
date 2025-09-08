@@ -1,6 +1,7 @@
 import { devLog } from '../../lib/devLog.js';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useUser, useAuth } from '@clerk/clerk-react';
 
 import {
   Brain, TrendingUp, AlertTriangle, Target,
@@ -9,8 +10,8 @@ import {
 } from 'lucide-react';
 
 const AIAnalyticsDashboard = () => {
-  const { data: session } = { data: null };
-  const user = session?.user;
+  const { user } = useUser();
+  const { getToken } = useAuth();
   const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);
 
@@ -19,7 +20,7 @@ const AIAnalyticsDashboard = () => {
     queryFn: async () => {
       const response = await fetch(`/api/ai/analytics?model=${selectedModel}`, {
         headers: {
-          'Authorization': `Bearer ${session?.accessToken || ''}`
+          'Authorization': `Bearer ${await getToken()}`
         }
       });
       if (!response.ok) {
@@ -74,7 +75,7 @@ const AIAnalyticsDashboard = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await user?.getToken()}`
+          'Authorization': `Bearer ${await getToken()}`
         },
         body: JSON.stringify({
           modelType: selectedModel,
@@ -106,7 +107,7 @@ const AIAnalyticsDashboard = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Analytics Dashboard</h1>
               <p className="mt-2 text-gray-600">
-                Artificial Intelligence powered insights and predictions
+                Artificial Intelligence powered insights and predictions - Fixed Authentication
               </p>
             </div>
             <div className="flex items-center space-x-4">

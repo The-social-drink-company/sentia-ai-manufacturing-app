@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
-import { ClerkProvider } from '@clerk/clerk-react'
 
 // Performance monitoring with web-vitals
 import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
@@ -26,11 +25,7 @@ try {
   devLog.warn('Web vitals measurement not available:', error.message)
 }
 
-// Get Clerk publishable key following official docs
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Clerk Publishable Key")
-}
+// Clerk authentication is handled in App.jsx
 
 devLog.info('Starting Sentia Manufacturing Dashboard...');
 devLog.info('Environment:', import.meta.env.MODE);

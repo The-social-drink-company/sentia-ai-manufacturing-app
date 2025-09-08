@@ -471,6 +471,15 @@ app.get('/api/debug/env', (req, res) => {
   res.json(envInfo);
 });
 
+// EMERGENCY ADMIN ENDPOINT - Test if routing works
+app.get('/api/admin/emergency', (req, res) => {
+  res.json({ 
+    message: 'EMERGENCY ADMIN ENDPOINT WORKING', 
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Basic health check for Railway deployment (no external service dependencies)
 app.get('/api/health', (req, res) => {
   try {

@@ -55,6 +55,8 @@ import WorkingCapitalCalculator from './services/financials/workingCapitalCalcul
 import InventoryOptimizer from './services/inventory/inventoryOptimizer.js';
 // Import production data integrator
 import ProductionDataIntegrator from './services/production/productionDataIntegrator.js';
+// Import automation controller
+import AutomationController from './services/automation/automationController.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -126,6 +128,10 @@ logInfo('Inventory Optimizer initialized');
 // Initialize production data integrator
 const productionDataIntegrator = new ProductionDataIntegrator(databaseService);
 logInfo('Production Data Integrator initialized');
+
+// Initialize automation controller
+const automationController = new AutomationController(databaseService, productionDataIntegrator);
+logInfo('Automation Controller initialized');
 
 // NextAuth will be handled by the React frontend
 
@@ -447,6 +453,22 @@ const authenticateUser = async (req, res, next) => {
   };
   next();
 };
+
+// Debug environment endpoint for Railway troubleshooting
+app.get('/api/debug/env', (req, res) => {
+  const envInfo = {
+    NODE_ENV: process.env.NODE_ENV,
+    PORT: process.env.PORT,
+    RAILWAY_ENVIRONMENT: process.env.RAILWAY_ENVIRONMENT,
+    RAILWAY_ENVIRONMENT_NAME: process.env.RAILWAY_ENVIRONMENT_NAME,
+    RAILWAY_SERVICE_NAME: process.env.RAILWAY_SERVICE_NAME,
+    RAILWAY_STATIC_URL: process.env.RAILWAY_STATIC_URL,
+    RAILWAY_PUBLIC_DOMAIN: process.env.RAILWAY_PUBLIC_DOMAIN,
+    isProduction: process.env.NODE_ENV === 'production',
+    railwayKeys: Object.keys(process.env).filter(k => k.includes('RAILWAY'))
+  };
+  res.json(envInfo);
+});
 
 // Basic health check for Railway deployment (no external service dependencies)
 app.get('/api/health', (req, res) => {

@@ -129,7 +129,7 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <EnterpriseEnhancedDashboard />
+      <WorldClassDashboard />
     </ErrorBoundary>
   )
 }
@@ -144,12 +144,12 @@ function App() {
                 {/* Public Landing Page */}
                 <Route path="/" element={<LandingPage />} />
                 
-                {/* Protected Routes with Layout */}
+                {/* Protected Routes with World-Class Layout */}
                 <Route 
                   path="/dashboard/*" 
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout>
+                      <WorldClassLayout>
                         <Routes>
                           <Route index element={
                             <Suspense fallback={<LoadingSpinner />}>
@@ -162,7 +162,7 @@ function App() {
                             </Suspense>
                           } />
                         </Routes>
-                      </DashboardLayout>
+                      </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />

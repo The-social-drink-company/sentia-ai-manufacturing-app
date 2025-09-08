@@ -3449,8 +3449,9 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ SENTIA SERVER RUNNING ON PORT ${PORT}`);
   console.log(`🔗 Dashboard: http://localhost:${PORT}`);
   console.log(`🔗 API Health: http://localhost:${PORT}/api/health`);
+  console.log(`🌐 External URL: ${process.env.RAILWAY_STATIC_URL || 'Railway will provide URL'}`);
 });

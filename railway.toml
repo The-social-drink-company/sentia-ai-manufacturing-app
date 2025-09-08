@@ -6,7 +6,7 @@ builder = "NIXPACKS"
 buildCommand = "npm ci && npm run build"
 
 [deploy]
-startCommand = "node scripts/self-healing-agent.js & npm start"
+startCommand = "npm start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"

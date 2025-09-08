@@ -1,4 +1,4 @@
-// Circuit Breaker Pattern Implementation for API Resilience
+import { devLog } from '../lib/devLog.js';\n// Circuit Breaker Pattern Implementation for API Resilience
 // Prevents cascade failures and provides fallback mechanisms
 
 export class CircuitBreaker {
@@ -195,7 +195,7 @@ export class CircuitBreaker {
     const timestamp = new Date().toISOString();
     
     if (typeof console !== 'undefined') {
-      console.log(`[CircuitBreaker] ${timestamp} - State changed to ${newState} (context: ${context})`);
+      devLog.log(`[CircuitBreaker] ${timestamp} - State changed to ${newState} (context: ${context})`);
     }
   }
   

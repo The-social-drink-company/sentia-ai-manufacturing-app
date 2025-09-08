@@ -1,4 +1,4 @@
-/**
+import { devLog } from '../lib/devLog.js';\n/**
  * Web Vitals Performance Monitoring
  * Tracks Core Web Vitals and custom performance metrics
  */
@@ -45,7 +45,7 @@ class WebVitalsMonitor {
     this.startPeriodicReporting();
     
     this.isInitialized = true;
-    console.log('Web Vitals monitoring initialized');
+    devLog.log('Web Vitals monitoring initialized');
   }
 
   /**
@@ -118,7 +118,7 @@ class WebVitalsMonitor {
   measureReactRenderTimes() {
     if (window.React && window.React.unstable_Profiler) {
       // This would be integrated with React Profiler API
-      console.log('React render time monitoring available');
+      devLog.log('React render time monitoring available');
     }
   }
 
@@ -286,7 +286,7 @@ class WebVitalsMonitor {
         longTaskObserver.observe({ entryTypes: ['longtask'] });
         this.observers.add(longTaskObserver);
       } catch (e) {
-        console.warn('Long tasks monitoring not supported');
+        devLog.warn('Long tasks monitoring not supported');
       }
     }
   }
@@ -402,7 +402,7 @@ class WebVitalsMonitor {
         body: JSON.stringify({ metrics: batch })
       });
     } catch (error) {
-      console.warn('Failed to send performance metrics:', error);
+      devLog.warn('Failed to send performance metrics:', error);
       // Add back to batch for retry
       this.reportBatch.unshift(...batch);
     }

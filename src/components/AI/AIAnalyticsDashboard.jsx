@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
+import { devLog } from '../../lib/devLog.js';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -8,7 +9,7 @@ import {
 } from 'lucide-react';
 
 const AIAnalyticsDashboard = () => {
-  const { data: session } = ();
+  const { data: session } = { data: null };
   const user = session?.user;
   const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);

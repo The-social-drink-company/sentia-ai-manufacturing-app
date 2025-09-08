@@ -1,4 +1,4 @@
-import { devLog } from '../lib/devLog.js';
+import { devLog } from '../../lib/devLog.js';
 import React, { Component } from 'react'
 
 // Universal error boundary for all widgets

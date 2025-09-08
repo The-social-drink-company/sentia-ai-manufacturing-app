@@ -1,4 +1,4 @@
-/**
+import { devLog } from '../lib/devLog.js';\n/**
  * Test Monitor Dashboard - Real-time Autonomous Testing & Healing Monitoring
  */
 
@@ -27,7 +27,7 @@ const TestMonitorDashboard = () => {
           setTestResults([]);
         }
       } catch (error) {
-        console.error('Failed to load dashboard data:', error);
+        devLog.error('Failed to load dashboard data:', error);
       } finally {
         setLoading(false);
       }

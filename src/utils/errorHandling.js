@@ -1,4 +1,4 @@
-import toast from 'react-hot-toast';
+import { devLog } from '../lib/devLog.js';\nimport toast from 'react-hot-toast';
 
 // Error types for categorization
 export const ERROR_TYPES = {
@@ -149,7 +149,7 @@ export const handleAsyncError = async (asyncFn, errorHandler = null) => {
   try {
     return await asyncFn();
   } catch (error) {
-    console.error('Async operation failed:', error);
+    devLog.error('Async operation failed:', error);
     
     if (errorHandler) {
       errorHandler(error);
@@ -190,7 +190,7 @@ export const withRetry = async (
       const waitTime = delay * Math.pow(backoff, attempt);
       await new Promise(resolve => setTimeout(resolve, waitTime));
       
-      console.log(`Retrying operation (attempt ${attempt + 2}/${maxRetries + 1})...`);
+      devLog.log(`Retrying operation (attempt ${attempt + 2}/${maxRetries + 1})...`);
     }
   }
   
@@ -251,7 +251,7 @@ export const createFetchWithErrorHandling = (baseOptions = {}) => {
 export const setupGlobalErrorHandling = () => {
   // Handle unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
-    console.error('Unhandled promise rejection:', event.reason);
+    devLog.error('Unhandled promise rejection:', event.reason);
     
     // Prevent default browser behavior
     event.preventDefault();
@@ -264,7 +264,7 @@ export const setupGlobalErrorHandling = () => {
 
   // Handle global JavaScript errors
   window.addEventListener('error', (event) => {
-    console.error('Global error:', event.error);
+    devLog.error('Global error:', event.error);
     
     // Don't show toast for every JS error to avoid spam
     // ErrorBoundary will catch React errors
@@ -273,7 +273,7 @@ export const setupGlobalErrorHandling = () => {
 
 // Error boundary error handler
 export const reportErrorToBoundary = (error, errorInfo) => {
-  console.error('Error boundary caught error:', error, errorInfo);
+  devLog.error('Error boundary caught error:', error, errorInfo);
   
   // In production, send to error reporting service
   if (process.env.NODE_ENV === 'production') {
@@ -281,7 +281,7 @@ export const reportErrorToBoundary = (error, errorInfo) => {
     try {
       // reportToErrorService(error, errorInfo);
     } catch (reportingError) {
-      console.error('Failed to report error:', reportingError);
+      devLog.error('Failed to report error:', reportingError);
     }
   }
 };
@@ -291,7 +291,7 @@ export const safeParse = (jsonString, fallback = null) => {
   try {
     return JSON.parse(jsonString);
   } catch (error) {
-    console.warn('JSON parse error:', error);
+    devLog.warn('JSON parse error:', error);
     return fallback;
   }
 };
@@ -303,7 +303,7 @@ export const safeLocalStorage = {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : fallback;
     } catch (error) {
-      console.warn('LocalStorage get error:', error);
+      devLog.warn('LocalStorage get error:', error);
       return fallback;
     }
   },
@@ -313,7 +313,7 @@ export const safeLocalStorage = {
       localStorage.setItem(key, JSON.stringify(value));
       return true;
     } catch (error) {
-      console.warn('LocalStorage set error:', error);
+      devLog.warn('LocalStorage set error:', error);
       return false;
     }
   },
@@ -323,7 +323,7 @@ export const safeLocalStorage = {
       localStorage.removeItem(key);
       return true;
     } catch (error) {
-      console.warn('LocalStorage remove error:', error);
+      devLog.warn('LocalStorage remove error:', error);
       return false;
     }
   }

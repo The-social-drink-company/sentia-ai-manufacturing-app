@@ -9,8 +9,8 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 
 const DemandForecasting = () => {
-  const { data: session } = ();
-  const user = session?.user;
+  // const { data: session } = ();
+  // const user = session?.user;
   const [forecastPeriod, setForecastPeriod] = useState('30');
   const [selectedProducts, setSelectedProducts] = useState(['all']);
   const [analysisType, setAnalysisType] = useState('demand');

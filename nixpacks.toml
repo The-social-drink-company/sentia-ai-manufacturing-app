@@ -14,7 +14,7 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "npm run build:force"
+  "npm run build"
 ]
 
 [start]

@@ -157,7 +157,9 @@
       "WebFetch(domain:clerk.com)",
       "WebFetch(domain:guiding-sloth-86.clerk.accounts.dev)",
       "WebFetch(domain:champion-bulldog-92.clerk.accounts.dev)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(start http://localhost:3010)",
+      "Bash(set PORT=3011)"
     ],
     "deny": [],
     "ask": []

@@ -625,7 +625,7 @@ const EnterpriseNavigation = () => {
             const SectionIcon = section.icon;
 
             return (
-              <div key={section.id} className="mb-4">
+              <motion.div key={section.id} className="mb-4">
                 {/* Section Header */}
                 <motion.button
                   onClick={() => !collapsed && toggleSection(section.id)}
@@ -741,7 +741,7 @@ const EnterpriseNavigation = () => {
                             transition={{ duration: 0.2 }}
                           />
 
-                          <div className="flex items-center flex-1 relative z-10">
+                          <motion.div className="flex items-center flex-1 relative z-10">
                             <motion.div
                               animate={active ? { 
                                 scale: 1.1,
@@ -809,7 +809,7 @@ const EnterpriseNavigation = () => {
                                 </motion.div>
                               )}
                             </AnimatePresence>
-                          </div>
+                          </motion.div>
                           
                           {/* Active Indicator Line */}
                           {active && !collapsed && (
@@ -896,7 +896,7 @@ const EnterpriseNavigation = () => {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

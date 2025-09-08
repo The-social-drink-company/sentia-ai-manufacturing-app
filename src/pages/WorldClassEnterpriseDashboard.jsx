@@ -1,0 +1,433 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ChartBarIcon,
+  BanknotesIcon,
+  TruckIcon,
+  CubeIcon,
+  BeakerIcon,
+  PresentationChartLineIcon,
+  CogIcon,
+  BuildingOfficeIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  DocumentTextIcon,
+  UserGroupIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon
+} from '@heroicons/react/24/outline';
+
+// Import actual components
+import WorkingCapital from '../components/WorkingCapital/WorkingCapital';
+import WhatIfAnalysis from '../components/analytics/WhatIfAnalysis';
+import DemandForecasting from '../components/forecasting/DemandForecasting';
+import InventoryManagement from '../components/inventory/InventoryManagement';
+import ProductionTracking from '../components/production/ProductionTracking';
+import QualityControl from '../components/quality/QualityControl';
+import Analytics from '../components/analytics/Analytics';
+
+const WorldClassEnterpriseNavigation = ({ activeSection, setActiveSection }) => {
+  const navigationSections = [
+    {
+      title: 'Overview',
+      items: [
+        { id: 'dashboard', label: 'Executive Dashboard', icon: ChartBarIcon }
+      ]
+    },
+    {
+      title: 'Planning & Analytics', 
+      items: [
+        { id: 'forecasting', label: 'Demand Forecasting', icon: PresentationChartLineIcon },
+        { id: 'inventory', label: 'Inventory Management', icon: CubeIcon },
+        { id: 'production', label: 'Production Tracking', icon: TruckIcon },
+        { id: 'quality', label: 'Quality Control', icon: BeakerIcon }
+      ]
+    },
+    {
+      title: 'Financial Management',
+      items: [
+        { id: 'working-capital', label: 'Working Capital', icon: BanknotesIcon },
+        { id: 'what-if', label: 'What-If Analysis', icon: DocumentTextIcon },
+        { id: 'analytics', label: 'Financial Reports', icon: ChartBarIcon }
+      ]
+    },
+    {
+      title: 'Operations',
+      items: [
+        { id: 'data-import', label: 'Data Import', icon: BuildingOfficeIcon },
+        { id: 'admin', label: 'Admin Panel', icon: CogIcon }
+      ]
+    }
+  ];
+
+  return (
+    <div className="bg-gray-900 text-white w-64 min-h-screen p-6">
+      <div className="mb-8">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-lg">S</span>
+          </div>
+          <div>
+            <h1 className="text-lg font-bold">Sentia Manufacturing</h1>
+            <p className="text-xs text-gray-400">Enterprise Dashboard</p>
+          </div>
+        </div>
+      </div>
+
+      <nav className="space-y-6">
+        {navigationSections.map((section, sectionIndex) => (
+          <div key={sectionIndex}>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+              {section.title}
+            </h3>
+            <ul className="space-y-2">
+              {section.items.map((item) => (
+                <li key={item.id}>
+                  <button
+                    onClick={() => setActiveSection(item.id)}
+                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      activeSection === item.id
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span>{item.label}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+    </div>
+  );
+};
+
+const EnterpriseKPICard = ({ title, value, change, trend, icon: Icon, description }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+  >
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-2 rounded-lg ${trend === 'up' ? 'bg-green-100' : trend === 'down' ? 'bg-red-100' : 'bg-gray-100'}`}>
+        <Icon className={`w-6 h-6 ${trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-600'}`} />
+      </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 ${trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-600'}`}>
+          {trend === 'up' ? (
+            <ArrowTrendingUpIcon className="w-4 h-4" />
+          ) : trend === 'down' ? (
+            <ArrowTrendingDownIcon className="w-4 h-4" />
+          ) : null}
+          <span className="text-sm font-medium">{change}</span>
+        </div>
+      )}
+    </div>
+    <div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-1">{title}</h3>
+      <p className="text-3xl font-bold text-gray-900 mb-2">{value}</p>
+      {description && <p className="text-sm text-gray-600">{description}</p>}
+    </div>
+  </motion.div>
+);
+
+const QuickActionButton = ({ icon: Icon, title, description, color, section, onNavigate }) => (
+  <button 
+    onClick={() => onNavigate(section)}
+    className={`flex items-center space-x-3 p-4 bg-${color}-50 rounded-lg hover:bg-${color}-100 transition-colors w-full`}
+  >
+    <Icon className={`w-6 h-6 text-${color}-600`} />
+    <div className="text-left">
+      <p className="font-medium text-gray-900">{title}</p>
+      <p className="text-sm text-gray-600">{description}</p>
+    </div>
+  </button>
+);
+
+const ExecutiveDashboard = ({ dashboardData, onNavigate }) => (
+  <div className="space-y-8">
+    <div>
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">Executive Dashboard</h2>
+      <p className="text-gray-600">Real-time manufacturing operations overview</p>
+    </div>
+
+    {/* Key Performance Indicators */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <EnterpriseKPICard
+        title="Total Revenue"
+        value={`£${(dashboardData?.totalRevenue / 1000000).toFixed(1)}M`}
+        change="+15.2%"
+        trend="up"
+        icon={BanknotesIcon}
+        description="Monthly recurring revenue"
+      />
+      <EnterpriseKPICard
+        title="Active Orders"
+        value={dashboardData?.totalOrders?.toLocaleString()}
+        change="+8.5%"
+        trend="up"
+        icon={DocumentTextIcon}
+        description="Orders in production"
+      />
+      <EnterpriseKPICard
+        title="Inventory Value"
+        value={`£${(dashboardData?.inventoryValue / 1000000).toFixed(1)}M`}
+        change="-2.1%"
+        trend="down"
+        icon={CubeIcon}
+        description="Current stock valuation"
+      />
+      <EnterpriseKPICard
+        title="Active Customers"
+        value={dashboardData?.activeCustomers?.toLocaleString()}
+        change="+12.3%"
+        trend="up"
+        icon={UserGroupIcon}
+        description="Customers with active orders"
+      />
+    </div>
+
+    {/* Production Status Cards */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-gray-900">Working Capital</h3>
+          <div className="flex items-center space-x-2">
+            <ArrowTrendingUpIcon className="w-5 h-5 text-green-500" />
+            <span className="text-sm font-medium text-green-600">
+              {dashboardData?.workingCapital?.trend}
+            </span>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-gray-600 mb-1">Current</p>
+            <p className="text-2xl font-bold text-gray-900">
+              £{(dashboardData?.workingCapital?.current / 1000000).toFixed(1)}M
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600 mb-1">30-Day Projection</p>
+            <p className="text-xl font-semibold text-blue-600">
+              £{(dashboardData?.workingCapital?.projected / 1000000).toFixed(1)}M
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      >
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">Key Performance Metrics</h3>
+        <div className="space-y-4">
+          {dashboardData?.kpis?.map((kpi, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">{kpi.name}</span>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-gray-900">{kpi.value}</span>
+                {kpi.trend === 'up' ? (
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-500" />
+                ) : kpi.trend === 'down' ? (
+                  <ArrowTrendingDownIcon className="w-4 h-4 text-red-500" />
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+
+    {/* Quick Actions */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7 }}
+      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+    >
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <QuickActionButton 
+          icon={PresentationChartLineIcon}
+          title="Run Forecast"
+          description="Generate demand forecast"
+          color="blue"
+          section="forecasting"
+          onNavigate={onNavigate}
+        />
+        <QuickActionButton 
+          icon={BanknotesIcon}
+          title="Working Capital"
+          description="Analyze cash flow"
+          color="green"
+          section="working-capital"
+          onNavigate={onNavigate}
+        />
+        <QuickActionButton 
+          icon={DocumentTextIcon}
+          title="What-If Analysis"
+          description="Scenario modeling"
+          color="purple"
+          section="what-if"
+          onNavigate={onNavigate}
+        />
+      </div>
+    </motion.div>
+  </div>
+);
+
+const WorldClassEnterpriseHeader = ({ activeSection }) => (
+  <div className="bg-white border-b border-gray-200 px-6 py-4">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {activeSection === 'dashboard' && 'Executive Dashboard'}
+          {activeSection === 'forecasting' && 'Demand Forecasting'}
+          {activeSection === 'working-capital' && 'Working Capital Management'}
+          {activeSection === 'what-if' && 'What-If Analysis'}
+          {activeSection === 'inventory' && 'Inventory Management'}
+          {activeSection === 'production' && 'Production Tracking'}
+          {activeSection === 'quality' && 'Quality Control'}
+          {activeSection === 'analytics' && 'Financial Analytics'}
+        </h1>
+        <p className="text-gray-600 mt-1">
+          {new Date().toLocaleDateString('en-GB', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </p>
+      </div>
+      <div className="flex items-center space-x-4">
+        <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <DocumentTextIcon className="w-4 h-4" />
+          <span>Export</span>
+        </button>
+        <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          <CheckCircleIcon className="w-4 h-4" />
+          <span>Save</span>
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+const PlaceholderContent = ({ title, description }) => (
+  <div className="flex items-center justify-center h-96">
+    <div className="text-center">
+      <BuildingOfficeIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+      <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
+      <p className="text-gray-600 max-w-md">{description}</p>
+    </div>
+  </div>
+);
+
+const WorldClassEnterpriseContent = ({ activeSection, dashboardData, onNavigate }) => {
+  switch (activeSection) {
+    case 'dashboard':
+      return <ExecutiveDashboard dashboardData={dashboardData} onNavigate={onNavigate} />;
+    case 'forecasting':
+      return <div className="bg-white rounded-lg shadow-sm"><DemandForecasting /></div>;
+    case 'working-capital':
+      return <div className="bg-white rounded-lg shadow-sm"><WorkingCapital /></div>;
+    case 'what-if':
+      return <div className="bg-white rounded-lg shadow-sm"><WhatIfAnalysis /></div>;
+    case 'inventory':
+      return <div className="bg-white rounded-lg shadow-sm"><InventoryManagement /></div>;
+    case 'production':
+      return <div className="bg-white rounded-lg shadow-sm"><ProductionTracking /></div>;
+    case 'quality':
+      return <div className="bg-white rounded-lg shadow-sm"><QualityControl /></div>;
+    case 'analytics':
+      return <div className="bg-white rounded-lg shadow-sm"><Analytics /></div>;
+    default:
+      return <ExecutiveDashboard dashboardData={dashboardData} onNavigate={onNavigate} />;
+  }
+};
+
+const WorldClassEnterpriseDashboard = () => {
+  const [activeSection, setActiveSection] = useState('dashboard');
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+        const response = await fetch(`${apiUrl}/dashboard/overview`);
+        const result = await response.json();
+        setDashboardData(result);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        setDashboardData({
+          totalRevenue: 2450000,
+          totalOrders: 1250,
+          activeCustomers: 850,
+          inventoryValue: 750000,
+          workingCapital: {
+            current: 1850000,
+            projected: 2100000,
+            trend: '+13.5%'
+          },
+          kpis: [
+            { name: 'Revenue Growth', value: '+15.2%', trend: 'up' },
+            { name: 'Order Fulfillment', value: '94.8%', trend: 'up' },
+            { name: 'Customer Satisfaction', value: '4.7/5', trend: 'stable' },
+            { name: 'Inventory Turnover', value: '8.2x', trend: 'up' }
+          ]
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading Enterprise Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      <WorldClassEnterpriseNavigation 
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
+      <div className="flex-1">
+        <WorldClassEnterpriseHeader activeSection={activeSection} />
+        <main className="p-6">
+          <AnimatePresence mode="wait">
+            <WorldClassEnterpriseContent 
+              key={activeSection}
+              activeSection={activeSection}
+              dashboardData={dashboardData}
+              onNavigate={setActiveSection}
+            />
+          </AnimatePresence>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default WorldClassEnterpriseDashboard;

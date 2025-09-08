@@ -34,15 +34,15 @@ import {
 
 // Enterprise Loading Component
 const EnterpriseLoading = () => (
-  <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+  <div className="min-h-screen bg-gradient-to-br from-secondary to-tertiary flex items-center justify-center">
     <div className="text-center">
       <div className="relative">
         <div className="w-16 h-16 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600 mx-auto"></div>
         <Cpu className="w-6 h-6 text-blue-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
       </div>
-      <h3 className="mt-4 text-xl font-semibold text-gray-900">Sentia Manufacturing</h3>
-      <p className="text-gray-600">Loading enterprise dashboard with AI integration...</p>
-      <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-500">
+      <h3 className="mt-4 text-xl font-semibold text-primary">Sentia Manufacturing</h3>
+      <p className="text-secondary">Loading enterprise dashboard with AI integration...</p>
+      <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-tertiary">
         <Brain className="w-4 h-4" />
         <span>AI Analytics</span>
         <span>•</span>
@@ -59,13 +59,13 @@ const EnterpriseLoading = () => (
 // Enterprise Error Boundary
 const EnterpriseErrorFallback = ({ error, resetError }) => (
   <div className="min-h-screen bg-red-50 flex items-center justify-center p-6">
-    <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
+    <div className="max-w-md w-full bg-elevated rounded-lg shadow-theme-lg p-6 text-center">
       <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-      <h2 className="text-xl font-semibold text-gray-900 mb-2">Enterprise Dashboard Error</h2>
-      <p className="text-gray-600 mb-4">
+      <h2 className="text-xl font-semibold text-primary mb-2">Enterprise Dashboard Error</h2>
+      <p className="text-secondary mb-4">
         A critical error occurred in the enterprise dashboard system.
       </p>
-      <div className="bg-gray-100 rounded p-3 mb-4 text-xs text-left overflow-x-auto">
+      <div className="bg-tertiary rounded p-3 mb-4 text-xs text-left overflow-x-auto">
         <code className="text-red-600">{error?.message}</code>
       </div>
       <div className="flex space-x-3">
@@ -78,7 +78,7 @@ const EnterpriseErrorFallback = ({ error, resetError }) => (
         </button>
         <button 
           onClick={() => window.location.href = '/dashboard?fallback=true'}
-          className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+          className="flex-1 bg-secondary text-primary px-4 py-2 rounded hover:bg-tertiary"
         >
           Simple Mode
         </button>
@@ -133,7 +133,7 @@ export default function EnterpriseEnhancedDashboard() {
       <NotificationSystem />
       
       {/* Enterprise Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-elevated shadow-theme-sm border-b border-light">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -141,8 +141,8 @@ export default function EnterpriseEnhancedDashboard() {
                 <span className="text-white font-bold text-lg">S</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Sentia Manufacturing</h1>
-                <p className="text-sm text-gray-600">Enterprise AI-Powered Dashboard</p>
+                <h1 className="text-2xl font-bold text-primary">Sentia Manufacturing</h1>
+                <p className="text-sm text-secondary">Enterprise AI-Powered Dashboard</p>
               </div>
             </div>
             
@@ -150,26 +150,26 @@ export default function EnterpriseEnhancedDashboard() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${sseConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
-                <span className="text-xs text-gray-600">Live Data</span>
+                <span className="text-xs text-secondary">Live Data</span>
               </div>
               
               {mcpEnabled && (
                 <div className="flex items-center space-x-2">
                   <Network className="w-4 h-4 text-blue-500" />
-                  <span className="text-xs text-gray-600">MCP Active</span>
+                  <span className="text-xs text-secondary">MCP Active</span>
                 </div>
               )}
               
               {aiMode && (
                 <div className="flex items-center space-x-2">
                   <Brain className="w-4 h-4 text-purple-500" />
-                  <span className="text-xs text-gray-600">AI Enhanced</span>
+                  <span className="text-xs text-secondary">AI Enhanced</span>
                 </div>
               )}
               
               <div className="flex items-center space-x-2">
                 <Shield className="w-4 h-4 text-green-500" />
-                <span className="text-xs text-gray-600">{user?.firstName || 'Enterprise User'}</span>
+                <span className="text-xs text-secondary">{user?.firstName || 'Enterprise User'}</span>
               </div>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function EnterpriseEnhancedDashboard() {
               className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 selectedView === id
                   ? 'bg-blue-100 text-blue-700'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : 'text-secondary hover:text-primary hover:bg-gray-100'
               }`}
             >
               <Icon className="w-4 h-4 mr-2" />

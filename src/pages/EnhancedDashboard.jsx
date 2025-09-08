@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   CogIcon, 
   ChartBarIcon,
   BoltIcon,
   CpuChipIcon,
   BeakerIcon,
   BanknotesIcon,
-  ArrowTrendingUpIcon,
   ShieldCheckIcon,
   CloudIcon
 } from '@heroicons/react/24/outline';

@@ -46,6 +46,20 @@ const EnterpriseNavigation = () => {
   const [expandedSections, setExpandedSections] = useState(['dashboard', 'analytics']);
   const [searchTerm, setSearchTerm] = useState('');
   const [recentItems, setRecentItems] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (mobile) {
+        setCollapsed(true);
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Navigation structure with enhanced enterprise features
   const navigationSections = [
@@ -316,11 +330,13 @@ const EnterpriseNavigation = () => {
   // Animation variants
   const sidebarVariants = {
     collapsed: {
-      width: 80,
+      width: isMobile ? 0 : 80,
+      x: isMobile ? -100 : 0,
       transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
     },
     expanded: {
-      width: 360,
+      width: isMobile ? 280 : 360,
+      x: 0,
       transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
     }
   };
@@ -385,16 +401,28 @@ const EnterpriseNavigation = () => {
   };
 
   return (
-    <motion.div
-      variants={sidebarVariants}
-      animate={collapsed ? "collapsed" : "expanded"}
-      initial="expanded"
-      className="fixed left-0 top-0 h-full bg-gradient-to-b from-white to-gray-50/50 shadow-2xl border-r border-gray-200/60 backdrop-blur-xl z-50 overflow-hidden"
-      style={{
-        backdropFilter: 'blur(20px) saturate(180%)',
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%)'
-      }}
-    >
+    <>
+      {/* Mobile Backdrop */}
+      {isMobile && !collapsed && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+          onClick={() => setCollapsed(true)}
+        />
+      )}
+
+      <motion.div
+        variants={sidebarVariants}
+        animate={collapsed ? "collapsed" : "expanded"}
+        initial="expanded"
+        className={`fixed left-0 top-0 h-full bg-gradient-to-b from-white to-gray-50/50 shadow-2xl border-r border-gray-200/60 backdrop-blur-xl ${isMobile ? 'z-50' : 'z-50'} overflow-hidden`}
+        style={{
+          backdropFilter: 'blur(20px) saturate(180%)',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%)'
+        }}
+      >
       
       {/* Header */}
       <motion.div 
@@ -897,6 +925,7 @@ const EnterpriseNavigation = () => {
         )}
       </div>
     </motion.div>
+    </>
   );
 };
 

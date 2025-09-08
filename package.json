@@ -1,6 +1,6 @@
 {
   "name": "sentia-manufacturing-dashboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Manufacturing Dashboard with React/Vite frontend and Node.js backend",
   "type": "module",
   "scripts": {

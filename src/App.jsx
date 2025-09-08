@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
-import { SignedIn, SignedOut, RedirectToSignIn, SignInButton, UserButton } from '@clerk/clerk-react'
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, UserButton } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -29,6 +29,17 @@ const DemandForecasting = lazy(() => import('./components/forecasting/DemandFore
 const Analytics = lazy(() => import('./components/analytics/Analytics'))
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...')
+
+// Get Clerk publishable key from environment
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+// Validate Clerk key exists
+if (!clerkPubKey) {
+  console.error('VITE_CLERK_PUBLISHABLE_KEY is not set in environment variables')
+  throw new Error('Clerk publishable key is required')
+}
+
+console.log('Clerk key loaded:', clerkPubKey.substring(0, 20) + '...')
 
 // Initialize React Query client
 const queryClient = new QueryClient({
@@ -165,6 +176,7 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <QueryClientProvider client={queryClient}>
+        <ClerkProvider publishableKey={clerkPubKey}>
           <Router>
             <div className="App">
               <Routes>
@@ -329,6 +341,7 @@ function App() {
               />
             </div>
           </Router>
+        </ClerkProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ErrorBoundary>

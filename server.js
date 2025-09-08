@@ -1175,25 +1175,34 @@ app.get('/api/admin/users', async (req, res) => {
 // Admin API - Get invitations
 app.get('/api/admin/invitations', async (req, res) => {
   try {
-    // Mock invitations data for demo
+    // Mock invitations data for demo (formatted for AdminPanel)
     const invitations = [
       {
         id: 'inv-001',
         email: 'john.doe@sentiaspirits.com',
         role: 'manager',
         status: 'pending',
-        invitedBy: 'admin@sentiaspirits.com',
-        invitedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+        invited_by_email: 'paul.roberts@sentiaspirits.com',
+        created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        expires_at: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
       },
       {
         id: 'inv-002',
         email: 'sarah.smith@sentiaspirits.com',
-        role: 'operator',
+        role: 'user',
         status: 'pending',
-        invitedBy: 'admin@sentiaspirits.com',
-        invitedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        expiresAt: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString()
+        invited_by_email: 'paul.roberts@sentiaspirits.com',
+        created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        expires_at: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        id: 'inv-003',
+        email: 'alex.thompson@sentiaspirits.com',
+        role: 'user',
+        status: 'pending',
+        invited_by_email: 'daniel.kenny@sentiaspirits.com',
+        created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
       }
     ];
 

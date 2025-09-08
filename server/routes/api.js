@@ -32,6 +32,127 @@ router.get('/manufacturing-data', (req, res) => {
   }
 });
 
+// Get dashboard data
+router.get('/dashboard-data', (req, res) => {
+  try {
+    logInfo('Dashboard data requested');
+    
+    const dashboardData = {
+      kpis: {
+        revenue: { value: 2847500, change: 12.5, trend: 'up' },
+        orders: { value: 1543, change: -3.2, trend: 'down' },
+        efficiency: { value: 94.2, change: 2.1, trend: 'up' },
+        quality: { value: 98.7, change: 0.5, trend: 'up' }
+      },
+      charts: {
+        salesTrend: [
+          { month: 'Jan', sales: 2400000 },
+          { month: 'Feb', sales: 2100000 },
+          { month: 'Mar', sales: 2800000 },
+          { month: 'Apr', sales: 2600000 },
+          { month: 'May', sales: 3200000 },
+          { month: 'Jun', sales: 2847500 }
+        ],
+        productionMetrics: {
+          efficiency: 94.2,
+          quality: 98.7,
+          capacity: 87.3,
+          downtime: 2.1
+        }
+      },
+      alerts: [
+        { type: 'warning', message: 'Production line 2 efficiency below target' },
+        { type: 'info', message: 'Scheduled maintenance tomorrow at 6 AM' }
+      ],
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(dashboardData);
+  } catch (error) {
+    logError('Error retrieving dashboard data', error);
+    res.status(500).json({ error: 'Failed to retrieve dashboard data' });
+  }
+});
+
+// Get demand forecasting data
+router.get('/demand-forecasting', (req, res) => {
+  try {
+    logInfo('Demand forecasting data requested');
+    
+    const forecastData = {
+      forecast: [
+        { month: 'Jul 2025', demand: 3100000, confidence: 85 },
+        { month: 'Aug 2025', demand: 3400000, confidence: 82 },
+        { month: 'Sep 2025', demand: 3200000, confidence: 78 },
+        { month: 'Oct 2025', demand: 2900000, confidence: 75 },
+        { month: 'Nov 2025', demand: 3600000, confidence: 72 },
+        { month: 'Dec 2025', demand: 4200000, confidence: 68 }
+      ],
+      historical: [
+        { month: 'Jan 2025', actual: 2400000 },
+        { month: 'Feb 2025', actual: 2100000 },
+        { month: 'Mar 2025', actual: 2800000 },
+        { month: 'Apr 2025', actual: 2600000 },
+        { month: 'May 2025', actual: 3200000 },
+        { month: 'Jun 2025', actual: 2847500 }
+      ],
+      accuracy: {
+        lastMonth: 94.2,
+        last3Months: 91.5,
+        last6Months: 88.7
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(forecastData);
+  } catch (error) {
+    logError('Error retrieving demand forecasting data', error);
+    res.status(500).json({ error: 'Failed to retrieve forecasting data' });
+  }
+});
+
+// Get working capital data
+router.get('/working-capital', (req, res) => {
+  try {
+    logInfo('Working capital data requested');
+    
+    const workingCapitalData = {
+      current: {
+        totalWorkingCapital: 15420000,
+        currentAssets: 28650000,
+        currentLiabilities: 13230000,
+        cashFlow: 2890000
+      },
+      breakdown: {
+        inventory: 12500000,
+        accountsReceivable: 8950000,
+        cash: 7200000,
+        accountsPayable: 9800000,
+        shortTermDebt: 3430000
+      },
+      trends: [
+        { month: 'Jan', workingCapital: 14200000 },
+        { month: 'Feb', workingCapital: 13800000 },
+        { month: 'Mar', workingCapital: 15100000 },
+        { month: 'Apr', workingCapital: 14900000 },
+        { month: 'May', workingCapital: 15800000 },
+        { month: 'Jun', workingCapital: 15420000 }
+      ],
+      ratios: {
+        currentRatio: 2.17,
+        quickRatio: 1.23,
+        cashRatio: 0.54
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(workingCapitalData);
+  } catch (error) {
+    logError('Error retrieving working capital data', error);
+    res.status(500).json({ error: 'Failed to retrieve working capital data' });
+  }
+});
+
 // Upload and process data files
 router.post('/upload', 
   upload.array('files', 5), 

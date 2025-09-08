@@ -15,6 +15,7 @@ import ErrorBoundaryFallback from './components/ErrorBoundary'
 
 // Lazy Load Pages for Performance
 const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'))
+const WorldClassEnterpriseDashboard = lazy(() => import('./pages/WorldClassEnterpriseDashboard'))
 const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
 const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
 const AdminPanel = lazy(() => import('./pages/AdminPanel'))
@@ -129,7 +130,7 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <WorldClassDashboard />
+      <WorldClassEnterpriseDashboard />
     </ErrorBoundary>
   )
 }

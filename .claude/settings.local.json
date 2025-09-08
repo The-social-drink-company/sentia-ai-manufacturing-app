@@ -198,7 +198,9 @@
       "Bash(start http://localhost:65126/working-capital)",
       "Bash(start http://localhost:3000/dashboard)",
       "Bash(start http://localhost:3006/dashboard)",
-      "Bash(start https://web-production-1f10.up.railway.app/production)"
+      "Bash(start https://web-production-1f10.up.railway.app/production)",
+      "Bash(start https://web-production-1f10.up.railway.app/quality)",
+      "Bash(start https://web-production-1f10.up.railway.app/forecasting)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { SellingPartnerApi } from 'amazon-sp-api';
+import pkg from 'amazon-sp-api';
+const { SellingPartnerApi } = pkg;
 import { PrismaClient } from '@prisma/client';
 import redisCache from '../src/lib/redis.js';
 

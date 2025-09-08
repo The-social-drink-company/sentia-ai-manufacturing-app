@@ -1,4 +1,4 @@
-import shopifyApi from '@shopify/shopify-api';
+import { shopifyApi } from '@shopify/shopify-api';
 import redisCacheService from './redis-cache.js';
 
 class ShopifyMultiStoreService {

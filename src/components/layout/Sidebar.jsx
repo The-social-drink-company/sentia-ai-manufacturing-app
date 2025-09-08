@@ -92,6 +92,7 @@ const SidebarItem = ({
   
   const className = cn(
     baseClasses,
+    "sidebar-item",
     isActive ? activeClasses : inactiveClasses,
     isCollapsed && "justify-center"
   )
@@ -333,7 +334,7 @@ const Sidebar = () => {
       )}
       
       <div className={cn(
-        "flex flex-col h-screen bg-white border-r border-gray-200 dark:bg-gray-900 dark:border-gray-800 transition-all duration-300 ease-in-out",
+        "sidebar-container flex flex-col h-screen transition-all duration-300 ease-in-out",
         isMobile ? "fixed left-0 top-0 z-50 sidebar-mobile" : "relative",
         isMobile && sidebarCollapsed && "transform -translate-x-full",
         !isMobile && (sidebarCollapsed ? "w-16" : "w-72"),
@@ -341,7 +342,7 @@ const Sidebar = () => {
       )}>
       {/* Sidebar Header */}
       <div className={cn(
-        "flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800",
+        "sidebar-header flex items-center justify-between px-4 py-4",
         sidebarCollapsed && "px-2"
       )}>
         {!sidebarCollapsed && (
@@ -350,10 +351,10 @@ const Sidebar = () => {
               <span className="text-white font-bold text-sm">S</span>
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900 dark:text-white">
+              <h2 className="sidebar-title text-base font-bold">
                 Sentia
               </h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="sidebar-subtitle text-xs">
                 Manufacturing Dashboard
               </p>
             </div>

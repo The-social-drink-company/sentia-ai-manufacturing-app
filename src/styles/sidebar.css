@@ -1,4 +1,80 @@
-/* Enterprise Sidebar Styles */
+/* Enterprise Sidebar Styles - Professional Light Theme */
+
+/* Force professional light sidebar styling to override dark mode */
+.sidebar-container {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e5e7eb !important;
+}
+
+.dark .sidebar-container {
+  background-color: #f8fafc !important;
+  border-right: 1px solid #d1d5db !important;
+}
+
+.sidebar-header {
+  background: linear-gradient(to right, #eff6ff, #e0e7ff) !important;
+  border-bottom: 1px solid #d1d5db !important;
+}
+
+.dark .sidebar-header {
+  background: linear-gradient(to right, #eff6ff, #e0e7ff) !important;
+  border-bottom: 1px solid #d1d5db !important;
+}
+
+.sidebar-title {
+  color: #111827 !important;
+}
+
+.dark .sidebar-title {
+  color: #1f2937 !important;
+}
+
+.sidebar-subtitle {
+  color: #6b7280 !important;
+}
+
+.dark .sidebar-subtitle {
+  color: #6b7280 !important;
+}
+
+.sidebar-item {
+  color: #374151 !important;
+}
+
+.sidebar-item:hover {
+  background-color: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+.dark .sidebar-item {
+  color: #374151 !important;
+}
+
+.dark .sidebar-item:hover {
+  background-color: #e0f2fe !important;
+  color: #1f2937 !important;
+}
+
+.sidebar-overlay {
+  background-color: rgba(71, 85, 105, 0.2) !important;
+}
+
+/* Remove all dark backgrounds and borders */
+.dark .sidebar-footer,
+.dark .sidebar-divider {
+  background: linear-gradient(to right, #eff6ff, #e0e7ff) !important;
+  border-color: #d1d5db !important;
+}
+
+.dark .sidebar-collapse-btn {
+  color: #6b7280 !important;
+  background-color: transparent !important;
+}
+
+.dark .sidebar-collapse-btn:hover {
+  color: #374151 !important;
+  background-color: #f3f4f6 !important;
+}
 
 /* Custom Scrollbar for Sidebar */
 .custom-scrollbar::-webkit-scrollbar {

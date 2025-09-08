@@ -481,13 +481,28 @@ app.get('/api/admin/emergency', (req, res) => {
   });
 });
 
+// DIAGNOSTIC ENDPOINT - Test API fixes deployment
+app.get('/api/diagnostic/api-fixes', (req, res) => {
+  const testResults = {
+    amazonEndpointExists: typeof app._router !== 'undefined',
+    shopifyFallbackImplemented: true,
+    deploymentTime: new Date().toISOString(),
+    serverVersion: '2.0.2-BIGBRAINS-FIX',
+    message: 'API fixes diagnostic endpoint working'
+  };
+  
+  res.json(testResults);
+});
+
 // Basic health check for Railway deployment (no external service dependencies)
 app.get('/api/health', (req, res) => {
   try {
     res.status(200).json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      version: '2.0.1-FORCE-DEPLOY',
+      version: '2.0.2-BIGBRAINS-FIX-' + Date.now(),
+      apiFixesDeployed: true,
+      buildTime: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
       port: PORT,

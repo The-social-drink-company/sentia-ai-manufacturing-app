@@ -1,9 +1,32 @@
 import { useMemo } from 'react';
 import { useUser } from '@clerk/clerk-react';
 
+// Check for auth bypass mode
+const useAuthBypass = import.meta.env.VITE_USE_AUTH_BYPASS === 'true';
+
+// Mock user data for development bypass
+const mockUser = {
+  id: 'dev-user',
+  firstName: 'Development',
+  lastName: 'User',
+  fullName: 'Development User',
+  emailAddresses: [{ emailAddress: 'dev@sentia.com' }],
+  publicMetadata: { role: 'admin' },
+  imageUrl: null,
+  createdAt: new Date().toISOString(),
+  lastSignInAt: new Date().toISOString()
+};
+
 // Professional Clerk Authentication Hook
 export const useAuthRole = () => {
-  const { user, isLoaded, isSignedIn } = useUser();
+  // Use real Clerk hook or mock data based on bypass mode
+  const clerkData = useUser();
+  
+  const { user, isLoaded, isSignedIn } = useAuthBypass ? {
+    user: mockUser,
+    isLoaded: true,
+    isSignedIn: true
+  } : clerkData;
 
   const authData = useMemo(() => {
     // Return loading state while Clerk is initializing

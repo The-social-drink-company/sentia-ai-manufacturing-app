@@ -37,7 +37,7 @@ export const devLog = {
    */
   log: (...args) => {
     if (getEnvironmentMode() === 'development') {
-      devLog.log('[DEV]', ...args);
+      console.log('[DEV]', ...args);
     }
   },
 
@@ -47,7 +47,7 @@ export const devLog = {
    */
   info: (...args) => {
     if (getEnvironmentMode() === 'development') {
-      devLog.log('[DEV]', ...args);
+      console.info('[DEV]', ...args);
     }
   },
 
@@ -57,7 +57,7 @@ export const devLog = {
    */
   warn: (...args) => {
     if (getEnvironmentMode() === 'development') {
-      devLog.warn('[DEV]', ...args);
+      console.warn('[DEV]', ...args);
     }
   },
 
@@ -67,7 +67,7 @@ export const devLog = {
    */
   error: (...args) => {
     if (getEnvironmentMode() === 'development') {
-      devLog.error('[DEV]', ...args);
+      console.error('[DEV]', ...args);
     }
   },
 
@@ -138,7 +138,7 @@ export const devLog = {
    */
   component: (component, lifecycle, props = {}) => {
     if (getEnvironmentMode() === 'development') {
-      devLog.log(`[DEV] ${component} - ${lifecycle}`, props);
+      console.log(`[DEV] ${component} - ${lifecycle}`, props);
     }
   },
 
@@ -150,7 +150,7 @@ export const devLog = {
    */
   api: (method, endpoint, data = {}) => {
     if (getEnvironmentMode() === 'development') {
-      devLog.log(`[DEV] API ${method} ${endpoint}`, data);
+      console.log(`[DEV] API ${method} ${endpoint}`, data);
     }
   },
 
@@ -162,7 +162,7 @@ export const devLog = {
    */
   stateChange: (state, oldValue, newValue) => {
     if (getEnvironmentMode() === 'development') {
-      devLog.log(`[DEV] State: ${state}`, {
+      console.log(`[DEV] State: ${state}`, {
         from: oldValue,
         to: newValue
       });
@@ -201,17 +201,17 @@ const getEnvironmentVariable = (key) => {
 export const featureLog = (feature) => ({
   log: (...args) => {
     if (getEnvironmentMode() === 'development' && getEnvironmentVariable(`FEATURE_DEBUG_${feature.toUpperCase()}`) === 'true') {
-      devLog.log(`[${feature}]`, ...args);
+      console.log(`[${feature}]`, ...args);
     }
   },
   warn: (...args) => {
     if (getEnvironmentMode() === 'development' && getEnvironmentVariable(`FEATURE_DEBUG_${feature.toUpperCase()}`) === 'true') {
-      devLog.warn(`[${feature}]`, ...args);
+      console.warn(`[${feature}]`, ...args);
     }
   },
   error: (...args) => {
     if (getEnvironmentMode() === 'development' && getEnvironmentVariable(`FEATURE_DEBUG_${feature.toUpperCase()}`) === 'true') {
-      devLog.error(`[${feature}]`, ...args);
+      console.error(`[${feature}]`, ...args);
     }
   }
 });

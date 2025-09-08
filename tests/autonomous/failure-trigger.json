@@ -1,14 +1,14 @@
 {
-  "timestamp": "2025-09-07T22:50:04.188Z",
+  "timestamp": "2025-09-07T22:57:23.453Z",
   "failedTests": [
     {
-      "testName": "REALTIME_SSE_CONNECTION",
+      "testName": "API_GET__api_services_status",
       "result": "fail",
-      "duration": 2124.035,
-      "timestamp": "2025-09-07T22:50:04.025Z",
+      "duration": 20.748400000000174,
+      "timestamp": "2025-09-07T22:57:23.332Z",
       "error": {
-        "message": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3000/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3000/\", waiting until \"load\"\u001b[22m\n",
-        "stack": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3000/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3000/\", waiting until \"load\"\u001b[22m\n\n    at testFunction (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:361:18)\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:13)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:360:26",
+        "message": "apiRequestContext.fetch: connect ECONNREFUSED 127.0.0.1:5000\nCall log:\n\u001b[2m  - → GET http://127.0.0.1:5000/api/api/services/status\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer test-token\u001b[22m\n",
+        "stack": "apiRequestContext.fetch: connect ECONNREFUSED 127.0.0.1:5000\nCall log:\n\u001b[2m  - → GET http://127.0.0.1:5000/api/api/services/status\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer test-token\u001b[22m\n\n    at testFunction (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:221:40)\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:13)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:218:28",
         "type": "Error"
       },
       "screenshot": null,
@@ -20,17 +20,17 @@
         },
         "userAgent": "Playwright Test Agent",
         "memoryUsage": {
-          "rss": 146268160,
-          "heapTotal": 66453504,
-          "heapUsed": 32789440,
-          "external": 4007456,
-          "arrayBuffers": 103780
+          "rss": 139124736,
+          "heapTotal": 60948480,
+          "heapUsed": 35744288,
+          "external": 3984284,
+          "arrayBuffers": 81198
         }
       }
     }
   ],
   "failurePatterns": {
-    "UNKNOWN": 1
+    "SERVER_ERROR": 1
   },
   "triggerSelfHealing": true
 }

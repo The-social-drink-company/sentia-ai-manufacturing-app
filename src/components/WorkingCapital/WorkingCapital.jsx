@@ -1,0 +1,190 @@
+import React, { useState, useEffect } from 'react'
+import { 
+  BanknotesIcon, 
+  TrendingUpIcon,
+  TrendingDownIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
+  CogIcon,
+  ClockIcon,
+  ExclamationTriangleIcon
+} from '@heroicons/react/24/outline'
+
+// Sub-components
+import KPIDashboard from './KPIDashboard'
+import CashFlowProjections from './CashFlowProjections'
+import ScenarioAnalysis from './ScenarioAnalysis'
+import PolicyManagement from './PolicyManagement'
+import SystemDiagnostics from './SystemDiagnostics'
+
+const WorkingCapital = () => {
+  const [activeTab, setActiveTab] = useState('overview')
+  const [loading, setLoading] = useState(false)
+  
+  // Mock data for the overview
+  const [workingCapitalData, setWorkingCapitalData] = useState({
+    current: 2456000,
+    projected: 2890000,
+    trend: '+17.7%',
+    lastUpdated: new Date().toLocaleString(),
+    components: {
+      inventory: 1890000,
+      receivables: 780000,
+      payables: -214000
+    },
+    alerts: [
+      { type: 'warning', message: 'Inventory levels 15% above optimal range' },
+      { type: 'info', message: 'Receivables collection improved by 3 days' }
+    ]
+  })
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: ChartBarIcon },
+    { id: 'projections', label: 'Cash Flow', icon: TrendingUpIcon },
+    { id: 'scenarios', label: 'What-If Analysis', icon: DocumentTextIcon },
+    { id: 'policies', label: 'Policies', icon: CogIcon },
+    { id: 'diagnostics', label: 'Diagnostics', icon: ExclamationTriangleIcon }
+  ]
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Working Capital Management
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">
+            Comprehensive financial analysis and optimization tools
+          </p>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <div className="text-right">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Last updated</div>
+            <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+              <ClockIcon className="w-4 h-4 mr-1" />
+              {workingCapitalData.lastUpdated}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* KPI Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <BanknotesIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div className="ml-4">
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Current Working Capital</h3>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                £{(workingCapitalData.current / 1000000).toFixed(2)}M
+              </p>
+              <div className="flex items-center mt-1">
+                <TrendingUpIcon className="w-4 h-4 text-green-500 mr-1" />
+                <span className="text-sm text-green-600 dark:text-green-400">{workingCapitalData.trend}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+              <TrendingUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+            </div>
+            <div className="ml-4">
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Projected (30 days)</h3>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                £{(workingCapitalData.projected / 1000000).toFixed(2)}M
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                +£{((workingCapitalData.projected - workingCapitalData.current) / 1000).toFixed(0)}K improvement
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+              <ChartBarIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div className="ml-4">
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Optimization Potential</h3>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">18.5%</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                £{((workingCapitalData.current * 0.185) / 1000).toFixed(0)}K available
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Alerts */}
+      {workingCapitalData.alerts.length > 0 && (
+        <div className="space-y-3">
+          {workingCapitalData.alerts.map((alert, index) => (
+            <div 
+              key={index}
+              className={`p-4 rounded-lg border-l-4 ${
+                alert.type === 'warning' 
+                  ? 'bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-600' 
+                  : 'bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-600'
+              }`}
+            >
+              <div className="flex items-center">
+                <ExclamationTriangleIcon className={`w-5 h-5 mr-3 ${
+                  alert.type === 'warning' ? 'text-yellow-600' : 'text-blue-600'
+                }`} />
+                <p className={`text-sm ${
+                  alert.type === 'warning' 
+                    ? 'text-yellow-800 dark:text-yellow-200' 
+                    : 'text-blue-800 dark:text-blue-200'
+                }`}>
+                  {alert.message}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 dark:border-gray-700">
+        <nav className="-mb-px flex space-x-8">
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+              >
+                <Icon className="w-4 h-4 mr-2" />
+                {tab.label}
+              </button>
+            )
+          })}
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      <div className="mt-6">
+        {activeTab === 'overview' && <KPIDashboard data={workingCapitalData} />}
+        {activeTab === 'projections' && <CashFlowProjections />}
+        {activeTab === 'scenarios' && <ScenarioAnalysis />}
+        {activeTab === 'policies' && <PolicyManagement />}
+        {activeTab === 'diagnostics' && <SystemDiagnostics />}
+      </div>
+    </div>
+  )
+}
+
+export default WorkingCapital

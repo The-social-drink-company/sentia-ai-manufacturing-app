@@ -134,7 +134,16 @@
       "Bash(start https://web-production-1f10.up.railway.app/dashboard?fallback=true)",
       "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk)",
       "Bash(start http://localhost:3002)",
-      "Bash(start https://sentia-manufacturing-dashboard-testing.up.railway.app/dashboard)"
+      "Bash(start https://sentia-manufacturing-dashboard-testing.up.railway.app/dashboard)",
+      "Bash(start http://localhost:3005)",
+      "Bash(start http://localhost:3006)",
+      "Bash(start http://localhost:3007)",
+      "Bash(start http://localhost:3008)",
+      "Bash(start http://localhost:3007/test.html)",
+      "Bash(set VITE_API_BASE_URL=http://localhost:5001/api)",
+      "Bash(start http://localhost:3009)",
+      "Bash(copy:*)",
+      "Bash(start http://localhost:3002/test.html)"
     ],
     "deny": [],
     "ask": []

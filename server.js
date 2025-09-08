@@ -1068,7 +1068,11 @@ app.post('/api/working-capital/upload-financial-data', authenticateUser, upload.
   }
 });
 
-// Admin APIs
+// Admin APIs - Test endpoint
+app.get('/api/admin/test', (req, res) => {
+  res.json({ status: 'Admin API working', timestamp: new Date().toISOString(), railway: !!process.env.RAILWAY_ENVIRONMENT_NAME });
+});
+
 app.get('/api/admin/users', async (req, res) => {
   try {
     // Demo user data formatted for Clerk-compatible AdminPanel
@@ -1167,8 +1171,13 @@ app.get('/api/admin/users', async (req, res) => {
       pending: users.filter(u => !u.public_metadata.approved).length
     });
   } catch (error) {
-    console.error('Admin users error:', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
+    console.error('Admin users error:', error.message);
+    console.error('Admin users stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Failed to fetch users', 
+      details: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      timestamp: new Date().toISOString()
+    });
   }
 });
 

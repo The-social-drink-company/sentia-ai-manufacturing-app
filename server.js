@@ -529,6 +529,97 @@ app.get('/api/dashboard/overview', async (req, res) => {
   }
 });
 
+// What-If Analysis API endpoints
+app.get('/api/what-if/scenarios', async (req, res) => {
+  try {
+    const scenarios = {
+      status: 'success',
+      scenarios: [
+        {
+          id: 1,
+          name: 'Current Baseline',
+          revenue: 2847592,
+          costs: 1698955,
+          profit: 1148637,
+          margin: 0.403
+        },
+        {
+          id: 2,
+          name: 'Optimistic Growth',
+          revenue: 3417110,
+          costs: 1869810,
+          profit: 1547300,
+          margin: 0.453
+        },
+        {
+          id: 3,
+          name: 'Conservative Scenario',
+          revenue: 2278074,
+          costs: 1594652,
+          profit: 683422,
+          margin: 0.30
+        }
+      ],
+      lastUpdated: new Date().toISOString()
+    };
+    res.json(scenarios);
+  } catch (error) {
+    logError('What-If scenarios error', { error: error.message });
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to fetch scenarios' 
+    });
+  }
+});
+
+app.post('/api/what-if/calculate', async (req, res) => {
+  try {
+    const { revenueChange, costChange, marketConditions } = req.body;
+    
+    const baseRevenue = 2847592;
+    const baseCosts = 1698955;
+    
+    const newRevenue = baseRevenue * (1 + (revenueChange || 0) / 100);
+    const newCosts = baseCosts * (1 + (costChange || 0) / 100);
+    const newProfit = newRevenue - newCosts;
+    const newMargin = newRevenue > 0 ? newProfit / newRevenue : 0;
+    
+    const results = {
+      status: 'success',
+      calculation: {
+        revenue: {
+          original: baseRevenue,
+          new: newRevenue,
+          change: newRevenue - baseRevenue,
+          changePercent: ((newRevenue - baseRevenue) / baseRevenue * 100)
+        },
+        costs: {
+          original: baseCosts,
+          new: newCosts,
+          change: newCosts - baseCosts,
+          changePercent: ((newCosts - baseCosts) / baseCosts * 100)
+        },
+        profit: {
+          original: baseRevenue - baseCosts,
+          new: newProfit,
+          change: newProfit - (baseRevenue - baseCosts),
+          margin: newMargin
+        },
+        inputs: { revenueChange, costChange, marketConditions }
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(results);
+  } catch (error) {
+    logError('What-If calculation error', { error: error.message });
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to calculate scenario' 
+    });
+  }
+});
+
 // Shopify API Integration
 app.get('/api/shopify/dashboard-data', authenticateUser, async (req, res) => {
   try {

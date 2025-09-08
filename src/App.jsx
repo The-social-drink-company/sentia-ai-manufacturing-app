@@ -177,7 +177,6 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <QueryClientProvider client={queryClient}>
-        <ClerkProvider publishableKey={clerkPubKey}>
           <Router>
             <div className="App">
               <Routes>
@@ -342,7 +341,6 @@ function App() {
               />
             </div>
           </Router>
-        </ClerkProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ErrorBoundary>

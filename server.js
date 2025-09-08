@@ -620,6 +620,149 @@ app.post('/api/what-if/calculate', async (req, res) => {
   }
 });
 
+// Production Tracking API endpoints
+app.get('/api/production/overview', async (req, res) => {
+  try {
+    const { line, range } = req.query
+    const overview = {
+      status: 'success',
+      kpis: {
+        activeJobs: 12,
+        capacity: 87.3,
+        efficiency: 94.2,
+        output: 1247
+      },
+      activeJobs: [
+        { id: 'JOB-001', product: 'Sentia Red Premium', line: 'Line A', progress: 75, eta: '2h 15m', status: 'Running' },
+        { id: 'JOB-002', product: 'Sentia Gold', line: 'Line B', progress: 45, eta: '4h 30m', status: 'Running' },
+        { id: 'JOB-003', product: 'Sentia Blue', line: 'Line C', progress: 90, eta: '30m', status: 'Running' },
+        { id: 'JOB-004', product: 'Limited Edition', line: 'Line D', progress: 20, eta: '6h', status: 'Paused' }
+      ],
+      alerts: [
+        { message: 'Line C requires maintenance in 2 hours', severity: 'medium' },
+        { message: 'Raw material inventory low for Sentia Blue', severity: 'high' }
+      ],
+      lastUpdated: new Date().toISOString()
+    }
+    res.json(overview)
+  } catch (error) {
+    logError('Production overview error', { error: error.message })
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to fetch production overview' 
+    })
+  }
+})
+
+app.get('/api/quality/metrics', async (req, res) => {
+  try {
+    const metrics = {
+      status: 'success',
+      kpis: {
+        passRate: 98.2,
+        testsToday: 47,
+        pending: 8,
+        alerts: 2
+      },
+      activeTests: [
+        { name: 'Tensile Strength', batch: 'BATCH-001', status: 'In Progress' },
+        { name: 'Surface Finish', batch: 'BATCH-002', status: 'Passed' },
+        { name: 'Dimensional Check', batch: 'BATCH-003', status: 'In Progress' },
+        { name: 'Material Composition', batch: 'BATCH-004', status: 'Failed' }
+      ],
+      alerts: [
+        { message: 'Quality threshold exceeded for Batch BATCH-004', severity: 'high' },
+        { message: 'Calibration due for testing equipment #3', severity: 'medium' }
+      ],
+      lastUpdated: new Date().toISOString()
+    }
+    res.json(metrics)
+  } catch (error) {
+    logError('Quality metrics error', { error: error.message })
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to fetch quality metrics' 
+    })
+  }
+})
+
+app.get('/api/inventory/overview', async (req, res) => {
+  try {
+    const overview = {
+      status: 'success',
+      kpis: {
+        totalItems: 3231,
+        totalValue: 2847592,
+        lowStock: 12,
+        pendingOrders: 7
+      },
+      lowStock: [
+        { name: 'Sentia Red Premium', sku: 'SENTIA-R-001', currentStock: 15, minStock: 50 },
+        { name: 'Packaging Material A', sku: 'PKG-MAT-001', currentStock: 23, minStock: 100 },
+        { name: 'Quality Labels', sku: 'LABEL-Q-001', currentStock: 8, minStock: 25 },
+        { name: 'Safety Seals', sku: 'SEAL-S-001', currentStock: 31, minStock: 75 }
+      ],
+      pendingOrders: [
+        { id: 'PO-001', supplier: 'Premium Materials Ltd', items: 5, value: 25000, eta: '2025-09-15' },
+        { id: 'PO-002', supplier: 'Packaging Corp', items: 3, value: 8500, eta: '2025-09-12' }
+      ],
+      lastUpdated: new Date().toISOString()
+    }
+    res.json(overview)
+  } catch (error) {
+    logError('Inventory overview error', { error: error.message })
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to fetch inventory overview' 
+    })
+  }
+})
+
+app.get('/api/analytics/overview', async (req, res) => {
+  try {
+    const { period } = req.query
+    const analytics = {
+      status: 'success',
+      revenue: {
+        current: 2800000,
+        previous: 2600000,
+        change: 7.7
+      },
+      profit: {
+        current: 700000,
+        previous: 580000,
+        change: 20.7
+      },
+      margins: {
+        current: 25.0,
+        previous: 22.3,
+        change: 2.7
+      },
+      efficiency: {
+        current: 89.2,
+        previous: 85.4,
+        change: 3.8
+      },
+      revenueData: [
+        { month: 'Jan', revenue: 2400000, profit: 600000, margin: 25.0 },
+        { month: 'Feb', revenue: 2200000, profit: 550000, margin: 25.0 },
+        { month: 'Mar', revenue: 2800000, profit: 700000, margin: 25.0 },
+        { month: 'Apr', revenue: 3200000, profit: 800000, margin: 25.0 },
+        { month: 'May', revenue: 2900000, profit: 725000, margin: 25.0 },
+        { month: 'Jun', revenue: 3100000, profit: 775000, margin: 25.0 }
+      ],
+      lastUpdated: new Date().toISOString()
+    }
+    res.json(analytics)
+  } catch (error) {
+    logError('Analytics overview error', { error: error.message })
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to fetch analytics overview' 
+    })
+  }
+})
+
 // Shopify API Integration
 app.get('/api/shopify/dashboard-data', authenticateUser, async (req, res) => {
   try {

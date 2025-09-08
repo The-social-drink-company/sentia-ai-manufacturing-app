@@ -124,8 +124,13 @@ const LandingPage = () => {
   )
 }
 
-// Protected route wrapper
-const ProtectedRoute = ({ children }) => {
+// Protected route wrapper with guest access support
+const ProtectedRoute = ({ children, allowGuest = false }) => {
+  // Allow guest access for demo purposes
+  if (allowGuest) {
+    return children
+  }
+  
   return (
     <>
       <SignedIn>
@@ -188,11 +193,11 @@ function App() {
                 {/* Public Landing Page */}
                 <Route path="/" element={<LandingPage />} />
                 
-                {/* Protected Routes with World-Class Layout */}
+                {/* Protected Routes with World-Class Layout - Guest Access Enabled */}
                 <Route 
                   path="/dashboard/*" 
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Routes>
                           <Route index element={

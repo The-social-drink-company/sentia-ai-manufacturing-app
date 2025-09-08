@@ -321,6 +321,7 @@ html {
 .enterprise-sidebar {
   @apply fixed left-0 top-0 h-full w-64 bg-gray-900 text-white z-50;
   font-family: 'Inter', sans-serif;
+  min-height: 100vh;
 }
 
 .enterprise-sidebar-header {
@@ -333,10 +334,12 @@ html {
 
 .enterprise-brand {
   @apply text-white font-semibold text-base leading-tight;
+  color: white !important;
 }
 
 .enterprise-subtitle {
   @apply text-gray-400 text-sm font-normal;
+  color: #9CA3AF !important;
 }
 
 .enterprise-nav {
@@ -350,6 +353,7 @@ html {
 .enterprise-section-title {
   @apply px-6 mb-3 text-xs font-medium text-gray-400 uppercase tracking-wider;
   letter-spacing: 0.05em;
+  color: #9CA3AF !important;
 }
 
 .enterprise-nav-items {
@@ -359,24 +363,30 @@ html {
 .enterprise-nav-item {
   @apply flex items-center px-6 py-3 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors duration-200;
   text-decoration: none;
+  color: #D1D5DB !important;
 }
 
 .enterprise-nav-item.active {
   @apply bg-blue-600 text-white;
+  color: white !important;
 }
 
 .enterprise-nav-item:hover {
   @apply bg-gray-800 text-white;
+  color: white !important;
 }
 
 .enterprise-nav-item.active:hover {
   @apply bg-blue-700;
+  color: white !important;
 }
 
 .enterprise-nav-icon {
   @apply w-5 h-5 mr-3 flex-shrink-0;
+  color: currentColor !important;
 }
 
 .enterprise-nav-label {
   @apply flex-1;
+  color: currentColor !important;
 }

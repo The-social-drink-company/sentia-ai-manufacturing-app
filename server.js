@@ -45,6 +45,8 @@ import LiveDataSyncService from './services/integration/liveDataSyncService.js';
 import WorkingCapitalCalculator from './services/financials/workingCapitalCalculator.js';
 // Import inventory optimizer
 import InventoryOptimizer from './services/inventory/inventoryOptimizer.js';
+// Import production data integrator
+import ProductionDataIntegrator from './services/production/productionDataIntegrator.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -112,6 +114,10 @@ logInfo('Working Capital Calculator initialized');
 // Initialize inventory optimizer
 const inventoryOptimizer = new InventoryOptimizer(databaseService);
 logInfo('Inventory Optimizer initialized');
+
+// Initialize production data integrator
+const productionDataIntegrator = new ProductionDataIntegrator(databaseService);
+logInfo('Production Data Integrator initialized');
 
 // NextAuth will be handled by the React frontend
 
@@ -3265,6 +3271,407 @@ app.get('/api/inventory/cache/stats', authenticateUser, (req, res) => {
     
   } catch (error) {
     logError('Failed to get inventory cache stats', error);
+    res.status(500).json({ 
+      error: 'Failed to get cache stats',
+      message: error.message
+    });
+  }
+});
+
+// Production Data Integration API endpoints
+app.get('/api/production/metrics', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', lineId, startDate, endDate, includeDowntime = 'true', includeQuality = 'true' } = req.query;
+    
+    // Parse date parameters
+    const options = {};
+    if (startDate) options.startDate = new Date(startDate);
+    if (endDate) options.endDate = new Date(endDate);
+    if (lineId) options.lineId = lineId;
+    options.includeDowntime = includeDowntime === 'true';
+    options.includeQuality = includeQuality === 'true';
+    
+    logInfo('Production metrics requested', { companyId, lineId, options });
+    
+    const metrics = await productionDataIntegrator.getProductionMetrics(companyId, options);
+    
+    res.json({
+      success: true,
+      data: metrics,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get production metrics', error);
+    res.status(500).json({ 
+      error: 'Failed to get production metrics',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/oee', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', lineId, startDate, endDate } = req.query;
+    
+    const options = {};
+    if (startDate) options.startDate = new Date(startDate);
+    if (endDate) options.endDate = new Date(endDate);
+    if (lineId) options.lineId = lineId;
+    
+    logInfo('OEE calculation requested', { companyId, lineId, options });
+    
+    const metrics = await productionDataIntegrator.getProductionMetrics(companyId, options);
+    
+    res.json({
+      success: true,
+      data: {
+        oee: metrics.oee,
+        availability: metrics.availability,
+        efficiency: metrics.efficiency,
+        quality: metrics.quality,
+        alerts: metrics.alerts.filter(alert => alert.metric === 'oee' || alert.type === 'performance'),
+        period: metrics.period,
+        lineId: metrics.lineId
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to calculate OEE', error);
+    res.status(500).json({ 
+      error: 'Failed to calculate OEE',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/downtime', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', lineId, startDate, endDate } = req.query;
+    
+    const options = {};
+    if (startDate) options.startDate = new Date(startDate);
+    if (endDate) options.endDate = new Date(endDate);
+    if (lineId) options.lineId = lineId;
+    
+    logInfo('Downtime analysis requested', { companyId, lineId, options });
+    
+    const metrics = await productionDataIntegrator.getProductionMetrics(companyId, options);
+    
+    res.json({
+      success: true,
+      data: {
+        downtime: metrics.downtime,
+        availability: metrics.availability,
+        alerts: metrics.alerts.filter(alert => alert.type === 'availability'),
+        recommendations: metrics.recommendations.filter(rec => rec.type === 'availability_improvement'),
+        period: metrics.period,
+        lineId: metrics.lineId
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get downtime analysis', error);
+    res.status(500).json({ 
+      error: 'Failed to get downtime analysis',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/quality', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', lineId, startDate, endDate } = req.query;
+    
+    const options = {};
+    if (startDate) options.startDate = new Date(startDate);
+    if (endDate) options.endDate = new Date(endDate);
+    if (lineId) options.lineId = lineId;
+    
+    logInfo('Quality metrics requested', { companyId, lineId, options });
+    
+    const metrics = await productionDataIntegrator.getProductionMetrics(companyId, options);
+    
+    res.json({
+      success: true,
+      data: {
+        quality: metrics.quality,
+        alerts: metrics.alerts.filter(alert => alert.type === 'quality'),
+        recommendations: metrics.recommendations.filter(rec => rec.type === 'quality_improvement'),
+        period: metrics.period,
+        lineId: metrics.lineId
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get quality metrics', error);
+    res.status(500).json({ 
+      error: 'Failed to get quality metrics',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/efficiency', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', lineId, startDate, endDate } = req.query;
+    
+    const options = {};
+    if (startDate) options.startDate = new Date(startDate);
+    if (endDate) options.endDate = new Date(endDate);
+    if (lineId) options.lineId = lineId;
+    
+    logInfo('Production efficiency requested', { companyId, lineId, options });
+    
+    const metrics = await productionDataIntegrator.getProductionMetrics(companyId, options);
+    
+    res.json({
+      success: true,
+      data: {
+        efficiency: metrics.efficiency,
+        throughput: metrics.throughput,
+        costs: metrics.costs,
+        trends: metrics.trends,
+        alerts: metrics.alerts.filter(alert => alert.type === 'efficiency'),
+        recommendations: metrics.recommendations.filter(rec => 
+          rec.type === 'performance_improvement' || rec.type === 'cost_optimization'
+        ),
+        period: metrics.period,
+        lineId: metrics.lineId
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get production efficiency', error);
+    res.status(500).json({ 
+      error: 'Failed to get production efficiency',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/alerts', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', severity, type } = req.query;
+    
+    logInfo('Production alerts requested', { companyId, severity, type });
+    
+    const metrics = await productionDataIntegrator.getProductionMetrics(companyId);
+    
+    let alerts = metrics.alerts || [];
+    
+    // Filter by severity if specified
+    if (severity) {
+      alerts = alerts.filter(alert => alert.severity === severity);
+    }
+    
+    // Filter by type if specified
+    if (type) {
+      alerts = alerts.filter(alert => alert.type === type);
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        alerts,
+        totalAlerts: alerts.length,
+        severityBreakdown: {
+          high: alerts.filter(a => a.severity === 'high').length,
+          medium: alerts.filter(a => a.severity === 'medium').length,
+          low: alerts.filter(a => a.severity === 'low').length
+        },
+        typeBreakdown: alerts.reduce((acc, alert) => {
+          acc[alert.type] = (acc[alert.type] || 0) + 1;
+          return acc;
+        }, {}),
+        generatedAt: metrics.calculatedAt
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get production alerts', error);
+    res.status(500).json({ 
+      error: 'Failed to get production alerts',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/recommendations', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', priority, type } = req.query;
+    
+    logInfo('Production recommendations requested', { companyId, priority, type });
+    
+    const metrics = await productionDataIntegrator.getProductionMetrics(companyId);
+    
+    let recommendations = metrics.recommendations || [];
+    
+    // Filter by priority if specified
+    if (priority) {
+      recommendations = recommendations.filter(rec => rec.priority === priority);
+    }
+    
+    // Filter by type if specified
+    if (type) {
+      recommendations = recommendations.filter(rec => rec.type === type);
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        recommendations,
+        totalRecommendations: recommendations.length,
+        priorityBreakdown: {
+          high: recommendations.filter(r => r.priority === 'high').length,
+          medium: recommendations.filter(r => r.priority === 'medium').length,
+          low: recommendations.filter(r => r.priority === 'low').length
+        },
+        typeBreakdown: recommendations.reduce((acc, rec) => {
+          acc[rec.type] = (acc[rec.type] || 0) + 1;
+          return acc;
+        }, {}),
+        generatedAt: metrics.calculatedAt
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get production recommendations', error);
+    res.status(500).json({ 
+      error: 'Failed to get production recommendations',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/lines', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default' } = req.query;
+    
+    logInfo('Production lines requested', { companyId });
+    
+    // Get line information from the integrator's configuration
+    const lines = Object.entries(productionDataIntegrator.productionLines).map(([id, config]) => ({
+      id,
+      ...config,
+      status: 'active' // This could come from real-time data
+    }));
+    
+    res.json({
+      success: true,
+      data: {
+        lines,
+        totalLines: lines.length,
+        activeLines: lines.filter(line => line.status === 'active').length
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get production lines', error);
+    res.status(500).json({ 
+      error: 'Failed to get production lines',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/dashboard', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', lineId } = req.query;
+    
+    logInfo('Production dashboard data requested', { companyId, lineId });
+    
+    // Get comprehensive metrics for dashboard
+    const metrics = await productionDataIntegrator.getProductionMetrics(companyId, { lineId });
+    
+    // Format for dashboard consumption
+    const dashboardData = {
+      kpis: {
+        oee: {
+          value: metrics.oee?.overall || 0,
+          rating: metrics.oee?.rating || 'poor',
+          target: 0.85
+        },
+        availability: {
+          value: metrics.availability?.overall || 0,
+          rating: metrics.availability?.rating || 'poor',
+          target: 0.90
+        },
+        performance: {
+          value: metrics.efficiency?.overall || 0,
+          rating: metrics.efficiency?.rating || 'poor',
+          target: 0.85
+        },
+        quality: {
+          value: metrics.quality?.overall || 0,
+          rating: metrics.quality?.rating || 'poor',
+          target: 0.95
+        }
+      },
+      production: metrics.production,
+      downtime: metrics.downtime,
+      alerts: metrics.alerts?.slice(0, 5) || [], // Top 5 alerts
+      recommendations: metrics.recommendations?.slice(0, 3) || [], // Top 3 recommendations
+      trends: metrics.trends,
+      costs: metrics.costs,
+      period: metrics.period,
+      lineId: metrics.lineId,
+      dataQuality: metrics.dataQuality
+    };
+    
+    res.json({
+      success: true,
+      data: dashboardData,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get production dashboard data', error);
+    res.status(500).json({ 
+      error: 'Failed to get production dashboard data',
+      message: error.message
+    });
+  }
+});
+
+app.delete('/api/production/cache', authenticateUser, (req, res) => {
+  try {
+    productionDataIntegrator.clearCache();
+    
+    res.json({
+      success: true,
+      message: 'Production metrics cache cleared',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to clear production cache', error);
+    res.status(500).json({ 
+      error: 'Failed to clear cache',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/production/cache/stats', authenticateUser, (req, res) => {
+  try {
+    const stats = productionDataIntegrator.getCacheStats();
+    
+    res.json({
+      success: true,
+      data: stats,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get production cache stats', error);
     res.status(500).json({ 
       error: 'Failed to get cache stats',
       message: error.message

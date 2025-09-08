@@ -42,8 +42,8 @@ const AIAnalyticsDashboard = () => {
     refetchInterval: 30000,
   });
 
-  // Use real API data, fallback to mock only when API is unavailable
-  const data = aiData || mockAIData;
+  // Use real API data only
+  const data = aiData;
 
   const aiModels = [
     {
@@ -383,55 +383,5 @@ const AIRecommendations = ({ recommendations }) => {
   );
 };
 
-// Mock data for development
-const mockAIData = {
-  confidence: 87.3,
-  predictions: 42,
-  accuracy: 89.1,
-  insights: [
-    {
-      type: 'positive',
-      title: 'Strong Seasonal Pattern Detected',
-      description: 'Clear seasonal trends identified in demand data, improving forecast accuracy',
-      impact: '+12% accuracy improvement'
-    },
-    {
-      type: 'warning',
-      title: 'Inventory Bottleneck Risk',
-      description: 'Raw material shortages predicted for Q2 based on supplier data',
-      impact: 'Risk of 15% production decrease'
-    },
-    {
-      type: 'info',
-      title: 'Quality Correlation Found',
-      description: 'Strong correlation between temperature and quality metrics identified',
-      impact: 'Process optimization opportunity'
-    }
-  ],
-  performance: {
-    precision: 89.4,
-    recall: 86.2,
-    f1_score: 87.8,
-    mae: 12.3,
-    rmse: 18.7
-  },
-  recommendations: [
-    {
-      title: 'Increase Safety Stock',
-      description: 'Based on demand volatility analysis, recommend 15% increase in safety stock for top 5 SKUs',
-      impact: '8% reduction in stockouts'
-    },
-    {
-      title: 'Optimize Production Schedule',
-      description: 'Shift production peak by 2 hours to align with quality window predictions',
-      impact: '12% quality improvement'
-    },
-    {
-      title: 'Update Reorder Points',
-      description: 'Adjust reorder points for 12 items based on lead time analysis',
-      impact: '5% inventory cost reduction'
-    }
-  ]
-};
 
 export default AIAnalyticsDashboard;

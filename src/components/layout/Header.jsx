@@ -723,130 +723,150 @@ const Header = () => {
                 <QuestionMarkCircleIcon className="w-5 h-5" />
               </button>
               
-              {/* User menu */}
-              <Menu as="div" className="relative">
-                <Menu.Button className="flex items-center space-x-2 p-1 rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  <span className="text-sm text-secondary hidden sm:block">
+              {/* User Profile - Clerk Pro Integration */}
+              <div className="flex items-center space-x-3">
+                {/* User Info Display */}
+                <div className="hidden sm:flex flex-col text-right">
+                  <span className="text-sm text-secondary font-medium">
                     {getUserDisplayName()}
                   </span>
-                  <span className="text-xs text-tertiary hidden sm:block">
+                  <span className="text-xs text-tertiary">
                     {role}
                   </span>
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                    {getUserDisplayName()?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <ChevronDownIcon className="w-4 h-4 text-tertiary" />
-                </Menu.Button>
+                </div>
+                
+                {/* Clerk UserButton with Pro Features */}
+                <UserButton
+                  appearance={{
+                    elements: {
+                      userButtonBox: "w-8 h-8",
+                      userButtonTrigger: "w-8 h-8 rounded-full focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                      userButtonPopoverCard: "bg-elevated border border-light shadow-theme-lg",
+                      userButtonPopoverMain: "bg-elevated",
+                      userButtonPopoverFooter: "bg-elevated",
+                      userButtonPopoverActionButton: "text-secondary hover:bg-secondary",
+                      userButtonPopoverActionButtonText: "text-secondary",
+                      userPreviewMainIdentifier: "text-primary font-medium",
+                      userPreviewSecondaryIdentifier: "text-tertiary",
+                      userButtonPopoverActions: "bg-elevated"
+                    },
+                    variables: {
+                      colorPrimary: "#2563eb",
+                      colorDanger: "#dc2626",
+                      colorText: "var(--color-text-primary)",
+                      colorTextOnPrimaryBackground: "#ffffff",
+                      colorBackground: "var(--color-bg-elevated)",
+                      colorInputBackground: "var(--color-bg-elevated)",
+                      colorInputText: "var(--color-text-primary)",
+                      borderRadius: "0.375rem"
+                    }
+                  }}
+                  afterSignOutUrl="/"
+                  showName={false}
+                  userProfileMode="navigation"
+                  userProfileUrl="/user-profile"
+                />
+                
+                {/* Custom Menu for Additional Options */}
+                <Menu as="div" className="relative">
+                  <Menu.Button className="p-1 text-tertiary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-md">
+                    <ChevronDownIcon className="w-4 h-4" />
+                  </Menu.Button>
 
-                <Transition
-                  as={React.Fragment}
-                  enter="transition ease-out duration-200"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-light rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800">
-                    <div className="px-4 py-3">
-                      <p className="text-sm text-primary font-medium">
-                        {getUserDisplayName()}
-                      </p>
-                      <p className="text-sm text-tertiary">
-                        {user?.emailAddresses?.[0]?.emailAddress || user?.email || 'No email'}
-                      </p>
-                      <p className="text-xs text-muted dark:text-gray-500 mt-1">
-                        Role: {role}
-                      </p>
-                    </div>
-                    
-                    <div className="py-1">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/profile"
-                            className={cn(
-                              active ? 'bg-secondary text-primary' : 'text-secondary',
-                              'group flex items-center px-4 py-2 text-sm'
-                            )}
-                          >
-                            <Cog6ToothIcon className="mr-3 h-4 w-4 text-muted" />
-                            Profile Settings
-                          </Link>
-                        )}
-                      </Menu.Item>
+                  <Transition
+                    as={React.Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-light rounded-md bg-elevated shadow-theme-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="px-4 py-3">
+                        <p className="text-sm text-primary font-medium">
+                          {getUserDisplayName()}
+                        </p>
+                        <p className="text-sm text-tertiary">
+                          {user?.emailAddresses?.[0]?.emailAddress || user?.email || 'No email'}
+                        </p>
+                        <p className="text-xs text-muted mt-1">
+                          Role: {role}
+                        </p>
+                      </div>
                       
-                      {(hasPermission('admin.access') || role === 'admin') && (
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => window.open('/user-profile', '_blank')}
+                              className={cn(
+                                active ? 'bg-secondary text-primary' : 'text-secondary',
+                                'group flex w-full items-center px-4 py-2 text-sm'
+                              )}
+                            >
+                              <Cog6ToothIcon className="mr-3 h-4 w-4 text-muted" />
+                              Account Settings
+                            </button>
+                          )}
+                        </Menu.Item>
+                        
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              to="/admin"
+                              to="/preferences"
                               className={cn(
                                 active ? 'bg-secondary text-primary' : 'text-secondary',
                                 'group flex items-center px-4 py-2 text-sm'
                               )}
                             >
-                              <Cog6ToothIcon className="mr-3 h-4 w-4 text-muted" />
-                              Admin Panel
+                              <AdjustmentsHorizontalIcon className="mr-3 h-4 w-4 text-muted" />
+                              App Preferences
                             </Link>
                           )}
                         </Menu.Item>
-                      )}
-                      
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/settings"
-                            className={cn(
-                              active ? 'bg-secondary text-primary' : 'text-secondary',
-                              'group flex items-center px-4 py-2 text-sm'
+                        
+                        {(hasPermission('admin.access') || role === 'admin' || role === 'master_admin') && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/admin"
+                                className={cn(
+                                  active ? 'bg-secondary text-primary' : 'text-secondary',
+                                  'group flex items-center px-4 py-2 text-sm'
+                                )}
+                              >
+                                <Cog6ToothIcon className="mr-3 h-4 w-4 text-muted" />
+                                Admin Panel
+                              </Link>
                             )}
-                          >
-                            <AdjustmentsHorizontalIcon className="mr-3 h-4 w-4 text-muted" />
-                            Settings
-                          </Link>
+                          </Menu.Item>
                         )}
-                      </Menu.Item>
-                    </div>
-                    
-                    <div className="py-1">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            onClick={() => {
-                              devLog.log('Show help modal')
-                              // Implement help modal here
-                            }}
-                            className={cn(
-                              active ? 'bg-secondary text-primary' : 'text-secondary',
-                              'group flex w-full items-center px-4 py-2 text-sm'
-                            )}
-                          >
-                            <QuestionMarkCircleIcon className="mr-3 h-4 w-4 text-muted" />
-                            Help & Support
-                          </button>
-                        )}
-                      </Menu.Item>
+                      </div>
                       
-                      <Menu.Item>
-                        {({ active }) => (
-                          <SignOutButton redirectUrl="/">
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
                             <button
+                              onClick={() => {
+                                devLog.log('Show help modal')
+                                // Implement help modal here
+                              }}
                               className={cn(
-                                active ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:text-red-100' : 'text-red-600 dark:text-red-400',
+                                active ? 'bg-secondary text-primary' : 'text-secondary',
                                 'group flex w-full items-center px-4 py-2 text-sm'
                               )}
                             >
-                              <ArrowPathIcon className="mr-3 h-4 w-4 text-red-500" />
-                              Sign Out
+                              <QuestionMarkCircleIcon className="mr-3 h-4 w-4 text-muted" />
+                              Help & Support
                             </button>
-                          </SignOutButton>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              </div>
             </div>
           </div>
         </div>

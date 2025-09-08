@@ -53,6 +53,7 @@ const AuditLogs = lazy(() => import('./components/admin/AuditLogs'))
 const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
 const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 const UIShowcase = lazy(() => import('./components/ui/UIShowcase'))
+const UserPreferences = lazy(() => import('./pages/UserPreferences'))
 
 // Enhanced Admin System Components
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
@@ -516,6 +517,42 @@ function App() {
                           <SystemSettings />
                         </Suspense>
                       </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* User Preferences */}
+                <Route 
+                  path="/preferences" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <UserPreferences />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* User Profile (Clerk Pro Integration) */}
+                <Route 
+                  path="/user-profile" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                        <div className="text-center">
+                          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                            Account Settings
+                          </h1>
+                          <p className="text-gray-600 dark:text-gray-400 mb-6">
+                            Manage your account settings, security, and profile information using Clerk Pro features.
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-500">
+                            This page integrates with your Clerk Pro account settings.
+                          </p>
+                        </div>
+                      </div>
                     </ProtectedRoute>
                   } 
                 />

@@ -36,39 +36,20 @@ const SidebarItem = ({
   onClick = null,
   isSubItem = false
 }) => {
-  const baseClasses = cn(
-    "group flex items-center transition-colors duration-150 ease-in-out relative",
-    isSubItem 
-      ? "pl-12 pr-4 py-2 text-sm" 
-      : "px-4 py-2 text-sm",
-    "font-normal w-full"
-  )
+  const baseClasses = "nav-item"
   
-  const activeClasses = "active"
+  const activeClasses = "nav-item-active"
   
-  const inactiveClasses = ""
+  const inactiveClasses = "nav-item-inactive"
   
   const content = (
     <>
-      <div className={cn(
-        "flex items-center justify-center flex-shrink-0",
-        isCollapsed ? "w-5 h-5" : "w-5 h-5 mr-3"
-      )}>
-        <Icon className="w-5 h-5" />
-      </div>
-      
-      {!isCollapsed && (
-        <span className="truncate">{label}</span>
-      )}
+      <Icon style={{width: '16px', height: '16px', marginRight: isCollapsed ? '0' : '12px'}} />
+      {!isCollapsed && <span>{label}</span>}
     </>
   )
   
-  const className = cn(
-    baseClasses,
-    "sidebar-item",
-    isActive && activeClasses,
-    isCollapsed && "justify-center"
-  )
+  const className = `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
   
   if (to) {
     return (
@@ -99,32 +80,34 @@ const SidebarSection = ({ title, children, isCollapsed, defaultExpanded = true }
   
   if (isCollapsed) {
     return (
-      <div className="space-y-0.5">
-        <div className="mx-2 my-2 border-t border-gray-200 dark:border-gray-700" />
+      <div className="nav-section-collapsed">
+        <div className="section-divider" />
         {children}
       </div>
     )
   }
   
   return (
-    <div className="mb-6">
+    <div className="nav-section">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors duration-200"
+        className="nav-section-header"
       >
         <span>{title}</span>
         {isExpanded ? (
-          <ChevronUpIcon className="w-3 h-3" />
+          <ChevronUpIcon style={{width: '12px', height: '12px'}} />
         ) : (
-          <ChevronDownIcon className="w-3 h-3" />
+          <ChevronDownIcon style={{width: '12px', height: '12px'}} />
         )}
       </button>
       
-      <div className={cn(
-        "transition-all duration-300 ease-in-out overflow-hidden",
-        isExpanded ? "opacity-100 max-h-96" : "opacity-0 max-h-0"
-      )}>
-        <div className="space-y-0.5 mt-2">
+      <div 
+        className="section-content"
+        style={{
+          display: isExpanded ? 'block' : 'none'
+        }}
+      >
+        <div className="section-items">
           {children}
         </div>
       </div>
@@ -306,13 +289,15 @@ const Sidebar = () => {
         />
       )}
       
-      <div className={cn(
-        "sidebar-container flex flex-col h-screen transition-all duration-300 ease-in-out",
-        isMobile ? "fixed left-0 top-0 z-50 sidebar-mobile" : "relative",
-        isMobile && sidebarCollapsed && "transform -translate-x-full",
-        !isMobile && (sidebarCollapsed ? "w-16" : "w-72"),
-        isMobile && "w-72"
-      )}>
+      <div 
+        className={`sidebar-container ${sidebarCollapsed ? 'collapsed' : ''}`}
+        style={{
+          position: isMobile ? 'fixed' : 'relative',
+          left: isMobile && sidebarCollapsed ? '-280px' : '0',
+          top: isMobile ? '0' : 'auto',
+          zIndex: isMobile ? '50' : 'auto'
+        }}
+      >
       {/* Sidebar Header */}
       <div className={cn(
         "sidebar-header flex items-center justify-between px-4 py-4",

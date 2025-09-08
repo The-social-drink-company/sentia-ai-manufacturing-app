@@ -41,6 +41,10 @@ import databaseService from './services/database/databaseService.js';
 import ForecastingService from './services/forecasting/forecastingService.js';
 // Import live data sync service
 import LiveDataSyncService from './services/integration/liveDataSyncService.js';
+// Import working capital calculator
+import WorkingCapitalCalculator from './services/financials/workingCapitalCalculator.js';
+// Import inventory optimizer
+import InventoryOptimizer from './services/inventory/inventoryOptimizer.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -100,6 +104,14 @@ logInfo('Forecasting service initialized');
 // Initialize live data sync service
 const liveDataSyncService = new LiveDataSyncService(databaseService);
 logInfo('Live Data Sync Service initialized');
+
+// Initialize working capital calculator
+const workingCapitalCalculator = new WorkingCapitalCalculator(databaseService);
+logInfo('Working Capital Calculator initialized');
+
+// Initialize inventory optimizer
+const inventoryOptimizer = new InventoryOptimizer(databaseService);
+logInfo('Inventory Optimizer initialized');
 
 // NextAuth will be handled by the React frontend
 
@@ -2747,6 +2759,516 @@ app.post('/api/integration/reconnect/:serviceName', async (req, res) => {
   } catch (error) {
     logError(`Failed to reconnect ${req.params.serviceName}`, error);
     res.status(500).json({ error: `Failed to reconnect ${req.params.serviceName}` });
+  }
+});
+
+// Working Capital API endpoints
+app.get('/api/working-capital/metrics', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', periodDays = 365 } = req.query;
+    
+    logInfo('Working capital metrics requested', { companyId, periodDays });
+    
+    const metrics = await workingCapitalCalculator.calculateWorkingCapitalMetrics(
+      companyId, 
+      parseInt(periodDays)
+    );
+    
+    res.json({
+      success: true,
+      data: metrics,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to calculate working capital metrics', error);
+    res.status(500).json({ 
+      error: 'Failed to calculate working capital metrics',
+      message: error.message
+    });
+  }
+});
+
+app.post('/api/working-capital/what-if', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', periodDays = 365, scenarios } = req.body;
+    
+    if (!scenarios || !Array.isArray(scenarios)) {
+      return res.status(400).json({ 
+        error: 'Scenarios array is required for what-if analysis'
+      });
+    }
+    
+    logInfo('Working capital what-if analysis requested', { 
+      companyId, 
+      periodDays, 
+      scenarioCount: scenarios.length 
+    });
+    
+    // Get base metrics first
+    const baseMetrics = await workingCapitalCalculator.calculateWorkingCapitalMetrics(
+      companyId, 
+      parseInt(periodDays)
+    );
+    
+    // Calculate what-if scenarios
+    const whatIfResults = await workingCapitalCalculator.calculateWhatIfScenarios(
+      baseMetrics, 
+      scenarios
+    );
+    
+    res.json({
+      success: true,
+      data: {
+        baseMetrics,
+        scenarios: whatIfResults,
+        analysisDate: new Date().toISOString()
+      }
+    });
+    
+  } catch (error) {
+    logError('Failed to perform what-if analysis', error);
+    res.status(500).json({ 
+      error: 'Failed to perform what-if analysis',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/working-capital/dso', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', periodDays = 365 } = req.query;
+    
+    const endDate = new Date();
+    const startDate = new Date(endDate.getTime() - periodDays * 24 * 60 * 60 * 1000);
+    
+    const dsoData = await workingCapitalCalculator.calculateDSO(companyId, startDate, endDate);
+    
+    res.json({
+      success: true,
+      data: dsoData,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to calculate DSO', error);
+    res.status(500).json({ 
+      error: 'Failed to calculate DSO',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/working-capital/dpo', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', periodDays = 365 } = req.query;
+    
+    const endDate = new Date();
+    const startDate = new Date(endDate.getTime() - periodDays * 24 * 60 * 60 * 1000);
+    
+    const dpoData = await workingCapitalCalculator.calculateDPO(companyId, startDate, endDate);
+    
+    res.json({
+      success: true,
+      data: dpoData,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to calculate DPO', error);
+    res.status(500).json({ 
+      error: 'Failed to calculate DPO',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/working-capital/dio', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', periodDays = 365 } = req.query;
+    
+    const endDate = new Date();
+    const startDate = new Date(endDate.getTime() - periodDays * 24 * 60 * 60 * 1000);
+    
+    const dioData = await workingCapitalCalculator.calculateDIO(companyId, startDate, endDate);
+    
+    res.json({
+      success: true,
+      data: dioData,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to calculate DIO', error);
+    res.status(500).json({ 
+      error: 'Failed to calculate DIO',
+      message: error.message
+    });
+  }
+});
+
+app.delete('/api/working-capital/cache', authenticateUser, (req, res) => {
+  try {
+    workingCapitalCalculator.clearCache();
+    
+    res.json({
+      success: true,
+      message: 'Working capital calculation cache cleared',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to clear working capital cache', error);
+    res.status(500).json({ 
+      error: 'Failed to clear cache',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/working-capital/cache/stats', authenticateUser, (req, res) => {
+  try {
+    const stats = workingCapitalCalculator.getCacheStats();
+    
+    res.json({
+      success: true,
+      data: stats,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get cache stats', error);
+    res.status(500).json({ 
+      error: 'Failed to get cache stats',
+      message: error.message
+    });
+  }
+});
+
+// Inventory Optimization API endpoints
+app.get('/api/inventory/optimize', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', periodDays = 365 } = req.query;
+    
+    // Parse optimization options from query parameters
+    const options = {};
+    if (req.query.holdingCostRate) options.holdingCostRate = parseFloat(req.query.holdingCostRate);
+    if (req.query.serviceLevel) options.serviceLevel = parseFloat(req.query.serviceLevel);
+    if (req.query.setupCost) options.setupCost = parseFloat(req.query.setupCost);
+    if (req.query.periodDays) options.periodDays = parseInt(req.query.periodDays);
+    
+    logInfo('Inventory optimization requested', { companyId, options });
+    
+    const optimization = await inventoryOptimizer.optimizeInventory(companyId, options);
+    
+    res.json({
+      success: true,
+      data: optimization,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to optimize inventory', error);
+    res.status(500).json({ 
+      error: 'Failed to optimize inventory',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/inventory/eoq/:productId', authenticateUser, async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { companyId = 'default', periodDays = 365 } = req.query;
+    
+    logInfo('EOQ calculation requested', { productId, companyId });
+    
+    // Get full optimization and extract specific product
+    const optimization = await inventoryOptimizer.optimizeInventory(companyId, { periodDays: parseInt(periodDays) });
+    const productOptimization = optimization.products.find(p => p.productId === productId);
+    
+    if (!productOptimization) {
+      return res.status(404).json({ 
+        error: 'Product not found',
+        message: `No optimization data found for product ${productId}`
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        productId,
+        eoq: productOptimization.eoq,
+        safetyStock: productOptimization.safetyStock,
+        reorderPoint: productOptimization.reorderPoint,
+        recommendations: productOptimization.recommendations,
+        dataQuality: productOptimization.dataQuality
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError(`Failed to calculate EOQ for product ${req.params.productId}`, error);
+    res.status(500).json({ 
+      error: 'Failed to calculate EOQ',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/inventory/reorder-recommendations', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', urgency } = req.query;
+    
+    logInfo('Reorder recommendations requested', { companyId, urgency });
+    
+    const optimization = await inventoryOptimizer.optimizeInventory(companyId);
+    
+    // Filter by urgency if specified
+    let reorderProducts = optimization.products.filter(p => p.reorderRecommended);
+    if (urgency) {
+      reorderProducts = reorderProducts.filter(p => p.reorderUrgency === urgency);
+    }
+    
+    const recommendations = reorderProducts.map(p => ({
+      productId: p.productId,
+      location: p.location,
+      currentStock: p.currentStock,
+      reorderPoint: p.reorderPoint.quantity,
+      reorderQuantity: p.reorderQuantity,
+      urgency: p.reorderUrgency,
+      estimatedCost: p.reorderQuantity * p.costs.unitCost,
+      daysUntilStockout: p.performance.daysOnHand,
+      recommendations: p.recommendations.filter(r => r.type === 'reorder')
+    }));
+    
+    res.json({
+      success: true,
+      data: {
+        totalRecommendations: recommendations.length,
+        urgencyBreakdown: optimization.portfolioMetrics.urgencyBreakdown,
+        recommendations,
+        generatedAt: optimization.optimizationDate
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get reorder recommendations', error);
+    res.status(500).json({ 
+      error: 'Failed to get reorder recommendations',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/inventory/abc-analysis', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default' } = req.query;
+    
+    logInfo('ABC analysis requested', { companyId });
+    
+    const optimization = await inventoryOptimizer.optimizeInventory(companyId);
+    
+    const abcAnalysis = {
+      A: optimization.products.filter(p => p.abcClassification === 'A'),
+      B: optimization.products.filter(p => p.abcClassification === 'B'),
+      C: optimization.products.filter(p => p.abcClassification === 'C')
+    };
+    
+    const summary = {
+      totalProducts: optimization.products.length,
+      categoryBreakdown: optimization.portfolioMetrics.abcBreakdown,
+      valueDistribution: {
+        A: abcAnalysis.A.reduce((sum, p) => sum + p.currentValue, 0),
+        B: abcAnalysis.B.reduce((sum, p) => sum + p.currentValue, 0),
+        C: abcAnalysis.C.reduce((sum, p) => sum + p.currentValue, 0)
+      },
+      recommendations: optimization.recommendations.filter(r => r.type === 'portfolio_optimization')
+    };
+    
+    res.json({
+      success: true,
+      data: {
+        summary,
+        analysis: abcAnalysis,
+        generatedAt: optimization.optimizationDate
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to perform ABC analysis', error);
+    res.status(500).json({ 
+      error: 'Failed to perform ABC analysis',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/inventory/performance-metrics', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default' } = req.query;
+    
+    logInfo('Inventory performance metrics requested', { companyId });
+    
+    const optimization = await inventoryOptimizer.optimizeInventory(companyId);
+    
+    const performanceMetrics = {
+      portfolioMetrics: optimization.portfolioMetrics,
+      topPerformers: optimization.products
+        .filter(p => p.performance.turnoverRatio > 0)
+        .sort((a, b) => b.performance.turnoverRatio - a.performance.turnoverRatio)
+        .slice(0, 10)
+        .map(p => ({
+          productId: p.productId,
+          turnoverRatio: p.performance.turnoverRatio,
+          daysOnHand: p.performance.daysOnHand,
+          currentValue: p.currentValue
+        })),
+      lowPerformers: optimization.products
+        .filter(p => p.performance.turnoverRatio > 0)
+        .sort((a, b) => a.performance.turnoverRatio - b.performance.turnoverRatio)
+        .slice(0, 10)
+        .map(p => ({
+          productId: p.productId,
+          turnoverRatio: p.performance.turnoverRatio,
+          daysOnHand: p.performance.daysOnHand,
+          currentValue: p.currentValue,
+          overstockAmount: p.performance.overstock
+        })),
+      riskAnalysis: {
+        criticalItems: optimization.products.filter(p => p.reorderUrgency === 'critical').length,
+        stockoutRisk: optimization.products.filter(p => p.performance.stockoutRisk > 0.5).length,
+        overstockItems: optimization.products.filter(p => p.performance.overstock > 0).length
+      }
+    };
+    
+    res.json({
+      success: true,
+      data: performanceMetrics,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get inventory performance metrics', error);
+    res.status(500).json({ 
+      error: 'Failed to get inventory performance metrics',
+      message: error.message
+    });
+  }
+});
+
+app.post('/api/inventory/what-if', authenticateUser, async (req, res) => {
+  try {
+    const { companyId = 'default', productId, scenarios } = req.body;
+    
+    if (!scenarios || !Array.isArray(scenarios)) {
+      return res.status(400).json({ 
+        error: 'Scenarios array is required for what-if analysis'
+      });
+    }
+    
+    logInfo('Inventory what-if analysis requested', { 
+      companyId, 
+      productId,
+      scenarioCount: scenarios.length 
+    });
+    
+    // Get base optimization
+    const baseOptimization = await inventoryOptimizer.optimizeInventory(companyId);
+    
+    // If productId specified, focus on that product
+    let baseProduct = null;
+    if (productId) {
+      baseProduct = baseOptimization.products.find(p => p.productId === productId);
+      if (!baseProduct) {
+        return res.status(404).json({ 
+          error: 'Product not found',
+          message: `No optimization data found for product ${productId}`
+        });
+      }
+    }
+    
+    // Run scenarios with modified parameters
+    const whatIfResults = [];
+    for (const scenario of scenarios) {
+      try {
+        const modifiedOptions = { ...scenario.parameters };
+        const scenarioOptimization = await inventoryOptimizer.optimizeInventory(companyId, modifiedOptions);
+        
+        whatIfResults.push({
+          scenario: scenario.name,
+          parameters: scenario.parameters,
+          results: productId ? 
+            scenarioOptimization.products.find(p => p.productId === productId) :
+            scenarioOptimization.portfolioMetrics,
+          impact: productId ? 
+            { message: 'Impact analysis for individual products' } :
+            { message: 'Impact analysis for portfolio metrics' }
+        });
+      } catch (error) {
+        whatIfResults.push({
+          scenario: scenario.name,
+          error: error.message,
+          status: 'failed'
+        });
+      }
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        baseResults: productId ? baseProduct : baseOptimization.portfolioMetrics,
+        scenarios: whatIfResults,
+        analysisDate: new Date().toISOString()
+      }
+    });
+    
+  } catch (error) {
+    logError('Failed to perform inventory what-if analysis', error);
+    res.status(500).json({ 
+      error: 'Failed to perform what-if analysis',
+      message: error.message
+    });
+  }
+});
+
+app.delete('/api/inventory/cache', authenticateUser, (req, res) => {
+  try {
+    inventoryOptimizer.clearCache();
+    
+    res.json({
+      success: true,
+      message: 'Inventory optimization cache cleared',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to clear inventory cache', error);
+    res.status(500).json({ 
+      error: 'Failed to clear cache',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/inventory/cache/stats', authenticateUser, (req, res) => {
+  try {
+    const stats = inventoryOptimizer.getCacheStats();
+    
+    res.json({
+      success: true,
+      data: stats,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logError('Failed to get inventory cache stats', error);
+    res.status(500).json({ 
+      error: 'Failed to get cache stats',
+      message: error.message
+    });
   }
 });
 

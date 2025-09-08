@@ -833,7 +833,7 @@ const EnterpriseNavigation = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
             );
           })}
         </motion.div>

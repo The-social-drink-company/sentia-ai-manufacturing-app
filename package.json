@@ -84,7 +84,12 @@
     "autonomous:health": "type tests\\autonomous\\logs\\service-manager.log 2>nul | tail -20 || echo No health logs available",
     "autonomous:logs": "type tests\\autonomous\\logs\\scheduler.log 2>nul | tail -50 || echo No scheduler logs available",
     "autonomous:deploy-logs": "type tests\\autonomous\\logs\\deployment.log 2>nul | tail -20 || echo No deployment logs available",
-    "test:autonomous": "playwright test --config=playwright.autonomous.config.js"
+    "test:autonomous": "playwright test --config=playwright.autonomous.config.js",
+    "dev:clean": "rimraf node_modules/.vite dist node_modules/.cache",
+    "dev:fresh": "npm run dev:clean && npm install && npm run dev",
+    "dev:quick": "concurrently \"npm run serve\" \"npm run dev:client\"",
+    "serve:static": "npx serve dist -p 3000",
+    "dev:production-test": "npm run build && npm run serve:static"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

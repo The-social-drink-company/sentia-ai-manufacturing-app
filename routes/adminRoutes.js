@@ -1,5 +1,4 @@
 import express from 'express';
-import logger from '../services/logger.js';
 
 // Enterprise admin routes for Sentia Manufacturing Dashboard
 // Temporary implementation without direct Clerk integration for Railway deployment
@@ -25,7 +24,7 @@ const adminMiddleware = async (req, res, next) => {
     
     next();
   } catch (error) {
-    logger.error('Admin middleware error:', error);
+    console.error('Admin middleware error:', error);
     return res.status(500).json({ error: 'Authentication service unavailable' });
   }
 };
@@ -77,7 +76,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
       hasMore: (parseInt(offset) + parseInt(limit)) < demoUsers.length
     });
   } catch (error) {
-    logger.error('Failed to fetch users:', error);
+    console.error('Failed to fetch users:', error);
     res.status(500).json({ 
       error: 'Failed to fetch users',
       message: error.message 
@@ -105,7 +104,7 @@ router.get('/users/:userId', adminMiddleware, async (req, res) => {
     
     res.json({ user });
   } catch (error) {
-    logger.error('Failed to fetch user:', error);
+    console.error('Failed to fetch user:', error);
     res.status(500).json({ 
       error: 'Failed to fetch user',
       message: error.message 
@@ -122,7 +121,7 @@ router.post('/users/:userId/approve', adminMiddleware, async (req, res) => {
     const { userId } = req.params;
     
     // Simplified approval for Railway deployment
-    logger.info(`User ${userId} approved by admin`);
+    console.log(`User ${userId} approved by admin`);
     
     res.json({ 
       success: true,
@@ -133,7 +132,7 @@ router.post('/users/:userId/approve', adminMiddleware, async (req, res) => {
       }
     });
   } catch (error) {
-    logger.error('Failed to approve user:', error);
+    console.error('Failed to approve user:', error);
     res.status(500).json({ 
       error: 'Failed to approve user',
       message: error.message 
@@ -150,7 +149,7 @@ router.post('/users/:userId/revoke', adminMiddleware, async (req, res) => {
     const { userId } = req.params;
     
     // Simplified revoke for Railway deployment
-    logger.info(`User ${userId} access revoked by admin`);
+    console.log(`User ${userId} access revoked by admin`);
     
     res.json({ 
       success: true,
@@ -161,7 +160,7 @@ router.post('/users/:userId/revoke', adminMiddleware, async (req, res) => {
       }
     });
   } catch (error) {
-    logger.error('Failed to revoke user access:', error);
+    console.error('Failed to revoke user access:', error);
     res.status(500).json({ 
       error: 'Failed to revoke user access',
       message: error.message 
@@ -185,7 +184,7 @@ router.post('/users/:userId/role', adminMiddleware, async (req, res) => {
     }
 
     // Simplified role update for Railway deployment
-    logger.info(`User ${userId} role updated to ${role} by admin`);
+    console.log(`User ${userId} role updated to ${role} by admin`);
     
     res.json({ 
       success: true,
@@ -196,7 +195,7 @@ router.post('/users/:userId/role', adminMiddleware, async (req, res) => {
       }
     });
   } catch (error) {
-    logger.error('Failed to update user role:', error);
+    console.error('Failed to update user role:', error);
     res.status(500).json({ 
       error: 'Failed to update user role',
       message: error.message 
@@ -213,14 +212,14 @@ router.delete('/users/:userId', adminMiddleware, async (req, res) => {
     const { userId } = req.params;
     
     // Simplified deletion for Railway deployment
-    logger.info(`User ${userId} deleted by admin`);
+    console.log(`User ${userId} deleted by admin`);
     
     res.json({ 
       success: true,
       message: 'User deleted successfully' 
     });
   } catch (error) {
-    logger.error('Failed to delete user:', error);
+    console.error('Failed to delete user:', error);
     res.status(500).json({ 
       error: 'Failed to delete user',
       message: error.message 
@@ -257,7 +256,7 @@ router.post('/invite', adminMiddleware, async (req, res) => {
       }
     };
 
-    logger.info(`Invitation sent to ${email} with role ${role} by admin`);
+    console.log(`Invitation sent to ${email} with role ${role} by admin`);
     
     res.json({ 
       success: true,
@@ -265,7 +264,7 @@ router.post('/invite', adminMiddleware, async (req, res) => {
       invitation: invitation 
     });
   } catch (error) {
-    logger.error('Failed to send invitation:', error);
+    console.error('Failed to send invitation:', error);
     res.status(500).json({ 
       error: 'Failed to send invitation',
       message: error.message 
@@ -294,7 +293,7 @@ router.get('/invitations', adminMiddleware, async (req, res) => {
       total: invitations.length
     });
   } catch (error) {
-    logger.error('Failed to fetch invitations:', error);
+    console.error('Failed to fetch invitations:', error);
     res.status(500).json({ 
       error: 'Failed to fetch invitations',
       message: error.message 
@@ -311,14 +310,14 @@ router.delete('/invitations/:invitationId', adminMiddleware, async (req, res) =>
     const { invitationId } = req.params;
     
     // Simplified revoke for Railway deployment
-    logger.info(`Invitation ${invitationId} revoked by admin`);
+    console.log(`Invitation ${invitationId} revoked by admin`);
     
     res.json({ 
       success: true,
       message: 'Invitation revoked successfully' 
     });
   } catch (error) {
-    logger.error('Failed to revoke invitation:', error);
+    console.error('Failed to revoke invitation:', error);
     res.status(500).json({ 
       error: 'Failed to revoke invitation',
       message: error.message 
@@ -347,7 +346,7 @@ router.get('/stats', adminMiddleware, async (req, res) => {
     
     res.json(stats);
   } catch (error) {
-    logger.error('Failed to get admin stats:', error);
+    console.error('Failed to get admin stats:', error);
     res.status(500).json({ 
       error: 'Failed to get admin stats',
       message: error.message 

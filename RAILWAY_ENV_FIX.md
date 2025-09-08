@@ -28,7 +28,7 @@ Add each variable ONE BY ONE with the correct format:
 |--------------|----------------|
 | `NODE_ENV` | `production` |
 | `PORT` | `3000` |
-| `VITE_CLERK_PUBLISHABLE_KEY` | `pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk` |
+| `VITE_CLERK_PUBLISHABLE_KEY` | `pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk` |
 | `UNLEASHED_API_ID` | `d5313df6-db35-430c-a69e-ae27dffe0c5a` |
 | `UNLEASHED_API_KEY` | `2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==` |
 
@@ -48,12 +48,12 @@ After fixing variables, Railway should automatically redeploy. If not:
 
 ❌ **DON'T** paste this:
 ```
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
 ```
 
 ✅ **DO** this instead:
 - Name field: `VITE_CLERK_PUBLISHABLE_KEY`
-- Value field: `pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk`
+- Value field: `pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk`
 
 ## After Fixing
 The deployment should succeed and show:

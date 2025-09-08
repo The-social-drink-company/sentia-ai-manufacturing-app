@@ -110,8 +110,8 @@ Your Sentia Manufacturing Dashboard has been completely implemented with enterpr
 ## 🛡️ SECURITY & AUTHENTICATION
 
 ### **Clerk Authentication**
-- **Environment**: `pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk`
-- **Backend Secret**: `sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx`
+- **Environment**: `pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk`
+- **Backend Secret**: `sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq`
 - **Features**: Sign-in, sign-up, user profiles, session management
 - **Security**: Token verification, protected routes, role-based access
 

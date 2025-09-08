@@ -84,8 +84,8 @@ VITE_SHARE_LINK_TTL_MINUTES=60
 ## Environment Configuration ✅ UPDATED
 ```env
 # Clerk Authentication
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk
-CLERK_SECRET_KEY=sk_test_VAYZffZP043cqbgUJQgAPmCTziMcZVbfTPfXUIKlrx
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
 
 # Database URLs (Updated)
 DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb

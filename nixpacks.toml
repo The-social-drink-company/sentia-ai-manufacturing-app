@@ -1,11 +1,15 @@
+[variables]
+NODE_ENV = "production"
+NIXPACKS_NO_CACHE = "1"
+
 [phases.setup]
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["npm ci --no-cache"]
 
 [phases.build]
-cmds = ["npx prisma generate", "npx vite build"]
+cmds = ["rm -rf node_modules/.cache || true", "npm run build"]
 
 [start]
 cmd = "node server.js"

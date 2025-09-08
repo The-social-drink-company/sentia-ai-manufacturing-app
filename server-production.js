@@ -641,6 +641,169 @@ app.get('/api/forecasting/enhanced', (req, res) => {
   });
 });
 
+// Production optimization endpoint
+app.get('/api/production/optimization', (req, res) => {
+  const { line = 'all', mode = 'efficiency', range = 'daily' } = req.query;
+  
+  res.json({
+    overview: {
+      overallEfficiency: 89.2 + Math.random() * 2,
+      potentialEfficiency: 94.8,
+      improvementOpportunity: 5.6,
+      costSavingsPotential: 145000,
+      energyOptimization: 12.3,
+      wasteReduction: 18.7,
+      throughputIncrease: 8.4,
+      qualityImprovement: 3.2
+    },
+    productionLines: [
+      {
+        id: 'line-a',
+        name: 'GABA Red Production Line A',
+        currentEfficiency: 92.1 + Math.random() * 2,
+        targetEfficiency: 96.5,
+        status: 'optimizing',
+        bottleneck: 'mixing_station',
+        optimizationPotential: 4.4,
+        costSavings: 48000,
+        recommendations: 3,
+        lastOptimized: '2025-09-08T10:30:00Z'
+      },
+      {
+        id: 'line-b',
+        name: 'GABA Clear Production Line B',
+        currentEfficiency: 87.8 + Math.random() * 2,
+        targetEfficiency: 93.2,
+        status: 'needs_attention',
+        bottleneck: 'quality_check',
+        optimizationPotential: 5.4,
+        costSavings: 62000,
+        recommendations: 5,
+        lastOptimized: '2025-09-07T14:20:00Z'
+      },
+      {
+        id: 'line-c',
+        name: 'Packaging Line C',
+        currentEfficiency: 88.5 + Math.random() * 2,
+        targetEfficiency: 94.1,
+        status: 'optimized',
+        bottleneck: 'labeling_unit',
+        optimizationPotential: 5.6,
+        costSavings: 35000,
+        recommendations: 2,
+        lastOptimized: '2025-09-08T08:15:00Z'
+      }
+    ],
+    bottleneckAnalysis: [
+      {
+        station: 'Mixing Station',
+        impact: 'high',
+        utilizationRate: 94.2,
+        cycleTime: 18.5,
+        targetCycleTime: 16.2,
+        improvement: 12.4,
+        priority: 1,
+        estimatedCost: 25000,
+        estimatedSavings: 78000,
+        recommendations: ['Upgrade mixer capacity', 'Optimize recipe parameters', 'Add parallel mixing unit']
+      },
+      {
+        station: 'Quality Check',
+        impact: 'high',
+        utilizationRate: 91.8,
+        cycleTime: 4.2,
+        targetCycleTime: 3.1,
+        improvement: 26.2,
+        priority: 2,
+        estimatedCost: 18000,
+        estimatedSavings: 52000,
+        recommendations: ['Implement automated testing', 'Reduce sampling frequency', 'Add quality sensors']
+      },
+      {
+        station: 'Labeling Unit',
+        impact: 'medium',
+        utilizationRate: 88.5,
+        cycleTime: 2.8,
+        targetCycleTime: 2.3,
+        improvement: 17.9,
+        priority: 3,
+        estimatedCost: 12000,
+        estimatedSavings: 31000,
+        recommendations: ['Calibrate label applicator', 'Optimize label feed speed', 'Preventive maintenance']
+      }
+    ],
+    efficiencyTrend: Array.from({ length: 8 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (7 - i));
+      return {
+        date: date.toISOString().split('T')[0],
+        efficiency: 87 + Math.random() * 5,
+        target: 92.0,
+        throughput: 2300 + Math.random() * 300,
+        downtime: 25 + Math.random() * 25
+      };
+    }),
+    aiRecommendations: [
+      {
+        id: 'opt-001',
+        title: 'Optimize Mixing Station Throughput',
+        description: 'AI analysis suggests increasing mixer speed by 8% and adjusting recipe timing to reduce cycle time from 18.5 to 16.2 minutes',
+        priority: 'high',
+        impact: 'efficiency_gain',
+        estimatedGain: 12.4,
+        confidence: 0.94,
+        implementationTime: 2,
+        cost: 15000,
+        savings: 78000,
+        status: 'ready',
+        category: 'process_optimization'
+      },
+      {
+        id: 'opt-002',
+        title: 'Implement Predictive Quality Control',
+        description: 'Deploy ML-based quality prediction to reduce inspection time by 26% while maintaining quality standards',
+        priority: 'high',
+        impact: 'cycle_time_reduction',
+        estimatedGain: 26.2,
+        confidence: 0.89,
+        implementationTime: 4,
+        cost: 35000,
+        savings: 92000,
+        status: 'planning',
+        category: 'automation'
+      },
+      {
+        id: 'opt-003',
+        title: 'Energy Consumption Optimization',
+        description: 'Smart scheduling algorithm to optimize equipment operation during low-cost energy periods',
+        priority: 'medium',
+        impact: 'cost_reduction',
+        estimatedGain: 18.7,
+        confidence: 0.91,
+        implementationTime: 3,
+        cost: 22000,
+        savings: 45000,
+        status: 'testing',
+        category: 'energy_management'
+      },
+      {
+        id: 'opt-004',
+        title: 'Automated Changeover Process',
+        description: 'Implement automated product changeover to reduce setup time from 18 to 12 minutes',
+        priority: 'medium',
+        impact: 'downtime_reduction',
+        estimatedGain: 33.3,
+        confidence: 0.87,
+        implementationTime: 6,
+        cost: 58000,
+        savings: 85000,
+        status: 'approved',
+        category: 'automation'
+      }
+    ]
+  });
+});
+
 // Catch all handler - serve React app for any route not handled above
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));

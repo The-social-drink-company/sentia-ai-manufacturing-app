@@ -31,6 +31,7 @@ const DataImportDashboard = lazy(() => import('./components/DataImport/DataImpor
 const InventoryManagement = lazy(() => import('./components/inventory/InventoryManagement'))
 const AdvancedInventoryManagement = lazy(() => import('./components/inventory/AdvancedInventoryManagement'))
 const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
+const ProductionOptimization = lazy(() => import('./components/production/ProductionOptimization'))
 const QualityControl = lazy(() => import('./components/quality/QualityControl'))
 const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
 const EnhancedAIForecasting = lazy(() => import('./components/forecasting/EnhancedAIForecasting'))
@@ -342,7 +343,33 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
+                          <ProductionOptimization />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/production/tracking" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <ProductionTracking />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/production/optimization" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <ProductionOptimization />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

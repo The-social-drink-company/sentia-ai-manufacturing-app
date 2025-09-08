@@ -181,7 +181,7 @@ const Sidebar = () => {
         {
           to: '/production',
           icon: TruckIcon,
-          label: 'Production Tracking',
+          label: 'Production Optimization',
           shortcut: 'G P',
           permission: 'production.view',
           badge: alertCounts.capacityIssues > 0 ? alertCounts.capacityIssues : null

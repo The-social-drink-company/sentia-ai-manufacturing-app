@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EnterpriseNavigation from './EnterpriseNavigation';
 import EnterpriseHeader from './EnterpriseHeader';
@@ -10,13 +10,24 @@ const WorldClassLayout = ({ children }) => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const mainContentVariants = {
     collapsed: {
-      marginLeft: '5rem',
+      marginLeft: isMobile ? '0' : '5rem',
       transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
     },
     expanded: {
-      marginLeft: '23rem',
+      marginLeft: isMobile ? '0' : '23rem',
       transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
     }
   };

@@ -1,11 +1,12 @@
 // Environment variable loading - prioritize Railway environment first
 import dotenv from 'dotenv';
 
-// Force production mode if deployed on Railway production domain
-if (process.env.RAILWAY_STATIC_URL?.includes('production') || 
-    process.env.RAILWAY_PUBLIC_DOMAIN?.includes('sentia-manufacturing-dashboard-production')) {
+// Force production mode for Railway production deployment
+// Railway production runs on port 8080, development uses different ports
+if (process.env.PORT === '8080' || process.env.RAILWAY_SERVICE_NAME?.includes('production')) {
   process.env.NODE_ENV = 'production';
   process.env.RAILWAY_ENVIRONMENT = 'production';
+  console.log('🚀 PRODUCTION MODE FORCED - Railway Port 8080 detected');
 }
 
 // Only load .env file if we're not in Railway (Railway provides vars directly)
@@ -1180,6 +1181,7 @@ app.get('/api/admin/test', authenticateUser, (req, res) => {
 });
 
 app.get('/api/admin/users', authenticateUser, async (req, res) => {
+  console.log('🔍 Admin users endpoint called - Environment:', process.env.NODE_ENV);
   try {
     // Enhanced demo user data with Railway-compatible fallbacks
     const users = [

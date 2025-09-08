@@ -182,9 +182,13 @@
       "Bash(start http://localhost:3005/dashboard)",
       "Bash(start http://localhost:3003/ai-analytics)",
       "Bash(start http://localhost:3003/working-capital)",
+<<<<<<< HEAD
       "Bash(gh pr close:*)",
       "Bash(start http://localhost:3005/ai-analytics)",
       "Bash(start http://localhost:3004/dashboard)"
+=======
+      "Bash(gh pr close:*)"
+>>>>>>> origin/test
     ],
     "deny": [],
     "ask": []

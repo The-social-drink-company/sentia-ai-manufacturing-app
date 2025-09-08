@@ -107,7 +107,7 @@ const AIAnalyticsDashboard = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Analytics Dashboard</h1>
               <p className="mt-2 text-gray-600">
-                Artificial Intelligence powered insights and predictions
+                Artificial Intelligence powered insights and predictions - Fixed Authentication
               </p>
             </div>
             <div className="flex items-center space-x-4">

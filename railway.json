@@ -18,7 +18,8 @@
         "AUTONOMOUS_TEST_INTERVAL": "*/10 * * * *",
         "AUTO_FIX_ENABLED": "true",
         "AUTO_DEPLOY_ENABLED": "true",
-        "RAILWAY_AUTO_DEPLOY": "true"
+        "RAILWAY_AUTO_DEPLOY": "true",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
       }
     },
     "testing": {
@@ -28,7 +29,8 @@
         "AUTONOMOUS_TEST_INTERVAL": "*/10 * * * *",
         "AUTO_FIX_ENABLED": "true",
         "AUTO_DEPLOY_ENABLED": "false",
-        "RAILWAY_AUTO_DEPLOY": "false"
+        "RAILWAY_AUTO_DEPLOY": "false",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
       }
     },
     "production": {
@@ -37,7 +39,8 @@
         "ENABLE_AUTONOMOUS_TESTING": "false",
         "AUTO_FIX_ENABLED": "false",
         "AUTO_DEPLOY_ENABLED": "false",
-        "RAILWAY_AUTO_DEPLOY": "false"
+        "RAILWAY_AUTO_DEPLOY": "false",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
       }
     }
   }

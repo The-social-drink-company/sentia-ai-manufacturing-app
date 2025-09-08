@@ -1071,62 +1071,91 @@ app.post('/api/working-capital/upload-financial-data', authenticateUser, upload.
 // Admin APIs
 app.get('/api/admin/users', async (req, res) => {
   try {
-    // Demo user data for admin panel (would normally come from Clerk + database)
+    // Demo user data formatted for Clerk-compatible AdminPanel
     const users = [
       {
         id: 'user_001',
-        name: 'Paul Roberts',
-        email: 'paul.roberts@sentiaspirits.com',
-        role: 'admin',
-        status: 'active',
-        lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000).toLocaleDateString(),
-        createdAt: '2024-01-15',
-        department: 'Management',
-        permissions: ['read', 'write', 'admin']
+        first_name: 'Paul',
+        last_name: 'Roberts',
+        username: 'paul.roberts',
+        email_addresses: [{ email_address: 'paul.roberts@sentiaspirits.com' }],
+        public_metadata: { 
+          role: 'admin', 
+          approved: true,
+          department: 'Management'
+        },
+        last_sign_in_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        created_at: '2024-01-15T00:00:00.000Z'
       },
       {
         id: 'user_002',
-        name: 'Daniel Kenny',
-        email: 'daniel.kenny@sentiaspirits.com',
-        role: 'manager',
-        status: 'active',
-        lastLogin: new Date(Date.now() - 4 * 60 * 60 * 1000).toLocaleDateString(),
-        createdAt: '2024-02-01',
-        department: 'Production',
-        permissions: ['read', 'write']
+        first_name: 'Daniel',
+        last_name: 'Kenny',
+        username: 'daniel.kenny',
+        email_addresses: [{ email_address: 'daniel.kenny@sentiaspirits.com' }],
+        public_metadata: { 
+          role: 'manager', 
+          approved: true,
+          department: 'Production'
+        },
+        last_sign_in_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+        created_at: '2024-02-01T00:00:00.000Z'
       },
       {
         id: 'user_003',
-        name: 'David Orren',
-        email: 'david.orren@gabalabs.com',
-        role: 'developer',
-        status: 'active',
-        lastLogin: new Date(Date.now() - 1 * 60 * 60 * 1000).toLocaleDateString(),
-        createdAt: '2024-01-20',
-        department: 'Technology',
-        permissions: ['read', 'write', 'admin']
+        first_name: 'David',
+        last_name: 'Orren',
+        username: 'david.orren',
+        email_addresses: [{ email_address: 'david.orren@gabalabs.com' }],
+        public_metadata: { 
+          role: 'admin', 
+          approved: true,
+          department: 'Technology'
+        },
+        last_sign_in_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+        created_at: '2024-01-20T00:00:00.000Z'
       },
       {
         id: 'user_004',
-        name: 'Sarah Wilson',
-        email: 'sarah.wilson@sentiaspirits.com',
-        role: 'operator',
-        status: 'active',
-        lastLogin: new Date(Date.now() - 6 * 60 * 60 * 1000).toLocaleDateString(),
-        createdAt: '2024-03-10',
-        department: 'Production',
-        permissions: ['read']
+        first_name: 'Sarah',
+        last_name: 'Wilson',
+        username: 'sarah.wilson',
+        email_addresses: [{ email_address: 'sarah.wilson@sentiaspirits.com' }],
+        public_metadata: { 
+          role: 'user', 
+          approved: true,
+          department: 'Production'
+        },
+        last_sign_in_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+        created_at: '2024-03-10T00:00:00.000Z'
       },
       {
         id: 'user_005',
-        name: 'Michael Chen',
-        email: 'michael.chen@sentiaspirits.com',
-        role: 'analyst',
-        status: 'inactive',
-        lastLogin: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        createdAt: '2024-02-15',
-        department: 'Analytics',
-        permissions: ['read', 'write']
+        first_name: 'Michael',
+        last_name: 'Chen',
+        username: 'michael.chen',
+        email_addresses: [{ email_address: 'michael.chen@sentiaspirits.com' }],
+        public_metadata: { 
+          role: 'user', 
+          approved: false,
+          department: 'Analytics'
+        },
+        last_sign_in_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: '2024-02-15T00:00:00.000Z'
+      },
+      {
+        id: 'user_006',
+        first_name: 'Jennifer',
+        last_name: 'Martinez',
+        username: 'jennifer.martinez',
+        email_addresses: [{ email_address: 'jennifer.martinez@sentiaspirits.com' }],
+        public_metadata: { 
+          role: 'user', 
+          approved: false,
+          department: 'Quality Control'
+        },
+        last_sign_in_at: null,
+        created_at: '2024-03-15T00:00:00.000Z'
       }
     ];
 
@@ -1134,8 +1163,8 @@ app.get('/api/admin/users', async (req, res) => {
       success: true, 
       users,
       total: users.length,
-      active: users.filter(u => u.status === 'active').length,
-      inactive: users.filter(u => u.status === 'inactive').length
+      approved: users.filter(u => u.public_metadata.approved).length,
+      pending: users.filter(u => !u.public_metadata.approved).length
     });
   } catch (error) {
     console.error('Admin users error:', error);

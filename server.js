@@ -344,14 +344,23 @@ const authenticateUser = async (req, res, next) => {
 
 // Basic health check for Railway deployment (no external service dependencies)
 app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    version: '2.0.0',
-    environment: process.env.NODE_ENV || 'development',
-    uptime: Math.floor(process.uptime()),
-    port: PORT
-  });
+  try {
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      version: '2.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      uptime: Math.floor(process.uptime()),
+      port: PORT,
+      memory: process.memoryUsage(),
+      railway: !!process.env.RAILWAY_ENVIRONMENT_NAME
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
+  }
 });
 
 // Enhanced health check with external services (may timeout in Railway)

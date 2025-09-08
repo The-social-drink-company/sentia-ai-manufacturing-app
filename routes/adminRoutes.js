@@ -1,10 +1,9 @@
 import express from 'express';
-import pkg from '@clerk/backend';
-const { createClerkClient } = pkg;
+import clerkBackend from '@clerk/backend';
 import logger from '../services/logger.js';
 
 const router = express.Router();
-const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+const clerk = clerkBackend.createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 // Admin middleware to check both authentication and admin privileges
 const adminMiddleware = async (req, res, next) => {

@@ -48,7 +48,7 @@ import MCPOrchestrator from './services/mcp/mcpOrchestrator.js';
 // Import database service for real data queries
 import databaseService from './services/database/databaseService.js';
 // Import forecasting service
-import ForecastingService from './services/forecasting/forecastingService.js';
+import ForecastingService from './services/forecasting/ForecastingService.js';
 // Import live data sync service
 import LiveDataSyncService from './services/integration/liveDataSyncService.js';
 // Import working capital calculator

@@ -91,13 +91,13 @@
         "VITE_ENVIRONMENT": "production",
         "VITE_APP_TITLE": "Sentia Manufacturing Dashboard",
         "VITE_APP_VERSION": "2.0.0",
-        "VITE_API_BASE_URL": "https://web-production-1f10.up.railway.app/api",
+        "VITE_API_BASE_URL": "https://sentia-manufacturing-dashboard-production.up.railway.app/api",
         "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
         "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq",
         "VITE_USE_AUTH_BYPASS": "false",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "PORT": 5002,
-        "CORS_ORIGINS": "https://web-production-1f10.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
+        "CORS_ORIGINS": "https://sentia-manufacturing-dashboard-production.up.railway.app,https://sentiaprod.financeflo.ai,http://localhost:3000,http://localhost:3001,http://localhost:3002",
         "OPENAI_API_KEY": "sk-proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M",
         "MCP_SERVER_PORT": 6003,
         "MCP_SERVER_HOST": "localhost",
@@ -112,7 +112,7 @@
         "VITE_ENABLE_CACHING": "true"
       },
       "domains": [
-        "web-production-1f10.up.railway.app",
+        "sentia-manufacturing-dashboard-production.up.railway.app",
         "sentiaprod.financeflo.ai"
       ],
       "serviceSettings": {

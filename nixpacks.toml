@@ -8,8 +8,8 @@ nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = [
-  "rm -rf .npm node_modules package-lock.json || true",
-  "npm install --legacy-peer-deps"
+  "rm -rf .npm node_modules package-lock.json node_modules/.cache || true",
+  "npm install --legacy-peer-deps --no-cache"
 ]
 
 [phases.build]

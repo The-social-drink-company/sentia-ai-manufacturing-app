@@ -385,7 +385,7 @@ const RealTimeMonitoring = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Efficiency:</span>
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {line.efficiency}%
+                      {Math.round(line.efficiency)}%
                     </span>
                   </div>
                   
@@ -447,7 +447,7 @@ const RealTimeMonitoring = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Efficiency:</span>
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {equipment.efficiency}%
+                      {Math.round(equipment.efficiency)}%
                     </span>
                   </div>
                   

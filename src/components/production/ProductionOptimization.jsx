@@ -552,7 +552,7 @@ const ProductionOptimization = () => {
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-gray-600 dark:text-gray-400">Efficiency</span>
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {line.currentEfficiency}% / {line.targetEfficiency}%
+                      {Math.round(line.currentEfficiency)}% / {Math.round(line.targetEfficiency)}%
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">

@@ -34,14 +34,6 @@ const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminM
 const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
 
-// Additional Enterprise Components
-const FinancialReports = lazy(() => import('./components/financial/FinancialReports'))
-const CostAnalysis = lazy(() => import('./components/financial/CostAnalysis'))
-const AIInsights = lazy(() => import('./components/AI/AIInsights'))
-const SmartAutomation = lazy(() => import('./components/automation/SmartAutomation'))
-const AuditLogs = lazy(() => import('./components/admin/AuditLogs'))
-const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
-const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...')
 

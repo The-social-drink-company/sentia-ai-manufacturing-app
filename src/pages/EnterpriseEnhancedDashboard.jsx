@@ -22,7 +22,7 @@ import { useMCPService } from '../hooks/useMCPService';
 // Enterprise Layout Components
 import DashboardGrid from '../components/layout/DashboardGrid';
 import { AdvancedKPI, ProductionStageKPI, ChannelKPI } from '../components/ui/AdvancedKPI';
-import { MultiChannelBarChart, ProductionPipelineChart, AIInsightsChart } from '../components/charts/RealTimeChart';
+import { MultiChannelBarChart, ProductionPipelineChart } from '../components/charts/RealTimeChart';
 import { NotificationSystem, notifySuccess, notifyInfo } from '../components/ui/NotificationSystem';
 
 // Icons

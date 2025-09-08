@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -25,18 +25,7 @@ const QualityControl = lazy(() => import('./components/quality/QualityControl'))
 const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
 const Analytics = lazy(() => import('./components/analytics/Analytics'))
 
-// Get Clerk publishable key with development bypass
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk'
-const useAuthBypass = import.meta.env.VITE_USE_AUTH_BYPASS === 'true'
-
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...')
-console.log('Auth bypass mode:', useAuthBypass ? 'ENABLED' : 'DISABLED')
-
-// Create a mock Clerk provider for development
-const MockClerkProvider = ({ children }) => {
-  console.log('Using mock authentication for development')
-  return <>{children}</>
-}
 
 // Initialize React Query client
 const queryClient = new QueryClient({
@@ -89,12 +78,8 @@ const LandingPage = () => {
   )
 }
 
-// Protected route wrapper with bypass support
+// Protected route wrapper
 const ProtectedRoute = ({ children }) => {
-  if (useAuthBypass) {
-    return children
-  }
-  
   return (
     <>
       <SignedIn>
@@ -148,14 +133,9 @@ const DashboardRoute = () => {
 }
 
 function App() {
-  // Choose provider based on bypass mode
-  const AuthProvider = useAuthBypass ? MockClerkProvider : ClerkProvider
-  const providerProps = useAuthBypass ? {} : { publishableKey: clerkPubKey }
-
   return (
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider {...providerProps}>
           <Router>
             <div className="App">
               <Routes>
@@ -320,7 +300,6 @@ function App() {
               />
             </div>
           </Router>
-        </AuthProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ErrorBoundary>

@@ -151,7 +151,13 @@
       "Bash(npx @clerk/cli:*)",
       "Bash(npx @clerk/dev-cli:*)",
       "Bash(railway:*)",
-      "Bash(npx @clerk/backend:*)"
+      "Bash(npx @clerk/backend:*)",
+      "Read(//c/Users/User/.config/clerk/**)",
+      "Bash(start http://localhost:3004)",
+      "WebFetch(domain:clerk.com)",
+      "WebFetch(domain:guiding-sloth-86.clerk.accounts.dev)",
+      "WebFetch(domain:champion-bulldog-92.clerk.accounts.dev)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

@@ -165,7 +165,8 @@
       "Bash(where:*)",
       "Bash(\"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe\")",
       "Bash(start http://localhost:3011)",
-      "Bash(set PORT=3012)"
+      "Bash(set PORT=3012)",
+      "Bash(set PORT=3013)"
     ],
     "deny": [],
     "ask": []

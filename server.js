@@ -477,6 +477,7 @@ app.get('/api/health/detailed', async (req, res) => {
 
 // Dashboard Overview API
 app.get('/api/dashboard/overview', async (req, res) => {
+  console.log('🔍 Dashboard overview API called:', req.method, req.path);
   try {
     // Return comprehensive dashboard data
     const overview = {
@@ -3544,9 +3545,18 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   etag: false
 }));
 
-// Catch all for SPA (must be ABSOLUTELY LAST route)
+// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
 app.get('*', (req, res) => {
-  // Always serve the React app in production
+  // Skip API routes - they should have been handled above
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ 
+      error: 'API endpoint not found', 
+      path: req.path,
+      method: req.method 
+    });
+  }
+  
+  // Serve the React app for all non-API routes
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 

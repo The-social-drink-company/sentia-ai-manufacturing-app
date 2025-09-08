@@ -7840,8 +7840,24 @@ app.get('*', (req, res) => {
   console.log(`[DEBUG] __dirname: ${__dirname}`);
   console.log(`[DEBUG] File exists:`, fs.existsSync(indexPath));
   
-  // Serve the React app for all non-API routes
-  res.sendFile(indexPath);
+  // NUCLEAR FIX: Explicitly set headers and ensure complete file serving
+  try {
+    const htmlContent = fs.readFileSync(indexPath, 'utf8');
+    console.log(`[DEBUG] HTML content length: ${htmlContent.length} characters`);
+    console.log(`[DEBUG] HTML preview:`, htmlContent.substring(0, 200));
+    
+    res.set({
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'X-Content-Type-Options': 'nosniff'
+    });
+    
+    res.send(htmlContent);
+    console.log(`[DEBUG] Successfully sent HTML for ${req.path}`);
+  } catch (error) {
+    console.error(`[DEBUG] Error serving HTML:`, error);
+    res.status(500).send('Error serving application');
+  }
 });
 
 // Forecasting helper functions

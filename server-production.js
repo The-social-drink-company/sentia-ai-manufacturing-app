@@ -297,6 +297,203 @@ app.get('/api/monitoring/stream', (req, res) => {
   });
 });
 
+// Advanced inventory management endpoint
+app.get('/api/inventory/advanced', (req, res) => {
+  res.json({
+    overview: {
+      totalItems: 245,
+      totalValue: 2847500,
+      lowStockItems: 12,
+      outOfStockItems: 3,
+      reorderAlerts: 8,
+      turnoverRate: 4.2,
+      warehouseUtilization: 78.5,
+      averageAge: 32.4
+    },
+    categories: [
+      {
+        name: 'Raw Materials',
+        items: 89,
+        value: 1250000,
+        status: 'good',
+        turnover: 5.2,
+        lowStock: 4
+      },
+      {
+        name: 'Work in Progress',
+        items: 45,
+        value: 680000,
+        status: 'warning',
+        turnover: 3.8,
+        lowStock: 2
+      },
+      {
+        name: 'Finished Goods',
+        items: 78,
+        value: 750000,
+        status: 'critical',
+        turnover: 3.2,
+        lowStock: 5
+      },
+      {
+        name: 'Packaging Materials',
+        items: 33,
+        value: 167500,
+        status: 'good',
+        turnover: 6.1,
+        lowStock: 1
+      }
+    ],
+    items: [
+      {
+        id: 'INV001',
+        name: 'GABA Extract Premium',
+        category: 'Raw Materials',
+        sku: 'RM-GABA-001',
+        currentStock: 450,
+        reorderPoint: 200,
+        maxStock: 1000,
+        unitCost: 125.50,
+        totalValue: 56475,
+        supplier: 'BioExtract Ltd',
+        location: 'A1-B3',
+        status: 'good',
+        lastOrder: '2025-09-01',
+        leadTime: 14,
+        avgUsage: 25,
+        turnoverRate: 5.8,
+        daysToStockout: 18
+      },
+      {
+        id: 'INV002',
+        name: 'Natural Flavoring - Berry',
+        category: 'Raw Materials',
+        sku: 'RM-FLAV-002',
+        currentStock: 85,
+        reorderPoint: 100,
+        maxStock: 500,
+        unitCost: 45.25,
+        totalValue: 3846.25,
+        supplier: 'Flavor Corp',
+        location: 'B2-C1',
+        status: 'low',
+        lastOrder: '2025-08-28',
+        leadTime: 7,
+        avgUsage: 12,
+        turnoverRate: 4.2,
+        daysToStockout: 7
+      },
+      {
+        id: 'INV003',
+        name: 'Glass Bottles 500ml',
+        category: 'Packaging Materials',
+        sku: 'PKG-BTL-500',
+        currentStock: 2400,
+        reorderPoint: 1000,
+        maxStock: 5000,
+        unitCost: 1.25,
+        totalValue: 3000,
+        supplier: 'Glass Solutions',
+        location: 'C1-D2',
+        status: 'good',
+        lastOrder: '2025-09-05',
+        leadTime: 10,
+        avgUsage: 180,
+        turnoverRate: 7.2,
+        daysToStockout: 13
+      },
+      {
+        id: 'INV004',
+        name: 'Sentia Red - Finished Product',
+        category: 'Finished Goods',
+        sku: 'FG-SENT-RED',
+        currentStock: 0,
+        reorderPoint: 50,
+        maxStock: 500,
+        unitCost: 25.00,
+        totalValue: 0,
+        supplier: 'Internal Production',
+        location: 'D1-E1',
+        status: 'out_of_stock',
+        lastOrder: '2025-09-03',
+        leadTime: 3,
+        avgUsage: 45,
+        turnoverRate: 12.5,
+        daysToStockout: 0
+      },
+      {
+        id: 'INV005',
+        name: 'Quality Control Labels',
+        category: 'Packaging Materials',
+        sku: 'PKG-LBL-QC',
+        currentStock: 15000,
+        reorderPoint: 5000,
+        maxStock: 20000,
+        unitCost: 0.08,
+        totalValue: 1200,
+        supplier: 'Label Pro',
+        location: 'E2-F1',
+        status: 'good',
+        lastOrder: '2025-08-30',
+        leadTime: 5,
+        avgUsage: 850,
+        turnoverRate: 8.9,
+        daysToStockout: 18
+      }
+    ],
+    recentMovements: [
+      {
+        id: 'MOV001',
+        item: 'GABA Extract Premium',
+        type: 'out',
+        quantity: 125,
+        timestamp: '2025-09-08T10:30:00Z',
+        reference: 'Production Order #2025-001',
+        user: 'Production Team'
+      },
+      {
+        id: 'MOV002',
+        item: 'Glass Bottles 500ml',
+        type: 'in',
+        quantity: 2000,
+        timestamp: '2025-09-08T08:15:00Z',
+        reference: 'Purchase Order #PO-2025-089',
+        user: 'Warehouse Staff'
+      },
+      {
+        id: 'MOV003',
+        item: 'Natural Flavoring - Berry',
+        type: 'out',
+        quantity: 35,
+        timestamp: '2025-09-08T07:45:00Z',
+        reference: 'Production Order #2025-002',
+        user: 'Production Team'
+      }
+    ],
+    valueTrend: [
+      { date: '2025-09-01', value: 2650000 },
+      { date: '2025-09-02', value: 2720000 },
+      { date: '2025-09-03', value: 2780000 },
+      { date: '2025-09-04', value: 2825000 },
+      { date: '2025-09-05', value: 2810000 },
+      { date: '2025-09-06', value: 2835000 },
+      { date: '2025-09-07', value: 2847500 }
+    ],
+    turnoverAnalysis: [
+      { category: 'Raw Materials', turnover: 5.2, target: 6.0 },
+      { category: 'Work in Progress', turnover: 3.8, target: 4.0 },
+      { category: 'Finished Goods', turnover: 3.2, target: 8.0 },
+      { category: 'Packaging Materials', turnover: 6.1, target: 7.0 }
+    ],
+    stockLevelDistribution: [
+      { status: 'Good', count: 185, color: '#10B981' },
+      { status: 'Low Stock', count: 43, color: '#F59E0B' },
+      { status: 'Critical', count: 12, color: '#EF4444' },
+      { status: 'Out of Stock', count: 5, color: '#DC2626' }
+    ]
+  });
+});
+
 // Catch all handler - serve React app for any route not handled above
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));

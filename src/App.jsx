@@ -29,6 +29,7 @@ const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'
 const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'))
 const DataImportDashboard = lazy(() => import('./components/DataImport/DataImportDashboard'))
 const InventoryManagement = lazy(() => import('./components/inventory/InventoryManagement'))
+const AdvancedInventoryManagement = lazy(() => import('./components/inventory/AdvancedInventoryManagement'))
 const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
 const QualityControl = lazy(() => import('./components/quality/QualityControl'))
 const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
@@ -297,6 +298,19 @@ function App() {
                 
                 <Route 
                   path="/inventory" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AdvancedInventoryManagement />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/inventory/basic" 
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>

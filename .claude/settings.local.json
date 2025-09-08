@@ -93,7 +93,7 @@
       "Bash(railway environment:*)",
       "Bash(npx concurrently:*)",
       "Bash(tasklist:*)",
-      "Bash(VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk npm run build)",
+      "Bash(VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk npm run build)",
       "Bash(set PORT=3000)",
       "Bash(start http://localhost:8080)",
       "Bash(start http://localhost:61086)",
@@ -132,7 +132,7 @@
       "Bash(start https://web-production-1f10.up.railway.app/dashboard)",
       "Bash(start https://sentiaprod.financeflo.ai/dashboard?fallback=true)",
       "Bash(start https://web-production-1f10.up.railway.app/dashboard?fallback=true)",
-      "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z3VpZGluZy1zbG90aC04Ni5jbGVyay5hY2NvdW50cy5kZXYk)",
+      "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk)",
       "Bash(start http://localhost:3002)",
       "Bash(start https://sentia-manufacturing-dashboard-testing.up.railway.app/dashboard)",
       "Bash(start http://localhost:3005)",
@@ -155,7 +155,7 @@
       "Read(//c/Users/User/.config/clerk/**)",
       "Bash(start http://localhost:3004)",
       "WebFetch(domain:clerk.com)",
-      "WebFetch(domain:guiding-sloth-86.clerk.accounts.dev)",
+      "WebFetch(domain:champion-bulldog-92.clerk.accounts.dev)",
       "WebFetch(domain:champion-bulldog-92.clerk.accounts.dev)",
       "Bash(dir:*)",
       "Bash(start http://localhost:3010)",
@@ -184,7 +184,9 @@
       "Bash(start http://localhost:3003/working-capital)",
       "Bash(gh pr close:*)",
       "Bash(start http://localhost:3005/ai-analytics)",
-      "Bash(start http://localhost:3004/dashboard)"
+      "Bash(start http://localhost:3004/dashboard)",
+      "Bash(start https://sentiaprod.financeflo.ai/what-if)",
+      "Bash(start https://sentiaprod.financeflo.ai/working-capital)"
     ],
     "deny": [],
     "ask": []

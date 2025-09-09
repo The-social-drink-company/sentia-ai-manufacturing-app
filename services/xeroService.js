@@ -292,41 +292,26 @@ class XeroService {
   }
 
   getFallbackFinancialData() {
-    // Realistic sample data for Sentia Manufacturing Dashboard
-    const cash = 485000;
-    const accountsReceivable = 645000;
-    const inventory = 1250000;
-    const accountsPayable = 425000;
-    const shortTermDebt = 150000;
+    // Return zero values - no hardcoded mock data
+    // Real API integration required for actual financial data
     
-    const currentAssets = cash + accountsReceivable + inventory;
-    const currentLiabilities = accountsPayable + shortTermDebt;
-    const workingCapital = currentAssets - currentLiabilities;
-    const currentRatio = currentLiabilities > 0 ? currentAssets / currentLiabilities : 0;
-    const quickRatio = currentLiabilities > 0 ? (currentAssets - inventory) / currentLiabilities : 0;
-
-    // Manufacturing company typical metrics
-    const dso = 45; // Days Sales Outstanding
-    const dio = 62; // Days Inventory Outstanding (higher for manufacturing)
-    const dpo = 35; // Days Payable Outstanding
-    const cashConversionCycle = dso + dio - dpo;
-
     return {
-      currentAssets: currentAssets,
-      currentLiabilities: currentLiabilities,
-      workingCapital: workingCapital,
-      currentRatio: Math.round(currentRatio * 100) / 100,
-      quickRatio: Math.round(quickRatio * 100) / 100,
-      cashConversionCycle: cashConversionCycle,
-      accountsReceivable: accountsReceivable,
-      accountsPayable: accountsPayable,
-      inventory: inventory,
-      cash: cash,
-      dso: dso,
-      dio: dio,
-      dpo: dpo,
-      dataSource: 'sample_data',
-      lastUpdated: new Date().toISOString()
+      currentAssets: 0,
+      currentLiabilities: 0,
+      workingCapital: 0,
+      currentRatio: 0,
+      quickRatio: 0,
+      cashConversionCycle: 0,
+      accountsReceivable: 0,
+      accountsPayable: 0,
+      inventory: 0,
+      cash: 0,
+      dso: 0,
+      dio: 0,
+      dpo: 0,
+      dataSource: 'authentication_required',
+      lastUpdated: new Date().toISOString(),
+      message: 'Xero API authentication required for real financial data'
     };
   }
 

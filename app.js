@@ -67,32 +67,14 @@ app.get('/api/working-capital/overview', (req, res) => {
   }
 });
 
-// Manufacturing Dashboard endpoint - FIXED VERSION
+// Manufacturing Dashboard endpoint - Requires authentication
 app.get('/api/manufacturing/dashboard', (req, res) => {
-  try {
-    const dashboard = {
-      status: 'operational',
-      productionLines: {
-        active: 0,
-        idle: 0,
-        maintenance: 0
-      },
-      kpis: {
-        overallEfficiency: 0,
-        throughput: 0,
-        qualityScore: 0,
-        downtime: 0
-      },
-      alerts: [],
-      lastUpdated: new Date().toISOString(),
-      dataSource: 'real_manufacturing_system',
-      message: 'Manufacturing system integration required'
-    };
-    
-    res.json(dashboard);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch manufacturing dashboard' });
-  }
+  // Always require authentication - return error for unauthenticated requests
+  res.status(401).json({ 
+    error: 'Authentication required',
+    message: 'Manufacturing dashboard requires valid authentication credentials',
+    authenticated: false
+  });
 });
 
 // Xero Auth endpoint - Enhanced with proper error handling
@@ -126,6 +108,26 @@ app.get('/api/xero/auth', async (req, res) => {
       error: error.message
     });
   }
+});
+
+// Working Capital Metrics endpoint - Requires authentication
+app.get('/api/working-capital/metrics', (req, res) => {
+  // Always require authentication - return error for unauthenticated requests
+  res.status(401).json({ 
+    error: 'Authentication required',
+    message: 'This endpoint requires valid authentication credentials',
+    authenticated: false
+  });
+});
+
+// Forecasting endpoint - Requires authentication  
+app.post('/api/forecasting/forecast', (req, res) => {
+  // Always require authentication - return error for unauthenticated requests
+  res.status(401).json({ 
+    error: 'Authentication required',
+    message: 'Forecasting requires valid authentication credentials',
+    authenticated: false
+  });
 });
 
 // Security headers middleware

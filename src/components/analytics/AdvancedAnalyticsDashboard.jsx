@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChartBarIcon,
-  ArrowTrendingUpIcon,
+  ArrowTrendingUpIcon as TrendingUpIcon,
+  ArrowTrendingDownIcon as TrendingDownIcon,
   CurrencyDollarIcon,
   BoltIcon,
+<<<<<<< HEAD
   ArrowTrendingUpIcon,
   TrendingDownIcon,
+=======
+>>>>>>> test
   CalendarIcon,
   EyeIcon,
   CogIcon,

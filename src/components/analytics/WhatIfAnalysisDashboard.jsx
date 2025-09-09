@@ -36,7 +36,7 @@ import { Badge } from '../ui/badge';
 import { Slider } from '../ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Progress } from '../ui/progress';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Tooltip, HelpTooltip } from '../ui/tooltip';
 import {
   LineChart as RechartsLineChart,
   Line,
@@ -521,19 +521,12 @@ function ParameterSlider({ label, value, min, max, step, unit, description, onCh
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center cursor-help">
-                <label className="text-sm font-medium text-gray-700">{label}</label>
-                <Info className="w-4 h-4 ml-1 text-gray-400" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="max-w-xs">{description}</p>
-            </TooltipContent>
+        <div className="flex items-center">
+          <label className="text-sm font-medium text-gray-700">{label}</label>
+          <Tooltip content={description}>
+            <Info className="w-4 h-4 ml-1 text-gray-400 cursor-help" />
           </Tooltip>
-        </TooltipProvider>
+        </div>
         
         <span className="text-sm font-semibold text-gray-900">
           {typeof value === 'number' ? value.toFixed(step < 1 ? 1 : 0) : value}{unit}

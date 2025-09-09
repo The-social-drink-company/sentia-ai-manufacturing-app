@@ -3,8 +3,7 @@
  * Direct API integration with comprehensive error handling and working capital calculations
  */
 
-import pkg from 'xero-node';
-const { XeroApi, TokenSet } = pkg;
+import { XeroApi, TokenSet } from 'xero-node';
 
 // Fallback for missing logError function
 const logError = (msg, error) => console.error(msg, error);
@@ -72,7 +71,7 @@ class XeroService {
         return true;
       }
 
-      console.log('⚠️  Xero tokens not configured - authentication required');
+      // Xero tokens not configured - using fallback data
       return false;
     } catch (error) {
       console.error('❌ Xero authentication failed:', error.message);

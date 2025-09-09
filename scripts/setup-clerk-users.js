@@ -14,6 +14,7 @@ const clerk = createClerkClient({
 const USERS_TO_CREATE = [
   {
     email: 'paul.roberts@sentiaspirits.com',
+    username: 'paul_roberts',
     firstName: 'Paul',
     lastName: 'Roberts',
     role: 'admin',
@@ -24,6 +25,7 @@ const USERS_TO_CREATE = [
   },
   {
     email: 'david.orren@gabalabs.com',
+    username: 'david_orren',
     firstName: 'David',
     lastName: 'Orren',
     role: 'admin',
@@ -34,6 +36,7 @@ const USERS_TO_CREATE = [
   },
   {
     email: 'daniel.kenny@sentiaspirits.com',
+    username: 'daniel_kenny',
     firstName: 'Daniel',
     lastName: 'Kenny',
     role: 'admin',
@@ -44,6 +47,7 @@ const USERS_TO_CREATE = [
   },
   {
     email: 'marta.haczek@gabalabs.com',
+    username: 'marta_haczek',
     firstName: 'Marta',
     lastName: 'Haczek',
     role: 'user',
@@ -54,6 +58,7 @@ const USERS_TO_CREATE = [
   },
   {
     email: 'matt.coulshed@gabalabs.com',
+    username: 'matt_coulshed',
     firstName: 'Matt',
     lastName: 'Coulshed',
     role: 'user',
@@ -64,6 +69,7 @@ const USERS_TO_CREATE = [
   },
   {
     email: 'jaron.reid@gabalabs.com',
+    username: 'jaron_reid',
     firstName: 'Jaron',
     lastName: 'Reid',
     role: 'user',
@@ -136,6 +142,7 @@ async function createUser(userData) {
     // Create new user
     const newUser = await clerk.users.createUser({
       emailAddress: [userData.email],
+      username: userData.username,
       firstName: userData.firstName,
       lastName: userData.lastName,
       publicMetadata: userData.publicMetadata,

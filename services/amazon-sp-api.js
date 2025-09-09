@@ -22,11 +22,11 @@ class AmazonSPAPIService {
 
   async initialize() {
     try {
-      console.log('ℹ️ Amazon SP-API: Using mock data (package not configured)');
+      // Amazon SP-API: Using mock data (package not configured)
       
       // REAL NUCLEAR FIX: Check if SellingPartnerApi constructor is available
       if (!SellingPartnerApi || typeof SellingPartnerApi !== 'function') {
-        console.log('ℹ️ Amazon SP-API: Mock implementation active');
+        // Amazon SP-API using mock data - no connection required
         this.spApi = { mock: true }; // Use mock object
         this.isConnected = true;
         return; // Exit early with mock

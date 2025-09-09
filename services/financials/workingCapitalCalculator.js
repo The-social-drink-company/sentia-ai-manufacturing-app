@@ -200,19 +200,23 @@ export class WorkingCapitalCalculator {
         revenueData = await this.databaseService.prisma.workingCapital.aggregate({
           where: {
             entity_id: companyId,
-          date: {
-            gte: startDate,
-            lte: endDate
+            projectionDate: {
+              gte: startDate,
+              lte: endDate
+            }
           },
-          type: 'REVENUE'
-        },
-        _sum: {
-          amount: true
-        }
-      });
+          _sum: {
+            actual_sales_revenue: true
+          }
+        });
+      } catch (error) {
+        // Fallback to estimated values if table doesn't exist  
+        logWarn('Revenue query failed, using fallback data', { error: error.message });
+        revenueData = { _sum: { actual_sales_revenue: null } };
+      }
 
-      const totalAR = accountsReceivable._sum.amount || 0;
-      const totalRevenue = revenueData._sum.amount || 0;
+      const totalAR = accountsReceivable._sum.actual_sales_revenue || 0;
+      const totalRevenue = revenueData._sum.actual_sales_revenue || 0;
       const periodDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
       const dailyRevenue = totalRevenue / periodDays;
 

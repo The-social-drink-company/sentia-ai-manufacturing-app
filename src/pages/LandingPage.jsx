@@ -1,453 +1,371 @@
-// src/pages/LandingPage.jsx
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useUser, SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, BarChart3, Brain, Factory, Users, Shield, Globe, Zap, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { SignInButton, SignUpButton, useAuth } from '@clerk/clerk-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  ChartBarIcon, 
+  CurrencyDollarIcon, 
+  LightBulbIcon,
+  ShieldCheckIcon,
+  BanknotesIcon,
+  TrendingUpIcon,
+  ArrowRightIcon,
+  CheckCircleIcon
+} from '@heroicons/react/24/outline'
 
 const LandingPage = () => {
-  const { isSignedIn, user } = useUser();
-  const navigate = useNavigate();
-  const [scrollY, setScrollY] = useState(0);
-  const [activeFeature, setActiveFeature] = useState(0);
-  const [mcpStatus, setMcpStatus] = useState('disconnected');
-  const [aiCapabilities, setAiCapabilities] = useState([]);
+  const { isSignedIn } = useAuth()
+  const navigate = useNavigate()
+  const [scrollY, setScrollY] = useState(0)
+
+  // Handle scroll for parallax effects
+  const handleScroll = useCallback(() => {
+    setScrollY(window.scrollY)
+  }, [])
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    
-    // Check MCP connection status
-    checkMCPConnection();
-    
-    // Load AI capabilities
-    loadAICapabilities();
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [handleScroll])
 
-  const checkMCPConnection = async () => {
-    try {
-      const response = await fetch('/api/mcp/status');
-      const data = await response.json();
-      setMcpStatus(data.connected ? 'connected' : 'disconnected');
-    } catch (error) {
-      console.error('MCP connection check failed:', error);
+  // Redirect signed-in users to dashboard
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate('/dashboard')
     }
-  };
-
-  const loadAICapabilities = async () => {
-    try {
-      const response = await fetch('/api/ai/capabilities');
-      const data = await response.json();
-      setAiCapabilities(data.capabilities);
-    } catch (error) {
-      console.error('Failed to load AI capabilities:', error);
-    }
-  };
+  }, [isSignedIn, navigate])
 
   const features = [
     {
-      icon: <Brain className="w-8 h-8" />,
-      title: "AI-Powered Insights",
-      description: "Multi-model ensemble forecasting with GPT-4, Claude 3, and specialized ML models",
-      details: [
-        "Real-time demand prediction",
-        "Anomaly detection",
-        "Natural language queries",
-        "Automated reporting"
-      ]
+      icon: CurrencyDollarIcon,
+      title: 'Working Capital Optimization',
+      description: 'Advanced analytics to optimize cash flow and working capital management across all Sentia operations.',
+      color: 'from-blue-600 to-blue-800'
     },
     {
-      icon: <Factory className="w-8 h-8" />,
-      title: "Digital Twin Technology",
-      description: "3D visualization and simulation of your entire manufacturing operation",
-      details: [
-        "Real-time 3D factory model",
-        "What-if scenario testing",
-        "Bottleneck identification",
-        "Capacity optimization"
-      ]
+      icon: TrendingUpIcon,
+      title: 'Cash Flow Forecasting',
+      description: 'Predictive modeling and AI-driven insights for accurate financial planning and decision making.',
+      color: 'from-purple-600 to-purple-800'
     },
     {
-      icon: <Zap className="w-8 h-8" />,
-      title: "24/7 Autonomous Agents",
-      description: "AI agents continuously monitor and optimize your operations",
-      details: [
-        "Proactive issue detection",
-        "Automated task execution",
-        "Continuous optimization",
-        "Alert management"
-      ]
+      icon: LightBulbIcon,
+      title: 'AI-Powered Analytics',
+      description: 'Machine learning algorithms analyze financial patterns to provide actionable business intelligence.',
+      color: 'from-amber-600 to-amber-800'
     },
     {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Enterprise Security",
-      description: "Bank-grade security with role-based access control",
-      details: [
-        "End-to-end encryption",
-        "SSO integration",
-        "Audit logging",
-        "Compliance reporting"
-      ]
+      icon: ShieldCheckIcon,
+      title: 'Enterprise Security',
+      description: 'Bank-grade security protocols ensure all financial data remains protected and compliant.',
+      color: 'from-green-600 to-green-800'
     }
-  ];
+  ]
 
-  const stats = [
-    { value: "45%", label: "Reduction in Lead Times" },
-    { value: "32%", label: "Increase in Efficiency" },
-    { value: "28%", label: "Cost Savings" },
-    { value: "99.9%", label: "System Uptime" }
-  ];
+  const benefits = [
+    'Real-time working capital monitoring',
+    'Automated cash flow optimization',
+    'Advanced financial reporting',
+    'AI-driven business insights',
+    'Secure enterprise-grade platform',
+    'Seamless integration with existing systems'
+  ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
-      {/* Navigation Header */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrollY > 50 ? 'bg-gray-900/95 backdrop-blur-lg shadow-lg' : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-3">
-              <Factory className="w-8 h-8 text-blue-500" />
-              <span className="text-2xl font-bold text-white">Sentia Manufacturing</span>
-              {mcpStatus === 'connected' && (
-                <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">
-                  MCP Connected
-                </span>
-              )}
-            </div>
-            <div className="flex items-center space-x-4">
-              {!isSignedIn ? (
-                <>
-                  <SignInButton mode="modal">
-                    <button className="px-4 py-2 text-white hover:text-blue-400 transition-colors">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                      Get Started
-                    </button>
-                  </SignUpButton>
-                </>
-              ) : (
-                <button 
-                  onClick={() => navigate('/dashboard')}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
-                >
-                  <span>Go to Dashboard</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-black text-white overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
+        <motion.div 
+          className="absolute inset-0 opacity-20"
+          style={{ backgroundImage: `radial-gradient(circle at ${scrollY * 0.1}px ${scrollY * 0.05}px, #ffffff 1px, transparent 1px)` }}
+          animate={{ 
+            backgroundPosition: [`0px 0px`, `100px 100px`] 
+          }}
+          transition={{ 
+            duration: 20, 
+            repeat: Infinity, 
+            repeatType: "reverse" 
+          }}
+        />
+      </div>
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-              Manufacturing Intelligence
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
-                Powered by AI
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Transform your manufacturing operations with real-time insights, predictive analytics, 
-              and autonomous optimization powered by cutting-edge AI technology.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      {/* Header */}
+      <header className="relative z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <motion.div 
+              className="flex items-center space-x-3"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
+                <span className="text-black font-bold text-xl">S</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">Sentia</h1>
+                <p className="text-xs text-gray-400 uppercase tracking-wider">Financial Management Platform</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="flex items-center space-x-4"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <SignInButton mode="modal">
+                <button className="px-6 py-2 text-white hover:text-gray-300 transition-colors font-medium">
+                  Sign In
+                </button>
+              </SignInButton>
               <SignUpButton mode="modal">
-                <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-lg font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-                  Start Free Trial
+                <button className="px-6 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                  Get Started
                 </button>
               </SignUpButton>
-              <button 
-                onClick={() => document.getElementById('demo').scrollIntoView({ behavior: 'smooth' })}
-                className="px-8 py-4 border-2 border-gray-600 text-white rounded-lg text-lg font-semibold hover:bg-gray-800 transition-colors"
-              >
-                Watch Demo
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Floating metrics */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6"
-          >
-            {stats.map((stat, index) => (
-              <div key={index} className="bg-gray-800/50 backdrop-blur-lg rounded-lg p-6 text-center">
-                <div className="text-3xl font-bold text-blue-400">{stat.value}</div>
-                <div className="text-sm text-gray-400 mt-2">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
+      </header>
 
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      {/* Hero Section */}
+      <section className="relative z-10 pt-20 pb-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="text-5xl md:text-7xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+                  Working Capital
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+                  Management
+                </span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Advanced financial analytics and cash flow optimization platform designed exclusively for Sentia's internal operations and contracted partners.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <SignUpButton mode="modal">
+                  <motion.button
+                    className="group px-8 py-4 bg-white text-black rounded-lg font-semibold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span>Access Dashboard</span>
+                    <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                </SignUpButton>
+
+                <Link to="/dashboard" className="group">
+                  <motion.button
+                    className="px-8 py-4 border border-white/20 text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center backdrop-blur-sm"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span>View Demo</span>
+                    <ChartBarIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-gray-800/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Enterprise-Grade Features
+      <section className="relative z-10 py-32 bg-gradient-to-b from-transparent to-gray-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-20"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Enterprise Financial Intelligence
             </h2>
-            <p className="text-xl text-gray-400">
-              Everything you need to optimize your manufacturing operations
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Sophisticated tools designed for Sentia's financial operations team and authorized partners to optimize working capital and cash flow performance.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  onClick={() => setActiveFeature(index)}
-                  className={`p-6 rounded-lg cursor-pointer transition-all duration-300 ${
-                    activeFeature === index 
-                      ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500' 
-                      : 'bg-gray-800/50 hover:bg-gray-700/50'
-                  }`}
-                >
-                  <div className="flex items-start space-x-4">
-                    <div className="text-blue-400">{feature.icon}</div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                      <p className="text-gray-400">{feature.description}</p>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="group"
+              >
+                <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:shadow-white/10">
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <feature.icon className="w-7 h-7 text-white" />
                   </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="bg-gray-800/50 rounded-lg p-8">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeFeature}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="text-blue-400 mb-4">{features[activeFeature].icon}</div>
-                  <h3 className="text-2xl font-bold text-white mb-4">
-                    {features[activeFeature].title}
+                  
+                  <h3 className="text-2xl font-bold mb-4 group-hover:text-white transition-colors">
+                    {feature.title}
                   </h3>
-                  <ul className="space-y-3">
-                    {features[activeFeature].details.map((detail, idx) => (
-                      <li key={idx} className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                        <span className="text-gray-300">{detail}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Learn More
-                  </button>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+                  
+                  <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
+                    {feature.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* AI Capabilities Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">
-              AI & Machine Learning Capabilities
-            </h2>
-            <p className="text-xl text-gray-400">
-              Powered by the latest in artificial intelligence
-            </p>
-          </div>
+      {/* Benefits Section */}
+      <section className="relative z-10 py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-8">
+                Comprehensive Financial Control
+              </h2>
+              
+              <p className="text-xl text-gray-400 mb-8 leading-relaxed">
+                Built specifically for Sentia's internal financial management needs, providing complete visibility and control over working capital optimization.
+              </p>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {aiCapabilities.length > 0 ? (
-              aiCapabilities.map((capability, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700"
-                >
-                  <div className="text-3xl mb-4">{capability.icon}</div>
-                  <h3 className="text-xl font-semibold text-white mb-2">{capability.name}</h3>
-                  <p className="text-gray-400 mb-4">{capability.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {capability.models?.map((model, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-blue-600/20 text-blue-400 text-xs rounded">
-                        {model}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              // Default capabilities if API not available
-              <>
-                <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700">
-                  <Brain className="w-12 h-12 text-blue-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Predictive Analytics</h3>
-                  <p className="text-gray-400">Advanced forecasting using ensemble ML models</p>
-                </div>
-                <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700">
-                  <BarChart3 className="w-12 h-12 text-purple-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Real-time Optimization</h3>
-                  <p className="text-gray-400">Continuous process improvement with AI agents</p>
-                </div>
-                <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700">
-                  <Globe className="w-12 h-12 text-green-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Natural Language Interface</h3>
-                  <p className="text-gray-400">Query your data using conversational AI</p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Demo Section */}
-      <section id="demo" className="py-20 px-4 bg-gray-800/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-white mb-4">
-              See It In Action
-            </h2>
-            <p className="text-xl text-gray-400">
-              Watch how Sentia transforms manufacturing operations
-            </p>
-          </div>
-
-          <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white">
-                <Factory className="w-16 h-16 mx-auto mb-4 text-blue-400" />
-                <h3 className="text-2xl font-bold mb-2">Interactive Demo Coming Soon</h3>
-                <p className="text-gray-400">Experience our manufacturing intelligence platform in action</p>
+              <div className="space-y-4">
+                {benefits.map((benefit, index) => (
+                  <motion.div
+                    key={benefit}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-center space-x-3"
+                  >
+                    <CheckCircleIcon className="w-6 h-6 text-green-400 flex-shrink-0" />
+                    <span className="text-gray-300">{benefit}</span>
+                  </motion.div>
+                ))}
               </div>
-            </div>
-          </div>
+            </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400 mb-2">5 min</div>
-              <div className="text-gray-400">Setup Time</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-2">100+</div>
-              <div className="text-gray-400">Integrations</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-400 mb-2">24/7</div>
-              <div className="text-gray-400">Support</div>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-md border border-white/10 rounded-3xl p-8">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white mb-2">98.7%</div>
+                    <div className="text-sm text-gray-400">Cash Flow Accuracy</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white mb-2">2.4x</div>
+                    <div className="text-sm text-gray-400">ROI Improvement</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white mb-2">15min</div>
+                    <div className="text-sm text-gray-400">Report Generation</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white mb-2">24/7</div>
+                    <div className="text-sm text-gray-400">Monitoring</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative z-10 py-32 bg-gradient-to-b from-transparent to-black">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Ready to Transform Your Manufacturing?
+            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+              Ready to Optimize Your Financial Operations?
             </h2>
-            <p className="text-xl text-white/90 mb-8">
-              Join leading manufacturers using AI to optimize operations
+            
+            <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
+              Join Sentia's internal financial management platform and gain access to advanced working capital optimization tools.
             </p>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <SignUpButton mode="modal">
-                <button className="px-8 py-4 bg-white text-blue-600 rounded-lg text-lg font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-                  Start Free Trial
-                </button>
+                <motion.button
+                  className="group px-10 py-4 bg-white text-black rounded-lg font-bold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center space-x-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span>Get Started Now</span>
+                  <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </motion.button>
               </SignUpButton>
-              <button className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg text-lg font-semibold hover:bg-white/10 transition-colors">
-                Schedule Demo
-              </button>
+
+              <Link to="/dashboard">
+                <motion.button
+                  className="group px-10 py-4 border border-white/20 text-white rounded-lg font-bold text-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span>Explore Demo</span>
+                  <BanknotesIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+              </Link>
             </div>
-            <p className="text-sm text-white/70 mt-6">
-              No credit card required • 14-day free trial • Cancel anytime
-            </p>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 border-t border-gray-800 py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Factory className="w-6 h-6 text-blue-500" />
-                <span className="text-xl font-bold text-white">Sentia</span>
+      <footer className="relative z-10 border-t border-white/10 bg-black/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-3 mb-4 md:mb-0">
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                <span className="text-black font-bold">S</span>
               </div>
-              <p className="text-gray-400">
-                AI-powered manufacturing intelligence platform
-              </p>
+              <div>
+                <div className="font-bold">Sentia Financial Platform</div>
+                <div className="text-xs text-gray-400">Internal Working Capital Management</div>
+              </div>
             </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Product</h4>
-              <ul className="space-y-2">
-                <li><Link to="/dashboard" className="text-gray-400 hover:text-white transition-colors">Features</Link></li>
-                <li><Link to="/working-capital" className="text-gray-400 hover:text-white transition-colors">Working Capital</Link></li>
-                <li><Link to="/what-if" className="text-gray-400 hover:text-white transition-colors">What-If Analysis</Link></li>
-                <li><Link to="/analytics" className="text-gray-400 hover:text-white transition-colors">Analytics</Link></li>
-              </ul>
+            
+            <div className="text-center md:text-right">
+              <div className="text-gray-400 text-sm">
+                © 2025 Sentia Spirits. Internal use only.
+              </div>
+              <div className="text-gray-500 text-xs mt-1">
+                Authorized personnel and contractors only
+              </div>
             </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Company</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Terms</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Security</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Compliance</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>2024 Sentia Manufacturing. All rights reserved.</p>
           </div>
         </div>
       </footer>
     </div>
-  );
-};
+  )
+}
 
-export default LandingPage;
+export default LandingPage

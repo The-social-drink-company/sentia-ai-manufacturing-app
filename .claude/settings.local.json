@@ -234,7 +234,12 @@
       "Bash(set PORT=3004)",
       "Bash(start http://localhost:3004/working-capital)",
       "Bash(start http://localhost:3010/working-capital)",
-      "Bash(set PORT=3014)"
+      "Bash(set PORT=3014)",
+      "Bash(PORT=5003 node server.js)",
+      "Bash(set NODE_ENV=production)",
+      "Bash(set PORT=5004)",
+      "Bash(PORT=6000 node server.js)",
+      "Bash(start http://localhost:6000)"
     ],
     "deny": [],
     "ask": []

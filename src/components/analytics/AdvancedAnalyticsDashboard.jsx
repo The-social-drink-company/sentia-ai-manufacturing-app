@@ -5,11 +5,6 @@ import {
   ArrowTrendingDownIcon as TrendingDownIcon,
   CurrencyDollarIcon,
   BoltIcon,
-<<<<<<< HEAD
-  ArrowTrendingUpIcon,
-  TrendingDownIcon,
-=======
->>>>>>> test
   CalendarIcon,
   EyeIcon,
   CogIcon,

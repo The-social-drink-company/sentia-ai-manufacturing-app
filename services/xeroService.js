@@ -3,7 +3,8 @@
  * Direct API integration with comprehensive error handling and working capital calculations
  */
 
-import { XeroApi, TokenSet } from 'xero-node';
+import pkg from 'xero-node';
+const { XeroApi, TokenSet } = pkg;
 
 // Fallback for missing logError function
 const logError = (msg, error) => console.error(msg, error);

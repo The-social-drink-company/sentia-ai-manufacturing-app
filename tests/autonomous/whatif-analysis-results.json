@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-07T22:50:09.957Z",
+  "timestamp": "2025-09-09T17:15:00.823Z",
   "testType": "whatif_analysis",
   "summary": {
     "totalSliderTests": 0,
@@ -14,10 +14,10 @@
   "scenarios": [],
   "performanceMetrics": [
     {
-      "operation": "market_analysis_UK",
-      "duration": 21.562799999999925,
+      "operation": "concurrent_load_test",
+      "duration": 44.78559999999993,
       "success": false,
-      "timestamp": "2025-09-07T22:50:09.852Z"
+      "timestamp": "2025-09-09T17:15:00.711Z"
     }
   ],
   "clientRequirementsMet": true,

@@ -4735,7 +4735,21 @@ app.get('*', (req, res) => {
     });
   }
   
-  // Serve the React app for all non-API routes
+  // Skip asset files - let express.static handle them
+  if (req.path.startsWith('/assets/') || 
+      req.path.endsWith('.js') || 
+      req.path.endsWith('.css') || 
+      req.path.endsWith('.map') ||
+      req.path.endsWith('.ico') ||
+      req.path.endsWith('.svg') ||
+      req.path.endsWith('.png') ||
+      req.path.endsWith('.jpg') ||
+      req.path.endsWith('.woff') ||
+      req.path.endsWith('.woff2')) {
+    return res.status(404).send('Asset not found');
+  }
+  
+  // Serve the React app for all non-API, non-asset routes
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 

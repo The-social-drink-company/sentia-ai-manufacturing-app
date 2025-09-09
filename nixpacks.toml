@@ -20,7 +20,8 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "npm install --force",
+  "rm -rf node_modules package-lock.json || true",
+  "npm install --force --legacy-peer-deps --no-optional",
   "npm run build",
   "ls -la dist/",
   "ls -la dist/assets/",

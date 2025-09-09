@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { logWarn, logError } from './logger.js';
+import { logWarn, logError } from './observability/structuredLogger.js';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config();
 
 class UnleashedService {
   constructor() {

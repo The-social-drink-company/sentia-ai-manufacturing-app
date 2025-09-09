@@ -21,9 +21,11 @@ if (process.env.PORT) {
   console.log(`🚀 PRODUCTION MODE FORCED - Railway deployment (was: ${originalEnv})`);
 }
 
-// Only load .env file if we're not in Railway (Railway provides vars directly)
-if (!process.env.RAILWAY_ENVIRONMENT) {
+// Load .env file in development and when not in actual Railway deployment
+// Check for actual Railway deployment by looking for RAILWAY_DEPLOYMENT_ID, not just RAILWAY_ENVIRONMENT
+if (!process.env.RAILWAY_DEPLOYMENT_ID) {
   dotenv.config();
+  console.log('🔧 Environment variables loaded from .env file');
 }
 
 // Validate critical environment variables
@@ -51,6 +53,7 @@ import fetch from 'node-fetch';
 // NextAuth will be handled by the frontend - server doesn't need direct NextAuth integration
 // import { getSession } from './lib/auth.js';
 import xeroService from './services/xeroService.js';
+import xeroApiRoutes from './api/xero.js';
 import aiAnalyticsService from './services/aiAnalyticsService.js';
 import dataRefreshService from './services/dataRefreshService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
@@ -4806,135 +4809,19 @@ app.get('/api/data/import/history', authenticateUser, async (req, res) => {
 // Forecasting APIs (Neon Vector Database AI)
 app.get('/api/forecasting/demand', authenticateUser, async (req, res) => {
   try {
-    let shopifyData, salesHistory;
+    // FORCE REAL DATA ONLY - No mock forecasting allowed
+    logError('Real demand forecasting data required', {
+      error: 'No real external data sources connected',
+      required: ['Shopify API', 'Amazon SP-API', 'Unleashed API', 'Xero API'],
+      message: 'Configure external APIs to provide historical sales data for AI forecasting'
+    });
     
-    try {
-      shopifyData = await fetchShopifyData();
-      salesHistory = await fetchShopifyOrders();
-    } catch (serviceError) {
-      console.warn('External services unavailable, using fallback data:', serviceError.message);
-      // Fallback to mock data when external services aren't available
-      shopifyData = null;
-      salesHistory = [];
-    }
-    
-    let forecast;
-    if (shopifyData && salesHistory.length > 0) {
-      forecast = await aiAnalyticsService.generateDemandForecast(
-        salesHistory, 
-        { seasonality: true, marketTrends: 'growth' }
-      );
-    } else {
-      // Enhanced 4-Model Ensemble Forecasting with fallback data
-      const { horizon = 30, model = 'ensemble', confidenceLevel = 0.95 } = req.query;
-      
-      forecast = {
-        status: 'success',
-        methodology: '4-Model Ensemble AI Forecasting',
-        dataSource: 'Sentia Manufacturing - Historical Production Data',
-        generatedAt: new Date().toISOString(),
-        forecastHorizon: parseInt(horizon),
-        confidenceLevel: parseFloat(confidenceLevel),
-        
-        models: {
-          arima: {
-            name: 'ARIMA (2,1,2)',
-            accuracy: 82.3,
-            weight: 0.25,
-            description: 'Time series analysis with seasonality detection'
-          },
-          lstm: {
-            name: 'LSTM Neural Network',
-            accuracy: 89.1,
-            weight: 0.30,
-            description: 'Deep learning with 64-unit LSTM layers'
-          },
-          prophet: {
-            name: 'Prophet',
-            accuracy: 85.7,
-            weight: 0.25,
-            description: 'Facebook Prophet with holiday effects'
-          },
-          randomForest: {
-            name: 'Random Forest',
-            accuracy: 87.4,
-            weight: 0.20,
-            description: '200 trees with feature importance analysis'
-          }
-        },
-        
-        ensemble: {
-          weightedAccuracy: 86.8,
-          ensembleMethod: 'Weighted average by historical accuracy',
-          confidenceInterval: `${confidenceLevel * 100}%`
-        },
-        
-        products: [
-          {
-            sku: 'SENTIA-RED-750',
-            name: 'Sentia Red Premium',
-            category: 'Premium Spirits',
-            forecast: Array.from({ length: parseInt(horizon) }, (_, i) => ({
-              date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-              demand: Math.round(850 + Math.sin(i * 0.3) * 120 + Math.random() * 100),
-              arima: Math.round(820 + Math.sin(i * 0.25) * 100),
-              lstm: Math.round(880 + Math.sin(i * 0.35) * 140),
-              prophet: Math.round(850 + Math.sin(i * 0.3) * 110),
-              randomForest: Math.round(845 + Math.sin(i * 0.28) * 115),
-              confidence: {
-                lower: Math.round(750 + Math.sin(i * 0.3) * 100),
-                upper: Math.round(950 + Math.sin(i * 0.3) * 140)
-              }
-            }))
-          },
-          {
-            sku: 'SENTIA-GOLD-750',
-            name: 'Sentia Gold',
-            category: 'Premium Spirits',
-            forecast: Array.from({ length: parseInt(horizon) }, (_, i) => ({
-              date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-              demand: Math.round(650 + Math.cos(i * 0.2) * 90 + Math.random() * 80),
-              arima: Math.round(630 + Math.cos(i * 0.18) * 80),
-              lstm: Math.round(670 + Math.cos(i * 0.22) * 100),
-              prophet: Math.round(650 + Math.cos(i * 0.2) * 85),
-              randomForest: Math.round(655 + Math.cos(i * 0.19) * 88),
-              confidence: {
-                lower: Math.round(570 + Math.cos(i * 0.2) * 70),
-                upper: Math.round(730 + Math.cos(i * 0.2) * 110)
-              }
-            }))
-          }
-        ],
-        
-        factorsConsidered: [
-          'Historical sales patterns (24 months)',
-          'Seasonal demand variations',
-          'Market growth trends',
-          'Promotional calendar impact',
-          'Economic indicators',
-          'Competitive landscape analysis'
-        ],
-        
-        recommendations: [
-          {
-            priority: 'high',
-            category: 'Inventory Planning',
-            action: 'Increase Sentia Red safety stock by 15% for next 30 days',
-            impact: 'Prevent stockouts during predicted demand surge',
-            confidence: 0.92
-          },
-          {
-            priority: 'medium',
-            category: 'Production Scheduling',
-            action: 'Schedule additional Gold production run in week 3',
-            impact: 'Meet forecasted 8% demand increase',
-            confidence: 0.87
-          }
-        ]
-      };
-    }
-    
-    res.json(forecast);
+    res.status(503).json({ 
+      error: 'Real demand forecasting data integration required',
+      message: 'Please configure external data sources (Shopify, Amazon SP-API, Unleashed, Xero) to provide historical sales data for AI forecasting. No mock forecast data will be returned.',
+      requiredAPIs: ['Shopify API', 'Amazon SP-API', 'Unleashed API', 'Xero API'],
+      action: 'Complete API authentication and data integration setup'
+    });
   } catch (error) {
     console.error('Demand forecast error:', error);
     res.status(500).json({ error: 'Failed to generate demand forecast' });
@@ -6448,6 +6335,9 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
 // Admin API Routes for User Management - Using direct endpoints instead of separate routes file
 // app.use('/api/admin', adminRoutes); // Disabled due to route conflicts with direct endpoints below
 
+// Xero API Routes for OAuth authentication and real data integration
+app.use('/api/xero', xeroApiRoutes);
+
 // Data Refresh Endpoints - Real-time API Data Integration
 app.post('/api/data/refresh/all', authenticateUser, async (req, res) => {
   try {
@@ -7635,105 +7525,8 @@ app.get('/api/integrations/status', async (req, res) => {
 
 // Original enterprise manufacturing APIs continue below...
 
-// Enhanced 4-Model Ensemble Demand Forecasting API
-app.get('/api/forecasting/demand', (req, res) => {
-  const { 
-    period = 30, 
-    products = 'all', 
-    type = 'demand',
-    horizon = '12_months',
-    model = 'ensemble',
-    seasonality = 'auto',
-    confidenceLevel = '0.95'
-  } = req.query;
-  
-  // Simulate 4-model ensemble system
-  const models = {
-    arima: { name: 'ARIMA', accuracy: 82.3, weight: 0.25 },
-    lstm: { name: 'LSTM Neural Network', accuracy: 89.1, weight: 0.30 },
-    prophet: { name: 'Prophet', accuracy: 85.7, weight: 0.25 },
-    randomForest: { name: 'Random Forest', accuracy: 87.4, weight: 0.20 }
-  };
-
-  // Generate forecast periods based on horizon
-  let periods = parseInt(period);
-  if (horizon === '3_months') periods = 90;
-  if (horizon === '6_months') periods = 180;
-  if (horizon === '12_months') periods = 365;
-
-  // Generate more sophisticated forecast data with ensemble predictions
-  const forecast = Array.from({ length: periods }, (_, i) => {
-    const date = new Date(Date.now() + i * 24 * 60 * 60 * 1000);
-    
-    // Base seasonal patterns
-    const yearlyTrend = Math.sin((i / 365) * 2 * Math.PI) * 0.3;
-    const weeklyPattern = Math.sin((i / 7) * 2 * Math.PI) * 0.15;
-    const monthlyPattern = Math.sin((i / 30) * 2 * Math.PI) * 0.1;
-    
-    // Model-specific predictions
-    const arimaPrediction = 1000 + yearlyTrend * 200 + weeklyPattern * 100 + Math.random() * 50;
-    const lstmPrediction = 1000 + yearlyTrend * 220 + weeklyPattern * 120 + monthlyPattern * 80 + Math.random() * 60;
-    const prophetPrediction = 1000 + yearlyTrend * 180 + weeklyPattern * 110 + monthlyPattern * 90 + Math.random() * 45;
-    const rfPrediction = 1000 + yearlyTrend * 200 + weeklyPattern * 105 + monthlyPattern * 75 + Math.random() * 55;
-    
-    // Ensemble prediction (weighted average)
-    const ensembleDemand = model === 'ensemble' 
-      ? (arimaPrediction * models.arima.weight + 
-         lstmPrediction * models.lstm.weight + 
-         prophetPrediction * models.prophet.weight + 
-         rfPrediction * models.randomForest.weight)
-      : model === 'arima' ? arimaPrediction
-      : model === 'lstm' ? lstmPrediction  
-      : model === 'prophet' ? prophetPrediction
-      : model === 'randomForest' ? rfPrediction
-      : arimaPrediction;
-
-    // Confidence intervals
-    const confidence = parseFloat(confidenceLevel);
-    const stdDev = ensembleDemand * 0.15; // 15% standard deviation
-    const zScore = confidence === 0.95 ? 1.96 : confidence === 0.90 ? 1.645 : confidence === 0.99 ? 2.576 : 1.96;
-    
-    return {
-      date: date.toISOString().split('T')[0],
-      demand: Math.round(ensembleDemand),
-      confidence: confidence,
-      upper_bound: Math.round(ensembleDemand + (zScore * stdDev)),
-      lower_bound: Math.round(Math.max(0, ensembleDemand - (zScore * stdDev))),
-      models: model === 'ensemble' ? {
-        arima: Math.round(arimaPrediction),
-        lstm: Math.round(lstmPrediction),
-        prophet: Math.round(prophetPrediction),
-        randomForest: Math.round(rfPrediction)
-      } : null
-    };
-  });
-
-  // Calculate ensemble accuracy
-  const ensembleAccuracy = model === 'ensemble' 
-    ? Object.values(models).reduce((sum, m) => sum + (m.accuracy * m.weight), 0)
-    : models[model] ? models[model].accuracy : 87.3;
-
-  res.json({
-    status: 'success',
-    period: periods,
-    products: products,
-    type: type,
-    horizon: horizon,
-    model: model === 'ensemble' ? 'Ensemble (4-Model)' : models[model]?.name || 'ARIMA',
-    seasonality: seasonality,
-    confidenceLevel: parseFloat(confidenceLevel),
-    forecast: forecast,
-    accuracy: Math.round(ensembleAccuracy * 10) / 10,
-    models: {
-      available: Object.keys(models),
-      details: models,
-      active: model,
-      ensemble: model === 'ensemble'
-    },
-    generated_at: new Date().toISOString(),
-    nextRetraining: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-  });
-});
+// DUPLICATE ENDPOINT REMOVED - This was causing routing conflicts
+// The original /api/forecasting/demand endpoint above now properly requires real data integration
 
 // Production Tracking API - Duplicate removed to fix routing conflict
 

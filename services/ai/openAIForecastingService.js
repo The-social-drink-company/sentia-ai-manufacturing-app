@@ -608,28 +608,13 @@ class OpenAIForecastingService extends EventEmitter {
   }
 
   async getMarketData(market) {
-    // This would connect to actual data sources
-    // Simplified for demonstration
-    return {
-      market,
-      products: [
-        { name: 'GABA Spirit', recentSales: [100, 120, 110, 130, 125, 140, 135] },
-        { name: 'Social Blend', recentSales: [80, 85, 90, 88, 92, 95, 93] }
-      ],
-      competitors: ['Brand A', 'Brand B'],
-      marketShare: 0.15
-    };
+    // FORCE REAL DATA ONLY - No mock market data allowed
+    throw new Error(`Real market data integration required for ${market}. Please configure external data sources (Shopify API, Amazon SP-API, Unleashed API, Xero API) to provide authentic market sales data, competitor analysis, and market share metrics. No mock market data will be generated.`);
   }
 
   generateBasicInsights(market) {
-    return {
-      market,
-      analysis: `Basic analysis for ${market} market. Enable OpenAI for enhanced insights.`,
-      trends: ['Steady growth', 'Seasonal patterns detected'],
-      recommendations: ['Monitor competition', 'Optimize inventory'],
-      generated: new Date().toISOString(),
-      confidence: 0.6
-    };
+    // FORCE REAL DATA ONLY - No basic/fallback insights allowed
+    throw new Error(`Real market insights integration required for ${market}. Please configure OpenAI API key and external data sources to generate authentic market analysis. No fallback insights will be generated.`);
   }
 
   prepareAIContext(params) {

@@ -543,28 +543,8 @@ class ForecastingService extends EventEmitter {
   }
 
   async loadTimeSeriesData(seriesId) {
-    // This would typically load from database
-    // For now, return sample data
-    const days = 180;
-    const data = [];
-    const baseDate = new Date();
-    baseDate.setDate(baseDate.getDate() - days);
-
-    for (let i = 0; i < days; i++) {
-      const date = new Date(baseDate);
-      date.setDate(date.getDate() + i);
-      
-      const trend = 100 + Math.sin(i * 0.05) * 20;
-      const seasonal = Math.sin(i * 0.3) * 15;  
-      const noise = (Math.random() - 0.5) * 10;
-      
-      data.push({
-        date: date.toISOString().split('T')[0],
-        value: Math.max(0, trend + seasonal + noise)
-      });
-    }
-    
-    return data;
+    // FORCE REAL DATA ONLY - No sample/mock data allowed
+    throw new Error(`Real time series data integration required for series ${seriesId}. Please configure external data sources (Amazon SP-API, Unleashed, Shopify, etc.) to provide historical sales data for forecasting. No mock forecast data will be returned.`);
   }
 
   // Batch processing methods

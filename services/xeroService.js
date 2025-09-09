@@ -4,7 +4,7 @@
  */
 
 import pkg from 'xero-node';
-const { XeroApi, TokenSet } = pkg;
+const { XeroClient, TokenSet } = pkg;
 
 // Fallback for missing logError function
 const logError = (msg, error) => console.error(msg, error);
@@ -14,33 +14,49 @@ class XeroService {
     this.xero = null;
     this.isConnected = false;
     this.tokenSet = null;
-    this.organizationId = process.env.XERO_ORGANIZATION_ID;
+    this.organizationId = null;
     this.retryAttempts = 0;
     this.maxRetries = 3;
+    this.initialized = false;
     
+    // Don't initialize immediately - wait for environment variables to be loaded
+    // this.initializeXeroClient();
+  }
+
+  ensureInitialized() {
+    if (this.initialized) {
+      return;
+    }
     this.initializeXeroClient();
+    this.initialized = true;
   }
 
   initializeXeroClient() {
+    console.log('🔍 Xero Debug - XERO_CLIENT_ID:', process.env.XERO_CLIENT_ID);
+    console.log('🔍 Xero Debug - XERO_CLIENT_SECRET:', process.env.XERO_CLIENT_SECRET);
+    
+    this.organizationId = process.env.XERO_ORGANIZATION_ID;
+    
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
+      console.log('❌ Xero credentials missing - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);
       // Xero service not configured - using mock data
       return;
     }
 
     try {
-      this.xero = new XeroApi({
+      this.xero = new XeroClient({
         clientId: process.env.XERO_CLIENT_ID,
         clientSecret: process.env.XERO_CLIENT_SECRET,
         redirectUris: [process.env.XERO_REDIRECT_URI || 'http://localhost:3000/xero/callback'],
         scopes: [
           'openid',
-          'profile',
+          'profile', 
           'email',
           'accounting.reports.read',
           'accounting.journals.read',
           'accounting.settings.read',
           'accounting.transactions'
-        ].join(' '),
+        ],
         httpTimeout: 30000
       });
 
@@ -48,6 +64,37 @@ class XeroService {
       this.authenticate();
     } catch (error) {
       console.error('❌ Failed to initialize Xero client:', error.message);
+    }
+  }
+
+  async getAuthUrl() {
+    this.ensureInitialized();
+    
+    if (!this.xero) {
+      throw new Error('Xero client not initialized');
+    }
+    
+    return await this.xero.buildConsentUrl();
+  }
+
+  async exchangeCodeForToken(code) {
+    this.ensureInitialized();
+    
+    if (!this.xero) {
+      throw new Error('Xero client not initialized');
+    }
+    
+    try {
+      const tokenSet = await this.xero.apiCallback(code);
+      this.tokenSet = tokenSet;
+      this.xero.setTokenSet(tokenSet);
+      this.isConnected = true;
+      console.log('✅ Xero authenticated successfully');
+      return tokenSet;
+    } catch (error) {
+      console.error('❌ Xero token exchange failed:', error.message);
+      this.isConnected = false;
+      throw error;
     }
   }
 
@@ -173,10 +220,11 @@ class XeroService {
   }
 
   async calculateWorkingCapital() {
-    // If not connected to Xero API, return realistic sample data
+    this.ensureInitialized();
+    
+    // FORCE REAL DATA ONLY - No fallback allowed
     if (!this.isConnected) {
-      console.log('🔄 Xero not connected - providing sample financial data for demo');
-      return this.getFallbackFinancialData();
+      throw new Error('Xero authentication required. Please authenticate via /api/xero/auth to access real financial data. No mock data will be returned.');
     }
 
     try {
@@ -219,8 +267,8 @@ class XeroService {
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
-      console.error('❌ Working capital calculation failed, using fallback data:', error);
-      return this.getFallbackFinancialData();
+      console.error('❌ Working capital calculation failed:', error);
+      throw new Error(`Real Xero API failed: ${error.message}. Authentication required for real financial data.`);
     }
   }
 
@@ -546,6 +594,8 @@ class XeroService {
 
   // Health check
   async healthCheck() {
+    this.ensureInitialized();
+    
     try {
       if (!this.xero) {
         return {

@@ -404,45 +404,8 @@ router.get('/dashboard', async (req, res) => {
 // Helper functions
 
 async function getHistoricalData(market, product) {
-  // Generate realistic sample data
-  const days = 90;
-  const data = [];
-  const baseQuantity = {
-    'UK': 100,
-    'USA': 150,
-    'EU': 120,
-    'ASIA': 80
-  }[market] || 100;
-
-  const productMultiplier = {
-    'GABA Spirit': 1.2,
-    'Social Blend': 1.0,
-    'Focus Mix': 0.8
-  }[product] || 1.0;
-
-  for (let i = days; i > 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    
-    const dayOfWeek = date.getDay();
-    const weekendBoost = (dayOfWeek === 5 || dayOfWeek === 6) ? 1.3 : 1.0;
-    const randomVariation = 0.8 + Math.random() * 0.4;
-    const trend = 1 + (days - i) * 0.002;
-    const seasonalFactor = getSeasonalFactor(date);
-    
-    const quantity = Math.round(
-      baseQuantity * productMultiplier * weekendBoost * 
-      randomVariation * trend * seasonalFactor
-    );
-    
-    data.push({
-      date: date.toISOString().split('T')[0],
-      quantity,
-      revenue: quantity * getPrice(product, market)
-    });
-  }
-
-  return data;
+  // FORCE REAL DATA ONLY - No mock historical data allowed
+  throw new Error(`Real historical data integration required for market ${market} and product ${product}. Please configure external data sources (Shopify API, Amazon SP-API, Unleashed API, Xero API) to provide authentic sales history. No mock historical data will be generated.`);
 }
 
 function getSeasonalFactor(date) {

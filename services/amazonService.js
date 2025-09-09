@@ -25,18 +25,23 @@ class AmazonService {
    */
   async getOrders(params = {}) {
     if (!this.isConfigured()) {
-      logWarn('Amazon SP-API not configured')
-      return this.getSampleOrders()
+      logError('Amazon SP-API authentication required', { 
+        error: 'No real Amazon SP-API credentials provided',
+        required: ['AMAZON_ACCESS_KEY_ID', 'AMAZON_SECRET_ACCESS_KEY', 'AMAZON_SELLER_ID', 'AMAZON_REFRESH_TOKEN']
+      })
+      throw new Error('Amazon SP-API authentication required. Please configure real Amazon SP-API credentials. No mock data will be returned.')
     }
 
     try {
-      // For now, return sample data as Amazon SP-API requires complex authentication
-      logInfo('Amazon SP-API integration placeholder - returning sample data')
-      return this.getSampleOrders()
+      logError('Amazon SP-API real integration not implemented yet', {
+        error: 'Real Amazon SP-API integration required',
+        action: 'Configure Amazon SP-API with real credentials and implement OAuth flow'
+      })
+      throw new Error('Amazon SP-API real integration not implemented. Please complete Amazon SP-API setup for live data access.')
 
     } catch (error) {
       logError('Error fetching Amazon orders', error)
-      return this.getSampleOrders()
+      throw error
     }
   }
 
@@ -62,17 +67,23 @@ class AmazonService {
    */
   async getListings(params = {}) {
     if (!this.isConfigured()) {
-      logWarn('Amazon SP-API not configured')
-      return []
+      logError('Amazon SP-API authentication required for listings', { 
+        error: 'No real Amazon SP-API credentials provided',
+        required: ['AMAZON_ACCESS_KEY_ID', 'AMAZON_SECRET_ACCESS_KEY', 'AMAZON_SELLER_ID', 'AMAZON_REFRESH_TOKEN']
+      })
+      throw new Error('Amazon SP-API authentication required for listings. Please configure real Amazon SP-API credentials.')
     }
 
     try {
-      logInfo('Amazon SP-API listings integration placeholder')
-      return []
+      logError('Amazon SP-API listings integration not implemented', {
+        error: 'Real Amazon SP-API integration required for listings',
+        action: 'Complete Amazon SP-API setup and implement listings API'
+      })
+      throw new Error('Amazon SP-API listings integration not implemented. Please complete Amazon SP-API setup.')
 
     } catch (error) {
       logError('Error fetching Amazon listings', error)
-      return []
+      throw error
     }
   }
 

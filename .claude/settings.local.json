@@ -233,7 +233,9 @@
       "Bash(start https://web-production-1f10.up.railway.app/inventory)",
       "Bash(set PORT=3004)",
       "Bash(start http://localhost:3004/working-capital)",
-      "Bash(start http://localhost:3010/working-capital)"
+      "Bash(start http://localhost:3010/working-capital)",
+      "Bash(set NODE_ENV=development)",
+      "Bash(set PORT=6002)"
     ],
     "deny": [],
     "ask": []

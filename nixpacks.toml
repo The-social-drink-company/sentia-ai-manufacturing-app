@@ -11,6 +11,7 @@ node = true
 
 [phases.setup]
 nixPkgs = ["nodejs_22"]
+nixLibs = ["nodejs_22"]
 
 [phases.install]
 cmds = [
@@ -36,4 +37,6 @@ cmd = "node server.js"
 # Health check configuration - CRITICAL for Railway deployment
 [healthcheck]
 path = "/api/health"
-port = "${PORT:-5000}"
+port = "${PORT:-8080}"
+timeout = "30s"
+interval = "15s"

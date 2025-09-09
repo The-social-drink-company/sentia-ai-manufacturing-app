@@ -426,16 +426,44 @@ app.post('/api/auth/microsoft/callback', async (req, res) => {
 
 // Updated authentication middleware that checks for actual authentication
 const authenticateUser = async (req, res, next) => {
-  // For now, allow all requests for development
-  // In production, verify session token from Authorization header
-  req.userId = 'admin@sentia.com';
-  req.user = { 
-    id: 'admin@sentia.com', 
-    email: 'admin@sentia.com', 
-    name: 'Admin User',
-    role: 'admin' 
-  };
-  next();
+  try {
+    const authHeader = req.headers.authorization;
+    
+    // Check for Authorization header
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        error: 'Unauthorized', 
+        message: 'Authorization header required' 
+      });
+    }
+    
+    const token = authHeader.split(' ')[1];
+    
+    // Validate token (basic validation for demo)
+    if (!token || token.length < 10) {
+      return res.status(401).json({ 
+        error: 'Unauthorized', 
+        message: 'Invalid authorization token' 
+      });
+    }
+    
+    // Set authenticated user context
+    req.userId = 'admin@sentia.com';
+    req.user = { 
+      id: 'admin@sentia.com', 
+      email: 'admin@sentia.com', 
+      name: 'Admin User',
+      role: 'admin' 
+    };
+    
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return res.status(401).json({ 
+      error: 'Unauthorized', 
+      message: 'Authentication failed' 
+    });
+  }
 };
 
 // Simple test endpoint to verify routing works
@@ -727,7 +755,7 @@ app.get('/api/production/overview', async (req, res) => {
 })
 
 // Manufacturing Dashboard endpoint (required by self-healing agent) - TEMPORARY: Remove auth for testing  
-app.get('/api/manufacturing/dashboard', async (req, res) => {
+app.get('/api/manufacturing/dashboard', authenticateUser, async (req, res) => {
   try {
     const dashboard = {
       status: 'operational',

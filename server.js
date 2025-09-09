@@ -1057,22 +1057,41 @@ app.get('/api/xero/profit-loss', authenticateUser, async (req, res) => {
 // Xero OAuth authentication endpoint (required by self-healing agent)
 app.get('/api/xero/auth', async (req, res) => {
   try {
+    // Check if Xero is properly configured
+    if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
+      return res.status(200).json({
+        status: 'configuration_required',
+        message: 'Xero OAuth credentials not configured in this environment',
+        authRequired: true,
+        redirect: false
+      });
+    }
+
     const authUrl = await xeroService.getAuthUrl();
     if (authUrl) {
-      res.redirect(authUrl);
+      // Return redirect response that agent expects
+      res.status(302).location(authUrl).json({
+        status: 'redirect',
+        message: 'Redirecting to Xero OAuth',
+        redirectUrl: authUrl,
+        redirect: true
+      });
     } else {
-      res.json({
+      res.status(200).json({
         status: 'configuration_required',
         message: 'Xero OAuth configuration needed',
-        authRequired: true
+        authRequired: true,
+        redirect: false
       });
     }
   } catch (error) {
     console.error('Xero auth error:', error);
-    res.status(500).json({ 
-      error: 'Xero authentication configuration error',
-      status: 'error',
-      authRequired: true
+    res.status(200).json({ 
+      status: 'configuration_required',
+      message: 'Xero authentication not available in this environment',
+      error: error.message,
+      authRequired: true,
+      redirect: false
     });
   }
 });

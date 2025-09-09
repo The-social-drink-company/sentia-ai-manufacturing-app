@@ -166,7 +166,7 @@ export class WorkingCapitalCalculator {
         logWarn('Database not connected, using estimated DSO');
         return {
           days: 45, // Industry average
-          accountsReceivable: 150000,
+          accountsReceivable: 0,
           dailyRevenue: 3333.33,
           hasRealData: false,
           source: 'estimated'
@@ -326,7 +326,7 @@ export class WorkingCapitalCalculator {
         logWarn('Database not connected, using estimated DIO');
         return {
           days: 60,
-          averageInventory: 200000,
+          averageInventory: 0,
           dailyCOGS: 3333.33,
           hasRealData: false,
           source: 'estimated'
@@ -407,11 +407,11 @@ export class WorkingCapitalCalculator {
     try {
       if (!this.databaseService.isConnected) {
         return {
-          total: 500000,
-          accountsReceivable: 150000,
-          inventory: 200000,
-          cash: 100000,
-          other: 50000
+          total: 0,
+          accountsReceivable: 0,
+          inventory: 0,
+          cash: 0,
+          other: 0
         };
       }
 
@@ -468,11 +468,11 @@ export class WorkingCapitalCalculator {
     try {
       if (!this.databaseService.isConnected) {
         return {
-          total: 300000,
-          accountsPayable: 80000,
-          shortTermDebt: 150000,
-          accruedExpenses: 50000,
-          other: 20000
+          total: 0,
+          accountsPayable: 0,
+          shortTermDebt: 0,
+          accruedExpenses: 0,
+          other: 0
         };
       }
 

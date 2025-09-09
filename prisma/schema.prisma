@@ -18,6 +18,7 @@ model User {
   role                   String    @db.VarChar(20)
   permissions            Json?     @db.Json
   isActive               Boolean   @map("is_active")
+  organizationId         String    @default("default")  // Enterprise organization support
   is_admin               Boolean
   department             String?   @db.VarChar(50)
   access_regions         Json?     @db.Json
@@ -1544,4 +1545,59 @@ model ImportLineage {
   @@index([importJobId])
   @@index([lineageTag])
   @@map("import_lineage")
+}
+
+// Enterprise API Key Management
+model ApiKey {
+  id             String    @id @default(uuid())
+  organizationId String    @default("default")
+  service        String    // xero, shopify, amazon, unleashed, microsoft, openai, anthropic
+  keyName        String    // XERO_CLIENT_ID, SHOPIFY_API_KEY, etc.
+  value          String?   // The actual key value (consider encryption)
+  encryptedData  String?   // JSON encrypted data for complex auth flows
+  isActive       Boolean   @default(true)
+  lastUsed       DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  createdBy      String?   @db.Uuid
+
+  @@unique([organizationId, service, keyName])
+  @@index([organizationId, service])
+  @@map("api_keys")
+}
+
+// API Connection Status Monitoring
+model ApiConnectionStatus {
+  id             String    @id @default(uuid())
+  organizationId String    @default("default")
+  service        String    // Service identifier
+  status         String    // connected, error, not_configured, warning
+  lastChecked    DateTime  @default(now())
+  responseTime   Int?      // Response time in milliseconds
+  errorMessage   String?   // Error details if status is error
+  metadata       Json?     // Additional service-specific data
+  
+  @@unique([organizationId, service])
+  @@index([organizationId, service])
+  @@map("api_connection_status")
+}
+
+// API Usage Analytics
+model ApiUsageLog {
+  id             String    @id @default(uuid())
+  organizationId String    @default("default")
+  service        String    // Service identifier
+  endpoint       String?   // API endpoint called
+  method         String?   // HTTP method
+  statusCode     Int?      // HTTP status code
+  responseTime   Int?      // Response time in milliseconds
+  requestSize    Int?      // Request size in bytes
+  responseSize   Int?      // Response size in bytes
+  timestamp      DateTime  @default(now())
+  userId         String?   @db.Uuid
+  metadata       Json?     // Additional request/response data
+
+  @@index([organizationId, service, timestamp])
+  @@index([timestamp])
+  @@map("api_usage_logs")
 }

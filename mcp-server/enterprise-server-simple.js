@@ -1167,6 +1167,46 @@ class SentiaEnterpriseMCPServer {
       }
     });
 
+    // Admin API sync endpoint for environment variables
+    this.app.post('/admin/sync-env', (req, res) => {
+      try {
+        const { variables } = req.body;
+        
+        if (!variables || typeof variables !== 'object') {
+          return res.status(400).json({ error: 'Invalid variables format' });
+        }
+
+        // Update process environment with new API keys
+        Object.entries(variables).forEach(([key, value]) => {
+          if (value && typeof value === 'string') {
+            process.env[key] = value;
+          }
+        });
+
+        // Log the sync for monitoring
+        logger.info('API keys synchronized from admin portal', {
+          keyCount: Object.keys(variables).length,
+          keys: Object.keys(variables),
+          timestamp: new Date().toISOString()
+        });
+
+        // Trigger service reconnection if needed
+        if (this.unifiedAPI) {
+          this.unifiedAPI.refreshConnections();
+        }
+
+        res.json({ 
+          success: true, 
+          message: 'Environment variables synchronized successfully',
+          keyCount: Object.keys(variables).length
+        });
+        
+      } catch (error) {
+        logger.error('Failed to sync environment variables', error);
+        res.status(500).json({ error: 'Failed to sync environment variables' });
+      }
+    });
+
     // AI Support Chatbot endpoint
     this.app.post('/ai/chat', async (req, res) => {
       try {

@@ -46,6 +46,9 @@ import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
 // Import MCP Orchestrator for Anthropic Model Context Protocol integration
 import MCPOrchestrator from './services/mcp/mcpOrchestrator.js';
+// Import Enterprise Error Handling and Process Management
+import { errorHandler, expressErrorMiddleware, asyncHandler } from './services/enterprise/errorHandler.js';
+import { processManager } from './services/enterprise/processManager.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -54,7 +57,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5000;
+
+// Enable enterprise process management and resource monitoring
+processManager.monitorResources();
+
+// Add enterprise error handling middleware early in the stack
+app.use(expressErrorMiddleware);
 
 // Start MCP server in production environment
 if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
@@ -4429,6 +4438,10 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
 // Admin API Routes for User Management - Using direct endpoints instead of separate routes file
 // app.use('/api/admin', adminRoutes); // Disabled due to route conflicts with direct endpoints below
 
+// Import and use API Key Management routes
+import apiKeyRoutes from './api/admin/api-keys.js';
+app.use('/api/admin/api-keys', apiKeyRoutes);
+
 // Enterprise Manufacturing APIs - IMMEDIATELY IMPLEMENT MISSING ENDPOINTS
 
 // Demand Forecasting API
@@ -4735,12 +4748,69 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ SENTIA SERVER RUNNING ON PORT ${PORT}`);
-  console.log(`🔗 Dashboard: http://localhost:${PORT}`);
-  console.log(`🔗 API Health: http://localhost:${PORT}/api/health`);
-  console.log(`🔗 Admin Panel: http://localhost:${PORT}/admin`);
-  console.log(`🌐 External URL: ${process.env.RAILWAY_STATIC_URL || 'Railway will provide URL'}`);
-  console.log(`📋 Admin Features: User management, invitations, and approval workflow enabled`);
-  console.log(`🤖 MCP Integration: ${process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT ? 'ENABLED' : 'DISABLED'}`);
-});
+// Use enterprise process manager for robust server startup
+(async () => {
+  try {
+    // Start server with enterprise process management
+    const { port } = await processManager.startServer(app, PORT, '0.0.0.0', 'sentia-api');
+    
+    // Log successful startup with enterprise logging
+    logInfo('✅ SENTIA ENTERPRISE SERVER STARTED', {
+      port,
+      environment: process.env.NODE_ENV || 'development',
+      pid: process.pid,
+      endpoints: {
+        dashboard: `http://localhost:${port}`,
+        api: `http://localhost:${port}/api/health`,
+        admin: `http://localhost:${port}/admin`
+      },
+      externalUrl: process.env.RAILWAY_STATIC_URL || 'Not configured',
+      mcpIntegration: process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT,
+      features: [
+        'Enterprise Error Handling',
+        'Process Management', 
+        'API Key Management',
+        'MCP Integration',
+        'User Management',
+        'Real-time Analytics'
+      ]
+    });
+    
+    // Register shutdown handlers for clean database closure
+    processManager.addShutdownHandler('database', async () => {
+      if (global.prisma) {
+        await global.prisma.$disconnect();
+        logInfo('Database connections closed');
+      }
+    });
+    
+    // Add health check for enterprise monitoring
+    app.get('/health', asyncHandler(async (req, res) => {
+      const health = {
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        version: process.env.npm_package_version || '1.0.0',
+        environment: process.env.NODE_ENV || 'development',
+        processManager: processManager.getHealthStatus(),
+        errorHandler: errorHandler.getHealthStatus(),
+        services: {
+          database: global.prisma ? 'connected' : 'disconnected',
+          mcp: process.env.MCP_SERVER_URL ? 'configured' : 'not_configured'
+        }
+      };
+      
+      res.json(health);
+    }));
+    
+  } catch (error) {
+    logError('Failed to start Sentia Enterprise Server', {
+      error: error.message,
+      stack: error.stack,
+      port: PORT
+    });
+    
+    // Attempt graceful shutdown
+    await processManager.gracefulShutdown('startup_failure');
+  }
+})();

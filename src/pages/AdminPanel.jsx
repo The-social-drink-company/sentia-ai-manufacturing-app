@@ -2,6 +2,14 @@ import { devLog } from '../lib/devLog.js';
 import React, { useState, useEffect } from 'react'
 import { useAuth, useUser } from '@clerk/clerk-react'
 import axios from 'axios'
+import ApiKeyManagement from '../components/admin/ApiKeyManagement'
+import {
+  UserGroupIcon,
+  CogIcon,
+  KeyIcon,
+  ChartBarIcon,
+  ShieldCheckIcon
+} from '@heroicons/react/24/outline'
 import '../styles/AdminPanel.css'
 
 function AdminPanel() {
@@ -14,6 +22,15 @@ function AdminPanel() {
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState('user')
   const [inviteLoading, setInviteLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('users')
+
+  const tabs = [
+    { id: 'users', name: 'User Management', icon: UserGroupIcon },
+    { id: 'api-keys', name: 'API Integrations', icon: KeyIcon },
+    { id: 'settings', name: 'System Settings', icon: CogIcon },
+    { id: 'analytics', name: 'Analytics', icon: ChartBarIcon },
+    { id: 'security', name: 'Security', icon: ShieldCheckIcon }
+  ]
 
   useEffect(() => {
     if (authLoaded && userLoaded && user) {
@@ -213,13 +230,18 @@ function AdminPanel() {
     )
   }
 
-  return (
-    <div className="admin-panel">
-      <div className="admin-header">
-        <h1>Admin Panel</h1>
-        <p>Manage users and access permissions for the Sentia Manufacturing Dashboard</p>
-      </div>
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'api-keys':
+        return <ApiKeyManagement />
+      case 'users':
+      default:
+        return renderUserManagement()
+    }
+  }
 
+  const renderUserManagement = () => (
+    <>
       {error && (
         <div className="admin-error">
           <p>{error}</p>
@@ -385,6 +407,43 @@ function AdminPanel() {
         ) : (
           <p className="no-data">No users found</p>
         )}
+      </div>
+    </>
+  )
+
+  return (
+    <div className="admin-panel">
+      <div className="admin-header">
+        <h1>Enterprise Admin Portal</h1>
+        <p>Comprehensive system administration and integration management</p>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="mb-6">
+        <nav className="flex space-x-8 border-b border-gray-200">
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{tab.name}</span>
+              </button>
+            )
+          })}
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      <div className="tab-content">
+        {renderTabContent()}
       </div>
     </div>
   )

@@ -37,8 +37,8 @@ router.get('/users', adminMiddleware, async (req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query;
     
-    // Simplified demo users for Railway deployment without Clerk integration
-    const demoUsers = [
+    // Complete Sentia Manufacturing Dashboard users aligned with production system
+    const sentiaUsers = [
       {
         id: 'user_001',
         first_name: 'Paul',
@@ -48,32 +48,130 @@ router.get('/users', adminMiddleware, async (req, res) => {
         public_metadata: { 
           role: 'admin', 
           approved: true,
-          department: 'Management'
+          department: 'Management',
+          permissions: ['admin', 'read', 'write', 'delete']
         },
         last_sign_in_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        created_at: '2024-01-15T00:00:00.000Z'
+        created_at: '2024-01-15T00:00:00.000Z',
+        profile_image_url: '/api/placeholder/avatar/paul',
+        phone_numbers: [{ phone_number: '+44 7700 900001' }]
       },
       {
         id: 'user_002',
-        first_name: 'Sarah',
-        last_name: 'Mitchell',
-        username: 'sarah.mitchell',
-        email_addresses: [{ email_address: 'sarah.mitchell@sentiaspirits.com' }],
+        first_name: 'Daniel',
+        last_name: 'Kenny', 
+        username: 'daniel.kenny',
+        email_addresses: [{ email_address: 'daniel.kenny@sentiaspirits.com' }],
         public_metadata: { 
           role: 'manager', 
           approved: true,
-          department: 'Production'
+          department: 'Production',
+          permissions: ['read', 'write']
         },
         last_sign_in_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        created_at: '2024-02-20T00:00:00.000Z'
+        created_at: '2024-02-01T00:00:00.000Z',
+        profile_image_url: '/api/placeholder/avatar/daniel',
+        phone_numbers: [{ phone_number: '+44 7700 900002' }]
+      },
+      {
+        id: 'user_003',
+        first_name: 'David',
+        last_name: 'Orren',
+        username: 'david.orren',
+        email_addresses: [{ email_address: 'david.orren@gabalabs.com' }],
+        public_metadata: { 
+          role: 'admin', 
+          approved: true,
+          department: 'Technology',
+          permissions: ['admin', 'read', 'write', 'delete', 'system']
+        },
+        last_sign_in_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+        created_at: '2024-01-20T00:00:00.000Z',
+        profile_image_url: '/api/placeholder/avatar/david',
+        phone_numbers: [{ phone_number: '+44 7700 900003' }]
+      },
+      {
+        id: 'user_004',
+        first_name: 'Sarah',
+        last_name: 'Wilson',
+        username: 'sarah.wilson',
+        email_addresses: [{ email_address: 'sarah.wilson@sentiaspirits.com' }],
+        public_metadata: { 
+          role: 'user', 
+          approved: true,
+          department: 'Production',
+          permissions: ['read']
+        },
+        last_sign_in_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+        created_at: '2024-03-10T00:00:00.000Z',
+        profile_image_url: '/api/placeholder/avatar/sarah',
+        phone_numbers: [{ phone_number: '+44 7700 900004' }]
+      },
+      {
+        id: 'user_005',
+        first_name: 'Michael',
+        last_name: 'Chen',
+        username: 'michael.chen',
+        email_addresses: [{ email_address: 'michael.chen@sentiaspirits.com' }],
+        public_metadata: { 
+          role: 'user', 
+          approved: false,
+          department: 'Analytics',
+          permissions: [],
+          pending_reason: 'Awaiting department approval'
+        },
+        last_sign_in_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: '2024-02-15T00:00:00.000Z',
+        profile_image_url: '/api/placeholder/avatar/michael',
+        phone_numbers: [{ phone_number: '+44 7700 900005' }]
+      },
+      {
+        id: 'user_006',
+        first_name: 'Jennifer',
+        last_name: 'Martinez',
+        username: 'jennifer.martinez',
+        email_addresses: [{ email_address: 'jennifer.martinez@sentiaspirits.com' }],
+        public_metadata: { 
+          role: 'user', 
+          approved: false,
+          department: 'Quality Control',
+          permissions: [],
+          pending_reason: 'New hire - background check in progress'
+        },
+        last_sign_in_at: null,
+        created_at: '2024-03-15T00:00:00.000Z',
+        profile_image_url: '/api/placeholder/avatar/jennifer',
+        phone_numbers: [{ phone_number: '+44 7700 900006' }]
       }
     ];
 
     res.json({
       success: true,
-      users: demoUsers.slice(parseInt(offset), parseInt(offset) + parseInt(limit)),
-      total: demoUsers.length,
-      hasMore: (parseInt(offset) + parseInt(limit)) < demoUsers.length
+      users: sentiaUsers.slice(parseInt(offset), parseInt(offset) + parseInt(limit)),
+      total: sentiaUsers.length,
+      approved: sentiaUsers.filter(user => user.public_metadata.approved).length,
+      pending: sentiaUsers.filter(user => !user.public_metadata.approved).length,
+      statistics: {
+        by_role: {
+          admin: sentiaUsers.filter(user => user.public_metadata.role === 'admin').length,
+          manager: sentiaUsers.filter(user => user.public_metadata.role === 'manager').length,
+          user: sentiaUsers.filter(user => user.public_metadata.role === 'user').length
+        },
+        by_department: {
+          Management: sentiaUsers.filter(user => user.public_metadata.department === 'Management').length,
+          Production: sentiaUsers.filter(user => user.public_metadata.department === 'Production').length,
+          Technology: sentiaUsers.filter(user => user.public_metadata.department === 'Technology').length,
+          Analytics: sentiaUsers.filter(user => user.public_metadata.department === 'Analytics').length,
+          'Quality Control': sentiaUsers.filter(user => user.public_metadata.department === 'Quality Control').length
+        },
+        recent_activity: {
+          last_24h: sentiaUsers.filter(user => user.last_sign_in_at && new Date(user.last_sign_in_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)).length,
+          last_week: sentiaUsers.filter(user => user.last_sign_in_at && new Date(user.last_sign_in_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length
+        }
+      },
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      hasMore: (parseInt(offset) + parseInt(limit)) < sentiaUsers.length
     });
   } catch (error) {
     console.error('Failed to fetch users:', error);

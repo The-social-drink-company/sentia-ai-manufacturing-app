@@ -391,21 +391,57 @@ class TestDataFactory {
     }
   }
 
-  generateTechnicianName() {
-    const technicians = [
-      'Sarah Johnson', 'Mike Brown', 'Lisa Davis', 'John Wilson',
-      'Emma Taylor', 'David Miller', 'Anna Chen', 'Robert Garcia',
-      'Maria Rodriguez', 'James Anderson'
-    ];
-    return faker.helpers.arrayElement(technicians);
+  async generateTechnicianName() {
+    try {
+      // Try to get real personnel data from the personnel service
+      const personnel = await this.getPersonnelData('technician');
+      if (personnel && personnel.length > 0) {
+        const person = faker.helpers.arrayElement(personnel);
+        return person.display_name || person.full_name || `${person.first_name} ${person.last_name}`;
+      }
+    } catch (error) {
+      console.warn('Failed to fetch real personnel, using fallback');
+    }
+    
+    // Fallback to realistic but clearly generated names
+    return `${faker.person.firstName()} ${faker.person.lastName()}`;
   }
 
-  generateManagerName() {
-    const managers = [
-      'Dr. Patricia Williams', 'Mark Thompson', 'Jennifer Martinez',
-      'Steven Lee', 'Rachel Green', 'Michael Johnson', 'Amy Chen'
-    ];
-    return faker.helpers.arrayElement(managers);
+  async generateManagerName() {
+    try {
+      // Try to get real personnel data from the personnel service
+      const personnel = await this.getPersonnelData('manager');
+      if (personnel && personnel.length > 0) {
+        const person = faker.helpers.arrayElement(personnel);
+        return person.display_name || person.full_name || `${person.first_name} ${person.last_name}`;
+      }
+    } catch (error) {
+      console.warn('Failed to fetch real personnel, using fallback');
+    }
+    
+    // Fallback to realistic but clearly generated names
+    return `${faker.person.firstName()} ${faker.person.lastName()}`;
+  }
+
+  // Helper method to fetch personnel data
+  async getPersonnelData(roleType) {
+    try {
+      let endpoint = '/api/personnel';
+      if (roleType === 'manager') {
+        endpoint += '?role=manager&role=admin';
+      } else if (roleType === 'technician') {
+        endpoint += '?role=operator&role=manager';
+      }
+      
+      const response = await fetch(endpoint);
+      if (response.ok) {
+        const result = await response.json();
+        return result.data || [];
+      }
+    } catch (error) {
+      console.warn('Error fetching personnel data:', error);
+    }
+    return [];
   }
 
   getTestPriority(category, passed) {

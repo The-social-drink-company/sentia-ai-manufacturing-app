@@ -20,7 +20,8 @@ import {
   AdjustmentsHorizontalIcon as SlidersIcon,
   SparklesIcon,
   CircleStackIcon,
-  SignalIcon
+  SignalIcon,
+  DevicePhoneMobileIcon
 } from '@heroicons/react/24/outline'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
@@ -206,6 +207,13 @@ const Sidebar = () => {
           label: 'Real-Time Monitoring',
           shortcut: 'G M',
           permission: 'monitoring.view'
+        },
+        {
+          to: '/mobile',
+          icon: DevicePhoneMobileIcon,
+          label: 'Mobile Floor View',
+          shortcut: 'G MF',
+          permission: 'production.view'
         }
       ]
     },

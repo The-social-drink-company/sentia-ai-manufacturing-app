@@ -63,12 +63,12 @@ export default function ProtectedRoute({
     )
   }
 
-  // Check admin requirement
-  if (requireAdmin && role !== 'admin') {
+  // Check admin requirement (master_admin also has admin privileges)
+  if (requireAdmin && role !== 'admin' && role !== 'master_admin') {
     return <UnauthorizedAccess 
       reason="Admin access required" 
       userRole={role}
-      requiredRole="admin"
+      requiredRole="admin or master_admin"
       fallback={fallback}
     />
   }

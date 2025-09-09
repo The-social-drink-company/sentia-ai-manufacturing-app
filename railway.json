@@ -5,6 +5,7 @@
   },
   "deploy": {
     "startCommand": "node server.js",
+    "comment": "Force redeploy to use correct server.js file",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",

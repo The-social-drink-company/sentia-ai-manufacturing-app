@@ -20,7 +20,7 @@ class XeroService {
 
   initializeXeroClient() {
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
-      console.log('⚠️  Xero credentials not configured - using fallback financial data');
+      console.log('⚠️  Xero credentials not configured - financial data unavailable');
       return;
     }
 
@@ -69,7 +69,7 @@ class XeroService {
         return true;
       }
 
-      console.log('⚠️  Xero tokens not configured - using fallback data');
+      console.log('⚠️  Xero tokens not configured - authentication required');
       return false;
     } catch (error) {
       console.error('❌ Xero authentication failed:', error.message);
@@ -119,7 +119,7 @@ class XeroService {
   // Enterprise working capital methods
   async getBalanceSheet(periods = 2) {
     if (!this.isConnected) {
-      return this.generateFallbackBalanceSheet();
+      throw new Error('Xero service not connected - no fallback data available');
     }
 
     return await this.executeWithRetry(async () => {
@@ -136,7 +136,7 @@ class XeroService {
 
   async getCashFlow(periods = 12) {
     if (!this.isConnected) {
-      return this.generateFallbackCashFlow(periods);
+      throw new Error('Xero service not connected - no fallback data available');
     }
 
     return await this.executeWithRetry(async () => {
@@ -153,7 +153,7 @@ class XeroService {
 
   async getProfitAndLoss(periods = 12) {
     if (!this.isConnected) {
-      return this.generateFallbackProfitLoss(periods);
+      throw new Error('Xero service not connected - no fallback data available');
     }
 
     return await this.executeWithRetry(async () => {
@@ -211,7 +211,7 @@ class XeroService {
       };
     } catch (error) {
       console.error('❌ Working capital calculation failed:', error);
-      return this.generateFallbackWorkingCapital();
+      throw new Error(`Failed to calculate working capital: ${error.message}`);
     }
   }
 
@@ -496,124 +496,6 @@ class XeroService {
     return searchRows(reportData.rows, accountName);
   }
 
-  // Fallback data generators
-  generateFallbackWorkingCapital() {
-    return {
-      currentAssets: 3800000,
-      currentLiabilities: 1150000,
-      workingCapital: 2650000,
-      currentRatio: 3.3,
-      quickRatio: 2.61,
-      cashConversionCycle: 42,
-      accountsReceivable: 1200000,
-      accountsPayable: 950000,
-      inventory: 800000,
-      cash: 1800000,
-      dso: 35,
-      dio: 45,
-      dpo: 38,
-      dataSource: 'fallback_estimated',
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
-  generateFallbackCashFlow(periods = 12) {
-    const cashFlowData = [];
-    
-    for (let i = periods - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setMonth(date.getMonth() - i);
-      
-      cashFlowData.push({
-        period: date.toISOString().substr(0, 7),
-        operatingCashFlow: 150000 + Math.floor(Math.random() * 100000),
-        investingCashFlow: -25000 + Math.floor(Math.random() * 50000),
-        financingCashFlow: -50000 + Math.floor(Math.random() * 100000),
-        netCashFlow: 75000 + Math.floor(Math.random() * 150000)
-      });
-    }
-
-    return {
-      reportName: 'Cash Flow Statement (Estimated)',
-      periods: periods,
-      data: cashFlowData,
-      dataSource: 'fallback_estimated',
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
-  generateFallbackBalanceSheet() {
-    return {
-      reportName: 'Balance Sheet (Estimated)',
-      reportDate: new Date().toISOString(),
-      rows: [
-        {
-          cells: [
-            { value: 'Cash and Cash Equivalents' },
-            { value: '1800000' },
-            { value: '1650000' }
-          ]
-        },
-        {
-          cells: [
-            { value: 'Accounts Receivable' },
-            { value: '1200000' },
-            { value: '1100000' }
-          ]
-        },
-        {
-          cells: [
-            { value: 'Inventory' },
-            { value: '800000' },
-            { value: '750000' }
-          ]
-        },
-        {
-          cells: [
-            { value: 'Accounts Payable' },
-            { value: '950000' },
-            { value: '900000' }
-          ]
-        },
-        {
-          cells: [
-            { value: 'Short-term Debt' },
-            { value: '200000' },
-            { value: '250000' }
-          ]
-        }
-      ],
-      dataSource: 'fallback_estimated',
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
-  generateFallbackProfitLoss(periods = 12) {
-    const profitLossData = [];
-    
-    for (let i = periods - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setMonth(date.getMonth() - i);
-      
-      profitLossData.push({
-        period: date.toISOString().substr(0, 7),
-        revenue: 500000 + Math.floor(Math.random() * 200000),
-        costOfGoodsSold: 300000 + Math.floor(Math.random() * 100000),
-        grossProfit: 200000 + Math.floor(Math.random() * 100000),
-        operatingExpenses: 150000 + Math.floor(Math.random() * 50000),
-        netProfit: 50000 + Math.floor(Math.random() * 75000)
-      });
-    }
-
-    return {
-      reportName: 'Profit & Loss (Estimated)',
-      periods: periods,
-      data: profitLossData,
-      dataSource: 'fallback_estimated',
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
   // Health check
   async healthCheck() {
     try {
@@ -627,7 +509,7 @@ class XeroService {
       if (!this.isConnected) {
         return {
           status: 'not_authenticated',
-          message: 'Xero not authenticated - using fallback data'
+          message: 'Xero not authenticated - no data available'
         };
       }
 

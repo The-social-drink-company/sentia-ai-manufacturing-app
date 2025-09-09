@@ -1,0 +1,70 @@
+{
+  "startTime": "2025-09-08T15:47:02.245Z",
+  "endTime": "2025-09-08T15:47:03.484Z",
+  "success": true,
+  "imports": {
+    "users": {
+      "success": false,
+      "error": "User sync failed: \nInvalid `prisma.user.findMany()` invocation:\n\n{\n  select: {\n    id: true,\n    username: true,\n    email: true,\n    first_name: true,\n    last_name: true,\n    role: true,\n    isActive: true,\n    is_admin: true,\n    permissions: true,\n    clerk_user_id: true,\n    ~~~~~~~~~~~~~\n    created_via_jit: true,\n    createdAt: true,\n    last_login: true,\n?   password_hash?: true,\n?   display_name?: true,\n?   department?: true,\n?   access_regions?: true,\n?   last_login_ip?: true,\n?   login_count?: true,\n?   password_reset_token?: true,\n?   password_reset_expires?: true,\n?   failed_login_attempts?: true,\n?   account_locked_until?: true,\n?   two_factor_enabled?: true,\n?   two_factor_secret?: true,\n?   backup_codes?: true,\n?   session_token?: true,\n?   session_expires?: true,\n?   locked_until?: true,\n?   failed_login_count?: true,\n?   last_failed_login?: true,\n?   password_changed_at?: true,\n?   default_entity_id?: true,\n?   allowed_entity_ids?: true,\n?   allowed_regions?: true,\n?   preferred_currency_code?: true,\n?   preferred_locale?: true,\n?   preferred_timezone?: true,\n?   sso_provider?: true,\n?   last_sso_login?: true,\n?   approved?: true,\n?   force_password_change?: true,\n?   preferences?: true,\n?   updatedAt?: true,\n?   created_by?: true,\n?   updated_by?: true,\n?   deleted_at?: true,\n?   data_imports?: true,\n?   forecasts_forecasts_approved_byTousers?: true,\n?   generatedForecasts?: true,\n?   recordedSales?: true,\n?   import_errors?: true,\n?   import_jobs?: true,\n?   import_templates?: true,\n?   inventory_levels?: true,\n?   markets?: true,\n?   createdProducts?: true,\n?   sales_channels?: true,\n?   createdSchedules?: true,\n?   managedSettings?: true,\n?   system_settings_system_settings_updated_byTousers?: true,\n?   working_capital_working_capital_approved_byTousers?: true,\n?   working_capital_working_capital_created_byTousers?: true,\n?   ar_policies?: true,\n?   ap_policies?: true,\n?   inventory_policies?: true,\n?   wc_projections?: true,\n?   wc_kpis?: true,\n?   wc_scenarios_creator?: true,\n?   wc_scenarios_approver?: true,\n?   wc_optimizations_creator?: true,\n?   wc_optimizations_approver?: true,\n?   user_sessions?: true,\n?   audit_logs?: true,\n?   password_reset_tokens?: true,\n?   AgentRuns?: true,\n?   Approvals?: true,\n?   _count?: true\n  }\n}\n\nUnknown field `clerk_user_id` for select statement on model `User`. Available options are marked with ?."
+    },
+    "amazon": {
+      "success": false,
+      "error": "Unknown import error"
+    },
+    "shopify": {
+      "success": true,
+      "duration": 1,
+      "recordsProcessed": 0,
+      "id": "shopify-1757346423479",
+      "source": "Shopify",
+      "startTime": "2025-09-08T15:47:03.479Z",
+      "details": {
+        "success": true,
+        "recordsProcessed": 0,
+        "message": "Shopify sync placeholder - not yet implemented"
+      },
+      "error": null
+    },
+    "unleashed": {
+      "success": true,
+      "duration": 0,
+      "recordsProcessed": 0,
+      "id": "unleashed-1757346423481",
+      "source": "Unleashed ERP",
+      "startTime": "2025-09-08T15:47:03.481Z",
+      "details": {
+        "success": true,
+        "recordsProcessed": 0,
+        "message": "Unleashed sync placeholder - not yet implemented"
+      },
+      "error": null
+    },
+    "xero": {
+      "success": true,
+      "duration": 0,
+      "recordsProcessed": 0,
+      "id": "xero-1757346423483",
+      "source": "Xero",
+      "startTime": "2025-09-08T15:47:03.483Z",
+      "details": {
+        "success": true,
+        "recordsProcessed": 0,
+        "message": "Xero sync placeholder - not yet implemented"
+      },
+      "error": null
+    }
+  },
+  "errors": [
+    "User import: User sync failed: \nInvalid `prisma.user.findMany()` invocation:\n\n{\n  select: {\n    id: true,\n    username: true,\n    email: true,\n    first_name: true,\n    last_name: true,\n    role: true,\n    isActive: true,\n    is_admin: true,\n    permissions: true,\n    clerk_user_id: true,\n    ~~~~~~~~~~~~~\n    created_via_jit: true,\n    createdAt: true,\n    last_login: true,\n?   password_hash?: true,\n?   display_name?: true,\n?   department?: true,\n?   access_regions?: true,\n?   last_login_ip?: true,\n?   login_count?: true,\n?   password_reset_token?: true,\n?   password_reset_expires?: true,\n?   failed_login_attempts?: true,\n?   account_locked_until?: true,\n?   two_factor_enabled?: true,\n?   two_factor_secret?: true,\n?   backup_codes?: true,\n?   session_token?: true,\n?   session_expires?: true,\n?   locked_until?: true,\n?   failed_login_count?: true,\n?   last_failed_login?: true,\n?   password_changed_at?: true,\n?   default_entity_id?: true,\n?   allowed_entity_ids?: true,\n?   allowed_regions?: true,\n?   preferred_currency_code?: true,\n?   preferred_locale?: true,\n?   preferred_timezone?: true,\n?   sso_provider?: true,\n?   last_sso_login?: true,\n?   approved?: true,\n?   force_password_change?: true,\n?   preferences?: true,\n?   updatedAt?: true,\n?   created_by?: true,\n?   updated_by?: true,\n?   deleted_at?: true,\n?   data_imports?: true,\n?   forecasts_forecasts_approved_byTousers?: true,\n?   generatedForecasts?: true,\n?   recordedSales?: true,\n?   import_errors?: true,\n?   import_jobs?: true,\n?   import_templates?: true,\n?   inventory_levels?: true,\n?   markets?: true,\n?   createdProducts?: true,\n?   sales_channels?: true,\n?   createdSchedules?: true,\n?   managedSettings?: true,\n?   system_settings_system_settings_updated_byTousers?: true,\n?   working_capital_working_capital_approved_byTousers?: true,\n?   working_capital_working_capital_created_byTousers?: true,\n?   ar_policies?: true,\n?   ap_policies?: true,\n?   inventory_policies?: true,\n?   wc_projections?: true,\n?   wc_kpis?: true,\n?   wc_scenarios_creator?: true,\n?   wc_scenarios_approver?: true,\n?   wc_optimizations_creator?: true,\n?   wc_optimizations_approver?: true,\n?   user_sessions?: true,\n?   audit_logs?: true,\n?   password_reset_tokens?: true,\n?   AgentRuns?: true,\n?   Approvals?: true,\n?   _count?: true\n  }\n}\n\nUnknown field `clerk_user_id` for select statement on model `User`. Available options are marked with ?.",
+    "amazon import: Unknown import error"
+  ],
+  "summary": {
+    "duration": 1239,
+    "totalImports": 5,
+    "successfulImports": 3,
+    "failedImports": 2,
+    "totalRecords": 0,
+    "totalUsers": 0,
+    "successRate": "3/5"
+  }
+}

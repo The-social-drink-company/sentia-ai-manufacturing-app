@@ -156,7 +156,7 @@ let manufacturingData = {
   lastUpdated: null
 };
 
-logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [API FIX DEPLOYMENT]', { port: PORT, environment: process.env.NODE_ENV || 'development', apiEndpointsActive: true, deploymentTime: new Date().toISOString() });
+logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYMENT]', { port: PORT, environment: process.env.NODE_ENV || 'development', apiEndpointsActive: true, deploymentTime: new Date().toISOString() });
 
 // Initialize enterprise services
 (async () => {

@@ -13,18 +13,11 @@ try {
   console.error('❌ Amazon SP-API package not installed or configured. Please install: npm install amazon-sp-api');
   SellingPartnerApi = class RequiredAuthSellingPartnerApi {
     constructor(config) {
-      this.config = config;
+      throw new Error('Amazon SP-API package not available. Please install: npm install amazon-sp-api and configure real credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN, AMAZON_SELLER_ID');
     }
     
     async callAPI(operation) {
-      // FORCE REAL AUTHENTICATION REQUIRED - No mock data allowed
-      throw new Error(`Amazon SP-API real authentication required for operation: ${operation.operation}. Please configure: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN, AMAZON_SELLER_ID. Install package: npm install amazon-sp-api`);
-            { ASIN: 'B002', SellerSKU: 'SENTIA-BLACK-001', TotalQuantity: 89 }
-          ]
-        }
-      };
-      
-      return { payload: mockResponses[operation.operation] || {} };
+      throw new Error(`Amazon SP-API real authentication required for operation: ${operation.operation}. Please configure real credentials and install package: npm install amazon-sp-api`);
     }
   };
 }

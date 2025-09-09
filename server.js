@@ -176,7 +176,7 @@ function broadcastToClients(event, data) {
       type: 'manufacturing-ai-integration',
       endpoint: process.env.NODE_ENV === 'production' 
         ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'
-        : 'http://localhost:7001',
+        : 'http://localhost:3001',
       transport: 'http',
       capabilities: [
         'inventory-optimization',
@@ -4723,7 +4723,7 @@ app.get('/api/mcp/status', async (req, res) => {
     // Try to fetch health from local MCP server
     let localMCPHealth = null;
     try {
-      const response = await fetch('http://localhost:7001/health', { timeout: 5000 });
+      const response = await fetch('http://localhost:3001/health', { timeout: 5000 });
       if (response.ok) {
         localMCPHealth = await response.json();
       }
@@ -4749,7 +4749,7 @@ app.get('/api/mcp/diagnostics', async (req, res) => {
   try {
     const mcpServerUrl = process.env.NODE_ENV === 'production' 
       ? 'http://localhost:9001'  // MCP server runs on port 9001 in same Railway container
-      : 'http://localhost:8081';  // Local MCP server on port 8081
+      : 'http://localhost:3001';  // Local MCP server on port 3001
 
     // Test connectivity to MCP server
     const healthEndpoint = `${mcpServerUrl}/health`;
@@ -4800,7 +4800,7 @@ app.post('/api/mcp/ai/chat', async (req, res) => {
     // Determine MCP server endpoint based on environment
     const mcpServerUrl = process.env.NODE_ENV === 'production' 
       ? 'http://localhost:9001'  // MCP server runs on port 9001 in same Railway container
-      : 'http://localhost:8081';  // Local MCP server on port 8081
+      : 'http://localhost:3001';  // Local MCP server on port 3001
 
     const mcpEndpoint = `${mcpServerUrl}/ai/chat`;
     

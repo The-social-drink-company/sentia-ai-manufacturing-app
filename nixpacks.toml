@@ -2,11 +2,15 @@
 NODE_ENV = "production"
 NIXPACKS_NO_CACHE = "1"
 NPM_CONFIG_CACHE = "/tmp/.npm"
-# Force rebuild to fix API endpoint issues - 2025-09-08 20:45  
-# Issue: Railway not deploying latest API endpoint fixes from server.js
+# Force rebuild to fix CSS serving issues - 2025-09-09 08:50
+# Issue: Railway not deploying latest Emergency CSS serving fix from server.js
+
+# CRITICAL: Prevent Caddy installation and force Node.js app detection
+[providers]
+node = true
 
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
 cmds = [
@@ -28,3 +32,8 @@ cmds = [
 
 [start]
 cmd = "node server.js"
+
+# Health check configuration - CRITICAL for Railway deployment
+[healthcheck]
+path = "/api/health"
+port = "${PORT:-5000}"

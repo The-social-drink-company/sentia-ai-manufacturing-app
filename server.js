@@ -8105,6 +8105,27 @@ const staticPath = path.join(__dirname, 'dist');
 console.log(`[DEBUG] Static files path: ${staticPath}`);
 console.log(`[DEBUG] Static files exist:`, fs.existsSync(staticPath));
 
+// CRITICAL FIX: Explicitly handle assets before express.static
+app.get('/assets/*', (req, res) => {
+  const assetPath = path.join(__dirname, 'dist', req.path);
+  console.log(`[ASSETS FIX] Request for ${req.path} -> ${assetPath}`);
+  console.log(`[ASSETS FIX] File exists:`, fs.existsSync(assetPath));
+  
+  if (fs.existsSync(assetPath)) {
+    // Set appropriate content type
+    if (req.path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (req.path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    }
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+    return res.sendFile(assetPath);
+  }
+  
+  console.log(`[ASSETS FIX] Asset not found: ${assetPath}`);
+  return res.status(404).send('Asset not found');
+});
+
 app.use(express.static(staticPath, {
   maxAge: '1d',
   etag: false

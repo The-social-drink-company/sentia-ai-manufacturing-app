@@ -4,7 +4,9 @@
  */
 
 import pkg from 'xero-node';
-const { XeroClient, TokenSet } = pkg;
+// Handle both old and new xero-node package exports
+const { XeroClient, XeroApi, TokenSet } = pkg;
+const XeroClientClass = XeroClient || XeroApi || pkg.default;
 
 // Fallback for missing logError function
 const logError = (msg, error) => console.error(msg, error);
@@ -44,7 +46,7 @@ class XeroService {
     }
 
     try {
-      this.xero = new XeroClient({
+      this.xero = new XeroClientClass({
         clientId: process.env.XERO_CLIENT_ID,
         clientSecret: process.env.XERO_CLIENT_SECRET,
         redirectUris: [process.env.XERO_REDIRECT_URI || 'http://localhost:3000/xero/callback'],

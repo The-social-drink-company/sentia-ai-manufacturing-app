@@ -58,7 +58,6 @@
     "railway:build": "npm run build",
     "railway:start": "npm run start",
     "railway:health": "curl -f http://localhost:$PORT/api/health || exit 1",
-    "postbuild": "echo 'Build completed for Railway deployment'",
     "railway:autonomous:status": "node scripts/railway-autonomous-setup.js status",
     "autonomous:activate": "node scripts/railway-autonomous-setup.js",
     "autonomous:watchdog": "node services/observability/autonomous-watchdog.js",
@@ -275,6 +274,6 @@
     "vitest": "^3.2.4"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.0.0"
   }
 }

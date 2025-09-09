@@ -5,8 +5,20 @@
  * Production-ready implementation with real credentials
  */
 
-import pkg from 'amazon-sp-api';
-const { SellingPartnerApi } = pkg;
+// Amazon SP-API package import with fallback for real authentication
+let SellingPartnerApi = null;
+
+try {
+  const pkg = await import('amazon-sp-api');
+  SellingPartnerApi = pkg.SellingPartnerApi || pkg.default;
+} catch (error) {
+  console.error('❌ Amazon SP-API package not installed. Please install: npm install amazon-sp-api');
+  SellingPartnerApi = class RequiredAuthAmazonSPAPI {
+    constructor() {
+      throw new Error('Amazon SP-API package required. Please install: npm install amazon-sp-api and configure real credentials.');
+    }
+  };
+}
 import { PrismaClient } from '@prisma/client';
 import { logInfo, logError, logWarn } from '../observability/structuredLogger.js';
 
@@ -65,6 +77,10 @@ export class AmazonSPAPIManager {
 
     try {
       logInfo('Initializing Amazon SP-API connection');
+      
+      if (!SellingPartnerApi || typeof SellingPartnerApi !== 'function') {
+        throw new Error('Amazon SP-API not available. Please install package and configure credentials.');
+      }
       
       this.spApi = new SellingPartnerApi({
         region: this.credentials.region,

@@ -48,20 +48,20 @@ class AmazonSPAPIService {
       }
 
       // Check if SellingPartnerApi constructor is available
-      if (!SellingPartnerApi || typeof SellingPartnerApi !== 'function') {
+      if (!SellingPartnerApi || typeof SellingPartnerApi !== 'function' || SellingPartnerApi.name === 'RequiredAuthSellingPartnerApi') {
         throw new Error('Amazon SP-API package not available. Please install amazon-sp-api package and configure real credentials.');
-      } else {
-        this.spApi = new SellingPartnerApi({
-          region: this.credentials.region,
-          refresh_token: this.credentials.refresh_token,
-          credentials: {
-            SELLING_PARTNER_APP_CLIENT_ID: this.credentials.lwa_app_id,
-            SELLING_PARTNER_APP_CLIENT_SECRET: this.credentials.lwa_client_secret,
-            AWS_SELLING_PARTNER_ROLE: this.credentials.aws_selling_partner_role
-          },
-          debug: process.env.NODE_ENV === 'development'
-        });
       }
+      
+      this.spApi = new SellingPartnerApi({
+        region: this.credentials.region,
+        refresh_token: this.credentials.refresh_token,
+        credentials: {
+          SELLING_PARTNER_APP_CLIENT_ID: this.credentials.lwa_app_id,
+          SELLING_PARTNER_APP_CLIENT_SECRET: this.credentials.lwa_client_secret,
+          AWS_SELLING_PARTNER_ROLE: this.credentials.aws_selling_partner_role
+        },
+        debug: process.env.NODE_ENV === 'development'
+      });
 
       // Test connection
       await this.testConnection();

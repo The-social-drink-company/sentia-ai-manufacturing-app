@@ -1,10 +1,11 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import axios from 'axios';
+import { getDatabaseFallback } from '../../services/database/connectionFallback.js';
+import { logInfo, logWarn, logError } from '../../services/observability/structuredLogger.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
+const dbFallback = getDatabaseFallback();
 
 // Encryption utilities for secure key storage
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || crypto.randomBytes(32);

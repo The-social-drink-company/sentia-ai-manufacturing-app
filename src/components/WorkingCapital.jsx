@@ -11,13 +11,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
          PieChart as RechartsPieChart, Cell, Pie, BarChart, Bar } from 'recharts';
 
-// Import components that would be in separate files
-import { CashFlowForecast } from './WorkingCapital/CashFlowForecast';
-import { ReceivablesManager } from './WorkingCapital/ReceivablesManager';
-import { PayablesManager } from './WorkingCapital/PayablesManager';
-import { InventoryOptimizer } from './WorkingCapital/InventoryOptimizer';
-import { WorkingCapitalAI } from './WorkingCapital/WorkingCapitalAI';
-import { FinancialAlerts } from './WorkingCapital/FinancialAlerts';
+// Components are defined as fallbacks at the bottom of this file
 
 const WorkingCapital = () => {
   const { user } = useUser();

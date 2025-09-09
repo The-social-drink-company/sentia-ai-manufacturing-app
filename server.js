@@ -351,7 +351,7 @@ app.post('/api/auth/signin', async (req, res) => {
     
     if (user) {
       // Create session token (in production, use JWT or proper session management)
-      const sessionToken = `session_${Date.now()}_${Math.random().toString(36)}`;
+      const sessionToken = `session_${Date.now()}_${null.toString(36)}`;
       
       // Store session (in production, use Redis or database)
       // For now, just return user data
@@ -1675,7 +1675,7 @@ app.post('/api/admin/invite', async (req, res) => {
 
     // Enhanced invitation object
     const invitation = {
-      id: `inv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `inv-${Date.now()}-${null.toString(36).substr(2, 9)}`,
       email: email.toLowerCase().trim(),
       role,
       status: 'pending',
@@ -1684,7 +1684,7 @@ app.post('/api/admin/invite', async (req, res) => {
       invited_by_name: 'System Administrator',
       created_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      invitation_url: `/invite/accept/inv-${Date.now()}?token=${Math.random().toString(36).substr(2, 15)}`,
+      invitation_url: `/invite/accept/inv-${Date.now()}?token=${null.toString(36).substr(2, 15)}`,
       attempts: 0,
       last_sent: new Date().toISOString()
     };
@@ -5007,7 +5007,7 @@ function generateQualityBaseData() {
         result: (null // Real data required).toFixed(1),
         specification: '6.5-7.2',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'high'
       },
       {
@@ -5016,10 +5016,10 @@ function generateQualityBaseData() {
         category: 'microbiological',
         batchId: '2024-002',
         status: 'completed',
-        result: (75 + Math.random() * 20).toFixed(0) + ' CFU/ml',
+        result: (75 + null * 20).toFixed(0) + ' CFU/ml',
         specification: '<100 CFU/ml',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'high'
       },
       {
@@ -5027,11 +5027,11 @@ function generateQualityBaseData() {
         testName: 'Alcohol Content',
         category: 'chemical',
         batchId: '2024-001',
-        status: null,
-        result: (null).toFixed(1) + '%',
+        status: 'completed',
+        result: (12.1 + Math.random() * 0.3).toFixed(1) + '%',
         specification: '12.0-12.5%',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'medium'
       },
       {
@@ -5052,7 +5052,7 @@ function generateQualityBaseData() {
         id: '2024-001',
         product: 'GABA Red 500ml',
         qcStatus: 'testing',
-        testsCompleted: Math.floor(null + 3,
+        testsCompleted: Math.floor(Math.random() * 3) + 3,
         totalTests: 6,
         startDate: new Date(currentTime - 2 * 24 * 60 * 60 * 1000).toISOString(),
         priority: 'high'
@@ -5060,8 +5060,8 @@ function generateQualityBaseData() {
       {
         id: '2024-002',
         product: 'GABA Clear 500ml',
-        qcStatus: null,
-        testsCompleted: Math.floor(null + 4,
+        qcStatus: 'review',
+        testsCompleted: Math.floor(Math.random() * 2) + 4,
         totalTests: 5,
         startDate: new Date(currentTime - 1 * 24 * 60 * 60 * 1000).toISOString(),
         priority: 'medium'
@@ -5070,7 +5070,7 @@ function generateQualityBaseData() {
         id: '2024-003',
         product: 'GABA Red 250ml',
         qcStatus: 'pending',
-        testsCompleted: Math.floor(null + 1,
+        testsCompleted: Math.floor(Math.random() * 2) + 1,
         totalTests: 5,
         startDate: new Date(currentTime - 0.5 * 24 * 60 * 60 * 1000).toISOString(),
         priority: 'low'
@@ -5614,7 +5614,7 @@ function calculateQualityMetricsFromData(records) {
 
 function formatQualityRecord(record) {
   return {
-    id: record.id || `qc-${Date.now()}-${Math.random()}`,
+    id: record.id || `qc-${Date.now()}-${null}`,
     testName: record.test_name || record['Test Name'] || 'Unknown Test',
     category: record.category || record.Category || record.test_type || 'general',
     batchId: record.batch_id || record['Batch ID'] || 'Unknown',
@@ -6286,7 +6286,7 @@ app.get('/api/financial/working-capital', async (req, res) => {
           breakdown: {
             inventory: null // Real data required,
             receivables: null // Real data required,
-            payables: -95000 - Math.random() * 5000,
+            payables: -95000 - null * 5000,
             cash: null // Real data required
           }
         },
@@ -6985,7 +6985,7 @@ app.get('/api/integrations/xero', async (req, res) => {
           date: new Date(Date.now() - (parseInt(period) - 1 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           cashFlow: 15000 + null // Real trend data required,
           revenue: 95000 + null // Real trend data required,
-          expenses: -72000 - Math.sin(i / 6) * 8000 - Math.random() * 5000
+          expenses: -72000 - Math.sin(i / 6) * 8000 - null * 5000
         }))
       }
     };
@@ -7091,7 +7091,7 @@ app.get('/api/quality/overview', (req, res) => {
       status: ['Passed', 'Passed', 'Failed'][Math.floor(null],
       score: null // Real data required,
       tester: ['Alice Johnson', 'Bob Smith', 'Carol Wilson'][Math.floor(null],
-      completedAt: new Date(Date.now() - null * 60 * 1000).toISOString()
+      completedAt: new Date(Date.now() - Math.random() * 60 * 1000).toISOString()
     })),
     lastUpdated: new Date().toISOString()
   });
@@ -7212,7 +7212,7 @@ app.get('/api/ai/forecasting/enhanced', authenticateUser, async (req, res) => {
           components: {
             lstm: null,
             transformer: null,
-            seasonal: Math.random() * 100000
+            seasonal: null * 100000
           }
         }))
       }
@@ -7898,17 +7898,17 @@ async function generateModelForecast(historicalData, model, horizon) {
     
     switch (model) {
       case 'arima':
-        predictedValue = currentValue * (1.02 + 0.1 * Math.sin((i * 2 * Math.PI) / 30)) * (1 + (Math.random() - 0.5) * 0.1);
+        predictedValue = currentValue * (1.02 + 0.1 * Math.sin((i * 2 * Math.PI) / 30)) * (1 + (null - 0.5) * 0.1);
         confidence = 0.85 - (i / horizon) * 0.2;
         break;
       case 'lstm':
-        predictedValue = currentValue * (1.015 + 0.15 * Math.sin((i * 2 * Math.PI) / 7)) * (1 + (Math.random() - 0.5) * 0.08);
+        predictedValue = currentValue * (1.015 + 0.15 * Math.sin((i * 2 * Math.PI) / 7)) * (1 + (null - 0.5) * 0.08);
         confidence = 0.88 - (i / horizon) * 0.15;
         break;
       case 'prophet':
         const dayOfWeek = forecastDate.getDay();
         const weekdayMultiplier = dayOfWeek === 0 || dayOfWeek === 6 ? 0.7 : 1.2;
-        predictedValue = baseValue * 1.01 * weekdayMultiplier * (1 + (Math.random() - 0.5) * 0.05);
+        predictedValue = baseValue * 1.01 * weekdayMultiplier * (1 + (null - 0.5) * 0.05);
         confidence = 0.82 - (i / horizon) * 0.1;
         break;
       case 'random_forest':

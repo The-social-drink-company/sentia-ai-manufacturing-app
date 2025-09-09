@@ -26,8 +26,8 @@ import compression from 'compression';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
-// import AICentralNervousSystem from './ai-orchestration/ai-central-nervous-system.js';
-// import UnifiedAPIInterface from './api-integrations/unified-api-interface.js';
+import AICentralNervousSystem from './ai-orchestration/ai-central-nervous-system.js';
+import UnifiedAPIInterface from './api-integrations/unified-api-interface.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,17 +71,17 @@ class SentiaEnterpriseMCPServer {
     this.availableTools = [];
     this.toolHandlers = new Map();
     
-    // Initialize AI Central Nervous System (disabled during setup)
-    // this.aiCentralNervousSystem = new AICentralNervousSystem();
+    // Initialize AI Central Nervous System
+    this.aiCentralNervousSystem = new AICentralNervousSystem();
     
-    // Initialize Unified API Interface (disabled during setup)
-    // this.unifiedAPIInterface = new UnifiedAPIInterface();
+    // Initialize Unified API Interface
+    this.unifiedAPIInterface = new UnifiedAPIInterface();
     
     this.setupMiddleware();
     this.initializeTools();
     this.setupWebSocketHandlers();
-    // this.initializeAICentralNervousSystem();
-    // this.initializeUnifiedAPIInterface();
+    this.initializeAICentralNervousSystem();
+    this.initializeUnifiedAPIInterface();
   }
 
   setupMiddleware() {
@@ -207,8 +207,7 @@ class SentiaEnterpriseMCPServer {
   initializeTools() {
     logger.info('Initializing enterprise MCP tools with AI integration');
     
-    // AI-POWERED CENTRAL NERVOUS SYSTEM TOOLS (disabled during setup)
-    /*
+    // AI-POWERED CENTRAL NERVOUS SYSTEM TOOLS
     this.registerTool({
       name: 'ai_manufacturing_request',
       description: 'Process any manufacturing request through AI Central Nervous System',
@@ -283,7 +282,6 @@ class SentiaEnterpriseMCPServer {
       },
       handler: this.handleSyncServiceData.bind(this)
     });
-    */
     
     // MANUFACTURING CORE TOOLS
     this.registerTool({

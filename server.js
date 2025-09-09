@@ -68,7 +68,7 @@ const mcpOrchestrator = new MCPOrchestrator();
       name: 'Sentia Enterprise MCP Server',
       type: 'manufacturing-ai-integration',
       endpoint: process.env.NODE_ENV === 'production' 
-        ? 'https://confident-energy-production-e4dc.up.railway.app'
+        ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'
         : 'http://localhost:6000',
       transport: 'http',
       capabilities: [

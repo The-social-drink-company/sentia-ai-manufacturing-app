@@ -230,7 +230,45 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <EnhancedWorkingCapital />
+                          <ErrorBoundary 
+                            FallbackComponent={({ error, resetErrorBoundary }) => (
+                              <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+                                <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
+                                  <h2 className="text-xl font-semibold text-gray-900 mb-2">Working Capital Error</h2>
+                                  <p className="text-gray-600 mb-4">Enhanced working capital dashboard failed to load.</p>
+                                  <div className="flex space-x-3">
+                                    <button 
+                                      onClick={resetErrorBoundary}
+                                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                    >
+                                      Retry Enhanced
+                                    </button>
+                                    <button 
+                                      onClick={() => window.location.href = '/working-capital/basic'}
+                                      className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                                    >
+                                      Basic Mode
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          >
+                            <EnhancedWorkingCapital />
+                          </ErrorBoundary>
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/working-capital/basic" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WorkingCapital />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

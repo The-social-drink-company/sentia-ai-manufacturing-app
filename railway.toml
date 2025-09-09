@@ -2,22 +2,8 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "node server.js"
+startCommand = "npm start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
-
-[environments.production.variables]
-NODE_ENV = "production"
-PORT = "5000"
-ENABLE_AUTONOMOUS_TESTING = "false"
-AUTO_FIX_ENABLED = "false"
-FORCE_REBUILD = "2025-09-09-16-33-CRITICAL-MOCK-DATA-FIX"
-
-[environments.development.variables]
-NODE_ENV = "development"
-PORT = "5000"
-ENABLE_AUTONOMOUS_TESTING = "false"
-AUTO_FIX_ENABLED = "false"
-FORCE_REBUILD = "2025-09-09-16-33-CRITICAL-MOCK-DATA-FIX"

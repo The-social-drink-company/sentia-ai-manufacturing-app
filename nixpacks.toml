@@ -1,6 +1,5 @@
 [phases.setup]
-nixPkgs = ['nodejs_18', 'npm']
-nixpkgsArchive = 'ba913eda2df8eb72147259189d55932012df6301'
+nixPkgs = ['nodejs', 'npm']
 
 [phases.install]
 cmds = ['npm install']
@@ -9,13 +8,7 @@ cmds = ['npm install']
 cmds = ['npm run build']
 
 [phases.start]
-cmd = 'node server.js'
+cmd = 'npm start'
 
 [variables]
 NODE_ENV = 'production'
-PORT = '5000'
-
-[staticAssets]
-# Disable static asset serving to force Node.js server
-from = '/does-not-exist'
-to = '/'

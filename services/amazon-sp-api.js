@@ -9,7 +9,7 @@ try {
   const pkg = await import('amazon-sp-api');
   SellingPartnerApi = pkg.SellingPartnerApi;
 } catch (error) {
-  console.warn('⚠️ Amazon SP-API package not available, using mock implementation');
+  // Amazon SP-API package not available, using mock implementation
   // Mock implementation for development/testing
   SellingPartnerApi = class MockSellingPartnerApi {
     constructor(config) {
@@ -58,12 +58,12 @@ class AmazonSPAPIService {
 
   async initialize() {
     try {
-      console.log('🔗 Initializing Amazon SP-API connection...');
+      // Amazon SP-API: Initializing connection...
       
       // NUCLEAR FIX: Check if SellingPartnerApi constructor is available
       if (!SellingPartnerApi) {
         // Amazon SP-API using mock data - no connection required
-        this.spApi = new SellingPartnerApi({}); // Use the mock implementation
+        this.spApi = { mock: true }; // Use mock object instead of constructor
       } else {
         this.spApi = new SellingPartnerApi({
           region: this.credentials.region,

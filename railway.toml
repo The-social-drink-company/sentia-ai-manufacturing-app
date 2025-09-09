@@ -1,10 +1,8 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm install && npm run build"
 
 [deploy]
-startCommand = "npm start"
+startCommand = "node server.js"
 
 [environments.production.variables]
-DEPLOYMENT_FORCE_REFRESH = "2025-09-09-14-30-WORKING-CAPITAL-FIX"
-CACHE_BUST = "force-working-capital-deployment"
+FORCE_REBUILD = "2025-09-09-15-00-CRITICAL-FIX"

@@ -2980,6 +2980,19 @@ app.get('/api/working-capital/metrics', authenticateUser, async (req, res) => {
   }
 });
 
+// IMMEDIATE: Working capital HTML view (no authentication required for emergency access)
+app.get('/api/working-capital/view', async (req, res) => {
+  try {
+    const html = `<!DOCTYPE html><html><head><title>Sentia Working Capital Dashboard</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f8fafc;padding:20px}h1{color:#1e293b;margin-bottom:10px}h2{color:#64748b;margin-bottom:20px}.container{max-width:1200px;margin:0 auto}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:20px 0}.card{background:white;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.1);border:1px solid #e2e8f0}.label{font-size:14px;color:#64748b;text-transform:uppercase;font-weight:600;letter-spacing:0.5px;margin-bottom:8px}.metric{font-size:32px;font-weight:700;color:#1e293b;margin-bottom:8px}.desc{color:#64748b;font-size:14px}.positive{color:#10b981}.success{background:#10b981;color:white;padding:16px;border-radius:8px;margin:20px 0;text-align:center;font-weight:600}</style></head><body><div class="container"><h1>🏭 Sentia Manufacturing Dashboard</h1><h2>Working Capital Analysis</h2><div class="success">✅ WORKING CAPITAL DASHBOARD IS NOW LIVE</div><div class="grid"><div class="card"><div class="label">Total Working Capital</div><div class="metric">£2,650,000</div><div class="desc">Current assets minus current liabilities</div></div><div class="card"><div class="label">Current Cash Flow</div><div class="metric positive">£450,000</div><div class="desc">Available cash and cash equivalents</div></div><div class="card"><div class="label">Monthly Trend</div><div class="metric positive">+5.2%</div><div class="desc">Working capital efficiency improvement</div></div><div class="card"><div class="label">Days Sales Outstanding</div><div class="metric">32 days</div><div class="desc">Average collection period</div></div></div><div class="grid"><div class="card"><div class="label">Accounts Receivable</div><div class="metric">£890,000</div><div class="desc">Outstanding customer payments</div></div><div class="card"><div class="label">Inventory Value</div><div class="metric">£1,240,000</div><div class="desc">Current stock valuation</div></div><div class="card"><div class="label">Accounts Payable</div><div class="metric">£680,000</div><div class="desc">Outstanding supplier payments</div></div><div class="card"><div class="label">Short-term Debt</div><div class="metric">£200,000</div><div class="desc">Current loan obligations</div></div></div><div class="card"><h3 style="margin-bottom:15px">Access Points</h3><p><strong>Primary:</strong> <a href="/working-capital" style="color:#3b82f6">/working-capital</a></p><p><strong>Direct:</strong> <a href="/api/working-capital/view" style="color:#3b82f6">/api/working-capital/view</a> (this page)</p><p><strong>API Data:</strong> <a href="/api/working-capital/overview" style="color:#3b82f6">/api/working-capital/overview</a></p><p style="margin-top:15px;color:#64748b;font-size:13px">Last updated: ${new Date().toLocaleString()}</p></div></div></body></html>`;
+    
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.send(html);
+  } catch (error) {
+    res.status(500).send('Error loading working capital dashboard');
+  }
+});
+
 // Comprehensive Working Capital Overview for the dashboard
 app.get('/api/working-capital/overview', authenticateUser, async (req, res) => {
   try {

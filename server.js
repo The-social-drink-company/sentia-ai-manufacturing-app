@@ -471,6 +471,22 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API routing is working', timestamp: new Date().toISOString() });
 });
 
+// Diagnostic endpoint to check environment variables
+app.get('/api/debug/env', (req, res) => {
+  const envInfo = {
+    NODE_ENV: process.env.NODE_ENV,
+    RAILWAY_ENVIRONMENT: process.env.RAILWAY_ENVIRONMENT,
+    PORT: process.env.PORT,
+    DATABASE_URL_EXISTS: !!process.env.DATABASE_URL,
+    CLERK_SECRET_EXISTS: !!process.env.CLERK_SECRET_KEY,
+    availableEnvVars: Object.keys(process.env).filter(key => 
+      key.includes('NODE') || key.includes('RAILWAY') || key.includes('PORT') || 
+      key.includes('DATABASE') || key.includes('CLERK')
+    )
+  };
+  res.json(envInfo);
+});
+
 // Basic health check for Railway deployment (no external service dependencies)
 app.get('/api/health', (req, res) => {
   try {

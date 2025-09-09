@@ -4742,4 +4742,5 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🔗 Admin Panel: http://localhost:${PORT}/admin`);
   console.log(`🌐 External URL: ${process.env.RAILWAY_STATIC_URL || 'Railway will provide URL'}`);
   console.log(`📋 Admin Features: User management, invitations, and approval workflow enabled`);
+  console.log(`🤖 MCP Integration: ${process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT ? 'ENABLED' : 'DISABLED'}`);
 });

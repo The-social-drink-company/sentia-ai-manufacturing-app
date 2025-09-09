@@ -5,4 +5,4 @@ builder = "NIXPACKS"
 startCommand = "node server.js"
 
 [environments.production.variables]
-FORCE_REBUILD = "2025-09-09-19-45-JSON-SYNTAX-DEPLOY"
+FORCE_REBUILD = "2025-09-09-20-00-CACHE-CONFLICT-FIX"

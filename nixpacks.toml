@@ -6,8 +6,7 @@ NPM_CONFIG_CACHE = "/tmp/.npm"
 # Issue: Railway not deploying latest Emergency CSS serving fix from server.js
 
 # CRITICAL: Prevent Caddy installation and force Node.js app detection
-[providers]
-node = true
+providers = ["node"]
 
 [phases.setup]
 nixPkgs = ["nodejs_22", "python311"]

@@ -69,7 +69,7 @@ const mcpOrchestrator = new MCPOrchestrator();
       type: 'manufacturing-ai-integration',
       endpoint: process.env.NODE_ENV === 'production' 
         ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'
-        : 'http://localhost:7000',
+        : 'http://localhost:9000',
       transport: 'http',
       capabilities: [
         'inventory-optimization',
@@ -179,7 +179,7 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [API FIX DEPLOYMENT]', {
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:7000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
+  origin: ['http://localhost:3000', 'http://localhost:9000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
   credentials: true
 }));
 app.use(express.json());

@@ -4,9 +4,22 @@
  */
 
 import pkg from 'xero-node';
-// Handle both old and new xero-node package exports
-const { XeroClient, XeroApi, TokenSet } = pkg;
-const XeroClientClass = XeroClient || XeroApi || pkg.default;
+// Handle both old and new xero-node package exports with comprehensive error handling
+let XeroClient, XeroApi, TokenSet, XeroClientClass;
+
+try {
+  ({ XeroClient, XeroApi, TokenSet } = pkg);
+  XeroClientClass = XeroClient || XeroApi || pkg.default || pkg;
+  
+  if (!XeroClientClass || typeof XeroClientClass !== 'function') {
+    console.warn('⚠️ Xero client class not found in package, using fallback');
+    XeroClientClass = null;
+  }
+} catch (error) {
+  console.error('❌ Failed to import Xero package:', error.message);
+  XeroClientClass = null;
+  TokenSet = null;
+}
 
 // Fallback for missing logError function
 const logError = (msg, error) => console.error(msg, error);

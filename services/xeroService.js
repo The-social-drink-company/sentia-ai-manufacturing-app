@@ -23,7 +23,7 @@ class XeroService {
 
   initializeXeroClient() {
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
-      console.log('ℹ️  Xero service: Using mock financial data (credentials not configured)');
+      // Xero service not configured - using mock data
       return;
     }
 

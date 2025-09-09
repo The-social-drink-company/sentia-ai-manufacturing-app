@@ -1,14 +1,21 @@
+[providers]
+node = "18"
+
 [phases.setup]
-nixPkgs = ['nodejs', 'npm']
+nixPkgs = ['nodejs_18']
 
 [phases.install]
-cmds = ['npm install']
+cmds = ['npm ci']
 
-[phases.build]
+[phases.build] 
 cmds = ['npm run build']
 
 [phases.start]
-cmd = 'npm start'
+cmd = 'node server.js'
+
+[staticAssets]
+from = []
 
 [variables]
 NODE_ENV = 'production'
+PORT = '$PORT'

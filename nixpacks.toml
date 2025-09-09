@@ -1,5 +1,6 @@
 [phases.setup]
-nixPkgs = ['nodejs', 'npm']
+nixPkgs = ['nodejs_18', 'npm']
+nixpkgsArchive = 'ba913eda2df8eb72147259189d55932012df6301'
 
 [phases.install]
 cmds = ['npm install']

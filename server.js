@@ -977,34 +977,14 @@ app.get('/api/shopify/dashboard-data', authenticateUser, async (req, res) => {
     try {
       shopifyData = await fetchShopifyData();
     } catch (credentialsError) {
-      console.log('⚠️ Shopify credentials not configured, using fallback data');
-      // Return fallback Shopify data when credentials are missing
-      shopifyData = {
-        orders: {
-          current: 247 + Math.floor(Math.random() * 50),
-          previous: 225 + Math.floor(Math.random() * 40),
-          change: 9.8,
-          avgOrderValue: 193.85
-        },
-        revenue: {
-          value: 47892.50 + Math.random() * 5000,
-          change: 12.5,
-          currency: 'GBP'
-        },
-        customers: {
-          total: 1247,
-          new: 89,
-          returning: 158
-        },
-        products: {
-          totalProducts: 156,
-          outOfStock: 12,
-          lowStock: 23
-        },
-        dataSource: 'fallback_estimated',
-        lastUpdated: new Date().toISOString()
-      };
-    }
+      console.log('⚠️ Shopify credentials not configured - NO FALLBACK DATA');
+      // NO MOCK DATA - Return error instead of fake data
+      return res.status(503).json({
+        error: 'Shopify API authentication required',
+        message: 'Real Shopify data integration required. No mock data will be returned.',
+        requiredAPI: 'Shopify API',
+        action: 'Configure Shopify API credentials'
+      });
     res.json(shopifyData);
   } catch (error) {
     console.error('Shopify API error:', error);
@@ -4408,8 +4388,13 @@ app.get('/api/inventory/dashboard', authenticateUser, (req, res) => {
   try {
     const { category, search, sort } = req.query;
     
-    // TEMPORARY FIX: Return fallback data directly until getInventoryData is implemented
-    const inventoryData = {
+    // NO MOCK DATA - Return error for missing real data
+    return res.status(503).json({
+      error: 'Inventory data integration required',
+      message: 'Real inventory data required from ERP/WMS systems. No mock data will be returned.',
+      requiredAPI: 'ERP/WMS Integration',
+      action: 'Configure inventory management system integration'
+    });
       totalItems: 24,
       lowStockItems: 3,
       outOfStockItems: 1,

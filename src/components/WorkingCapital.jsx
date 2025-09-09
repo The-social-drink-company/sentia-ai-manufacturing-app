@@ -36,89 +36,26 @@ const WorkingCapital = () => {
         
         return await response.json();
       } catch (error) {
-        // Fallback to mock data for demo purposes
-        return {
-          workingCapital: 2450000,
-          currentRatio: 1.8,
-          quickRatio: 1.2,
-          cashConversionCycle: 45,
-          wcChange: 15.2,
-          crChange: 8.1,
-          qrChange: -2.3,
-          cccChange: -5.4,
-          currentAssets: 5200000,
-          currentLiabilities: 2750000,
-          cashFlow: [
-            { date: '2025-09-01', projected: 850000, actual: 820000 },
-            { date: '2025-09-02', projected: 890000, actual: 895000 },
-            { date: '2025-09-03', projected: 920000, actual: 910000 },
-            { date: '2025-09-04', projected: 950000, actual: 945000 },
-            { date: '2025-09-05', projected: 980000, actual: 975000 },
-            { date: '2025-09-06', projected: 1010000, actual: 1020000 },
-            { date: '2025-09-07', projected: 1040000, actual: 1035000 }
-          ],
-          breakdown: [
-            { name: 'Cash & Equivalents', value: 1200000, color: '#3b82f6' },
-            { name: 'Accounts Receivable', value: 2800000, color: '#10b981' },
-            { name: 'Inventory', value: 1200000, color: '#f59e0b' },
-            { name: 'Other Assets', value: 0, color: '#ef4444' }
-          ]
-        };
-=======
-        const response = await fetch(`/api/working-capital/summary?period=${selectedPeriod}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch working capital data');
-        }
-        return response.json();
-      } catch (error) {
-        // Fallback to basic financial endpoint
+        // No mock data - try alternative endpoint first
         try {
-          const response = await fetch(`/api/financial/working-capital?period=${selectedPeriod}`);
+          const response = await fetch(`/api/working-capital/summary?period=${selectedPeriod}`);
           if (!response.ok) {
-            throw new Error('Both endpoints failed');
+            throw new Error('Failed to fetch working capital data');
           }
           return response.json();
         } catch (fallbackError) {
-          // Return mock data structure that matches the real API
-          return {
-            workingCapital: { amount: 2450000, currency: 'GBP' },
-            currentRatio: 3.3,
-            quickRatio: 2.61,
-            cashConversionCycle: { days: 75 },
-            accountsReceivable: 1200000,
-            inventory: 800000,
-            accountsPayable: 950000,
-            cash: 1800000,
-            cashFlowProjections: [
-              { week: 1, date: '2025-09-09', projectedInflow: 280000, projectedOutflow: 217803, netCashFlow: 70000, cumulativeCash: 1870000 },
-              { week: 2, date: '2025-09-16', projectedInflow: 300136, projectedOutflow: 246801, netCashFlow: 75034, cumulativeCash: 1950068 },
-              { week: 3, date: '2025-09-23', projectedInflow: 315342, projectedOutflow: 241729, netCashFlow: 78835, cumulativeCash: 2036506 },
-              { week: 4, date: '2025-09-30', projectedInflow: 321895, projectedOutflow: 256771, netCashFlow: 80474, cumulativeCash: 2121895 }
-            ],
-            recommendations: [
-              {
-                category: 'Collections',
-                priority: 'HIGH',
-                action: 'Reduce DSO from 35 to 28 days',
-                impact: 'Free up £700,000 in working capital',
-                confidence: 0.85
-              }
-            ],
-            trends: {
-              cash: [{ amount: 1800000 }],
-              accountsReceivable: 1200000,
-              inventory: 800000,
-              accountsPayable: 950000
-            },
-            projections: [
-              { week: 'Week 1', projected: 1870000, actual: 1850000 },
-              { week: 'Week 2', projected: 1950000, actual: 1945000 },
-              { week: 'Week 3', projected: 2036000, actual: 2030000 },
-              { week: 'Week 4', projected: 2122000, actual: 2115000 }
-            ]
-          };
+          // Try final endpoint
+          try {
+            const response = await fetch(`/api/financial/working-capital?period=${selectedPeriod}`);
+            if (!response.ok) {
+              throw new Error('Both endpoints failed');
+            }
+            return response.json();
+          } catch (finalError) {
+            // No mock data - throw error requiring real API connection
+            throw new Error('No real working capital data available from any API endpoint. Mock data has been eliminated per user requirements. Please ensure API authentication is configured for Xero, bank APIs, or accounting systems to access authentic financial data.');
+          }
         }
->>>>>>> test
       }
     },
     refetchInterval: 60000,

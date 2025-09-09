@@ -170,52 +170,22 @@ app.post('/mcp/tools/call', async (req, res) => {
 // Xero Balance Sheet Integration
 async function getXeroBalanceSheet({ date, periods = 1 }) {
   if (!xeroClient) {
-    // Return mock data for development
-    return {
-      source: 'mock',
-      date: date || new Date().toISOString().split('T')[0],
-      balanceSheet: {
-        totalAssets: 5200000,
-        currentAssets: {
-          cash: 850000,
-          accountsReceivable: 1200000,
-          inventory: 800000,
-          otherCurrentAssets: 250000,
-          total: 3100000
-        },
-        fixedAssets: {
-          propertyPlantEquipment: 1800000,
-          accumulatedDepreciation: -500000,
-          intangibleAssets: 800000,
-          total: 2100000
-        },
-        totalLiabilities: 2100000,
-        currentLiabilities: {
-          accountsPayable: 400000,
-          shortTermDebt: 300000,
-          accruedExpenses: 250000,
-          otherCurrentLiabilities: 150000,
-          total: 1100000
-        },
-        longTermLiabilities: {
-          longTermDebt: 800000,
-          otherLongTermLiabilities: 200000,
-          total: 1000000
-        },
-        equity: {
-          shareholderEquity: 2500000,
-          retainedEarnings: 600000,
-          total: 3100000
-        },
-        workingCapital: 2000000,
-        currentRatio: 2.82
-      }
-    };
+    // No mock data - throw error requiring real Xero connection
+    throw new Error('Xero API client not configured. Real financial data required - mock data has been eliminated per user requirements. Please configure Xero API authentication to access balance sheet data.');
   }
 
-  // Real Xero integration would go here
-  // const balanceSheet = await xeroClient.accountingApi.getReports(tenantId, 'BalanceSheet', ...args);
-  // return balanceSheet;
+  // Real Xero integration
+  try {
+    const balanceSheet = await xeroClient.accountingApi.getReports(tenantId, 'BalanceSheet', date, periods);
+    return {
+      source: 'xero',
+      date: date || new Date().toISOString().split('T')[0],
+      balanceSheet: balanceSheet
+    };
+  } catch (error) {
+    console.error('Xero balance sheet fetch failed:', error);
+    throw new Error(`Failed to fetch real balance sheet data from Xero: ${error.message}`);
+  }
 }
 
 // Xero Profit & Loss Integration  

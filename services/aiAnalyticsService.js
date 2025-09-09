@@ -305,7 +305,15 @@ class AIAnalyticsService {
   }
 
   async performCashFlowVectorAnalysis(historicalData) {
-    const baseAmount = 1800000;
+    // Use real historical data instead of hardcoded amount
+    const baseAmount = historicalData && historicalData.length > 0 
+      ? historicalData[historicalData.length - 1].amount || 0
+      : 0;
+    
+    if (baseAmount === 0) {
+      throw new Error('Cash flow analysis requires real historical data - no mock base amounts allowed');
+    }
+    
     const projections = [];
     
     for (let week = 1; week <= 8; week++) {
@@ -463,21 +471,8 @@ class AIAnalyticsService {
   }
 
   generateFallbackCashFlow() {
-    const projections = [];
-    let baseAmount = 1800000;
-    
-    for (let week = 1; week <= 8; week++) {
-      baseAmount *= (1 + Math.random() * 0.05 - 0.025); // ±2.5% variance
-      projections.push({
-        period: `W${week}`,
-        week,
-        projectedAmount: Math.round(baseAmount),
-        confidence: 0.75,
-        scenario: 'fallback'
-      });
-    }
-    
-    return projections;
+    // No fallback cash flow data - throw error instead of using mock data
+    throw new Error('Cash flow generation requires real financial data sources. Mock cash flow data has been eliminated per user requirements. Please connect to Xero, bank APIs, or accounting systems for authentic cash flow analysis.');
   }
 
   // Health check

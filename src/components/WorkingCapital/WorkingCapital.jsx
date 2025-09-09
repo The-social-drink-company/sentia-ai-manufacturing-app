@@ -29,25 +29,18 @@ const WorkingCapital = () => {
       try {
         setLoading(true)
         
-        // Set timeout to prevent hanging
-        const timeoutId = setTimeout(() => {
-          setLoading(false)
-          setWorkingCapitalData(getMockData()) // Fallback to mock data
-        }, 5000)
-        
         const response = await fetch('/api/working-capital/overview')
-        clearTimeout(timeoutId)
         
         if (response.ok) {
           const data = await response.json()
           setWorkingCapitalData(data)
         } else {
-          console.error('Failed to load working capital data, using mock data')
-          setWorkingCapitalData(getMockData())
+          console.error('Failed to load working capital data - API error')
+          setWorkingCapitalData(null) // NO MOCK DATA - Real data only
         }
       } catch (error) {
         console.error('Error fetching working capital data:', error)
-        setWorkingCapitalData(getMockData()) // Always fall back to mock data
+        setWorkingCapitalData(null) // NO MOCK DATA - Real data only
       } finally {
         setLoading(false)
       }
@@ -56,17 +49,7 @@ const WorkingCapital = () => {
     fetchWorkingCapitalData()
   }, [])
 
-  const getMockData = () => ({
-    currentRatio: 2.34,
-    quickRatio: 1.89,
-    cashConversionCycle: 45,
-    workingCapital: 2400000,
-    accountsReceivable: 1800000,
-    inventory: 3200000,
-    accountsPayable: 2600000,
-    status: 'healthy',
-    lastUpdated: new Date().toISOString()
-  })
+  // REMOVED: getMockData function - NO MOCK DATA ALLOWED per user requirements
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: ChartBarIcon },

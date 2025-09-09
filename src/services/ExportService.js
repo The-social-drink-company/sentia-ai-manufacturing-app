@@ -94,25 +94,25 @@ class ExportService {
   extractFinancialData(dashboardData) {
     return {
       revenue: {
-        current: dashboardData?.revenue || 40000000,
-        projected: dashboardData?.projectedRevenue || 42000000,
-        growth: dashboardData?.revenueGrowth || 5.0
+        current: dashboardData?.revenue,
+        projected: dashboardData?.projectedRevenue,
+        growth: dashboardData?.revenueGrowth
       },
       costs: {
-        operatingCosts: dashboardData?.operatingCosts || 26000000,
-        financingCosts: dashboardData?.financingCosts || 800000,
-        totalCosts: dashboardData?.totalCosts || 26800000
+        operatingCosts: dashboardData?.operatingCosts,
+        financingCosts: dashboardData?.financingCosts,
+        totalCosts: dashboardData?.totalCosts
       },
       margins: {
-        gross: dashboardData?.grossMargin || 35.0,
-        operating: dashboardData?.operatingMargin || 25.0,
-        net: dashboardData?.netMargin || 18.0
+        gross: dashboardData?.grossMargin,
+        operating: dashboardData?.operatingMargin,
+        net: dashboardData?.netMargin
       },
       cashFlow: {
-        operating: dashboardData?.operatingCashFlow || 7200000,
-        investing: dashboardData?.investingCashFlow || -2400000,
-        financing: dashboardData?.financingCashFlow || -1800000,
-        net: dashboardData?.netCashFlow || 3000000
+        operating: dashboardData?.operatingCashFlow,
+        investing: dashboardData?.investingCashFlow,
+        financing: dashboardData?.financingCashFlow,
+        net: dashboardData?.netCashFlow
       }
     };
   }

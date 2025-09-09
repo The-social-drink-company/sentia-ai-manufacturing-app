@@ -16,7 +16,7 @@
     "express": "^4.21.1",
     "cors": "^2.8.5", 
     "dotenv": "^16.4.7",
-    "xero-node": "^5.5.1",
+    "xero-node": "^4.38.0",
     "helmet": "^7.1.0",
     "express-rate-limit": "^7.4.0",
     "ws": "^8.18.0",
@@ -24,7 +24,9 @@
     "jsonwebtoken": "^9.0.2",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1",
+    "axios": "^1.6.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

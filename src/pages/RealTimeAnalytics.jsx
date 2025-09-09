@@ -5,7 +5,7 @@ import {
   CurrencyDollarIcon,
   ShoppingCartIcon,
   UserGroupIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   TrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
@@ -303,7 +303,7 @@ const RealTimeAnalytics = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <TrendingUpIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <ArrowTrendingUpIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Avg Order Value</p>

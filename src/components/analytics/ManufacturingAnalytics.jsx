@@ -7,7 +7,7 @@ import {
 import { 
   ChartBarIcon, 
   Cog6ToothIcon, 
-  ArrowTrendingUpIcon, 
+  ArrowArrowTrendingUpIcon, 
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon
@@ -333,9 +333,9 @@ const ManufacturingAnalytics = () => {
                 </p>
               </div>
               {metric.trend === 'up' ? (
-                <ArrowTrendingUpIcon className="w-8 h-8 text-green-500" />
+                <ArrowArrowTrendingUpIcon className="w-8 h-8 text-green-500" />
               ) : (
-                <ArrowTrendingUpIcon className="w-8 h-8 text-red-500 transform rotate-180" />
+                <ArrowArrowTrendingUpIcon className="w-8 h-8 text-red-500 transform rotate-180" />
               )}
             </div>
             <div className="mt-2">

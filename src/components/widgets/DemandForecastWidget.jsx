@@ -2,7 +2,7 @@ import { devLog } from '../lib/devLog.js';
 import React, { useState, memo, useMemo, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { ArrowTrendingUpIcon, Cog6ToothIcon, SparklesIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
+import { ArrowArrowTrendingUpIcon, Cog6ToothIcon, SparklesIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
 import { queryKeys, queryConfigs } from '../../services/queryClient'
 import { useFeatureFlags } from '../../hooks/useFeatureFlags'
 // Optional import for SSE functionality - use dynamic import
@@ -256,7 +256,7 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
     return (
       <div className="h-full flex items-center justify-center text-center">
         <div className="text-red-600 dark:text-red-400">
-          <ArrowTrendingUpIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
+          <ArrowArrowTrendingUpIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
           <p className="text-lg font-medium">Failed to load forecast</p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {error.message}

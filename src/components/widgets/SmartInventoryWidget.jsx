@@ -7,7 +7,7 @@ import {
   ClockIcon,
   TruckIcon,
   ChartBarIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   SparklesIcon,
   CurrencyDollarIcon,
   AdjustmentsHorizontalIcon
@@ -197,7 +197,7 @@ const SmartInventoryWidget = React.memo(() => {
           
           <div className="bg-white p-3 rounded-lg border">
             <div className="flex items-center">
-              <ArrowTrendingUpIcon className="h-5 w-5 text-purple-600 mr-2" />
+              <ArrowArrowTrendingUpIcon className="h-5 w-5 text-purple-600 mr-2" />
               <div>
                 <p className="text-xs font-medium text-gray-500">Potential Savings</p>
                 <p className="text-lg font-bold text-purple-600">{formatCurrency(summary.totalOptimizationSavings)}</p>

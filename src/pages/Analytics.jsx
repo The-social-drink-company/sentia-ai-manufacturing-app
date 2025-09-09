@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   ChartBarIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   TrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
@@ -70,7 +70,7 @@ const Analytics = () => {
   const getTrendIcon = (trend) => {
     switch (trend) {
       case 'improving':
-        return <TrendingUpIcon className="h-5 w-5 text-green-500" />;
+        return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
       case 'declining':
         return <TrendingDownIcon className="h-5 w-5 text-red-500" />;
       default:

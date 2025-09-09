@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { 
   ChartBarIcon, 
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   CalendarDaysIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
   CurrencyPoundIcon,
   ClockIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   TrendingDownIcon,
   DocumentChartBarIcon
 } from '@heroicons/react/24/outline'
@@ -157,7 +157,7 @@ const RealTimeCashFlowForecasting = () => {
   }
 
   const getTrendIcon = (current, previous) => {
-    if (current > previous) return TrendingUpIcon
+    if (current > previous) return ArrowTrendingUpIcon
     if (current < previous) return TrendingDownIcon
     return InformationCircleIcon
   }
@@ -395,7 +395,7 @@ const RealTimeCashFlowForecasting = () => {
                         </p>
                       </div>
                       <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                        <ArrowTrendingUpIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                        <ArrowArrowTrendingUpIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                       </div>
                     </div>
                   </div>

@@ -9,7 +9,7 @@ import {
   DocumentArrowDownIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   ArrowTrendingDownIcon
 } from '@heroicons/react/24/outline';
 
@@ -115,7 +115,7 @@ export default function ModelsBaselines() {
 
   const modelTypes = [
     { key: 'forecast', name: 'Forecast', icon: ChartBarIcon },
-    { key: 'opt', name: 'Optimization', icon: ArrowTrendingUpIcon },
+    { key: 'opt', name: 'Optimization', icon: ArrowArrowTrendingUpIcon },
     { key: 'wc', name: 'Working Capital', icon: DocumentArrowDownIcon }
   ];
 
@@ -407,7 +407,7 @@ function PerformanceTrendsSection({ type }) {
               metric.trend > 0 ? 'text-green-600' : 'text-red-600'
             }`}>
               {metric.trend > 0 ? (
-                <ArrowTrendingUpIcon className="h-4 w-4 mr-1" />
+                <ArrowArrowTrendingUpIcon className="h-4 w-4 mr-1" />
               ) : (
                 <ArrowTrendingDownIcon className="h-4 w-4 mr-1" />
               )}

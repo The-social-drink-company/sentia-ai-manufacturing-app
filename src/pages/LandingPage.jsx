@@ -8,7 +8,7 @@ import {
   LightBulbIcon,
   ShieldCheckIcon,
   BanknotesIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowRightIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
@@ -43,7 +43,7 @@ const LandingPage = () => {
       color: 'from-blue-600 to-blue-800'
     },
     {
-      icon: TrendingUpIcon,
+      icon: ArrowTrendingUpIcon,
       title: 'Cash Flow Forecasting',
       description: 'Predictive modeling and AI-driven insights for accurate financial planning and decision making.',
       color: 'from-purple-600 to-purple-800'

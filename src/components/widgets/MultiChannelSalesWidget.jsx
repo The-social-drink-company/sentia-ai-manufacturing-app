@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { 
   ShoppingCartIcon, 
-  ArrowTrendingUpIcon, 
+  ArrowArrowTrendingUpIcon, 
   ArrowTrendingDownIcon,
   EyeIcon,
   ChartBarIcon,
@@ -299,7 +299,7 @@ const MultiChannelSalesWidget = ({ timeRange = '30d', className = '' }) => {
                         channel.trend > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                       }`}>
                         {channel.trend > 0 ? (
-                          <ArrowTrendingUpIcon className="w-3 h-3 mr-1" />
+                          <ArrowArrowTrendingUpIcon className="w-3 h-3 mr-1" />
                         ) : (
                           <ArrowTrendingDownIcon className="w-3 h-3 mr-1" />
                         )}

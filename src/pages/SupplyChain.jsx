@@ -9,7 +9,7 @@ import {
   CubeIcon,
   DocumentTextIcon,
   ShieldExclamationIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ArrowPathIcon,
   EyeIcon

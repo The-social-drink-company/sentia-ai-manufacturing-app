@@ -3,7 +3,7 @@ import {
   CogIcon,
   BoltIcon,
   ChartBarIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ClockIcon,
   ExclamationTriangleIcon,
@@ -466,7 +466,7 @@ const ProductionOptimization = () => {
               </p>
               <p className="text-sm text-purple-600">Achievable gain</p>
             </div>
-            <ArrowTrendingUpIcon className="h-8 w-8 text-purple-600" />
+            <ArrowArrowTrendingUpIcon className="h-8 w-8 text-purple-600" />
           </div>
         </div>
       </div>

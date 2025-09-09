@@ -8,7 +8,7 @@ import {
   BeakerIcon, 
   PresentationChartLineIcon,
   CogIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   ArrowTrendingDownIcon
 } from '@heroicons/react/24/outline';
 
@@ -56,7 +56,7 @@ const WorkingEnterpriseDashboard = () => {
                 <h3 className="text-sm font-medium text-gray-500">Production Output</h3>
                 <p className="text-2xl font-bold text-gray-900">1,234</p>
                 <p className="text-sm text-green-600 flex items-center">
-                  <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
+                  <ArrowArrowTrendingUpIcon className="w-4 h-4 mr-1" />
                   +12% from yesterday
                 </p>
               </div>
@@ -72,7 +72,7 @@ const WorkingEnterpriseDashboard = () => {
                 <h3 className="text-sm font-medium text-gray-500">Efficiency Rate</h3>
                 <p className="text-2xl font-bold text-gray-900">94.2%</p>
                 <p className="text-sm text-green-600 flex items-center">
-                  <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
+                  <ArrowArrowTrendingUpIcon className="w-4 h-4 mr-1" />
                   +2.1% from last week
                 </p>
               </div>

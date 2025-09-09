@@ -1,6 +1,6 @@
 import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react';
-import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { ArrowArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationTriangleIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { intelligenceService } from '../../services/intelligenceService';
 import { logError } from '../../lib/logger';
 import {
@@ -88,7 +88,7 @@ const IntelligentKPICard = ({
     
     const trendValue = parseFloat(metric.trend);
     if (trendValue > 0) {
-      return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
+      return <ArrowArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
     } else if (trendValue < 0) {
       return <ArrowTrendingDownIcon className="h-5 w-5 text-red-500" />;
     }

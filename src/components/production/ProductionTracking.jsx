@@ -7,7 +7,7 @@ import {
   PauseCircleIcon as PauseCircle, 
   StopCircleIcon as StopCircle, 
   Cog6ToothIcon as Settings,
-  ArrowTrendingUpIcon as TrendingUp, 
+  ArrowArrowTrendingUpIcon as TrendingUp, 
   ExclamationTriangleIcon as AlertTriangle, 
   CheckCircleIcon as CheckCircle, 
   ClockIcon as Clock,

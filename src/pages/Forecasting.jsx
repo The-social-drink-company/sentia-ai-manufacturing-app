@@ -2,7 +2,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import {
   PresentationChartLineIcon,
   ChartBarIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   TrendingDownIcon,
   CalendarDaysIcon,
   CpuChipIcon,
@@ -170,7 +170,7 @@ const Forecasting = () => {
   const getTrendIcon = (trend) => {
     switch (trend) {
       case 'increasing':
-        return <TrendingUpIcon className="h-4 w-4 text-green-600" />;
+        return <ArrowTrendingUpIcon className="h-4 w-4 text-green-600" />;
       case 'decreasing':
         return <TrendingDownIcon className="h-4 w-4 text-red-600" />;
       default:
@@ -342,7 +342,7 @@ const Forecasting = () => {
               </p>
               <p className="text-sm text-blue-600">+11% vs current month</p>
             </div>
-            <TrendingUpIcon className="h-8 w-8 text-blue-600" />
+            <ArrowTrendingUpIcon className="h-8 w-8 text-blue-600" />
           </div>
         </div>
 

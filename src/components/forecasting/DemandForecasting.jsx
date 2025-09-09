@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { ChartJS } from '../../lib/chartSetup';
 import {
-  ArrowTrendingUpIcon as TrendingUp, 
+  ArrowArrowTrendingUpIcon as TrendingUp, 
   CalendarIcon as Calendar, 
   FlagIcon as Target, 
   Cog6ToothIcon as Settings,

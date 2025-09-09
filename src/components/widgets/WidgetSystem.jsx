@@ -14,7 +14,7 @@ import {
   Cog8ToothIcon,
   CubeIcon,
   ShieldCheckIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   TrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
@@ -149,7 +149,7 @@ const KPIStripWidget = ({ metrics = [] }) => {
               metric.trend === 'up' ? 'text-green-600' : 
               metric.trend === 'down' ? 'text-red-600' : 'text-gray-500'
             )}>
-              {metric.trend === 'up' && <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />}
+              {metric.trend === 'up' && <ArrowArrowTrendingUpIcon className="h-3 w-3 mr-1" />}
               {metric.trend === 'down' && <TrendingDownIcon className="h-3 w-3 mr-1" />}
               {metric.change}
             </div>

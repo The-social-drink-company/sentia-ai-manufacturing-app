@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChartBarIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   CurrencyDollarIcon,
   BoltIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   TrendingDownIcon,
   CalendarIcon,
   EyeIcon,
@@ -157,7 +157,7 @@ const AdvancedAnalyticsDashboard = () => {
           {change && (
             <div className="flex items-center mt-1">
               {change > 0 ? (
-                <TrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
               ) : (
                 <TrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
               )}
@@ -288,7 +288,7 @@ const AdvancedAnalyticsDashboard = () => {
             value={data.performanceMetrics.overall.throughput}
             suffix="%"
             change={-1.1}
-            icon={ArrowTrendingUpIcon}
+            icon={ArrowArrowTrendingUpIcon}
             color="orange"
           />
         </div>

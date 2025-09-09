@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   EllipsisHorizontalIcon,
   ArrowsPointingOutIcon,
@@ -72,7 +72,7 @@ const EnterpriseWidget = ({
   const colors = colorClasses[color] || colorClasses.blue;
 
   const getTrendIcon = () => {
-    if (trend === 'up') return ArrowTrendingUpIcon;
+    if (trend === 'up') return ArrowArrowTrendingUpIcon;
     if (trend === 'down') return ArrowTrendingDownIcon;
     return null;
   };

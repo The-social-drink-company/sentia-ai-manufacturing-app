@@ -17,7 +17,7 @@ import { format, parseISO, subDays } from 'date-fns';
 import {
   LightBulbIcon,
   ExclamationTriangleIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   TrendingDownIcon,
   BoltIcon,
   EyeIcon,

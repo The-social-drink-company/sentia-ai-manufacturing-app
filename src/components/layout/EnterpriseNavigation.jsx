@@ -22,7 +22,7 @@ import {
   CloudIcon,
   WrenchScrewdriverIcon,
   DocumentDuplicateIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   BuildingStorefrontIcon,
   CalculatorIcon,
   ChartPieIcon,
@@ -182,7 +182,7 @@ const EnterpriseNavigation = () => {
         { 
           path: '/working-capital', 
           label: 'Working Capital', 
-          icon: ArrowTrendingUpIcon, 
+          icon: ArrowArrowTrendingUpIcon, 
           description: 'Cash flow and working capital analysis',
           keywords: ['working capital', 'cash flow', 'financial']
         },

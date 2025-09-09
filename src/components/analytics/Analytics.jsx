@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   ChartBarIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   CurrencyPoundIcon,
   ClockIcon,
   ArrowUpIcon,
@@ -200,7 +200,7 @@ const Analytics = () => {
         
         {renderMetricCard(
           'Net Profit',
-          ArrowTrendingUpIcon,
+          ArrowArrowTrendingUpIcon,
           data.profit.current,
           data.profit.previous,
           data.profit.change,

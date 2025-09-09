@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Line, Bar, Scatter } from 'react-chartjs-2';
 import {
   ChartBarIcon,
-  ArrowTrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   ExclamationTriangleIcon,
   LightBulbIcon,
   SparklesIcon,
@@ -188,7 +188,7 @@ const PredictiveAnalyticsDashboard = ({
   };
 
   const tabs = [
-    { id: 'predictions', label: 'Predictions', icon: ArrowTrendingUpIcon },
+    { id: 'predictions', label: 'Predictions', icon: ArrowArrowTrendingUpIcon },
     { id: 'anomalies', label: 'Anomalies', icon: ExclamationTriangleIcon },
     { id: 'optimizations', label: 'Optimizations', icon: LightBulbIcon },
     { id: 'insights', label: 'AI Insights', icon: SparklesIcon }

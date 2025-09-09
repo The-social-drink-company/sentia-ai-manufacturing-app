@@ -90,6 +90,8 @@
     "self-healing:start": "node scripts/enterprise-self-healing-agent.js",
     "self-healing:test": "node scripts/enterprise-self-healing-agent.js --test",
     "self-healing:status": "echo 'Enterprise Self-Healing Agent v2.0 - Mock Data Elimination Validation'",
+    "self-healing:deploy": "node scripts/deploy-self-healing-agent.js",
+    "self-healing:24x7": "node scripts/deploy-self-healing-agent.js",
     "test:autonomous": "playwright test --config=playwright.autonomous.config.js",
     "dev:clean": "rimraf node_modules/.vite dist",
     "dev:fresh": "npm run dev:clean && npm install && npm run dev",

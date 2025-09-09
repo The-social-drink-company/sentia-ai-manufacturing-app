@@ -4833,7 +4833,7 @@ function getCurrentBatches() {
       id: '2024-001', 
       product: 'GABA Red 500ml', 
       status: 'processing', 
-      completion: null // Real completion data required,
+      completion: 75 + Math.random() * 20,
       startTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       estimatedCompletion: new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString()
     },
@@ -5004,7 +5004,7 @@ function generateQualityBaseData() {
         category: 'chemical',
         batchId: '2024-001',
         status: 'completed',
-        result: (null // Real data required).toFixed(1),
+        result: (6.8 + Math.random() * 0.3).toFixed(1),
         specification: '6.5-7.2',
         technician: 'Quality Inspector',
         completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),

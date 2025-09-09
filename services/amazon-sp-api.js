@@ -4,22 +4,30 @@
 // Implementing fallback service with mock data until package is fixed
 let SellingPartnerApi = null;
 
-// Try to import the package, require real authentication if it fails
-try {
-  const pkg = await import('amazon-sp-api');
-  SellingPartnerApi = pkg.SellingPartnerApi || pkg.default;
-} catch (error) {
-  // Amazon SP-API package not available - FORCE real authentication required
-  console.error('❌ Amazon SP-API package not installed or configured. Please install: npm install amazon-sp-api');
-  SellingPartnerApi = class RequiredAuthSellingPartnerApi {
-    constructor(config) {
-      throw new Error('Amazon SP-API package not available. Please install: npm install amazon-sp-api and configure real credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN, AMAZON_SELLER_ID');
+// Dynamic import function to be called when needed
+async function importSellingPartnerApi() {
+  if (SellingPartnerApi !== null) return SellingPartnerApi;
+  
+  try {
+    const pkg = await import('amazon-sp-api');
+    SellingPartnerApi = pkg.SellingPartnerApi || pkg.default;
+    if (!SellingPartnerApi || typeof SellingPartnerApi !== 'function') {
+      throw new Error('SellingPartnerApi constructor not found in package');
     }
-    
-    async callAPI(operation) {
-      throw new Error(`Amazon SP-API real authentication required for operation: ${operation.operation}. Please configure real credentials and install package: npm install amazon-sp-api`);
-    }
-  };
+    return SellingPartnerApi;
+  } catch (error) {
+    console.error('❌ Amazon SP-API package not available:', error.message);
+    SellingPartnerApi = class RequiredAuthSellingPartnerApi {
+      constructor(config) {
+        throw new Error('Amazon SP-API package not available. Please install: npm install amazon-sp-api and configure real credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN, AMAZON_SELLER_ID');
+      }
+      
+      async callAPI(operation) {
+        throw new Error(`Amazon SP-API real authentication required for operation: ${operation.operation}. Please configure real credentials and install package: npm install amazon-sp-api`);
+      }
+    };
+    return SellingPartnerApi;
+  }
 }
 import { PrismaClient } from '@prisma/client';
 import redisCache from '../src/lib/redis.js';
@@ -47,12 +55,10 @@ class AmazonSPAPIService {
         throw new Error('Amazon SP-API authentication required. Please configure real Amazon SP-API credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN. No mock data will be returned.');
       }
 
-      // Check if SellingPartnerApi constructor is available
-      if (!SellingPartnerApi || typeof SellingPartnerApi !== 'function' || SellingPartnerApi.name === 'RequiredAuthSellingPartnerApi') {
-        throw new Error('Amazon SP-API package not available. Please install amazon-sp-api package and configure real credentials.');
-      }
+      // Dynamically import SellingPartnerApi
+      const SPAPIClass = await importSellingPartnerApi();
       
-      this.spApi = new SellingPartnerApi({
+      this.spApi = new SPAPIClass({
         region: this.credentials.region,
         refresh_token: this.credentials.refresh_token,
         credentials: {

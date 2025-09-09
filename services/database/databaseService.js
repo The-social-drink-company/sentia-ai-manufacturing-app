@@ -195,22 +195,22 @@ export class DatabaseService {
   async getWorkingCapitalData(companyId) {
     try {
       const [arData, apData, inventory, cashFlow] = await Promise.all([
-        this.prisma.accountsReceivable.findMany({
-          where: { companyId },
+        this.prisma.workingCapital.findMany({
+          where: { entity_id: companyId },
           orderBy: { dueDate: 'desc' },
           take: 100
         }),
-        this.prisma.accountsPayable.findMany({
-          where: { companyId },
+        this.prisma.workingCapital.findMany({
+          where: { entity_id: companyId },
           orderBy: { dueDate: 'desc' },
           take: 100
         }),
         this.prisma.inventoryLevel.findMany({
-          where: { companyId },
+          where: { entity_id: companyId },
           include: { product: true }
         }),
-        this.prisma.cashFlow.findMany({
-          where: { companyId },
+        this.prisma.workingCapital.findMany({
+          where: { entity_id: companyId },
           orderBy: { date: 'desc' },
           take: 90 // Last 90 days
         })

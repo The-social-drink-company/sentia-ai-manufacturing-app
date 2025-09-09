@@ -605,7 +605,7 @@ export class InventoryOptimizer {
 
     try {
       const inventoryLevels = await this.databaseService.prisma.inventoryLevel.findMany({
-        where: { companyId },
+        where: { entity_id: companyId },
         include: {
           product: true
         }

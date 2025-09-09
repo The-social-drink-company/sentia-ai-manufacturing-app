@@ -1910,39 +1910,13 @@ app.get('/api/data/status', authenticateUser, (req, res) => {
 // Analytics APIs (Enterprise AI-powered with Neon PostgreSQL)
 app.get('/api/kpis/realtime', async (req, res) => {
   try {
-    // Mock realtime KPI data that frontend expects
-    const realtimeData = {
-      production: {
-        efficiency: Math.round(Math.random() * 10 + 85), // 85-95%
-        unitsProduced: Math.round(Math.random() * 500 + 2000),
-        qualityScore: Math.round((Math.random() * 5 + 94) * 10) / 10 // 94-99%
-      },
-      sales: {
-        revenue: Math.round(Math.random() * 100000 + 500000),
-        orders: Math.round(Math.random() * 200 + 800),
-        fulfillment: Math.round(Math.random() * 5 + 95) // 95-100%
-      },
-      manufacturing: {
-        mixing: {
-          batchesInProgress: Math.round(Math.random() * 5 + 2),
-          efficiency: Math.round(Math.random() * 10 + 85),
-          qualityScore: Math.round((Math.random() * 5 + 94) * 10) / 10
-        },
-        bottling: {
-          unitsBottled: Math.round(Math.random() * 1000 + 5000),
-          efficiency: Math.round(Math.random() * 10 + 88),
-          qualityScore: Math.round((Math.random() * 4 + 95) * 10) / 10
-        },
-        warehousing: {
-          inventory: Math.round(Math.random() * 5000 + 15000),
-          efficiency: Math.round(Math.random() * 8 + 90),
-          qualityScore: Math.round((Math.random() * 3 + 96) * 10) / 10
-        }
-      },
-      timestamp: new Date().toISOString()
-    };
-    
-    res.json(realtimeData);
+    // NO MOCK DATA - Return error for missing real-time data integration
+    return res.status(503).json({
+      error: 'Real-time KPI data integration required',
+      message: 'Real-time KPI data requires integration with manufacturing systems, IoT sensors, and ERP systems. No mock data will be returned.',
+      requiredIntegrations: ['Manufacturing Systems', 'IoT Sensors', 'ERP Systems', 'Real-time Data Pipeline'],
+      action: 'Configure real-time data collection from production systems'
+    });
   } catch (error) {
     console.error('Realtime KPI error:', error);
     res.status(500).json({ error: 'Failed to fetch realtime KPIs' });

@@ -8,7 +8,7 @@ cmds = ['npm install']
 cmds = ['npm run build']
 
 [phases.start]
-cmd = 'npm start'
+cmd = 'node app.js'
 
 [variables]
 NODE_ENV = 'production'

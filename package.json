@@ -9,7 +9,7 @@
     "dev:server": "nodemon server.js",
     "dev:internal": "concurrently \"npm run dev:server\" \"npm run dev:client\" --names \"server,client\" --prefix-colors \"blue,green\"",
     "prebuild": "rimraf dist package-lock.json",
-    "build": "npm install && vite build",
+    "build": "vite build",
     "postbuild": "echo 'Build completed for Railway deployment' && ls -la dist/ && echo 'Assets:' && ls -la dist/assets/ || echo 'No assets directory found'",
     "build:force": "rimraf dist node_modules/.vite && vite build",
     "start": "NODE_OPTIONS=--disable-warning=DEP0040 node server.js",
@@ -270,7 +270,7 @@
     "tailwindcss": "^3.4.17",
     "terser": "^5.44.0",
     "typescript": "^5.3.0",
-    "vite": "^6.1.6",
+    "vite": "^5.4.0",
     "vitest": "^3.2.4"
   },
   "engines": {

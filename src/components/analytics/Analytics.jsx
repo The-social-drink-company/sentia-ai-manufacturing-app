@@ -14,13 +14,14 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 import { ChartJS } from '../../lib/chartSetup';
+import { formatCurrency, formatPercentage } from '../../utils/formatters';
 
 const Analytics = () => {
   const [analyticsData, setAnalyticsData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState('monthly')
   
-  // Fetch analytics data
+  // Fetch analytics data - REAL DATA ONLY
   useEffect(() => {
     const fetchAnalyticsData = async () => {
       try {
@@ -30,12 +31,12 @@ const Analytics = () => {
           const data = await response.json()
           setAnalyticsData(data)
         } else {
-          // Use mock data as fallback
-          setAnalyticsData(mockAnalyticsData)
+          console.error('Failed to fetch analytics data - API returned non-OK status')
+          setAnalyticsData(null)
         }
       } catch (error) {
         console.error('Failed to fetch analytics data:', error)
-        setAnalyticsData(mockAnalyticsData)
+        setAnalyticsData(null)
       } finally {
         setLoading(false)
       }
@@ -46,51 +47,7 @@ const Analytics = () => {
     return () => clearInterval(interval)
   }, [timeRange])
 
-  const mockAnalyticsData = {
-    revenue: {
-      current: 2800000,
-      previous: 2600000,
-      change: 7.7
-    },
-    profit: {
-      current: 700000,
-      previous: 580000,
-      change: 20.7
-    },
-    margins: {
-      current: 25.0,
-      previous: 22.3,
-      change: 2.7
-    },
-    efficiency: {
-      current: 89.2,
-      previous: 85.4,
-      change: 3.8
-    }
-  }
-  
-  const mockRevenueData = [
-    { month: 'Jan', revenue: 2400000, profit: 600000, margin: 25.0 },
-    { month: 'Feb', revenue: 2200000, profit: 550000, margin: 25.0 },
-    { month: 'Mar', revenue: 2800000, profit: 700000, margin: 25.0 },
-    { month: 'Apr', revenue: 3200000, profit: 800000, margin: 25.0 },
-    { month: 'May', revenue: 2900000, profit: 725000, margin: 25.0 },
-    { month: 'Jun', revenue: 3100000, profit: 775000, margin: 25.0 }
-  ]
-
-  const mockProductPerformance = [
-    { name: 'Sentia Red Premium', revenue: 1200000, margin: 28, units: 45000 },
-    { name: 'Sentia Gold Edition', revenue: 950000, margin: 32, units: 32000 },
-    { name: 'Sentia Blue Classic', revenue: 650000, margin: 22, units: 38000 },
-    { name: 'Limited Editions', revenue: 400000, margin: 35, units: 8000 }
-  ]
-
-  const mockCostBreakdown = [
-    { name: 'Raw Materials', value: 45, color: '#EF4444' },
-    { name: 'Labor', value: 25, color: '#F59E0B' },
-    { name: 'Overhead', value: 18, color: '#3B82F6' },
-    { name: 'Marketing', value: 12, color: '#10B981' }
-  ]
+  // All mock data removed - only real API data allowed
 
   if (loading) {
     return (
@@ -101,6 +58,48 @@ const Analytics = () => {
             {[...Array(4)].map((_, i) => (
               <div key={i} className="h-32 bg-gray-300 rounded"></div>
             ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state if no real data available
+  if (!analyticsData) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="text-center py-12">
+          <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-lg font-medium text-gray-900">Analytics API Not Available</h3>
+          <p className="mt-2 text-sm text-gray-500">
+            The analytics API endpoint <code className="bg-gray-100 px-2 py-1 rounded text-xs">/api/analytics/overview</code> is not responding.
+          </p>
+          <p className="mt-1 text-sm text-gray-500">
+            This could be due to:
+          </p>
+          <ul className="mt-2 text-sm text-gray-500 text-left max-w-md mx-auto">
+            <li>• Backend server not running (port conflicts)</li>
+            <li>• Database connection issues</li>
+            <li>• Missing API route implementation</li>
+            <li>• Authentication or permission issues</li>
+          </ul>
+          
+          <div className="mt-6 space-y-3">
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              Retry Connection
+            </button>
+            
+            <div>
+              <a
+                href="/api-status" 
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Check API Status
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -119,7 +118,8 @@ const Analytics = () => {
   };
 
   const formatPercentage = (value) => {
-    return `${value.toFixed(1)}%`;
+    // Percentages should be integers - no decimals
+    return `${Math.round(value)}%`;
   };
 
   const renderMetricCard = (title, icon, current, previous, change, isPercentage = false, isCurrency = false) => {
@@ -146,7 +146,7 @@ const Analytics = () => {
               <span className={`ml-1 text-sm font-medium ${
                 isPositive ? 'text-green-600' : 'text-red-600'
               }`}>
-                {Math.abs(change).toFixed(1)}%
+                {Math.round(Math.abs(change))}%
               </span>
               <span className="ml-1 text-sm text-gray-500">vs last {timeRange.slice(0, -2)}</span>
             </div>
@@ -239,7 +239,7 @@ const Analytics = () => {
           <div className="h-64">
             <ChartErrorBoundary>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={mockRevenueData}>
+                <AreaChart data={data?.revenueData || []}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -266,7 +266,7 @@ const Analytics = () => {
           <div className="h-64">
             <ChartErrorBoundary>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockRevenueData}>
+                <BarChart data={data?.revenueData || []}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -292,7 +292,7 @@ const Analytics = () => {
             <FunnelIcon className="h-5 w-5 text-gray-400" />
           </div>
           <div className="space-y-4">
-            {mockProductPerformance.map((product, index) => (
+            {(data?.productPerformance || []).map((product, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-900 dark:text-white text-sm">{product.name}</h4>
@@ -301,7 +301,7 @@ const Analytics = () => {
                     <span className="text-xs text-green-600">{product.margin}% margin</span>
                   </div>
                   <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs text-gray-500">{product.units.toLocaleString()} units</span>
+                    <span className="text-xs text-gray-500">{product.units?.toLocaleString() || 0} units</span>
                   </div>
                 </div>
               </div>
@@ -320,7 +320,7 @@ const Analytics = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={mockCostBreakdown}
+                    data={data?.costBreakdown || []}
                     cx="50%"
                     cy="50%"
                     outerRadius={70}
@@ -328,7 +328,7 @@ const Analytics = () => {
                     dataKey="value"
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   >
-                    {mockCostBreakdown.map((entry, index) => (
+                    {(data?.costBreakdown || []).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -346,45 +346,34 @@ const Analytics = () => {
             <PresentationChartLineIcon className="h-5 w-5 text-gray-400" />
           </div>
           <div className="space-y-4">
-            <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <div className="flex items-center">
-                <ArrowUpIcon className="h-4 w-4 text-green-600 mr-2" />
-                <span className="text-sm font-medium text-green-800 dark:text-green-200">Revenue Growth</span>
+            {(data?.insights || []).map((insight, index) => (
+              <div key={index} className={`p-3 ${insight.type === 'positive' ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : insight.type === 'negative' ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' : 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'} rounded-lg`}>
+                <div className="flex items-center">
+                  {insight.type === 'positive' ? (
+                    <ArrowUpIcon className="h-4 w-4 text-green-600 mr-2" />
+                  ) : insight.type === 'negative' ? (
+                    <ArrowDownIcon className="h-4 w-4 text-red-600 mr-2" />
+                  ) : (
+                    <ChartBarIcon className="h-4 w-4 text-blue-600 mr-2" />
+                  )}
+                  <span className={`text-sm font-medium ${insight.type === 'positive' ? 'text-green-800 dark:text-green-200' : insight.type === 'negative' ? 'text-red-800 dark:text-red-200' : 'text-blue-800 dark:text-blue-200'}`}>
+                    {insight.title}
+                  </span>
+                </div>
+                <p className={`text-sm mt-1 ${insight.type === 'positive' ? 'text-green-700 dark:text-green-300' : insight.type === 'negative' ? 'text-red-700 dark:text-red-300' : 'text-blue-700 dark:text-blue-300'}`}>
+                  {insight.description}
+                </p>
               </div>
-              <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                +7.7% increase this month driven by premium product sales
-              </p>
-            </div>
+            ))}
             
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <div className="flex items-center">
-                <ChartBarIcon className="h-4 w-4 text-blue-600 mr-2" />
-                <span className="text-sm font-medium text-blue-800 dark:text-blue-200">Margin Improvement</span>
+            {/* Show message if no real insights available */}
+            {(!data?.insights || data.insights.length === 0) && (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No insights available. Connect your analytics API to view business insights.
+                </p>
               </div>
-              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                Profit margins increased by 2.7 percentage points
-              </p>
-            </div>
-            
-            <div className="p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-              <div className="flex items-center">
-                <ClockIcon className="h-4 w-4 text-orange-600 mr-2" />
-                <span className="text-sm font-medium text-orange-800 dark:text-orange-200">Efficiency Gains</span>
-              </div>
-              <p className="text-sm text-orange-700 dark:text-orange-300 mt-1">
-                Operational efficiency up 3.8% through process optimization
-              </p>
-            </div>
-            
-            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-              <div className="flex items-center">
-                <CalendarIcon className="h-4 w-4 text-purple-600 mr-2" />
-                <span className="text-sm font-medium text-purple-800 dark:text-purple-200">Seasonal Trends</span>
-              </div>
-              <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
-                Q2 showing 15% higher demand vs historical averages
-              </p>
-            </div>
+            )}
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@
     "dev:client": "vite",
     "dev:server": "nodemon server.js",
     "dev:internal": "concurrently \"npm run dev:server\" \"npm run dev:client\" --names \"server,client\" --prefix-colors \"blue,green\"",
-    "prebuild": "rimraf dist || true",
+    "prebuild": "rimraf dist",
     "build": "vite build",
     "build:force": "rimraf dist node_modules/.vite && vite build",
     "start": "node server-production.js",
@@ -98,6 +98,7 @@
     "@auth/prisma-adapter": "^2.10.0",
     "@azure/msal-browser": "^4.22.0",
     "@azure/msal-react": "^3.0.19",
+    "@babel/runtime": "^7.28.4",
     "@clerk/clerk-react": "^5.46.1",
     "@clerk/clerk-sdk-node": "^5.1.6",
     "@dnd-kit/core": "^6.3.1",
@@ -125,7 +126,7 @@
     "@tanstack/react-query": "^5.87.1",
     "@tanstack/react-query-devtools": "^5.85.9",
     "amazon-sp-api": "^1.1.6",
-    "axios": "^1.5.0",
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "bullmq": "^5.58.4",
@@ -150,11 +151,17 @@
     "express-validator": "^7.2.1",
     "framer-motion": "^12.23.12",
     "helmet": "^8.1.0",
+    "html2canvas": "^1.4.1",
     "ioredis": "^5.7.0",
     "joi": "^18.0.1",
     "jotai": "^2.13.1",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^3.0.2",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.263.1",
+    "ml-kmeans": "^6.0.0",
+    "ml-matrix": "^6.12.1",
+    "ml-regression": "^6.3.0",
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
@@ -189,6 +196,7 @@
     "web-vitals": "^5.1.0",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1",
+    "ws": "^8.18.3",
     "xero-node": "^13.0.0",
     "xss": "^1.0.15",
     "zod": "^3.23.8",
@@ -266,6 +274,6 @@
     "vitest": "^3.2.4"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.12.0"
   }
 }

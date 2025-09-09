@@ -316,3 +316,77 @@ html {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: scale(1.1);
 }
+
+/* Enterprise Sidebar Styles */
+.enterprise-sidebar {
+  @apply fixed left-0 top-0 h-full w-64 bg-gray-900 text-white z-50;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+.enterprise-sidebar-header {
+  @apply p-6 border-b border-gray-800;
+}
+
+.enterprise-logo {
+  @apply w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg;
+}
+
+.enterprise-brand {
+  @apply text-white font-semibold text-base leading-tight;
+  color: white !important;
+}
+
+.enterprise-subtitle {
+  @apply text-gray-400 text-sm font-normal;
+  color: #9CA3AF !important;
+}
+
+.enterprise-nav {
+  @apply flex-1 overflow-y-auto py-4;
+}
+
+.enterprise-nav-section {
+  @apply mb-8;
+}
+
+.enterprise-section-title {
+  @apply px-6 mb-3 text-xs font-medium text-gray-400 uppercase tracking-wider;
+  letter-spacing: 0.05em;
+  color: #9CA3AF !important;
+}
+
+.enterprise-nav-items {
+  @apply space-y-1;
+}
+
+.enterprise-nav-item {
+  @apply flex items-center px-6 py-3 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors duration-200;
+  text-decoration: none;
+  color: #D1D5DB !important;
+}
+
+.enterprise-nav-item.active {
+  @apply bg-blue-600 text-white;
+  color: white !important;
+}
+
+.enterprise-nav-item:hover {
+  @apply bg-gray-800 text-white;
+  color: white !important;
+}
+
+.enterprise-nav-item.active:hover {
+  @apply bg-blue-700;
+  color: white !important;
+}
+
+.enterprise-nav-icon {
+  @apply w-5 h-5 mr-3 flex-shrink-0;
+  color: currentColor !important;
+}
+
+.enterprise-nav-label {
+  @apply flex-1;
+  color: currentColor !important;
+}

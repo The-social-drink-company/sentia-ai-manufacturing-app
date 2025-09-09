@@ -8,8 +8,14 @@ import {
   AlertCircle, CheckCircle, Sliders, Calculator, Target, Percent,
   ArrowUpDown, BarChart3, PieChart
 } from 'lucide-react';
+import DateContextEngine from '../../services/DateContextEngine';
+import CashConversionCycleEngine from '../../services/CashConversionCycleEngine';
 
 const WhatIfAnalysis = () => {
+  // Calendar-aware engines for realistic calculations
+  const [dateEngine] = useState(() => new DateContextEngine());
+  const [cccEngine] = useState(() => new CashConversionCycleEngine());
+  
   // Core scenario parameters with realistic defaults
   const [scenarios, setScenarios] = useState({
     rawMaterials: {
@@ -53,70 +59,107 @@ const WhatIfAnalysis = () => {
     eu: { revenue: 9800000, growth: 5, margin: 18, risk: 'Low' }
   });
 
-  // Calculated results based on current scenario
+  // Calendar-aware calculations based on current scenario
   const calculations = useMemo(() => {
     const { rawMaterials, manufacturing, inventory, sales, finance } = scenarios;
     
-    // Base revenue calculation
-    const baseRevenue = marketData.uk.revenue + marketData.us.revenue + marketData.eu.revenue;
-    
-    // Apply growth rates by market
-    const projectedRevenue = 
-      marketData.uk.revenue * (1 + sales.ukGrowth / 100) +
-      marketData.us.revenue * (1 + sales.usGrowth / 100) +
-      marketData.eu.revenue * (1 + sales.euGrowth / 100);
-    
-    // Manufacturing capacity impact
-    const capacityConstraint = manufacturing.capacity / 100;
-    const efficiencyFactor = manufacturing.efficiency / 100;
-    const actualCapacity = Math.min(1, capacityConstraint * efficiencyFactor);
-    
-    // Revenue adjusted for capacity constraints
-    const capacityAdjustedRevenue = projectedRevenue * actualCapacity;
-    
-    // Working capital components
-    const avgInventoryDays = (inventory.finishedGoods + inventory.rawMaterials + inventory.workInProcess) / 3;
-    const inventoryValue = (capacityAdjustedRevenue * 0.6) * (avgInventoryDays / 365); // 60% COGS assumption
-    
-    const receivablesValue = capacityAdjustedRevenue * (finance.collectionPeriod / 365);
-    const payablesValue = (capacityAdjustedRevenue * 0.4) * (finance.payablesPeriod / 365); // 40% of COGS
-    
-    const workingCapital = inventoryValue + receivablesValue - payablesValue;
-    
-    // Raw materials impact
-    const rawMaterialRisk = (100 - rawMaterials.availability) / 100;
-    const deliveryRisk = Math.max(0, (rawMaterials.deliveryTime - 10) / 20); // Risk increases with delivery time
-    const rawMaterialCostImpact = rawMaterials.costVariation / 100;
-    
-    // Cost of capital
-    const interestCost = workingCapital * (finance.interestRate / 100);
-    
-    // Seasonal working capital requirements
-    const seasonalPeak = workingCapital * (1 + sales.seasonality / 100);
-    const seasonalTrough = workingCapital * (1 - sales.seasonality / 200);
-    
-    // Risk assessment
-    const overallRisk = calculateRisk(rawMaterialRisk, deliveryRisk, actualCapacity);
-    
-    return {
-      projectedRevenue: Math.round(capacityAdjustedRevenue),
-      workingCapital: Math.round(workingCapital),
-      seasonalPeak: Math.round(seasonalPeak),
-      seasonalTrough: Math.round(seasonalTrough),
-      interestCost: Math.round(interestCost),
-      inventoryValue: Math.round(inventoryValue),
-      receivablesValue: Math.round(receivablesValue),
-      payablesValue: Math.round(payablesValue),
-      actualCapacity: Math.round(actualCapacity * 100),
-      rawMaterialRisk: Math.round(rawMaterialRisk * 100),
-      overallRisk,
-      recommendations: generateRecommendations(scenarios, {
-        workingCapital,
-        actualCapacity,
-        rawMaterialRisk
-      })
-    };
-  }, [scenarios, marketData]);
+    try {
+      // Get current business context
+      const context = dateEngine.getCurrentContext();
+      
+      // Calculate realistic Cash Conversion Cycle based on scenarios
+      const cccOptions = {
+        targetDSO: finance.collectionPeriod,
+        targetDPO: finance.payablesPeriod,
+        targetDIO: (inventory.finishedGoods + inventory.rawMaterials + inventory.workInProcess) / 3,
+        creditTerms: {
+          net15: 0.1,
+          net30: finance.collectionPeriod <= 30 ? 0.6 : 0.4,
+          net45: finance.collectionPeriod > 30 ? 0.4 : 0.2,
+          net60: finance.collectionPeriod > 45 ? 0.3 : 0.1
+        }
+      };
+      
+      const cccEngine = new CashConversionCycleEngine(cccOptions);
+      const cccResults = cccEngine.calculateCashConversionCycle({
+        annualRevenue: marketData.uk.revenue + marketData.us.revenue + marketData.eu.revenue,
+        annualCOGS: (marketData.uk.revenue + marketData.us.revenue + marketData.eu.revenue) * 0.65
+      });
+
+      // Apply growth rates by market with seasonal adjustments
+      const seasonalMultiplier = dateEngine.seasonalPatterns.getBusinessSeasonality(
+        context.currentMonth, 
+        context.currentQuarter
+      );
+      
+      const projectedRevenue = 
+        marketData.uk.revenue * (1 + sales.ukGrowth / 100) * seasonalMultiplier +
+        marketData.us.revenue * (1 + sales.usGrowth / 100) * seasonalMultiplier +
+        marketData.eu.revenue * (1 + sales.euGrowth / 100) * seasonalMultiplier;
+      
+      // Manufacturing capacity with realistic constraints
+      const capacityConstraint = manufacturing.capacity / 100;
+      const efficiencyFactor = manufacturing.efficiency / 100;
+      const downtimeImpact = (100 - manufacturing.downtime) / 100;
+      const actualCapacity = Math.min(1, capacityConstraint * efficiencyFactor * downtimeImpact);
+      
+      // Revenue adjusted for capacity and seasonal constraints
+      const capacityAdjustedRevenue = projectedRevenue * actualCapacity;
+      
+      // Working capital components based on CCC calculations
+      const workingCapital = cccResults.balanceSheetItems.receivables + 
+                            cccResults.balanceSheetItems.inventory - 
+                            cccResults.balanceSheetItems.payables;
+      
+      // Raw materials supply chain risk assessment
+      const rawMaterialRisk = (100 - rawMaterials.availability) / 100;
+      const deliveryRisk = Math.max(0, (rawMaterials.deliveryTime - 7) / 30); // Risk increases with delivery time
+      const supplychainRisk = (rawMaterialRisk + deliveryRisk) / 2;
+      
+      // Cost of capital based on working capital requirements
+      const interestCost = workingCapital * (finance.interestRate / 100);
+      
+      // Calendar-aware seasonal working capital requirements
+      const seasonalVariation = sales.seasonality / 100;
+      const isHighSeason = [10, 11, 12].includes(context.currentMonth); // Q4 high season
+      const seasonalPeak = workingCapital * (1 + seasonalVariation);
+      const seasonalTrough = workingCapital * (1 - seasonalVariation / 2);
+      
+      // Overall risk assessment with business calendar context
+      const operationalRisk = actualCapacity > 0.95 ? 0.8 : actualCapacity < 0.7 ? 0.6 : 0.3;
+      const overallRisk = Math.min(100, (supplychainRisk * 40 + operationalRisk * 30 + (finance.interestRate / 12) * 30) * 100);
+      
+      return {
+        projectedRevenue: Math.round(capacityAdjustedRevenue),
+        workingCapital: Math.round(workingCapital),
+        seasonalPeak: Math.round(seasonalPeak),
+        seasonalTrough: Math.round(seasonalTrough),
+        interestCost: Math.round(interestCost),
+        inventoryValue: Math.round(cccResults.balanceSheetItems.inventory),
+        receivablesValue: Math.round(cccResults.balanceSheetItems.receivables),
+        payablesValue: Math.round(cccResults.balanceSheetItems.payables),
+        actualCapacity: Math.round(actualCapacity * 100),
+        rawMaterialRisk: Math.round(supplychainRisk * 100),
+        overallRisk: Math.round(overallRisk),
+        cashConversionCycle: cccResults.cashConversionCycle,
+        cccComponents: cccResults.components,
+        seasonalMultiplier: Math.round(seasonalMultiplier * 100) / 100,
+        businessContext: context,
+        recommendations: generateCalendarAwareRecommendations(scenarios, {
+          workingCapital,
+          actualCapacity,
+          supplychainRisk,
+          cccResults,
+          context
+        })
+      };
+      
+    } catch (error) {
+      console.error('What-If Analysis calculation error:', error);
+      // Fallback to basic calculations if calendar engine fails
+      return generateFallbackCalculations(scenarios, marketData);
+    }
+  }, [scenarios, marketData, dateEngine, cccEngine]);
 
   // Generate time series data for charts
   const chartData = useMemo(() => {
@@ -689,6 +732,80 @@ const generateRecommendations = (scenarios, calculations) => {
       priority: 'low'
     }
   ];
+};
+
+// Helper functions for calendar-aware calculations
+const generateCalendarAwareRecommendations = (scenarios, calculations) => {
+  const { workingCapital, actualCapacity, supplychainRisk, cccResults, context } = calculations;
+  const recommendations = [];
+  
+  // Working capital optimization based on Cash Conversion Cycle
+  if (cccResults && cccResults.cashConversionCycle > (cccResults.benchmarks?.targetCCC || 45) + 10) {
+    recommendations.push({
+      type: 'cash-conversion',
+      priority: 'high',
+      message: `CCC of ${cccResults.cashConversionCycle.toFixed(1)} days exceeds target`,
+      impact: `Potential cash release: £${Math.round((cccResults.cashConversionCycle - 45) * 40000000 / 365).toLocaleString()}`
+    });
+  }
+  
+  // Seasonal working capital planning
+  if (context && [9, 10].includes(context.currentMonth)) {
+    recommendations.push({
+      type: 'seasonal',
+      priority: 'medium',
+      message: 'Q4 peak season approaching. Ensure adequate credit facilities.',
+      impact: `Additional WC needed: £${Math.round(workingCapital * 0.2).toLocaleString()}`
+    });
+  }
+  
+  // Capacity utilization based on current month
+  if (actualCapacity > 95 && context && [10, 11, 12].includes(context.currentMonth)) {
+    recommendations.push({
+      type: 'capacity',
+      priority: 'high',
+      message: 'Peak season capacity constraint detected.',
+      impact: 'Revenue at risk during peak demand period'
+    });
+  }
+  
+  return recommendations;
+};
+
+const generateFallbackCalculations = (scenarios, marketData) => {
+  // Basic fallback calculations if calendar engine fails
+  const { rawMaterials, manufacturing, inventory, sales, finance } = scenarios;
+  const baseRevenue = marketData.uk.revenue + marketData.us.revenue + marketData.eu.revenue;
+  
+  const projectedRevenue = baseRevenue * (1 + sales.ukGrowth / 200);
+  const actualCapacity = Math.min(100, (manufacturing.capacity * manufacturing.efficiency) / 100);
+  const workingCapital = projectedRevenue * 0.25;
+  
+  return {
+    projectedRevenue: Math.round(projectedRevenue),
+    workingCapital: Math.round(workingCapital),
+    seasonalPeak: Math.round(workingCapital * 1.2),
+    seasonalTrough: Math.round(workingCapital * 0.8),
+    interestCost: Math.round(workingCapital * finance.interestRate / 100),
+    inventoryValue: Math.round(workingCapital * 0.4),
+    receivablesValue: Math.round(workingCapital * 0.35),
+    payablesValue: Math.round(workingCapital * 0.25),
+    actualCapacity: Math.round(actualCapacity),
+    rawMaterialRisk: Math.round((100 - rawMaterials.availability)),
+    overallRisk: 50,
+    cashConversionCycle: 45,
+    cccComponents: { dso: 30, dio: 35, dpo: 20 },
+    seasonalMultiplier: 1.0,
+    businessContext: { currentDate: new Date().toISOString().split('T')[0] },
+    recommendations: [
+      {
+        type: 'fallback',
+        priority: 'medium',
+        message: 'Using simplified calculations. Full calendar analysis unavailable.',
+        impact: 'Limited scenario accuracy'
+      }
+    ]
+  };
 };
 
 export default WhatIfAnalysis;

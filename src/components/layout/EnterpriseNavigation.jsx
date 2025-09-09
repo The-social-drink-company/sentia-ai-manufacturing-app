@@ -119,11 +119,11 @@ const EnterpriseNavigation = () => {
         },
         { 
           path: '/working-capital/enhanced', 
-          label: 'Enhanced Working Capital', 
+          label: 'True Working Capital Requirements', 
           icon: BanknotesIcon, 
-          description: 'Advanced financial analysis with sliders',
-          badge: 'Pro',
-          keywords: ['working capital', 'financial', 'cash flow', 'sliders', 'enhanced']
+          description: 'Real-time calculations with live API data',
+          badge: 'Live',
+          keywords: ['working capital', 'financial', 'cash flow', 'requirements', 'real-time', 'api']
         },
         { 
           path: '/predictive-analytics', 

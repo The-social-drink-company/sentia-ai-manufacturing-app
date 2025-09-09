@@ -36,7 +36,7 @@ import { Badge } from '../ui/badge';
 import { Slider } from '../ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Progress } from '../ui/progress';
-import { Tooltip, HelpTooltip } from '../ui/tooltip';
+import { Tooltip, HelpTooltip } from '../ui/Tooltip';
 import {
   LineChart as RechartsLineChart,
   Line,

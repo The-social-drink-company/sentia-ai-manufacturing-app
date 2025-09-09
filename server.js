@@ -985,6 +985,7 @@ app.get('/api/shopify/dashboard-data', authenticateUser, async (req, res) => {
         requiredAPI: 'Shopify API',
         action: 'Configure Shopify API credentials'
       });
+    }
     res.json(shopifyData);
   } catch (error) {
     console.error('Shopify API error:', error);
@@ -1934,13 +1935,13 @@ app.get('/api/analytics/kpis', authenticateUser, async (req, res) => {
 });
 
 app.get('/api/analytics/trends', authenticateUser, async (req, res) => {
-  try {
-    const analysis = await aiAnalyticsService.analyzeProductionData(manufacturingData.production);
-    res.json(analysis.trends);
-  } catch (error) {
-    console.error('Trends calculation error:', error);
-    res.status(500).json({ error: 'Failed to calculate trends' });
-  }
+  // NO MOCK DATA - Analytics trends require real business intelligence data
+  return res.status(503).json({
+    error: 'Analytics trends integration required',
+    message: 'Real analytics trends require integration with ERP systems, financial databases, and business intelligence platforms. No mock data will be returned.',
+    requiredIntegrations: ['ERP Systems', 'Financial Database', 'Business Intelligence Platform', 'CRM System'],
+    action: 'Configure real business analytics data pipeline'
+  });
 });
 
 // Vector database AI insights

@@ -26,6 +26,8 @@ import compression from 'compression';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
+// import AICentralNervousSystem from './ai-orchestration/ai-central-nervous-system.js';
+// import UnifiedAPIInterface from './api-integrations/unified-api-interface.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,9 +71,17 @@ class SentiaEnterpriseMCPServer {
     this.availableTools = [];
     this.toolHandlers = new Map();
     
+    // Initialize AI Central Nervous System (disabled during setup)
+    // this.aiCentralNervousSystem = new AICentralNervousSystem();
+    
+    // Initialize Unified API Interface (disabled during setup)
+    // this.unifiedAPIInterface = new UnifiedAPIInterface();
+    
     this.setupMiddleware();
     this.initializeTools();
     this.setupWebSocketHandlers();
+    // this.initializeAICentralNervousSystem();
+    // this.initializeUnifiedAPIInterface();
   }
 
   setupMiddleware() {
@@ -122,8 +132,158 @@ class SentiaEnterpriseMCPServer {
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   }
 
+  async initializeAICentralNervousSystem() {
+    try {
+      logger.info('🧠 Initializing AI Central Nervous System integration...');
+      
+      // Connect AI system to WebSocket connections
+      this.aiCentralNervousSystem.on('ai-response', (response) => {
+        this.broadcastToAllClients({
+          jsonrpc: '2.0',
+          method: 'notifications/ai-response',
+          params: response
+        });
+      });
+      
+      this.aiCentralNervousSystem.on('ai-decision', (decision) => {
+        this.broadcastToAllClients({
+          jsonrpc: '2.0',
+          method: 'notifications/ai-decision',
+          params: decision
+        });
+      });
+      
+      // Add AI system WebSocket connections to our connection pool
+      this.wss.on('connection', (ws) => {
+        this.aiCentralNervousSystem.addWebSocketConnection(ws);
+      });
+      
+      logger.info('✅ AI Central Nervous System integrated successfully');
+    } catch (error) {
+      logger.error('❌ Failed to initialize AI Central Nervous System:', error);
+    }
+  }
+
+  async initializeUnifiedAPIInterface() {
+    try {
+      logger.info('🔌 Initializing Unified API Interface integration...');
+      
+      // Connect API interface events to our WebSocket broadcast
+      this.unifiedAPIInterface.on('data-sync-complete', (data) => {
+        this.broadcastToAllClients({
+          jsonrpc: '2.0',
+          method: 'notifications/api-sync-complete',
+          params: data
+        });
+      });
+      
+      this.unifiedAPIInterface.on('data-sync-error', (error) => {
+        this.broadcastToAllClients({
+          jsonrpc: '2.0',
+          method: 'notifications/api-sync-error',
+          params: error
+        });
+      });
+      
+      logger.info('✅ Unified API Interface integrated successfully');
+    } catch (error) {
+      logger.error('❌ Failed to initialize Unified API Interface:', error);
+    }
+  }
+
+  broadcastToAllClients(message) {
+    const messageStr = JSON.stringify(message);
+    this.activeConnections.forEach(ws => {
+      if (ws.readyState === 1) { // WebSocket.OPEN
+        try {
+          ws.send(messageStr);
+        } catch (error) {
+          logger.error('Failed to broadcast to client:', error);
+        }
+      }
+    });
+  }
+
   initializeTools() {
-    logger.info('Initializing enterprise MCP tools');
+    logger.info('Initializing enterprise MCP tools with AI integration');
+    
+    // AI-POWERED CENTRAL NERVOUS SYSTEM TOOLS (disabled during setup)
+    /*
+    this.registerTool({
+      name: 'ai_manufacturing_request',
+      description: 'Process any manufacturing request through AI Central Nervous System',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Natural language query or request' },
+          type: { type: 'string', description: 'Request type (analysis, optimization, forecasting, decision)' },
+          llmProvider: { type: 'string', enum: ['claude', 'gpt4', 'gemini', 'local'], description: 'Preferred AI provider' },
+          capabilities: { 
+            type: 'array', 
+            items: { type: 'string' },
+            description: 'Required capabilities (reasoning, coding, analysis, manufacturing-intelligence)'
+          }
+        },
+        required: ['query', 'type']
+      },
+      handler: this.handleAIManufacturingRequest.bind(this)
+    });
+
+    this.registerTool({
+      name: 'ai_system_status',
+      description: 'Get comprehensive AI Central Nervous System status',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          includeMetrics: { type: 'boolean', description: 'Include performance metrics', default: true }
+        }
+      },
+      handler: this.handleAISystemStatus.bind(this)
+    });
+
+    // UNIFIED API INTERFACE TOOLS (disabled during setup)
+    this.registerTool({
+      name: 'unified_api_call',
+      description: 'Make API calls through the unified interface to any connected service',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          serviceId: { type: 'string', description: 'Service ID (xero-accounting, amazon-sp-api, shopify-multistore, etc.)' },
+          endpoint: { type: 'string', description: 'API endpoint path' },
+          method: { type: 'string', enum: ['GET', 'POST', 'PUT', 'DELETE'], default: 'GET' },
+          data: { type: 'object', description: 'Request data for POST/PUT requests' }
+        },
+        required: ['serviceId', 'endpoint']
+      },
+      handler: this.handleUnifiedAPICall.bind(this)
+    });
+
+    this.registerTool({
+      name: 'get_api_system_status',
+      description: 'Get comprehensive status of all connected APIs and services',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          includeMetrics: { type: 'boolean', description: 'Include detailed metrics', default: true }
+        }
+      },
+      handler: this.handleAPISystemStatus.bind(this)
+    });
+
+    this.registerTool({
+      name: 'sync_service_data',
+      description: 'Manually trigger data synchronization for a specific service',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          serviceId: { type: 'string', description: 'Service ID to synchronize' },
+          force: { type: 'boolean', description: 'Force sync even if recently synced', default: false }
+        },
+        required: ['serviceId']
+      },
+      handler: this.handleSyncServiceData.bind(this)
+    });
+    */
     
     // MANUFACTURING CORE TOOLS
     this.registerTool({
@@ -429,6 +589,143 @@ class SentiaEnterpriseMCPServer {
         }
       ]
     };
+  }
+
+  // AI Central Nervous System tool handlers
+  async handleAIManufacturingRequest({ query, type, llmProvider, capabilities = [] }) {
+    try {
+      logger.info('Processing AI manufacturing request through Central Nervous System', { query, type, llmProvider });
+      
+      const request = {
+        query,
+        type,
+        preferredProvider: llmProvider,
+        capabilities: capabilities.length > 0 ? capabilities : ['manufacturing-intelligence', 'reasoning'],
+        timestamp: new Date().toISOString()
+      };
+      
+      const result = await this.aiCentralNervousSystem.processAIRequest(request);
+      
+      return {
+        success: true,
+        result,
+        aiProvider: result.provider,
+        confidence: result.confidence,
+        responseTime: result.responseTime
+      };
+      
+    } catch (error) {
+      logger.error('AI manufacturing request failed:', error);
+      return {
+        success: false,
+        error: error.message,
+        query,
+        type
+      };
+    }
+  }
+
+  async handleAISystemStatus({ includeMetrics = true }) {
+    try {
+      logger.info('Retrieving AI Central Nervous System status');
+      
+      const status = await this.aiCentralNervousSystem.getSystemStatus();
+      
+      return {
+        success: true,
+        aiCentralNervousSystem: status,
+        mcpServerStatus: {
+          activeConnections: this.activeConnections.size,
+          authenticatedClients: this.authenticatedClients.size,
+          availableTools: this.availableTools.length
+        },
+        timestamp: new Date().toISOString()
+      };
+      
+    } catch (error) {
+      logger.error('Failed to get AI system status:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // Unified API Interface tool handlers
+  async handleUnifiedAPICall({ serviceId, endpoint, method = 'GET', data }) {
+    try {
+      logger.info('Making unified API call', { serviceId, endpoint, method });
+      
+      const result = await this.unifiedAPIInterface.makeUnifiedAPICall(serviceId, endpoint, {
+        method,
+        data
+      });
+      
+      return {
+        success: result.success,
+        serviceId,
+        endpoint,
+        method,
+        data: result.data,
+        responseTime: result.responseTime,
+        status: result.status,
+        error: result.error
+      };
+      
+    } catch (error) {
+      logger.error('Unified API call failed:', error);
+      return {
+        success: false,
+        error: error.message,
+        serviceId,
+        endpoint
+      };
+    }
+  }
+
+  async handleAPISystemStatus({ includeMetrics = true }) {
+    try {
+      logger.info('Retrieving API system status');
+      
+      const status = await this.unifiedAPIInterface.getUnifiedSystemStatus();
+      
+      return {
+        success: true,
+        unifiedAPIInterface: status,
+        timestamp: new Date().toISOString()
+      };
+      
+    } catch (error) {
+      logger.error('Failed to get API system status:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async handleSyncServiceData({ serviceId, force = false }) {
+    try {
+      logger.info('Manually syncing service data', { serviceId, force });
+      
+      // Trigger manual sync
+      await this.unifiedAPIInterface.syncServiceData(serviceId);
+      
+      return {
+        success: true,
+        serviceId,
+        message: `Data synchronization initiated for service: ${serviceId}`,
+        timestamp: new Date().toISOString()
+      };
+      
+    } catch (error) {
+      logger.error('Manual sync failed:', error);
+      return {
+        success: false,
+        error: error.message,
+        serviceId
+      };
+    }
   }
 
   // Tool implementation methods
@@ -853,6 +1150,16 @@ class SentiaEnterpriseMCPServer {
 
   async shutdown() {
     logger.info('Shutting down Enterprise MCP Server');
+    
+    // Shutdown AI Central Nervous System
+    if (this.aiCentralNervousSystem) {
+      await this.aiCentralNervousSystem.shutdown();
+    }
+    
+    // Shutdown Unified API Interface
+    if (this.unifiedAPIInterface) {
+      await this.unifiedAPIInterface.shutdown();
+    }
     
     // Close all active connections
     this.activeConnections.forEach(connection => {

@@ -4575,12 +4575,46 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   etag: false
 }));
 
-// Simple test endpoint to verify routes are working
+// Comprehensive build debugging endpoint
 app.get('/api/test-simple', (req, res) => {
+  const distPath = path.join(__dirname, 'dist');
+  let distInfo = {};
+  
+  try {
+    const distStats = fs.statSync(distPath);
+    const distFiles = fs.readdirSync(distPath);
+    
+    distInfo = {
+      exists: true,
+      isDirectory: distStats.isDirectory(),
+      totalFiles: distFiles.length,
+      indexHtmlExists: distFiles.includes('index.html'),
+      assetsExists: fs.existsSync(path.join(distPath, 'assets')),
+      sampleFiles: distFiles.slice(0, 10),
+      indexHtmlSize: fs.existsSync(path.join(distPath, 'index.html')) 
+        ? fs.statSync(path.join(distPath, 'index.html')).size 
+        : 0
+    };
+    
+    if (distInfo.assetsExists) {
+      const assetsFiles = fs.readdirSync(path.join(distPath, 'assets'));
+      distInfo.assetsCount = assetsFiles.length;
+      distInfo.mainJSExists = assetsFiles.some(f => f.startsWith('index-') && f.endsWith('.js'));
+      distInfo.sampleAssets = assetsFiles.slice(0, 5);
+    }
+  } catch (error) {
+    distInfo = { exists: false, error: error.message };
+  }
+  
   res.json({ 
     message: 'Route registration is working!', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'production'
+    environment: process.env.NODE_ENV || 'production',
+    workingDirectory: __dirname,
+    railwayEnvironment: process.env.RAILWAY_ENVIRONMENT || 'not-set',
+    distInfo: distInfo,
+    viteClerKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'present' : 'missing',
+    nodeEnv: process.env.NODE_ENV
   });
 });
 

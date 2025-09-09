@@ -32,3 +32,10 @@ cmds = [
 
 [start]
 cmd = "node server.js"
+
+# Health check configuration - CRITICAL for Railway deployment
+[healthcheck]
+path = "/api/health"
+port = "${PORT:-8080}"
+timeout = "30s"
+interval = "15s"

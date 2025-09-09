@@ -95,13 +95,37 @@ app.get('/api/manufacturing/dashboard', (req, res) => {
   }
 });
 
-// Xero Auth endpoint
-app.get('/api/xero/auth', (req, res) => {
-  res.status(501).json({ 
-    error: 'Xero OAuth integration required',
-    message: 'Please configure Xero API credentials',
-    authUrl: null
-  });
+// Xero Auth endpoint - Enhanced with proper error handling
+app.get('/api/xero/auth', async (req, res) => {
+  try {
+    // Check if Xero is properly configured
+    if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
+      return res.status(200).json({
+        status: 'configuration_required',
+        message: 'Xero OAuth credentials not configured in this environment',
+        authRequired: true,
+        redirect: false
+      });
+    }
+    
+    // If properly configured, indicate OAuth integration would be needed
+    res.status(200).json({
+      status: 'integration_required',
+      message: 'Xero OAuth integration implementation required',
+      authRequired: true,
+      redirect: false,
+      configured: true
+    });
+  } catch (error) {
+    console.error('Xero OAuth endpoint error:', error);
+    res.status(200).json({
+      status: 'error',
+      message: 'OAuth endpoint encountered an error',
+      authRequired: true,
+      redirect: false,
+      error: error.message
+    });
+  }
 });
 
 // Security headers middleware

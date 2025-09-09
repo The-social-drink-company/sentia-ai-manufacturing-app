@@ -4,30 +4,21 @@
 // Implementing fallback service with mock data until package is fixed
 let SellingPartnerApi = null;
 
-// Try to import the package, fallback to mock implementation if it fails
+// Try to import the package, require real authentication if it fails
 try {
   const pkg = await import('amazon-sp-api');
-  SellingPartnerApi = pkg.SellingPartnerApi;
+  SellingPartnerApi = pkg.SellingPartnerApi || pkg.default;
 } catch (error) {
-  // Amazon SP-API package not available, using mock implementation
-  // Mock implementation for development/testing
-  SellingPartnerApi = class MockSellingPartnerApi {
+  // Amazon SP-API package not available - FORCE real authentication required
+  console.error('❌ Amazon SP-API package not installed or configured. Please install: npm install amazon-sp-api');
+  SellingPartnerApi = class RequiredAuthSellingPartnerApi {
     constructor(config) {
       this.config = config;
     }
     
     async callAPI(operation) {
-      // Return mock data based on operation
-      const mockResponses = {
-        getOrders: {
-          Orders: [
-            { AmazonOrderId: 'AMZ-001', PurchaseDate: new Date().toISOString(), OrderTotal: { Amount: '150.00' } },
-            { AmazonOrderId: 'AMZ-002', PurchaseDate: new Date().toISOString(), OrderTotal: { Amount: '89.50' } }
-          ]
-        },
-        getInventorySummaries: {
-          InventorySummaries: [
-            { ASIN: 'B001', SellerSKU: 'SENTIA-RED-001', TotalQuantity: 150 },
+      // FORCE REAL AUTHENTICATION REQUIRED - No mock data allowed
+      throw new Error(`Amazon SP-API real authentication required for operation: ${operation.operation}. Please configure: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN, AMAZON_SELLER_ID. Install package: npm install amazon-sp-api`);
             { ASIN: 'B002', SellerSKU: 'SENTIA-BLACK-001', TotalQuantity: 89 }
           ]
         }

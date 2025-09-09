@@ -8105,6 +8105,27 @@ const staticPath = path.join(__dirname, 'dist');
 console.log(`[DEBUG] Static files path: ${staticPath}`);
 console.log(`[DEBUG] Static files exist:`, fs.existsSync(staticPath));
 
+// List contents of dist directory for debugging
+if (fs.existsSync(staticPath)) {
+  try {
+    const distContents = fs.readdirSync(staticPath);
+    console.log(`[DEBUG] Dist directory contents:`, distContents);
+    
+    // Check for assets directory
+    const assetsPath = path.join(staticPath, 'assets');
+    if (fs.existsSync(assetsPath)) {
+      const assetsContents = fs.readdirSync(assetsPath);
+      console.log(`[DEBUG] Assets directory contents (first 10):`, assetsContents.slice(0, 10));
+    } else {
+      console.log(`[DEBUG] Assets directory does not exist: ${assetsPath}`);
+    }
+  } catch (error) {
+    console.error(`[DEBUG] Error reading dist directory:`, error.message);
+  }
+} else {
+  console.log(`[DEBUG] Dist directory does not exist`);
+}
+
 // CRITICAL FIX: Explicitly handle assets before express.static
 app.get('/assets/*', (req, res) => {
   const assetPath = path.join(__dirname, 'dist', req.path);

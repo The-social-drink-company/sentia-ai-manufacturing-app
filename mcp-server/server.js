@@ -7,7 +7,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { XeroApi } from 'xero-node';
+import pkg from 'xero-node';
+const { XeroClient } = pkg;
 
 dotenv.config();
 
@@ -40,11 +41,18 @@ app.use(express.json());
 let xeroClient = null;
 try {
   if (process.env.XERO_CLIENT_ID && process.env.XERO_CLIENT_SECRET) {
-    xeroClient = new XeroApi({
+    xeroClient = new XeroClient({
       clientId: process.env.XERO_CLIENT_ID,
       clientSecret: process.env.XERO_CLIENT_SECRET,
       redirectUris: [process.env.XERO_REDIRECT_URI || 'https://sentia-mcp-server.railway.app/callback'],
-      scopes: 'accounting.transactions accounting.contacts accounting.settings'
+      scopes: [
+        'openid',
+        'profile',
+        'email',
+        'accounting.transactions',
+        'accounting.contacts',
+        'accounting.settings'
+      ]
     });
   }
 } catch (error) {

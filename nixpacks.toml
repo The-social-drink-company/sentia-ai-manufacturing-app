@@ -8,8 +8,9 @@ cmds = ['npm install --production=false']
 cmds = ['npm run build']
 
 [phases.start]
-cmd = 'node server.js'
+cmd = 'node start-production.js'
 
 [variables]
 NODE_ENV = 'production'
 PORT = '$PORT'
+MCP_PORT = '9001'

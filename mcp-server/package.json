@@ -9,7 +9,7 @@
     "start:legacy": "node server.js",
     "dev": "nodemon enterprise-server-simple.js",
     "test": "node -e \"console.log('Testing enterprise MCP server...'); import('./enterprise-server-simple.js').then(() => console.log('Server loaded successfully')).catch(console.error)\"",
-    "health": "curl -s http://localhost:7000/health || echo 'Server not running'",
+    "health": "curl -s http://localhost:9000/health || echo 'Server not running'",
     "build": "echo 'No build step required for Node.js server'"
   },
   "dependencies": {

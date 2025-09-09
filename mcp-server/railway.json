@@ -18,7 +18,7 @@
     "development": {
       "variables": {
         "NODE_ENV": "development",
-        "PORT": 7000,
+        "PORT": 9000,
         "LOG_LEVEL": "debug",
         "JWT_SECRET": "sentia-mcp-secret-key"
       }
@@ -26,7 +26,7 @@
     "testing": {
       "variables": {
         "NODE_ENV": "test",
-        "PORT": 7000,
+        "PORT": 9000,
         "LOG_LEVEL": "info",
         "JWT_SECRET": "sentia-mcp-secret-key"
       }
@@ -34,7 +34,7 @@
     "production": {
       "variables": {
         "NODE_ENV": "production",
-        "PORT": 7000,
+        "PORT": 9000,
         "LOG_LEVEL": "info",
         "JWT_SECRET": "sentia-mcp-secret-key"
       }

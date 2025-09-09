@@ -106,7 +106,7 @@ class SentiaEnterpriseMCPServer {
         'https://sentia-manufacturing-dashboard-production.up.railway.app',
         'https://web-production-1f10.up.railway.app',
         'http://localhost:3000',
-        'http://localhost:3001',
+        'http://localhost:9000',
         'http://localhost:5000',
         'http://localhost:8080'
       ],
@@ -1124,7 +1124,7 @@ class SentiaEnterpriseMCPServer {
 
   // Server lifecycle
   async start() {
-    const port = process.env.PORT || 7000;
+    const port = process.env.PORT || 9000;
     
     // Setup HTTP endpoints
     this.setupHTTPEndpoints();

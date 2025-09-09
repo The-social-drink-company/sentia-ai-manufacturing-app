@@ -1,0 +1,13 @@
+# Railway ignore file for MCP server deployment
+# Prevent deploying parent directory files
+
+../*
+!../package.json
+node_modules/
+.env
+.env.*
+*.log
+logs/
+.DS_Store
+.git/
+.gitignore

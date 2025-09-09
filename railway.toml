@@ -5,4 +5,4 @@ builder = "NIXPACKS"
 startCommand = "node server.js"
 
 [environments.production.variables]
-FORCE_REBUILD = "2025-09-09-15-30-TOOLTIP-FIX-FINAL"
+FORCE_REBUILD = "2025-09-09-16-00-PRODUCTION-DATA-ONLY"

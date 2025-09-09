@@ -5,7 +5,7 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   TruckIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ClockIcon,
   MagnifyingGlassIcon,
@@ -724,7 +724,7 @@ const AdvancedInventoryManagement = () => {
                   movement.type === 'in' ? 'bg-green-100 dark:bg-green-900/20' : 'bg-red-100 dark:bg-red-900/20'
                 }`}>
                   {movement.type === 'in' ? (
-                    <ArrowArrowTrendingUpIcon className={`h-4 w-4 ${
+                    <ArrowTrendingUpIcon className={`h-4 w-4 ${
                       movement.type === 'in' ? 'text-green-600' : 'text-red-600'
                     }`} />
                   ) : (

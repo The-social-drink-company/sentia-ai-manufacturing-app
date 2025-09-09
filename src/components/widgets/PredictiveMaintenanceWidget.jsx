@@ -9,7 +9,7 @@ import {
   ChartBarIcon,
   BoltIcon,
   Cog6ToothIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Tooltip, Legend } from 'recharts';
@@ -302,7 +302,7 @@ const PredictiveMaintenanceWidget = React.memo(() => {
           
           <div className="bg-white p-3 rounded-lg border">
             <div className="flex items-center">
-              <ArrowArrowTrendingUpIcon className="h-5 w-5 text-green-600 mr-2" />
+              <ArrowTrendingUpIcon className="h-5 w-5 text-green-600 mr-2" />
               <div>
                 <p className="text-xs font-medium text-gray-500">Est. Cost</p>
                 <p className="text-lg font-bold text-green-600">{formatCurrency(predictionsData.estimatedTotalCost)}</p>

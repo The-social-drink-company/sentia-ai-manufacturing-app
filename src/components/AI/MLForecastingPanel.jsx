@@ -3,7 +3,7 @@ import {
   ChartBarIcon,
   CpuChipIcon,
   LightBulbIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   BeakerIcon,
   SparklesIcon,
@@ -93,7 +93,7 @@ const MLForecastingPanel = ({ forecastData, className = "" }) => {
     prophet: {
       name: 'Facebook Prophet',
       description: 'Advanced statistical forecasting',
-      icon: <ArrowArrowTrendingUpIcon className="h-5 w-5" />,
+      icon: <ArrowTrendingUpIcon className="h-5 w-5" />,
       color: '#ef4444',
       features: ['Holiday effects', 'Trend changes', 'Seasonal patterns']
     }
@@ -157,7 +157,7 @@ const MLForecastingPanel = ({ forecastData, className = "" }) => {
                 <p className="text-sm text-green-600">Accuracy</p>
                 <p className="text-2xl font-bold text-green-900">{getCurrentMetrics().accuracy}%</p>
               </div>
-              <ArrowArrowTrendingUpIcon className="h-8 w-8 text-green-500" />
+              <ArrowTrendingUpIcon className="h-8 w-8 text-green-500" />
             </div>
           </div>
 

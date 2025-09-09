@@ -7,7 +7,7 @@ import {
   ChartBarIcon,
   AdjustmentsHorizontalIcon,
   ClockIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
@@ -231,7 +231,7 @@ const EnhancedAIForecasting = () => {
   const getInsightIcon = (type) => {
     switch (type) {
       case 'trend':
-        return <ArrowArrowTrendingUpIcon className="h-5 w-5" />;
+        return <ArrowTrendingUpIcon className="h-5 w-5" />;
       case 'anomaly':
         return <ExclamationTriangleIcon className="h-5 w-5" />;
       case 'optimization':
@@ -582,11 +582,11 @@ const EnhancedAIForecasting = () => {
                   'bg-gray-100 dark:bg-gray-600'
                 }`}>
                   {factor.trend === 'positive' ? (
-                    <ArrowArrowTrendingUpIcon className="h-4 w-4 text-green-600" />
+                    <ArrowTrendingUpIcon className="h-4 w-4 text-green-600" />
                   ) : factor.trend === 'negative' ? (
                     <ArrowTrendingDownIcon className="h-4 w-4 text-red-600" />
                   ) : (
-                    <ArrowArrowTrendingUpIcon className="h-4 w-4 text-gray-600" />
+                    <ArrowTrendingUpIcon className="h-4 w-4 text-gray-600" />
                   )}
                 </div>
                 <div>

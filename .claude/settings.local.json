@@ -242,7 +242,8 @@
       "Bash(start http://localhost:6000)",
       "Bash(set NODE_ENV=development)",
       "Bash(set PORT=6002)",
-      "Bash(PORT=6001 timeout 10s node server.js)"
+      "Bash(PORT=6001 timeout 10s node server.js)",
+      "Bash(start http://localhost:3002/dashboard/basic)"
     ],
     "deny": [],
     "ask": []

@@ -11,7 +11,7 @@ import {
   ShieldCheckIcon,
   ClipboardDocumentCheckIcon,
   BellAlertIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   CalendarDaysIcon,
   UserIcon,
@@ -434,7 +434,7 @@ const QualityManagementSystem = () => {
               </p>
               <div className="flex items-center mt-2">
                 {data.overview.trendDirection === 'up' ? (
-                  <ArrowArrowTrendingUpIcon className="h-4 w-4 text-green-500" />
+                  <ArrowTrendingUpIcon className="h-4 w-4 text-green-500" />
                 ) : (
                   <ArrowTrendingDownIcon className="h-4 w-4 text-red-500" />
                 )}
@@ -607,7 +607,7 @@ const QualityManagementSystem = () => {
                     'text-gray-600'
                   }`}>
                     {category.trend === 'up' ? (
-                      <ArrowArrowTrendingUpIcon className="h-4 w-4" />
+                      <ArrowTrendingUpIcon className="h-4 w-4" />
                     ) : category.trend === 'down' ? (
                       <ArrowTrendingDownIcon className="h-4 w-4" />
                     ) : (

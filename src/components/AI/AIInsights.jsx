@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LightBulbIcon,
   SparklesIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
@@ -81,9 +81,9 @@ const AIInsights = () => {
       case 'opportunity': return LightBulbIcon
       case 'alert': return ExclamationTriangleIcon
       case 'insight': return SparklesIcon
-      case 'prediction': return ArrowArrowTrendingUpIcon
+      case 'prediction': return ArrowTrendingUpIcon
       case 'optimization': return ChartBarIcon
-      case 'forecast': return ArrowArrowTrendingUpIcon
+      case 'forecast': return ArrowTrendingUpIcon
       default: return CpuChipIcon
     }
   }
@@ -216,7 +216,7 @@ const AIInsights = () => {
                           
                           {insight.estimatedSavings && (
                             <div className="flex items-center">
-                              <ArrowArrowTrendingUpIcon className="w-4 h-4 text-green-500 mr-1" />
+                              <ArrowTrendingUpIcon className="w-4 h-4 text-green-500 mr-1" />
                               <span className="text-gray-600">
                                 Est. Savings: £{insight.estimatedSavings.toLocaleString()}
                               </span>

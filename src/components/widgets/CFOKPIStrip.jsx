@@ -10,7 +10,7 @@ import {
   CurrencyDollarIcon,
   BanknotesIcon,
   BuildingOfficeIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   GlobeAltIcon
 } from '@heroicons/react/24/outline'
@@ -57,7 +57,7 @@ const CFOKPICard = ({
     )
   }
   
-  const TrendIcon = changeType === 'positive' ? ArrowArrowTrendingUpIcon : 
+  const TrendIcon = changeType === 'positive' ? ArrowTrendingUpIcon : 
                    changeType === 'negative' ? ArrowTrendingDownIcon : null
   
   // Format value with Intl API for proper localization
@@ -248,7 +248,7 @@ const CFOKPIStrip = ({ timeRange = '90d', currency = 'GBP', region = 'consolidat
         status: workingCapital?.wcUnlockedQTD > 200000 ? 'excellent' :
                 workingCapital?.wcUnlockedQTD > 100000 ? 'good' :
                 workingCapital?.wcUnlockedQTD > 50000 ? 'warning' : 'neutral',
-        icon: ArrowArrowTrendingUpIcon,
+        icon: ArrowTrendingUpIcon,
         target: hasBenchmarks ? 250000 : null
       },
       {

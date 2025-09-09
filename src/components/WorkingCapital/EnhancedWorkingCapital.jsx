@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { 
   BanknotesIcon, 
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ChartBarIcon,
   ExclamationTriangleIcon,
   ClockIcon,
@@ -149,7 +149,7 @@ const EnhancedWorkingCapital = () => {
                 disabled={loading || refreshing}
                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
-                <ArrowArrowTrendingUpIcon className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                <ArrowTrendingUpIcon className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 {refreshing ? 'Updating...' : 'Refresh Data'}
               </button>
             </div>

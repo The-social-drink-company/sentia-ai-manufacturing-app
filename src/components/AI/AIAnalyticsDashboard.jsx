@@ -5,7 +5,7 @@ import { useUser, useAuth } from '@clerk/clerk-react';
 
 import {
   CpuChipIcon as Brain, 
-  ArrowArrowTrendingUpIcon as TrendingUp, 
+  ArrowTrendingUpIcon as TrendingUp, 
   ExclamationTriangleIcon as AlertTriangle, 
   ViewfinderCircleIcon as Target,
   ChartBarIcon as BarChart3, 

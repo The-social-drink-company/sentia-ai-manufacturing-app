@@ -9,7 +9,7 @@ import {
   PresentationChartLineIcon,
   CogIcon,
   BuildingOfficeIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   DocumentTextIcon,
   UserGroupIcon,
@@ -120,7 +120,7 @@ const EnterpriseKPICard = ({ title, value, change, trend, icon: Icon, descriptio
       {trend && (
         <div className={`flex items-center space-x-1 ${trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-600'}`}>
           {trend === 'up' ? (
-            <ArrowArrowTrendingUpIcon className="w-4 h-4" />
+            <ArrowTrendingUpIcon className="w-4 h-4" />
           ) : trend === 'down' ? (
             <ArrowTrendingDownIcon className="w-4 h-4" />
           ) : null}
@@ -227,7 +227,7 @@ const ExecutiveDashboard = ({ dashboardData, onNavigate }) => (
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-gray-900">Working Capital</h3>
           <div className="flex items-center space-x-2">
-            <ArrowArrowTrendingUpIcon className="w-5 h-5 text-green-500" />
+            <ArrowTrendingUpIcon className="w-5 h-5 text-green-500" />
             <span className="text-sm font-medium text-green-600">
               {dashboardData?.workingCapital?.trend}
             </span>
@@ -263,7 +263,7 @@ const ExecutiveDashboard = ({ dashboardData, onNavigate }) => (
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium text-gray-900">{kpi.value}</span>
                 {kpi.trend === 'up' ? (
-                  <ArrowArrowTrendingUpIcon className="w-4 h-4 text-green-500" />
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-500" />
                 ) : kpi.trend === 'down' ? (
                   <ArrowTrendingDownIcon className="w-4 h-4 text-red-500" />
                 ) : null}

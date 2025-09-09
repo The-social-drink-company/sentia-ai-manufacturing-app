@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { 
   ChartBarIcon, 
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   CalendarDaysIcon,
   ExclamationTriangleIcon,
@@ -395,7 +395,7 @@ const RealTimeCashFlowForecasting = () => {
                         </p>
                       </div>
                       <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                        <ArrowArrowTrendingUpIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                        <ArrowTrendingUpIcon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                       </div>
                     </div>
                   </div>

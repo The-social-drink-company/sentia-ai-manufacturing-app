@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChartBarIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   CurrencyDollarIcon,
   BoltIcon,
   ArrowTrendingUpIcon,
@@ -288,7 +288,7 @@ const AdvancedAnalyticsDashboard = () => {
             value={data.performanceMetrics.overall.throughput}
             suffix="%"
             change={-1.1}
-            icon={ArrowArrowTrendingUpIcon}
+            icon={ArrowTrendingUpIcon}
             color="orange"
           />
         </div>

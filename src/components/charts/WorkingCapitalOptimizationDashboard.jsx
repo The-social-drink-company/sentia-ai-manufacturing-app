@@ -40,7 +40,7 @@ import {
   ClockIcon, 
   TruckIcon,
   BuildingOfficeIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
@@ -534,7 +534,7 @@ const WorkingCapitalOptimizationDashboard = ({
 
               <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                 <div className="flex items-center space-x-2">
-                  <ArrowArrowTrendingUpIcon className="w-5 h-5 text-purple-600" />
+                  <ArrowTrendingUpIcon className="w-5 h-5 text-purple-600" />
                   <span className="font-medium text-purple-900 dark:text-purple-200">
                     ROI Potential
                   </span>
@@ -607,7 +607,7 @@ const WorkingCapitalOptimizationDashboard = ({
                 {change > 0 ? (
                   <ArrowTrendingDownIcon className="w-4 h-4 text-green-600" />
                 ) : (
-                  <ArrowArrowTrendingUpIcon className="w-4 h-4 text-red-600" />
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-red-600" />
                 )}
                 <span className={`text-xs font-medium ${
                   change > 0 ? 'text-green-600' : 'text-red-600'

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, ComposedChart, Area, AreaChart } from 'recharts'
-import { ArrowArrowTrendingUpIcon, ArrowTrendingDownIcon, Cog6ToothIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, Cog6ToothIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import { queryKeys, queryConfigs } from '../../services/queryClient'
 import DateContextEngine from '../../services/DateContextEngine'
 

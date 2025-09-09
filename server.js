@@ -94,8 +94,8 @@ const PORT = process.env.PORT || 5000;
 // Initialize MCP Orchestrator for Anthropic Model Context Protocol (disabled in production)
 const mcpOrchestrator = new MCPOrchestrator();
 
-// Register MCP server for integrated data processing (only in development)
-if (process.env.NODE_ENV === 'development') {
+// Register MCP server for integrated data processing (enabled for development and local environments)
+if (process.env.NODE_ENV === 'development' || process.env.PORT === '5003') {
   (async () => {
     try {
       const mcpServerConfig = {
@@ -120,7 +120,7 @@ if (process.env.NODE_ENV === 'development') {
     }
   })();
 } else {
-  logInfo('MCP Server disabled in production environment');
+  logInfo('MCP Server disabled in Railway production environment');
 }
 
 // Initialize forecasting service

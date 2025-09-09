@@ -243,7 +243,16 @@
       "Bash(start http://localhost:5002/api/working-capital/overview)",
       "Bash(PORT=5004 node server.js)",
       "Bash(start http://localhost:3005/test-working-capital.html)",
-      "Bash(start http://localhost:3005/api-test.html)"
+      "Bash(start http://localhost:3005/api-test.html)",
+      "Bash(del \"C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\pages\\WorkingEnterpriseDashboard.jsx\")",
+      "Bash(start http://localhost:3003/dashboard)",
+      "Bash(start http://localhost:3003/what-if)",
+      "Bash(cd:*)",
+      "Bash(start http://localhost:3004/forecasting)",
+      "Bash(start http://localhost:3004/inventory)",
+      "Bash(start http://localhost:3002/what-if)",
+      "Bash(echo:*)",
+      "Bash(MCP_SERVER_PORT=6002 node mcp-server.js)"
     ],
     "deny": [],
     "ask": []

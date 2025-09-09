@@ -3,8 +3,7 @@
  * Direct API integration with comprehensive error handling and working capital calculations
  */
 
-import pkg from 'xero-node';
-const { XeroApi, TokenSet } = pkg;
+import { XeroApi, TokenSet } from 'xero-node';
 
 class XeroService {
   constructor() {

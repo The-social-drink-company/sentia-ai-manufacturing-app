@@ -14,7 +14,7 @@ import './lib/chartSetup'
 
 // Layout Components
 import DashboardLayout from './components/layout/DashboardLayout'
-import SimpleWorldClassLayout from './components/layout/SimpleWorldClassLayout'
+import WorldClassLayout from './components/layout/WorldClassLayout'
 import { LoadingSpinner } from './components/LoadingStates'
 import ErrorBoundaryFallback from './components/ErrorBoundary'
 
@@ -23,12 +23,15 @@ const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'))
 const WorldClassEnterpriseDashboard = lazy(() => import('./pages/WorldClassEnterpriseDashboard'))
 const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
 const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
-const WorkingEnterpriseDashboard = lazy(() => import('./pages/WorkingEnterpriseDashboard'))
+// Removed: WorkingEnterpriseDashboard (deleted file - replaced with WorldClassEnterpriseDashboard)
 const AdminPanel = lazy(() => import('./pages/AdminPanel'))
 const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'))
+const WhatIfAnalysisDashboard = lazy(() => import('./components/analytics/WhatIfAnalysisDashboard'))
 const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'))
 const EnhancedWorkingCapital = lazy(() => import('./components/WorkingCapital/EnhancedWorkingCapital'))
+const EnhancedWorkingCapitalAnalysis = lazy(() => import('./components/analytics/EnhancedWorkingCapitalAnalysis'))
 const DataImportDashboard = lazy(() => import('./components/DataImport/DataImportDashboard'))
+const EnhancedDataImportDashboard = lazy(() => import('./components/DataImport/EnhancedDataImportDashboard'))
 const InventoryManagement = lazy(() => import('./components/inventory/InventoryManagement'))
 const AdvancedInventoryManagement = lazy(() => import('./components/inventory/AdvancedInventoryManagement'))
 const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
@@ -38,6 +41,7 @@ const QualityManagementSystem = lazy(() => import('./components/quality/QualityM
 const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
 const EnhancedAIForecasting = lazy(() => import('./components/forecasting/EnhancedAIForecasting'))
 const Analytics = lazy(() => import('./components/analytics/Analytics'))
+const AdvancedAnalyticsDashboard = lazy(() => import('./components/analytics/AdvancedAnalyticsDashboard'))
 const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashboard'))
 const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
 const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMonitoring'))
@@ -387,7 +391,7 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <WorkingEnterpriseDashboard />
+      <WorldClassEnterpriseDashboard />
     </ErrorBoundary>
   )
 }
@@ -443,7 +447,7 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <WorkingCapital />
+                          <EnhancedWorkingCapital />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -469,7 +473,7 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <WhatIfAnalysis />
+                          <WhatIfAnalysisDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -612,7 +616,7 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <Analytics />
+                          <AdvancedAnalyticsDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -625,7 +629,7 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <DataImportDashboard />
+                          <EnhancedDataImportDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

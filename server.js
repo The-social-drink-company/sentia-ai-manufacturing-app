@@ -2729,41 +2729,12 @@ app.get('/api/working-capital/overview', authenticateUser, async (req, res) => {
         concentrationRisk: 'MEDIUM', // Customer/supplier concentration
         seasonalityRisk: 'MEDIUM', // Business seasonality impact
         creditRisk: 'LOW', // Customer payment history
-        overallRiskScore: 2.3, // Out of 5, lower is better
-        riskFactors: [
-          'Seasonal demand variations (Q4 surge)',
-          'Supplier payment term concentration', 
-          'Customer payment timing delays'
-        ]
+        overallRiskScore: null, // FORCE REAL DATA - No mock risk score
+        riskFactors: [] // FORCE REAL DATA - No mock risk factors
       },
       
-      // Optimization Recommendations
-      recommendations: [
-        {
-          category: 'Collections',
-          priority: 'HIGH',
-          action: 'Reduce DSO from 35 to 28 days',
-          impact: 'Free up £700,000 in working capital',
-          timeline: '60 days',
-          confidence: 0.85
-        },
-        {
-          category: 'Inventory',
-          priority: 'MEDIUM', 
-          action: 'Implement JIT for high-volume SKUs',
-          impact: 'Reduce inventory by £200,000',
-          timeline: '90 days',
-          confidence: 0.70
-        },
-        {
-          category: 'Payables',
-          priority: 'LOW',
-          action: 'Extend payment terms with key suppliers',
-          impact: 'Improve cash position by £150,000',
-          timeline: '30 days',
-          confidence: 0.60
-        }
-      ],
+      // Optimization Recommendations - FORCE REAL DATA ONLY
+      recommendations: [], // No mock recommendations - require real financial analysis
       
       // Benchmarking (Industry comparisons)
       benchmarks: {
@@ -4460,14 +4431,12 @@ app.post('/api/forecasting/run-model', authenticateUser, async (req, res) => {
         break;
         
       default:
-        // Enhanced fallback with vector database
-        results = {
-          modelId: `${modelType}_${Date.now()}`,
-          accuracy: 0.78 + Math.random() * 0.15,
-          predictions: generateForecastPredictions(),
-          dataSource: 'fallback_enhanced',
-          completedAt: new Date().toISOString()
-        };
+        return res.status(400).json({
+          error: `Unsupported AI model type: ${modelType}`,
+          supported_models: ['demand_forecast', 'production_optimization', 'cash_flow_forecast'],
+          message: 'AI model execution requires real data integration and proper model configuration',
+          contact: 'Contact system administrator to configure supported AI models'
+        });
     }
     
     res.json(results);
@@ -4732,15 +4701,14 @@ async function calculateRealTrendsWithAI() {
     }));
   }
   
-  // Final fallback trend data
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-  return months.map(month => ({
-    month,
-    production: Math.floor(Math.random() * 10000) + 15000,
-    quality: Math.floor(Math.random() * 5) + 95,
-    efficiency: Math.floor(Math.random() * 10) + 90,
-    dataSource: 'estimated'
-  }));
+  // No fallback data - real production data required
+  logError('Production trends data unavailable', {
+    message: 'Real production data required from MES or uploaded files',
+    availableData: manufacturingData.production.length,
+    required: 'Historical production data from Manufacturing Execution System'
+  });
+  
+  return [];
 }
 
 // Enhanced Production Status Calculation
@@ -5007,25 +4975,36 @@ function getQualityControlData(batch = 'all', testType = 'all') {
 }
 
 function generateQualityBaseData() {
-  const currentTime = new Date();
+  logError('Quality control data requires QMS integration', {
+    message: 'Real quality control data required from Quality Management System',
+    required: 'Live QC test results from Laboratory Information Management System (LIMS)',
+    missing_integrations: [
+      'Quality Management System (QMS) for test protocols',
+      'Laboratory Information Management System (LIMS) for test results', 
+      'Manufacturing Execution System (MES) for batch tracking',
+      'Enterprise Resource Planning (ERP) for quality specifications'
+    ]
+  });
   
   return {
-    overallPassRate: 98.7,
-    passRateChange: 0.5,
-    testsCompleted: Math.floor(Math.random() * 50) + 120,
-    testsCompletedChange: Math.floor(Math.random() * 20) + 5,
-    pendingTests: Math.floor(Math.random() * 10) + 5,
-    pendingTestsChange: Math.floor(Math.random() * 5) + 1,
-    failedTests: Math.floor(Math.random() * 5) + 1,
-    failedTestsChange: Math.floor(Math.random() * 3),
+    error: 'Quality control data unavailable',
+    message: 'Real QC data required from integrated LIMS and QMS systems',
+    overallPassRate: null,
+    passRateChange: null,
+    testsCompleted: null,
+    testsCompletedChange: null,
+    pendingTests: null,
+    pendingTestsChange: null,
+    failedTests: null,
+    failedTestsChange: null,
     recentTests: [
       {
         id: 'QC-001',
         testName: 'pH Analysis',
         category: 'chemical',
         batchId: '2024-001',
-        status: Math.random() > 0.1 ? 'passed' : 'failed',
-        result: (Math.random() * 1.4 + 6.3).toFixed(1),
+        status: null,
+        result: (null).toFixed(1),
         specification: '6.5-7.2',
         technician: 'Quality Inspector',
         completedAt: new Date(currentTime - Math.random() * 8 * 60 * 60 * 1000).toISOString(),
@@ -5036,8 +5015,8 @@ function generateQualityBaseData() {
         testName: 'Microbiological Count',
         category: 'microbiological',
         batchId: '2024-002',
-        status: Math.random() > 0.05 ? 'passed' : 'failed',
-        result: Math.random() > 0.9 ? Math.floor(Math.random() * 50) + ' CFU/ml' : '<10 CFU/ml',
+        status: null,
+        result: null,
         specification: '<100 CFU/ml',
         technician: 'Quality Inspector',
         completedAt: new Date(currentTime - Math.random() * 12 * 60 * 60 * 1000).toISOString(),
@@ -5048,8 +5027,8 @@ function generateQualityBaseData() {
         testName: 'Alcohol Content',
         category: 'chemical',
         batchId: '2024-001',
-        status: Math.random() > 0.15 ? 'passed' : 'failed',
-        result: (Math.random() * 1.0 + 11.8).toFixed(1) + '%',
+        status: null,
+        result: (null).toFixed(1) + '%',
         specification: '12.0-12.5%',
         technician: 'Quality Inspector',
         completedAt: new Date(currentTime - Math.random() * 16 * 60 * 60 * 1000).toISOString(),
@@ -5081,7 +5060,7 @@ function generateQualityBaseData() {
       {
         id: '2024-002',
         product: 'GABA Clear 500ml',
-        qcStatus: Math.random() > 0.3 ? 'approved' : 'testing',
+        qcStatus: null,
         testsCompleted: Math.floor(Math.random() * 2) + 4,
         totalTests: 5,
         startDate: new Date(currentTime - 1 * 24 * 60 * 60 * 1000).toISOString(),
@@ -5201,7 +5180,7 @@ async function submitTestResult(testData) {
     specification: testData.specification,
     technician: testData.technician,
     completedAt: new Date().toISOString(),
-    confidence: Math.random() * 0.1 + 0.9, // 90-100% confidence
+    confidence: null, // 90-100% confidence
     notes: testData.notes || '',
     success: true
   };
@@ -5725,7 +5704,7 @@ function generateForecastPredictions() {
     predictions.push({
       day: i,
       demand: Math.floor(Math.random() * 200) + 800,
-      confidence: Math.random() * 0.3 + 0.7
+      confidence: null
     });
   }
   
@@ -5861,13 +5840,13 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
   // Mock deployment data
   const deployments = Array.from({ length: Math.min(limit, 5) }, (_, i) => ({
     id: `deploy_${Date.now()}_${i}`,
-    status: Math.random() > 0.8 ? 'failed' : 'completed',
+    status: null,
     startTime: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-    duration: Math.random() * 300000 + 60000, // 1-5 minutes
+    duration: null, // 1-5 minutes
     environments: {
       localhost: { status: 'deployed' },
       test: { status: 'deployed' },
-      production: { status: Math.random() > 0.9 ? 'failed' : 'deployed' }
+      production: { status: null}
     }
   }));
   
@@ -6759,16 +6738,16 @@ app.get('/api/amazon/sp-api/dashboard', authenticateUser, async (req, res) => {
     // Amazon SP-API Dashboard endpoint with comprehensive metrics
     const dashboardData = {
       summary: {
-        totalSales: 47892.50 + Math.random() * 5000,
-        totalOrders: 247 + Math.floor(Math.random() * 50),
-        averageOrderValue: 193.85 + Math.random() * 30,
+        totalSales: null, // Real Amazon SP-API data required
+        totalOrders: null, // Real Amazon SP-API data required
+        averageOrderValue: null, // Real Amazon SP-API data required
         activeListings: 156,
-        fbaInventoryValue: 234000 + Math.random() * 20000
+        fbaInventoryValue: null // Real Amazon SP-API data required
       },
       performance: {
-        sessionConversionRate: 3.2 + Math.random() * 0.8,
-        returnRate: 2.1 + Math.random() * 0.5,
-        orderDefectRate: 0.8 + Math.random() * 0.3,
+        sessionConversionRate: null, // Real Amazon SP-API data required
+        returnRate: null, // Real Amazon SP-API data required
+        orderDefectRate: null, // Real Amazon SP-API data required
         accountHealth: 'Good'
       },
       inventory: {
@@ -6779,9 +6758,9 @@ app.get('/api/amazon/sp-api/dashboard', authenticateUser, async (req, res) => {
         unsellable: 23
       },
       fees: {
-        totalFees: 12847.30 + Math.random() * 1000,
-        fbaFees: 8234.50 + Math.random() * 800,
-        referralFees: 4612.80 + Math.random() * 500
+        totalFees: null, // Real Amazon SP-API data required
+        fbaFees: null, // Real Amazon SP-API data required
+        referralFees: null // Real Amazon SP-API data required
       }
     };
 
@@ -6810,11 +6789,11 @@ app.get('/api/integrations/amazon', async (req, res) => {
     // Mock Amazon data with realistic patterns
     const mockAmazonData = {
       metrics: {
-        totalSales: 47892.50 + Math.random() * 5000,
-        totalOrders: 247 + Math.floor(Math.random() * 50),
-        averageOrderValue: 193.85 + Math.random() * 30,
+        totalSales: null, // Real Amazon SP-API data required
+        totalOrders: null, // Real Amazon SP-API data required
+        averageOrderValue: null, // Real Amazon SP-API data required
         conversionRate: 3.2 + Math.random() * 0.8,
-        returnRate: 2.1 + Math.random() * 0.5,
+        returnRate: null, // Real Amazon SP-API data required
         fbaFees: 12847.30 + Math.random() * 1000,
         inventory: {
           inStock: 2847,
@@ -7231,8 +7210,8 @@ app.get('/api/ai/forecasting/enhanced', authenticateUser, async (req, res) => {
           value: 500000 + Math.sin(i * 0.1) * 50000 + Math.random() * 25000,
           confidence: 0.85 + Math.random() * 0.1,
           components: {
-            lstm: Math.random() * 400000 + 300000,
-            transformer: Math.random() * 300000 + 200000,
+            lstm: null,
+            transformer: null,
             seasonal: Math.random() * 100000
           }
         }))
@@ -7257,7 +7236,7 @@ app.get('/api/ai/dso/optimize', authenticateUser, async (req, res) => {
         invoiceDate: new Date(Date.now() - (12 - i) * 30 * 24 * 60 * 60 * 1000),
         dueDate: new Date(Date.now() - (12 - i) * 30 * 24 * 60 * 60 * 1000 + 30 * 24 * 60 * 60 * 1000),
         paidDate: new Date(Date.now() - (12 - i) * 30 * 24 * 60 * 60 * 1000 + (25 + Math.random() * 20) * 24 * 60 * 60 * 1000),
-        amount: Math.random() * 50000 + 10000,
+        amount: null,
         daysToPay: 25 + Math.random() * 20
       })),
       creditRating: 'B+',
@@ -7951,7 +7930,7 @@ async function generateModelForecast(historicalData, model, horizon) {
 
   return {
     periods,
-    accuracy: Math.random() * 0.1 + 0.75, // 0.75-0.85 accuracy
+    accuracy: null, // 0.75-0.85 accuracy
     rmse: baseValue * (0.1 + Math.random() * 0.1),
     mae: baseValue * (0.08 + Math.random() * 0.08)
   };

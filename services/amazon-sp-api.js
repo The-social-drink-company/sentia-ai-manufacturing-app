@@ -52,7 +52,9 @@ class AmazonSPAPIService {
     try {
       // FORCE REAL DATA ONLY - No mock data allowed
       if (!this.credentials.refresh_token || !this.credentials.lwa_app_id || !this.credentials.lwa_client_secret) {
-        throw new Error('Amazon SP-API authentication required. Please configure real Amazon SP-API credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN. No mock data will be returned.');
+        console.warn('Amazon SP-API authentication required. Please configure real Amazon SP-API credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN. No mock data will be returned.');
+        this.isConnected = false;
+        return false;
       }
 
       // Dynamically import SellingPartnerApi

@@ -4502,22 +4502,16 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   etag: false
 }));
 
-// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
-app.get('*', (req, res) => {
-  // Skip API routes - they should have been handled above
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ 
-      error: 'API endpoint not found', 
-      path: req.path,
-      method: req.method 
-    });
-  }
-  
-  // Serve the React app for all non-API routes
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+// Simple test endpoint to verify routes are working
+app.get('/api/test-simple', (req, res) => {
+  res.json({ 
+    message: 'Route registration is working!', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'production'
+  });
 });
 
-// MCP Server Status endpoint
+// Move MCP status route BEFORE catch-all
 app.get('/api/mcp/status', async (req, res) => {
   try {
     // Get MCP status from orchestrator
@@ -4530,41 +4524,43 @@ app.get('/api/mcp/status', async (req, res) => {
       if (response.ok) {
         localMCPHealth = await response.json();
       }
-    } catch (error) {
-      logWarn('Local MCP server health check failed', { error: error.message });
+    } catch (mcpError) {
+      // Local MCP server not running, which is expected in Railway
     }
-
-    res.status(200).json({
-      status: 'healthy',
+    
+    res.json({
+      status: 'operational',
+      mcp_orchestrator: mcpStatus,
+      local_mcp_server: localMCPHealth || { status: 'not_running_in_production', message: 'MCP server runs separately in Railway' },
       timestamp: new Date().toISOString(),
-      connections: mcpStatus.servers || [],
-      totalServers: mcpStatus.totalServers || 0,
-      activeConnections: mcpStatus.activeServers || 0,
-      vectorQueries: localMCPHealth?.queries || 0,
-      lastSync: new Date().toISOString(),
-      dataQuality: 85.5,
-      localMCP: localMCPHealth ? {
-        status: 'connected',
-        version: localMCPHealth.version,
-        uptime: localMCPHealth.uptime,
-        features: localMCPHealth.features
-      } : {
-        status: 'disconnected',
-        message: 'Local MCP server not reachable'
-      }
+      environment: process.env.NODE_ENV || 'development'
     });
   } catch (error) {
-    logError('Failed to get MCP status', error);
-    res.status(500).json({
-      status: 'error',
-      message: error.message,
-      connections: [],
-      totalServers: 0,
-      activeConnections: 0,
-      vectorQueries: 0,
-      dataQuality: 0
+    console.error('MCP status error:', error);
+    res.status(500).json({ error: 'Failed to get MCP status' });
+  }
+});
+
+// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
+app.get('*', (req, res) => {
+  // Skip API routes - they should have been handled above
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ 
+      error: 'API endpoint not found', 
+      path: req.path,
+      method: req.method,
+      availableEndpoints: [
+        '/api/health',
+        '/api/test-simple',
+        '/api/services/status',
+        '/api/working-capital/overview',
+        '/api/mcp/status'
+      ]
     });
   }
+  
+  // Serve the React app for all non-API routes
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Error handling middleware

@@ -57,37 +57,62 @@ const app = express();
 const PORT = process.env.PORT || 5002;
 // Server restarted
 
-// Initialize MCP Orchestrator for Anthropic Model Context Protocol (disabled in production)
+// Initialize Enterprise MCP Orchestrator for Anthropic Model Context Protocol
 const mcpOrchestrator = new MCPOrchestrator();
 
-// Register MCP server for integrated data processing (only in development)
-if (process.env.NODE_ENV === 'development') {
-  (async () => {
-    try {
-      const mcpServerConfig = {
-        id: 'sentia-mcp-server',
-        name: 'Sentia MCP Server',
-        type: 'manufacturing-finance',
-        endpoint: 'http://localhost:6002',
-        transport: 'http',
-        capabilities: ['xero-integration', 'financial-data', 'real-time-sync', 'ai-analysis'],
-        dataTypes: ['financial', 'manufacturing', 'forecasting', 'optimization'],
-        updateInterval: 30000
-      };
-      
-      const result = await mcpOrchestrator.registerMCPServer(mcpServerConfig);
-      if (result.success) {
-        logInfo('MCP Server registered successfully', { serverId: result.serverId });
-      } else {
-        logError('Failed to register MCP Server', { error: result.error });
+// Register Enterprise MCP server for integrated data processing (enabled in all environments)
+(async () => {
+  try {
+    const mcpServerConfig = {
+      id: 'sentia-enterprise-mcp-server',
+      name: 'Sentia Enterprise MCP Server',
+      type: 'manufacturing-ai-integration',
+      endpoint: process.env.NODE_ENV === 'production' 
+        ? 'https://confident-energy-production-e4dc.up.railway.app'
+        : 'http://localhost:6000',
+      transport: 'http',
+      capabilities: [
+        'inventory-optimization',
+        'demand-forecasting', 
+        'working-capital-analysis',
+        'production-scheduling',
+        'quality-control',
+        'amazon-sp-api-integration',
+        'shopify-multi-store',
+        'xero-financial-data',
+        'ai-powered-insights',
+        'real-time-analytics',
+        'manufacturing-intelligence'
+      ],
+      dataTypes: [
+        'inventory', 'sales', 'financial', 'manufacturing', 
+        'forecasting', 'optimization', 'quality', 'production'
+      ],
+      updateInterval: 15000, // 15 seconds for real-time updates
+      version: '2.0.0-enterprise',
+      features: {
+        multiProvider: true,
+        aiIntegration: true,
+        realTimeMonitoring: true,
+        enterpriseGrade: true
       }
-    } catch (error) {
-      logError('MCP Server registration error', error);
+    };
+    
+    const result = await mcpOrchestrator.registerMCPServer(mcpServerConfig);
+    if (result.success) {
+      logInfo('Enterprise MCP Server registered successfully', { 
+        serverId: result.serverId,
+        environment: process.env.NODE_ENV,
+        endpoint: mcpServerConfig.endpoint,
+        capabilities: mcpServerConfig.capabilities.length
+      });
+    } else {
+      logError('Failed to register Enterprise MCP Server', { error: result.error });
     }
-  })();
-} else {
-  logInfo('MCP Server disabled in production environment');
-}
+  } catch (error) {
+    logError('Enterprise MCP Server registration error', error);
+  }
+})();
 
 // NextAuth will be handled by the React frontend
 

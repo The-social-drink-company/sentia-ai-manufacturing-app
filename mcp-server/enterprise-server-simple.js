@@ -1347,7 +1347,7 @@ Always provide specific, actionable advice based on Sentia's actual capabilities
 
   // Server lifecycle
   async start() {
-    const port = process.env.PORT || 9001;
+    const port = process.env.MCP_PORT || 9001;
     
     // Setup HTTP endpoints
     this.setupHTTPEndpoints();
@@ -1362,9 +1362,23 @@ Always provide specific, actionable advice based on Sentia's actual capabilities
         endpoints: {
           http: `http://localhost:${port}`,
           websocket: `ws://localhost:${port}/mcp/ws`,
-          health: `http://localhost:${port}/health`
+          health: `http://localhost:${port}/health`,
+          chatbot: `http://localhost:${port}/ai/chat`
+        },
+        ai_systems: {
+          central_nervous_system: this.aiCentralNervousSystem ? 'Active' : 'Inactive',
+          learning_system: this.learningSystem ? 'Active' : 'Inactive',
+          knowledge_base: 'Loaded'
         },
         timestamp: new Date().toISOString()
+      });
+      
+      // Additional log for chatbot readiness
+      logger.info('🤖 AI Chatbot endpoint ready for connections', {
+        endpoint: `/ai/chat`,
+        knowledge_base: 'Sentia Manufacturing Domain',
+        learning_enabled: true,
+        fallback_responses: 'Available'
       });
     });
   }

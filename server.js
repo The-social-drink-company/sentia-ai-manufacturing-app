@@ -4568,7 +4568,7 @@ app.post('/api/mcp/ai/chat', async (req, res) => {
 
     // Determine MCP server endpoint based on environment
     const mcpServerUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'  // Railway MCP endpoint
+      ? 'http://localhost:9001'  // MCP server runs on port 9001 in same Railway container
       : 'http://localhost:8081';  // Local MCP server on port 8081
 
     const mcpEndpoint = `${mcpServerUrl}/ai/chat`;

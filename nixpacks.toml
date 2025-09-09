@@ -9,7 +9,7 @@ NPM_CONFIG_CACHE = "/tmp/.npm"
 providers = ["node"]
 
 [phases.setup]
-nixPkgs = ["nodejs_22"]
+nixPkgs = ["nodejs_22", "python311"]
 nixLibs = ["nodejs_22"]
 
 [phases.install]

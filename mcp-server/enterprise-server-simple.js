@@ -1124,7 +1124,7 @@ class SentiaEnterpriseMCPServer {
 
   // Server lifecycle
   async start() {
-    const port = process.env.PORT || 6000;
+    const port = process.env.PORT || 7000;
     
     // Setup HTTP endpoints
     this.setupHTTPEndpoints();

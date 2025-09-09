@@ -53,16 +53,12 @@ class XeroService {
     this.organizationId = process.env.XERO_ORGANIZATION_ID;
     
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
-<<<<<<< HEAD
-      // Xero service not configured - using mock data
-=======
       console.log('❌ Xero credentials missing - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);
       return;
     }
 
     if (!XeroClientClass) {
       console.warn('⚠️ Xero client class not available, service will not be initialized');
->>>>>>> production
       return;
     }
 

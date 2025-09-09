@@ -17,11 +17,11 @@ const CONFIG = {
   HEALTH_CHECK_INTERVAL: 10 * 60 * 1000, // 10 minutes
   DEEP_SCAN_INTERVAL: 60 * 60 * 1000,    // 1 hour
   
-  // Environment URLs
+  // Environment URLs (Updated for mock data elimination deployment)
   ENVIRONMENTS: {
-    development: process.env.RAILWAY_DEVELOPMENT_URL || 'https://sentia-manufacturing-dashboard-development.up.railway.app',
-    testing: process.env.RAILWAY_TESTING_URL || 'https://sentiatest.financeflo.ai',
-    production: process.env.RAILWAY_PRODUCTION_URL || 'https://sentiaprod.financeflo.ai'
+    development: process.env.RAILWAY_DEVELOPMENT_URL || 'https://daring-reflection-development.up.railway.app',
+    testing: process.env.RAILWAY_TESTING_URL || 'https://sentia-manufacturing-dashboard-testing.up.railway.app',
+    production: process.env.RAILWAY_PRODUCTION_URL || 'https://web-production-1f10.up.railway.app'
   },
   
   // Auto-fix settings

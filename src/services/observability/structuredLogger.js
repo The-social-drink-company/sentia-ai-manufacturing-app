@@ -1,4 +1,6 @@
-import { devLog } from '../lib/devLog.js';\n// Structured Logging System for Enterprise Applications
+import { devLog } from '../../lib/devLog.js';
+
+// Structured Logging System for Enterprise Applications
 // Provides consistent, searchable, and actionable log output
 
 class StructuredLogger {

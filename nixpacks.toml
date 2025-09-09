@@ -1,12 +1,12 @@
+# CRITICAL: Prevent Caddy installation and force Node.js app detection
+providers = ["node"]
+
 [variables]
-NODE_ENV = "test"
+NODE_ENV = "production"
 NIXPACKS_NO_CACHE = "1"
 NPM_CONFIG_CACHE = "/tmp/.npm"
 # Force rebuild to fix CSS serving issues - 2025-09-09 08:50
 # Issue: Railway not deploying latest Emergency CSS serving fix from server.js
-
-# CRITICAL: Prevent Caddy installation and force Node.js app detection
-providers = ["node"]
 
 [phases.setup]
 nixPkgs = ["nodejs_22", "python311"]

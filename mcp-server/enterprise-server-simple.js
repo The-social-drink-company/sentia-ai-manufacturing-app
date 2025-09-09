@@ -1347,7 +1347,7 @@ Always provide specific, actionable advice based on Sentia's actual capabilities
 
   // Server lifecycle
   async start() {
-    const port = process.env.PORT || process.env.MCP_PORT || 9001;
+    const port = process.env.MCP_PORT || 9001;
     
     // Setup HTTP endpoints
     this.setupHTTPEndpoints();

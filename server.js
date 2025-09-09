@@ -60,14 +60,15 @@ import ProductionDataIntegrator from './services/production/productionDataIntegr
 // Import automation controller
 import AutomationController from './services/automation/automationController.js';
 // Import new AI-powered services
-import EnhancedForecastingService from './services/ai/enhancedForecastingService.js';
+// Temporarily disable AI services due to dependency issues - will enable progressively
+// import EnhancedForecastingService from './services/ai/enhancedForecastingService.js';
 // import DataDecompositionService from './services/ai/dataDecompositionService.js';
-import DSOOptimizationService from './services/ai/dsoOptimizationService.js';
-import InventoryOptimizationService from './services/ai/inventoryOptimizationService.js';
-import PayablesOptimizationService from './services/ai/payablesOptimizationService.js';
-import MCPIntegrationService from './services/mcp/mcpIntegrationService.js';
-import ModelPerformanceMonitor from './services/monitoring/modelPerformanceMonitor.js';
-import DataQualityValidator from './services/validation/dataQualityValidator.js';
+// import DSOOptimizationService from './services/ai/dsoOptimizationService.js';
+// import InventoryOptimizationService from './services/ai/inventoryOptimizationService.js';
+// import PayablesOptimizationService from './services/ai/payablesOptimizationService.js';
+// import MCPIntegrationService from './services/mcp/mcpIntegrationService.js';
+// import ModelPerformanceMonitor from './services/monitoring/modelPerformanceMonitor.js';
+// import DataQualityValidator from './services/validation/dataQualityValidator.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -144,28 +145,28 @@ logInfo('Production Data Integrator initialized');
 const automationController = new AutomationController(databaseService, productionDataIntegrator);
 logInfo('Automation Controller initialized');
 
-// Initialize new AI-powered services
-const enhancedForecastingService = new EnhancedForecastingService();
-const dataDecompositionService = new DataDecompositionService();
-const dsoOptimizationService = new DSOOptimizationService();
-const inventoryOptimizationService = new InventoryOptimizationService();
-const payablesOptimizationService = new PayablesOptimizationService();
-const mcpIntegrationService = new MCPIntegrationService();
-const modelPerformanceMonitor = new ModelPerformanceMonitor();
-const dataQualityValidator = new DataQualityValidator();
+// Initialize new AI-powered services (temporarily disabled)
+// const enhancedForecastingService = new EnhancedForecastingService();
+// const dataDecompositionService = new DataDecompositionService();
+// const dsoOptimizationService = new DSOOptimizationService();
+// const inventoryOptimizationService = new InventoryOptimizationService();
+// const payablesOptimizationService = new PayablesOptimizationService();
+// const mcpIntegrationService = new MCPIntegrationService();
+// const modelPerformanceMonitor = new ModelPerformanceMonitor();
+// const dataQualityValidator = new DataQualityValidator();
 
-logInfo('AI-powered services initialized', {
-  services: [
-    'EnhancedForecastingService',
-    'DataDecompositionService', 
-    'DSOOptimizationService',
-    'InventoryOptimizationService',
-    'PayablesOptimizationService',
-    'MCPIntegrationService',
-    'ModelPerformanceMonitor',
-    'DataQualityValidator'
-  ]
-});
+// logInfo('AI-powered services initialized', {
+//   services: [
+//     'EnhancedForecastingService',
+//     'DataDecompositionService', 
+//     'DSOOptimizationService',
+//     'InventoryOptimizationService',
+//     'PayablesOptimizationService',
+//     'MCPIntegrationService',
+//     'ModelPerformanceMonitor',
+//     'DataQualityValidator'
+//   ]
+// });
 
 // NextAuth will be handled by the React frontend
 
@@ -8281,6 +8282,18 @@ app.use('/', (req, res, next) => {
     console.log(`[DEBUG] Static request: ${req.method} ${req.path}`);
   }
   next();
+});
+
+// AGGRESSIVE CSS FIX: Serve CSS files directly before express.static
+app.get('/assets/*.css', (req, res) => {
+  const cssPath = path.join(__dirname, 'dist', req.path);
+  console.log(`[AGGRESSIVE CSS FIX] Serving CSS directly: ${cssPath}`);
+  if (fs.existsSync(cssPath)) {
+    res.setHeader('Content-Type', 'text/css');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return res.sendFile(cssPath);
+  }
+  res.status(404).send('CSS file not found');
 });
 
 // Serve static files (must be after ALL API routes)

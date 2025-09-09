@@ -59,6 +59,15 @@ import InventoryOptimizer from './services/inventory/inventoryOptimizer.js';
 import ProductionDataIntegrator from './services/production/productionDataIntegrator.js';
 // Import automation controller
 import AutomationController from './services/automation/automationController.js';
+// Import new AI-powered services
+import EnhancedForecastingService from './services/ai/enhancedForecastingService.js';
+import DataDecompositionService from './services/ai/dataDecompositionService.js';
+import DSOOptimizationService from './services/ai/dsoOptimizationService.js';
+import InventoryOptimizationService from './services/ai/inventoryOptimizationService.js';
+import PayablesOptimizationService from './services/ai/payablesOptimizationService.js';
+import MCPIntegrationService from './services/mcp/mcpIntegrationService.js';
+import ModelPerformanceMonitor from './services/monitoring/modelPerformanceMonitor.js';
+import DataQualityValidator from './services/validation/dataQualityValidator.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -134,6 +143,29 @@ logInfo('Production Data Integrator initialized');
 // Initialize automation controller
 const automationController = new AutomationController(databaseService, productionDataIntegrator);
 logInfo('Automation Controller initialized');
+
+// Initialize new AI-powered services
+const enhancedForecastingService = new EnhancedForecastingService();
+const dataDecompositionService = new DataDecompositionService();
+const dsoOptimizationService = new DSOOptimizationService();
+const inventoryOptimizationService = new InventoryOptimizationService();
+const payablesOptimizationService = new PayablesOptimizationService();
+const mcpIntegrationService = new MCPIntegrationService();
+const modelPerformanceMonitor = new ModelPerformanceMonitor();
+const dataQualityValidator = new DataQualityValidator();
+
+logInfo('AI-powered services initialized', {
+  services: [
+    'EnhancedForecastingService',
+    'DataDecompositionService', 
+    'DSOOptimizationService',
+    'InventoryOptimizationService',
+    'PayablesOptimizationService',
+    'MCPIntegrationService',
+    'ModelPerformanceMonitor',
+    'DataQualityValidator'
+  ]
+});
 
 // NextAuth will be handled by the React frontend
 

@@ -8,29 +8,35 @@
     }
   },
   "deploy": {
-    "startCommand": "node index.js",
+    "startCommand": "node enterprise-server-simple.js",
     "healthcheckPath": "/health",
-    "healthcheckTimeout": 100,
+    "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+    "restartPolicyMaxRetries": 3
   },
   "environments": {
-    "production": {
-      "variables": {
-        "NODE_ENV": "production",
-        "LOG_LEVEL": "info"
-      }
-    },
-    "staging": {
-      "variables": {
-        "NODE_ENV": "staging",
-        "LOG_LEVEL": "debug"
-      }
-    },
     "development": {
       "variables": {
         "NODE_ENV": "development",
-        "LOG_LEVEL": "debug"
+        "PORT": 3001,
+        "LOG_LEVEL": "debug",
+        "JWT_SECRET": "sentia-mcp-secret-key"
+      }
+    },
+    "testing": {
+      "variables": {
+        "NODE_ENV": "test",
+        "PORT": 3001,
+        "LOG_LEVEL": "info",
+        "JWT_SECRET": "sentia-mcp-secret-key"
+      }
+    },
+    "production": {
+      "variables": {
+        "NODE_ENV": "production",
+        "PORT": 3001,
+        "LOG_LEVEL": "info",
+        "JWT_SECRET": "sentia-mcp-secret-key"
       }
     }
   }

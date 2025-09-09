@@ -65,13 +65,19 @@ export class LiveDataSyncService {
         this.syncStatus.amazon = { status: 'connected', lastSync: null, error: null };
         logInfo('Amazon SP-API connected successfully');
       } else {
-        await this.services.amazon.initialize();
-        this.syncStatus.amazon = { status: 'connected', lastSync: null, error: null };
-        logInfo('Amazon SP-API initialized and connected');
+        // Try to initialize but handle gracefully if no credentials
+        try {
+          await this.services.amazon.initialize();
+          this.syncStatus.amazon = { status: 'connected', lastSync: null, error: null };
+          logInfo('Amazon SP-API initialized and connected');
+        } catch (initError) {
+          this.syncStatus.amazon = { status: 'not_configured', lastSync: null, error: 'Amazon SP-API credentials not configured' };
+          logWarn('Amazon SP-API not configured - credentials required for real data', { reason: initError.message });
+        }
       }
     } catch (error) {
-      this.syncStatus.amazon = { status: 'error', lastSync: null, error: error.message };
-      // Amazon SP-API using mock data - no connection required
+      this.syncStatus.amazon = { status: 'not_configured', lastSync: null, error: error.message };
+      logWarn('Amazon SP-API connection not available', { reason: error.message });
     }
 
     // Test Shopify connection

@@ -351,7 +351,7 @@ app.post('/api/auth/signin', async (req, res) => {
     
     if (user) {
       // Create session token (in production, use JWT or proper session management)
-      const sessionToken = `session_${Date.now()}_${Math.random().toString(36)}`;
+      const sessionToken = `session_${Date.now()}_${null.toString(36)}`;
       
       // Store session (in production, use Redis or database)
       // For now, just return user data
@@ -1675,7 +1675,7 @@ app.post('/api/admin/invite', async (req, res) => {
 
     // Enhanced invitation object
     const invitation = {
-      id: `inv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `inv-${Date.now()}-${null.toString(36).substr(2, 9)}`,
       email: email.toLowerCase().trim(),
       role,
       status: 'pending',
@@ -1684,7 +1684,7 @@ app.post('/api/admin/invite', async (req, res) => {
       invited_by_name: 'System Administrator',
       created_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      invitation_url: `/invite/accept/inv-${Date.now()}?token=${Math.random().toString(36).substr(2, 15)}`,
+      invitation_url: `/invite/accept/inv-${Date.now()}?token=${null.toString(36).substr(2, 15)}`,
       attempts: 0,
       last_sent: new Date().toISOString()
     };
@@ -2707,7 +2707,7 @@ app.get('/api/working-capital/overview', authenticateUser, async (req, res) => {
           week: week + 1,
           date: date.toISOString().split('T')[0],
           projectedInflow: Math.round(baseInflow * seasonal),
-          projectedOutflow: Math.round(baseOutflow * seasonal * (1 + Math.random() * 0.1)),
+          projectedOutflow: Math.round(baseOutflow * seasonal),
           netCashFlow: Math.round((baseInflow - baseOutflow) * seasonal),
           cumulativeCash: Math.round(baseMetrics.cash + ((baseInflow - baseOutflow) * seasonal * (week + 1)))
         };
@@ -2729,41 +2729,12 @@ app.get('/api/working-capital/overview', authenticateUser, async (req, res) => {
         concentrationRisk: 'MEDIUM', // Customer/supplier concentration
         seasonalityRisk: 'MEDIUM', // Business seasonality impact
         creditRisk: 'LOW', // Customer payment history
-        overallRiskScore: 2.3, // Out of 5, lower is better
-        riskFactors: [
-          'Seasonal demand variations (Q4 surge)',
-          'Supplier payment term concentration', 
-          'Customer payment timing delays'
-        ]
+        overallRiskScore: null, // FORCE REAL DATA - No mock risk score
+        riskFactors: [] // FORCE REAL DATA - No mock risk factors
       },
       
-      // Optimization Recommendations
-      recommendations: [
-        {
-          category: 'Collections',
-          priority: 'HIGH',
-          action: 'Reduce DSO from 35 to 28 days',
-          impact: 'Free up £700,000 in working capital',
-          timeline: '60 days',
-          confidence: 0.85
-        },
-        {
-          category: 'Inventory',
-          priority: 'MEDIUM', 
-          action: 'Implement JIT for high-volume SKUs',
-          impact: 'Reduce inventory by £200,000',
-          timeline: '90 days',
-          confidence: 0.70
-        },
-        {
-          category: 'Payables',
-          priority: 'LOW',
-          action: 'Extend payment terms with key suppliers',
-          impact: 'Improve cash position by £150,000',
-          timeline: '30 days',
-          confidence: 0.60
-        }
-      ],
+      // Optimization Recommendations - FORCE REAL DATA ONLY
+      recommendations: [], // No mock recommendations - require real financial analysis
       
       // Benchmarking (Industry comparisons)
       benchmarks: {
@@ -4460,14 +4431,12 @@ app.post('/api/forecasting/run-model', authenticateUser, async (req, res) => {
         break;
         
       default:
-        // Enhanced fallback with vector database
-        results = {
-          modelId: `${modelType}_${Date.now()}`,
-          accuracy: 0.78 + Math.random() * 0.15,
-          predictions: generateForecastPredictions(),
-          dataSource: 'fallback_enhanced',
-          completedAt: new Date().toISOString()
-        };
+        return res.status(400).json({
+          error: `Unsupported AI model type: ${modelType}`,
+          supported_models: ['demand_forecast', 'production_optimization', 'cash_flow_forecast'],
+          message: 'AI model execution requires real data integration and proper model configuration',
+          contact: 'Contact system administrator to configure supported AI models'
+        });
     }
     
     res.json(results);
@@ -4732,15 +4701,14 @@ async function calculateRealTrendsWithAI() {
     }));
   }
   
-  // Final fallback trend data
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-  return months.map(month => ({
-    month,
-    production: Math.floor(Math.random() * 10000) + 15000,
-    quality: Math.floor(Math.random() * 5) + 95,
-    efficiency: Math.floor(Math.random() * 10) + 90,
-    dataSource: 'estimated'
-  }));
+  // No fallback data - real production data required
+  logError('Production trends data unavailable', {
+    message: 'Real production data required from MES or uploaded files',
+    availableData: manufacturingData.production.length,
+    required: 'Historical production data from Manufacturing Execution System'
+  });
+  
+  return [];
 }
 
 // Enhanced Production Status Calculation
@@ -4865,7 +4833,7 @@ function getCurrentBatches() {
       id: '2024-001', 
       product: 'GABA Red 500ml', 
       status: 'processing', 
-      completion: Math.floor(Math.random() * 30) + 70,
+      completion: null // Real completion data required,
       startTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       estimatedCompletion: new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString()
     },
@@ -5007,28 +4975,39 @@ function getQualityControlData(batch = 'all', testType = 'all') {
 }
 
 function generateQualityBaseData() {
-  const currentTime = new Date();
+  logError('Quality control data requires QMS integration', {
+    message: 'Real quality control data required from Quality Management System',
+    required: 'Live QC test results from Laboratory Information Management System (LIMS)',
+    missing_integrations: [
+      'Quality Management System (QMS) for test protocols',
+      'Laboratory Information Management System (LIMS) for test results', 
+      'Manufacturing Execution System (MES) for batch tracking',
+      'Enterprise Resource Planning (ERP) for quality specifications'
+    ]
+  });
   
   return {
-    overallPassRate: 98.7,
-    passRateChange: 0.5,
-    testsCompleted: Math.floor(Math.random() * 50) + 120,
-    testsCompletedChange: Math.floor(Math.random() * 20) + 5,
-    pendingTests: Math.floor(Math.random() * 10) + 5,
-    pendingTestsChange: Math.floor(Math.random() * 5) + 1,
-    failedTests: Math.floor(Math.random() * 5) + 1,
-    failedTestsChange: Math.floor(Math.random() * 3),
+    error: 'Quality control data unavailable',
+    message: 'Real QC data required from integrated LIMS and QMS systems',
+    overallPassRate: null,
+    passRateChange: null,
+    testsCompleted: null,
+    testsCompletedChange: null,
+    pendingTests: null,
+    pendingTestsChange: null,
+    failedTests: null,
+    failedTestsChange: null,
     recentTests: [
       {
         id: 'QC-001',
         testName: 'pH Analysis',
         category: 'chemical',
         batchId: '2024-001',
-        status: Math.random() > 0.1 ? 'passed' : 'failed',
-        result: (Math.random() * 1.4 + 6.3).toFixed(1),
+        status: 'completed',
+        result: (null // Real data required).toFixed(1),
         specification: '6.5-7.2',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 8 * 60 * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'high'
       },
       {
@@ -5036,11 +5015,11 @@ function generateQualityBaseData() {
         testName: 'Microbiological Count',
         category: 'microbiological',
         batchId: '2024-002',
-        status: Math.random() > 0.05 ? 'passed' : 'failed',
-        result: Math.random() > 0.9 ? Math.floor(Math.random() * 50) + ' CFU/ml' : '<10 CFU/ml',
+        status: 'completed',
+        result: (75 + null * 20).toFixed(0) + ' CFU/ml',
         specification: '<100 CFU/ml',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 12 * 60 * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'high'
       },
       {
@@ -5048,11 +5027,11 @@ function generateQualityBaseData() {
         testName: 'Alcohol Content',
         category: 'chemical',
         batchId: '2024-001',
-        status: Math.random() > 0.15 ? 'passed' : 'failed',
-        result: (Math.random() * 1.0 + 11.8).toFixed(1) + '%',
+        status: 'completed',
+        result: (12.1 + Math.random() * 0.3).toFixed(1) + '%',
         specification: '12.0-12.5%',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 16 * 60 * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'medium'
       },
       {
@@ -5081,7 +5060,7 @@ function generateQualityBaseData() {
       {
         id: '2024-002',
         product: 'GABA Clear 500ml',
-        qcStatus: Math.random() > 0.3 ? 'approved' : 'testing',
+        qcStatus: 'review',
         testsCompleted: Math.floor(Math.random() * 2) + 4,
         totalTests: 5,
         startDate: new Date(currentTime - 1 * 24 * 60 * 60 * 1000).toISOString(),
@@ -5135,7 +5114,7 @@ function generateQualityAlerts() {
     }
   ];
   
-  return alerts.filter(() => Math.random() > 0.3); // Show random subset
+  return []; // Show random subset
 }
 
 function generateTestSchedule() {
@@ -5181,10 +5160,10 @@ function generateQualityTrends() {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   return months.map(month => ({
     month,
-    passRate: Math.floor(Math.random() * 5) + 95,
-    testsCompleted: Math.floor(Math.random() * 50) + 100,
-    failureRate: Math.floor(Math.random() * 3) + 1,
-    avgTestTime: Math.floor(Math.random() * 30) + 60 // minutes
+    passRate: Math.floor(null + 95,
+    testsCompleted: Math.floor(null + 100,
+    failureRate: Math.floor(null + 1,
+    avgTestTime: Math.floor(null + 60 // minutes
   }));
 }
 
@@ -5192,7 +5171,7 @@ async function submitTestResult(testData) {
   // Simulate test result processing
   await new Promise(resolve => setTimeout(resolve, 1000));
   
-  const isPass = Math.random() > 0.15; // 85% pass rate
+  const isPass = false; // Real data required // 85% pass rate
   
   return {
     testId: testData.testId,
@@ -5201,7 +5180,7 @@ async function submitTestResult(testData) {
     specification: testData.specification,
     technician: testData.technician,
     completedAt: new Date().toISOString(),
-    confidence: Math.random() * 0.1 + 0.9, // 90-100% confidence
+    confidence: null, // 90-100% confidence
     notes: testData.notes || '',
     success: true
   };
@@ -5261,8 +5240,8 @@ async function scheduleTest(testData) {
 }
 
 function calculateNewPassRate() {
-  // Simulate pass rate calculation based on recent tests
-  return Math.floor(Math.random() * 5) + 95; // 95-100%
+  logError('Pass rate calculation requires real QC data');
+  return null; // Real QC data required
 }
 
 // Data Import and Storage Functions
@@ -5635,7 +5614,7 @@ function calculateQualityMetricsFromData(records) {
 
 function formatQualityRecord(record) {
   return {
-    id: record.id || `qc-${Date.now()}-${Math.random()}`,
+    id: record.id || `qc-${Date.now()}-${null}`,
     testName: record.test_name || record['Test Name'] || 'Unknown Test',
     category: record.category || record.Category || record.test_type || 'general',
     batchId: record.batch_id || record['Batch ID'] || 'Unknown',
@@ -5724,8 +5703,8 @@ function generateForecastPredictions() {
   for (let i = 1; i <= days; i++) {
     predictions.push({
       day: i,
-      demand: Math.floor(Math.random() * 200) + 800,
-      confidence: Math.random() * 0.3 + 0.7
+      demand: Math.floor(null + 800,
+      confidence: null
     });
   }
   
@@ -5861,13 +5840,13 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
   // Mock deployment data
   const deployments = Array.from({ length: Math.min(limit, 5) }, (_, i) => ({
     id: `deploy_${Date.now()}_${i}`,
-    status: Math.random() > 0.8 ? 'failed' : 'completed',
+    status: null,
     startTime: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-    duration: Math.random() * 300000 + 60000, // 1-5 minutes
+    duration: null, // 1-5 minutes
     environments: {
       localhost: { status: 'deployed' },
       test: { status: 'deployed' },
-      production: { status: Math.random() > 0.9 ? 'failed' : 'deployed' }
+      production: { status: null}
     }
   }));
   
@@ -5959,28 +5938,28 @@ app.get('/api/kpis/realtime', async (req, res) => {
       timestamp: new Date().toISOString(),
       kpis: {
         production: {
-          efficiency: 94.2 + Math.random() * 3,
-          throughput: 1247 + Math.floor(Math.random() * 100),
-          downtime: 0.8 + Math.random() * 0.4,
-          oee: 89.5 + Math.random() * 5
+          efficiency: null // Real data required,
+          throughput: 1247 + Math.floor(null,
+          downtime: null // Real data required,
+          oee: null // Real data required
         },
         quality: {
-          defectRate: 0.02 + Math.random() * 0.01,
-          firstPassYield: 98.7 + Math.random() * 1,
-          customerReturns: 0.1 + Math.random() * 0.05,
-          testsPassed: Math.floor(1200 + Math.random() * 50)
+          defectRate: null // Real data required,
+          firstPassYield: null // Real data required,
+          customerReturns: null // Real data required,
+          testsPassed: Math.floor(1200 + null
         },
         financial: {
-          costPerUnit: 12.45 + Math.random() * 0.50,
-          revenue: 284759 + Math.random() * 10000,
-          profitMargin: 23.4 + Math.random() * 2,
-          workingCapital: 450000 + Math.random() * 25000
+          costPerUnit: null // Real data required,
+          revenue: null // Real data required,
+          profitMargin: null // Real data required,
+          workingCapital: null // Real data required
         },
         inventory: {
-          turnover: 8.2 + Math.random() * 0.5,
-          stockoutRisk: 2.1 + Math.random() * 1,
-          excessStock: 156000 + Math.random() * 10000,
-          accuracy: 99.2 + Math.random() * 0.5
+          turnover: null // Real data required,
+          stockoutRisk: null // Real data required,
+          excessStock: null // Real data required,
+          accuracy: null // Real data required
         }
       },
       alerts: [
@@ -6018,22 +5997,22 @@ app.get('/api/metrics/current', async (req, res) => {
       timestamp: new Date().toISOString(),
       metrics: {
         system: {
-          cpuUsage: 45.2 + Math.random() * 20,
-          memoryUsage: 67.8 + Math.random() * 15,
-          diskUsage: 34.1 + Math.random() * 10,
-          networkLatency: 23 + Math.random() * 10
+          cpuUsage: null // Real data required,
+          memoryUsage: null // Real data required,
+          diskUsage: null // Real data required,
+          networkLatency: null // Real data required
         },
         application: {
-          activeUsers: Math.floor(25 + Math.random() * 10),
-          apiCalls: Math.floor(1500 + Math.random() * 500),
-          errorRate: 0.02 + Math.random() * 0.01,
-          responseTime: 145 + Math.random() * 50
+          activeUsers: Math.floor(25 + null,
+          apiCalls: Math.floor(1500 + null,
+          errorRate: null // Real data required,
+          responseTime: null // Real data required
         },
         business: {
-          ordersToday: Math.floor(45 + Math.random() * 15),
-          revenueToday: 12500 + Math.random() * 2000,
-          productionUnits: Math.floor(890 + Math.random() * 100),
-          qualityScore: 97.2 + Math.random() * 2
+          ordersToday: Math.floor(45 + null,
+          revenueToday: null // Real data required,
+          productionUnits: Math.floor(890 + null,
+          qualityScore: null // Real data required
         }
       }
     };
@@ -6098,17 +6077,17 @@ app.get('/api/production/overview', async (req, res) => {
           startTime: '06:00',
           endTime: '14:00',
           supervisor: 'Production Supervisor',
-          efficiency: 93.7 + Math.random() * 4,
+          efficiency: null // Real data required,
           plannedOutput: 1200,
-          actualOutput: Math.floor(1150 + Math.random() * 100),
-          downtime: 45 + Math.random() * 20
+          actualOutput: Math.floor(1150 + null,
+          downtime: null // Real data required
         },
         lines: [
           {
             id: 'line-001',
             name: 'Mixing Line 1',
             status: 'running',
-            efficiency: 94.2 + Math.random() * 3,
+            efficiency: null // Real data required,
             currentProduct: 'Sentia Red Premium',
             batchNumber: 'SR-2024-001',
             startTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
@@ -6118,7 +6097,7 @@ app.get('/api/production/overview', async (req, res) => {
             id: 'line-002',
             name: 'Bottling Line A',
             status: 'running',
-            efficiency: 91.8 + Math.random() * 3,
+            efficiency: null // Real data required,
             currentProduct: 'Sentia Black Elite',
             batchNumber: 'SB-2024-045',
             startTime: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString(),
@@ -6137,9 +6116,9 @@ app.get('/api/production/overview', async (req, res) => {
         ],
         dailyTargets: {
           totalOutput: 2400,
-          currentOutput: Math.floor(1650 + Math.random() * 200),
-          efficiency: 92.5 + Math.random() * 3,
-          qualityScore: 98.1 + Math.random() * 1.5
+          currentOutput: Math.floor(1650 + null,
+          efficiency: null // Real data required,
+          qualityScore: null // Real data required
         },
         equipment: {
           operational: 15,
@@ -6175,7 +6154,7 @@ app.get('/api/ai/insights', async (req, res) => {
           demandForecast: {
             trend: 'increasing',
             confidence: 0.87,
-            nextWeekDemand: 2847 + Math.random() * 200,
+            nextWeekDemand: null // Real data required,
             recommendation: 'Increase production capacity by 12% to meet projected demand'
           },
           qualityRisk: {
@@ -6241,22 +6220,22 @@ app.get('/api/dashboard/overview', async (req, res) => {
       timestamp: new Date().toISOString(),
       overview: {
         summary: {
-          totalRevenue: 2847592 + Math.random() * 50000,
-          monthlyGrowth: 12.3 + Math.random() * 2,
-          activeOrders: Math.floor(156 + Math.random() * 20),
-          productionEfficiency: 93.8 + Math.random() * 3,
-          qualityScore: 98.2 + Math.random() * 1.5,
-          customerSatisfaction: 94.7 + Math.random() * 2
+          totalRevenue: null // Real data required,
+          monthlyGrowth: null // Real data required,
+          activeOrders: Math.floor(156 + null,
+          productionEfficiency: null // Real data required,
+          qualityScore: null // Real data required,
+          customerSatisfaction: null // Real data required
         },
         trends: {
           revenue: Array.from({ length: 7 }, (_, i) => ({
             date: new Date(Date.now() - (6-i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            value: 25000 + Math.sin(i) * 3000 + Math.random() * 2000
+            value: 25000 + null // Real trend data required
           })),
           production: Array.from({ length: 24 }, (_, i) => ({
             hour: i,
-            efficiency: 85 + Math.sin(i / 24 * Math.PI * 2) * 10 + Math.random() * 5,
-            output: 95 + Math.sin((i + 6) / 24 * Math.PI * 2) * 15 + Math.random() * 8
+            efficiency: 85 + null // Real trend data required,
+            output: 95 + Math.sin((i + 6) / 24 * Math.PI * 2) * null // Real data required
           }))
         },
         alerts: [
@@ -6303,23 +6282,23 @@ app.get('/api/financial/working-capital', async (req, res) => {
       timestamp: new Date().toISOString(),
       workingCapital: {
         current: {
-          total: 450000 + Math.random() * 25000,
+          total: null // Real data required,
           breakdown: {
-            inventory: 280000 + Math.random() * 15000,
-            receivables: 120000 + Math.random() * 8000,
-            payables: -95000 - Math.random() * 5000,
-            cash: 145000 + Math.random() * 10000
+            inventory: null // Real data required,
+            receivables: null // Real data required,
+            payables: -95000 - null * 5000,
+            cash: null // Real data required
           }
         },
         ratios: {
-          dso: 28.5 + Math.random() * 3, // Days Sales Outstanding
-          dpo: 35.2 + Math.random() * 4, // Days Payable Outstanding
-          dio: 42.1 + Math.random() * 5  // Days Inventory Outstanding
+          dso: null // Real data required, // Days Sales Outstanding
+          dpo: null // Real data required, // Days Payable Outstanding
+          dio: null // Real data required  // Days Inventory Outstanding
         },
         trends: Array.from({ length: parseInt(period) }, (_, i) => ({
           date: new Date(Date.now() - (period-1-i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          workingCapital: 420000 + Math.sin(i / 7) * 25000 + Math.random() * 10000,
-          cashFlow: 12000 + Math.sin(i / 5) * 5000 + Math.random() * 2000
+          workingCapital: 420000 + null // Real trend data required,
+          cashFlow: 12000 + null // Real trend data required
         })),
         optimization: {
           recommendations: [
@@ -6362,11 +6341,11 @@ app.get('/api/analytics/enterprise', async (req, res) => {
           trends: {
             revenue: Array.from({ length: 12 }, (_, i) => ({
               month: new Date(2024, i, 1).toLocaleString('default', { month: 'short' }),
-              value: 200000 + Math.sin(i / 12 * Math.PI * 2) * 50000 + Math.random() * 30000
+              value: 200000 + null // Real trend data required
             })),
             profit: Array.from({ length: 12 }, (_, i) => ({
               month: new Date(2024, i, 1).toLocaleString('default', { month: 'short' }),
-              value: 45000 + Math.sin(i / 12 * Math.PI * 2) * 12000 + Math.random() * 8000
+              value: 45000 + null // Real trend data required
             }))
           },
           strategic: {
@@ -6429,8 +6408,8 @@ app.get('/api/production/ai-enhanced', async (req, res) => {
           demand: {
             next7Days: Array.from({ length: 7 }, (_, i) => ({
               date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-              demand: 1200 + Math.sin(i / 7 * Math.PI * 2) * 200 + Math.random() * 100,
-              confidence: 0.85 + Math.random() * 0.1
+              demand: 1200 + null // Real trend data required,
+              confidence: null // Real data required
             }))
           },
           quality: {
@@ -6759,16 +6738,16 @@ app.get('/api/amazon/sp-api/dashboard', authenticateUser, async (req, res) => {
     // Amazon SP-API Dashboard endpoint with comprehensive metrics
     const dashboardData = {
       summary: {
-        totalSales: 47892.50 + Math.random() * 5000,
-        totalOrders: 247 + Math.floor(Math.random() * 50),
-        averageOrderValue: 193.85 + Math.random() * 30,
+        totalSales: null, // Real Amazon SP-API data required
+        totalOrders: null, // Real Amazon SP-API data required
+        averageOrderValue: null, // Real Amazon SP-API data required
         activeListings: 156,
-        fbaInventoryValue: 234000 + Math.random() * 20000
+        fbaInventoryValue: null // Real Amazon SP-API data required
       },
       performance: {
-        sessionConversionRate: 3.2 + Math.random() * 0.8,
-        returnRate: 2.1 + Math.random() * 0.5,
-        orderDefectRate: 0.8 + Math.random() * 0.3,
+        sessionConversionRate: null, // Real Amazon SP-API data required
+        returnRate: null, // Real Amazon SP-API data required
+        orderDefectRate: null, // Real Amazon SP-API data required
         accountHealth: 'Good'
       },
       inventory: {
@@ -6779,9 +6758,9 @@ app.get('/api/amazon/sp-api/dashboard', authenticateUser, async (req, res) => {
         unsellable: 23
       },
       fees: {
-        totalFees: 12847.30 + Math.random() * 1000,
-        fbaFees: 8234.50 + Math.random() * 800,
-        referralFees: 4612.80 + Math.random() * 500
+        totalFees: null, // Real Amazon SP-API data required
+        fbaFees: null, // Real Amazon SP-API data required
+        referralFees: null // Real Amazon SP-API data required
       }
     };
 
@@ -6810,12 +6789,12 @@ app.get('/api/integrations/amazon', async (req, res) => {
     // Mock Amazon data with realistic patterns
     const mockAmazonData = {
       metrics: {
-        totalSales: 47892.50 + Math.random() * 5000,
-        totalOrders: 247 + Math.floor(Math.random() * 50),
-        averageOrderValue: 193.85 + Math.random() * 30,
-        conversionRate: 3.2 + Math.random() * 0.8,
-        returnRate: 2.1 + Math.random() * 0.5,
-        fbaFees: 12847.30 + Math.random() * 1000,
+        totalSales: null, // Real Amazon SP-API data required
+        totalOrders: null, // Real Amazon SP-API data required
+        averageOrderValue: null, // Real Amazon SP-API data required
+        conversionRate: null // Real data required,
+        returnRate: null, // Real Amazon SP-API data required
+        fbaFees: null // Real data required,
         inventory: {
           inStock: 2847,
           reserved: 156,
@@ -6824,9 +6803,9 @@ app.get('/api/integrations/amazon', async (req, res) => {
         },
         salesTrends: Array.from({ length: parseInt(range.replace('d', '')) }, (_, i) => ({
           date: new Date(Date.now() - (parseInt(range.replace('d', '')) - 1 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          sales: 1500 + Math.sin(i / 7 * Math.PI * 2) * 300 + Math.random() * 200,
-          orders: 8 + Math.floor(Math.sin(i / 7 * Math.PI * 2) * 2 + Math.random() * 3),
-          units: 25 + Math.floor(Math.sin(i / 7 * Math.PI * 2) * 5 + Math.random() * 5)
+          sales: 1500 + null // Real trend data required,
+          orders: 8 + Math.floor(null // Real trend data required),
+          units: 25 + Math.floor(null // Real trend data required)
         }))
       }
     };
@@ -6858,12 +6837,12 @@ app.get('/api/integrations/shopify', async (req, res) => {
     // Mock Shopify data for multiple stores
     const mockShopifyData = {
       analytics: {
-        totalSales: 89473.20 + Math.random() * 8000,
-        totalOrders: 423 + Math.floor(Math.random() * 80),
+        totalSales: null // Real data required,
+        totalOrders: 423 + Math.floor(null,
         customers: {
           total: 2847,
-          new: 47 + Math.floor(Math.random() * 15),
-          returning: 376 + Math.floor(Math.random() * 30)
+          new: 47 + Math.floor(null,
+          returning: 376 + Math.floor(null
         },
         stores: {
           uk: {
@@ -6887,9 +6866,9 @@ app.get('/api/integrations/shopify', async (req, res) => {
         },
         trends: Array.from({ length: parseInt(period) }, (_, i) => ({
           date: new Date(Date.now() - (parseInt(period) - 1 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          sales: 2800 + Math.sin(i / 7 * Math.PI * 2) * 500 + Math.random() * 300,
-          orders: 15 + Math.floor(Math.sin(i / 7 * Math.PI * 2) * 3 + Math.random() * 4),
-          visitors: 450 + Math.floor(Math.sin(i / 7 * Math.PI * 2) * 80 + Math.random() * 50)
+          sales: 2800 + null // Real trend data required,
+          orders: 15 + Math.floor(null // Real trend data required),
+          visitors: 450 + Math.floor(null // Real trend data required)
         }))
       }
     };
@@ -6924,8 +6903,8 @@ app.get('/api/integrations/unleashed', async (req, res) => {
         production: {
           activeJobs: 12,
           completedToday: 8,
-          efficiency: 94.2 + Math.random() * 4,
-          plannedVsActual: 102.3 + Math.random() * 5
+          efficiency: null // Real data required,
+          plannedVsActual: null // Real data required
         },
         inventory: {
           rawMaterials: 45670.80,
@@ -6974,7 +6953,7 @@ app.get('/api/integrations/xero', async (req, res) => {
     const mockXeroData = {
       'financial-summary': {
         cashPosition: {
-          total: 345678.90 + Math.random() * 25000,
+          total: null // Real data required,
           operating: 289450.30,
           investment: 56228.60,
           breakdown: [
@@ -6984,11 +6963,11 @@ app.get('/api/integrations/xero', async (req, res) => {
           ]
         },
         pnl: {
-          revenue: 2847592 + Math.random() * 50000,
-          expenses: 2183947 + Math.random() * 40000,
-          grossProfit: 663645 + Math.random() * 30000,
-          netProfit: 485621 + Math.random() * 25000,
-          profitMargin: 17.1 + Math.random() * 3
+          revenue: null // Real data required,
+          expenses: null // Real data required,
+          grossProfit: null // Real data required,
+          netProfit: null // Real data required,
+          profitMargin: null // Real data required
         },
         workingCapital: {
           current: 456789.20,
@@ -7004,9 +6983,9 @@ app.get('/api/integrations/xero', async (req, res) => {
         },
         trends: Array.from({ length: parseInt(period) }, (_, i) => ({
           date: new Date(Date.now() - (parseInt(period) - 1 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          cashFlow: 15000 + Math.sin(i / 5) * 5000 + Math.random() * 2000,
-          revenue: 95000 + Math.sin(i / 7) * 15000 + Math.random() * 8000,
-          expenses: -72000 - Math.sin(i / 6) * 8000 - Math.random() * 5000
+          cashFlow: 15000 + null // Real trend data required,
+          revenue: 95000 + null // Real trend data required,
+          expenses: -72000 - Math.sin(i / 6) * 8000 - null * 5000
         }))
       }
     };
@@ -7108,11 +7087,11 @@ app.get('/api/quality/overview', (req, res) => {
     qualityTests: Array.from({ length: 6 }, (_, i) => ({
       id: `QC-${1000 + i}`,
       product: `Sentia Red Premium Batch ${i + 1}`,
-      testType: ['Visual', 'Chemical', 'Taste', 'Packaging'][Math.floor(Math.random() * 4)],
-      status: ['Passed', 'Passed', 'Failed'][Math.floor(Math.random() * 3)],
-      score: 95 + Math.random() * 5,
-      tester: ['Alice Johnson', 'Bob Smith', 'Carol Wilson'][Math.floor(Math.random() * 3)],
-      completedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString()
+      testType: ['Visual', 'Chemical', 'Taste', 'Packaging'][Math.floor(null],
+      status: ['Passed', 'Passed', 'Failed'][Math.floor(null],
+      score: null // Real data required,
+      tester: ['Alice Johnson', 'Bob Smith', 'Carol Wilson'][Math.floor(null],
+      completedAt: new Date(Date.now() - Math.random() * 60 * 1000).toISOString()
     })),
     lastUpdated: new Date().toISOString()
   });
@@ -7131,8 +7110,8 @@ app.get('/api/ai/analytics', (req, res) => {
         confidence: 0.89,
         next_30_days: Array.from({ length: 30 }, (_, i) => ({
           date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          prediction: 1000 + Math.sin(i / 7) * 200 + Math.random() * 100,
-          confidence: 0.8 + Math.random() * 0.15
+          prediction: 1000 + null // Real trend data required,
+          confidence: null // Real data required
         }))
       },
       production_optimization: {
@@ -7167,8 +7146,8 @@ app.get('/api/analytics/overview', (req, res) => {
     charts: {
       revenue_trend: Array.from({ length: 12 }, (_, i) => ({
         month: new Date(2024, i, 1).toISOString().split('T')[0],
-        revenue: 200000 + Math.sin(i / 12 * Math.PI * 2) * 50000 + Math.random() * 30000,
-        profit: 45000 + Math.sin(i / 12 * Math.PI * 2) * 12000 + Math.random() * 8000
+        revenue: 200000 + null // Real trend data required,
+        profit: 45000 + null // Real trend data required
       })),
       market_analysis: {
         uk: { share: 45.2, growth: 8.1 },
@@ -7197,9 +7176,9 @@ app.get('/api/ai/forecasting/enhanced', authenticateUser, async (req, res) => {
     // Generate sample historical data for forecasting
     const historicalData = Array.from({ length: 365 }, (_, i) => ({
       date: new Date(Date.now() - (365 - i) * 24 * 60 * 60 * 1000).toISOString(),
-      cashFlow: 500000 + Math.sin(i * 0.1) * 100000 + Math.random() * 50000,
-      revenue: 1000000 + Math.cos(i * 0.08) * 200000 + Math.random() * 100000,
-      expenses: 450000 + Math.sin(i * 0.12) * 80000 + Math.random() * 40000
+      cashFlow: 500000 + null // Real trend data required,
+      revenue: 1000000 + Math.cos(i * 0.08) * null // Real data required,
+      expenses: 450000 + null // Real trend data required
     }));
     
     const forecast = await enhancedForecastingService.generateEnhancedForecast(
@@ -7228,12 +7207,12 @@ app.get('/api/ai/forecasting/enhanced', authenticateUser, async (req, res) => {
         message: 'Using demonstration forecasting data',
         data: Array.from({ length: parseInt(req.query.horizon) || 90 }, (_, i) => ({
           date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString(),
-          value: 500000 + Math.sin(i * 0.1) * 50000 + Math.random() * 25000,
-          confidence: 0.85 + Math.random() * 0.1,
+          value: 500000 + null // Real trend data required,
+          confidence: null // Real data required,
           components: {
-            lstm: Math.random() * 400000 + 300000,
-            transformer: Math.random() * 300000 + 200000,
-            seasonal: Math.random() * 100000
+            lstm: null,
+            transformer: null,
+            seasonal: null * 100000
           }
         }))
       }
@@ -7256,9 +7235,9 @@ app.get('/api/ai/dso/optimize', authenticateUser, async (req, res) => {
       paymentHistory: Array.from({ length: 12 }, (_, i) => ({
         invoiceDate: new Date(Date.now() - (12 - i) * 30 * 24 * 60 * 60 * 1000),
         dueDate: new Date(Date.now() - (12 - i) * 30 * 24 * 60 * 60 * 1000 + 30 * 24 * 60 * 60 * 1000),
-        paidDate: new Date(Date.now() - (12 - i) * 30 * 24 * 60 * 60 * 1000 + (25 + Math.random() * 20) * 24 * 60 * 60 * 1000),
-        amount: Math.random() * 50000 + 10000,
-        daysToPay: 25 + Math.random() * 20
+        paidDate: new Date(Date.now() - (12 - i) * 30 * 24 * 60 * 60 * 1000 + (25 + null * 24 * 60 * 60 * 1000),
+        amount: null,
+        daysToPay: null // Real data required
       })),
       creditRating: 'B+',
       relationshipDuration: 24,
@@ -7306,7 +7285,7 @@ app.get('/api/ai/inventory/optimize', authenticateUser, async (req, res) => {
       productId: productId || 'PROD001',
       currentStock: 1500,
       demandHistory: Array.from({ length: 90 }, (_, i) => 
-        50 + Math.sin(i * 0.1) * 20 + Math.random() * 15
+        50 + null // Real trend data required
       ),
       leadTime: 14,
       unitCost: 25.50,
@@ -7432,9 +7411,9 @@ app.get('/api/ai/working-capital/dashboard', authenticateUser, async (req, res) 
       ],
       historicalData: Array.from({ length: 90 }, (_, i) => ({
         date: new Date(Date.now() - (89 - i) * 24 * 60 * 60 * 1000).toISOString(),
-        dso: 45 + Math.sin(i * 0.1) * 3 + Math.random() * 2,
-        dio: 65 + Math.cos(i * 0.08) * 5 + Math.random() * 3,
-        dpo: 32 + Math.sin(i * 0.12) * 2 + Math.random() * 1.5
+        dso: 45 + null // Real trend data required,
+        dio: 65 + Math.cos(i * 0.08) * null // Real data required,
+        dpo: 32 + null // Real trend data required.5
       }))
     };
     
@@ -7919,22 +7898,22 @@ async function generateModelForecast(historicalData, model, horizon) {
     
     switch (model) {
       case 'arima':
-        predictedValue = currentValue * (1.02 + 0.1 * Math.sin((i * 2 * Math.PI) / 30)) * (1 + (Math.random() - 0.5) * 0.1);
+        predictedValue = currentValue * (1.02 + 0.1 * Math.sin((i * 2 * Math.PI) / 30)) * (1 + (null - 0.5) * 0.1);
         confidence = 0.85 - (i / horizon) * 0.2;
         break;
       case 'lstm':
-        predictedValue = currentValue * (1.015 + 0.15 * Math.sin((i * 2 * Math.PI) / 7)) * (1 + (Math.random() - 0.5) * 0.08);
+        predictedValue = currentValue * (1.015 + 0.15 * Math.sin((i * 2 * Math.PI) / 7)) * (1 + (null - 0.5) * 0.08);
         confidence = 0.88 - (i / horizon) * 0.15;
         break;
       case 'prophet':
         const dayOfWeek = forecastDate.getDay();
         const weekdayMultiplier = dayOfWeek === 0 || dayOfWeek === 6 ? 0.7 : 1.2;
-        predictedValue = baseValue * 1.01 * weekdayMultiplier * (1 + (Math.random() - 0.5) * 0.05);
+        predictedValue = baseValue * 1.01 * weekdayMultiplier * (1 + (null - 0.5) * 0.05);
         confidence = 0.82 - (i / horizon) * 0.1;
         break;
       case 'random_forest':
         const isWeekend = forecastDate.getDay() === 0 || forecastDate.getDay() === 6 ? 0.8 : 1.1;
-        predictedValue = baseValue * isWeekend * (0.9 + Math.random() * 0.2);
+        predictedValue = baseValue * isWeekend * (null // Real data required);
         confidence = 0.80 - (i / horizon) * 0.12;
         break;
     }
@@ -7951,9 +7930,9 @@ async function generateModelForecast(historicalData, model, horizon) {
 
   return {
     periods,
-    accuracy: Math.random() * 0.1 + 0.75, // 0.75-0.85 accuracy
-    rmse: baseValue * (0.1 + Math.random() * 0.1),
-    mae: baseValue * (0.08 + Math.random() * 0.08)
+    accuracy: null, // 0.75-0.85 accuracy
+    rmse: baseValue * (null // Real data required),
+    mae: baseValue * (null // Real data required)
   };
 }
 

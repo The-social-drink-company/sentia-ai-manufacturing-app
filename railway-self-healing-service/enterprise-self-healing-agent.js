@@ -1234,9 +1234,16 @@ class EnterpriseSelfHealingAgent {
 }
 
 // Start the agent if run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url.includes(process.argv[1]) || process.argv[1].includes('enterprise-self-healing-agent.js')) {
   const agent = new EnterpriseSelfHealingAgent();
   agent.start();
+  
+  // Keep the process alive
+  process.on('SIGINT', () => {
+    console.log('Received SIGINT, shutting down gracefully...');
+    agent.stop();
+    process.exit(0);
+  });
 }
 
 export default EnterpriseSelfHealingAgent;

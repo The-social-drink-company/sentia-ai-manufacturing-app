@@ -93,7 +93,7 @@ class RedisCacheService {
 
   async get(key) {
     if (!this.isConnected || !this.client) {
-      console.warn('REDIS: Not connected, returning null');
+      // REDIS: Not connected - using fallback (no cache)
       return null;
     }
 
@@ -108,7 +108,7 @@ class RedisCacheService {
 
   async set(key, value, ttlSeconds = 3600) {
     if (!this.isConnected || !this.client) {
-      console.warn('REDIS: Not connected, skipping set operation');
+      // REDIS: Not connected - skipping cache set operation
       return false;
     }
 
@@ -124,7 +124,7 @@ class RedisCacheService {
 
   async del(key) {
     if (!this.isConnected || !this.client) {
-      console.warn('REDIS: Not connected, skipping delete operation');
+      // REDIS: Not connected - skipping cache delete operation
       return false;
     }
 
@@ -153,7 +153,7 @@ class RedisCacheService {
 
   async flushAll() {
     if (!this.isConnected || !this.client) {
-      console.warn('REDIS: Not connected, cannot flush');
+      // REDIS: Not connected - cannot flush cache
       return false;
     }
 

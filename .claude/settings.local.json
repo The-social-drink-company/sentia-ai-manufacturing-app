@@ -240,7 +240,10 @@
       "Bash(set PORT=5004)",
       "Bash(PORT=6000 node server.js)",
       "Bash(start http://localhost:6000)",
-      "Bash(start http://localhost:5002/api/working-capital/overview)"
+      "Bash(start http://localhost:5002/api/working-capital/overview)",
+      "Bash(PORT=5004 node server.js)",
+      "Bash(start http://localhost:3005/test-working-capital.html)",
+      "Bash(start http://localhost:3005/api-test.html)"
     ],
     "deny": [],
     "ask": []

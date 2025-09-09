@@ -14,7 +14,7 @@ import './lib/chartSetup'
 
 // Layout Components
 import DashboardLayout from './components/layout/DashboardLayout'
-import WorldClassLayout from './components/layout/WorldClassLayout'
+import SimpleWorldClassLayout from './components/layout/SimpleWorldClassLayout'
 import { LoadingSpinner } from './components/LoadingStates'
 import ErrorBoundaryFallback from './components/ErrorBoundary'
 

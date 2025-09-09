@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import EnterpriseNavSidebar from './EnterpriseNavSidebar';
+import Sidebar from './Sidebar';
 import EnterpriseHeader from './EnterpriseHeader';
 
 const WorldClassLayout = ({ children }) => {
@@ -23,7 +23,7 @@ const WorldClassLayout = ({ children }) => {
 
   const mainContentVariants = {
     default: {
-      marginLeft: isMobile ? '0' : '16rem', // 64 * 4 = 256px = 16rem for fixed sidebar
+      marginLeft: isMobile ? '0' : '256px', // 256px to match sidebar width
       transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
     }
   };
@@ -48,8 +48,8 @@ const WorldClassLayout = ({ children }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-purple-50/30" />
       </div>
 
-      {/* Enterprise Navigation Sidebar */}
-      <EnterpriseNavSidebar />
+      {/* Navigation Sidebar */}
+      <Sidebar />
 
       {/* Enterprise Header */}
       <EnterpriseHeader 

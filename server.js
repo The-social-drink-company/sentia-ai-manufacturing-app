@@ -2995,24 +2995,14 @@ app.get('/api/working-capital/overview', authenticateUser, async (req, res) => {
         parseInt(periodDays)
       );
     } catch (error) {
-      logError('Working capital calculator failed, using fallback values', error);
-      // Direct fallback calculations without database dependency
-      baseMetrics = {
-        currentAssets: 3800000,
-        currentLiabilities: 1150000,
-        workingCapital: 2650000,
-        currentRatio: 3.3,
-        quickRatio: 2.61,
-        cashConversionCycle: 42,
-        dso: 35,
-        dio: 45,
-        dpo: 38,
-        accountsReceivable: 1200000,
-        inventory: 800000,
-        accountsPayable: 950000,
-        cash: 1800000,
-        dataSource: 'fallback_estimated'
-      };
+      logError('Working capital calculator failed - real data required', error);
+      // FORCE REAL DATA ONLY - No fallback working capital data allowed
+      return res.status(503).json({
+        error: 'Real working capital data integration required',
+        message: 'Working capital analysis requires real financial data from authenticated sources (Xero API, bank APIs, accounting systems). Please complete API authentication to access authentic balance sheet data. No mock working capital data will be returned.',
+        requiredAPIs: ['Xero API', 'Bank API', 'Accounting System'],
+        action: 'Complete financial data integration setup'
+      });
     }
     
     // Enhanced overview with additional business context

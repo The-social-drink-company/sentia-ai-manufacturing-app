@@ -448,6 +448,25 @@ app.get('/api/health', (req, res) => {
   }
 });
 
+// Railway health check endpoint (without /api prefix)
+app.get('/health', (req, res) => {
+  try {
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      version: '2.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      uptime: Math.floor(process.uptime()),
+      railway: true
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+});
+
 // Enhanced health check with external services (may timeout in Railway)
 app.get('/api/health/detailed', async (req, res) => {
   const startTime = Date.now();
@@ -1924,78 +1943,18 @@ app.get('/api/analytics/executive-kpis', authenticateUser, async (req, res) => {
   }
 });
 
-// Generate historical financial data for trending
+// Generate historical financial data - requires live ERP integration
 function generateHistoricalFinancials() {
-  const months = 24;
-  const data = [];
-  const baseRevenue = 40000000;
-  
-  for (let i = months; i >= 0; i--) {
-    const date = new Date();
-    date.setMonth(date.getMonth() - i);
-    
-    const seasonality = 1 + 0.1 * Math.sin((date.getMonth() / 12) * 2 * Math.PI);
-    const growth = Math.pow(1.08, i / 12); // 8% annual growth
-    const variance = 0.95 + Math.random() * 0.1; // ±5% variance
-    
-    const revenue = baseRevenue * growth * seasonality * variance;
-    
-    data.push({
-      date: date.toISOString().split('T')[0],
-      revenue,
-      cogs: revenue * 0.6,
-      gross_profit: revenue * 0.4,
-      operating_expenses: revenue * 0.2,
-      ebitda: revenue * 0.2,
-      net_income: revenue * 0.14
-    });
-  }
-  
-  return data;
+  // Return empty array - no mock historical data
+  // Real implementation requires historical data from financial systems
+  return [];
 }
 
-// Generate KPI trend data
+// Generate KPI trend data - requires live data integration
 function generateKPITrends(category, timeframe) {
-  const periods = timeframe === 'daily' ? 30 : timeframe === 'weekly' ? 12 : timeframe === 'monthly' ? 12 : 4;
-  const trends = [];
-  
-  for (let i = periods - 1; i >= 0; i--) {
-    const date = new Date();
-    if (timeframe === 'daily') date.setDate(date.getDate() - i);
-    else if (timeframe === 'weekly') date.setDate(date.getDate() - (i * 7));
-    else if (timeframe === 'monthly') date.setMonth(date.getMonth() - i);
-    else date.setMonth(date.getMonth() - (i * 3));
-    
-    const period = date.toISOString().split('T')[0];
-    
-    if (category === 'financial') {
-      trends.push({
-        period,
-        revenue: 42500000 + (Math.random() - 0.5) * 2000000,
-        ebitda: 8800000 + (Math.random() - 0.5) * 500000,
-        cash_flow: 7200000 + (Math.random() - 0.5) * 400000,
-        working_capital: 13500000 + (Math.random() - 0.5) * 800000
-      });
-    } else if (category === 'operational') {
-      trends.push({
-        period,
-        production_efficiency: 0.92 + Math.random() * 0.08,
-        quality_rate: 0.98 + Math.random() * 0.02,
-        inventory_turnover: 6 + Math.random() * 2,
-        on_time_delivery: 0.94 + Math.random() * 0.06
-      });
-    } else {
-      trends.push({
-        period,
-        market_share: 0.13 + Math.random() * 0.02,
-        customer_satisfaction: 4.0 + Math.random() * 0.5,
-        employee_engagement: 3.6 + Math.random() * 0.6,
-        innovation_index: 3.4 + Math.random() * 0.8
-      });
-    }
-  }
-  
-  return trends;
+  // Return empty array - no mock trend data
+  // Real implementation requires live data from business systems
+  return [];
 }
 
 // What-If Analysis APIs
@@ -3074,15 +3033,8 @@ async function calculateRealTrendsWithAI() {
     }));
   }
   
-  // Final fallback trend data
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-  return months.map(month => ({
-    month,
-    production: Math.floor(Math.random() * 10000) + 15000,
-    quality: Math.floor(Math.random() * 5) + 95,
-    efficiency: Math.floor(Math.random() * 10) + 90,
-    dataSource: 'estimated'
-  }));
+  // No fallback data available - requires real production data
+  return [];
 }
 
 // Enhanced Production Status Calculation
@@ -3207,7 +3159,7 @@ function getCurrentBatches() {
       id: '2024-001', 
       product: 'GABA Red 500ml', 
       status: 'processing', 
-      completion: Math.floor(Math.random() * 30) + 70,
+      completion: 70,
       startTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       estimatedCompletion: new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString()
     },

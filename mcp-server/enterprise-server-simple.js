@@ -1028,6 +1028,21 @@ class SentiaEnterpriseMCPServer {
 
   // HTTP endpoints setup
   setupHTTPEndpoints() {
+    // Root endpoint
+    this.app.get('/', (req, res) => {
+      res.json({
+        service: 'Sentia Enterprise MCP Server',
+        version: SERVER_VERSION,
+        protocol: MCP_PROTOCOL_VERSION,
+        status: 'running',
+        endpoints: {
+          health: '/health',
+          info: '/mcp/info',
+          chat: '/ai/chat'
+        }
+      });
+    });
+
     // Health check endpoint
     this.app.get('/health', (req, res) => {
       res.status(200).json({
@@ -1347,7 +1362,7 @@ Always provide specific, actionable advice based on Sentia's actual capabilities
 
   // Server lifecycle
   async start() {
-    const port = process.env.MCP_PORT || 9001;
+    const port = process.env.PORT || process.env.MCP_PORT || 9001;
     
     // Setup HTTP endpoints
     this.setupHTTPEndpoints();

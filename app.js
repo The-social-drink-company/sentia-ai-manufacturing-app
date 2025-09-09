@@ -5,9 +5,13 @@
  * This is a simplified server specifically designed to work with Railway's deployment system
  */
 
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -82,7 +86,7 @@ app.get('/api/xero/auth', async (req, res) => {
   try {
     // Check if Xero is properly configured
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
-      return res.status(200).json({
+      return res.status(503).json({
         status: 'configuration_required',
         message: 'Xero OAuth credentials not configured in this environment',
         authRequired: true,
@@ -91,7 +95,7 @@ app.get('/api/xero/auth', async (req, res) => {
     }
     
     // If properly configured, indicate OAuth integration would be needed
-    res.status(200).json({
+    res.status(501).json({
       status: 'integration_required',
       message: 'Xero OAuth integration implementation required',
       authRequired: true,
@@ -100,7 +104,7 @@ app.get('/api/xero/auth', async (req, res) => {
     });
   } catch (error) {
     console.error('Xero OAuth endpoint error:', error);
-    res.status(200).json({
+    res.status(500).json({
       status: 'error',
       message: 'OAuth endpoint encountered an error',
       authRequired: true,
@@ -162,4 +166,4 @@ app.listen(PORT, () => {
   console.log(`🧪 Test endpoint: /api/test`);
 });
 
-module.exports = app;
+export default app;

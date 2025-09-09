@@ -4,8 +4,9 @@
  * Research-based approach for superior financial time series preprocessing
  */
 
-import { EMD } from 'ml-emd';
-import { FFT } from 'ml-fft';
+// EMD and FFT packages not available in Node.js, using simulation
+// import { EMD } from 'ml-emd';
+// import { FFT } from 'ml-fft';
 
 class DataDecompositionService {
   constructor() {

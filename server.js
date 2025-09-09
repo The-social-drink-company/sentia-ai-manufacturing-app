@@ -4557,6 +4557,75 @@ app.get('/api/mcp/status', async (req, res) => {
   }
 });
 
+// AI Chatbot endpoint - proxy to MCP server
+app.post('/api/mcp/ai/chat', async (req, res) => {
+  try {
+    logInfo('AI Chatbot request received', { 
+      path: req.path,
+      message_length: req.body?.message?.length || 0,
+      context: req.body?.context 
+    });
+
+    // Determine MCP server endpoint based on environment
+    const mcpServerUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'  // Railway MCP endpoint
+      : 'http://localhost:8081';  // Local MCP server on port 8081
+
+    const mcpEndpoint = `${mcpServerUrl}/ai/chat`;
+    
+    const response = await fetch(mcpEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-session-id': req.headers['x-session-id'] || 'anonymous'
+      },
+      body: JSON.stringify(req.body),
+      timeout: 30000 // 30 second timeout for AI processing
+    });
+
+    if (!response.ok) {
+      throw new Error(`MCP server returned ${response.status}: ${response.statusText}`);
+    }
+
+    const chatbotResponse = await response.json();
+    
+    logInfo('AI Chatbot response sent', { 
+      ai_provider: chatbotResponse.ai_provider,
+      response_length: chatbotResponse.response?.length || 0,
+      confidence: chatbotResponse.confidence
+    });
+
+    res.json(chatbotResponse);
+
+  } catch (error) {
+    logError('AI Chatbot proxy error', error);
+    
+    // Provide fallback response if MCP server is unavailable
+    res.json({
+      response: `I apologize, but I'm currently experiencing technical difficulties connecting to my AI brain. 
+      
+I'm still here to help! Here are some quick resources while I recover:
+
+**Navigation Help:**
+• Click the Sentia logo to return to the main dashboard
+• Use the sidebar menu to access different modules
+• Try the What-If Analysis for scenario planning
+
+**Quick Support:**
+• Check the Help section in the top navigation
+• Visit our documentation for detailed guides
+• Contact support if you need immediate assistance
+
+I should be back to full functionality shortly. Please try asking your question again in a moment!`,
+      context: 'fallback_mode',
+      ai_provider: 'fallback',
+      confidence: 0.5,
+      timestamp: new Date().toISOString(),
+      error: 'MCP server temporarily unavailable'
+    });
+  }
+});
+
 // Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
 app.get('*', (req, res) => {
   // Skip API routes - they should have been handled above
@@ -4570,7 +4639,8 @@ app.get('*', (req, res) => {
         '/api/test-simple',
         '/api/services/status',
         '/api/working-capital/overview',
-        '/api/mcp/status'
+        '/api/mcp/status',
+        '/api/mcp/ai/chat'
       ]
     });
   }

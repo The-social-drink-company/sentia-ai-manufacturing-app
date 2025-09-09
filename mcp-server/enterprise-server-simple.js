@@ -1146,6 +1146,92 @@ class SentiaEnterpriseMCPServer {
       }
     });
 
+    // AI Support Chatbot endpoint
+    this.app.post('/ai/chat', async (req, res) => {
+      try {
+        const { message, context, conversation_history } = req.body;
+        
+        if (!message || typeof message !== 'string') {
+          return res.status(400).json({ 
+            error: 'Message is required and must be a string' 
+          });
+        }
+
+        logger.info('AI Chatbot request received', { 
+          message: message.substring(0, 100),
+          context,
+          history_length: conversation_history?.length || 0
+        });
+
+        // Prepare system prompt for Sentia Manufacturing domain knowledge
+        const systemPrompt = `You are the official AI Support Assistant for Sentia Manufacturing Dashboard. 
+        
+Your role is to:
+- Provide comprehensive support and onboarding for Sentia Manufacturing software users
+- Answer questions about software features, business processes, and manufacturing workflows
+- Help users navigate the dashboard, understand reports, and optimize their operations
+- Educate users on best practices for manufacturing, inventory, forecasting, and financial management
+- Provide 24/7 support with friendly, professional, and knowledgeable assistance
+
+Context about Sentia Manufacturing Dashboard:
+- Enterprise manufacturing management platform with AI-powered analytics
+- Features: Demand Forecasting, Inventory Management, Production Tracking, Quality Control
+- Financial tools: Working Capital management, What-If Analysis, Financial Reports
+- Integrations: Xero, Shopify, Amazon SP-API, and other business systems
+- AI-powered insights for inventory optimization, demand forecasting, and business intelligence
+- Real-time monitoring and automated decision-making capabilities
+
+Current user context: ${context || 'general_support'}
+Always be helpful, accurate, and focused on Sentia Manufacturing business needs.`;
+
+        // Process through AI Central Nervous System if available
+        let aiResponse;
+        if (this.aiCentralNervousSystem) {
+          try {
+            aiResponse = await this.aiCentralNervousSystem.processRequest({
+              query: message,
+              type: 'support_chat',
+              systemPrompt,
+              conversationHistory: conversation_history,
+              capabilities: ['reasoning', 'manufacturing-intelligence', 'support']
+            });
+          } catch (aiError) {
+            logger.error('AI Central Nervous System error:', aiError);
+            // Fallback to simple response
+            aiResponse = null;
+          }
+        }
+
+        // Generate appropriate response
+        const response = aiResponse?.response || this.generateFallbackResponse(message, context);
+        
+        // Log interaction for knowledge base building
+        this.logChatbotInteraction({
+          user_message: message,
+          ai_response: response,
+          context,
+          timestamp: new Date().toISOString(),
+          session_id: req.headers['x-session-id'] || 'anonymous'
+        });
+
+        res.json({
+          response,
+          context: context || 'sentia_support',
+          ai_provider: aiResponse?.provider || 'fallback',
+          confidence: aiResponse?.confidence || 0.8,
+          timestamp: new Date().toISOString(),
+          capabilities_used: aiResponse?.capabilities || ['support', 'knowledge-base']
+        });
+
+      } catch (error) {
+        logger.error('AI Chatbot error:', error);
+        res.status(500).json({ 
+          error: 'I apologize, but I encountered a technical issue. Please try again or contact support if the problem persists.',
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
+
     // Manufacturing insights demo endpoint
     this.app.get('/demo/inventory-insight', (req, res) => {
       res.json({
@@ -1230,6 +1316,156 @@ class SentiaEnterpriseMCPServer {
     }
     
     logger.info('Enterprise MCP Server shutdown complete');
+  }
+
+  // Helper method to generate fallback responses for chatbot
+  generateFallbackResponse(message, context) {
+    const lowerMessage = message.toLowerCase();
+    
+    // Greetings and basic interactions
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('help')) {
+      return `Hello! I'm your Sentia Manufacturing AI Assistant. I'm here to help you with:
+
+• Software navigation and features
+• Manufacturing best practices
+• Inventory and demand forecasting
+• Financial management and working capital
+• Production optimization and quality control
+• Data import and integration questions
+
+What would you like to learn about today?`;
+    }
+
+    // Dashboard and navigation help
+    if (lowerMessage.includes('dashboard') || lowerMessage.includes('navigate') || lowerMessage.includes('menu')) {
+      return `I can help you navigate the Sentia Manufacturing Dashboard:
+
+**Main Sections:**
+• **Overview**: Main dashboard with KPIs and real-time monitoring
+• **Planning & Analytics**: Forecasting, inventory management, production tracking
+• **Financial Management**: Working capital, what-if analysis, financial reports  
+• **Data Management**: Import data, templates, and API integrations
+• **Administration**: User management, system configuration, and settings
+
+**Quick Navigation Tips:**
+• Click the Sentia logo to return to the main dashboard
+• Use keyboard shortcuts (G+O for Overview, G+F for Forecasting, etc.)
+• The sidebar shows all available modules based on your permissions
+
+Would you like help with a specific section?`;
+    }
+
+    // Working capital help
+    if (lowerMessage.includes('working capital') || lowerMessage.includes('cash flow') || lowerMessage.includes('financial')) {
+      return `The Working Capital module helps you optimize your cash flow:
+
+**Key Features:**
+• Real-time cash flow monitoring and forecasting
+• Accounts receivable and payable management
+• Working capital optimization recommendations
+• Integration with Xero for live financial data
+• Cash conversion cycle analysis
+
+**Best Practices:**
+• Monitor your cash conversion cycle weekly
+• Set up automated AR/AP aging reports
+• Use predictive analytics for cash flow planning
+• Review working capital ratios monthly
+
+Would you like help with a specific financial metric or report?`;
+    }
+
+    // Inventory and forecasting
+    if (lowerMessage.includes('inventory') || lowerMessage.includes('forecast') || lowerMessage.includes('demand')) {
+      return `Our AI-powered inventory and forecasting tools help optimize your stock levels:
+
+**Inventory Management:**
+• Real-time stock level monitoring
+• Automated reorder point calculations
+• ABC analysis for inventory prioritization
+• Integration with Amazon SP-API and Shopify
+
+**Demand Forecasting:**
+• Machine learning algorithms for accurate predictions
+• Seasonal trend analysis
+• External factor integration (weather, events, etc.)
+• What-if scenario modeling
+
+**Best Practices:**
+• Review forecasts weekly and adjust for market changes
+• Use safety stock calculations for critical items
+• Monitor forecast accuracy and continuously improve models
+
+What specific inventory challenge can I help you solve?`;
+    }
+
+    // Data import and integration
+    if (lowerMessage.includes('import') || lowerMessage.includes('data') || lowerMessage.includes('integration')) {
+      return `Sentia supports multiple data import and integration methods:
+
+**Import Options:**
+• Excel/CSV file uploads with validation
+• API integrations (Xero, Shopify, Amazon SP-API)
+• Real-time data sync and automated imports
+• Custom data templates and mapping
+
+**Supported Data Types:**
+• Financial data (transactions, invoices, payments)
+• Inventory data (stock levels, movements, SKUs)
+• Sales data (orders, customers, products)
+• Production data (jobs, resources, quality metrics)
+
+**Integration Best Practices:**
+• Use our templates to ensure proper data formatting
+• Set up automated sync schedules for real-time updates
+• Validate data quality before importing
+• Monitor integration logs for errors
+
+Need help with a specific data import or integration?`;
+    }
+
+    // General support response
+    return `I'm here to help you get the most out of Sentia Manufacturing Dashboard. 
+
+**Common Topics I Can Help With:**
+• Navigation and software features
+• Manufacturing workflows and best practices  
+• Financial management and working capital optimization
+• Inventory management and demand forecasting
+• Data imports and system integrations
+• Quality control and production tracking
+• Report generation and analytics
+
+**Getting Started Tips:**
+• Explore the main dashboard for an overview of your operations
+• Check out the What-If Analysis tool for scenario planning
+• Set up your data integrations for real-time insights
+• Use the financial reports for monthly business reviews
+
+Feel free to ask me specific questions about any of these topics or anything else related to your manufacturing operations!`;
+  }
+
+  // Helper method to log chatbot interactions for knowledge base building
+  logChatbotInteraction(interaction) {
+    try {
+      // Log to structured logger for analysis
+      logger.info('Chatbot interaction', {
+        type: 'chatbot_interaction',
+        user_message: interaction.user_message,
+        ai_response_length: interaction.ai_response.length,
+        context: interaction.context,
+        session_id: interaction.session_id,
+        timestamp: interaction.timestamp
+      });
+
+      // Store interaction for knowledge base building (future implementation)
+      // This could be expanded to store in a database for ML training
+      if (this.chatbotKnowledgeBase) {
+        this.chatbotKnowledgeBase.storeInteraction(interaction);
+      }
+    } catch (error) {
+      logger.error('Failed to log chatbot interaction:', error);
+    }
   }
 }
 

@@ -63,6 +63,9 @@ const UIShowcase = lazy(() => import('./components/ui/UIShowcase'))
 const UserPreferences = lazy(() => import('./pages/UserPreferences'))
 const MobileFloor = lazy(() => import('./pages/MobileFloor'))
 
+// AI Support Chatbot Component
+const AISupportChatbot = lazy(() => import('./components/chatbot/AISupportChatbot'))
+
 // Enhanced Admin System Components
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
 const AdminOverview = lazy(() => import('./components/admin/pages/AdminOverview'))
@@ -813,6 +816,11 @@ function App() {
                   },
                 }}
               />
+              
+              {/* AI Support Chatbot - Available on all authenticated pages */}
+              <Suspense fallback={null}>
+                <AISupportChatbot />
+              </Suspense>
             </div>
             </Router>
           </ThemeProvider>

@@ -651,9 +651,9 @@ export class RailwayMCPHealthTester {
    */
   getEnvironmentUrl(environment) {
     const envUrls = {
-      development: process.env.RAILWAY_DEV_URL || 'https://daring-reflection-development.up.railway.app',
-      testing: process.env.RAILWAY_TEST_URL || 'https://sentia-manufacturing-dashboard-testing.up.railway.app',
-      production: process.env.RAILWAY_PROD_URL || 'https://web-production-1f10.up.railway.app'
+      development: process.env.RAILWAY_DEV_URL || 'https://sentia-manufacturing-dashboard-development.up.railway.app',
+      testing: process.env.RAILWAY_TEST_URL || 'https://sentiatest.financeflo.ai',
+      production: process.env.RAILWAY_PROD_URL || 'https://sentia-manufacturing-dashboard-production.up.railway.app'
     };
     
     return envUrls[environment] || this.config.railwayBaseUrl;

@@ -305,48 +305,39 @@ class MCPServer {
   }
 
   async getXeroBalanceSheet() {
-    // Mock implementation - replace with actual Xero API calls
-    return {
-      assets: 5200000,
-      liabilities: 2100000,
-      equity: 3100000,
-      date: new Date().toISOString(),
-      currency: 'GBP',
-      source: 'mcp-server'
-    };
+    if (!this.isXeroConfigured()) {
+      throw new Error('Xero API credentials not configured. Real financial data required - no mock data available. Please configure XERO_CLIENT_ID and XERO_CLIENT_SECRET environment variables.');
+    }
+    
+    // Real Xero API integration required
+    throw new Error('Xero Balance Sheet API integration not yet implemented. Real data connection required - mock data has been eliminated per enterprise requirements.');
   }
 
   async getXeroCashFlow() {
-    return {
-      operating: 450000,
-      investing: -125000,
-      financing: -80000,
-      net: 245000,
-      date: new Date().toISOString(),
-      currency: 'GBP',
-      source: 'mcp-server'
-    };
+    if (!this.isXeroConfigured()) {
+      throw new Error('Xero API credentials not configured. Real financial data required - no mock data available. Please configure XERO_CLIENT_ID and XERO_CLIENT_SECRET environment variables.');
+    }
+    
+    // Real Xero API integration required
+    throw new Error('Xero Cash Flow API integration not yet implemented. Real data connection required - mock data has been eliminated per enterprise requirements.');
   }
 
   async getXeroProfitLoss() {
-    return {
-      revenue: 2800000,
-      expenses: 2100000,
-      profit: 700000,
-      margin: 25.0,
-      date: new Date().toISOString(),
-      currency: 'GBP',
-      source: 'mcp-server'
-    };
+    if (!this.isXeroConfigured()) {
+      throw new Error('Xero API credentials not configured. Real financial data required - no mock data available. Please configure XERO_CLIENT_ID and XERO_CLIENT_SECRET environment variables.');
+    }
+    
+    // Real Xero API integration required
+    throw new Error('Xero Profit & Loss API integration not yet implemented. Real data connection required - mock data has been eliminated per enterprise requirements.');
   }
 
   async syncXeroData() {
-    return {
-      status: 'success',
-      recordsSynced: 247,
-      lastSync: new Date().toISOString(),
-      nextSync: new Date(Date.now() + 3600000).toISOString() // 1 hour
-    };
+    if (!this.isXeroConfigured()) {
+      throw new Error('Xero API credentials not configured. Real data synchronization required - no mock data available. Please configure XERO_CLIENT_ID and XERO_CLIENT_SECRET environment variables.');
+    }
+    
+    // Real Xero API synchronization required
+    throw new Error('Xero data synchronization not yet implemented. Real API integration required - mock data has been eliminated per enterprise requirements.');
   }
 
   // API Proxy Methods - Connect MCP to main server APIs

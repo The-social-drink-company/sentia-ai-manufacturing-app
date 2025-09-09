@@ -1,11 +1,11 @@
 {
   "build": {
     "builder": "nixpacks",
-    "nixpacksConfigPath": "nixpacks.toml"
+    "buildCommand": "npm run build"
   },
   "deploy": {
-    "startCommand": "node server.js",
-    "comment": "Force redeploy to use correct server.js file",
+    "startCommand": "npm start",
+    "comment": "FORCE PRODUCTION DEPLOY - 2025-09-09-17:18 - Using npm start to run server.js",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",

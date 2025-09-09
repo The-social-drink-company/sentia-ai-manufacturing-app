@@ -5,8 +5,10 @@
 
 import { logError, logApiCall } from '../lib/logger.js';
 
-const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://sentia-mcp-server.railway.app';
-const MCP_HEALTH_URL = process.env.MCP_HEALTH_URL || 'https://sentia-mcp-server.railway.app/health';
+const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 
+  (process.env.NODE_ENV === 'development' ? 'http://localhost:7001' : 'https://sentia-mcp-server.railway.app');
+const MCP_HEALTH_URL = process.env.MCP_HEALTH_URL || 
+  (process.env.NODE_ENV === 'development' ? 'http://localhost:7001/health' : 'https://sentia-mcp-server.railway.app/health');
 
 class MCPService {
   constructor() {

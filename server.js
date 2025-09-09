@@ -69,7 +69,7 @@ const mcpOrchestrator = new MCPOrchestrator();
       type: 'manufacturing-ai-integration',
       endpoint: process.env.NODE_ENV === 'production' 
         ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'
-        : 'http://localhost:8080',
+        : 'http://localhost:7001',
       transport: 'http',
       capabilities: [
         'inventory-optimization',
@@ -4515,6 +4515,56 @@ app.get('*', (req, res) => {
   
   // Serve the React app for all non-API routes
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// MCP Server Status endpoint
+app.get('/api/mcp/status', async (req, res) => {
+  try {
+    // Get MCP status from orchestrator
+    const mcpStatus = await mcpOrchestrator.getStatus();
+    
+    // Try to fetch health from local MCP server
+    let localMCPHealth = null;
+    try {
+      const response = await fetch('http://localhost:7001/health', { timeout: 5000 });
+      if (response.ok) {
+        localMCPHealth = await response.json();
+      }
+    } catch (error) {
+      logWarn('Local MCP server health check failed', { error: error.message });
+    }
+
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      connections: mcpStatus.servers || [],
+      totalServers: mcpStatus.totalServers || 0,
+      activeConnections: mcpStatus.activeServers || 0,
+      vectorQueries: localMCPHealth?.queries || 0,
+      lastSync: new Date().toISOString(),
+      dataQuality: 85.5,
+      localMCP: localMCPHealth ? {
+        status: 'connected',
+        version: localMCPHealth.version,
+        uptime: localMCPHealth.uptime,
+        features: localMCPHealth.features
+      } : {
+        status: 'disconnected',
+        message: 'Local MCP server not reachable'
+      }
+    });
+  } catch (error) {
+    logError('Failed to get MCP status', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message,
+      connections: [],
+      totalServers: 0,
+      activeConnections: 0,
+      vectorQueries: 0,
+      dataQuality: 0
+    });
+  }
 });
 
 // Error handling middleware

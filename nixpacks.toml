@@ -1,14 +1,17 @@
 [variables]
-NODE_ENV = "production"
+NODE_ENV = "test"
 NIXPACKS_NO_CACHE = "1"
 NPM_CONFIG_CACHE = "/tmp/.npm"
+# Force rebuild to fix CSS serving issues - 2025-09-09 08:50
+# Issue: Railway not deploying latest Emergency CSS serving fix from server.js
 
-# CRITICAL: Force Node.js app detection and prevent Caddy installation
-providers = ["node"]
+# CRITICAL: Prevent Caddy installation and force Node.js app detection
+[providers]
+node = true
 
 [phases.setup]
-nixPkgs = ["nodejs_20", "python311"]
-nixLibs = ["nodejs_20"]
+nixPkgs = ["nodejs_22", "python311"]
+nixLibs = ["nodejs_22"]
 
 [phases.install]
 cmds = [
@@ -18,8 +21,22 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "npm run build"
+  "npm run build",
+  "ls -la dist/",
+  "ls -la dist/assets/",
+  "echo 'BUILD VERIFICATION: Checking index.html'",
+  "cat dist/index.html",
+  "echo 'BUILD VERIFICATION: Checking if React app built correctly'",
+  "find dist -name '*.js' | head -5",
+  "echo 'BUILD COMPLETED - NUCLEAR FIX APPLIED'"
 ]
 
 [start]
 cmd = "node server.js"
+
+# Health check configuration - CRITICAL for Railway deployment
+[healthcheck]
+path = "/api/health"
+port = "${PORT:-8080}"
+timeout = "30s"
+interval = "15s"

@@ -2235,50 +2235,29 @@ app.get('/api/production/live', async (req, res) => {
 
       res.json(productionData);
     } else {
-      // Fallback to mock data when database is not available
-      logWarn('Database not connected, using fallback production data');
-      
-      const productionData = {
-        activeJobs: [
-          { 
-            id: 'JOB-2025-001', 
-            product: 'GABA Red 500ml', 
-            line: 'Line A', 
-            status: 'running', 
-            progress: Math.floor(Math.random() * 30) + 65, 
-            startTime: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-            estimatedEnd: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString()
-          },
-          { 
-            id: 'JOB-2025-002', 
-            product: 'GABA Gold 500ml', 
-            line: 'Line B', 
-            status: 'running', 
-            progress: Math.floor(Math.random() * 20) + 40, 
-            startTime: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-            estimatedEnd: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
-          }
+      logError('Database not connected - live production data unavailable');
+      res.status(503).json({
+        error: 'Live production data requires database connection',
+        message: 'Production tracking requires connection to Manufacturing Execution System (MES)',
+        required_integrations: [
+          'Manufacturing Execution System (MES) for job tracking',
+          'Production Line Controllers for real-time metrics',
+          'Industrial IoT sensors for equipment monitoring',
+          'Warehouse Management System (WMS) for production planning',
+          'Quality Management System (QMS) for production quality data'
         ],
-        metrics: {
-          totalJobs: 15,
-          activeJobs: 12,
-          completedToday: Math.floor(Math.random() * 3) + 8,
-          capacity: Math.floor(Math.random() * 10) + 80,
-          efficiency: Math.floor(Math.random() * 5) + 92,
-          outputToday: Math.floor(Math.random() * 200) + 1200,
-          outputTarget: 1400,
-          downtimeMinutes: Math.floor(Math.random() * 20) + 15
+        supported_parameters: {
+          line: 'Specific production line (line-a, line-b, line-c, line-d) or "all"',
+          range: 'Time range for data (1h, 8h, 24h, 7d)'
         },
-        lines: [
-          { id: 'line-a', name: 'Line A', status: 'running', efficiency: 93, output: 430 },
-          { id: 'line-b', name: 'Line B', status: 'running', efficiency: 88, output: 390 },
-          { id: 'line-c', name: 'Line C', status: 'running', efficiency: 85, output: 340 },
-          { id: 'line-d', name: 'Line D', status: 'running', efficiency: 96, output: 350 }
+        required_data: [
+          'Active production jobs with real-time progress',
+          'Production line metrics and efficiency rates',
+          'Hourly production output and capacity utilization',
+          'Equipment downtime and maintenance schedules'
         ],
-        hourlyProduction: generateHourlyData(range)
-      };
-      
-      res.json(productionData);
+        contact: 'Contact system administrator to configure MES and production data integration'
+      });
     }
   } catch (error) {
     logError('Production live data error', error);
@@ -2382,39 +2361,31 @@ app.get('/api/automation/overview', async (req, res) => {
       const automationData = await databaseService.getAutomationProcesses();
       res.json(automationData);
     } else {
-      // Fallback automation data when database not available
-      logWarn('Database not connected, using fallback automation data');
-      
-      const automationData = {
-        stats: {
-          totalProcesses: 12,
-          activeProcesses: Math.floor(Math.random() * 3) + 8,
-          completedToday: Math.floor(Math.random() * 5) + 22,
-          averageEfficiency: Math.floor(Math.random() * 5) + 92
-        },
-        activeProcesses: [
-          { 
-            id: 'proc-001', 
-            name: 'Quality Check Automation', 
-            type: 'QUALITY', 
-            status: 'RUNNING', 
-            progress: 78,
-            nextRun: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-            steps: 4
-          },
-          { 
-            id: 'proc-002', 
-            name: 'Inventory Sync Process', 
-            type: 'INVENTORY', 
-            status: 'RUNNING', 
-            progress: 45,
-            nextRun: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-            steps: 6
-          }
-        ]
-      };
-      
-      res.json(automationData);
+      logError('Database not connected - automation overview data unavailable');
+      res.status(503).json({
+        error: 'Automation overview requires database connection',
+        message: 'Automation process monitoring requires connection to Process Automation System',
+        required_integrations: [
+          'Process Automation System (PAS) for automation workflows',
+          'Manufacturing Execution System (MES) for process coordination',
+          'Quality Management System (QMS) for automated quality checks',
+          'Warehouse Management System (WMS) for inventory automation',
+          'Enterprise Resource Planning (ERP) for business process automation'
+        ],
+        automation_types: [
+          'QUALITY - Automated quality control processes',
+          'INVENTORY - Inventory synchronization and management',
+          'PRODUCTION - Manufacturing workflow automation',
+          'REPORTING - Automated data collection and reporting'
+        ],
+        required_data: [
+          'Active automation process status and progress',
+          'Process execution statistics and efficiency metrics',
+          'Scheduled automation tasks and next run times',
+          'Process completion rates and error logs'
+        ],
+        contact: 'Contact system administrator to configure automation system integration'
+      });
     }
   } catch (error) {
     logError('Automation overview error', error);

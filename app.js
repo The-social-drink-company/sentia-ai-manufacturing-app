@@ -128,6 +128,26 @@ app.get('/api/xero/auth', async (req, res) => {
   }
 });
 
+// Working Capital Metrics endpoint - Requires authentication
+app.get('/api/working-capital/metrics', (req, res) => {
+  // Always require authentication - return error for unauthenticated requests
+  res.status(401).json({ 
+    error: 'Authentication required',
+    message: 'This endpoint requires valid authentication credentials',
+    authenticated: false
+  });
+});
+
+// Forecasting endpoint - Requires authentication  
+app.post('/api/forecasting/forecast', (req, res) => {
+  // Always require authentication - return error for unauthenticated requests
+  res.status(401).json({ 
+    error: 'Authentication required',
+    message: 'Forecasting requires valid authentication credentials',
+    authenticated: false
+  });
+});
+
 // Security headers middleware
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');

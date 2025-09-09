@@ -532,16 +532,17 @@ export class WorkingCapitalCalculator {
 
   getFallbackMetrics(companyId, error) {
     return {
-      workingCapital: { amount: 200000, ratio: 1.67, currency: 'GBP' },
-      currentAssets: { total: 500000, accountsReceivable: 150000, inventory: 200000, cash: 100000, other: 50000 },
-      currentLiabilities: { total: 300000, accountsPayable: 80000, shortTermDebt: 150000, accruedExpenses: 50000, other: 20000 },
-      dso: { days: 45, hasRealData: false, source: 'fallback' },
-      dpo: { days: 30, hasRealData: false, source: 'fallback' },
-      dio: { days: 60, hasRealData: false, source: 'fallback' },
-      cashConversionCycle: { days: 75 },
-      error: error.message,
+      workingCapital: { amount: 0, ratio: 0, currency: 'GBP' },
+      currentAssets: { total: 0, accountsReceivable: 0, inventory: 0, cash: 0, other: 0 },
+      currentLiabilities: { total: 0, accountsPayable: 0, shortTermDebt: 0, accruedExpenses: 0, other: 0 },
+      dso: { days: 0, hasRealData: false, source: 'authentication_required' },
+      dpo: { days: 0, hasRealData: false, source: 'authentication_required' },
+      dio: { days: 0, hasRealData: false, source: 'authentication_required' },
+      cashConversionCycle: { days: 0 },
+      error: 'Authentication required for real financial data',
       fallback: true,
-      calculatedAt: new Date()
+      calculatedAt: new Date(),
+      message: 'Real API integration required - no mock data'
     };
   }
 

@@ -7,6 +7,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { Toaster } from 'react-hot-toast'
 import './index.css'
 import './styles/themes.css'
+import './styles/landing.css'
 import ThemeProvider from './components/ui/ThemeProvider'
 
 // Import Chart.js setup early to ensure registration
@@ -17,6 +18,7 @@ import DashboardLayout from './components/layout/DashboardLayout'
 import WorldClassLayout from './components/layout/WorldClassLayout'
 import { LoadingSpinner } from './components/LoadingStates'
 import ErrorBoundaryFallback from './components/ErrorBoundary'
+import LandingPage from './pages/LandingPage'
 
 // Lazy Load Pages for Performance
 const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'))

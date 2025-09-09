@@ -239,7 +239,9 @@
       "Bash(set NODE_ENV=production)",
       "Bash(set PORT=5004)",
       "Bash(PORT=6000 node server.js)",
-      "Bash(start http://localhost:6000)"
+      "Bash(start http://localhost:6000)",
+      "Bash(set NODE_ENV=development)",
+      "Bash(set PORT=6002)"
     ],
     "deny": [],
     "ask": []

@@ -5007,7 +5007,7 @@ function generateQualityBaseData() {
         result: (null).toFixed(1),
         specification: '6.5-7.2',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 8 * 60 * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'high'
       },
       {
@@ -5019,7 +5019,7 @@ function generateQualityBaseData() {
         result: null,
         specification: '<100 CFU/ml',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 12 * 60 * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'high'
       },
       {
@@ -5031,7 +5031,7 @@ function generateQualityBaseData() {
         result: (null).toFixed(1) + '%',
         specification: '12.0-12.5%',
         technician: 'Quality Inspector',
-        completedAt: new Date(currentTime - Math.random() * 16 * 60 * 60 * 1000).toISOString(),
+        completedAt: new Date(currentTime - null * 60 * 1000).toISOString(),
         priority: 'medium'
       },
       {
@@ -7091,7 +7091,7 @@ app.get('/api/quality/overview', (req, res) => {
       status: ['Passed', 'Passed', 'Failed'][Math.floor(Math.random() * 3)],
       score: 95 + Math.random() * 5,
       tester: ['Alice Johnson', 'Bob Smith', 'Carol Wilson'][Math.floor(Math.random() * 3)],
-      completedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString()
+      completedAt: new Date(Date.now() - null * 60 * 1000).toISOString()
     })),
     lastUpdated: new Date().toISOString()
   });

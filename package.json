@@ -12,7 +12,7 @@
     "build": "vite build",
     "postbuild": "echo 'Build completed for Railway deployment' && ls -la dist/ && echo 'Assets:' && ls -la dist/assets/ || echo 'No assets directory found'",
     "build:force": "rimraf dist node_modules/.vite && vite build",
-    "start": "node app.js",
+    "start": "node server.js",
     "start:dev": "node server.js",
     "preview": "vite preview",
     "serve": "node server.js",

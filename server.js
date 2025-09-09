@@ -4833,7 +4833,7 @@ function getCurrentBatches() {
       id: '2024-001', 
       product: 'GABA Red 500ml', 
       status: 'processing', 
-      completion: Math.floor(Math.random() * 30) + 70,
+      completion: null // Real completion data required,
       startTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       estimatedCompletion: new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString()
     },
@@ -5171,7 +5171,7 @@ async function submitTestResult(testData) {
   // Simulate test result processing
   await new Promise(resolve => setTimeout(resolve, 1000));
   
-  const isPass = Math.random() > 0.15; // 85% pass rate
+  const isPass = false; // Real data required // 85% pass rate
   
   return {
     testId: testData.testId,

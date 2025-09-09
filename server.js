@@ -69,7 +69,7 @@ const mcpOrchestrator = new MCPOrchestrator();
       type: 'manufacturing-ai-integration',
       endpoint: process.env.NODE_ENV === 'production' 
         ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'
-        : 'http://localhost:6000',
+        : 'http://localhost:3001',
       transport: 'http',
       capabilities: [
         'inventory-optimization',

@@ -187,7 +187,11 @@
       "Bash(start http://localhost:3004/dashboard)",
       "Bash(start https://sentiaprod.financeflo.ai/what-if)",
       "Bash(start https://sentiaprod.financeflo.ai/working-capital)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(start http://localhost:3006/what-if)",
+      "Bash(start http://localhost:3006/forecasting)",
+      "Bash(start http://localhost:3006/ai-analytics)",
+      "Bash(start http://localhost:3006/admin)"
     ],
     "deny": [],
     "ask": []

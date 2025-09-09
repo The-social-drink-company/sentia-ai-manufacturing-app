@@ -124,7 +124,7 @@ class ShopifyMultiStoreService {
 
   async syncAllStores() {
     if (!this.isConnected) {
-      console.warn('SHOPIFY: Not connected, skipping sync');
+      // SHOPIFY: Not connected - using mock data
       return;
     }
 

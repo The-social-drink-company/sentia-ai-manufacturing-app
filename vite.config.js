@@ -24,7 +24,7 @@ export default defineConfig({
     strictPort: false, // Allow dynamic port selection
     proxy: {
       '/api': {
-        target: 'http://localhost:5050',
+        target: 'http://localhost:5002',
         changeOrigin: true,
         secure: false,
       }

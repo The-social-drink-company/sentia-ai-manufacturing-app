@@ -243,7 +243,11 @@
       "Bash(set NODE_ENV=development)",
       "Bash(set PORT=6002)",
       "Bash(PORT=6001 timeout 10s node server.js)",
-      "Bash(start http://localhost:3002/dashboard/basic)"
+      "Bash(start http://localhost:3002/dashboard/basic)",
+      "Bash(npx kill-port:*)",
+      "Bash(start http://localhost:3003/dashboard)",
+      "Bash(start http://localhost:3003/dashboard?fallback=true)",
+      "Bash(start http://localhost:3003/what-if)"
     ],
     "deny": [],
     "ask": []

@@ -55,6 +55,38 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5002;
+
+// Start MCP server in production environment
+if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
+  import('child_process').then(({ spawn }) => {
+    const mcpPort = process.env.MCP_PORT || 9001;
+    console.log(`🤖 Starting MCP server on port ${mcpPort}...`);
+    
+    const mcpServer = spawn('node', ['mcp-server/enterprise-server-simple.js'], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        MCP_PORT: mcpPort,
+        NODE_ENV: process.env.NODE_ENV || 'production'
+      }
+    });
+    
+    mcpServer.stdout.on('data', (data) => {
+      console.log(`[MCP] ${data.toString().trim()}`);
+    });
+    
+    mcpServer.stderr.on('data', (data) => {
+      console.error(`[MCP ERROR] ${data.toString().trim()}`);
+    });
+    
+    mcpServer.on('exit', (code, signal) => {
+      console.error(`❌ MCP server exited with code ${code}, signal ${signal}`);
+    });
+    
+    console.log('✅ MCP server startup initiated');
+  }).catch(err => console.error('Failed to start MCP server:', err));
+}
+
 // Server restarted
 
 // Initialize Enterprise MCP Orchestrator for Anthropic Model Context Protocol

@@ -1,3 +1,14 @@
+// Suppress Node.js deprecation warnings in production
+process.removeAllListeners('warning');
+process.on('warning', (warning) => {
+  // Only suppress punycode deprecation warnings
+  if (warning.name === 'DeprecationWarning' && warning.message.includes('punycode')) {
+    return; // Silently ignore punycode deprecation
+  }
+  // Log other warnings normally
+  console.warn(warning.name + ': ' + warning.message);
+});
+
 // Environment variable loading - prioritize Railway environment first
 import dotenv from 'dotenv';
 

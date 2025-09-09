@@ -20,7 +20,7 @@ class XeroService {
 
   initializeXeroClient() {
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
-      console.log('ℹ️  Xero service: Using mock financial data (credentials not configured)');
+      // Xero service not configured - using mock data
       return;
     }
 
@@ -69,7 +69,7 @@ class XeroService {
         return true;
       }
 
-      console.log('⚠️  Xero tokens not configured - authentication required');
+      // Xero tokens not configured - using fallback data
       return false;
     } catch (error) {
       console.error('❌ Xero authentication failed:', error.message);

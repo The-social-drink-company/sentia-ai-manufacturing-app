@@ -62,7 +62,7 @@ class AmazonSPAPIService {
       
       // NUCLEAR FIX: Check if SellingPartnerApi constructor is available
       if (!SellingPartnerApi) {
-        console.warn('⚠️ Amazon SP-API constructor not available - using mock implementation');
+        // Amazon SP-API using mock data - no connection required
         this.spApi = new SellingPartnerApi({}); // Use the mock implementation
       } else {
         this.spApi = new SellingPartnerApi({

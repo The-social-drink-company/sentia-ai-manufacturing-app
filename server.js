@@ -4761,6 +4761,11 @@ I should be back to full functionality shortly. Please try asking your question 
   }
 });
 
+// Emergency access route during deployments
+app.get('/emergency', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'emergency-dashboard.html'));
+});
+
 // Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
 app.get('*', (req, res) => {
   // Skip API routes - they should have been handled above

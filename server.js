@@ -4557,6 +4557,18 @@ app.get('/api/analytics/overview', (req, res) => {
   });
 });
 
+// Debug: Check if dist directory exists in Railway
+const distPath = path.join(__dirname, 'dist');
+try {
+  const distStats = fs.statSync(distPath);
+  const distFiles = fs.readdirSync(distPath);
+  console.log('DIST DEBUG: Directory exists:', distStats.isDirectory());
+  console.log('DIST DEBUG: Files count:', distFiles.length);
+  console.log('DIST DEBUG: Sample files:', distFiles.slice(0, 5));
+} catch (error) {
+  console.error('DIST DEBUG: Directory does not exist or cannot be read:', error.message);
+}
+
 // Serve static files (must be after ALL API routes)
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1d',

@@ -1,7 +1,6 @@
 [providers]
 # Explicitly use Node.js only - no Python
-node = true
-python = false
+node = "18.20.4"
 
 [phases.setup]
 # Only Node.js packages
@@ -15,7 +14,3 @@ cmds = ["mkdir -p logs"]
 
 [start]
 cmd = "node enterprise-server-simple.js"
-
-[variables]
-NODE_ENV = "production"
-LOG_LEVEL = "info"

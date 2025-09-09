@@ -205,20 +205,20 @@ function App() {
                   path="/dashboard/*" 
                   element={
                     <ProtectedRoute allowGuest={true}>
-                      <WorldClassLayout>
-                        <Routes>
-                          <Route index element={
-                            <Suspense fallback={<LoadingSpinner />}>
-                              <DashboardRoute />
-                            </Suspense>
-                          } />
-                          <Route path="basic" element={
-                            <Suspense fallback={<LoadingSpinner />}>
+                      <Routes>
+                        <Route index element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <DashboardRoute />
+                          </Suspense>
+                        } />
+                        <Route path="basic" element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <WorldClassLayout>
                               <SimpleDashboard />
-                            </Suspense>
-                          } />
-                        </Routes>
-                      </WorldClassLayout>
+                            </WorldClassLayout>
+                          </Suspense>
+                        } />
+                      </Routes>
                     </ProtectedRoute>
                   } 
                 />

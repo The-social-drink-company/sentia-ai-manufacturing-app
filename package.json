@@ -11,7 +11,7 @@
     "prebuild": "rimraf dist",
     "build": "vite build",
     "build:force": "rimraf dist node_modules/.vite && vite build",
-    "start": "NODE_OPTIONS='--disable-warning=DEP0040' node server.js",
+    "start": "NODE_OPTIONS=--disable-warning=DEP0040 node server.js",
     "start:dev": "node server.js",
     "preview": "vite preview",
     "serve": "node server.js",

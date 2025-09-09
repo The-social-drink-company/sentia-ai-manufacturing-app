@@ -1972,386 +1972,106 @@ app.get('/api/analytics/ai-insights', authenticateUser, async (req, res) => {
 
 // Executive KPI Dashboard APIs
 app.get('/api/analytics/executive-kpis', authenticateUser, async (req, res) => {
-  try {
-    const { category = 'financial', timeframe = 'monthly' } = req.query;
-    
-    // Import business intelligence services
-    const FinancialForecastingEngine = (await import('./services/ai/financial-forecasting-engine.js')).default;
-    const BusinessInsightsEngine = (await import('./services/intelligence/business-insights-engine.js')).default;
-    
-    const forecastingEngine = new FinancialForecastingEngine();
-    const insightsEngine = new BusinessInsightsEngine();
-    
-    // Prepare company data
-    const companyData = {
-      companyId: req.user?.companyId || 'demo-company',
-      financials: {
-        revenue: 42500000,
-        cogs: 25500000,
-        gross_profit: 17000000,
-        operating_expenses: 8200000,
-        ebitda: 8800000,
-        net_income: 6100000,
-        cash_flow: 7200000,
-        working_capital: 13500000,
-        currentAssets: 28000000,
-        currentLiabilities: 14500000,
-        cash: 5200000,
-        inventory: 8900000
-      },
-      production: manufacturingData.production,
-      historicalFinancials: generateHistoricalFinancials(),
-      cashFlow: { monthlyAverage: 600000 }
-    };
-    
-    // Generate executive insights
-    const businessIntelligence = await insightsEngine.generateBusinessIntelligence(companyData, {
-      analysisType: category
-    });
-    
-    // Calculate current KPI values based on category
-    let metrics = {};
-    let trends = [];
-    
-    switch (category) {
-      case 'financial':
-        metrics = {
-          revenue: { 
-            current: companyData.financials.revenue,
-            previous: companyData.financials.revenue * 0.92,
-            target: 50000000
-          },
-          ebitda: {
-            current: companyData.financials.ebitda,
-            previous: companyData.financials.ebitda * 0.88,
-            target: 12500000
-          },
-          cash_flow: {
-            current: companyData.financials.cash_flow,
-            previous: companyData.financials.cash_flow * 0.95,
-            target: 8000000
-          },
-          working_capital: {
-            current: companyData.financials.working_capital,
-            previous: companyData.financials.working_capital * 1.05,
-            target: 15000000
-          }
-        };
-        trends = generateKPITrends('financial', timeframe);
-        break;
-        
-      case 'operational':
-        const productionMetrics = calculateOverallProductionMetrics(timeframe);
-        metrics = {
-          production_efficiency: {
-            current: productionMetrics.efficiency / 100,
-            previous: (productionMetrics.efficiency - 3.2) / 100,
-            target: 0.95
-          },
-          quality_rate: {
-            current: 0.987,
-            previous: 0.983,
-            target: 0.99
-          },
-          inventory_turnover: {
-            current: 6.8,
-            previous: 6.2,
-            target: 8
-          },
-          on_time_delivery: {
-            current: 0.954,
-            previous: 0.948,
-            target: 0.98
-          }
-        };
-        trends = generateKPITrends('operational', timeframe);
-        break;
-        
-      case 'strategic':
-        metrics = {
-          market_share: {
-            current: 0.138,
-            previous: 0.135,
-            target: 0.15
-          },
-          customer_satisfaction: {
-            current: 4.3,
-            previous: 4.2,
-            target: 4.5
-          },
-          employee_engagement: {
-            current: 3.9,
-            previous: 3.8,
-            target: 4.2
-          },
-          innovation_index: {
-            current: 3.7,
-            previous: 3.5,
-            target: 4.0
-          }
-        };
-        trends = generateKPITrends('strategic', timeframe);
-        break;
-    }
-    
-    res.json({
-      category,
-      timeframe,
-      metrics,
-      trends,
-      insights: businessIntelligence.insights[category === 'financial' ? 'financial' : 'operational']?.insights || [
-        {
-          type: 'positive',
-          title: 'Strong Performance Trend',
-          description: 'Key metrics showing consistent improvement over the selected timeframe'
-        },
-        {
-          type: 'neutral',
-          title: 'Optimization Opportunity',
-          description: 'Several areas identified for performance enhancement'
-        }
-      ],
-      recommendations: businessIntelligence.recommendations?.actionable?.slice(0, 4) || [
-        {
-          action: 'Optimize working capital management',
-          priority: 'high',
-          impact: 'High cash flow improvement',
-          timeframe: '30-60 days'
-        },
-        {
-          action: 'Accelerate digital transformation initiatives',
-          priority: 'medium',
-          impact: 'Operational efficiency gains',
-          timeframe: '3-6 months'
-        }
-      ],
-      lastUpdated: new Date().toISOString(),
-      dataSource: 'integrated_analytics_engine'
-    });
-    
-  } catch (error) {
-    console.error('Executive KPI error:', error);
-    res.status(500).json({ 
-      error: 'Failed to generate executive KPIs',
-      details: error.message 
-    });
-  }
+  res.status(503).json({
+    error: 'Executive KPI data requires real business intelligence integration',
+    message: 'This endpoint requires connection to enterprise business intelligence systems',
+    required_integrations: [
+      'Enterprise Resource Planning (ERP) system for financial KPIs',
+      'Customer Relationship Management (CRM) for customer satisfaction metrics',
+      'Human Resources Information System (HRIS) for employee engagement data',
+      'Business Intelligence (BI) platform for market share and strategic metrics',
+      'Manufacturing Execution System (MES) for production efficiency KPIs',
+      'Quality Management System (QMS) for quality rate metrics'
+    ],
+    supported_categories: ['financial', 'operational', 'strategic'],
+    data_requirements: {
+      financial: ['revenue', 'ebitda', 'cash_flow', 'working_capital', 'historical_trends'],
+      operational: ['production_efficiency', 'quality_rate', 'inventory_turnover', 'on_time_delivery'],
+      strategic: ['market_share', 'customer_satisfaction', 'employee_engagement', 'innovation_index']
+    },
+    contact: 'Contact system administrator to configure business intelligence data sources'
+  });
 });
 
-// Generate historical financial data for trending
-function generateHistoricalFinancials() {
-  const months = 24;
-  const data = [];
-  const baseRevenue = 40000000;
-  
-  for (let i = months; i >= 0; i--) {
-    const date = new Date();
-    date.setMonth(date.getMonth() - i);
-    
-    const seasonality = 1 + 0.1 * Math.sin((date.getMonth() / 12) * 2 * Math.PI);
-    const growth = Math.pow(1.08, i / 12); // 8% annual growth
-    const variance = 0.95 + Math.random() * 0.1; // ±5% variance
-    
-    const revenue = baseRevenue * growth * seasonality * variance;
-    
-    data.push({
-      date: date.toISOString().split('T')[0],
-      revenue,
-      cogs: revenue * 0.6,
-      gross_profit: revenue * 0.4,
-      operating_expenses: revenue * 0.2,
-      ebitda: revenue * 0.2,
-      net_income: revenue * 0.14
-    });
-  }
-  
-  return data;
-}
 
-// Generate KPI trend data
-function generateKPITrends(category, timeframe) {
-  const periods = timeframe === 'daily' ? 30 : timeframe === 'weekly' ? 12 : timeframe === 'monthly' ? 12 : 4;
-  const trends = [];
-  
-  for (let i = periods - 1; i >= 0; i--) {
-    const date = new Date();
-    if (timeframe === 'daily') date.setDate(date.getDate() - i);
-    else if (timeframe === 'weekly') date.setDate(date.getDate() - (i * 7));
-    else if (timeframe === 'monthly') date.setMonth(date.getMonth() - i);
-    else date.setMonth(date.getMonth() - (i * 3));
-    
-    const period = date.toISOString().split('T')[0];
-    
-    if (category === 'financial') {
-      trends.push({
-        period,
-        revenue: 42500000 + (Math.random() - 0.5) * 2000000,
-        ebitda: 8800000 + (Math.random() - 0.5) * 500000,
-        cash_flow: 7200000 + (Math.random() - 0.5) * 400000,
-        working_capital: 13500000 + (Math.random() - 0.5) * 800000
-      });
-    } else if (category === 'operational') {
-      trends.push({
-        period,
-        production_efficiency: 0.92 + Math.random() * 0.08,
-        quality_rate: 0.98 + Math.random() * 0.02,
-        inventory_turnover: 6 + Math.random() * 2,
-        on_time_delivery: 0.94 + Math.random() * 0.06
-      });
-    } else {
-      trends.push({
-        period,
-        market_share: 0.13 + Math.random() * 0.02,
-        customer_satisfaction: 4.0 + Math.random() * 0.5,
-        employee_engagement: 3.6 + Math.random() * 0.6,
-        innovation_index: 3.4 + Math.random() * 0.8
-      });
-    }
-  }
-  
-  return trends;
-}
 
 // What-If Analysis APIs
 app.get('/api/analytics/whatif-analysis/initialize', authenticateUser, async (req, res) => {
-  try {
-    // Import What-If Analysis engine
-    const WhatIfAnalysisEngine = (await import('./services/analytics/whatif-analysis-engine.js')).default;
-    const analysisEngine = new WhatIfAnalysisEngine();
-    
-    // Prepare baseline data
-    const baselineData = {
-      companyId: req.user?.companyId || 'demo-company',
-      financials: {
-        revenue: 42500000,
-        working_capital: 13500000,
-        net_income: 6100000,
-        cash: 5200000
-      },
-      production: manufacturingData.production,
-      markets: {
-        UK: { sales: 15000000, currency: 'GBP' },
-        USA: { sales: 18500000, currency: 'USD' },
-        EUROPE: { sales: 9000000, currency: 'EUR' }
-      }
-    };
-    
-    // Initialize analysis engine
-    const initialScenario = await analysisEngine.initialize(baselineData);
-    
-    res.json({
-      success: true,
-      parameters: analysisEngine.getDefaultScenario().parameters,
-      scenario: initialScenario,
-      markets: ['UK', 'USA', 'EUROPE'],
-      currencies: { UK: 'GBP', USA: 'USD', EUROPE: 'EUR' },
-      parameterRanges: analysisEngine.parameters,
-      timestamp: new Date().toISOString()
-    });
-    
-  } catch (error) {
-    console.error('What-If Analysis initialization error:', error);
-    res.status(500).json({ 
-      error: 'Failed to initialize What-If Analysis',
-      details: error.message 
-    });
-  }
+  res.status(503).json({
+    error: 'What-If Analysis requires real enterprise data integration',
+    message: 'This endpoint requires connection to live financial and operational systems',
+    required_integrations: [
+      'Enterprise Resource Planning (ERP) system for baseline financial data',
+      'Customer Relationship Management (CRM) for market sales data', 
+      'Manufacturing Execution System (MES) for production baselines',
+      'Financial Planning and Analysis (FP&A) system for scenario modeling',
+      'Market Research and Business Intelligence platforms for competitive data'
+    ],
+    supported_markets: ['UK', 'USA', 'EUROPE'],
+    required_baseline_data: {
+      financials: ['revenue', 'working_capital', 'net_income', 'cash_flow'],
+      production: ['capacity_utilization', 'throughput', 'efficiency_metrics'],
+      markets: ['sales_by_region', 'market_share', 'competitive_position']
+    },
+    contact: 'Contact system administrator to configure real-time data sources for scenario analysis'
+  });
 });
 
 app.post('/api/analytics/whatif-analysis/calculate', authenticateUser, async (req, res) => {
-  try {
-    const { parameters } = req.body;
-    
-    if (!parameters) {
-      return res.status(400).json({ error: 'Parameters are required' });
-    }
-    
-    // Import and initialize What-If Analysis engine
-    const WhatIfAnalysisEngine = (await import('./services/analytics/whatif-analysis-engine.js')).default;
-    const analysisEngine = new WhatIfAnalysisEngine();
-    
-    // Prepare baseline data
-    const baselineData = {
-      companyId: req.user?.companyId || 'demo-company',
-      financials: {
-        revenue: 42500000,
-        working_capital: 13500000,
-        net_income: 6100000,
-        cash: 5200000
-      },
-      production: manufacturingData.production,
-      markets: {
-        UK: { sales: 15000000, currency: 'GBP' },
-        USA: { sales: 18500000, currency: 'USD' },
-        EUROPE: { sales: 9000000, currency: 'EUR' }
-      }
-    };
-    
-    // Initialize and update scenario
-    await analysisEngine.initialize(baselineData);
-    const updatedScenario = await analysisEngine.updateScenario(parameters);
-    
-    // Send real-time SSE update
-    sendSSEEvent('whatif.scenario.updated', {
-      scenario: updatedScenario,
-      timestamp: new Date().toISOString()
-    });
-    
-    res.json({
-      success: true,
-      scenario: updatedScenario,
-      processingTime: updatedScenario.processingTime || 0,
-      timestamp: new Date().toISOString()
-    });
-    
-  } catch (error) {
-    console.error('What-If Analysis calculation error:', error);
-    res.status(500).json({ 
-      error: 'Failed to calculate scenario',
-      details: error.message 
-    });
-  }
+  res.status(503).json({
+    error: 'What-If Analysis calculation requires real data integration',
+    message: 'Scenario calculations require live connection to enterprise systems',
+    required_parameters: ['revenue_growth', 'cost_optimization', 'market_expansion', 'operational_efficiency'],
+    required_data_sources: [
+      'Live financial data from ERP system',
+      'Real-time production metrics from MES',
+      'Current market data from CRM and BI platforms',
+      'Historical performance data for baseline scenarios'
+    ],
+    calculation_capabilities: [
+      'Revenue impact modeling',
+      'Cost structure optimization',
+      'Market expansion scenarios', 
+      'Operational efficiency improvements',
+      'Working capital optimization',
+      'Multi-currency market analysis'
+    ],
+    contact: 'Contact system administrator to integrate enterprise data sources for scenario modeling'
+  });
 });
 
 app.get('/api/analytics/whatif-analysis/market/:marketId', authenticateUser, async (req, res) => {
-  try {
-    const { marketId } = req.params;
-    const { parameters } = req.query;
-    
-    if (!['UK', 'USA', 'EUROPE'].includes(marketId)) {
-      return res.status(400).json({ error: 'Invalid market ID' });
-    }
-    
-    // Import What-If Analysis engine
-    const WhatIfAnalysisEngine = (await import('./services/analytics/whatif-analysis-engine.js')).default;
-    const analysisEngine = new WhatIfAnalysisEngine();
-    
-    // Prepare baseline data
-    const baselineData = {
-      companyId: req.user?.companyId || 'demo-company',
-      financials: { revenue: 42500000, working_capital: 13500000, net_income: 6100000 }
-    };
-    
-    await analysisEngine.initialize(baselineData);
-    
-    // Get market-specific parameters or use defaults
-    const scenarioParams = parameters ? JSON.parse(parameters) : analysisEngine.getDefaultScenario().parameters;
-    const marketData = await analysisEngine.calculateMarketScenario(marketId, scenarioParams);
-    
-    res.json({
-      success: true,
-      market: marketId,
-      data: marketData,
-      timestamp: new Date().toISOString()
-    });
-    
-  } catch (error) {
-    console.error('Market analysis error:', error);
-    res.status(500).json({ 
-      error: 'Failed to analyze market',
-      details: error.message 
-    });
+  const { marketId } = req.params;
+  
+  if (!['UK', 'USA', 'EUROPE'].includes(marketId)) {
+    return res.status(400).json({ error: 'Invalid market ID. Supported markets: UK, USA, EUROPE' });
   }
+  
+  res.status(503).json({
+    error: `Market analysis for ${marketId} requires real market intelligence data`,
+    message: 'Market-specific What-If analysis requires integration with live market data sources',
+    market: marketId,
+    required_integrations: [
+      'Market research platforms for competitive intelligence',
+      'Economic data feeds for regional market conditions',
+      'Customer data from CRM systems for regional performance',
+      'Regional financial systems for currency and regulatory data',
+      'Supply chain data for region-specific operational costs'
+    ],
+    analysis_capabilities: [
+      'Regional revenue impact modeling',
+      'Currency exchange rate scenario analysis',
+      'Regional cost structure optimization',
+      'Market penetration scenario planning',
+      'Competitive positioning analysis'
+    ],
+    supported_currencies: {
+      UK: 'GBP',
+      USA: 'USD', 
+      EUROPE: 'EUR'
+    },
+    contact: `Contact system administrator to configure ${marketId} market data integration`
+  });
 });
 
 app.get('/api/analytics/whatif-analysis/working-capital-breakdown', authenticateUser, async (req, res) => {

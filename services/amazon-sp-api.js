@@ -50,19 +50,6 @@ class AmazonSPAPIService {
 
   async initialize() {
     try {
-<<<<<<< HEAD
-      // Amazon SP-API: Using mock data (package not configured)
-      
-      // REAL NUCLEAR FIX: Check if SellingPartnerApi constructor is available
-      if (!SellingPartnerApi || typeof SellingPartnerApi !== 'function') {
-        // Amazon SP-API using mock data - no connection required
-        this.spApi = { mock: true }; // Use mock object
-        this.isConnected = true;
-        return; // Exit early with mock
-      }
-
-      this.spApi = new SellingPartnerApi({
-=======
       // FORCE REAL DATA ONLY - No mock data allowed
       if (!this.credentials.refresh_token || !this.credentials.lwa_app_id || !this.credentials.lwa_client_secret) {
         console.warn('Amazon SP-API authentication required. Please configure real Amazon SP-API credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN. No mock data will be returned.');
@@ -74,7 +61,6 @@ class AmazonSPAPIService {
       const SPAPIClass = await importSellingPartnerApi();
       
       this.spApi = new SPAPIClass({
->>>>>>> production
         region: this.credentials.region,
         refresh_token: this.credentials.refresh_token,
         credentials: {

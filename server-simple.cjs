@@ -240,118 +240,33 @@ function generateDemandForecast(seriesId, options) {
 
 // KPI Metrics endpoint
 app.get('/api/kpi-metrics', (req, res) => {
-  const { timeRange = '24h', filters = '{}' } = req.query;
-  
-  // Generate realistic KPI data based on time and some randomness
-  const now = new Date();
-  const baseMetrics = {
-    totalRevenue: {
-      value: Math.round((120000 + Math.random() * 20000) * 100) / 100,
-      change: Math.round((5 + Math.random() * 10 - 5) * 10) / 10,
-      changeType: Math.random() > 0.4 ? 'positive' : 'negative',
-      status: Math.random() > 0.3 ? 'good' : 'warning',
-      trustLevel: 'good',
-      freshness: 'fresh',
-      lastUpdated: new Date(now.getTime() - Math.random() * 5 * 60 * 1000).toISOString()
-    },
-    stockLevel: {
-      value: Math.round((90 + Math.random() * 20) * 10) / 10,
-      change: Math.round((Math.random() * 10 - 5) * 10) / 10,
-      changeType: Math.random() > 0.5 ? 'positive' : 'negative',
-      status: Math.random() > 0.4 ? 'good' : 'warning',
-      trustLevel: Math.random() > 0.8 ? 'needs_attention' : 'good',
-      freshness: 'recent',
-      lastUpdated: new Date(now.getTime() - Math.random() * 30 * 60 * 1000).toISOString()
-    },
-    forecastAccuracy: {
-      value: Math.round((80 + Math.random() * 15) * 10) / 10,
-      change: Math.round((Math.random() * 8 - 2) * 10) / 10,
-      changeType: Math.random() > 0.6 ? 'positive' : 'negative',
-      status: Math.random() > 0.2 ? 'excellent' : 'good',
-      trustLevel: 'excellent',
-      freshness: 'fresh',
-      lastUpdated: new Date(now.getTime() - Math.random() * 2 * 60 * 1000).toISOString()
-    },
-    capacityUtilization: {
-      value: Math.round((70 + Math.random() * 25) * 10) / 10,
-      change: Math.round((Math.random() * 6 - 2) * 10) / 10,
-      changeType: Math.random() > 0.5 ? 'positive' : 'negative',
-      status: 'good',
-      trustLevel: 'good',
-      freshness: 'recent',
-      lastUpdated: new Date(now.getTime() - Math.random() * 20 * 60 * 1000).toISOString()
-    },
-    cashPosition: {
-      value: Math.round((250 + Math.random() * 100)),
-      change: Math.round((Math.random() * 20 - 10) * 10) / 10,
-      changeType: Math.random() > 0.4 ? 'positive' : 'negative',
-      status: Math.random() > 0.3 ? 'good' : 'warning',
-      trustLevel: 'good',
-      freshness: 'fresh',
-      lastUpdated: new Date(now.getTime() - Math.random() * 10 * 60 * 1000).toISOString()
-    },
-    productionThroughput: {
-      value: Math.round((85 + Math.random() * 20) * 10) / 10,
-      change: Math.round((Math.random() * 8 - 3) * 10) / 10,
-      changeType: Math.random() > 0.5 ? 'positive' : 'negative',
-      status: Math.random() > 0.3 ? 'good' : 'warning',
-      trustLevel: 'good',
-      freshness: 'fresh',
-      lastUpdated: new Date(now.getTime() - Math.random() * 8 * 60 * 1000).toISOString()
-    },
-    alertsCount: {
-      value: Math.round(Math.random() * 8),
-      change: Math.round((Math.random() * 80 - 40) * 10) / 10,
-      changeType: Math.random() > 0.6 ? 'positive' : 'negative',
-      status: Math.random() > 0.4 ? 'good' : 'warning',
-      trustLevel: Math.random() > 0.7 ? 'stale' : 'good',
-      freshness: Math.random() > 0.8 ? 'stale' : 'recent',
-      lastUpdated: new Date(now.getTime() - Math.random() * 60 * 60 * 1000).toISOString()
-    }
-  };
-  
-  // Set appropriate changeType based on change value
-  Object.keys(baseMetrics).forEach(key => {
-    const metric = baseMetrics[key];
-    metric.changeType = metric.change > 0 ? 'positive' : metric.change < 0 ? 'negative' : 'neutral';
-  });
-  
-  res.json({
-    data: baseMetrics,
-    timeRange,
-    filters: JSON.parse(filters),
-    timestamp: now.toISOString()
+  res.status(503).json({
+    error: 'KPI metrics require live business system integration',
+    required_integrations: [
+      'ERP system (SAP/Oracle) for revenue and financial metrics',
+      'WMS (Warehouse Management System) for stock levels',
+      'MES (Manufacturing Execution System) for production throughput',
+      'Business Intelligence platform for forecast accuracy',
+      'Real-time monitoring systems for capacity utilization',
+      'Treasury Management System for cash position tracking'
+    ],
+    message: 'No mock KPI data available - connect production systems for accurate business metrics'
   });
 });
 
 // Working Capital API endpoints
 app.get('/api/working-capital/diagnostics', (req, res) => {
-  const diagnosticsData = {
-    overallHealthScore: Math.round((75 + Math.random() * 25) * 10) / 10,
-    dataQuality: {
-      overallScore: Math.round((80 + Math.random() * 20) * 10) / 10,
-      completeness: Math.round((85 + Math.random() * 15) * 10) / 10,
-      accuracy: Math.round((90 + Math.random() * 10) * 10) / 10,
-      freshness: Math.round((75 + Math.random() * 25) * 10) / 10
-    },
-    modelAccuracy: {
-      overallAccuracy: Math.random() > 0.7 ? 'good' : 'excellent',
-      cashFlowModel: Math.round((85 + Math.random() * 15) * 10) / 10,
-      demandForecast: Math.round((80 + Math.random() * 20) * 10) / 10,
-      workingCapitalModel: Math.round((88 + Math.random() * 12) * 10) / 10
-    },
-    performanceMetrics: {
-      status: Math.random() > 0.6 ? 'optimal' : 'good',
-      responseTime: Math.round((50 + Math.random() * 100) * 10) / 10,
-      throughput: Math.round((95 + Math.random() * 5) * 10) / 10,
-      availability: Math.round((99 + Math.random() * 1) * 100) / 100
-    },
-    alerts: generateRandomAlerts()
-  };
-  
-  res.json({
-    data: diagnosticsData,
-    timestamp: new Date().toISOString()
+  res.status(503).json({
+    error: 'Working capital diagnostics require live financial system integration',
+    required_integrations: [
+      'Financial ERP system for real-time cash position data',
+      'Accounts Payable system for accurate payables tracking',
+      'Accounts Receivable system for receivables monitoring',
+      'Inventory Management System for stock valuation',
+      'Treasury Management System for cash flow analysis',
+      'Business Intelligence platform for model accuracy metrics'
+    ],
+    message: 'No mock diagnostic data available - connect production financial systems for accurate working capital analysis'
   });
 });
 
@@ -369,42 +284,17 @@ app.get('/api/working-capital/projections', (req, res) => {
 });
 
 app.get('/api/working-capital/kpis', (req, res) => {
-  const kpis = {
-    daysSalesOutstanding: {
-      current: Math.round((25 + Math.random() * 10) * 10) / 10,
-      target: 30,
-      trend: Math.random() > 0.5 ? 'improving' : 'declining',
-      change: Math.round((Math.random() * 4 - 2) * 10) / 10
-    },
-    daysPayableOutstanding: {
-      current: Math.round((35 + Math.random() * 10) * 10) / 10,
-      target: 45,
-      trend: Math.random() > 0.5 ? 'improving' : 'declining', 
-      change: Math.round((Math.random() * 6 - 3) * 10) / 10
-    },
-    inventoryTurnover: {
-      current: Math.round((8 + Math.random() * 4) * 10) / 10,
-      target: 12,
-      trend: Math.random() > 0.5 ? 'improving' : 'declining',
-      change: Math.round((Math.random() * 2 - 1) * 10) / 10
-    },
-    cashConversionCycle: {
-      current: Math.round((45 + Math.random() * 15) * 10) / 10,
-      target: 40,
-      trend: Math.random() > 0.5 ? 'improving' : 'declining',
-      change: Math.round((Math.random() * 8 - 4) * 10) / 10
-    },
-    workingCapitalRatio: {
-      current: Math.round((1.2 + Math.random() * 0.8) * 100) / 100,
-      target: 1.5,
-      trend: Math.random() > 0.5 ? 'improving' : 'declining',
-      change: Math.round((Math.random() * 0.2 - 0.1) * 100) / 100
-    }
-  };
-  
-  res.json({
-    data: kpis,
-    timestamp: new Date().toISOString()
+  res.status(503).json({
+    error: 'Working capital KPIs require live financial data integration',
+    required_integrations: [
+      'Accounts Receivable system for Days Sales Outstanding (DSO)',
+      'Accounts Payable system for Days Payable Outstanding (DPO)', 
+      'Inventory Management System for Inventory Turnover calculations',
+      'Financial ERP for Cash Conversion Cycle computation',
+      'Balance Sheet data for Working Capital Ratio analysis',
+      'Real-time financial data warehouse for trend analysis'
+    ],
+    message: 'No mock KPI data available - connect production financial systems for accurate working capital KPIs'
   });
 });
 
@@ -429,61 +319,17 @@ app.get('/api/demand-forecast/:seriesId', (req, res) => {
 
 // Multi-channel sales data endpoint
 app.get('/api/sales/multi-channel', (req, res) => {
-  const { timeRange = '30d' } = req.query;
-  
-  // Simulate multi-channel sales data
-  const amazonData = {
-    orders: Array.from({ length: Math.floor(Math.random() * 50) + 20 }, (_, i) => ({
-      id: `AMZ-${Date.now() + i}`,
-      date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-      amount: Math.random() * 500 + 50
-    })),
-    revenue: 0,
-    trend: (Math.random() - 0.5) * 20,
-    status: 'connected'
-  };
-  amazonData.revenue = amazonData.orders.reduce((sum, order) => sum + order.amount, 0);
-
-  const shopifyRegions = ['uk', 'eu', 'usa'];
-  const shopifyData = {};
-  
-  shopifyRegions.forEach(region => {
-    const orders = Array.from({ length: Math.floor(Math.random() * 30) + 10 }, (_, i) => ({
-      id: `SH-${region.toUpperCase()}-${Date.now() + i}`,
-      date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-      amount: Math.random() * 300 + 30
-    }));
-    
-    shopifyData[region] = {
-      orders,
-      revenue: orders.reduce((sum, order) => sum + order.amount, 0),
-      trend: (Math.random() - 0.5) * 15,
-      status: Math.random() > 0.2 ? 'connected' : 'disconnected'
-    };
-  });
-
-  // Generate daily trends for the last 30 days
-  const dailyTrends = Array.from({ length: 30 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (29 - i));
-    
-    return {
-      date: date.toISOString().split('T')[0],
-      amazon: Math.random() * 2000 + 500,
-      shopify_uk: Math.random() * 1500 + 300,
-      shopify_eu: Math.random() * 1200 + 250,
-      shopify_usa: Math.random() * 1800 + 400
-    };
-  });
-
-  res.json({
-    success: true,
-    data: {
-      amazon: amazonData,
-      shopify: shopifyData,
-      dailyTrends
-    },
-    timestamp: new Date().toISOString()
+  res.status(503).json({
+    error: 'Multi-channel sales data requires live e-commerce platform integration',
+    required_integrations: [
+      'Amazon Seller Central API for order and revenue data',
+      'Shopify API integration for UK, EU, and USA stores',
+      'Payment gateway APIs for transaction details',
+      'Real-time webhook connections for order updates',
+      'E-commerce analytics platform for trend analysis',
+      'Channel-specific reporting APIs for performance metrics'
+    ],
+    message: 'No mock sales data available - connect production e-commerce platforms for accurate multi-channel sales analytics'
   });
 });
 
@@ -704,25 +550,18 @@ app.get('/api/maintenance/equipment', (req, res) => {
 });
 
 app.get('/api/maintenance/history', (req, res) => {
-  // Mock maintenance history
-  const maintenanceTypes = ['Preventive', 'Corrective', 'Emergency', 'Routine'];
-  const history = Array.from({ length: 50 }, (_, i) => {
-    const equipmentId = `EQ${Math.floor(Math.random() * 15 + 1).toString().padStart(3, '0')}`;
-    const type = maintenanceTypes[Math.floor(Math.random() * maintenanceTypes.length)];
-    
-    return {
-      id: `MH${i.toString().padStart(3, '0')}`,
-      equipmentId,
-      type,
-      date: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
-      duration: Math.floor(Math.random() * 8) + 1,
-      cost: Math.floor(Math.random() * 5000) + 500,
-      description: `${type} maintenance for ${equipmentId}`,
-      technician: `Technician ${Math.floor(Math.random() * 5) + 1}`
-    };
+  res.status(503).json({
+    error: 'Maintenance history requires live CMMS integration',
+    required_integrations: [
+      'Computerized Maintenance Management System (CMMS)',
+      'Work Order Management System',
+      'Equipment Management Database',
+      'Maintenance Scheduling Platform',
+      'Asset Management System',
+      'Technician Time Tracking System'
+    ],
+    message: 'No mock maintenance data available - connect production CMMS for accurate maintenance history tracking'
   });
-  
-  res.json({ success: true, history });
 });
 
 app.post('/api/ai/maintenance-insights', (req, res) => {

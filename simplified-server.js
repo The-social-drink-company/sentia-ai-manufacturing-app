@@ -70,22 +70,16 @@ app.get('/api/dashboard/overview', (req, res) => {
 });
 
 app.get('/api/forecasting/demand', (req, res) => {
-  const forecastData = [];
-  for (let i = 0; i < 30; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() + i);
-    forecastData.push({
-      date: date.toISOString().split('T')[0],
-      demand: Math.floor(Math.random() * 1000) + 500,
-      confidence: Math.random() * 0.3 + 0.7
-    });
-  }
-  
-  res.json({
-    forecast: forecastData,
-    accuracy: 0.87,
-    model: 'ARIMA+ML',
-    lastUpdated: new Date().toISOString()
+  res.status(503).json({
+    error: 'Demand forecasting requires live system integration',
+    required_integrations: [
+      'Historical sales data from ERP system (SAP/Oracle)',
+      'Real-time demand signals from CRM (Salesforce)',
+      'Market data integration (external APIs)',
+      'Seasonal pattern analysis from data warehouse',
+      'Machine learning model training pipeline'
+    ],
+    message: 'No mock forecasting data available - connect production systems for accurate demand predictions'
   });
 });
 
@@ -163,8 +157,8 @@ app.post('/api/what-if/scenario', (req, res) => {
       revenueImpact: newRevenue - baseRevenue,
       newRevenue: newRevenue,
       profitabilityChange: impact * 0.3, // Simplified calculation
-      riskScore: Math.random() * 0.5 + 0.2,
-      confidence: Math.random() * 0.2 + 0.8
+      riskScore: null,
+      confidence: null
     },
     recommendations: [
       'Monitor key performance indicators closely',

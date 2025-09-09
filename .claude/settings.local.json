@@ -188,12 +188,6 @@
       "Bash(start https://sentiaprod.financeflo.ai/what-if)",
       "Bash(start https://sentiaprod.financeflo.ai/working-capital)",
       "Bash(rg:*)",
-<<<<<<< HEAD
-      "Bash(start http://localhost:3006/what-if)",
-      "Bash(start http://localhost:3006/forecasting)",
-      "Bash(start http://localhost:3006/ai-analytics)",
-      "Bash(start http://localhost:3006/admin)"
-=======
       "Bash(start http://localhost:3001/dashboard)",
       "Bash(start http://localhost:50969)",
       "Bash(start http://localhost:50969/dashboard)",
@@ -269,8 +263,6 @@
       "Bash(start http://localhost:3002/what-if)",
       "Bash(echo:*)",
       "Bash(MCP_SERVER_PORT=6002 node mcp-server.js)"
->>>>>>> test
->>>>>>> production
     ],
     "deny": [],
     "ask": []

@@ -17,5 +17,4 @@ cmd = 'node server.js'
 from = []
 
 [variables]
-NODE_ENV = 'production'
 PORT = '$PORT'

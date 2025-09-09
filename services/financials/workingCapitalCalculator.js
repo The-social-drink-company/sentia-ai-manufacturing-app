@@ -250,7 +250,7 @@ export class WorkingCapitalCalculator {
         logWarn('Database not connected, using estimated DPO');
         return {
           days: 30,
-          accountsPayable: 80000,
+          accountsPayable: 0,
           dailyCOGS: 2666.67,
           hasRealData: false,
           source: 'estimated'

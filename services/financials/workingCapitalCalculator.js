@@ -324,7 +324,7 @@ export class WorkingCapitalCalculator {
       // Get current inventory levels
       const currentInventory = await this.databaseService.prisma.inventoryLevel.aggregate({
         where: {
-          companyId
+          entity_id: companyId
         },
         _sum: {
           value: true
@@ -333,9 +333,9 @@ export class WorkingCapitalCalculator {
 
       // Get historical inventory for average calculation
       const inventoryHistory = await this.databaseService.prisma.inventoryLevel.groupBy({
-        by: ['companyId'],
+        by: ['entity_id'],
         where: {
-          companyId,
+          entity_id: companyId,
           updatedAt: {
             gte: startDate,
             lte: endDate

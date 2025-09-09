@@ -5114,7 +5114,7 @@ function generateQualityAlerts() {
     }
   ];
   
-  return alerts.filter(() => Math.random() > 0.3); // Show random subset
+  return []; // Show random subset
 }
 
 function generateTestSchedule() {

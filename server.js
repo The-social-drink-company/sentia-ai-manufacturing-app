@@ -4557,6 +4557,50 @@ app.get('/api/mcp/status', async (req, res) => {
   }
 });
 
+// MCP Server diagnostics endpoint
+app.get('/api/mcp/diagnostics', async (req, res) => {
+  try {
+    const mcpServerUrl = process.env.NODE_ENV === 'production' 
+      ? 'http://localhost:9001'  // MCP server runs on port 9001 in same Railway container
+      : 'http://localhost:8081';  // Local MCP server on port 8081
+
+    // Test connectivity to MCP server
+    const healthEndpoint = `${mcpServerUrl}/health`;
+    
+    let mcpHealth = null;
+    let mcpError = null;
+    
+    try {
+      const healthResponse = await fetch(healthEndpoint, { timeout: 5000 });
+      if (healthResponse.ok) {
+        mcpHealth = await healthResponse.json();
+      } else {
+        mcpError = `HTTP ${healthResponse.status}: ${healthResponse.statusText}`;
+      }
+    } catch (error) {
+      mcpError = error.message;
+    }
+
+    res.json({
+      mcp_server_url: mcpServerUrl,
+      health_endpoint: healthEndpoint,
+      chatbot_endpoint: `${mcpServerUrl}/ai/chat`,
+      environment: process.env.NODE_ENV || 'development',
+      mcp_health: mcpHealth,
+      mcp_error: mcpError,
+      main_server: {
+        status: 'running',
+        port: process.env.PORT || 5000,
+        uptime: process.uptime()
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logError('MCP diagnostics error', error);
+    res.status(500).json({ error: 'Failed to get MCP diagnostics', details: error.message });
+  }
+});
+
 // AI Chatbot endpoint - proxy to MCP server
 app.post('/api/mcp/ai/chat', async (req, res) => {
   try {
@@ -4640,6 +4684,7 @@ app.get('*', (req, res) => {
         '/api/services/status',
         '/api/working-capital/overview',
         '/api/mcp/status',
+        '/api/mcp/diagnostics',
         '/api/mcp/ai/chat'
       ]
     });

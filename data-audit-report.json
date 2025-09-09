@@ -1,0 +1,183 @@
+{
+  "timestamp": "2025-09-08T15:37:08.017Z",
+  "auditResults": {
+    "users": {
+      "real": [
+        {
+          "id": "ab7cd917-e758-4c57-9e11-731c03a959f0",
+          "email": "daniel.kenny@sentiaspirits.com",
+          "source": "Manually created legitimate account"
+        },
+        {
+          "id": "516eb5af-72c3-4639-85cb-0b17e1573cc2",
+          "email": "david.orren@gabalabs.com",
+          "source": "Manually created legitimate account"
+        },
+        {
+          "id": "f91a4648-0f49-4565-b99c-2de9a891e446",
+          "email": "dudley@financeflo.ai",
+          "source": "Manually created legitimate account"
+        },
+        {
+          "id": "66ab6386-a535-449c-83a9-dba3102c4e3e",
+          "email": "paul.roberts@sentiaspirits.com",
+          "source": "Manually created legitimate account"
+        },
+        {
+          "id": "01bbea45-1c25-49bb-911b-1a47db8011bb",
+          "email": "marta.haczek@gabalabs.com",
+          "source": "Manually created legitimate account"
+        },
+        {
+          "id": "4cbf7113-45dd-4b0a-a016-8dda82bc766d",
+          "email": "matt.coulshed@gabalabs.com",
+          "source": "Manually created legitimate account"
+        },
+        {
+          "id": "bab24795-99e9-4d92-8771-a862b685c111",
+          "email": "jaron.reid@gabalabs.com",
+          "source": "Manually created legitimate account"
+        },
+        {
+          "id": "95c290bf-a2bc-4e11-b5f8-4d4476c7fbc5",
+          "email": "adam@financeflo.ai",
+          "source": "Manually created legitimate account"
+        },
+        {
+          "id": "204182a2-2f0d-4258-a0f4-d93c9da697ac",
+          "email": "dudley.peacock@financeflo.ai",
+          "source": "Manually created legitimate account"
+        }
+      ],
+      "fake": [
+        {
+          "id": "dbb55b35-1a84-4c07-a9a1-a831a43abe5a",
+          "email": "test@sentia.com",
+          "reason": "Test email address"
+        },
+        {
+          "id": "4175d10c-075b-46f1-9551-25f3cd40b55c",
+          "email": "testregister@example.com",
+          "reason": "Test email address"
+        },
+        {
+          "id": "f00f169d-13a5-4bd7-b78a-3ba2ffed968c",
+          "email": "admin@sentia.com",
+          "reason": "Appears to be test/demo account"
+        },
+        {
+          "id": "61d9aa46-62e2-458a-9472-d852378fd0f7",
+          "email": "test@test.com",
+          "reason": "Test email address"
+        },
+        {
+          "id": "39ca2fe1-b15d-4abd-ac70-586f4533599a",
+          "email": "test@example.com",
+          "reason": "Test email address"
+        }
+      ],
+      "total": 14
+    },
+    "products": {
+      "real": [],
+      "fake": [],
+      "total": 0
+    },
+    "financialData": {
+      "real": [],
+      "fake": [],
+      "total": 0
+    },
+    "productionData": {
+      "real": [],
+      "fake": [],
+      "total": 0
+    },
+    "integrationData": {
+      "real": [
+        {
+          "name": "Shopify",
+          "status": "Configured",
+          "keys": [
+            "SHOPIFY_API_KEY"
+          ]
+        },
+        {
+          "name": "Unleashed ERP",
+          "status": "Configured",
+          "keys": [
+            "UNLEASHED_API_KEY"
+          ]
+        },
+        {
+          "name": "Xero Accounting",
+          "status": "Configured",
+          "keys": [
+            "XERO_CLIENT_ID",
+            "XERO_CLIENT_SECRET"
+          ]
+        },
+        {
+          "name": "Database",
+          "status": "Configured",
+          "keys": [
+            "DATABASE_URL"
+          ]
+        },
+        {
+          "name": "Clerk Auth",
+          "status": "Configured",
+          "keys": [
+            "CLERK_SECRET_KEY",
+            "VITE_CLERK_PUBLISHABLE_KEY"
+          ]
+        }
+      ],
+      "fake": [
+        {
+          "name": "Amazon SP-API",
+          "status": "Not configured or using placeholder",
+          "keys": [
+            "AMAZON_SELLER_ID",
+            "AMAZON_MARKETPLACE_ID",
+            "AMAZON_ACCESS_KEY"
+          ]
+        }
+      ],
+      "total": 0
+    },
+    "summary": {
+      "totalReal": 0,
+      "totalFake": 0,
+      "realDataSources": [],
+      "fakeDataIndicators": []
+    }
+  },
+  "cleanupActions": {
+    "removeUsers": [
+      {
+        "id": "dbb55b35-1a84-4c07-a9a1-a831a43abe5a",
+        "email": "test@sentia.com"
+      },
+      {
+        "id": "4175d10c-075b-46f1-9551-25f3cd40b55c",
+        "email": "testregister@example.com"
+      },
+      {
+        "id": "f00f169d-13a5-4bd7-b78a-3ba2ffed968c",
+        "email": "admin@sentia.com"
+      },
+      {
+        "id": "61d9aa46-62e2-458a-9472-d852378fd0f7",
+        "email": "test@test.com"
+      },
+      {
+        "id": "39ca2fe1-b15d-4abd-ac70-586f4533599a",
+        "email": "test@example.com"
+      }
+    ],
+    "removeProducts": [],
+    "removeFinancialData": [],
+    "removeProductionData": []
+  }
+}

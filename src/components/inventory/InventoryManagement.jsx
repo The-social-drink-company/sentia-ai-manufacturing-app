@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { CubeIcon, ExclamationTriangleIcon, TruckIcon, ClockIcon, ArrowUpIcon, ArrowDownIcon, PlusIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline'
+import { CubeIcon, ExclamationTriangleIcon, TruckIcon, ClockIcon, ArrowUpIcon, ArrowDownIcon, PlusIcon, AdjustmentsHorizontalIcon, BoltIcon, ChartBarIcon } from '@heroicons/react/24/outline'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 import ChartErrorBoundary from '../charts/ChartErrorBoundary'
 import { ChartJS } from '../../lib/chartSetup'
+import LiveInventoryMonitor from './LiveInventoryMonitor'
 
 const InventoryManagement = () => {
   const [inventoryData, setInventoryData] = useState(null)
@@ -10,6 +11,7 @@ const InventoryManagement = () => {
   const [selectedWarehouse, setSelectedWarehouse] = useState('all')
   const [lowStockItems, setLowStockItems] = useState([])
   const [pendingOrders, setPendingOrders] = useState([])
+  const [activeTab, setActiveTab] = useState('live')
 
   // Fetch inventory data
   useEffect(() => {
@@ -35,29 +37,7 @@ const InventoryManagement = () => {
     return () => clearInterval(interval)
   }, [])
 
-  const mockStockMovement = [
-    { date: '2025-09-01', inbound: 150, outbound: 120 },
-    { date: '2025-09-02', inbound: 180, outbound: 145 },
-    { date: '2025-09-03', inbound: 120, outbound: 160 },
-    { date: '2025-09-04', inbound: 200, outbound: 135 },
-    { date: '2025-09-05', inbound: 160, outbound: 155 },
-    { date: '2025-09-06', inbound: 190, outbound: 140 },
-    { date: '2025-09-07', inbound: 170, outbound: 165 }
-  ]
-
-  const mockCategoryBreakdown = [
-    { name: 'Raw Materials', value: 45, color: '#3B82F6' },
-    { name: 'Finished Goods', value: 35, color: '#10B981' },
-    { name: 'Work in Progress', value: 15, color: '#F59E0B' },
-    { name: 'Spare Parts', value: 5, color: '#EF4444' }
-  ]
-
-  const mockWarehouseData = [
-    { location: 'UK Main', capacity: 85, utilization: 78, items: 1247 },
-    { location: 'EU Central', capacity: 92, utilization: 85, items: 892 },
-    { location: 'US East', capacity: 76, utilization: 65, items: 634 },
-    { location: 'US West', capacity: 88, utilization: 72, items: 458 }
-  ]
+  // All mock data removed - only real API data allowed
 
   if (loading) {
     return (
@@ -74,6 +54,12 @@ const InventoryManagement = () => {
     )
   }
 
+  const tabs = [
+    { id: 'live', label: 'Live Monitor', icon: BoltIcon },
+    { id: 'overview', label: 'Overview', icon: ChartBarIcon },
+    { id: 'management', label: 'Management', icon: CubeIcon }
+  ]
+
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="mb-8">
@@ -83,7 +69,37 @@ const InventoryManagement = () => {
         </p>
       </div>
 
-      {/* Inventory Alerts */}
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          {tabs.map((tab) => {
+            const IconComponent = tab.icon
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+              >
+                <IconComponent className="w-5 h-5" />
+                <span>{tab.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'live' && (
+        <LiveInventoryMonitor />
+      )}
+
+      {activeTab === 'overview' && (
+        <div>
+          {/* Inventory Alerts */}
       {lowStockItems.length > 0 && (
         <div className="mb-6 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
           <div className="flex items-center">
@@ -366,6 +382,23 @@ const InventoryManagement = () => {
           </table>
         </div>
       </div>
+        </div>
+      )}
+
+      {activeTab === 'management' && (
+        <div>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Advanced inventory management tools and controls will be available here.
+          </p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
+            <CubeIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Management Tools Coming Soon</h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              Advanced inventory management features including bulk operations, automated workflows, and predictive analytics.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

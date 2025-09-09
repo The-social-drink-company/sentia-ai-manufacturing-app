@@ -34,31 +34,7 @@ const QualityControl = () => {
     return () => clearInterval(interval)
   }, [])
 
-  const mockQualityTrend = [
-    { date: '2025-09-01', passRate: 97.5, defectRate: 2.5 },
-    { date: '2025-09-02', passRate: 98.1, defectRate: 1.9 },
-    { date: '2025-09-03', passRate: 97.8, defectRate: 2.2 },
-    { date: '2025-09-04', passRate: 98.5, defectRate: 1.5 },
-    { date: '2025-09-05', passRate: 98.2, defectRate: 1.8 },
-    { date: '2025-09-06', passRate: 97.9, defectRate: 2.1 },
-    { date: '2025-09-07', passRate: 98.7, defectRate: 1.3 }
-  ]
-
-  const mockDefectTypes = [
-    { name: 'Dimensional', value: 35, color: '#EF4444' },
-    { name: 'Surface', value: 28, color: '#F59E0B' },
-    { name: 'Material', value: 22, color: '#3B82F6' },
-    { name: 'Assembly', value: 15, color: '#10B981' }
-  ]
-
-  const mockTestPerformance = [
-    { hour: '08:00', completed: 12, passed: 11, failed: 1 },
-    { hour: '10:00', completed: 15, passed: 14, failed: 1 },
-    { hour: '12:00', completed: 18, passed: 17, failed: 1 },
-    { hour: '14:00', completed: 14, passed: 13, failed: 1 },
-    { hour: '16:00', completed: 16, passed: 16, failed: 0 },
-    { hour: '18:00', completed: 12, passed: 12, failed: 0 }
-  ]
+  // All mock data removed - only real API data allowed
 
   if (loading) {
     return (

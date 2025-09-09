@@ -4,7 +4,9 @@
  */
 
 import pkg from 'xero-node';
-const { XeroClient, AccountingApi } = pkg;
+// Handle both old and new xero-node package exports
+const { XeroClient, XeroApi, AccountingApi, TokenSet } = pkg;
+const XeroClientClass = XeroClient || XeroApi || pkg.default;
 
 export class XeroProvider {
   constructor(logger) {
@@ -29,7 +31,10 @@ export class XeroProvider {
   }
 
   initializeClient() {
-    this.xeroClient = new XeroClient({
+    if (!XeroClientClass) {
+      throw new Error('Xero client not available. Please ensure xero-node package is properly installed.');
+    }
+    this.xeroClient = new XeroClientClass({
       clientId: this.clientId,
       clientSecret: this.clientSecret,
       redirectUris: [this.redirectUri],

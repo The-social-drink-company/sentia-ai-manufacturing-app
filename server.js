@@ -1657,44 +1657,32 @@ app.get('/api/data/status', authenticateUser, (req, res) => {
 
 // Analytics APIs (Enterprise AI-powered with Neon PostgreSQL)
 app.get('/api/kpis/realtime', async (req, res) => {
-  try {
-    // Mock realtime KPI data that frontend expects
-    const realtimeData = {
-      production: {
-        efficiency: Math.round(Math.random() * 10 + 85), // 85-95%
-        unitsProduced: Math.round(Math.random() * 500 + 2000),
-        qualityScore: Math.round((Math.random() * 5 + 94) * 10) / 10 // 94-99%
-      },
-      sales: {
-        revenue: Math.round(Math.random() * 100000 + 500000),
-        orders: Math.round(Math.random() * 200 + 800),
-        fulfillment: Math.round(Math.random() * 5 + 95) // 95-100%
-      },
-      manufacturing: {
-        mixing: {
-          batchesInProgress: Math.round(Math.random() * 5 + 2),
-          efficiency: Math.round(Math.random() * 10 + 85),
-          qualityScore: Math.round((Math.random() * 5 + 94) * 10) / 10
-        },
-        bottling: {
-          unitsBottled: Math.round(Math.random() * 1000 + 5000),
-          efficiency: Math.round(Math.random() * 10 + 88),
-          qualityScore: Math.round((Math.random() * 4 + 95) * 10) / 10
-        },
-        warehousing: {
-          inventory: Math.round(Math.random() * 5000 + 15000),
-          efficiency: Math.round(Math.random() * 8 + 90),
-          qualityScore: Math.round((Math.random() * 3 + 96) * 10) / 10
-        }
-      },
-      timestamp: new Date().toISOString()
-    };
-    
-    res.json(realtimeData);
-  } catch (error) {
-    console.error('Realtime KPI error:', error);
-    res.status(500).json({ error: 'Failed to fetch realtime KPIs' });
-  }
+  res.status(503).json({
+    error: 'Realtime KPI data requires live system integration',
+    message: 'Real-time KPI monitoring requires connection to live operational systems',
+    required_integrations: [
+      'Manufacturing Execution System (MES) for production efficiency and units produced',
+      'Quality Management System (QMS) for real-time quality scores',
+      'Enterprise Resource Planning (ERP) for sales revenue and order data',
+      'Warehouse Management System (WMS) for inventory and fulfillment metrics',
+      'Industrial IoT sensors for live equipment efficiency monitoring',
+      'Customer Relationship Management (CRM) for sales performance tracking'
+    ],
+    supported_kpis: [
+      'Production efficiency and throughput',
+      'Quality scores and defect rates', 
+      'Sales revenue and order fulfillment',
+      'Manufacturing process metrics (mixing, bottling, warehousing)',
+      'Inventory levels and warehouse efficiency'
+    ],
+    data_requirements: [
+      'Real-time production line data from MES',
+      'Live quality test results from LIMS',
+      'Current sales orders from ERP/CRM',
+      'Equipment sensor data from IoT systems'
+    ],
+    contact: 'Contact system administrator to configure real-time data integration for live KPI monitoring'
+  });
 });
 
 app.get('/api/analytics/kpis', authenticateUser, async (req, res) => {

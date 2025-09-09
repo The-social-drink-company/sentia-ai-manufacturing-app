@@ -4,40 +4,82 @@
  */
 
 import pkg from 'xero-node';
-const { XeroApi, TokenSet } = pkg;
+// Handle both old and new xero-node package exports with comprehensive error handling
+let XeroClient, XeroApi, TokenSet, XeroClientClass;
+
+try {
+  ({ XeroClient, XeroApi, TokenSet } = pkg);
+  XeroClientClass = XeroClient || XeroApi || pkg.default || pkg;
+  
+  if (!XeroClientClass || typeof XeroClientClass !== 'function') {
+    console.warn('⚠️ Xero client class not found in package, using fallback');
+    XeroClientClass = null;
+  }
+} catch (error) {
+  console.error('❌ Failed to import Xero package:', error.message);
+  XeroClientClass = null;
+  TokenSet = null;
+}
+
+// Fallback for missing logError function
+const logError = (msg, error) => console.error(msg, error);
 
 class XeroService {
   constructor() {
     this.xero = null;
     this.isConnected = false;
     this.tokenSet = null;
-    this.organizationId = process.env.XERO_ORGANIZATION_ID;
+    this.organizationId = null;
     this.retryAttempts = 0;
     this.maxRetries = 3;
+    this.initialized = false;
     
+    // Don't initialize immediately - wait for environment variables to be loaded
+    // this.initializeXeroClient();
+  }
+
+  ensureInitialized() {
+    if (this.initialized) {
+      return;
+    }
     this.initializeXeroClient();
+    this.initialized = true;
   }
 
   initializeXeroClient() {
+    console.log('🔍 Xero Debug - XERO_CLIENT_ID:', process.env.XERO_CLIENT_ID);
+    console.log('🔍 Xero Debug - XERO_CLIENT_SECRET:', process.env.XERO_CLIENT_SECRET);
+    
+    this.organizationId = process.env.XERO_ORGANIZATION_ID;
+    
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
+<<<<<<< HEAD
       // Xero service not configured - using mock data
+=======
+      console.log('❌ Xero credentials missing - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);
+      return;
+    }
+
+    if (!XeroClientClass) {
+      console.warn('⚠️ Xero client class not available, service will not be initialized');
+>>>>>>> production
       return;
     }
 
     try {
-      this.xero = new XeroApi({
+      this.xero = new XeroClientClass({
         clientId: process.env.XERO_CLIENT_ID,
         clientSecret: process.env.XERO_CLIENT_SECRET,
         redirectUris: [process.env.XERO_REDIRECT_URI || 'http://localhost:3000/xero/callback'],
         scopes: [
           'openid',
-          'profile',
+          'profile', 
           'email',
           'accounting.reports.read',
           'accounting.journals.read',
           'accounting.settings.read',
           'accounting.transactions'
-        ].join(' '),
+        ],
         httpTimeout: 30000
       });
 
@@ -45,6 +87,37 @@ class XeroService {
       this.authenticate();
     } catch (error) {
       console.error('❌ Failed to initialize Xero client:', error.message);
+    }
+  }
+
+  async getAuthUrl() {
+    this.ensureInitialized();
+    
+    if (!this.xero) {
+      throw new Error('Xero client not initialized');
+    }
+    
+    return await this.xero.buildConsentUrl();
+  }
+
+  async exchangeCodeForToken(code) {
+    this.ensureInitialized();
+    
+    if (!this.xero) {
+      throw new Error('Xero client not initialized');
+    }
+    
+    try {
+      const tokenSet = await this.xero.apiCallback(code);
+      this.tokenSet = tokenSet;
+      this.xero.setTokenSet(tokenSet);
+      this.isConnected = true;
+      console.log('✅ Xero authenticated successfully');
+      return tokenSet;
+    } catch (error) {
+      console.error('❌ Xero token exchange failed:', error.message);
+      this.isConnected = false;
+      throw error;
     }
   }
 
@@ -119,7 +192,7 @@ class XeroService {
   // Enterprise working capital methods
   async getBalanceSheet(periods = 2) {
     if (!this.isConnected) {
-      return this.generateFallbackBalanceSheet();
+      throw new Error('Xero service not connected - no fallback data available');
     }
 
     return await this.executeWithRetry(async () => {
@@ -136,7 +209,7 @@ class XeroService {
 
   async getCashFlow(periods = 12) {
     if (!this.isConnected) {
-      return this.generateFallbackCashFlow(periods);
+      throw new Error('Xero service not connected - no fallback data available');
     }
 
     return await this.executeWithRetry(async () => {
@@ -153,7 +226,7 @@ class XeroService {
 
   async getProfitAndLoss(periods = 12) {
     if (!this.isConnected) {
-      return this.generateFallbackProfitLoss(periods);
+      throw new Error('Xero service not connected - no fallback data available');
     }
 
     return await this.executeWithRetry(async () => {
@@ -170,6 +243,13 @@ class XeroService {
   }
 
   async calculateWorkingCapital() {
+    this.ensureInitialized();
+    
+    // FORCE REAL DATA ONLY - No fallback allowed
+    if (!this.isConnected) {
+      throw new Error('Xero authentication required. Please authenticate via /api/xero/auth to access real financial data. No mock data will be returned.');
+    }
+
     try {
       const balanceSheet = await this.getBalanceSheet();
       
@@ -206,13 +286,52 @@ class XeroService {
         dso: dso,
         dio: dio,
         dpo: dpo,
-        dataSource: this.isConnected ? 'xero_api' : 'fallback_estimated',
+        dataSource: 'xero_api',
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
       console.error('❌ Working capital calculation failed:', error);
-      return this.generateFallbackWorkingCapital();
+      throw new Error(`Real Xero API failed: ${error.message}. Authentication required for real financial data.`);
     }
+  }
+
+  getFallbackFinancialData() {
+    // Realistic sample data for Sentia Manufacturing Dashboard
+    const cash = 485000;
+    const accountsReceivable = 645000;
+    const inventory = 1250000;
+    const accountsPayable = 425000;
+    const shortTermDebt = 150000;
+    
+    const currentAssets = cash + accountsReceivable + inventory;
+    const currentLiabilities = accountsPayable + shortTermDebt;
+    const workingCapital = currentAssets - currentLiabilities;
+    const currentRatio = currentLiabilities > 0 ? currentAssets / currentLiabilities : 0;
+    const quickRatio = currentLiabilities > 0 ? (currentAssets - inventory) / currentLiabilities : 0;
+
+    // Manufacturing company typical metrics
+    const dso = 45; // Days Sales Outstanding
+    const dio = 62; // Days Inventory Outstanding (higher for manufacturing)
+    const dpo = 35; // Days Payable Outstanding
+    const cashConversionCycle = dso + dio - dpo;
+
+    return {
+      currentAssets: currentAssets,
+      currentLiabilities: currentLiabilities,
+      workingCapital: workingCapital,
+      currentRatio: Math.round(currentRatio * 100) / 100,
+      quickRatio: Math.round(quickRatio * 100) / 100,
+      cashConversionCycle: cashConversionCycle,
+      accountsReceivable: accountsReceivable,
+      accountsPayable: accountsPayable,
+      inventory: inventory,
+      cash: cash,
+      dso: dso,
+      dio: dio,
+      dpo: dpo,
+      dataSource: 'sample_data',
+      lastUpdated: new Date().toISOString()
+    };
   }
 
   /**
@@ -220,7 +339,7 @@ class XeroService {
    */
   async exchangeCodeForToken(code) {
     try {
-      const tokenSet = await this.xeroClient.apiCallback(code);
+      const tokenSet = await this.xero.apiCallback(code);
       return tokenSet;
     } catch (error) {
       logError('Error exchanging code for token', error);
@@ -233,7 +352,7 @@ class XeroService {
    */
   async refreshToken(refreshToken) {
     try {
-      const tokenSet = await this.xeroClient.refreshAccessToken(refreshToken);
+      const tokenSet = await this.xero.refreshAccessToken(refreshToken);
       return tokenSet;
     } catch (error) {
       logError('Error refreshing token', error);
@@ -246,8 +365,8 @@ class XeroService {
    */
   async getOrganizations(accessToken) {
     try {
-      this.xeroClient.setTokenSet({ access_token: accessToken });
-      const response = await this.xeroClient.accountingApi.getOrganisations();
+      this.xero.setTokenSet({ access_token: accessToken });
+      const response = await this.xero.accountingApi.getOrganisations();
       return response.body.organisations;
     } catch (error) {
       logError('Error fetching organizations', error);
@@ -260,8 +379,8 @@ class XeroService {
    */
   async getContacts(accessToken, tenantId, page = 1, limit = 100) {
     try {
-      this.xeroClient.setTokenSet({ access_token: accessToken });
-      const response = await this.xeroClient.accountingApi.getContacts(
+      this.xero.setTokenSet({ access_token: accessToken });
+      const response = await this.xero.accountingApi.getContacts(
         tenantId,
         undefined, // ifModifiedSince
         undefined, // where
@@ -289,8 +408,8 @@ class XeroService {
    */
   async createOrUpdateContact(accessToken, tenantId, contactData) {
     try {
-      this.xeroClient.setTokenSet({ access_token: accessToken });
-      const response = await this.xeroClient.accountingApi.createOrUpdateContacts(
+      this.xero.setTokenSet({ access_token: accessToken });
+      const response = await this.xero.accountingApi.createOrUpdateContacts(
         tenantId,
         { contacts: [contactData] }
       );
@@ -306,8 +425,8 @@ class XeroService {
    */
   async getInvoices(accessToken, tenantId, page = 1, limit = 100) {
     try {
-      this.xeroClient.setTokenSet({ access_token: accessToken });
-      const response = await this.xeroClient.accountingApi.getInvoices(
+      this.xero.setTokenSet({ access_token: accessToken });
+      const response = await this.xero.accountingApi.getInvoices(
         tenantId,
         undefined, // ifModifiedSince
         undefined, // where
@@ -335,8 +454,8 @@ class XeroService {
    */
   async createInvoice(accessToken, tenantId, invoiceData) {
     try {
-      this.xeroClient.setTokenSet({ access_token: accessToken });
-      const response = await this.xeroClient.accountingApi.createInvoices(
+      this.xero.setTokenSet({ access_token: accessToken });
+      const response = await this.xero.accountingApi.createInvoices(
         tenantId,
         { invoices: [invoiceData] }
       );
@@ -352,8 +471,8 @@ class XeroService {
    */
   async getItems(accessToken, tenantId, page = 1, limit = 100) {
     try {
-      this.xeroClient.setTokenSet({ access_token: accessToken });
-      const response = await this.xeroClient.accountingApi.getItems(
+      this.xero.setTokenSet({ access_token: accessToken });
+      const response = await this.xero.accountingApi.getItems(
         tenantId,
         undefined, // ifModifiedSince
         undefined, // where
@@ -378,8 +497,8 @@ class XeroService {
    */
   async createOrUpdateItem(accessToken, tenantId, itemData) {
     try {
-      this.xeroClient.setTokenSet({ access_token: accessToken });
-      const response = await this.xeroClient.accountingApi.createOrUpdateItems(
+      this.xero.setTokenSet({ access_token: accessToken });
+      const response = await this.xero.accountingApi.createOrUpdateItems(
         tenantId,
         { items: [itemData] }
       );
@@ -395,8 +514,8 @@ class XeroService {
    */
   async getFinancialReports(accessToken, tenantId, reportType, fromDate, toDate) {
     try {
-      this.xeroClient.setTokenSet({ access_token: accessToken });
-      const response = await this.xeroClient.accountingApi.getReportFinancialStatements(
+      this.xero.setTokenSet({ access_token: accessToken });
+      const response = await this.xero.accountingApi.getReportFinancialStatements(
         tenantId,
         reportType,
         fromDate,
@@ -496,126 +615,10 @@ class XeroService {
     return searchRows(reportData.rows, accountName);
   }
 
-  // Fallback data generators
-  generateFallbackWorkingCapital() {
-    return {
-      currentAssets: 3800000,
-      currentLiabilities: 1150000,
-      workingCapital: 2650000,
-      currentRatio: 3.3,
-      quickRatio: 2.61,
-      cashConversionCycle: 42,
-      accountsReceivable: 1200000,
-      accountsPayable: 950000,
-      inventory: 800000,
-      cash: 1800000,
-      dso: 35,
-      dio: 45,
-      dpo: 38,
-      dataSource: 'fallback_estimated',
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
-  generateFallbackCashFlow(periods = 12) {
-    const cashFlowData = [];
-    
-    for (let i = periods - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setMonth(date.getMonth() - i);
-      
-      cashFlowData.push({
-        period: date.toISOString().substr(0, 7),
-        operatingCashFlow: 150000 + Math.floor(Math.random() * 100000),
-        investingCashFlow: -25000 + Math.floor(Math.random() * 50000),
-        financingCashFlow: -50000 + Math.floor(Math.random() * 100000),
-        netCashFlow: 75000 + Math.floor(Math.random() * 150000)
-      });
-    }
-
-    return {
-      reportName: 'Cash Flow Statement (Estimated)',
-      periods: periods,
-      data: cashFlowData,
-      dataSource: 'fallback_estimated',
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
-  generateFallbackBalanceSheet() {
-    return {
-      reportName: 'Balance Sheet (Estimated)',
-      reportDate: new Date().toISOString(),
-      rows: [
-        {
-          cells: [
-            { value: 'Cash and Cash Equivalents' },
-            { value: '1800000' },
-            { value: '1650000' }
-          ]
-        },
-        {
-          cells: [
-            { value: 'Accounts Receivable' },
-            { value: '1200000' },
-            { value: '1100000' }
-          ]
-        },
-        {
-          cells: [
-            { value: 'Inventory' },
-            { value: '800000' },
-            { value: '750000' }
-          ]
-        },
-        {
-          cells: [
-            { value: 'Accounts Payable' },
-            { value: '950000' },
-            { value: '900000' }
-          ]
-        },
-        {
-          cells: [
-            { value: 'Short-term Debt' },
-            { value: '200000' },
-            { value: '250000' }
-          ]
-        }
-      ],
-      dataSource: 'fallback_estimated',
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
-  generateFallbackProfitLoss(periods = 12) {
-    const profitLossData = [];
-    
-    for (let i = periods - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setMonth(date.getMonth() - i);
-      
-      profitLossData.push({
-        period: date.toISOString().substr(0, 7),
-        revenue: 500000 + Math.floor(Math.random() * 200000),
-        costOfGoodsSold: 300000 + Math.floor(Math.random() * 100000),
-        grossProfit: 200000 + Math.floor(Math.random() * 100000),
-        operatingExpenses: 150000 + Math.floor(Math.random() * 50000),
-        netProfit: 50000 + Math.floor(Math.random() * 75000)
-      });
-    }
-
-    return {
-      reportName: 'Profit & Loss (Estimated)',
-      periods: periods,
-      data: profitLossData,
-      dataSource: 'fallback_estimated',
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
   // Health check
   async healthCheck() {
+    this.ensureInitialized();
+    
     try {
       if (!this.xero) {
         return {
@@ -627,7 +630,7 @@ class XeroService {
       if (!this.isConnected) {
         return {
           status: 'not_authenticated',
-          message: 'Xero not authenticated - using fallback data'
+          message: 'Xero not authenticated - no data available'
         };
       }
 

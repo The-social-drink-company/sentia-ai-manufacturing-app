@@ -75,17 +75,13 @@ const RoleBadge = ({ role }) => {
       color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
       text: 'Manager'
     },
-    operator: {
+    user: {
       color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      text: 'Operator'
-    },
-    viewer: {
-      color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-      text: 'Viewer'
+      text: 'User'
     }
   }
 
-  const config = roleConfig[role] || roleConfig.viewer
+  const config = roleConfig[role] || roleConfig.user
 
   return (
     <span className={cn(
@@ -176,8 +172,7 @@ const UserModal = ({ user, isOpen, onClose, onSave, mode = 'create' }) => {
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
-              <option value="viewer">Viewer</option>
-              <option value="operator">Operator</option>
+              <option value="user">User</option>
               <option value="manager">Manager</option>
               <option value="admin">Administrator</option>
             </select>
@@ -252,109 +247,42 @@ const AdminUsers = () => {
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin', 'users', searchTerm, roleFilter, statusFilter],
     queryFn: async () => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800))
-      
-      return [
-        // Requested Admin Users for Sentia Manufacturing Dashboard
-        {
-          id: 1,
-          email: 'daniel.kenny@sentiaspirits.com',
-          firstName: 'Daniel',
-          lastName: 'Kenny',
-          role: 'admin',
-          status: 'active',
-          lastLogin: '2025-09-07T15:00:00Z',
-          mfaEnabled: true,
-          loginCount: 1,
-          createdAt: '2025-09-07T15:00:00Z'
-        },
-        {
-          id: 2,
-          email: 'paul.roberts@sentiaspirits.com',
-          firstName: 'Paul',
-          lastName: 'Roberts',
-          role: 'admin',
-          status: 'active',
-          lastLogin: null,
-          mfaEnabled: true,
-          loginCount: 0,
-          createdAt: '2025-09-07T15:00:00Z'
-        },
-        {
-          id: 3,
-          email: 'david.orren@gabalabs.com',
-          firstName: 'David',
-          lastName: 'Orren',
-          role: 'admin',
-          status: 'active',
-          lastLogin: null,
-          mfaEnabled: true,
-          loginCount: 0,
-          createdAt: '2025-09-07T15:00:00Z'
-        },
-        // Existing system users
-        {
-          id: 4,
-          email: 'john.admin@company.com',
-          firstName: 'John',
-          lastName: 'Administrator',
-          role: 'admin',
-          status: 'active',
-          lastLogin: '2025-01-15T10:30:00Z',
-          mfaEnabled: true,
-          loginCount: 245,
-          createdAt: '2024-06-01T00:00:00Z'
-        },
-        {
-          id: 5,
-          email: 'sarah.manager@company.com',
-          firstName: 'Sarah',
-          lastName: 'Johnson',
-          role: 'manager',
-          status: 'active',
-          lastLogin: '2025-01-15T08:15:00Z',
-          mfaEnabled: true,
-          loginCount: 89,
-          createdAt: '2024-08-15T00:00:00Z'
-        },
-        {
-          id: 6,
-          email: 'mike.operator@company.com',
-          firstName: 'Mike',
-          lastName: 'Wilson',
-          role: 'operator',
-          status: 'locked',
-          lastLogin: '2025-01-10T16:45:00Z',
-          mfaEnabled: false,
-          loginCount: 156,
-          createdAt: '2024-09-22T00:00:00Z'
-        },
-        {
-          id: 7,
-          email: 'emma.viewer@company.com',
-          firstName: 'Emma',
-          lastName: 'Davis',
-          role: 'viewer',
-          status: 'active',
-          lastLogin: '2025-01-14T14:20:00Z',
-          mfaEnabled: false,
-          loginCount: 34,
-          createdAt: '2024-12-01T00:00:00Z'
-        },
-        {
-          id: 8,
-          email: 'robert.pending@company.com',
-          firstName: 'Robert',
-          lastName: 'Brown',
-          role: 'operator',
-          status: 'pending',
-          lastLogin: null,
-          mfaEnabled: false,
-          loginCount: 0,
-          createdAt: '2025-01-14T00:00:00Z'
+      try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+        const response = await fetch(`${apiUrl}/admin/users`)
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch users: ${response.status}`)
         }
-      ]
+        
+        const data = await response.json()
+        
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to fetch users')
+        }
+        
+        // Transform API data to match component expectations
+        return data.users.map(user => ({
+          id: user.id,
+          email: user.email_addresses?.[0]?.email_address || '',
+          firstName: user.first_name,
+          lastName: user.last_name,
+          username: user.username,
+          role: user.public_metadata?.role || 'user',
+          status: user.public_metadata?.approved ? 'active' : 'pending',
+          department: user.public_metadata?.department || '',
+          lastLogin: user.last_sign_in_at,
+          mfaEnabled: user.public_metadata?.mfaEnabled || false,
+          loginCount: user.public_metadata?.loginCount || 0,
+          createdAt: user.created_at,
+          phoneNumbers: user.phone_numbers || [],
+          permissions: user.public_metadata?.permissions || [],
+          profileImage: user.profile_image_url
+        }))
+      } catch (error) {
+        logError('Failed to fetch users from API', error, { component: 'AdminUsers' })
+        return []
+      }
     },
     refetchInterval: 30000
   })
@@ -607,8 +535,7 @@ const AdminUsers = () => {
             <option value="all">All Roles</option>
             <option value="admin">Admin</option>
             <option value="manager">Manager</option>
-            <option value="operator">Operator</option>
-            <option value="viewer">Viewer</option>
+            <option value="user">User</option>
           </select>
           
           <select

@@ -1,26 +1,31 @@
-/* TRULY CONSERVATIVE SIDEBAR - NO BOXES, NO DECORATIONS */
+/* ENTERPRISE DARK SIDEBAR - MATCHES REFERENCE DESIGN */
 
-/* Sidebar container - clean and simple with !important overrides */
+/* Sidebar container - dark theme to match reference */
 .sidebar-container {
-  width: 280px !important;
-  background-color: #f8f9fa !important;
-  border-right: 1px solid #dee2e6 !important;
+  width: 256px !important;
+  background-color: #111827 !important;
+  border-right: none !important;
   height: 100vh !important;
   display: flex !important;
   flex-direction: column !important;
   border-radius: 0 !important;
   box-shadow: none !important;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  color: white !important;
 }
 
 .sidebar-container.collapsed {
   width: 60px;
 }
 
-/* Header - flat design with !important overrides */
+/* Header - dark theme with branding */
 .sidebar-header {
-  padding: 16px !important;
-  background-color: #f1f3f4 !important;
-  border-bottom: 1px solid #dee2e6 !important;
+  padding: 24px !important;
+  background-color: #111827 !important;
+  border-bottom: 1px solid #374151 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -32,50 +37,49 @@
 .sidebar-title {
   font-size: 16px;
   font-weight: 600;
-  color: #202124;
+  color: white !important;
   margin: 0;
 }
 
 .sidebar-subtitle {
-  font-size: 12px;
-  color: #5f6368;
+  font-size: 14px;
+  color: #9CA3AF !important;
   margin: 0;
 }
 
-/* Navigation items - completely flat with !important to override Tailwind */
+/* Navigation items - dark theme to match reference */
 .nav-item {
   display: flex !important;
   align-items: center !important;
-  padding: 10px 16px !important;
+  padding: 12px 24px !important;
   text-decoration: none !important;
-  color: #3c4043 !important;
+  color: #D1D5DB !important;
   font-size: 14px !important;
+  font-weight: 500 !important;
   border: none !important;
   background: none !important;
   width: 100% !important;
   cursor: pointer !important;
-  transition: background-color 0.2s !important;
+  transition: all 0.2s !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   margin: 0 !important;
 }
 
 .nav-item:hover {
-  background-color: #f1f3f4 !important;
+  background-color: #1F2937 !important;
   text-decoration: none !important;
-  color: #3c4043 !important;
+  color: white !important;
 }
 
 .nav-item-active {
-  background-color: #e8f0fe !important;
-  color: #1967d2 !important;
-  border-left: 3px solid #1967d2 !important;
+  background-color: #2563EB !important;
+  color: white !important;
   border-radius: 0 !important;
   box-shadow: none !important;
 }
 
 .nav-item-inactive {
-  border-left: 3px solid transparent !important;
   border-radius: 0 !important;
   box-shadow: none !important;
 }
@@ -164,9 +168,9 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 8px 16px;
-  font-size: 11px;
-  color: #9aa0a6;
+  padding: 12px 24px 8px 24px;
+  font-size: 12px;
+  color: #9CA3AF !important;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -177,7 +181,7 @@
 }
 
 .nav-section-header:hover {
-  color: #5f6368;
+  color: #D1D5DB !important;
 }
 
 .section-content {
@@ -197,9 +201,9 @@
 }
 
 .sidebar-logo {
-  width: 32px !important;
-  height: 32px !important;
-  background-color: #1967d2 !important;
+  width: 40px !important;
+  height: 40px !important;
+  background-color: #2563EB !important;
   border-radius: 8px !important;
   display: flex !important;
   align-items: center !important;
@@ -210,7 +214,7 @@
 .sidebar-logo span {
   color: white;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .sidebar-text {
@@ -223,6 +227,7 @@
   flex: 1;
   padding: 24px 0;
   overflow-y: auto;
+  background-color: #111827 !important;
 }
 
 .nav-sections {
@@ -234,8 +239,8 @@
 /* Footer */
 .sidebar-footer {
   padding: 16px;
-  border-top: 1px solid #dee2e6;
-  background-color: #f8f9fa;
+  border-top: 1px solid #374151;
+  background-color: #111827;
 }
 
 .sidebar-info {

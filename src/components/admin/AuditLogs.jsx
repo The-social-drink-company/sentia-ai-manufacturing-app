@@ -22,138 +22,47 @@ const AuditLogs = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [dateRange, setDateRange] = useState('today')
 
-  // Mock audit log data
-  const mockLogs = [
-    {
-      id: 1,
-      timestamp: new Date(Date.now() - 1000 * 60 * 15),
-      level: 'info',
-      category: 'authentication',
-      action: 'User Login',
-      user: 'john.smith@sentia.com',
-      userRole: 'Manager',
-      description: 'Successful login from Chrome browser',
-      ipAddress: '192.168.1.45',
-      location: 'London, UK',
-      details: { browser: 'Chrome 119.0', device: 'Desktop' }
-    },
-    {
-      id: 2,
-      timestamp: new Date(Date.now() - 1000 * 60 * 32),
-      level: 'warning',
-      category: 'data_access',
-      action: 'Sensitive Data Access',
-      user: 'sarah.connor@sentia.com',
-      userRole: 'Analyst',
-      description: 'Accessed financial reports outside normal hours',
-      ipAddress: '192.168.1.78',
-      location: 'Manchester, UK',
-      details: { report: 'Q3 Financial Summary', size: '2.3MB' }
-    },
-    {
-      id: 3,
-      timestamp: new Date(Date.now() - 1000 * 60 * 45),
-      level: 'error',
-      category: 'system',
-      action: 'Failed API Call',
-      user: 'system',
-      userRole: 'System',
-      description: 'Failed to sync data with external ERP system',
-      ipAddress: '10.0.0.1',
-      location: 'Internal',
-      details: { endpoint: '/api/erp/sync', error: 'Connection timeout' }
-    },
-    {
-      id: 4,
-      timestamp: new Date(Date.now() - 1000 * 60 * 67),
-      level: 'info',
-      category: 'configuration',
-      action: 'Settings Updated',
-      user: 'admin@sentia.com',
-      userRole: 'Administrator',
-      description: 'Updated production line settings',
-      ipAddress: '192.168.1.10',
-      location: 'Birmingham, UK',
-      details: { setting: 'Line 3 Speed', oldValue: '85%', newValue: '92%' }
-    },
-    {
-      id: 5,
-      timestamp: new Date(Date.now() - 1000 * 60 * 89),
-      level: 'warning',
-      category: 'security',
-      action: 'Multiple Failed Logins',
-      user: 'unknown',
-      userRole: 'Unknown',
-      description: '5 consecutive failed login attempts detected',
-      ipAddress: '203.0.113.45',
-      location: 'Unknown',
-      details: { attempts: 5, timespan: '2 minutes', blocked: true }
-    },
-    {
-      id: 6,
-      timestamp: new Date(Date.now() - 1000 * 60 * 112),
-      level: 'success',
-      category: 'data_export',
-      action: 'Data Export',
-      user: 'mike.johnson@sentia.com',
-      userRole: 'Operator',
-      description: 'Exported production data for analysis',
-      ipAddress: '192.168.1.67',
-      location: 'Leeds, UK',
-      details: { format: 'CSV', records: 15420, size: '4.7MB' }
-    },
-    {
-      id: 7,
-      timestamp: new Date(Date.now() - 1000 * 60 * 134),
-      level: 'info',
-      category: 'user_management',
-      action: 'User Role Changed',
-      user: 'admin@sentia.com',
-      userRole: 'Administrator',
-      description: 'Updated user role for team member',
-      ipAddress: '192.168.1.10',
-      location: 'Birmingham, UK',
-      details: { targetUser: 'lisa.williams@sentia.com', oldRole: 'Viewer', newRole: 'Analyst' }
-    },
-    {
-      id: 8,
-      timestamp: new Date(Date.now() - 1000 * 60 * 156),
-      level: 'error',
-      category: 'data_integrity',
-      action: 'Data Validation Failed',
-      user: 'system',
-      userRole: 'System',
-      description: 'Inventory data validation failed during import',
-      ipAddress: '10.0.0.1',
-      location: 'Internal',
-      details: { source: 'Warehouse System', errors: 23, records: 1245 }
+  // Fetch real audit logs from API - NO MOCK DATA
+  const fetchAuditLogs = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/admin/audit-logs')
+      
+      if (response.ok) {
+        const data = await response.json()
+        setLogs(data.logs || [])
+      } else {
+        console.warn('Audit logs API unavailable')
+        setLogs([]) // No fallback mock data - empty if API fails
+      }
+    } catch (error) {
+      console.error('Failed to fetch audit logs:', error)
+      setLogs([]) // No fallback mock data - empty if API fails
+    } finally {
+      setLoading(false)
     }
-  ]
-
+  }
+  // Categories and levels based on real data
   const categories = [
-    { id: 'all', name: 'All Categories', count: mockLogs.length },
-    { id: 'authentication', name: 'Authentication', count: mockLogs.filter(l => l.category === 'authentication').length },
-    { id: 'data_access', name: 'Data Access', count: mockLogs.filter(l => l.category === 'data_access').length },
-    { id: 'security', name: 'Security', count: mockLogs.filter(l => l.category === 'security').length },
-    { id: 'system', name: 'System', count: mockLogs.filter(l => l.category === 'system').length },
-    { id: 'configuration', name: 'Configuration', count: mockLogs.filter(l => l.category === 'configuration').length },
-    { id: 'user_management', name: 'User Management', count: mockLogs.filter(l => l.category === 'user_management').length }
+    { id: 'all', name: 'All Categories', count: logs.length },
+    { id: 'authentication', name: 'Authentication', count: logs.filter(l => l.category === 'authentication').length },
+    { id: 'data_access', name: 'Data Access', count: logs.filter(l => l.category === 'data_access').length },
+    { id: 'security', name: 'Security', count: logs.filter(l => l.category === 'security').length },
+    { id: 'system', name: 'System', count: logs.filter(l => l.category === 'system').length },
+    { id: 'configuration', name: 'Configuration', count: logs.filter(l => l.category === 'configuration').length },
+    { id: 'user_management', name: 'User Management', count: logs.filter(l => l.category === 'user_management').length }
   ]
 
   const levels = [
-    { id: 'all', name: 'All Levels', count: mockLogs.length },
-    { id: 'info', name: 'Info', count: mockLogs.filter(l => l.level === 'info').length },
-    { id: 'warning', name: 'Warning', count: mockLogs.filter(l => l.level === 'warning').length },
-    { id: 'error', name: 'Error', count: mockLogs.filter(l => l.level === 'error').length },
-    { id: 'success', name: 'Success', count: mockLogs.filter(l => l.level === 'success').length }
+    { id: 'all', name: 'All Levels', count: logs.length },
+    { id: 'info', name: 'Info', count: logs.filter(l => l.level === 'info').length },
+    { id: 'warning', name: 'Warning', count: logs.filter(l => l.level === 'warning').length },
+    { id: 'error', name: 'Error', count: logs.filter(l => l.level === 'error').length },
+    { id: 'success', name: 'Success', count: logs.filter(l => l.level === 'success').length }
   ]
 
   useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLogs(mockLogs)
-      setLoading(false)
-    }, 600)
+    fetchAuditLogs()
   }, [])
 
   useEffect(() => {

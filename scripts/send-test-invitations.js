@@ -37,9 +37,12 @@ async function sendPasswordResetWithWarning(userEmail, userName, role) {
     const user = users.data[0];
     console.log(`Found user: ${user.id} - ${userEmail}`);
 
-    // Create a password reset flow with custom template
-    const passwordReset = await clerk.users.createPasswordResetFlow({
-      userId: user.id
+    // Create invitation to reset password
+    const invitation = await clerk.invitations.createInvitation({
+      emailAddress: userEmail,
+      redirectUrl: 'https://sentia-manufacturing-dashboard-production.up.railway.app/dashboard',
+      notify: true,
+      ignoreExisting: true
     });
 
     console.log(`Password reset flow created for ${userEmail}`);
@@ -51,8 +54,8 @@ async function sendPasswordResetWithWarning(userEmail, userName, role) {
     return { 
       success: true, 
       email: userEmail, 
-      message: 'Password reset email sent',
-      resetFlow: passwordReset 
+      message: 'Invitation email sent',
+      invitation: invitation 
     };
 
   } catch (error) {

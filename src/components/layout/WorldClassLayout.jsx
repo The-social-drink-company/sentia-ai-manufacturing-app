@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import EnterpriseNavigation from './EnterpriseNavigation';
+import Sidebar from './Sidebar';
 import EnterpriseHeader from './EnterpriseHeader';
 
 const WorldClassLayout = ({ children }) => {
@@ -22,12 +22,8 @@ const WorldClassLayout = ({ children }) => {
   }, []);
 
   const mainContentVariants = {
-    collapsed: {
-      marginLeft: isMobile ? '0' : '5rem',
-      transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
-    },
-    expanded: {
-      marginLeft: isMobile ? '0' : '23rem',
+    default: {
+      marginLeft: isMobile ? '0' : '256px', // 256px to match sidebar width
       transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
     }
   };
@@ -52,11 +48,8 @@ const WorldClassLayout = ({ children }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-purple-50/30" />
       </div>
 
-      {/* Enterprise Navigation Sidebar */}
-      <EnterpriseNavigation 
-        isCollapsed={sidebarCollapsed} 
-        onToggleCollapse={toggleSidebar} 
-      />
+      {/* Navigation Sidebar */}
+      <Sidebar />
 
       {/* Enterprise Header */}
       <EnterpriseHeader 
@@ -67,7 +60,7 @@ const WorldClassLayout = ({ children }) => {
       {/* Main Content Area */}
       <motion.main
         variants={mainContentVariants}
-        animate={sidebarCollapsed ? "collapsed" : "expanded"}
+        animate="default"
         className="pt-20 min-h-screen relative z-10"
       >
         <motion.div

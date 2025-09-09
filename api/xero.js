@@ -3,21 +3,19 @@
  * Handles Xero OAuth flow and API operations
  */
 
-const express = require('express');
-const { logError } = require('../services/observability/structuredLogger');
-const router = express.Router();
-const XeroService = require('../services/xeroService');
+import express from 'express';
+import { logError } from '../services/observability/structuredLogger.js';
+import xeroService from '../services/xeroService.js';
 
-// Initialize Xero service
-const xeroService = new XeroService();
+const router = express.Router();
 
 /**
  * GET /api/xero/auth
  * Initiate Xero OAuth flow
  */
-router.get('/auth', (req, res) => {
+router.get('/auth', async (req, res) => {
   try {
-    const authUrl = xeroService.getAuthUrl();
+    const authUrl = await xeroService.getAuthUrl();
     res.json({
       success: true,
       authUrl: authUrl,

@@ -6,6 +6,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Toaster } from 'react-hot-toast'
 import './index.css'
+import './styles/themes.css'
+import './styles/landing.css'
+import ThemeProvider from './components/ui/ThemeProvider'
 
 // Import Chart.js setup early to ensure registration
 import './lib/chartSetup'
@@ -15,27 +18,38 @@ import DashboardLayout from './components/layout/DashboardLayout'
 import WorldClassLayout from './components/layout/WorldClassLayout'
 import { LoadingSpinner } from './components/LoadingStates'
 import ErrorBoundaryFallback from './components/ErrorBoundary'
-
 // Lazy Load Pages for Performance
+const LandingPage = lazy(() => import('./pages/LandingPage'))
 const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'))
 const WorldClassEnterpriseDashboard = lazy(() => import('./pages/WorldClassEnterpriseDashboard'))
 const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
 const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
-const WorkingEnterpriseDashboard = lazy(() => import('./pages/WorkingEnterpriseDashboard'))
+// Removed: WorkingEnterpriseDashboard (deleted file - replaced with WorldClassEnterpriseDashboard)
 const AdminPanel = lazy(() => import('./pages/AdminPanel'))
 const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'))
+const WhatIfAnalysisDashboard = lazy(() => import('./components/analytics/WhatIfAnalysisDashboard'))
 const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'))
+const EnhancedWorkingCapital = lazy(() => import('./components/WorkingCapital/EnhancedWorkingCapital'))
+const EnhancedWorkingCapitalAnalysis = lazy(() => import('./components/analytics/EnhancedWorkingCapitalAnalysis'))
 const DataImportDashboard = lazy(() => import('./components/DataImport/DataImportDashboard'))
+const EnhancedDataImportDashboard = lazy(() => import('./components/DataImport/EnhancedDataImportDashboard'))
 const InventoryManagement = lazy(() => import('./components/inventory/InventoryManagement'))
+const AdvancedInventoryManagement = lazy(() => import('./components/inventory/AdvancedInventoryManagement'))
 const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
+const ProductionOptimization = lazy(() => import('./components/production/ProductionOptimization'))
 const QualityControl = lazy(() => import('./components/quality/QualityControl'))
+const QualityManagementSystem = lazy(() => import('./components/quality/QualityManagementSystem'))
 const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
+const EnhancedAIForecasting = lazy(() => import('./components/forecasting/EnhancedAIForecasting'))
 const Analytics = lazy(() => import('./components/analytics/Analytics'))
+const AdvancedAnalyticsDashboard = lazy(() => import('./components/analytics/AdvancedAnalyticsDashboard'))
 const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashboard'))
 const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
+const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMonitoring'))
 const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
 const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
+const APIStatusDiagnostic = lazy(() => import('./components/diagnostics/APIStatusDiagnostic'))
 
 // Additional Enterprise Components
 const FinancialReports = lazy(() => import('./components/financial/FinancialReports'))
@@ -46,6 +60,20 @@ const AuditLogs = lazy(() => import('./components/admin/AuditLogs'))
 const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
 const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 const UIShowcase = lazy(() => import('./components/ui/UIShowcase'))
+const UserPreferences = lazy(() => import('./pages/UserPreferences'))
+const MobileFloor = lazy(() => import('./pages/MobileFloor'))
+
+// Enhanced Admin System Components
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
+const AdminOverview = lazy(() => import('./components/admin/pages/AdminOverview'))
+const AdminUsers = lazy(() => import('./components/admin/pages/AdminUsers'))
+const AdminAPI = lazy(() => import('./components/admin/pages/AdminAPI'))
+const AdminSettings = lazy(() => import('./components/admin/pages/AdminSettings'))
+const AdminLogs = lazy(() => import('./components/admin/pages/AdminLogs'))
+const AdminErrors = lazy(() => import('./components/admin/pages/AdminErrors'))
+const AdminFeatureFlags = lazy(() => import('./components/admin/pages/AdminFeatureFlags'))
+const AdminIntegrations = lazy(() => import('./components/admin/pages/AdminIntegrations'))
+const AdminWebhooks = lazy(() => import('./components/admin/pages/AdminWebhooks'))
 
 
 console.log('Starting Sentia Enterprise Manufacturing Dashboard...', { 
@@ -61,13 +89,12 @@ console.log('Starting Sentia Enterprise Manufacturing Dashboard...', {
 // Get Clerk publishable key from environment
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-// Validate Clerk key exists
+// Handle missing Clerk key gracefully
 if (!clerkPubKey) {
-  console.error('VITE_CLERK_PUBLISHABLE_KEY is not set in environment variables')
-  throw new Error('Clerk publishable key is required')
+  console.warn('VITE_CLERK_PUBLISHABLE_KEY is not set - running in guest mode')
+} else {
+  console.log('Clerk key loaded:', clerkPubKey.substring(0, 20) + '...')
 }
-
-console.log('Clerk key loaded:', clerkPubKey.substring(0, 20) + '...')
 
 // Initialize React Query client
 const queryClient = new QueryClient({
@@ -84,70 +111,13 @@ const queryClient = new QueryClient({
   }
 })
 
-// Landing Page Component
-const LandingPage = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
-      <div className="relative min-h-screen flex items-center justify-center px-4">
-        {/* Background Effects */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-1/2 -right-1/2 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-1/2 -left-1/2 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
-        </div>
-
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-              SENTIA
-            </h1>
-            <h2 className="text-2xl md:text-3xl font-light mb-6 text-blue-100">
-              Manufacturing Intelligence Platform
-            </h2>
-            <p className="text-lg md:text-xl text-blue-200 max-w-2xl mx-auto mb-8">
-              Advanced AI-powered manufacturing dashboard with real-time analytics, 
-              predictive insights, and intelligent automation for modern production facilities.
-            </p>
-          </div>
-
-          {/* Authentication Section */}
-          <div className="space-y-6">
-            <SignedOut>
-              <div className="space-y-4">
-                <SignInButton mode="modal" redirectUrl="/dashboard">
-                  <button className="inline-block px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg shadow-lg hover:shadow-xl transform hover:scale-105">
-                    Sign In to Access Dashboard
-                  </button>
-                </SignInButton>
-                
-                <p className="text-blue-200 text-sm">
-                  Secure enterprise authentication powered by Clerk
-                </p>
-              </div>
-            </SignedOut>
-
-            <SignedIn>
-              <div className="space-y-4">
-                <a 
-                  href="/dashboard"
-                  className="inline-block px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg shadow-lg hover:shadow-xl transform hover:scale-105">
-                    Access Your Dashboard
-                </a>
-                
-                <div className="flex items-center justify-center space-x-4">
-                  <p className="text-blue-200 text-sm">Welcome back!</p>
-                  <UserButton afterSignOutUrl="/" />
-                </div>
-              </div>
-            </SignedIn>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // Protected route wrapper with guest access support
 const ProtectedRoute = ({ children, allowGuest = false }) => {
+  // If Clerk is not configured, always allow access
+  if (!clerkPubKey) {
+    return children
+  }
+  
   // Allow guest access for demo purposes
   if (allowGuest) {
     return children
@@ -200,21 +170,35 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <WorkingEnterpriseDashboard />
+      <WorldClassEnterpriseDashboard />
     </ErrorBoundary>
   )
 }
 
+// Fallback auth provider for when Clerk is not configured
+const FallbackAuthProvider = ({ children }) => {
+  return <div data-auth-provider="fallback">{children}</div>
+}
+
 function App() {
+  // Use ClerkProvider if key is available, otherwise use fallback
+  const AuthProvider = clerkPubKey ? ClerkProvider : FallbackAuthProvider
+  const authProps = clerkPubKey ? { publishableKey: clerkPubKey, afterSignOutUrl: "/" } : {}
+  
   return (
-    <ClerkProvider publishableKey={clerkPubKey} afterSignOutUrl="/">
+    <AuthProvider {...authProps}>
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
-          <Router>
+          <ThemeProvider>
+            <Router>
             <div className="App">
               <Routes>
                 {/* Public Landing Page */}
-                <Route path="/" element={<LandingPage />} />
+                <Route path="/" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <LandingPage />
+                  </Suspense>
+                } />
                 
                 {/* Protected Routes with World-Class Layout - Guest Access Enabled */}
                 <Route 
@@ -246,7 +230,58 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
+                          <ErrorBoundary 
+                            FallbackComponent={({ error, resetErrorBoundary }) => (
+                              <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+                                <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
+                                  <h2 className="text-xl font-semibold text-gray-900 mb-2">Working Capital Error</h2>
+                                  <p className="text-gray-600 mb-4">Enhanced working capital dashboard failed to load.</p>
+                                  <div className="flex space-x-3">
+                                    <button 
+                                      onClick={resetErrorBoundary}
+                                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                    >
+                                      Retry Enhanced
+                                    </button>
+                                    <button 
+                                      onClick={() => window.location.href = '/working-capital/basic'}
+                                      className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                                    >
+                                      Basic Mode
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          >
+                            <EnhancedWorkingCapital />
+                          </ErrorBoundary>
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/working-capital/basic" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <WorkingCapital />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/working-capital/enhanced" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <EnhancedWorkingCapital />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -259,7 +294,7 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <WhatIfAnalysis />
+                          <WhatIfAnalysisDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -268,6 +303,19 @@ function App() {
                 
                 <Route 
                   path="/forecasting" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <EnhancedAIForecasting />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/forecasting/basic" 
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
@@ -285,6 +333,19 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
+                          <AdvancedInventoryManagement />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/inventory/basic" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <InventoryManagement />
                         </Suspense>
                       </WorldClassLayout>
@@ -298,7 +359,33 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
+                          <ProductionOptimization />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/production/tracking" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <ProductionTracking />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/production/optimization" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <ProductionOptimization />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -311,7 +398,33 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
+                          <QualityManagementSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/quality/basic" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <QualityControl />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/quality/management" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <QualityManagementSystem />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -324,7 +437,7 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <Analytics />
+                          <AdvancedAnalyticsDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -337,7 +450,7 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <DataImportDashboard />
+                          <EnhancedDataImportDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -364,6 +477,19 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <AIAnalyticsDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/api-status" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <APIStatusDiagnostic />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -422,18 +548,124 @@ function App() {
                   } 
                 />
                 
+                {/* User Preferences */}
                 <Route 
-                  path="/admin" 
+                  path="/preferences" 
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <AdminPanel />
+                          <UserPreferences />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
                   } 
                 />
+                
+                {/* User Profile (Clerk Pro Integration) */}
+                <Route 
+                  path="/user-profile" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                        <div className="text-center">
+                          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                            Account Settings
+                          </h1>
+                          <p className="text-gray-600 dark:text-gray-400 mb-6">
+                            Manage your account settings, security, and profile information using Clerk Pro features.
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-500">
+                            This page integrates with your Clerk Pro account settings.
+                          </p>
+                        </div>
+                      </div>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/monitoring" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <RealTimeMonitoring />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Enhanced Admin System with Nested Routes */}
+                <Route 
+                  path="/admin/*" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <AdminLayout />
+                      </Suspense>
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminOverview />
+                    </Suspense>
+                  } />
+                  <Route path="users" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminUsers />
+                    </Suspense>
+                  } />
+                  <Route path="api" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminAPI />
+                    </Suspense>
+                  } />
+                  <Route path="settings" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminSettings />
+                    </Suspense>
+                  } />
+                  <Route path="logs" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminLogs />
+                    </Suspense>
+                  } />
+                  <Route path="errors" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminErrors />
+                    </Suspense>
+                  } />
+                  <Route path="feature-flags" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminFeatureFlags />
+                    </Suspense>
+                  } />
+                  <Route path="integrations" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminIntegrations />
+                    </Suspense>
+                  } />
+                  <Route path="webhooks" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminWebhooks />
+                    </Suspense>
+                  } />
+                  <Route path="maintenance" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <MaintenanceManagement />
+                    </Suspense>
+                  } />
+                  
+                  {/* Legacy Admin Panel Route for Backward Compatibility */}
+                  <Route path="legacy" element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminPanel />
+                    </Suspense>
+                  } />
+                </Route>
                 
                 {/* Financial Management Routes */}
                 <Route 
@@ -554,6 +786,18 @@ function App() {
                   } 
                 />
                 
+                {/* Mobile Manufacturing Floor Interface */}
+                <Route 
+                  path="/mobile" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <MobileFloor />
+                      </Suspense>
+                    </ProtectedRoute>
+                  } 
+                />
+                
                 {/* Redirect to dashboard for any other route */}
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
@@ -570,11 +814,12 @@ function App() {
                 }}
               />
             </div>
-          </Router>
+            </Router>
+          </ThemeProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>
-    </ClerkProvider>
+    </AuthProvider>
   )
 }
 

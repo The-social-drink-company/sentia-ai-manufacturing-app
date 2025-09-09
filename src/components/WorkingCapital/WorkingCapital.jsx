@@ -19,24 +19,37 @@ import SystemDiagnostics from './SystemDiagnostics'
 
 const WorkingCapital = () => {
   const [activeTab, setActiveTab] = useState('overview')
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   
-  // Mock data for the overview
-  const [workingCapitalData, setWorkingCapitalData] = useState({
-    current: 2456000,
-    projected: 2890000,
-    trend: '+17.7%',
-    lastUpdated: new Date().toLocaleString(),
-    components: {
-      inventory: 1890000,
-      receivables: 780000,
-      payables: -214000
-    },
-    alerts: [
-      { type: 'warning', message: 'Inventory levels 15% above optimal range' },
-      { type: 'info', message: 'Receivables collection improved by 3 days' }
-    ]
-  })
+  // Real data loaded from API
+  const [workingCapitalData, setWorkingCapitalData] = useState(null)
+
+  useEffect(() => {
+    const fetchWorkingCapitalData = async () => {
+      try {
+        setLoading(true)
+        
+        const response = await fetch('/api/working-capital/overview')
+        
+        if (response.ok) {
+          const data = await response.json()
+          setWorkingCapitalData(data)
+        } else {
+          console.error('Failed to load working capital data - API error')
+          setWorkingCapitalData(null) // NO MOCK DATA - Real data only
+        }
+      } catch (error) {
+        console.error('Error fetching working capital data:', error)
+        setWorkingCapitalData(null) // NO MOCK DATA - Real data only
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWorkingCapitalData()
+  }, [])
+
+  // REMOVED: getMockData function - NO MOCK DATA ALLOWED per user requirements
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: ChartBarIcon },
@@ -71,60 +84,78 @@ const WorkingCapital = () => {
       </div>
 
       {/* KPI Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <BanknotesIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <div className="animate-pulse">
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+              </div>
             </div>
-            <div className="ml-4">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Current Working Capital</h3>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                £{(workingCapitalData.current / 1000000).toFixed(2)}M
-              </p>
-              <div className="flex items-center mt-1">
-                <ArrowTrendingUpIcon className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-sm text-green-600 dark:text-green-400">{workingCapitalData.trend}</span>
+          ))}
+        </div>
+      ) : workingCapitalData ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <BanknotesIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Current Working Capital</h3>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  £{((workingCapitalData.current || 0) / 1000000).toFixed(2)}M
+                </p>
+                <div className="flex items-center mt-1">
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-500 mr-1" />
+                  <span className="text-sm text-green-600 dark:text-green-400">{workingCapitalData.trend || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                <ArrowTrendingUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Projected (30 days)</h3>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  £{((workingCapitalData.projected || 0) / 1000000).toFixed(2)}M
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                  +£{(((workingCapitalData.projected || 0) - (workingCapitalData.current || 0)) / 1000).toFixed(0)}K improvement
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                <ChartBarIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Optimization Potential</h3>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{workingCapitalData.optimizationPct || '0'}%</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                  £{(((workingCapitalData.current || 0) * ((workingCapitalData.optimizationPct || 0) / 100)) / 1000).toFixed(0)}K available
+                </p>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-              <ArrowTrendingUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div className="ml-4">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Projected (30 days)</h3>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                £{(workingCapitalData.projected / 1000000).toFixed(2)}M
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                +£{((workingCapitalData.projected - workingCapitalData.current) / 1000).toFixed(0)}K improvement
-              </p>
-            </div>
-          </div>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-gray-500 dark:text-gray-400">Unable to load working capital data. Please check your API connection.</p>
         </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-              <ChartBarIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div className="ml-4">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Optimization Potential</h3>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">18.5%</p>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                £{((workingCapitalData.current * 0.185) / 1000).toFixed(0)}K available
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Alerts */}
-      {workingCapitalData.alerts.length > 0 && (
+      {workingCapitalData?.alerts && workingCapitalData.alerts.length > 0 && (
         <div className="space-y-3">
           {workingCapitalData.alerts.map((alert, index) => (
             <div 

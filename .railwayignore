@@ -1,23 +1,36 @@
-# Force Railway to use Nixpacks instead of Docker
+# Force Railway to use Nixpacks (ignore Docker files)
 Dockerfile*
 docker-compose*
 
-# Ignore development files
+# Development and test files
 *.log
 .env.local
+.env.development.local
+.env.test.local
+tests/autonomous/logs/
+coverage/
+.nyc_output/
+
+# Editor and OS files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
+Thumbs.db
 
-# Ignore build artifacts  
+# Build artifacts and cache
 dist/
 build/
 node_modules/.cache/
 .npm/
 .cache/
 
-# Ignore git
+# Git files
 .git/
 .gitignore
+
+# MCP and autonomous testing logs
+mcp-server/logs/
+autonomous-*.log

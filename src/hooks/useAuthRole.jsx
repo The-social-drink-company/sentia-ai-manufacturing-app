@@ -50,8 +50,9 @@ export const useAuthRole = () => {
     const userPermissions = user.publicMetadata?.permissions || getDefaultPermissions(userRole);
     const userFeatures = user.publicMetadata?.features || getDefaultFeatures(userRole);
 
-    // Role hierarchy: admin > manager > operator > viewer
+    // Role hierarchy: master_admin > admin > manager > operator > viewer
     const roleHierarchy = {
+      master_admin: 5,
       admin: 4,
       manager: 3, 
       operator: 2,
@@ -122,6 +123,8 @@ export const useAuthRole = () => {
 // Default permissions based on role
 function getDefaultPermissions(role) {
   switch (role) {
+    case 'master_admin':
+      return ['read', 'write', 'delete', 'admin', 'export', 'working-capital', 'what-if-analysis', 'user-management', 'system-config', 'master-access', 'all-permissions'];
     case 'admin':
       return ['read', 'write', 'delete', 'admin', 'export', 'working-capital', 'what-if-analysis', 'user-management'];
     case 'manager':
@@ -137,6 +140,18 @@ function getDefaultPermissions(role) {
 // Default features based on role
 function getDefaultFeatures(role) {
   switch (role) {
+    case 'master_admin':
+      return {
+        advancedAnalytics: true,
+        systemDiagnostics: true,
+        userManagement: true,
+        apiAccess: true,
+        experimentalFeatures: true,
+        debugMode: true,
+        masterAccess: true,
+        systemConfig: true,
+        allFeatures: true
+      };
     case 'admin':
       return {
         advancedAnalytics: true,

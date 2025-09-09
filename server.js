@@ -46,6 +46,8 @@ import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
 // Import MCP Orchestrator for Anthropic Model Context Protocol integration
 import MCPOrchestrator from './services/mcp/mcpOrchestrator.js';
+// Import AI Central Nervous System for data analysis
+import AICentralNervousSystem from './mcp-server/ai-orchestration/ai-central-nervous-system.js';
 // Import Enterprise Error Handling and Process Management
 import { errorHandler, expressErrorMiddleware, asyncHandler } from './services/enterprise/errorHandler.js';
 import { processManager } from './services/enterprise/processManager.js';
@@ -100,6 +102,70 @@ if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
 
 // Initialize Enterprise MCP Orchestrator for Anthropic Model Context Protocol
 const mcpOrchestrator = new MCPOrchestrator();
+
+// Initialize AI Central Nervous System
+const aiCentralNervousSystem = new AICentralNervousSystem();
+let aiSystemInitialized = false;
+
+// Initialize AI system
+async function initializeAISystem() {
+  try {
+    await aiCentralNervousSystem.initialize();
+    aiSystemInitialized = true;
+    console.log('✅ AI Central Nervous System initialized');
+  } catch (error) {
+    console.warn('⚠️ AI system initialization failed:', error.message);
+    aiSystemInitialized = false;
+  }
+}
+
+// Start AI system initialization
+initializeAISystem();
+
+// AI data analysis function
+async function analyzeDataWithAI(dataType, data, metadata) {
+  if (!aiSystemInitialized) {
+    console.warn('AI system not initialized, skipping analysis');
+    return { status: 'skipped', reason: 'AI system not initialized' };
+  }
+  
+  try {
+    const analysis = await aiCentralNervousSystem.analyzeUploadedData(dataType, data, metadata);
+    console.log('✅ AI analysis completed for', dataType, 'data');
+    return {
+      status: 'completed',
+      insights: analysis.analysis,
+      recommendations: analysis.recommendations,
+      alerts: analysis.alerts,
+      dashboardUpdates: analysis.dashboardUpdates,
+      processingTime: analysis.processingTime
+    };
+  } catch (error) {
+    console.error('AI analysis error:', error.message);
+    return { status: 'failed', error: error.message };
+  }
+}
+
+// WebSocket connections for real-time updates
+const wsConnections = new Set();
+
+// Broadcast function for real-time updates
+function broadcastToClients(event, data) {
+  const message = JSON.stringify({ event, data, timestamp: new Date().toISOString() });
+  
+  wsConnections.forEach(ws => {
+    try {
+      if (ws.readyState === 1) { // WebSocket.OPEN
+        ws.send(message);
+      }
+    } catch (error) {
+      console.warn('WebSocket send failed:', error.message);
+      wsConnections.delete(ws);
+    }
+  });
+  
+  console.log(`📡 Broadcasted ${event} to ${wsConnections.size} clients`);
+}
 
 // Register Enterprise MCP server for integrated data processing (enabled in all environments)
 (async () => {
@@ -2783,12 +2849,42 @@ app.post('/api/data/import/file', authenticateUser, upload.single('file'), async
       validation
     });
     
-    res.json({
-      success: true,
-      importResult,
-      validation,
-      recordsImported: processedData.length
-    });
+    // Trigger AI brain analysis of uploaded data
+    try {
+      const aiAnalysis = await analyzeDataWithAI(dataType, processedData, {
+        filename: file.originalname,
+        importedBy: req.user.id,
+        source: 'file'
+      });
+      
+      // Broadcast AI insights to connected clients
+      if (aiAnalysis && aiAnalysis.insights) {
+        broadcastToClients('ai-analysis-complete', {
+          dataType,
+          insights: aiAnalysis.insights,
+          recommendations: aiAnalysis.recommendations,
+          alerts: aiAnalysis.alerts,
+          dashboardUpdates: aiAnalysis.dashboardUpdates
+        });
+      }
+      
+      res.json({
+        success: true,
+        importResult,
+        validation,
+        recordsImported: processedData.length,
+        aiAnalysis: aiAnalysis || { status: 'pending', message: 'AI analysis initiated' }
+      });
+    } catch (aiError) {
+      console.warn('AI analysis failed, but data import succeeded:', aiError.message);
+      res.json({
+        success: true,
+        importResult,
+        validation,
+        recordsImported: processedData.length,
+        aiAnalysis: { status: 'failed', error: aiError.message }
+      });
+    }
     
   } catch (error) {
     console.error('File import error:', error);

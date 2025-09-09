@@ -339,7 +339,7 @@ export class WorkingCapitalCalculator {
           entity_id: companyId
         },
         _sum: {
-          value: true
+          total_value: true
         }
       });
 
@@ -354,7 +354,7 @@ export class WorkingCapitalCalculator {
           }
         },
         _avg: {
-          value: true
+          total_value: true
         }
       });
 
@@ -374,7 +374,7 @@ export class WorkingCapitalCalculator {
         }
       });
 
-      const averageInventory = inventoryHistory[0]?._avg?.value || currentInventory._sum.value || 0;
+      const averageInventory = inventoryHistory[0]?._avg?.total_value || currentInventory._sum.total_value || 0;
       const totalCOGS = Math.abs(cogsData._sum.amount || 0);
       const periodDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
       const dailyCOGS = totalCOGS / periodDays;
@@ -415,16 +415,16 @@ export class WorkingCapitalCalculator {
         };
       }
 
-      // Get accounts receivable
-      const arData = await this.databaseService.prisma.accountsReceivable.aggregate({
-        where: { companyId, status: 'AUTHORISED' },
-        _sum: { amount: true }
+      // Get accounts receivable (use WorkingCapital model instead of non-existent accountsReceivable)
+      const arData = await this.databaseService.prisma.workingCapital.aggregate({
+        where: { entity_id: companyId },
+        _sum: { actual_sales_revenue: true }
       });
 
       // Get inventory value
       const inventoryData = await this.databaseService.prisma.inventoryLevel.aggregate({
-        where: { companyId },
-        _sum: { value: true }
+        where: { entity_id: companyId },
+        _sum: { total_value: true }
       });
 
       // Get cash from positive cash flow balances
@@ -439,8 +439,8 @@ export class WorkingCapitalCalculator {
         _sum: { amount: true }
       });
 
-      const accountsReceivable = arData._sum.amount || 0;
-      const inventory = inventoryData._sum.value || 0;
+      const accountsReceivable = arData._sum.actual_sales_revenue || 0;
+      const inventory = inventoryData._sum.total_value || 0;
       const cash = Math.max(0, cashData._sum.amount || 0) * 0.1; // Estimate 10% as cash balance
       const other = (accountsReceivable + inventory) * 0.1; // Estimate 10% other current assets
 

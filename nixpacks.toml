@@ -3,8 +3,12 @@ NODE_ENV = "production"
 NIXPACKS_NO_CACHE = "1"
 NPM_CONFIG_CACHE = "/tmp/.npm"
 
+# CRITICAL: Force Node.js app detection and prevent Caddy installation
+providers = ["node"]
+
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_20", "python311"]
+nixLibs = ["nodejs_20"]
 
 [phases.install]
 cmds = [

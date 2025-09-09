@@ -2,7 +2,13 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "node server.js"
+startCommand = "npm start"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
 
 [environments.production.variables]
-FORCE_REBUILD = "2025-09-09-15-44-PRODUCTION-FORCE-DEPLOY"
+NODE_ENV = "production"
+PORT = "5000"
+FORCE_REBUILD = "2025-09-09-15-47-CRITICAL-API-FIX"

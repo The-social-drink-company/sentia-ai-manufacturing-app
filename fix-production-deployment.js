@@ -5,8 +5,12 @@
  * Addresses critical MIME type and CSP issues in Railway production environment
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log('🔧 Sentia Manufacturing Dashboard - Production Deployment Fix');
 console.log('=' .repeat(60));
@@ -16,7 +20,7 @@ async function runDeploymentFixes() {
   
   // 1. Verify dist directory structure
   console.log('\n📁 Checking dist directory structure...');
-  const distPath = path.join(process.cwd(), 'dist');
+  const distPath = path.join(__dirname, 'dist');
   
   try {
     const distExists = fs.existsSync(distPath);
@@ -76,7 +80,7 @@ async function runDeploymentFixes() {
   // 3. Test server configuration
   console.log('\n🌐 Testing server configuration...');
   try {
-    const serverPath = path.join(process.cwd(), 'server.js');
+    const serverPath = path.join(__dirname, 'server.js');
     const serverExists = fs.existsSync(serverPath);
     
     if (serverExists) {
@@ -142,8 +146,8 @@ async function runDeploymentFixes() {
  * Run this script after Railway deployment to verify all fixes
  */
 
-const http = require('http');
-const https = require('https');
+import http from 'http';
+import https from 'https';
 
 const BASE_URL = process.env.RAILWAY_URL || 'https://web-production-1f10.up.railway.app';
 

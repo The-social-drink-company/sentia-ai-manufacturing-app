@@ -1,4 +1,4 @@
-# Railway Nixpacks Configuration - DO NOT OVERRIDE NODE_ENV
+# Railway Nixpacks Configuration
 [phases.setup]
 nixPkgs = ['nodejs_23']
 
@@ -12,4 +12,6 @@ cmds = ['npm run build']
 cmd = 'node server.js'
 
 [variables]
+NODE_ENV = 'production'
 PORT = '$PORT'
+RAILWAY_ENVIRONMENT = 'production'

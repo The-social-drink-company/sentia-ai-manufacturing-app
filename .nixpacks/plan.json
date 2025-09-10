@@ -1,0 +1,8 @@
+{
+  "providers": ["node"],
+  "buildImage": "ghcr.io/railwayapp/nixpacks:latest",
+  "variables": {
+    "NODE_ENV": "production",
+    "PORT": "$PORT"
+  }
+}

@@ -1,23 +1,16 @@
-# Force Node.js provider (no static detection)
-[providers]
-
-# Node.js 23 setup
+# Nixpacks configuration for Node.js application
 [phases.setup]
 nixPkgs = ['nodejs_23']
 
-# Install dependencies (use --omit=dev for production)
 [phases.install]
 cmds = ['npm ci --omit=dev']
 
-# Simple build without cache removal
 [phases.build]
 cmds = ['npm run build']
 
-# Start the Node.js server
 [phases.start]
 cmd = 'node server.js'
 
-# Environment variables
 [variables]
 NODE_ENV = 'production'
 PORT = '$PORT'

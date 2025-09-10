@@ -1,3 +1,17 @@
+# Cache directories that cause mount conflicts
 node_modules/.cache
 .next
 dist/.cache
+.vite/
+.cache/
+
+# Prevent static site detection
+public/
+build/
+docs/
+
+# Development and temporary files
+*.log
+*.env.local
+.env.example
+.git/

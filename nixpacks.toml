@@ -10,7 +10,14 @@ cmds = ['npm run build']
 [phases.start]
 cmd = 'node server.js'
 
+# DO NOT OVERRIDE RAILWAY ENVIRONMENT VARIABLES
+# Let Railway set NODE_ENV per environment:
+# - development: NODE_ENV=development
+# - testing: NODE_ENV=testing  
+# - production: NODE_ENV=production
+
 [variables]
-NODE_ENV = 'production'
 PORT = '$PORT'
-RAILWAY_ENVIRONMENT = 'production'
+
+[providers]
+static = false

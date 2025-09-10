@@ -385,8 +385,8 @@ npm run security:scan
 # SAST analysis  
 npm run analyze:security
 
-# Container scanning
-docker scout cves sentia-dashboard:latest
+# Container scanning (not applicable)
+# Deployment uses Railway Nixpacks (no Docker images)
 ```
 
 ### Incident Response

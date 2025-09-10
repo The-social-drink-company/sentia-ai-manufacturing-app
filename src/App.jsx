@@ -66,6 +66,7 @@ const MobileFloor = lazy(() => import('./pages/MobileFloor'))
 
 // AI Support Chatbot Component
 const AISupportChatbot = lazy(() => import('./components/chatbot/AISupportChatbot'))
+const AIStatusDashboard = lazy(() => import('./components/AI/AIStatusDashboard'))
 
 // Enhanced Admin System Components
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
@@ -481,6 +482,19 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <AIAnalyticsDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/ai-status" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AIStatusDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

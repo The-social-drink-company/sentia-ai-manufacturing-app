@@ -1261,6 +1261,144 @@ app.get('/api/services/status', authenticateUser, async (req, res) => {
   }
 });
 
+// MCP Server AI Integration APIs
+app.get('/api/mcp/status', async (req, res) => {
+  try {
+    // Check if MCP server is running
+    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:3001';
+    
+    let mcpStatus = null;
+    try {
+      const response = await fetch(`${mcpServerUrl}/health`, { 
+        timeout: 5000,
+        headers: { 'Content-Type': 'application/json' }
+      });
+      mcpStatus = await response.json();
+    } catch (mcpError) {
+      console.log('MCP server not responding:', mcpError.message);
+    }
+    
+    res.json({
+      status: mcpStatus ? 'connected' : 'disconnected',
+      version: mcpStatus?.version || 'unknown',
+      uptime: mcpStatus?.uptime || 0,
+      serverUrl: mcpServerUrl,
+      lastCheck: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('MCP status check error:', error);
+    res.json({
+      status: 'disconnected',
+      error: error.message,
+      lastCheck: new Date().toISOString()
+    });
+  }
+});
+
+app.get('/api/ai/system/status', async (req, res) => {
+  try {
+    // Check AI Central Nervous System status
+    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:3001';
+    
+    let aiSystemStatus = null;
+    try {
+      const response = await fetch(`${mcpServerUrl}/ai/status`, { 
+        timeout: 10000,
+        headers: { 'Content-Type': 'application/json' }
+      });
+      aiSystemStatus = await response.json();
+    } catch (aiError) {
+      console.log('AI Central Nervous System not responding:', aiError.message);
+    }
+    
+    res.json({
+      status: aiSystemStatus ? 'active' : 'inactive',
+      activeAgents: aiSystemStatus?.activeAgents || 0,
+      decisionsCount: aiSystemStatus?.decisionsCount || 0,
+      llmProviders: aiSystemStatus?.llmProviders || [
+        { name: 'Claude 3.5 Sonnet', status: 'inactive' },
+        { name: 'GPT-4 Turbo', status: 'inactive' },
+        { name: 'Gemini Pro', status: 'inactive' },
+        { name: 'Local LLM', status: 'inactive' }
+      ],
+      manufacturingIntelligence: aiSystemStatus?.manufacturingIntelligence || {
+        demandForecasting: 'inactive',
+        inventoryOptimization: 'inactive',
+        qualityAnalysis: 'inactive',
+        productionOptimization: 'inactive'
+      },
+      lastCheck: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('AI system status check error:', error);
+    res.json({
+      status: 'inactive',
+      error: error.message,
+      lastCheck: new Date().toISOString()
+    });
+  }
+});
+
+app.get('/api/integrations/status', async (req, res) => {
+  try {
+    // Check unified API interface status
+    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:3001';
+    
+    let integrationStatus = null;
+    try {
+      const response = await fetch(`${mcpServerUrl}/integrations/status`, { 
+        timeout: 10000,
+        headers: { 'Content-Type': 'application/json' }
+      });
+      integrationStatus = await response.json();
+    } catch (integrationError) {
+      console.log('API integrations not responding:', integrationError.message);
+    }
+    
+    // Also check local service statuses
+    const localServiceStatus = {
+      xero: 'disconnected',
+      database: 'disconnected',
+      redis: 'disconnected'
+    };
+    
+    // Check Xero
+    try {
+      await xeroService.healthCheck();
+      localServiceStatus.xero = 'connected';
+    } catch (xeroError) {
+      console.log('Xero service check failed:', xeroError.message);
+    }
+    
+    // Check database connection
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      localServiceStatus.database = 'connected';
+    } catch (dbError) {
+      console.log('Database check failed:', dbError.message);
+    }
+    
+    res.json({
+      status: integrationStatus ? 'connected' : 'disconnected',
+      connectedServices: integrationStatus?.connectedServices || 0,
+      lastSync: integrationStatus?.lastSync || 'Never',
+      services: {
+        ...localServiceStatus,
+        ...(integrationStatus?.services || {})
+      },
+      unifiedAPI: integrationStatus ? 'active' : 'inactive',
+      lastCheck: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Integration status check error:', error);
+    res.json({
+      status: 'disconnected',
+      error: error.message,
+      lastCheck: new Date().toISOString()
+    });
+  }
+});
+
 // Authentication APIs
 app.post('/api/auth/signin', async (req, res) => {
   try {

@@ -91,7 +91,13 @@
     "dev:fresh": "npm run dev:clean && npm install && npm run dev",
     "dev:quick": "concurrently \"npm run serve\" \"npm run dev:client\"",
     "serve:static": "npx serve dist -p 3000",
-    "dev:production-test": "npm run build && npm run serve:static"
+    "dev:production-test": "npm run build && npm run serve:static",
+    "mcp:start": "cd mcp-server && npm start",
+    "mcp:dev": "cd mcp-server && npm run dev",
+    "mcp:test": "cd mcp-server && npm run test",
+    "mcp:health": "cd mcp-server && npm run health",
+    "ai:full-stack": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npm run mcp:dev\" --names \"server,client,mcp\" --prefix-colors \"blue,green,yellow\"",
+    "ai:production": "concurrently \"npm run start\" \"npm run mcp:start\" --names \"main,mcp\" --prefix-colors \"blue,yellow\""
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

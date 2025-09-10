@@ -1,3 +1,17 @@
+// RAILWAY MCP SERVER REDIRECT
+// If this is the sentia-mcp-server Railway service, start MCP server instead
+if (process.env.RAILWAY_SERVICE_NAME === 'sentia-mcp-server' || 
+    process.env.RAILWAY_ENVIRONMENT && process.argv.includes('--mcp-server')) {
+  console.log('🚂 Railway detected - redirecting to MCP server...');
+  import('./mcp-startup.js');
+  // Exit to prevent main Express server from starting
+  process.exit = () => {}; // Override exit to let MCP startup handle it
+} else if (process.env.MCP_SERVER_MODE === 'true') {
+  console.log('🔧 MCP_SERVER_MODE detected - starting MCP server...');
+  import('./mcp-startup.js');
+  process.exit = () => {};
+}
+
 // Suppress Node.js deprecation warnings in production
 process.removeAllListeners('warning');
 process.on('warning', (warning) => {
@@ -596,18 +610,38 @@ app.get('/api/health', async (req, res) => {
 // Railway health check endpoint (without /api prefix)
 app.get('/health', (req, res) => {
   try {
+    // Check if this should behave as MCP server
+    if (process.env.MCP_SERVER_MODE === 'true' || req.query.mcp === 'true') {
+      return res.status(200).json({
+        status: 'healthy',
+        server: 'sentia-mcp-server-via-express',
+        version: '2.0.0-express-wrapper',
+        protocol: '2024-11-05',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+        railway: true,
+        mcp_mode: true
+      });
+    }
+    
+    // Default Express server health response
     res.status(200).json({
       status: 'healthy',
+      server: 'sentia-express-server',
       timestamp: new Date().toISOString(),
       version: '2.0.0',
       environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
-      railway: true
+      railway: true,
+      type: 'express'
     });
   } catch (error) {
+    console.error('Health endpoint error:', error);
     res.status(500).json({
       status: 'error',
-      message: error.message
+      message: error.message,
+      timestamp: new Date().toISOString()
     });
   }
 });

@@ -5,7 +5,7 @@
   },
   "deploy": {
     "startCommand": "node server.js",
-    "comment": "FIXED DEPLOYMENT - 2025-09-10 - Using server.js directly, Railway MCP server hosted separately",
+    "comment": "FIXED DEPLOYMENT - 2025-09-10 - Using server.js directly, cache mount conflicts resolved",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",

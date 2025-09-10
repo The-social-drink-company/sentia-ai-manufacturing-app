@@ -1,9 +1,6 @@
 [phases.setup]
 nixPkgs = ['nodejs_20']
 
-[providers]
-node = true
-
 [phases.install]
 cmds = ['npm ci --production=false']
 

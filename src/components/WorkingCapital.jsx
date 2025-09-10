@@ -36,7 +36,7 @@ const WorkingCapital = () => {
       } catch (error) {
         // No mock data - try alternative endpoint first
         try {
-          const response = await fetch(`/api/working-capital/summary?period=${selectedPeriod}`);
+          const response = await fetch(`/api/working-capital/summary?period=${dateRange}`);
           if (!response.ok) {
             throw new Error('Failed to fetch working capital data');
           }
@@ -44,7 +44,7 @@ const WorkingCapital = () => {
         } catch (fallbackError) {
           // Try final endpoint
           try {
-            const response = await fetch(`/api/financial/working-capital?period=${selectedPeriod}`);
+            const response = await fetch(`/api/financial/working-capital?period=${dateRange}`);
             if (!response.ok) {
               throw new Error('Both endpoints failed');
             }

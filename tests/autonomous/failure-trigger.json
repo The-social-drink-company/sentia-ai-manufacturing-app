@@ -1,15 +1,15 @@
 {
-  "timestamp": "2025-09-10T07:15:03.394Z",
+  "timestamp": "2025-09-10T07:20:48.423Z",
   "failedTests": [
     {
-      "testName": "API_GET__api_production_status",
+      "testName": "API_GET__api_working-capital_projections",
       "result": "fail",
-      "duration": 25.55250000000001,
-      "timestamp": "2025-09-10T07:15:03.345Z",
+      "duration": 7378.1211,
+      "timestamp": "2025-09-10T07:20:48.359Z",
       "error": {
-        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m404\u001b[39m",
-        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m404\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:231:37\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:218:7",
-        "type": "ExpectError"
+        "message": "apiRequestContext.fetch: read ECONNRESET\nCall log:\n\u001b[2m  - → GET http://127.0.0.1:5000/api/api/working-capital/projections\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer test-token\u001b[22m\n",
+        "stack": "apiRequestContext.fetch: read ECONNRESET\nCall log:\n\u001b[2m  - → GET http://127.0.0.1:5000/api/api/working-capital/projections\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer test-token\u001b[22m\n\n    at testFunction (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:221:40)\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:13)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:218:28",
+        "type": "Error"
       },
       "screenshot": null,
       "context": {
@@ -20,17 +20,17 @@
         },
         "userAgent": "Playwright Test Agent",
         "memoryUsage": {
-          "rss": 151506944,
-          "heapTotal": 103153664,
-          "heapUsed": 41137296,
-          "external": 4002943,
-          "arrayBuffers": 100488
+          "rss": 119500800,
+          "heapTotal": 45481984,
+          "heapUsed": 30701768,
+          "external": 3995102,
+          "arrayBuffers": 91960
         }
       }
     }
   ],
   "failurePatterns": {
-    "API_NOT_FOUND": 1
+    "SERVER_ERROR": 1
   },
   "triggerSelfHealing": true
 }

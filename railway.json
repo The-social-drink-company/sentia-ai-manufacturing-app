@@ -4,8 +4,8 @@
     "buildCommand": "npm run build"
   },
   "deploy": {
-    "startCommand": "node start-production.js",
-    "comment": "FORCE PRODUCTION DEPLOY - 2025-09-09-17:18 - Using start-production.js for proper process management",
+    "startCommand": "node server.js",
+    "comment": "FIXED DEPLOYMENT - 2025-09-10 - Using server.js directly, Railway MCP server hosted separately",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",
@@ -16,12 +16,15 @@
       "variables": {
         "NODE_ENV": "development",
         "RAILWAY_ENVIRONMENT": "development",
-        "PORT": 5000,
+        "PORT": "$PORT",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
         "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq",
         "CORS_ORIGINS": "https://sentia-manufacturing-dashboard-development.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M"
+        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M",
+        "XERO_CLIENT_ID": "9C0CAB921C134476A249E48BBECB8C4B",
+        "XERO_CLIENT_SECRET": "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5",
+        "XERO_REDIRECT_URI": "https://sentia-manufacturing-dashboard-development.up.railway.app/api/xero/callback"
       },
       "domains": [
         "sentia-manufacturing-dashboard-development.up.railway.app"
@@ -37,12 +40,15 @@
       "variables": {
         "NODE_ENV": "test",
         "RAILWAY_ENVIRONMENT": "testing",
-        "PORT": 5000,
+        "PORT": "$PORT",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
         "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq",
         "CORS_ORIGINS": "https://sentiatest.financeflo.ai,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M"
+        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M",
+        "XERO_CLIENT_ID": "9C0CAB921C134476A249E48BBECB8C4B",
+        "XERO_CLIENT_SECRET": "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5",
+        "XERO_REDIRECT_URI": "https://sentiatest.financeflo.ai/api/xero/callback"
       },
       "domains": [
         "sentiatest.financeflo.ai"
@@ -58,12 +64,15 @@
       "variables": {
         "NODE_ENV": "production",
         "RAILWAY_ENVIRONMENT": "production",
-        "PORT": 5000,
+        "PORT": "$PORT",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
         "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq",
         "CORS_ORIGINS": "https://sentiaprod.financeflo.ai,https://sentia-manufacturing-dashboard-production.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M"
+        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M",
+        "XERO_CLIENT_ID": "9C0CAB921C134476A249E48BBECB8C4B",
+        "XERO_CLIENT_SECRET": "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5",
+        "XERO_REDIRECT_URI": "https://sentia-manufacturing-dashboard-production.up.railway.app/api/xero/callback"
       },
       "domains": [
         "sentia-manufacturing-dashboard-production.up.railway.app",

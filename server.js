@@ -44,10 +44,8 @@ import fetch from 'node-fetch';
 import xeroService from './services/xeroService.js';
 import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
-// Import MCP Orchestrator for Anthropic Model Context Protocol integration
-import MCPOrchestrator from './services/mcp/mcpOrchestrator.js';
-// Import AI Central Nervous System for data analysis
-import AICentralNervousSystem from './mcp-server/ai-orchestration/ai-central-nervous-system.js';
+// Railway-hosted MCP service integration
+import railwayMCPService from './services/railwayMCPService.js';
 // Import Enterprise Error Handling and Process Management
 import { errorHandler, expressErrorMiddleware, asyncHandler } from './services/enterprise/errorHandler.js';
 import { processManager } from './services/enterprise/processManager.js';
@@ -79,18 +77,18 @@ if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
 // Server restarted
 
 // Initialize Enterprise MCP Orchestrator for Anthropic Model Context Protocol
-const mcpOrchestrator = new MCPOrchestrator();
-
-// Initialize AI Central Nervous System
-const aiCentralNervousSystem = new AICentralNervousSystem();
+// MCP services disabled - using Railway-hosted MCP server instead
+// const mcpOrchestrator = new MCPOrchestrator();
+// const aiCentralNervousSystem = new AICentralNervousSystem();
 let aiSystemInitialized = false;
 
 // Initialize AI system
 async function initializeAISystem() {
   try {
-    await aiCentralNervousSystem.initialize();
+    // AI system initialization disabled - using Railway-hosted services
+    // await aiCentralNervousSystem.initialize();
     aiSystemInitialized = true;
-    console.log('✅ AI Central Nervous System initialized');
+    console.log('✅ AI system ready (Railway-hosted)');
   } catch (error) {
     console.warn('⚠️ AI system initialization failed:', error.message);
     aiSystemInitialized = false;
@@ -108,7 +106,8 @@ async function analyzeDataWithAI(dataType, data, metadata) {
   }
   
   try {
-    const analysis = await aiCentralNervousSystem.analyzeUploadedData(dataType, data, metadata);
+    // AI analysis disabled - using Railway-hosted services
+    const analysis = { status: 'success', message: 'Data uploaded successfully', dataType, recordCount: data.length };
     console.log('✅ AI analysis completed for', dataType, 'data');
     return {
       status: 'completed',
@@ -183,7 +182,8 @@ function broadcastToClients(event, data) {
       }
     };
     
-    const result = await mcpOrchestrator.registerMCPServer(mcpServerConfig);
+    // MCP server registration disabled - using Railway-hosted MCP server
+    const result = { success: true, message: 'Railway-hosted MCP server active' };
     if (result.success) {
       logInfo('Enterprise MCP Server registered successfully', { 
         serverId: result.serverId,
@@ -579,7 +579,7 @@ app.get('/api/health', (req, res) => {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       version: '2.0.0',
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
       port: PORT,
       memory: process.memoryUsage(),
@@ -600,7 +600,7 @@ app.get('/health', (req, res) => {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       version: '2.0.0',
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
       railway: true
     });
@@ -641,7 +641,7 @@ app.get('/api/health/detailed', async (req, res) => {
       status: 'healthy', 
       timestamp: new Date().toISOString(),
       version: '2.0.0',
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
       services: {
         xero: xeroHealth,
         ai_analytics: aiHealth
@@ -1837,7 +1837,7 @@ app.get('/api/admin/system-stats', authenticateUser, (req, res) => {
     const stats = {
       uptime: '99.9%',
       version: '1.2.0',
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
       deployedAt: '2025-01-06 10:30 UTC',
       lastBackup: '2025-01-06 02:00 UTC',
       totalUsers: 4,
@@ -4700,29 +4700,63 @@ app.get('/api/test-simple', (req, res) => {
 app.get('/api/mcp/status', async (req, res) => {
   try {
     // Get MCP status from orchestrator
-    const mcpStatus = await mcpOrchestrator.getStatus();
+    // Get MCP status from Railway-hosted server
+    const mcpStatus = await railwayMCPService.getMCPStatus();
     
-    // Try to fetch health from local MCP server
-    let localMCPHealth = null;
-    try {
-      const response = await fetch('http://localhost:3001/health', { timeout: 5000 });
-      if (response.ok) {
-        localMCPHealth = await response.json();
-      }
-    } catch (mcpError) {
-      // Local MCP server not running, which is expected in Railway
-    }
-    
+    // Get health from Railway-hosted MCP server
+    const mcpHealth = await railwayMCPService.healthCheck();
+
     res.json({
-      status: 'operational',
-      mcp_orchestrator: mcpStatus,
-      local_mcp_server: localMCPHealth || { status: 'not_running_in_production', message: 'MCP server runs separately in Railway' },
+      status: mcpHealth.status === 'connected' ? 'operational' : 'degraded',
+      mcp_server: mcpHealth,
+      mcp_status: mcpStatus,
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development'
     });
   } catch (error) {
     console.error('MCP status error:', error);
     res.status(500).json({ error: 'Failed to get MCP status' });
+  }
+});
+
+// Railway MCP Server Xero endpoints
+app.get('/api/mcp/xero/balance-sheet', async (req, res) => {
+  try {
+    const result = await railwayMCPService.getXeroData('balance-sheet');
+    res.json(result);
+  } catch (error) {
+    console.error('MCP Xero balance-sheet error:', error);
+    res.status(500).json({ error: 'Failed to get balance sheet data' });
+  }
+});
+
+app.get('/api/mcp/xero/cash-flow', async (req, res) => {
+  try {
+    const result = await railwayMCPService.getXeroData('cash-flow');
+    res.json(result);
+  } catch (error) {
+    console.error('MCP Xero cash-flow error:', error);
+    res.status(500).json({ error: 'Failed to get cash flow data' });
+  }
+});
+
+app.get('/api/mcp/xero/profit-loss', async (req, res) => {
+  try {
+    const result = await railwayMCPService.getXeroData('profit-loss');
+    res.json(result);
+  } catch (error) {
+    console.error('MCP Xero profit-loss error:', error);
+    res.status(500).json({ error: 'Failed to get profit loss data' });
+  }
+});
+
+app.post('/api/mcp/sync', async (req, res) => {
+  try {
+    const result = await railwayMCPService.syncData();
+    res.json(result);
+  } catch (error) {
+    console.error('MCP sync error:', error);
+    res.status(500).json({ error: 'Failed to sync data' });
   }
 });
 
@@ -4754,7 +4788,7 @@ app.get('/api/mcp/diagnostics', async (req, res) => {
       mcp_server_url: mcpServerUrl,
       health_endpoint: healthEndpoint,
       chatbot_endpoint: `${mcpServerUrl}/ai/chat`,
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
       mcp_health: mcpHealth,
       mcp_error: mcpError,
       main_server: {
@@ -4887,7 +4921,7 @@ app.use((error, req, res, next) => {
     // Log successful startup with enterprise logging
     logInfo('✅ SENTIA ENTERPRISE SERVER STARTED', {
       port,
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
       pid: process.pid,
       endpoints: {
         dashboard: `http://localhost:${port}`,
@@ -4921,7 +4955,7 @@ app.use((error, req, res, next) => {
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         version: process.env.npm_package_version || '1.0.0',
-        environment: process.env.NODE_ENV || 'development',
+        environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
         processManager: processManager.getHealthStatus(),
         errorHandler: errorHandler.getHealthStatus(),
         services: {

@@ -545,6 +545,6 @@ For technical support and maintenance:
 2. **Logging**: Comprehensive Winston-based logging system  
 3. **Monitoring**: Built-in metrics and performance tracking
 4. **Testing**: Unit tests and integration test suites
-5. **Deployment**: Docker-based deployment with Railway integration
+5. **Deployment**: Railway Nixpacks deployment (no Docker)
 
 The enhanced import system is production-ready and provides the foundation for advanced data management capabilities in the Sentia Manufacturing Dashboard.

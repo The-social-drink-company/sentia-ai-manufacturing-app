@@ -5,7 +5,7 @@ nixPkgs = ['nodejs_20']
 cmds = ['npm ci --production=false']
 
 [phases.build] 
-cmds = ['npm run build']
+cmds = ['FORCE_COLOR=0 npm run build']
 
 [phases.start]
 cmd = 'node server.js'

@@ -738,8 +738,58 @@ class SelfHealingAgent {
   }
 
   async fixRemoteApplication(environment) {
-    // For Railway deployments, we can't directly restart, but we can trigger redeployment
-    return { success: false, details: 'Remote application fixes require manual intervention or Railway API integration' };
+    // For Railway deployments, attempt redeploy if Railway CLI available
+    const env = this.environments[environment];
+    
+    try {
+      // First, check if Railway CLI is available
+      const railwayCheck = await execAsync('railway --version', { timeout: 5000 });
+      
+      if (railwayCheck.stdout.includes('railway')) {
+        // Attempt redeployment using Railway CLI
+        const redeployResult = await execAsync(`railway redeploy --service production --environment ${environment}`, { timeout: 60000 });
+        
+        return { 
+          success: true, 
+          details: `Railway redeploy triggered for ${environment}`,
+          output: redeployResult.stdout 
+        };
+      }
+    } catch (cliError) {
+      // Railway CLI not available, try curl-based approach
+      try {
+        const triggerResponse = await fetch(`${env.url}/api/admin/trigger-redeploy`, {
+          method: 'POST',
+          headers: { 'User-Agent': 'Sentia-Self-Healing-Agent' },
+          timeout: 10000
+        });
+        
+        if (triggerResponse.ok) {
+          return { 
+            success: true, 
+            details: 'Redeploy triggered via API endpoint' 
+          };
+        }
+      } catch (apiError) {
+        // Fallback: Log the issue for manual intervention
+        this.log('WARN', `Railway ${environment} deployment requires manual intervention`, {
+          environment: env.name,
+          url: env.url,
+          lastHealthCheck: env.lastCheck,
+          suggestedActions: [
+            'Check Railway dashboard for deployment errors',
+            'Verify environment variables are configured',
+            'Check application logs in Railway console',
+            'Consider manual redeploy from Railway dashboard'
+          ]
+        });
+      }
+    }
+    
+    return { 
+      success: false, 
+      details: 'Remote application fixes require manual intervention - Railway CLI not available and API endpoint unreachable' 
+    };
   }
 
   async fixRemoteMCP(environment) {

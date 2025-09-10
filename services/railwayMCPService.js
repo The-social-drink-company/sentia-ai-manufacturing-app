@@ -28,7 +28,14 @@ class RailwayMCPService {
 
   async healthCheck() {
     try {
-      const response = await this.makeRequest('/health');
+      // Try primary health endpoint
+      let response;
+      try {
+        response = await this.makeRequest('/health');
+      } catch (e) {
+        // Fallback to /mcp/info if /health not available
+        response = await this.makeRequest('/mcp/info');
+      }
       return {
         status: 'connected',
         provider: 'railway-hosted',
@@ -51,7 +58,13 @@ class RailwayMCPService {
 
   async getMCPStatus() {
     try {
-      const response = await this.makeRequest('/mcp/status');
+      // Prefer /mcp/status, fallback to /mcp/info
+      let response;
+      try {
+        response = await this.makeRequest('/mcp/status');
+      } catch (e) {
+        response = await this.makeRequest('/mcp/info');
+      }
       return {
         status: 'connected',
         capabilities: response.capabilities || ['manufacturing-ai', 'data-integration', 'analytics'],

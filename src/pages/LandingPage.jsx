@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { SignInButton, SignUpButton, useAuth } from '@clerk/clerk-react'
+import { useAuth } from '@clerk/clerk-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ChartBarIcon, 
@@ -115,16 +115,16 @@ const LandingPage = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <SignInButton mode="modal">
+              <Link to="/dashboard">
                 <button className="px-6 py-2 text-white hover:text-gray-300 transition-colors font-medium">
                   Sign In
                 </button>
-              </SignInButton>
-              <SignUpButton mode="modal">
+              </Link>
+              <Link to="/dashboard">
                 <button className="px-6 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium">
                   Get Started
                 </button>
-              </SignUpButton>
+              </Link>
             </motion.div>
           </div>
         </div>
@@ -154,7 +154,7 @@ const LandingPage = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <SignUpButton mode="modal">
+                <Link to="/dashboard">
                   <motion.button
                     className="group px-8 py-4 bg-white text-black rounded-lg font-semibold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center"
                     whileHover={{ scale: 1.05 }}
@@ -163,7 +163,7 @@ const LandingPage = () => {
                     <span>Access Dashboard</span>
                     <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
-                </SignUpButton>
+                </Link>
 
                 <Link to="/dashboard" className="group">
                   <motion.button
@@ -313,7 +313,7 @@ const LandingPage = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <SignUpButton mode="modal">
+              <Link to="/dashboard">
                 <motion.button
                   className="group px-10 py-4 bg-white text-black rounded-lg font-bold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center justify-center space-x-2"
                   whileHover={{ scale: 1.05 }}
@@ -322,7 +322,7 @@ const LandingPage = () => {
                   <span>Get Started Now</span>
                   <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
-              </SignUpButton>
+              </Link>
 
               <Link to="/dashboard">
                 <motion.button

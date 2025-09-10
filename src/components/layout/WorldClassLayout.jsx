@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from './Sidebar';
 import EnterpriseHeader from './EnterpriseHeader';
+
+const AISupportChatbot = lazy(() => import('../chatbot/AISupportChatbot'));
 
 const WorldClassLayout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -60,6 +62,11 @@ const WorldClassLayout = ({ children }) => {
           {children}
         </div>
       </main>
+
+      {/* AI Support Chatbot - Only on protected dashboard pages */}
+      <Suspense fallback={null}>
+        <AISupportChatbot />
+      </Suspense>
 
       {/* Simple Scroll to Top Button */}
       <button

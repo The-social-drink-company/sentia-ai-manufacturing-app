@@ -823,10 +823,6 @@ function App() {
                 }}
               />
               
-              {/* AI Support Chatbot - Available on all authenticated pages */}
-              <Suspense fallback={null}>
-                <AISupportChatbot />
-              </Suspense>
             </div>
             </Router>
           </ThemeProvider>

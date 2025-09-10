@@ -4930,7 +4930,30 @@ try {
   console.error('DIST DEBUG: Directory does not exist or cannot be read:', error.message);
 }
 
-// Serve static files (must be after ALL API routes)
+// Serve static files with proper MIME types (must be after ALL API routes)
+app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
+  maxAge: '1d',
+  etag: false,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
+app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
+  maxAge: '1d',
+  etag: false,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
+// Serve main dist files
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1d',
   etag: false,

@@ -1,0 +1,2 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"","options":{},"platform":"win32","wallTime":1757488574235,"monotonicTime":145304.583,"sdkLanguage":"javascript","contextId":"request-context@ed17f1e47a3221133162fd5d1d94ecf8","title":"master-test-suite.js:418 › 🚀 Performance Testing › API Response Times"}
+{"type":"before","callId":"call@5","startTime":145307.453,"class":"APIRequestContext","method":"fetch","params":{"url":"http://127.0.0.1:5000/api/api/health","method":"GET","timeout":0},"stepId":"pw:api@27","beforeSnapshot":"before@call@5"}

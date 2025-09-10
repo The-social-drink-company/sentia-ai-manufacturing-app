@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ['nodejs_20']
+nixPkgs = ['nodejs_22']
 
 [phases.install]
-cmds = ['npm ci --production=false']
+cmds = ['npm ci --production=false --verbose']
 
 [phases.build] 
-cmds = ['npm run build:railway']
+cmds = ['rm -rf dist .vite || true', 'FORCE_COLOR=0 npm run build:railway']
 
 [phases.start]
 cmd = 'node server.js'

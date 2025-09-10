@@ -134,7 +134,7 @@ Platform: Railway
 CI/CD: GitHub Actions
 Monitoring: Sentry + Custom APM
 Logging: Winston
-Environment: Docker containers
+Environment: Railway Nixpacks deployment
 ```
 
 ---
@@ -552,31 +552,24 @@ Production:
   Features: Optimized build, monitoring enabled
 ```
 
-### Container Architecture
+### Railway Nixpacks Deployment
 
-```dockerfile
-# Multi-stage Docker build
-FROM node:18-alpine AS base
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+```toml
+[phases.setup]
+nixPkgs = ['nodejs_20']
 
-FROM node:18-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
+[phases.install]
+cmds = ['npm install --production=false']
 
-FROM node:18-alpine AS production
-WORKDIR /app
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/server.js ./
-COPY --from=build /app/package.json ./
+[phases.build] 
+cmds = ['npm run build']
 
-EXPOSE 5000
-CMD ["node", "server.js"]
+[phases.start]
+cmd = 'node server.js'
+
+[variables]
+NODE_ENV = 'production'
+PORT = '$PORT'
 ```
 
 ### Scaling Strategy

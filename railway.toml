@@ -1,9 +1,25 @@
 [build]
-builder = "NIXPACKS"
+builder = "nixpacks" 
+buildCommand = "rm -rf node_modules dist .vite package-lock.json && npm ci && FORCE_COLOR=0 npm run build"
+watchPatterns = ["src/**/*", "public/**/*", "*.js", "*.json"]
 
 [deploy]
-startCommand = "npm start"
+startCommand = "node server.js"
 healthcheckPath = "/api/health"
-healthcheckTimeout = 300
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 3
+restartPolicyType = "never"
+
+[[env]]
+name = "NODE_ENV"
+value = "production"
+
+[[env]]
+name = "VITE_CLERK_PUBLISHABLE_KEY" 
+value = "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+
+[[env]]
+name = "CLERK_SECRET_KEY"
+value = "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq"
+
+[[env]]
+name = "VITE_API_BASE_URL"
+value = "https://web-production-1f10.up.railway.app/api"

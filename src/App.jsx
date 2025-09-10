@@ -9,6 +9,7 @@ import './index.css'
 import './styles/themes.css'
 import './styles/landing.css'
 import ThemeProvider from './components/ui/ThemeProvider'
+import { logInfo, logWarn } from './services/observability/structuredLogger.js'
 
 // Import Chart.js setup early to ensure registration
 import './lib/chartSetup'
@@ -47,7 +48,7 @@ const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashb
 const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
 const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMonitoring'))
 const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
-const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
+// MCPConnectionStatus component removed - not required for enterprise dashboard
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
 const APIStatusDiagnostic = lazy(() => import('./components/diagnostics/APIStatusDiagnostic'))
 
@@ -65,6 +66,7 @@ const MobileFloor = lazy(() => import('./pages/MobileFloor'))
 
 // AI Support Chatbot Component
 const AISupportChatbot = lazy(() => import('./components/chatbot/AISupportChatbot'))
+const AIStatusDashboard = lazy(() => import('./components/AI/AIStatusDashboard'))
 
 // Enhanced Admin System Components
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
@@ -79,7 +81,7 @@ const AdminIntegrations = lazy(() => import('./components/admin/pages/AdminInteg
 const AdminWebhooks = lazy(() => import('./components/admin/pages/AdminWebhooks'))
 
 
-console.log('Starting Sentia Enterprise Manufacturing Dashboard...', { 
+logInfo('Starting Sentia Enterprise Manufacturing Dashboard', { 
   deploymentTime: new Date().toISOString(), 
   continuousDeployment: true, 
   cycle: 4, 
@@ -94,9 +96,9 @@ const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 // Handle missing Clerk key gracefully
 if (!clerkPubKey) {
-  console.warn('VITE_CLERK_PUBLISHABLE_KEY is not set - running in guest mode')
+  logWarn('VITE_CLERK_PUBLISHABLE_KEY is not set - running in guest mode')
 } else {
-  console.log('Clerk key loaded:', clerkPubKey.substring(0, 20) + '...')
+  logInfo('Clerk key loaded', { keyPrefix: clerkPubKey.substring(0, 20) + '...' })
 }
 
 // Initialize React Query client
@@ -487,6 +489,19 @@ function App() {
                 />
 
                 <Route 
+                  path="/ai-status" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AIStatusDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
                   path="/api-status" 
                   element={
                     <ProtectedRoute allowGuest={true}>
@@ -525,18 +540,7 @@ function App() {
                   } 
                 />
 
-                <Route 
-                  path="/mcp-status" 
-                  element={
-                    <ProtectedRoute allowGuest={true}>
-                      <WorldClassLayout>
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <MCPConnectionStatus />
-                        </Suspense>
-                      </WorldClassLayout>
-                    </ProtectedRoute>
-                  } 
-                />
+                {/* MCP Status route removed - component not available */}
 
                 <Route 
                   path="/settings" 

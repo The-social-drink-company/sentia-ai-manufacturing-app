@@ -2,10 +2,13 @@
 nixPkgs = ['nodejs_20']
 
 [phases.install]
-cmds = ['npm install --production=false']
+cmds = ['npm ci --production=false']
 
 [phases.build] 
-cmds = ['npm run build']
+cmds = [
+  'rm -rf dist .vite',
+  'FORCE_COLOR=0 npm run build'
+]
 
 [phases.start]
 cmd = 'node server.js'
@@ -15,3 +18,6 @@ NODE_ENV = 'production'
 PORT = '$PORT'
 MCP_PORT = '9001'
 RAILWAY_ENVIRONMENT = 'production'
+
+[providers.options]
+HEALTHCHECK_ON_HTTP = true

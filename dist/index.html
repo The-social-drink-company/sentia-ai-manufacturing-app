@@ -87,7 +87,7 @@
               box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             ">
               <span style="margin-right: 16px;">A new version of Sentia Manufacturing Dashboard is available!</span>
-              <button onclick="window.location.reload()" style="
+              <button id="sw-update-btn" style="
                 background: white; 
                 color: #2563eb; 
                 border: none; 
@@ -97,7 +97,7 @@
                 cursor: pointer;
                 margin-right: 8px;
               ">Update Now</button>
-              <button onclick="this.parentElement.parentElement.remove()" style="
+              <button id="sw-dismiss-btn" style="
                 background: transparent; 
                 color: white; 
                 border: 1px solid white; 
@@ -109,6 +109,14 @@
             </div>
           `;
           document.body.appendChild(updateBanner);
+          
+          // Add event listeners for CSP compliance
+          document.getElementById('sw-update-btn').addEventListener('click', () => {
+            window.location.reload();
+          });
+          document.getElementById('sw-dismiss-btn').addEventListener('click', (e) => {
+            e.target.closest('div').parentElement.remove();
+          });
         });
       }
     </script>

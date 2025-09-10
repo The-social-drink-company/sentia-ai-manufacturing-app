@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "avgDuration": 10.55800000000003,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_production_metrics",
+      "result": "pass",
+      "duration": 21.559799999999996,
+      "timestamp": "2025-09-10T20:36:15.788Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 132898816,
+          "heapTotal": 59637760,
+          "heapUsed": 38375696,
+          "external": 3961430,
+          "arrayBuffers": 101133
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_production_batches",
+      "result": "pass",
+      "duration": 5.518700000000081,
+      "timestamp": "2025-09-10T20:36:15.837Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139399168,
+          "heapTotal": 60424192,
+          "heapUsed": 37042240,
+          "external": 3950794,
+          "arrayBuffers": 90457
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_production_batch_update",
+      "result": "pass",
+      "duration": 4.5955000000000155,
+      "timestamp": "2025-09-10T20:36:15.890Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 146890752,
+          "heapTotal": 64880640,
+          "heapUsed": 37833184,
+          "external": 3957419,
+          "arrayBuffers": 97082
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

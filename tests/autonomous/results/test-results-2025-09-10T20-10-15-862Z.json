@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "avgDuration": 20.77819999999997,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_xero_cash-flow",
+      "result": "pass",
+      "duration": 20.77819999999997,
+      "timestamp": "2025-09-10T20:10:15.862Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 131645440,
+          "heapTotal": 59899904,
+          "heapUsed": 37100720,
+          "external": 3955039,
+          "arrayBuffers": 94742
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

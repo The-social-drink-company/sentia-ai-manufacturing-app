@@ -1,0 +1,611 @@
+{
+  "summary": {
+    "total": 26,
+    "passed": 26,
+    "failed": 0,
+    "avgDuration": 4.206007692307712,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_production_metrics",
+      "result": "pass",
+      "duration": 19.81389999999999,
+      "timestamp": "2025-09-10T21:00:17.981Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 131309568,
+          "heapTotal": 59899904,
+          "heapUsed": 37587440,
+          "external": 3955953,
+          "arrayBuffers": 95656
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_production_batches",
+      "result": "pass",
+      "duration": 5.862100000000055,
+      "timestamp": "2025-09-10T21:00:18.049Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 137400320,
+          "heapTotal": 60686336,
+          "heapUsed": 36859712,
+          "external": 3949001,
+          "arrayBuffers": 88664
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_production_batch_update",
+      "result": "pass",
+      "duration": 3.8794000000000324,
+      "timestamp": "2025-09-10T21:00:18.106Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 145268736,
+          "heapTotal": 64618496,
+          "heapUsed": 37720088,
+          "external": 3955626,
+          "arrayBuffers": 95289
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_quality_dashboard",
+      "result": "pass",
+      "duration": 3.529700000000048,
+      "timestamp": "2025-09-10T21:00:18.163Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 151560192,
+          "heapTotal": 102891520,
+          "heapUsed": 39058480,
+          "external": 3947167,
+          "arrayBuffers": 86830
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_quality_test_submit",
+      "result": "pass",
+      "duration": 3.3560000000001082,
+      "timestamp": "2025-09-10T21:00:18.230Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 151842816,
+          "heapTotal": 102891520,
+          "heapUsed": 47164640,
+          "external": 3958837,
+          "arrayBuffers": 98500
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_quality_batch_approve",
+      "result": "pass",
+      "duration": 4.299499999999966,
+      "timestamp": "2025-09-10T21:00:18.293Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 157310976,
+          "heapTotal": 102891520,
+          "heapUsed": 55239368,
+          "external": 3970111,
+          "arrayBuffers": 109774
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_quality_alert_resolve",
+      "result": "pass",
+      "duration": 3.7442000000000917,
+      "timestamp": "2025-09-10T21:00:18.358Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 168050688,
+          "heapTotal": 107610112,
+          "heapUsed": 48350936,
+          "external": 3946798,
+          "arrayBuffers": 86461
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_quality_tests_schedule",
+      "result": "pass",
+      "duration": 4.188800000000128,
+      "timestamp": "2025-09-10T21:00:18.425Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 171327488,
+          "heapTotal": 107610112,
+          "heapUsed": 56456896,
+          "external": 3958651,
+          "arrayBuffers": 98314
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_inventory_dashboard",
+      "result": "pass",
+      "duration": 3.973600000000033,
+      "timestamp": "2025-09-10T21:00:18.498Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 179122176,
+          "heapTotal": 107872256,
+          "heapUsed": 65283576,
+          "external": 3970698,
+          "arrayBuffers": 110361
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_inventory_stock_update",
+      "result": "pass",
+      "duration": 3.626499999999851,
+      "timestamp": "2025-09-10T21:00:18.576Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 192000000,
+          "heapTotal": 117047296,
+          "heapUsed": 59653800,
+          "external": 3946632,
+          "arrayBuffers": 86295
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_inventory_alerts",
+      "result": "pass",
+      "duration": 2.809300000000121,
+      "timestamp": "2025-09-10T21:00:18.649Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 192610304,
+          "heapTotal": 117047296,
+          "heapUsed": 67774056,
+          "external": 3958872,
+          "arrayBuffers": 98535
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_inventory_reorder",
+      "result": "pass",
+      "duration": 3.5401999999999134,
+      "timestamp": "2025-09-10T21:00:18.753Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 192901120,
+          "heapTotal": 117309440,
+          "heapUsed": 75788952,
+          "external": 3969938,
+          "arrayBuffers": 109601
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_working-capital_metrics",
+      "result": "pass",
+      "duration": 3.511700000000019,
+      "timestamp": "2025-09-10T21:00:18.813Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 202338304,
+          "heapTotal": 172883968,
+          "heapUsed": 34565184,
+          "external": 3954135,
+          "arrayBuffers": 93798
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_working-capital_projections",
+      "result": "pass",
+      "duration": 4.119000000000142,
+      "timestamp": "2025-09-10T21:00:18.876Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 202338304,
+          "heapTotal": 172883968,
+          "heapUsed": 42587200,
+          "external": 3965598,
+          "arrayBuffers": 105261
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_working-capital_ai-recommendations",
+      "result": "pass",
+      "duration": 3.9103999999999814,
+      "timestamp": "2025-09-10T21:00:18.961Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 202645504,
+          "heapTotal": 172883968,
+          "heapUsed": 50632064,
+          "external": 3977475,
+          "arrayBuffers": 117138
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_working-capital_upload-financial-data",
+      "result": "pass",
+      "duration": 3.9985999999998967,
+      "timestamp": "2025-09-10T21:00:19.045Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 205422592,
+          "heapTotal": 172883968,
+          "heapUsed": 58699456,
+          "external": 3989181,
+          "arrayBuffers": 128844
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_xero_balance-sheet",
+      "result": "pass",
+      "duration": 4.015599999999949,
+      "timestamp": "2025-09-10T21:00:19.107Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 213504000,
+          "heapTotal": 172883968,
+          "heapUsed": 66710776,
+          "external": 4000826,
+          "arrayBuffers": 140489
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_xero_cash-flow",
+      "result": "pass",
+      "duration": 3.0342000000000553,
+      "timestamp": "2025-09-10T21:00:19.217Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 221147136,
+          "heapTotal": 172883968,
+          "heapUsed": 74733688,
+          "external": 4012662,
+          "arrayBuffers": 152325
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_xero_profit-loss",
+      "result": "pass",
+      "duration": 3.208900000000085,
+      "timestamp": "2025-09-10T21:00:19.285Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 228835328,
+          "heapTotal": 172883968,
+          "heapUsed": 82759720,
+          "external": 4024502,
+          "arrayBuffers": 164165
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_shopify_dashboard-data",
+      "result": "pass",
+      "duration": 2.6551000000004024,
+      "timestamp": "2025-09-10T21:00:19.347Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 229011456,
+          "heapTotal": 172883968,
+          "heapUsed": 56271216,
+          "external": 3971117,
+          "arrayBuffers": 110780
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_shopify_orders",
+      "result": "pass",
+      "duration": 3.5031000000003587,
+      "timestamp": "2025-09-10T21:00:19.425Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 235102208,
+          "heapTotal": 172883968,
+          "heapUsed": 64304480,
+          "external": 3983153,
+          "arrayBuffers": 122816
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_analytics_kpis",
+      "result": "pass",
+      "duration": 2.8321999999998297,
+      "timestamp": "2025-09-10T21:00:19.494Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 242958336,
+          "heapTotal": 172883968,
+          "heapUsed": 72320928,
+          "external": 3994789,
+          "arrayBuffers": 134452
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_analytics_trends",
+      "result": "pass",
+      "duration": 3.3350000000000364,
+      "timestamp": "2025-09-10T21:00:19.558Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 250908672,
+          "heapTotal": 172883968,
+          "heapUsed": 80345160,
+          "external": 4006629,
+          "arrayBuffers": 146292
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_analytics_ai-insights",
+      "result": "pass",
+      "duration": 3.0166999999996733,
+      "timestamp": "2025-09-10T21:00:19.626Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 255500288,
+          "heapTotal": 184680448,
+          "heapUsed": 54764512,
+          "external": 3960723,
+          "arrayBuffers": 100386
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_data_upload",
+      "result": "pass",
+      "duration": 2.7521999999999025,
+      "timestamp": "2025-09-10T21:00:19.690Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 255565824,
+          "heapTotal": 184680448,
+          "heapUsed": 62787016,
+          "external": 3972177,
+          "arrayBuffers": 111840
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_data_status",
+      "result": "pass",
+      "duration": 2.840299999999843,
+      "timestamp": "2025-09-10T21:00:19.759Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 255565824,
+          "heapTotal": 184680448,
+          "heapUsed": 70833520,
+          "external": 3984207,
+          "arrayBuffers": 123870
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

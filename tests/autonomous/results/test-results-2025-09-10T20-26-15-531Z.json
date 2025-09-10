@@ -1,0 +1,105 @@
+{
+  "summary": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "avgDuration": 8.81910000000002,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_POST__api_production_control",
+      "result": "pass",
+      "duration": 20.633500000000026,
+      "timestamp": "2025-09-10T20:26:15.369Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 132501504,
+          "heapTotal": 60162048,
+          "heapUsed": 37657024,
+          "external": 3955050,
+          "arrayBuffers": 94753
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_production_metrics",
+      "result": "pass",
+      "duration": 6.677999999999997,
+      "timestamp": "2025-09-10T20:26:15.434Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 137814016,
+          "heapTotal": 60424192,
+          "heapUsed": 36855704,
+          "external": 3940874,
+          "arrayBuffers": 80537
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_production_batches",
+      "result": "pass",
+      "duration": 3.821299999999951,
+      "timestamp": "2025-09-10T20:26:15.484Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 146128896,
+          "heapTotal": 64880640,
+          "heapUsed": 37707216,
+          "external": 3947466,
+          "arrayBuffers": 87129
+        }
+      }
+    },
+    {
+      "testName": "API_POST__api_production_batch_update",
+      "result": "pass",
+      "duration": 4.143600000000106,
+      "timestamp": "2025-09-10T20:26:15.531Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 152104960,
+          "heapTotal": 102629376,
+          "heapUsed": 39079936,
+          "external": 3946867,
+          "arrayBuffers": 86530
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

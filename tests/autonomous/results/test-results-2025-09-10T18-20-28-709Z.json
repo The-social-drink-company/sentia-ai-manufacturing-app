@@ -1,0 +1,42 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "avgDuration": 8303.3357,
+    "passRate": 0
+  },
+  "results": [
+    {
+      "testName": "PERFORMANCE_PAGE_LOAD",
+      "result": "fail",
+      "duration": 8303.3357,
+      "timestamp": "2025-09-10T18:20:28.708Z",
+      "error": {
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m8300.303\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m8300.303\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:408:24\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:401:5",
+        "type": "ExpectError"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 152473600,
+          "heapTotal": 101933056,
+          "heapUsed": 42822944,
+          "external": 15594809,
+          "arrayBuffers": 11735456
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "UNKNOWN": 1
+  },
+  "performanceMetrics": []
+}

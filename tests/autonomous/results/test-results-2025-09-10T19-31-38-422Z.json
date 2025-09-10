@@ -1,0 +1,88 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1,
+    "avgDuration": 15.590233333333344,
+    "passRate": 66.66666666666666
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_admin_users",
+      "result": "pass",
+      "duration": 26.83310000000006,
+      "timestamp": "2025-09-10T19:31:38.271Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 133255168,
+          "heapTotal": 59637760,
+          "heapUsed": 29594320,
+          "external": 3940711,
+          "arrayBuffers": 80414
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_system-stats",
+      "result": "pass",
+      "duration": 7.617400000000089,
+      "timestamp": "2025-09-10T19:31:38.338Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139235328,
+          "heapTotal": 60686336,
+          "heapUsed": 37919664,
+          "external": 3943804,
+          "arrayBuffers": 83467
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_production_status",
+      "result": "fail",
+      "duration": 12.320199999999886,
+      "timestamp": "2025-09-10T19:31:38.422Z",
+      "error": {
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m404\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m404\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:231:37\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:218:7",
+        "type": "ExpectError"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 144261120,
+          "heapTotal": 65404928,
+          "heapUsed": 40735280,
+          "external": 3950597,
+          "arrayBuffers": 91772
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "API_NOT_FOUND": 1
+  },
+  "performanceMetrics": []
+}

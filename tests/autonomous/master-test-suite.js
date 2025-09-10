@@ -8,7 +8,6 @@ import { test, expect } from '@playwright/test';
 import { performance } from 'perf_hooks';
 import fs from 'fs';
 import path from 'path';
-import './railway-mcp-health-tests.js';
 import { WhatIfAnalysisTestTracker, WHATIF_TEST_CONFIG } from './whatif-analysis-tests.js';
 
 // Test configuration

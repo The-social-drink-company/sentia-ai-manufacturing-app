@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-10T07:21:04.307Z",
+  "timestamp": "2025-09-10T21:00:13.169Z",
   "testType": "whatif_analysis",
   "summary": {
     "totalSliderTests": 0,
@@ -8,11 +8,18 @@
     "avgCalculationTime": null,
     "avgConfidence": null,
     "totalScenarios": 0,
-    "performanceTests": 0
+    "performanceTests": 1
   },
   "sliderInteractions": [],
   "scenarios": [],
-  "performanceMetrics": [],
+  "performanceMetrics": [
+    {
+      "operation": "concurrent_load_test",
+      "duration": 25.543700000000058,
+      "success": false,
+      "timestamp": "2025-09-10T21:00:13.007Z"
+    }
+  ],
   "clientRequirementsMet": true,
   "criticalSystemTest": true
 }

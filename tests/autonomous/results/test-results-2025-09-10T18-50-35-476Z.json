@@ -1,0 +1,65 @@
+{
+  "summary": {
+    "total": 2,
+    "passed": 1,
+    "failed": 1,
+    "avgDuration": 4198.156300000001,
+    "passRate": 50
+  },
+  "results": [
+    {
+      "testName": "SECURITY_XSS_PROTECTION",
+      "result": "pass",
+      "duration": 8373.0726,
+      "timestamp": "2025-09-10T18:50:34.964Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 171823104,
+          "heapTotal": 80166912,
+          "heapUsed": 53101752,
+          "external": 23910279,
+          "arrayBuffers": 20049231
+        }
+      }
+    },
+    {
+      "testName": "WHATIF_ANALYSIS_COMPREHENSIVE",
+      "result": "fail",
+      "duration": 23.2400000000016,
+      "timestamp": "2025-09-10T18:50:35.476Z",
+      "error": {
+        "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m401\u001b[39m",
+        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m401\u001b[39m\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:494:37\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:7)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:489:5",
+        "type": "ExpectError"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139902976,
+          "heapTotal": 98959360,
+          "heapUsed": 36150912,
+          "external": 4405185,
+          "arrayBuffers": 545792
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "UNKNOWN": 1
+  },
+  "performanceMetrics": []
+}

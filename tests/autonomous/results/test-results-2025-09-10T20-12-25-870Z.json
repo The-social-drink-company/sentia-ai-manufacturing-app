@@ -1,0 +1,42 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "avgDuration": 2096.4463,
+    "passRate": 0
+  },
+  "results": [
+    {
+      "testName": "REALTIME_SSE_CONNECTION",
+      "result": "fail",
+      "duration": 2096.4463,
+      "timestamp": "2025-09-10T20:12:25.870Z",
+      "error": {
+        "message": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3000/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3000/\", waiting until \"load\"\u001b[22m\n",
+        "stack": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3000/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3000/\", waiting until \"load\"\u001b[22m\n\n    at testFunction (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:360:18)\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:140:13)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:359:26",
+        "type": "Error"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 133238784,
+          "heapTotal": 60686336,
+          "heapUsed": 31903912,
+          "external": 3964807,
+          "arrayBuffers": 104761
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "UNKNOWN": 1
+  },
+  "performanceMetrics": []
+}

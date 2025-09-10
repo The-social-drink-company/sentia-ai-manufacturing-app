@@ -22,7 +22,7 @@ export default defineConfig({
     {
       name: 'autonomous-tests',
       use: { ...devices['Desktop Chrome'] },
-      testMatch: 'master-test-suite.js'
+      testMatch: ['master-test-suite.js', 'railway-mcp-health-tests.js']
     }
   ],
 

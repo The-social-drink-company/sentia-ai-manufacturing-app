@@ -1,0 +1,59 @@
+{
+  "summary": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "avgDuration": 13.279899999999998,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_xero_cash-flow",
+      "result": "pass",
+      "duration": 20.77819999999997,
+      "timestamp": "2025-09-10T20:10:15.862Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 131645440,
+          "heapTotal": 59899904,
+          "heapUsed": 37100720,
+          "external": 3955039,
+          "arrayBuffers": 94742
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_xero_profit-loss",
+      "result": "pass",
+      "duration": 5.781600000000026,
+      "timestamp": "2025-09-10T20:10:15.928Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 137961472,
+          "heapTotal": 60686336,
+          "heapUsed": 34620232,
+          "external": 3946691,
+          "arrayBuffers": 86354
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

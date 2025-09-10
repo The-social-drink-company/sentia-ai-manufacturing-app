@@ -1,0 +1,65 @@
+{
+  "summary": {
+    "total": 2,
+    "passed": 1,
+    "failed": 1,
+    "avgDuration": 16.59465,
+    "passRate": 50
+  },
+  "results": [
+    {
+      "testName": "API_GET__api_admin_users",
+      "result": "pass",
+      "duration": 28.66020000000003,
+      "timestamp": "2025-09-10T19:15:36.125Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 132403200,
+          "heapTotal": 60162048,
+          "heapUsed": 38522176,
+          "external": 3956398,
+          "arrayBuffers": 96101
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_admin_system-stats",
+      "result": "fail",
+      "duration": 4.529099999999971,
+      "timestamp": "2025-09-10T19:15:36.178Z",
+      "error": {
+        "message": "apiRequestContext.fetch: connect ECONNREFUSED 127.0.0.1:5000\nCall log:\n\u001b[2m  - → GET http://127.0.0.1:5000/api/api/admin/system-stats\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer test-token\u001b[22m\n",
+        "stack": "apiRequestContext.fetch: connect ECONNREFUSED 127.0.0.1:5000\nCall log:\n\u001b[2m  - → GET http://127.0.0.1:5000/api/api/admin/system-stats\u001b[22m\n\u001b[2m    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36\u001b[22m\n\u001b[2m    - accept: */*\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer test-token\u001b[22m\n\n    at testFunction (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:221:40)\n    at EnterpriseTest.runTest (C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:141:13)\n    at C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\tests\\autonomous\\master-test-suite.js:218:28",
+        "type": "Error"
+      },
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 137650176,
+          "heapTotal": 61210624,
+          "heapUsed": 36700104,
+          "external": 3939048,
+          "arrayBuffers": 79558
+        }
+      }
+    }
+  ],
+  "failurePatterns": {
+    "SERVER_ERROR": 1
+  },
+  "performanceMetrics": []
+}

@@ -1,0 +1,59 @@
+{
+  "summary": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "avgDuration": 16.059950000000015,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_POST__api_inventory_stock_update",
+      "result": "pass",
+      "duration": 24.938199999999938,
+      "timestamp": "2025-09-10T19:19:20.386Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 131252224,
+          "heapTotal": 60162048,
+          "heapUsed": 38133656,
+          "external": 3955199,
+          "arrayBuffers": 94902
+        }
+      }
+    },
+    {
+      "testName": "API_GET__api_inventory_alerts",
+      "result": "pass",
+      "duration": 7.181700000000092,
+      "timestamp": "2025-09-10T19:19:20.441Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 137322496,
+          "heapTotal": 61210624,
+          "heapUsed": 37127472,
+          "external": 3948211,
+          "arrayBuffers": 87874
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

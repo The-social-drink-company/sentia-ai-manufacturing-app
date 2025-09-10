@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "avgDuration": 8007.5914999999995,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "SECURITY_XSS_PROTECTION",
+      "result": "pass",
+      "duration": 8007.5914999999995,
+      "timestamp": "2025-09-10T18:20:40.015Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 141811712,
+          "heapTotal": 66297856,
+          "heapUsed": 32940288,
+          "external": 5417618,
+          "arrayBuffers": 1556570
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

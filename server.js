@@ -1,3 +1,25 @@
+// AUTO-FIX: Railway deployment improvements
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  process.exit(0);
+});
+
+// Auto-Fix: Better error handling for Railway
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
 // RAILWAY MCP SERVER REDIRECT
 // If this is the sentia-mcp-server Railway service, start MCP server instead
 if (process.env.RAILWAY_SERVICE_NAME === 'sentia-mcp-server' || 

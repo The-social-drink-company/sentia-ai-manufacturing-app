@@ -31,6 +31,15 @@ if (!process.env.RAILWAY_ENVIRONMENT) {
   dotenv.config();
 }
 
+// Railway-specific database connection handling
+if (process.env.RAILWAY_ENVIRONMENT) {
+  // Increase database connection timeout for Railway
+  process.env.DATABASE_CONNECTION_TIMEOUT = '60000';
+  process.env.DATABASE_POOL_TIMEOUT = '60000';
+  // Disable MCP server registration in Railway environments to prevent connection errors
+  process.env.DISABLE_MCP_SERVER_REGISTRATION = 'true';
+}
+
 // Validate critical environment variables
 const requiredEnvVars = ['DATABASE_URL'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);

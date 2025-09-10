@@ -70,7 +70,7 @@ app.use(expressErrorMiddleware);
 // Start MCP server in production environment
 if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
   import('child_process').then(({ spawn }) => {
-    const mcpPort = process.env.MCP_PORT || 9001;
+    const mcpPort = process.env.MCP_PORT || 3001;
     console.log(`🤖 Starting MCP server on port ${mcpPort}...`);
     
     const mcpServer = spawn('node', ['mcp-server/enterprise-server-simple.js'], {
@@ -4752,7 +4752,7 @@ app.get('/api/mcp/status', async (req, res) => {
 app.get('/api/mcp/diagnostics', async (req, res) => {
   try {
     const mcpServerUrl = process.env.NODE_ENV === 'production' 
-      ? 'http://localhost:9001'  // MCP server runs on port 9001 in same Railway container
+      ? 'http://localhost:3001'  // MCP server runs on port 3001 in same Railway container
       : 'http://localhost:3001';  // Local MCP server on port 3001
 
     // Test connectivity to MCP server
@@ -4803,7 +4803,7 @@ app.post('/api/mcp/ai/chat', async (req, res) => {
 
     // Determine MCP server endpoint based on environment
     const mcpServerUrl = process.env.NODE_ENV === 'production' 
-      ? 'http://localhost:9001'  // MCP server runs on port 9001 in same Railway container
+      ? 'http://localhost:3001'  // MCP server runs on port 3001 in same Railway container
       : 'http://localhost:3001';  // Local MCP server on port 3001
 
     const mcpEndpoint = `${mcpServerUrl}/ai/chat`;

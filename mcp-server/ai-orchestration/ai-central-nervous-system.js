@@ -17,6 +17,7 @@
 
 import EventEmitter from 'events';
 import winston from 'winston';
+import crypto from 'crypto';
 
 // AI Central Nervous System Logger
 const aiLogger = winston.createLogger({
@@ -178,6 +179,11 @@ class AICentralNervousSystem extends EventEmitter {
     });
     
     aiLogger.info(`🗃️ Vector database initialized with ${categories.length} categories`);
+  }
+
+  // Alias method for compatibility with MCP server
+  async processRequest(request) {
+    return this.processAIRequest(request);
   }
 
   async processAIRequest(request) {

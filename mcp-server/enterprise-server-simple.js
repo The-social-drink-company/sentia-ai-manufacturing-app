@@ -1116,6 +1116,28 @@ class SentiaEnterpriseMCPServer {
       }
     });
 
+    // MCP Initialize endpoint for HTTP clients
+    this.app.post('/mcp/initialize', async (req, res) => {
+      try {
+        const result = await this.handleInitialize(req.body);
+        res.json({
+          jsonrpc: '2.0',
+          id: req.body.id || null,
+          result
+        });
+      } catch (error) {
+        logger.error('HTTP MCP initialization error:', error);
+        res.status(500).json({ 
+          jsonrpc: '2.0',
+          id: req.body.id || null,
+          error: {
+            code: -32603,
+            message: error.message
+          }
+        });
+      }
+    });
+
     // WebSocket endpoint info
     this.app.get('/mcp/ws', (req, res) => {
       res.json({

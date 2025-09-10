@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ['nodejs_20']
+nixPkgs = ['nodejs_22']
 
 [phases.install] 
 cmds = ['npm ci --production=false']
@@ -12,3 +12,8 @@ NODE_ENV = 'production'
 PORT = '$PORT'
 LOG_LEVEL = 'info'
 RAILWAY_ENVIRONMENT = 'production'
+
+# Explicitly disable static site providers
+[providers]
+# Disable Caddy - this is a pure Node.js API server
+caddy = false

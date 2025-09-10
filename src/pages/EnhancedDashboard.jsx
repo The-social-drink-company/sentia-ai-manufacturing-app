@@ -27,7 +27,7 @@ export default function EnhancedDashboard() {
   // Real-time data connection
   const { data: realtimeData, isConnected } = useSSE('/api/kpis/realtime');
 
-  // MCP Service health check (disabled - service not available)
+  // MCP Service health check (disabled - service not available in this build)
   // const { data: mcpHealth } = useQuery({
   //   queryKey: ['mcp-health'],
   //   queryFn: () => ({ status: 'disconnected', services: [] }),

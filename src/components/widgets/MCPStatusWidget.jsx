@@ -1,114 +1,108 @@
 import React from 'react';
-import { CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { 
+  CpuChipIcon,
+  CheckCircleIcon, 
+  ExclamationTriangleIcon,
+  ClockIcon
+} from '@heroicons/react/24/outline';
 
-const MCPStatusWidget = () => {
-  // Mock data for display purposes since MCP service is not available in this build
-  const healthData = { status: 'disconnected', environment: 'test', version: '1.0.0', uptime: '0s' };
-  const healthLoading = false;
-  const healthError = true;
-  const providersData = { providers: [] };
-  const providersLoading = false;
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'healthy':
-      case 'connected':
-        return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
-      case 'error':
-      case 'disconnected':
-        return <XCircleIcon className="h-5 w-5 text-red-500" />;
-      default:
-        return <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />;
-    }
+/**
+ * MCP Status Widget
+ * Compact widget showing MCP (Model Context Protocol) status
+ */
+const MCPStatusWidget = ({ status = null }) => {
+  // Default status if none provided
+  const defaultStatus = {
+    status: 'disconnected',
+    services: [],
+    lastUpdate: new Date().toISOString(),
+    responseTime: null
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'healthy':
-      case 'connected':
-        return 'text-green-600';
-      case 'error':
-      case 'disconnected':
-        return 'text-red-600';
-      default:
-        return 'text-yellow-600';
-    }
-  };
+  const mcpStatus = status || defaultStatus;
+  const isConnected = mcpStatus.status === 'connected';
+  const serviceCount = mcpStatus.services?.length || 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          MCP Server Status
-        </h3>
+    <div className="bg-white rounded-lg shadow-sm p-4 h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
-          {healthLoading ? (
-            <div className="animate-pulse h-2 w-2 bg-yellow-500 rounded-full" />
-          ) : healthError ? (
-            <XCircleIcon className="h-5 w-5 text-red-500" />
+          <CpuChipIcon className="w-5 h-5 text-blue-600" />
+          <h3 className="text-sm font-semibold text-gray-900">MCP Protocol</h3>
+        </div>
+        <div className="flex items-center">
+          {isConnected ? (
+            <CheckCircleIcon className="w-4 h-4 text-green-500" />
           ) : (
-            getStatusIcon(healthData?.status)
+            <ExclamationTriangleIcon className="w-4 h-4 text-yellow-500" />
           )}
-          <span className={`text-sm font-medium ${
-            healthError ? 'text-red-600' : getStatusColor(healthData?.status)
-          }`}>
-            {healthLoading ? 'Checking...' : healthError ? 'Offline' : healthData?.status || 'Unknown'}
-          </span>
         </div>
       </div>
 
-      <div className="space-y-3">
-        {/* Server Info */}
-        {healthData && !healthError && (
-          <div className="text-sm text-gray-600 dark:text-gray-300">
-            <div className="flex justify-between">
-              <span>Environment:</span>
-              <span className="font-medium">{healthData.environment || 'N/A'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Version:</span>
-              <span className="font-medium">{healthData.version || 'N/A'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Uptime:</span>
-              <span className="font-medium">{healthData.uptime || 'N/A'}</span>
-            </div>
+      {/* Status Indicator */}
+      <div className="space-y-2 mb-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-600">Status</span>
+          <div className="flex items-center space-x-1">
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
+            <span className={`text-xs font-medium ${isConnected ? 'text-green-600' : 'text-yellow-600'}`}>
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </span>
           </div>
-        )}
+        </div>
 
-        {/* Provider Status */}
-        {providersData && !providersLoading && (
-          <div className="border-t dark:border-gray-700 pt-3">
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Service Providers
-            </h4>
-            <div className="space-y-2">
-              {providersData.providers?.map((provider) => (
-                <div key={provider.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    {getStatusIcon(provider.status)}
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
-                      {provider.name}
-                    </span>
-                  </div>
-                  <span className={`text-xs ${getStatusColor(provider.status)}`}>
-                    {provider.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-600">Services</span>
+          <span className="text-xs font-medium text-gray-900">
+            {serviceCount}
+          </span>
+        </div>
 
-        {/* Error Message */}
-        {healthError && (
-          <div className="bg-red-50 dark:bg-red-900/20 rounded p-3">
-            <p className="text-sm text-red-600 dark:text-red-400">
-              Unable to connect to MCP Server. Please check your configuration.
-            </p>
+        {mcpStatus.responseTime && (
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-600">Response Time</span>
+            <span className="text-xs text-gray-900">
+              {mcpStatus.responseTime}ms
+            </span>
           </div>
         )}
       </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        <div className="bg-gray-50 rounded p-2 text-center">
+          <div className="text-lg font-bold text-gray-900">{serviceCount}</div>
+          <div className="text-xs text-gray-600">Services</div>
+        </div>
+        <div className="bg-gray-50 rounded p-2 text-center">
+          <div className={`text-lg font-bold ${isConnected ? 'text-green-600' : 'text-yellow-600'}`}>
+            {isConnected ? '100%' : '0%'}
+          </div>
+          <div className="text-xs text-gray-600">Uptime</div>
+        </div>
+      </div>
+
+      {/* Last Update */}
+      <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center space-x-1">
+          <ClockIcon className="w-3 h-3" />
+          <span>Updated</span>
+        </div>
+        <span>
+          {new Date(mcpStatus.lastUpdate).toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          })}
+        </span>
+      </div>
+
+      {/* Status Message */}
+      {!isConnected && (
+        <div className="mt-2 text-xs text-yellow-700 bg-yellow-50 rounded px-2 py-1">
+          AI features may be limited
+        </div>
+      )}
     </div>
   );
 };

@@ -6,8 +6,7 @@ cmds = ['npm ci --production=false']
 
 [phases.build] 
 cmds = [
-  'rm -rf dist .vite',
-  'FORCE_COLOR=0 npm run build'
+  'npm run build'
 ]
 
 [phases.start]

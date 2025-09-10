@@ -177,7 +177,9 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <WorldClassDashboard />
+      <WorldClassLayout>
+        <WorldClassDashboard />
+      </WorldClassLayout>
     </ErrorBoundary>
   )
 }

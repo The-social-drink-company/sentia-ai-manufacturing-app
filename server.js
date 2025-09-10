@@ -5274,7 +5274,7 @@ app.get('/emergency', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'emergency-dashboard.html'));
 });
 
-// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
+// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes and assets
 app.get('*', (req, res) => {
   // Skip API routes - they should have been handled above
   if (req.path.startsWith('/api/')) {
@@ -5294,8 +5294,16 @@ app.get('*', (req, res) => {
     });
   }
   
-  // Serve the React app for all non-API routes
-  // Note: express.static middleware handles assets before this route
+  // Skip asset requests - they should be handled by express.static middleware
+  if (req.path.startsWith('/assets/') || req.path.startsWith('/vite.svg')) {
+    return res.status(404).json({ 
+      error: 'Asset not found', 
+      path: req.path,
+      note: 'Assets should be served by static middleware'
+    });
+  }
+  
+  // Serve the React app for all non-API, non-asset routes
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 

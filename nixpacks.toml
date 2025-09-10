@@ -11,6 +11,5 @@ cmds = ['npm run build']
 cmd = 'node server.js'
 
 [variables]
-NODE_ENV = 'production'
+NODE_ENV = '$NODE_ENV'
 PORT = '$PORT'
-RAILWAY_ENVIRONMENT = 'production'

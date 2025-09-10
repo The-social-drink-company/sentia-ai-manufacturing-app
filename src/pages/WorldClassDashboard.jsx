@@ -173,13 +173,8 @@ const WorldClassDashboard = () => {
         <EnterpriseWidget
           title="Inventory Management"
           subtitle="Stock levels & optimization"
-<<<<<<< HEAD
-          value={`$${((dashboardData?.data?.kpis?.inventory?.totalValue || dashboardData?.inventory?.totalValue || 750000) / 1000000).toFixed(1)}M`}
-          previousValue={`$${(((dashboardData?.data?.kpis?.inventory?.totalValue || dashboardData?.inventory?.totalValue || 750000) - 150000) / 1000000).toFixed(1)}M`}
-=======
           value={`$${((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue || 1800000) / 1000000).toFixed(1)}M`}
           previousValue={`$${(((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue || 1800000) - 150000) / 1000000).toFixed(1)}M`}
->>>>>>> development
           trend={dashboardData?.inventory?.trend}
           trendPercentage={dashboardData?.inventory?.trendPercentage}
           icon={CubeIcon}
@@ -191,21 +186,13 @@ const WorldClassDashboard = () => {
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Turnover Rate</span>
               <span className="font-semibold text-gray-900">
-<<<<<<< HEAD
-                {dashboardData?.data?.kpis?.inventory?.turnover || dashboardData?.inventory?.turnover || '8.2'}x
-=======
-                {dashboardData?.data?.production?.utilization || dashboardData?.inventory?.turnover || '8.2'}x
->>>>>>> development
+                {dashboardData?.data?.production?.utilization || dashboardData?.inventory?.turnover || '87.3'}x
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Stockouts</span>
               <span className="font-semibold text-orange-600">
-<<<<<<< HEAD
-                {dashboardData?.data?.kpis?.inventory?.stockouts || dashboardData?.inventory?.stockouts || '3'}
-=======
-                {dashboardData?.data?.kpis?.find(k => k.id === 'orders')?.value || dashboardData?.inventory?.stockouts || '3'}
->>>>>>> development
+                {dashboardData?.data?.kpis?.find(k => k.id === 'orders')?.value || dashboardData?.inventory?.stockouts || '342'}
               </span>
             </div>
           </div>
@@ -215,13 +202,8 @@ const WorldClassDashboard = () => {
         <EnterpriseWidget
           title="Financial Performance"
           subtitle="Revenue & profitability"
-<<<<<<< HEAD
-          value={`$${((dashboardData?.data?.kpis?.totalRevenue || dashboardData?.financial?.revenue || 2450000) / 1000000).toFixed(1)}M`}
-          previousValue={`$${(((dashboardData?.data?.kpis?.totalRevenue || dashboardData?.financial?.revenue || 2450000) - 320000) / 1000000).toFixed(1)}M`}
-=======
           value={`$${((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue || dashboardData?.financial?.revenue || 2800000) / 1000000).toFixed(1)}M`}
           previousValue={`$${(((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue || dashboardData?.financial?.revenue || 2800000) - 320000) / 1000000).toFixed(1)}M`}
->>>>>>> development
           trend={dashboardData?.financial?.trend}
           trendPercentage={dashboardData?.financial?.trendPercentage}
           icon={BanknotesIcon}
@@ -233,21 +215,13 @@ const WorldClassDashboard = () => {
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Profit Margin</span>
               <span className="font-semibold text-green-600">
-<<<<<<< HEAD
-                {dashboardData?.data?.kpis?.financial?.margin || dashboardData?.financial?.margin || '18.5'}%
-=======
-                {dashboardData?.data?.production?.efficiency || dashboardData?.financial?.margin || '18.5'}%
->>>>>>> development
+                {dashboardData?.data?.production?.efficiency || dashboardData?.financial?.margin || '94.2'}%
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Total Profit</span>
               <span className="font-semibold text-gray-900">
-<<<<<<< HEAD
-                $${((dashboardData?.data?.kpis?.financial?.profit || dashboardData?.financial?.profit || 453250) / 1000000).toFixed(1)}M
-=======
                 $${(((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue || 2800000) * 0.185 / 1000000).toFixed(1))}M
->>>>>>> development
               </span>
             </div>
           </div>

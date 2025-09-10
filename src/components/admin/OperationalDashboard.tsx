@@ -144,9 +144,9 @@ export default function OperationalDashboard() {
 
   if (!systemHealth) {
     return (
-      <div className=\"flex items-center justify-center h-64\">
-        <ArrowPathIcon className=\"w-6 h-6 animate-spin\" />
-        <span className=\"ml-2\">Loading system health...</span>
+      <div className="flex items-center justify-center h-64">
+        <ArrowPathIcon className="w-6 h-6 animate-spin" />
+        <span className="ml-2">Loading system health...</span>
       </div>
     );
   }

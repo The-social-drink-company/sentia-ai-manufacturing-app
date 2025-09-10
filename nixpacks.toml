@@ -1,11 +1,6 @@
 [phases.setup]
 nixPkgs = ['nodejs_23']
 
-[providers]
-node = true
-static = false
-caddy = false
-
 [phases.install]
 cmds = [
   "npm ci --omit=dev"
@@ -16,5 +11,5 @@ cmds = [
   "npm run build"
 ]
 
-[phases.start]
+[start]
 cmd = "node server.js"

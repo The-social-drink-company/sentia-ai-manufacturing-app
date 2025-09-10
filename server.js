@@ -40,6 +40,17 @@ if (process.env.RAILWAY_ENVIRONMENT) {
   process.env.DISABLE_MCP_SERVER_REGISTRATION = 'true';
 }
 
+// Prevent process exits from unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit - log and continue
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit - log and continue
+});
+
 // Validate critical environment variables
 const requiredEnvVars = ['DATABASE_URL'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);

@@ -21,7 +21,10 @@
         "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
         "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
         "CORS_ORIGINS": "https://sentia-manufacturing-dashboard-development.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "$OPENAI_API_KEY"
+        "OPENAI_API_KEY": "$OPENAI_API_KEY",
+        "XERO_CLIENT_ID": "$XERO_CLIENT_ID",
+        "XERO_CLIENT_SECRET": "$XERO_CLIENT_SECRET",
+        "XERO_REDIRECT_URI": "https://sentia-manufacturing-dashboard-development.up.railway.app/api/xero/callback"
       },
       "domains": [
         "sentia-manufacturing-dashboard-development.up.railway.app"
@@ -42,7 +45,10 @@
         "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
         "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
         "CORS_ORIGINS": "https://sentiatest.financeflo.ai,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "$OPENAI_API_KEY"
+        "OPENAI_API_KEY": "$OPENAI_API_KEY",
+        "XERO_CLIENT_ID": "$XERO_CLIENT_ID",
+        "XERO_CLIENT_SECRET": "$XERO_CLIENT_SECRET",
+        "XERO_REDIRECT_URI": "https://sentiatest.financeflo.ai/api/xero/callback"
       },
       "domains": [
         "sentiatest.financeflo.ai"
@@ -63,7 +69,10 @@
         "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
         "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
         "CORS_ORIGINS": "https://sentiaprod.financeflo.ai,https://sentia-manufacturing-dashboard-production.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "$OPENAI_API_KEY"
+        "OPENAI_API_KEY": "$OPENAI_API_KEY",
+        "XERO_CLIENT_ID": "$XERO_CLIENT_ID",
+        "XERO_CLIENT_SECRET": "$XERO_CLIENT_SECRET",
+        "XERO_REDIRECT_URI": "https://sentia-manufacturing-dashboard-production.up.railway.app/api/xero/callback"
       },
       "domains": [
         "sentia-manufacturing-dashboard-production.up.railway.app",

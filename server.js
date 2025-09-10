@@ -67,35 +67,13 @@ processManager.monitorResources();
 // Add enterprise error handling middleware early in the stack
 app.use(expressErrorMiddleware);
 
-// Start MCP server in production environment
+// MCP server is handled by start-production.js in Railway production
+// This prevents duplicate MCP server processes and port conflicts
 if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
-  import('child_process').then(({ spawn }) => {
-    const mcpPort = process.env.MCP_PORT || 3001;
-    console.log(`🤖 Starting MCP server on port ${mcpPort}...`);
-    
-    const mcpServer = spawn('node', ['mcp-server/enterprise-server-simple.js'], {
-      stdio: ['ignore', 'pipe', 'pipe'],
-      env: {
-        ...process.env,
-        MCP_PORT: mcpPort,
-        NODE_ENV: process.env.NODE_ENV || 'production'
-      }
-    });
-    
-    mcpServer.stdout.on('data', (data) => {
-      console.log(`[MCP] ${data.toString().trim()}`);
-    });
-    
-    mcpServer.stderr.on('data', (data) => {
-      console.error(`[MCP ERROR] ${data.toString().trim()}`);
-    });
-    
-    mcpServer.on('exit', (code, signal) => {
-      console.error(`❌ MCP server exited with code ${code}, signal ${signal}`);
-    });
-    
-    console.log('✅ MCP server startup initiated');
-  }).catch(err => console.error('Failed to start MCP server:', err));
+  console.log('🤖 MCP server managed by production startup script (start-production.js)');
+} else if (process.env.NODE_ENV !== 'production') {
+  console.log('🤖 MCP server should be started separately in development mode');
+  console.log('💡 Run: cd mcp-server && npm start');
 }
 
 // Server restarted

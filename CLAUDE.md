@@ -247,20 +247,26 @@ scripts/               # Utility scripts
 - `test` - User acceptance testing environment
 - `production` - Live production environment
 
-### Auto-Deployment (Railway)
-All branches auto-deploy with corresponding Neon PostgreSQL databases:
-- development → daring-reflection-development.up.railway.app
-- test → sentia-manufacturing-dashboard-testing.up.railway.app
-- production → web-production-1f10.up.railway.app
+### Railway Project Structure
 
-### Development Workflow (Critical)
-**NODE_ENV=development in Railway** - Therefore we must follow this branching workflow:
+#### Main Application Project
+**Project ID**: `b9ca1af1-13c5-4ced-9ab6-68fddd73fc8f`
+- **Development**: `f97b65ad-c306-410a-9d5d-5f5fdc098620` → sentia-manufacturing-dashboard-development.up.railway.app
+- **Testing**: `02e0c7f6-9ca1-4355-af52-ee9eec0b3545` → sentiatest.financeflo.ai
+- **Production**: `3e0053fc-ea90-49ec-9708-e09d58cad4a0` → web-production-1f10.up.railway.app
+
+#### MCP Server Project (AI Central Nervous System)
+**Project ID**: `3adb1ac4-84d8-473b-885f-3a9790fe6140`
+- **MCP Server**: `99691282-de66-45b2-98cf-317083dd11ba` → web-production-99691282.up.railway.app
+
+### Development Workflow (Implemented)
+**Enterprise Git Workflow**: Proper development → testing → production progression:
 
 1. **Development Branch**: All coding, fixing, and development work happens in `development` branch
-2. **Test Branch**: Once ready, push to `test` branch for user acceptance testing
+2. **Test Branch**: Push to `test` branch for user acceptance testing at sentiatest.financeflo.ai
 3. **Production Branch**: Only push to `production` when software is ready to go live
 
-This workflow ensures proper testing stages and prevents development code from reaching production.
+**Quality Gates**: Formal UAT process with client approval required before production deployment.
 
 ## Development Methodology
 

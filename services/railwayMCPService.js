@@ -21,10 +21,9 @@ class RailwayMCPService {
 
     const envName = (process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development').toLowerCase();
 
-    // Use actual Railway MCP service tokens
-    if (envName.includes('prod')) return 'https://web-production-99691282.up.railway.app';
-    if (envName.includes('test')) return 'https://web-testing-02e0c7f6.up.railway.app';
-    return 'https://web-development-f97b65ad.up.railway.app';
+    // MCP Server is deployed in separate Railway project (3adb1ac4-84d8-473b-885f-3a9790fe6140)
+    // All environments use the same MCP server endpoint
+    return 'https://web-production-99691282.up.railway.app';
   }
 
   async healthCheck() {

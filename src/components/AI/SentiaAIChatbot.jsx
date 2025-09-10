@@ -31,11 +31,11 @@ const SentiaAIChatbot = ({
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
 
-  // MCP Server configuration
+  // MCP Server configuration - Single MCP server for all environments
   const MCP_SERVER_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://sentia-mcp-server-production.up.railway.app'
+    ? 'https://web-production-99691282.up.railway.app'
     : process.env.NODE_ENV === 'development'
-    ? 'https://splendid-warmth-development.up.railway.app' 
+    ? 'https://web-production-99691282.up.railway.app' 
     : 'http://localhost:9001';
 
   useEffect(() => {

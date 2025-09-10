@@ -17,7 +17,7 @@ const mcpService = {
 
 class IntelligenceService {
   constructor() {
-    this.mcpBaseUrl = process.env.MCP_SERVER_URL || 'https://sentia-mcp-server.railway.app';
+    this.mcpBaseUrl = process.env.MCP_SERVER_URL || 'https://web-production-99691282.up.railway.app';
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
   }

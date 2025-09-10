@@ -125,6 +125,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-toast": "^1.2.15",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@react-spring/three": "^10.0.2",
     "@react-three/drei": "^10.7.5",
     "@react-three/fiber": "^9.3.0",
     "@react-three/postprocessing": "^3.0.4",

@@ -16,21 +16,21 @@ class RailwayPipeline {
   constructor() {
     this.environments = {
       development: {
-        token: process.env.RAILWAY_TOKEN_DEVELOPMENT,
+        token: 'f97b65ad-c306-410a-9d5d-5f5fdc098620',
         mainAppUrl: 'https://sentia-manufacturing-dashboard-development.up.railway.app',
-        mcpUrl: 'https://sentia-mcp-server-development.up.railway.app',
+        mcpUrl: 'https://web-production-99691282.up.railway.app', // Shared MCP server
         testAgentUrl: 'https://sentia-test-agent-development.up.railway.app'
       },
       testing: {
-        token: process.env.RAILWAY_TOKEN_TESTING,
-        mainAppUrl: 'https://sentia-manufacturing-dashboard-testing.up.railway.app',
-        mcpUrl: 'https://sentia-mcp-server-testing.up.railway.app',
+        token: '02e0c7f6-9ca1-4355-af52-ee9eec0b3545',
+        mainAppUrl: 'https://sentiatest.financeflo.ai',
+        mcpUrl: 'https://web-production-99691282.up.railway.app', // Shared MCP server
         testAgentUrl: 'https://sentia-test-agent-testing.up.railway.app'
       },
       production: {
-        token: process.env.RAILWAY_TOKEN_PRODUCTION,
-        mainAppUrl: 'https://sentia-manufacturing-dashboard-production.up.railway.app',
-        mcpUrl: 'https://sentia-mcp-server-production.up.railway.app',
+        token: '3e0053fc-ea90-49ec-9708-e09d58cad4a0',
+        mainAppUrl: 'https://web-production-1f10.up.railway.app',
+        mcpUrl: 'https://web-production-99691282.up.railway.app', // Shared MCP server
         testAgentUrl: 'https://sentia-test-agent-production.up.railway.app'
       }
     };

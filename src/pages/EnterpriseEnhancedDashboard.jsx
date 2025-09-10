@@ -5,11 +5,11 @@ import { useUser } from '@clerk/clerk-react';
 // Enterprise AI Components (Lazy Loaded for Performance)
 const AIAnalyticsDashboard = lazy(() => import('../components/AI/AIAnalyticsDashboard'));
 const PredictiveAnalyticsDashboard = lazy(() => import('../components/AI/PredictiveAnalyticsDashboard'));
-const MCPConnectionStatus = lazy(() => import('../components/AI/MCPConnectionStatus'));
+// MCPConnectionStatus component removed - not available
 
-// Advanced Widgets
+// Advanced Widgets  
 const AIForecastingWidget = lazy(() => import('../components/widgets/AIForecastingWidget'));
-const MCPStatusWidget = lazy(() => import('../components/widgets/MCPStatusWidget'));
+// MCPStatusWidget component removed - not available
 const WorkingCapitalWidget = lazy(() => import('../components/widgets/WorkingCapitalWidget'));
 const SupplyChainWidget = lazy(() => import('../components/widgets/SupplyChainWidget'));
 
@@ -17,7 +17,7 @@ const SupplyChainWidget = lazy(() => import('../components/widgets/SupplyChainWi
 import { useSSE } from '../hooks/useSSE';
 import { useRealTimeData } from '../hooks/useRealTimeData.jsx';
 import { useAIRealTimeData } from '../hooks/useAIRealTimeData';
-import { useMCPService } from '../hooks/useMCPService';
+// useMCPService hook removed - not available
 
 // Enterprise Layout Components
 import DashboardGrid from '../components/layout/DashboardGrid';

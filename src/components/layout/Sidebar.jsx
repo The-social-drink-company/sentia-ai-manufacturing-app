@@ -21,7 +21,8 @@ import {
   SparklesIcon,
   CircleStackIcon,
   SignalIcon,
-  DevicePhoneMobileIcon
+  DevicePhoneMobileIcon,
+  CpuChipIcon
 } from '@heroicons/react/24/outline'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
@@ -200,6 +201,13 @@ const Sidebar = () => {
           label: 'AI Analytics',
           shortcut: 'G A',
           permission: 'analytics.view'
+        },
+        {
+          to: '/ai-status',
+          icon: CpuChipIcon,
+          label: 'AI System Status',
+          shortcut: 'G AI',
+          permission: 'system.view'
         },
         {
           to: '/monitoring',

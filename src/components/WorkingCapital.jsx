@@ -32,7 +32,6 @@ const WorkingCapital = () => {
         if (!response.ok) {
           throw new Error('API not available');
         }
-        
         return await response.json();
       } catch (error) {
         // No mock data - try alternative endpoint first

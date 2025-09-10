@@ -7,7 +7,7 @@ Railway Project ID: `ef36131f-d36e-4c2d-8ab9-1914288d5781`
 - ✅ Repository: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
 - ✅ Branch structure: development, test, production
 - ✅ Auto-deployment configured via GitHub integration
-- ✅ Railway configuration files in place (railway.json, Dockerfile)
+- ✅ Railway configuration files in place (railway.json, Nixpacks)
 
 ## Recent Deployments
 
@@ -21,6 +21,6 @@ Test purpose: Verify GitHub push triggers Railway deployment
 
 Expected behavior:
 1. Push to development branch triggers Railway build
-2. Railway builds using Dockerfile
+2. Railway builds using Nixpacks
 3. New deployment becomes available at https://sentiadeploy.financeflo.ai
 4. Health check endpoint responds successfully

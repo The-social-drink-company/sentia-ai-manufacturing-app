@@ -883,13 +883,12 @@ process.on('SIGTERM', async () => {
 ```toml
 # railway.toml - Railway service configuration
 [build]
-builder = "DOCKERFILE"
+builder = "NIXPACKS"
 buildCommand = "npm ci && npm run build"
 
 # Web Service - Express API + React frontend
 [services.web]
 name = "sentia-web"
-build.dockerfilePath = "./Dockerfile"
 deploy.startCommand = "node server.js"
 deploy.healthcheckPath = "/api/health"
 deploy.port = 5000
@@ -904,7 +903,6 @@ resources.memory = "2Gi"
 # Worker Service - BullMQ job processing
 [services.worker]
 name = "sentia-worker" 
-build.dockerfilePath = "./Dockerfile.worker"
 deploy.startCommand = "node services/workers/index.js"
 deploy.numReplicas = 1
 resources.cpu = "1"

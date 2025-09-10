@@ -16,7 +16,6 @@ import {
 // Import AI and MCP components
 import AIAnalyticsDashboard from '../components/AI/AIAnalyticsDashboard';
 import MCPConnectionStatus from '../components/AI/MCPConnectionStatus';
-import { mcpService } from '../services/mcpService';
 import { useSSE } from '../hooks/useSSE';
 
 export default function EnhancedDashboard() {
@@ -28,12 +27,12 @@ export default function EnhancedDashboard() {
   // Real-time data connection
   const { data: realtimeData, isConnected } = useSSE('/api/kpis/realtime');
 
-  // MCP Service health check
-  const { data: mcpHealth } = useQuery({
-    queryKey: ['mcp-health'],
-    queryFn: () => mcpService.checkHealth(),
-    refetchInterval: 30000, // Check every 30 seconds
-  });
+  // MCP Service health check (disabled - service not available in this build)
+  // const { data: mcpHealth } = useQuery({
+  //   queryKey: ['mcp-health'],
+  //   queryFn: () => ({ status: 'disconnected', services: [] }),
+  //   refetchInterval: 30000,
+  // });
 
   // Fetch dashboard data
   const { data: dashboardData, refetch } = useQuery({

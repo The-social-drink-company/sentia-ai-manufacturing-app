@@ -490,7 +490,7 @@ def generate_forecast():
 
 **Development Environment:**
 - Local development with SQLite fallback
-- Docker containers for services
+- Railway-style services (no Docker)
 - Hot reloading for rapid development
 - Mock external API responses
 

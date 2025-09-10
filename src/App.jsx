@@ -48,7 +48,7 @@ const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashb
 const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
 const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMonitoring'))
 const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
-const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
+// MCPConnectionStatus component removed - not required for enterprise dashboard
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
 const APIStatusDiagnostic = lazy(() => import('./components/diagnostics/APIStatusDiagnostic'))
 
@@ -66,6 +66,7 @@ const MobileFloor = lazy(() => import('./pages/MobileFloor'))
 
 // AI Support Chatbot Component
 const AISupportChatbot = lazy(() => import('./components/chatbot/AISupportChatbot'))
+const AIStatusDashboard = lazy(() => import('./components/AI/AIStatusDashboard'))
 
 // Enhanced Admin System Components
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
@@ -174,7 +175,7 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <WorldClassEnterpriseDashboard />
+      <WorldClassDashboard />
     </ErrorBoundary>
   )
 }
@@ -488,6 +489,19 @@ function App() {
                 />
 
                 <Route 
+                  path="/ai-status" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AIStatusDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
                   path="/api-status" 
                   element={
                     <ProtectedRoute allowGuest={true}>
@@ -526,18 +540,7 @@ function App() {
                   } 
                 />
 
-                <Route 
-                  path="/mcp-status" 
-                  element={
-                    <ProtectedRoute allowGuest={true}>
-                      <WorldClassLayout>
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <MCPConnectionStatus />
-                        </Suspense>
-                      </WorldClassLayout>
-                    </ProtectedRoute>
-                  } 
-                />
+                {/* MCP Status route removed - component not available */}
 
                 <Route 
                   path="/settings" 

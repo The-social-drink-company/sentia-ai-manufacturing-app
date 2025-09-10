@@ -1,9 +1,13 @@
 # Cache directories that cause mount conflicts
 node_modules/.cache
+node_modules/.vite
 .next
 dist/.cache
 .vite/
 .cache/
+**/cache/
+**/.cache/
+.turbo
 
 # Prevent static site detection
 public/

@@ -25,8 +25,7 @@ const SECURITY_CONFIG = {
     enableCodeScanning: true,
     enableSecretDetection: true,
     enableDependencyCheck: true,
-    enableLicenseCheck: true,
-    enableDockerSecurity: false
+    enableLicenseCheck: true
   },
   secretPatterns: [
     /(['"`])(AKIA[0-9A-Z]{16})\1/g, // AWS Access Key
@@ -346,10 +345,6 @@ class SecurityComplianceScanner {
     }
   }
 
-  async scanDockerSecurity() {
-    this.log('INFO', 'Docker security scanning disabled - using Railway Nixpacks deployment');
-    this.report.compliance.dockerSecurity = { scanned: false, reason: 'Docker not used - Railway Nixpacks deployment' };
-  }
 
   updateSeverityCount(severity) {
     switch (severity) {
@@ -400,7 +395,6 @@ class SecurityComplianceScanner {
       await this.scanSecrets();
       await this.scanCodeVulnerabilities();
       await this.scanLicenseCompliance();
-      await this.scanDockerSecurity();
       
       // Calculate compliance score
       const complianceScore = this.calculateComplianceScore();

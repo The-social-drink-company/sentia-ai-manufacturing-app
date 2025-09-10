@@ -8,7 +8,12 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "npm run build:railway"
+  "echo 'Starting Railway build process...'",
+  "npm run build:railway",
+  "echo 'Build completed. Checking dist directory...'",
+  "ls -la dist/ || echo 'Dist directory not found'",
+  "ls -la dist/js/ || echo 'JS directory not found'",
+  "echo 'Build verification complete.'"
 ]
 
 [start]

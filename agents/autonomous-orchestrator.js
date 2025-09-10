@@ -9,7 +9,6 @@
 import { spawn, exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
-import fetch from 'node-fetch';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -81,7 +80,7 @@ class AutonomousOrchestrator {
     try {
       await execAsync('git config user.name');
       await execAsync('git config user.email');
-    } catch (error) {
+    } catch (_error) {
       // Configure git if not set
       await execAsync('git config user.name "Autonomous Agent"');
       await execAsync('git config user.email "agent@sentia-manufacturing.ai"');

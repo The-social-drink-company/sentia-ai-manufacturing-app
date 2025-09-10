@@ -8,8 +8,8 @@ import {
   CalendarIcon,
   BeakerIcon,
   SignalIcon,
-  TrendingUpIcon,
-  TrendingDownIcon
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon
 } from '@heroicons/react/24/outline';
 import { useAI } from '../ai';
 import { useRealtime } from '../realtime/RealtimeProvider';

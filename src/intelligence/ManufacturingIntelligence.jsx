@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChartBarIcon,
   CogIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   ExclamationCircleIcon,
   LightBulbIcon,
   ClockIcon,

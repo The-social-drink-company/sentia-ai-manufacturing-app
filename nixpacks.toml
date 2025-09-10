@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ['nodejs_22']
+nixPkgs = ['nodejs_23']
 
 [phases.install]
 cmds = ['npm ci --production=false']
@@ -11,5 +11,9 @@ cmds = ['npm run build']
 cmd = 'node server.js'
 
 [variables]
-NODE_ENV = '$NODE_ENV'
+NODE_ENV = 'production'
 PORT = '$PORT'
+RAILWAY_ENVIRONMENT = 'production'
+
+[providers]
+static = false

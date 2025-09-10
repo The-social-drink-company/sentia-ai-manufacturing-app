@@ -48,7 +48,7 @@ const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashb
 const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
 const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMonitoring'))
 const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
-const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
+// MCPConnectionStatus component removed - not required for enterprise dashboard
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
 const APIStatusDiagnostic = lazy(() => import('./components/diagnostics/APIStatusDiagnostic'))
 
@@ -526,18 +526,7 @@ function App() {
                   } 
                 />
 
-                <Route 
-                  path="/mcp-status" 
-                  element={
-                    <ProtectedRoute allowGuest={true}>
-                      <WorldClassLayout>
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <MCPConnectionStatus />
-                        </Suspense>
-                      </WorldClassLayout>
-                    </ProtectedRoute>
-                  } 
-                />
+                {/* MCP Status route removed - component not available */}
 
                 <Route 
                   path="/settings" 

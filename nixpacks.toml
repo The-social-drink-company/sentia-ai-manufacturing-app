@@ -11,13 +11,7 @@ cmds = ['npm run build']
 [phases.start]
 cmd = 'node server.js'
 
-# Let Railway set environment-specific NODE_ENV values
-# Development: NODE_ENV=development 
-# Testing: NODE_ENV=testing
-# Production: NODE_ENV=production
-
 [variables]
+NODE_ENV = 'production'
 PORT = '$PORT'
-
-[providers]
-static = false
+RAILWAY_ENVIRONMENT = 'production'

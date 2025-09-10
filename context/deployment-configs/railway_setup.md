@@ -61,7 +61,6 @@ This document outlines the complete Railway deployment setup for the Sentia Manu
 ```toml
 [services.web]
 name = "sentia-web"
-build.dockerfilePath = "./Dockerfile"
 deploy.startCommand = "node server.js"
 deploy.healthcheckPath = "/api/health"
 deploy.region = "us-west1"
@@ -90,7 +89,6 @@ resources.memory = "512Mi"
 ```toml
 [services.worker]
 name = "sentia-worker"
-build.dockerfilePath = "./Dockerfile.worker"
 deploy.startCommand = "node services/workers/index.js"
 deploy.region = "us-west1"
 

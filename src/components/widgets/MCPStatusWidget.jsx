@@ -1,11 +1,13 @@
 import React from 'react';
-import { useMCPService } from '../../hooks/useMCPService';
 import { CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 const MCPStatusWidget = () => {
-  const { useHealthCheck, useProviders } = useMCPService();
-  const { data: healthData, isLoading: healthLoading, isError: healthError } = useHealthCheck();
-  const { data: providersData, isLoading: providersLoading } = useProviders();
+  // Mock data for display purposes since MCP service is not available in this build
+  const healthData = { status: 'disconnected', environment: 'test', version: '1.0.0', uptime: '0s' };
+  const healthLoading = false;
+  const healthError = true;
+  const providersData = { providers: [] };
+  const providersLoading = false;
 
   const getStatusIcon = (status) => {
     switch (status) {

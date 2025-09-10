@@ -772,6 +772,6 @@ The enterprise navigation system, Git workflow, local development environment, a
 This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase analysis (September 2025) and establishes enterprise-grade development standards for the Sentia Manufacturing Dashboard.
 
 ### Railway Platform Configuration Notes
-- Deployment uses Railway with Nixpacks for all environments — do not use Docker or Caddy
+- Deployment uses Railway with Nixpacks builder for all environments (never use Docker or Caddy)
 - Application is an Express/Node.js server (not a static site); no Caddy reverse proxy is used
 - Auto-deployment configured for all three branches with corresponding databases

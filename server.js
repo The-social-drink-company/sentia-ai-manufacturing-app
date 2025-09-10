@@ -36,8 +36,8 @@ if (process.env.RAILWAY_ENVIRONMENT) {
   // Increase database connection timeout for Railway
   process.env.DATABASE_CONNECTION_TIMEOUT = '60000';
   process.env.DATABASE_POOL_TIMEOUT = '60000';
-  // Disable MCP server registration in Railway environments to prevent connection errors
-  process.env.DISABLE_MCP_SERVER_REGISTRATION = 'true';
+  // Enable MCP server registration in Railway environments for health checks
+  process.env.ENABLE_MCP_SERVER_REGISTRATION = 'true';
 }
 
 // Prevent process exits from unhandled promise rejections

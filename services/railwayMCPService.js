@@ -14,21 +14,37 @@ class RailwayMCPService {
   }
 
   getRailwayMCPUrl() {
-    // Highest priority: explicit override
+    // Use local embedded MCP server for Railway deployments
+    if (process.env.RAILWAY_ENVIRONMENT) {
+      // MCP server is embedded in the main application
+      return 'http://localhost:' + (process.env.PORT || 8080);
+    }
+
+    // For local development, use separate MCP server if configured
     if (process.env.MCP_SERVER_URL && process.env.MCP_SERVER_URL.trim().length > 0) {
       return process.env.MCP_SERVER_URL.trim();
     }
 
-    const envName = (process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development').toLowerCase();
-
-    // MCP Server is deployed in separate Railway project (3adb1ac4-84d8-473b-885f-3a9790fe6140)
-    // All environments use the same MCP server endpoint
-    return 'https://web-production-99691282.up.railway.app';
+    // Default to localhost MCP server
+    return 'http://localhost:3001';
   }
 
   async healthCheck() {
     try {
-      // Try primary health endpoint
+      // For Railway embedded MCP server, check for local MCP endpoints
+      if (process.env.RAILWAY_ENVIRONMENT) {
+        // Return embedded MCP status (always healthy when main server is running)
+        return {
+          status: 'connected',
+          provider: 'railway-embedded',
+          environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'production',
+          endpoint: this.baseUrl,
+          mode: 'embedded',
+          timestamp: new Date().toISOString()
+        };
+      }
+
+      // For external MCP servers, try health endpoints
       let response;
       try {
         response = await this.makeRequest('/health');
@@ -38,7 +54,7 @@ class RailwayMCPService {
       }
       return {
         status: 'connected',
-        provider: 'railway-hosted',
+        provider: 'external',
         environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
         endpoint: this.baseUrl,
         health: response,

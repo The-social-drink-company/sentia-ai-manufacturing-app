@@ -89,6 +89,8 @@ import realtimeManager from './services/realtime/websocket-sse-manager.js';
 import { createServer } from 'http';
 // Import API integration manager
 import apiIntegrationManager from './services/integrations/api-integration-manager.js';
+// Import route validator
+import routeValidator from './services/route-validator.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -668,6 +670,25 @@ app.get('/health', (req, res) => {
       message: error.message,
       timestamp: new Date().toISOString()
     });
+  }
+});
+
+// Route validation endpoint - check all 92 routes
+app.get('/api/routes/validate', async (req, res) => {
+  try {
+    const validation = routeValidator.validateAllRoutes();
+    const activationPlan = routeValidator.activateMissingRoutes();
+    
+    res.json({
+      status: 'success',
+      validation,
+      activationPlan,
+      summary: routeValidator.getStatus(),
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Route validation error:', error);
+    res.status(500).json({ error: 'Failed to validate routes' });
   }
 });
 

@@ -16,9 +16,9 @@ const __dirname = dirname(__filename);
 console.log('🚂 Railway MCP Server Startup Wrapper');
 console.log('🔄 Redirecting to MCP server in mcp-server directory...');
 
-// Change to mcp-server directory and start the simple MCP server
+// Change to mcp-server directory and start the enterprise MCP server
 const mcpServerPath = join(__dirname, 'mcp-server');
-const serverScript = 'simple-mcp-server.js';
+const serverScript = 'enterprise-server-simple.js';
 
 console.log(`📁 MCP Server Path: ${mcpServerPath}`);
 console.log(`🚀 Starting: ${serverScript}`);

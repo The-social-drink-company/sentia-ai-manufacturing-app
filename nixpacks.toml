@@ -2,13 +2,14 @@
 nixPkgs = ['nodejs_23']
 
 [phases.install]
-cmds = ['npm ci --omit=dev']
+cmds = [
+  "npm ci --omit=dev"
+]
 
 [phases.build]
-cmds = ['npm run build']
+cmds = [
+  "npm run build"
+]
 
-[phases.start]
-cmd = 'node server.js'
-
-[variables]
-PORT = '$PORT'
+[start]
+cmd = "node server.js"

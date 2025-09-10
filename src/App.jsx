@@ -63,6 +63,8 @@ const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
 const UIShowcase = lazy(() => import('./components/ui/UIShowcase'))
 const UserPreferences = lazy(() => import('./pages/UserPreferences'))
 const MobileFloor = lazy(() => import('./pages/MobileFloor'))
+const MissionControl = lazy(() => import('./pages/MissionControl'))
+const FactoryDigitalTwin = lazy(() => import('./components/3d/FactoryDigitalTwin'))
 
 // AI Support Chatbot Component
 const AISupportChatbot = lazy(() => import('./components/chatbot/AISupportChatbot'))

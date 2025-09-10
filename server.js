@@ -84,6 +84,11 @@ import healthMonitorService from './services/healthMonitorService.js';
 // Import Enterprise Error Handling and Process Management
 import { errorHandler, expressErrorMiddleware, asyncHandler } from './services/enterprise/errorHandler.js';
 import { processManager } from './services/enterprise/processManager.js';
+// Import realtime manager for WebSocket and SSE
+import realtimeManager from './services/realtime/websocket-sse-manager.js';
+import { createServer } from 'http';
+// Import API integration manager
+import apiIntegrationManager from './services/integrations/api-integration-manager.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -1267,12 +1272,44 @@ app.get('/api/xero/auth', async (req, res) => {
 // Enterprise services status
 app.get('/api/services/status', authenticateUser, async (req, res) => {
   try {
-    const xeroStatus = await xeroService.healthCheck();
-    const aiStatus = await aiAnalyticsService.healthCheck();
+    // Get comprehensive status from API integration manager
+    const apiManagerStatus = apiIntegrationManager.getStatus();
+    
+    // Legacy status checks for backward compatibility
+    let xeroStatus = null;
+    let aiStatus = null;
+    try {
+      xeroStatus = await xeroService.healthCheck();
+    } catch (e) {
+      xeroStatus = { status: 'error', message: e.message };
+    }
+    
+    try {
+      aiStatus = await aiAnalyticsService.healthCheck();
+    } catch (e) {
+      aiStatus = { status: 'error', message: e.message };
+    }
+    
+    // Get realtime connections status
+    const realtimeStatus = realtimeManager.getStats();
     
     res.json({ 
-      xero: xeroStatus,
-      ai_analytics: aiStatus,
+      summary: {
+        totalServices: Object.keys(apiManagerStatus.services).length,
+        connectedServices: Object.values(apiManagerStatus.services).filter(s => s.status === 'connected').length,
+        healthyServices: Object.values(apiManagerStatus.services).filter(s => s.isHealthy).length,
+        errorServices: Object.values(apiManagerStatus.services).filter(s => s.status === 'error').length
+      },
+      services: apiManagerStatus.services,
+      realtime: {
+        websockets: realtimeStatus.activeWebSockets,
+        sse: realtimeStatus.activeSSE,
+        totalConnections: realtimeStatus.activeWebSockets + realtimeStatus.activeSSE
+      },
+      legacy: {
+        xero: xeroStatus,
+        ai_analytics: aiStatus
+      },
       lastCheck: new Date().toISOString()
     });
   } catch (error) {
@@ -1288,12 +1325,27 @@ app.get('/api/mcp/status', async (req, res) => {
     const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:3001';
     
     let mcpStatus = null;
+    let aiSystemStatus = null;
+    let availableTools = [];
+    
     try {
       const response = await fetch(`${mcpServerUrl}/health`, { 
         timeout: 5000,
         headers: { 'Content-Type': 'application/json' }
       });
       mcpStatus = await response.json();
+      
+      // Get AI system status
+      const aiResponse = await fetch(`${mcpServerUrl}/mcp/status`, {
+        timeout: 5000,
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (aiResponse.ok) {
+        const aiData = await aiResponse.json();
+        aiSystemStatus = aiData.aiSystem;
+        availableTools = aiData.tools || [];
+      }
     } catch (mcpError) {
       console.log('MCP server not responding:', mcpError.message);
     }
@@ -1303,6 +1355,14 @@ app.get('/api/mcp/status', async (req, res) => {
       version: mcpStatus?.version || 'unknown',
       uptime: mcpStatus?.uptime || 0,
       serverUrl: mcpServerUrl,
+      aiFeatures: {
+        enabled: process.env.ENABLE_AI_FEATURES === 'true',
+        llmProviders: aiSystemStatus?.llmProviders || 0,
+        apiIntegrations: aiSystemStatus?.apiIntegrations || 0,
+        vectorDatabase: aiSystemStatus?.vectorMemory || 0,
+        tools: availableTools.length,
+        toolNames: availableTools.map(t => t.name)
+      },
       lastCheck: new Date().toISOString()
     });
   } catch (error) {
@@ -1310,6 +1370,13 @@ app.get('/api/mcp/status', async (req, res) => {
     res.json({
       status: 'disconnected',
       error: error.message,
+      aiFeatures: {
+        enabled: false,
+        llmProviders: 0,
+        apiIntegrations: 0,
+        vectorDatabase: 0,
+        tools: 0
+      },
       lastCheck: new Date().toISOString()
     });
   }
@@ -5107,8 +5174,27 @@ app.use((error, req, res, next) => {
 // Use enterprise process manager for robust server startup
 (async () => {
   try {
+    // Create HTTP server for WebSocket support
+    const httpServer = createServer(app);
+    
+    // Initialize WebSocket if enabled
+    if (process.env.ENABLE_WEBSOCKET === 'true') {
+      realtimeManager.initializeWebSocket(httpServer);
+      logInfo('WebSocket server initialized');
+    }
+    
+    // Initialize SSE if enabled
+    if (process.env.ENABLE_SSE === 'true') {
+      realtimeManager.initializeSSE(app);
+      logInfo('SSE endpoints initialized');
+    }
+    
+    // Initialize API integrations
+    const apiStatus = await apiIntegrationManager.initialize();
+    logInfo('API integrations initialized', apiStatus);
+    
     // Start server with enterprise process management
-    const { port } = await processManager.startServer(app, PORT, '0.0.0.0', 'sentia-api');
+    const { port } = await processManager.startServer(httpServer, PORT, '0.0.0.0', 'sentia-api');
     
     // Log successful startup with enterprise logging
     logInfo('✅ SENTIA ENTERPRISE SERVER STARTED', {
@@ -5138,6 +5224,12 @@ app.use((error, req, res, next) => {
         await global.prisma.$disconnect();
         logInfo('Database connections closed');
       }
+    });
+    
+    // Register shutdown handler for realtime connections
+    processManager.addShutdownHandler('realtime', async () => {
+      realtimeManager.shutdown();
+      logInfo('Realtime connections closed');
     });
     
     // Add health check for enterprise monitoring

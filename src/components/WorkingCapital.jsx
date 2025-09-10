@@ -25,7 +25,6 @@ const WorkingCapital = () => {
     queryKey: ['working-capital', dateRange],
     queryFn: async () => {
       try {
-<<<<<<< HEAD
         const response = await fetch(`/api/working-capital/summary?range=${dateRange}`, {
           headers: user ? { 'Authorization': `Bearer ${await user.getToken()}` } : {}
         });

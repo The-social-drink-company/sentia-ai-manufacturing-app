@@ -11,6 +11,7 @@ import {
   PencilIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
+import { logError } from '../../services/observability/structuredLogger.js';
 
 const ApiKeyManagement = () => {
   const [apiKeys, setApiKeys] = useState({});
@@ -143,7 +144,7 @@ const ApiKeyManagement = () => {
         setApiKeys(keys);
       }
     } catch (error) {
-      console.error('Failed to load API keys:', error);
+      logError('Failed to load API keys', { component: 'ApiKeyManagement' }, error);
     } finally {
       setLoading(false);
     }
@@ -157,7 +158,7 @@ const ApiKeyManagement = () => {
         setConnectionStatus(status);
       }
     } catch (error) {
-      console.error('Failed to check connection status:', error);
+      logError('Failed to check connection status', { component: 'ApiKeyManagement' }, error);
     }
   };
 
@@ -188,7 +189,11 @@ const ApiKeyManagement = () => {
         setTimeout(checkConnectionStatus, 1000);
       }
     } catch (error) {
-      console.error('Failed to save API key:', error);
+      logError('Failed to save API key', { 
+        component: 'ApiKeyManagement', 
+        serviceId, 
+        fieldKey 
+      }, error);
     } finally {
       setSaving(prev => ({ ...prev, [`${serviceId}_${fieldKey}`]: false }));
     }

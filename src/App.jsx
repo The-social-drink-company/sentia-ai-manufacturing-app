@@ -9,6 +9,7 @@ import './index.css'
 import './styles/themes.css'
 import './styles/landing.css'
 import ThemeProvider from './components/ui/ThemeProvider'
+import { logInfo, logWarn } from './services/observability/structuredLogger.js'
 
 // Import Chart.js setup early to ensure registration
 import './lib/chartSetup'
@@ -79,7 +80,7 @@ const AdminIntegrations = lazy(() => import('./components/admin/pages/AdminInteg
 const AdminWebhooks = lazy(() => import('./components/admin/pages/AdminWebhooks'))
 
 
-console.log('Starting Sentia Enterprise Manufacturing Dashboard...', { 
+logInfo('Starting Sentia Enterprise Manufacturing Dashboard', { 
   deploymentTime: new Date().toISOString(), 
   continuousDeployment: true, 
   cycle: 4, 
@@ -94,9 +95,9 @@ const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 // Handle missing Clerk key gracefully
 if (!clerkPubKey) {
-  console.warn('VITE_CLERK_PUBLISHABLE_KEY is not set - running in guest mode')
+  logWarn('VITE_CLERK_PUBLISHABLE_KEY is not set - running in guest mode')
 } else {
-  console.log('Clerk key loaded:', clerkPubKey.substring(0, 20) + '...')
+  logInfo('Clerk key loaded', { keyPrefix: clerkPubKey.substring(0, 20) + '...' })
 }
 
 // Initialize React Query client

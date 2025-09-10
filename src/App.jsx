@@ -67,7 +67,7 @@ const PredictiveAnalyticsDashboard = createRouteComponent('predictive-analytics'
 
 // Data Management (Standard Priority)
 const DataImportDashboard = createRouteComponent('data-import', () => import('./components/DataImport/DataImportDashboard'))
-const EnhancedDataImportDashboard = createRouteComponent('enhanced-data-import', () => import('./components/DataImport/EnhancedDataImportDashboard'))
+const EnhancedDataImportDashboard = createRouteComponent('enhanced-data-import', () => import('./components/DataImport/DataImportSimple')) // Using simplified version for stability
 
 // Monitoring (Standard Priority)
 const RealTimeMonitoring = createRouteComponent('monitoring', () => import('./components/monitoring/RealTimeMonitoring'))

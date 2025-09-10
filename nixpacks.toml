@@ -12,7 +12,8 @@ cmds = [
 ]
 
 [start]
-cmd = "npm run start"
+cmd = "node server.js"
 
 [variables]
 NODE_ENV = "production"
+RAILWAY_DEPLOYMENT = "true"

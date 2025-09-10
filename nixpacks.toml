@@ -2,10 +2,10 @@
 nixPkgs = ['nodejs_22']
 
 [phases.install]
-cmds = ['npm ci --production=false --verbose']
+cmds = ['npm ci --production=false']
 
 [phases.build] 
-cmds = ['FORCE_COLOR=0 npm run build:railway']
+cmds = ['npm run build']
 
 [phases.start]
 cmd = 'node server.js'
@@ -14,3 +14,8 @@ cmd = 'node server.js'
 NODE_ENV = 'production'
 PORT = '$PORT'
 RAILWAY_ENVIRONMENT = 'production'
+
+# Explicitly disable static site providers
+[providers]
+# Disable Caddy - we serve static files through Node.js/Express
+caddy = false

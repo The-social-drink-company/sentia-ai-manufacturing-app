@@ -46,6 +46,7 @@ import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
 // Railway-hosted MCP service integration
 import railwayMCPService from './services/railwayMCPService.js';
+import healthMonitorService from './services/healthMonitorService.js';
 // Import Enterprise Error Handling and Process Management
 import { errorHandler, expressErrorMiddleware, asyncHandler } from './services/enterprise/errorHandler.js';
 import { processManager } from './services/enterprise/processManager.js';
@@ -573,22 +574,21 @@ app.get('/api/debug/env', (req, res) => {
 });
 
 // Basic health check for Railway deployment (no external service dependencies)
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
   try {
-    res.status(200).json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      version: '2.0.0',
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
-      uptime: Math.floor(process.uptime()),
-      port: PORT,
-      memory: process.memoryUsage(),
-      railway: !!process.env.RAILWAY_ENVIRONMENT_NAME
-    });
+    const health = await healthMonitorService.getComprehensiveHealth();
+    
+    // Set appropriate status code based on health
+    const statusCode = health.status === 'healthy' ? 200 : 
+                      health.status === 'degraded' ? 200 : 503;
+    
+    res.status(statusCode).json(health);
   } catch (error) {
-    res.status(500).json({
+    console.error('Health check error:', error);
+    res.status(500).json({ 
       status: 'error',
-      message: error.message
+      timestamp: new Date().toISOString(),
+      error: error.message 
     });
   }
 });

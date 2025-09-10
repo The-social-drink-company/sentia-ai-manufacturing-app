@@ -14,4 +14,3 @@ cmd = 'node server.js'
 NODE_ENV = 'production'
 PORT = '$PORT'
 RAILWAY_ENVIRONMENT = 'production'
-

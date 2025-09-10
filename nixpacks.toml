@@ -1,15 +1,18 @@
 [phases.setup]
-nixPkgs = ['nodejs_23']
+nixPkgs = ['nodejs_18']
 
 [phases.install]
 cmds = [
-  "npm ci --omit=dev"
+  "npm ci"
 ]
 
 [phases.build]
 cmds = [
-  "npm run build"
+  "npm run build:railway"
 ]
 
 [start]
-cmd = "node server.js"
+cmd = "npm run start"
+
+[variables]
+NODE_ENV = "production"

@@ -13,6 +13,7 @@ import { ThemeProvider } from './theming'
 import { NavigationProvider } from './navigation'
 import { CommandPaletteProvider } from './components/CommandPalette'
 import { ChartProvider } from './charts'
+import { AIProvider } from './ai'
 import { logInfo, logWarn } from './services/observability/structuredLogger.js'
 
 // Import Chart.js setup early to ensure registration
@@ -230,6 +231,7 @@ function App() {
               <NavigationProvider>
                 <CommandPaletteProvider>
                   <ChartProvider>
+                    <AIProvider>
             <div className="App">
               <Routes>
                 {/* Public Landing Page */}
@@ -855,7 +857,8 @@ function App() {
                 }}
               />
               
-                  </div>
+                    </div>
+                    </AIProvider>
                   </ChartProvider>
                 </CommandPaletteProvider>
               </NavigationProvider>

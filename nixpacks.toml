@@ -1,4 +1,4 @@
-# Nixpacks configuration for Railway deployment
+# Railway Nixpacks Configuration - DO NOT OVERRIDE NODE_ENV
 [phases.setup]
 nixPkgs = ['nodejs_23']
 
@@ -11,10 +11,10 @@ cmds = ['npm run build']
 [phases.start]
 cmd = 'node server.js'
 
-# Let Railway set environment-specific NODE_ENV values
-# Development: NODE_ENV=development 
-# Testing: NODE_ENV=testing
-# Production: NODE_ENV=production
+# CRITICAL: Do not set NODE_ENV here - let Railway environment variables control it
+# Development: NODE_ENV=development (set in Railway dashboard)
+# Testing: NODE_ENV=testing (set in Railway dashboard)  
+# Production: NODE_ENV=production (set in Railway dashboard)
 
 [variables]
 PORT = '$PORT'

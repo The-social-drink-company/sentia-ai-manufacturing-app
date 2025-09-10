@@ -1,25 +1,29 @@
 {
-  "timestamp": "2025-09-10T07:15:29.072Z",
+  "timestamp": "2025-09-10T07:16:08.315Z",
   "testType": "whatif_analysis",
   "summary": {
-    "totalSliderTests": 0,
+    "totalSliderTests": 1,
     "passedSliderTests": 0,
-    "sliderSuccessRate": null,
-    "avgCalculationTime": null,
-    "avgConfidence": null,
+    "sliderSuccessRate": 0,
+    "avgCalculationTime": 6358.188,
+    "avgConfidence": 0,
     "totalScenarios": 0,
-    "performanceTests": 1
+    "performanceTests": 0
   },
-  "sliderInteractions": [],
-  "scenarios": [],
-  "performanceMetrics": [
+  "sliderInteractions": [
     {
-      "operation": "initialization",
-      "duration": 5406.888000000001,
-      "success": false,
-      "timestamp": "2025-09-10T07:15:29.034Z"
+      "timestamp": "2025-09-10T07:16:08.275Z",
+      "category": "rawMaterials",
+      "parameter": "availability",
+      "value": 60,
+      "calculationTime": 6358.188,
+      "workingCapital": 0,
+      "confidence": 0,
+      "passed": false
     }
   ],
+  "scenarios": [],
+  "performanceMetrics": [],
   "clientRequirementsMet": true,
   "criticalSystemTest": true
 }

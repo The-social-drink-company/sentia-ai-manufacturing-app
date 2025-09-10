@@ -11,7 +11,7 @@
     "prebuild": "rimraf dist || true",
     "build": "vite build",
     "build:railway": "vite build",
-    "postbuild": "echo Build completed for Railway deployment",
+    "postbuild": "echo 'Build completed for Railway deployment' && ls -la dist/ && echo 'Assets:' && ls -la dist/assets/ 2>/dev/null || echo 'Assets directory not found' && echo 'Total dist size:' && du -sh dist/ 2>/dev/null || echo 'Dist size check failed'",
     "build:force": "rimraf dist node_modules/.vite && vite build",
     "start": "node server.js",
     "start:concurrent": "concurrently \"node server.js\"",

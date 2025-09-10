@@ -4930,7 +4930,15 @@ try {
 // Serve static files (must be after ALL API routes)
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1d',
-  etag: false
+  etag: false,
+  setHeaders: (res, path) => {
+    // Ensure JavaScript files are served with correct MIME type
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'text/javascript');
+    } else if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    }
+  }
 }));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data

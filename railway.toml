@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks" 
-buildCommand = "rm -rf node_modules dist .vite package-lock.json && npm ci && FORCE_COLOR=0 npm run build"
+buildCommand = "npm run build"
 watchPatterns = ["src/**/*", "public/**/*", "*.js", "*.json"]
 
 [deploy]

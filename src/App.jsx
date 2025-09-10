@@ -9,11 +9,7 @@ import './index.css'
 import './styles/themes.css'
 import './styles/landing.css'
 import './styles/theme-system.css'
-import { ThemeProvider } from './theming'
-import { NavigationProvider } from './navigation'
-import { CommandPaletteProvider } from './components/CommandPalette'
-import { ChartProvider } from './charts'
-import { AIProvider } from './ai'
+import { EnterpriseIntegrationHub } from './core/EnterpriseIntegrationHub'
 import { logInfo, logWarn } from './services/observability/structuredLogger.js'
 
 // Import Chart.js setup early to ensure registration
@@ -48,6 +44,12 @@ const WorkingCapital = createPriorityComponent(() => import('./components/Workin
 const EnhancedWorkingCapital = createPriorityComponent(() => import('./components/WorkingCapital/EnhancedWorkingCapital'), 'EnhancedWorkingCapital')
 
 // Manufacturing Operations (Standard Priority)
+const PredictiveMaintenanceSystem = createRouteComponent('predictive-maintenance', () => import('./maintenance/PredictiveMaintenanceSystem'))
+const ManufacturingIntelligence = createRouteComponent('manufacturing-intelligence', () => import('./intelligence/ManufacturingIntelligence'))
+const QualityIntelligence = createRouteComponent('quality-intelligence', () => import('./intelligence/QualityIntelligence'))
+const WorkflowAutomation = createRouteComponent('workflow-automation', () => import('./operations/WorkflowAutomation'))
+const GlobalComplianceSystem = createRouteComponent('global-compliance', () => import('./compliance/GlobalComplianceSystem'))
+const DigitalTwinSystem = createRouteComponent('digital-twin', () => import('./innovation/DigitalTwinSystem'))
 const InventoryManagement = createRouteComponent('inventory-management', () => import('./components/inventory/InventoryManagement'))
 const AdvancedInventoryManagement = createRouteComponent('advanced-inventory', () => import('./components/inventory/AdvancedInventoryManagement'))
 const ProductionTracking = createRouteComponent('production-tracking', () => import('./components/production/ProductionTracking'))
@@ -226,12 +228,8 @@ function App() {
     <AuthProvider {...authProps}>
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <Router>
-              <NavigationProvider>
-                <CommandPaletteProvider>
-                  <ChartProvider>
-                    <AIProvider>
+          <Router>
+            <EnterpriseIntegrationHub>
             <div className="App">
               <Routes>
                 {/* Public Landing Page */}
@@ -466,6 +464,85 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <QualityManagementSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                {/* Enterprise Innovation Routes */}
+                <Route 
+                  path="/maintenance/predictive" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <PredictiveMaintenanceSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/intelligence/manufacturing" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <ManufacturingIntelligence />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/intelligence/quality" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <QualityIntelligence />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/operations/workflow" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WorkflowAutomation />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/compliance/global" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <GlobalComplianceSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/innovation/digital-twin" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <DigitalTwinSystem />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -858,12 +935,8 @@ function App() {
               />
               
                     </div>
-                    </AIProvider>
-                  </ChartProvider>
-                </CommandPaletteProvider>
-              </NavigationProvider>
-            </Router>
-          </ThemeProvider>
+            </EnterpriseIntegrationHub>
+          </Router>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>

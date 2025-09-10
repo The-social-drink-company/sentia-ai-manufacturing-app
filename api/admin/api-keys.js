@@ -36,11 +36,15 @@ const decrypt = (encryptedData) => {
 // Get all API keys for the current organization
 router.get('/', async (req, res) => {
   try {
-    const apiKeys = await prisma.apiKey.findMany({
-      where: {
-        organizationId: req.user?.organizationId || 'default'
-      }
-    });
+    const apiKeys = await dbFallback.execute(
+      async (prisma) => await prisma.apiKey.findMany({
+        where: {
+          organizationId: req.user?.organizationId || 'default'
+        }
+      }),
+      [], // Empty array as fallback
+      `api-keys-${req.user?.organizationId || 'default'}`
+    );
 
     // Decrypt and format keys for frontend
     const formattedKeys = apiKeys.reduce((acc, key) => {
@@ -51,7 +55,7 @@ router.get('/', async (req, res) => {
         acc[key.service][key.keyName] = key.value ? 
           `${key.value.substring(0, 8)}...${key.value.slice(-4)}` : '';
       } catch (error) {
-        console.error('Failed to decrypt key:', error);
+        logError('Failed to decrypt key', { error: error.message });
         acc[key.service][key.keyName] = '';
       }
       
@@ -60,7 +64,7 @@ router.get('/', async (req, res) => {
 
     res.json(formattedKeys);
   } catch (error) {
-    console.error('Failed to fetch API keys:', error);
+    logError('Failed to fetch API keys', { error: error.message });
     res.status(500).json({ error: 'Failed to fetch API keys' });
   }
 });
@@ -78,35 +82,44 @@ router.post('/', async (req, res) => {
     // Encrypt the value
     const encryptedValue = value ? encrypt(value) : null;
 
-    // Upsert the API key
-    await prisma.apiKey.upsert({
-      where: {
-        organizationId_service_keyName: {
+    // Upsert the API key using fallback system
+    const result = await dbFallback.execute(
+      async (prisma) => await prisma.apiKey.upsert({
+        where: {
+          organizationId_service_keyName: {
+            organizationId,
+            service,
+            keyName: key
+          }
+        },
+        update: {
+          value: value || null,
+          encryptedData: encryptedValue ? JSON.stringify(encryptedValue) : null,
+          updatedAt: new Date()
+        },
+        create: {
           organizationId,
           service,
-          keyName: key
+          keyName: key,
+          value: value || null,
+          encryptedData: encryptedValue ? JSON.stringify(encryptedValue) : null
         }
-      },
-      update: {
-        value: value || null,
-        encryptedData: encryptedValue ? JSON.stringify(encryptedValue) : null,
-        updatedAt: new Date()
-      },
-      create: {
-        organizationId,
-        service,
-        keyName: key,
-        value: value || null,
-        encryptedData: encryptedValue ? JSON.stringify(encryptedValue) : null
-      }
-    });
+      }),
+      null,
+      null
+    );
 
-    // Sync with MCP server
-    await syncWithMCPServer();
+    if (result) {
+      // Sync with MCP server only if database operation succeeded
+      await syncWithMCPServer();
+      logInfo('API key saved successfully', { service, key });
+    } else {
+      logWarn('API key save failed - database unavailable', { service, key });
+    }
 
-    res.json({ success: true });
+    res.json({ success: !!result });
   } catch (error) {
-    console.error('Failed to save API key:', error);
+    logError('Failed to save API key', { error: error.message });
     res.status(500).json({ error: 'Failed to save API key' });
   }
 });
@@ -116,10 +129,14 @@ router.get('/status', async (req, res) => {
   try {
     const organizationId = req.user?.organizationId || 'default';
     
-    // Get all API keys
-    const apiKeys = await prisma.apiKey.findMany({
-      where: { organizationId }
-    });
+    // Get all API keys using fallback system
+    const apiKeys = await dbFallback.execute(
+      async (prisma) => await prisma.apiKey.findMany({
+        where: { organizationId }
+      }),
+      [], // Empty array as fallback
+      `api-keys-status-${organizationId}`
+    );
 
     // Group by service
     const serviceKeys = apiKeys.reduce((acc, key) => {
@@ -139,9 +156,13 @@ router.get('/status', async (req, res) => {
       }
     }
 
+    // Add database connection status
+    const dbStatus = dbFallback.getStatus();
+    status['database'] = dbStatus.connected ? 'connected' : 'disconnected';
+
     res.json(status);
   } catch (error) {
-    console.error('Failed to check connection status:', error);
+    logError('Failed to check connection status', { error: error.message });
     res.status(500).json({ error: 'Failed to check connection status' });
   }
 });
@@ -152,10 +173,14 @@ router.post('/test/:service', async (req, res) => {
     const { service } = req.params;
     const organizationId = req.user?.organizationId || 'default';
 
-    // Get service keys
-    const apiKeys = await prisma.apiKey.findMany({
-      where: { organizationId, service }
-    });
+    // Get service keys using fallback system
+    const apiKeys = await dbFallback.execute(
+      async (prisma) => await prisma.apiKey.findMany({
+        where: { organizationId, service }
+      }),
+      [], // Empty array as fallback
+      `api-keys-${service}-${organizationId}`
+    );
 
     const keys = apiKeys.reduce((acc, key) => {
       acc[key.keyName] = key.value;
@@ -165,7 +190,7 @@ router.post('/test/:service', async (req, res) => {
     const status = await testServiceConnection(service, keys);
     res.json({ status, service });
   } catch (error) {
-    console.error(`Failed to test ${req.params.service} connection:`, error);
+    logError(`Failed to test ${req.params.service} connection`, { error: error.message });
     res.status(500).json({ error: 'Connection test failed' });
   }
 });
@@ -346,8 +371,12 @@ async function syncWithMCPServer() {
   try {
     const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:9001';
     
-    // Get all API keys
-    const apiKeys = await prisma.apiKey.findMany();
+    // Get all API keys using fallback system
+    const apiKeys = await dbFallback.execute(
+      async (prisma) => await prisma.apiKey.findMany(),
+      [], // Empty array as fallback
+      'all-api-keys'
+    );
     
     // Format for MCP server
     const envVars = apiKeys.reduce((acc, key) => {
@@ -363,9 +392,9 @@ async function syncWithMCPServer() {
       timeout: 5000
     });
     
-    console.log('✅ API keys synchronized with MCP server');
+    logInfo('API keys synchronized with MCP server');
   } catch (error) {
-    console.error('❌ Failed to sync with MCP server:', error.message);
+    logWarn('Failed to sync with MCP server', { error: error.message });
   }
 }
 

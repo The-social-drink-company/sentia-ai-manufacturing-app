@@ -1,0 +1,386 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "npm ci && npm run build",
+    "watchPatterns": ["src/**", "public/**", "server.js", "mcp-server/**"]
+  },
+  "deploy": {
+    "startCommand": "npm run start:concurrent",
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 30,
+    "restartPolicyType": "on_failure",
+    "restartPolicyMaxRetries": 3
+  },
+  "environments": {
+    "development": {
+      "name": "Sentia Manufacturing Dashboard - Development",
+      "variables": {
+        "NODE_ENV": "development",
+        "PORT": "${{ PORT }}",
+        "MCP_PORT": "9001",
+        "ENABLE_AI_FEATURES": "true",
+        "ENABLE_REAL_TIME_STREAMING": "true",
+        "ENABLE_AUTONOMOUS_MONITORING": "true",
+        "ENABLE_BUSINESS_INTELLIGENCE": "true",
+        "LOG_LEVEL": "debug",
+        "METRICS_COLLECTION_ENABLED": "true",
+        "PERFORMANCE_MONITORING_ENABLED": "true",
+        "ERROR_REPORTING_ENABLED": "true",
+        "FEATURE_FLAGS_ENABLED": "true",
+        "DATABASE_CONNECTION_TIMEOUT": "30000",
+        "DATABASE_POOL_SIZE": "10",
+        "REDIS_CONNECTION_TIMEOUT": "5000",
+        "API_RATE_LIMIT_WINDOW": "900000",
+        "API_RATE_LIMIT_MAX_REQUESTS": "1000",
+        "SESSION_TIMEOUT": "86400000",
+        "JWT_EXPIRATION": "24h",
+        "CORS_ORIGIN": "https://sentia-manufacturing-dashboard-development.up.railway.app",
+        "WEBHOOK_VERIFICATION_ENABLED": "true",
+        "ENCRYPTION_ENABLED": "true",
+        "AUDIT_LOGGING_ENABLED": "true",
+        "BACKUP_ENABLED": "false",
+        "CDN_ENABLED": "false"
+      },
+      "domains": [
+        "sentia-manufacturing-dashboard-development.up.railway.app"
+      ]
+    },
+    "testing": {
+      "name": "Sentia Manufacturing Dashboard - Testing",
+      "variables": {
+        "NODE_ENV": "test",
+        "PORT": "${{ PORT }}",
+        "MCP_PORT": "9001",
+        "ENABLE_AI_FEATURES": "true",
+        "ENABLE_REAL_TIME_STREAMING": "true",
+        "ENABLE_AUTONOMOUS_MONITORING": "true",
+        "ENABLE_BUSINESS_INTELLIGENCE": "true",
+        "LOG_LEVEL": "info",
+        "METRICS_COLLECTION_ENABLED": "true",
+        "PERFORMANCE_MONITORING_ENABLED": "true",
+        "ERROR_REPORTING_ENABLED": "true",
+        "FEATURE_FLAGS_ENABLED": "true",
+        "DATABASE_CONNECTION_TIMEOUT": "30000",
+        "DATABASE_POOL_SIZE": "10",
+        "REDIS_CONNECTION_TIMEOUT": "5000",
+        "API_RATE_LIMIT_WINDOW": "900000",
+        "API_RATE_LIMIT_MAX_REQUESTS": "800",
+        "SESSION_TIMEOUT": "86400000",
+        "JWT_EXPIRATION": "24h",
+        "CORS_ORIGIN": "https://sentiatest.financeflo.ai",
+        "WEBHOOK_VERIFICATION_ENABLED": "true",
+        "ENCRYPTION_ENABLED": "true",
+        "AUDIT_LOGGING_ENABLED": "true",
+        "BACKUP_ENABLED": "true",
+        "CDN_ENABLED": "false"
+      },
+      "domains": [
+        "sentiatest.financeflo.ai"
+      ]
+    },
+    "production": {
+      "name": "Sentia Manufacturing Dashboard - Production",
+      "variables": {
+        "NODE_ENV": "production",
+        "PORT": "${{ PORT }}",
+        "MCP_PORT": "9001",
+        "ENABLE_AI_FEATURES": "true",
+        "ENABLE_REAL_TIME_STREAMING": "true",
+        "ENABLE_AUTONOMOUS_MONITORING": "true",
+        "ENABLE_BUSINESS_INTELLIGENCE": "true",
+        "LOG_LEVEL": "warn",
+        "METRICS_COLLECTION_ENABLED": "true",
+        "PERFORMANCE_MONITORING_ENABLED": "true",
+        "ERROR_REPORTING_ENABLED": "true",
+        "FEATURE_FLAGS_ENABLED": "true",
+        "DATABASE_CONNECTION_TIMEOUT": "30000",
+        "DATABASE_POOL_SIZE": "20",
+        "REDIS_CONNECTION_TIMEOUT": "5000",
+        "API_RATE_LIMIT_WINDOW": "900000",
+        "API_RATE_LIMIT_MAX_REQUESTS": "500",
+        "SESSION_TIMEOUT": "86400000",
+        "JWT_EXPIRATION": "24h",
+        "CORS_ORIGIN": "https://sentia-manufacturing-dashboard-production.up.railway.app",
+        "WEBHOOK_VERIFICATION_ENABLED": "true",
+        "ENCRYPTION_ENABLED": "true",
+        "AUDIT_LOGGING_ENABLED": "true",
+        "BACKUP_ENABLED": "true",
+        "CDN_ENABLED": "true",
+        "COMPRESSION_ENABLED": "true",
+        "CACHING_ENABLED": "true",
+        "MONITORING_ALERTS_ENABLED": "true",
+        "AUTO_SCALING_ENABLED": "true",
+        "PERFORMANCE_BUDGETS_ENABLED": "true"
+      },
+      "domains": [
+        "sentia-manufacturing-dashboard-production.up.railway.app",
+        "web-production-1f10.up.railway.app"
+      ]
+    }
+  },
+  "services": {
+    "web": {
+      "build": {
+        "builder": "nixpacks",
+        "nixpacksConfig": {
+          "phases": {
+            "setup": {
+              "nixPkgs": ["nodejs_18", "npm-9_x"],
+              "aptPkgs": []
+            },
+            "install": {
+              "cmds": [
+                "npm ci --production=false",
+                "npm run db:generate"
+              ]
+            },
+            "build": {
+              "cmds": [
+                "npm run build"
+              ]
+            }
+          },
+          "start": {
+            "cmd": "npm run start:concurrent"
+          }
+        }
+      },
+      "healthcheck": {
+        "path": "/api/health",
+        "timeout": 30
+      },
+      "variables": {
+        "RAILWAY_SERVICE_NAME": "sentia-web",
+        "RAILWAY_SERVICE_TYPE": "web"
+      }
+    },
+    "mcp-server": {
+      "build": {
+        "builder": "nixpacks",
+        "nixpacksConfig": {
+          "phases": {
+            "setup": {
+              "nixPkgs": ["nodejs_18", "npm-9_x"]
+            },
+            "install": {
+              "cmds": [
+                "cd mcp-server && npm ci"
+              ]
+            }
+          },
+          "start": {
+            "cmd": "cd mcp-server && npm start"
+          }
+        }
+      },
+      "healthcheck": {
+        "path": "/health",
+        "timeout": 30
+      },
+      "variables": {
+        "RAILWAY_SERVICE_NAME": "sentia-mcp",
+        "RAILWAY_SERVICE_TYPE": "backend",
+        "PORT": "9001"
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "postgresql",
+      "config": {
+        "version": "15",
+        "extensions": ["uuid-ossp", "pg_stat_statements"]
+      }
+    },
+    {
+      "name": "redis",
+      "config": {
+        "version": "7"
+      }
+    }
+  ],
+  "monitoring": {
+    "enabled": true,
+    "metrics": {
+      "cpu": true,
+      "memory": true,
+      "disk": true,
+      "network": true,
+      "requests": true,
+      "errors": true,
+      "latency": true
+    },
+    "alerts": [
+      {
+        "name": "High CPU Usage",
+        "condition": "cpu > 80",
+        "threshold": 5,
+        "channels": ["email", "webhook"]
+      },
+      {
+        "name": "High Memory Usage",
+        "condition": "memory > 85",
+        "threshold": 5,
+        "channels": ["email", "webhook"]
+      },
+      {
+        "name": "High Error Rate",
+        "condition": "error_rate > 5",
+        "threshold": 2,
+        "channels": ["email", "webhook", "slack"]
+      },
+      {
+        "name": "Database Connection Issues",
+        "condition": "database_connections < 1",
+        "threshold": 1,
+        "channels": ["email", "webhook", "slack", "pager"]
+      },
+      {
+        "name": "Service Unavailable",
+        "condition": "uptime < 99",
+        "threshold": 1,
+        "channels": ["email", "webhook", "slack", "pager"]
+      }
+    ]
+  },
+  "scaling": {
+    "autoscaling": {
+      "enabled": true,
+      "minReplicas": 1,
+      "maxReplicas": 5,
+      "targetCPUUtilization": 70,
+      "targetMemoryUtilization": 80
+    },
+    "resources": {
+      "development": {
+        "cpu": "0.5",
+        "memory": "1Gi",
+        "disk": "2Gi"
+      },
+      "testing": {
+        "cpu": "1",
+        "memory": "2Gi",
+        "disk": "5Gi"
+      },
+      "production": {
+        "cpu": "2",
+        "memory": "4Gi",
+        "disk": "10Gi"
+      }
+    }
+  },
+  "security": {
+    "headers": {
+      "contentSecurityPolicy": {
+        "directives": {
+          "defaultSrc": ["'self'"],
+          "scriptSrc": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https:"],
+          "styleSrc": ["'self'", "'unsafe-inline'", "https:"],
+          "imgSrc": ["'self'", "data:", "https:"],
+          "connectSrc": ["'self'", "wss:", "https:"],
+          "fontSrc": ["'self'", "https:"],
+          "objectSrc": ["'none'"],
+          "mediaSrc": ["'self'"],
+          "frameSrc": ["'none'"]
+        }
+      },
+      "hsts": {
+        "maxAge": 31536000,
+        "includeSubDomains": true,
+        "preload": true
+      },
+      "xContentTypeOptions": "nosniff",
+      "xFrameOptions": "DENY",
+      "xssProtection": "1; mode=block",
+      "referrerPolicy": "strict-origin-when-cross-origin"
+    },
+    "rateLimit": {
+      "windowMs": 900000,
+      "maxRequests": 1000,
+      "skipSuccessfulRequests": false,
+      "skipFailedRequests": false
+    },
+    "cors": {
+      "origin": true,
+      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      "allowedHeaders": ["Content-Type", "Authorization", "x-api-key"],
+      "credentials": true
+    }
+  },
+  "backup": {
+    "enabled": true,
+    "schedule": "0 2 * * *",
+    "retention": {
+      "daily": 7,
+      "weekly": 4,
+      "monthly": 12
+    },
+    "databases": ["postgresql"],
+    "files": [
+      "logs/*.log",
+      "uploads/*"
+    ]
+  },
+  "logging": {
+    "level": "info",
+    "format": "json",
+    "outputs": ["console", "file"],
+    "rotation": {
+      "maxSize": "10MB",
+      "maxFiles": 5,
+      "datePattern": "YYYY-MM-DD"
+    },
+    "structuredLogging": true,
+    "requestLogging": true,
+    "errorTracking": true
+  },
+  "performance": {
+    "compression": true,
+    "caching": {
+      "enabled": true,
+      "ttl": 300,
+      "maxSize": "100MB"
+    },
+    "cdn": {
+      "enabled": true,
+      "provider": "cloudflare"
+    },
+    "optimization": {
+      "minification": true,
+      "bundling": true,
+      "imageOptimization": true,
+      "lazy_loading": true
+    }
+  },
+  "testing": {
+    "enabled": true,
+    "types": ["unit", "integration", "e2e"],
+    "coverage": {
+      "threshold": 80,
+      "reports": ["text", "html", "lcov"]
+    },
+    "ci_cd": {
+      "enabled": true,
+      "on_pull_request": true,
+      "on_push": true,
+      "environments": ["testing"]
+    }
+  },
+  "documentation": {
+    "api": {
+      "enabled": true,
+      "format": "openapi",
+      "path": "/api/docs"
+    },
+    "health_check": {
+      "enabled": true,
+      "path": "/api/health",
+      "detailed": true
+    },
+    "status_page": {
+      "enabled": true,
+      "path": "/status"
+    }
+  }
+}

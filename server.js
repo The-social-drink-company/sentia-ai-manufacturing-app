@@ -4538,6 +4538,10 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
 import apiKeyRoutes from './api/admin/api-keys.js';
 app.use('/api/admin/api-keys', apiKeyRoutes);
 
+// Import and use Comprehensive Health Monitoring routes
+import comprehensiveHealthRoutes from './api/health/comprehensive-health.js';
+app.use('/api/health', comprehensiveHealthRoutes);
+
 // Enterprise Manufacturing APIs - IMMEDIATELY IMPLEMENT MISSING ENDPOINTS
 
 // Demand Forecasting API

@@ -69,31 +69,8 @@ class APIIntegrationManager {
         authType: 'apikey',
         healthEndpoint: '/health',
         priority: 3
-      },
-      stripe: {
-        name: 'Stripe Payments',
-        baseUrl: 'https://api.stripe.com/v1',
-        requiredEnvVars: ['STRIPE_SECRET_KEY'],
-        authType: 'bearer',
-        healthEndpoint: '/balance',
-        priority: 3
-      },
-      sendgrid: {
-        name: 'SendGrid Email',
-        baseUrl: 'https://api.sendgrid.com/v3',
-        requiredEnvVars: ['SENDGRID_API_KEY'],
-        authType: 'bearer',
-        healthEndpoint: '/user/profile',
-        priority: 3
-      },
-      twilio: {
-        name: 'Twilio SMS',
-        baseUrl: 'https://api.twilio.com/2010-04-01',
-        requiredEnvVars: ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN'],
-        authType: 'basic',
-        healthEndpoint: '/Accounts/{AccountSid}.json',
-        priority: 3
       }
+      // Removed Stripe, SendGrid, and Twilio - not needed for manufacturing dashboard
     };
   }
 
@@ -203,16 +180,7 @@ class APIIntegrationManager {
       case 'anthropic':
         creds.apiKey = process.env.ANTHROPIC_API_KEY;
         break;
-      case 'stripe':
-        creds.secretKey = process.env.STRIPE_SECRET_KEY;
-        break;
-      case 'sendgrid':
-        creds.apiKey = process.env.SENDGRID_API_KEY;
-        break;
-      case 'twilio':
-        creds.accountSid = process.env.TWILIO_ACCOUNT_SID;
-        creds.authToken = process.env.TWILIO_AUTH_TOKEN;
-        break;
+      // Removed Stripe, SendGrid, and Twilio cases - not needed
       default:
         creds.apiKey = process.env[`${serviceId.toUpperCase()}_API_KEY`];
     }

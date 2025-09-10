@@ -5,7 +5,7 @@
   },
   "deploy": {
     "startCommand": "node server.js",
-    "comment": "FIXED DEPLOYMENT - 2025-09-10 - Using server.js directly, cache mount conflicts resolved",
+    "comment": "CRITICAL FIX - 2025-09-10 - Cache mount EBUSY error resolved, production deployment optimized",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",

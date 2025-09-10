@@ -5,15 +5,12 @@ nixPkgs = ['nodejs_20']
 cmds = ['npm ci --production=false']
 
 [phases.build] 
-cmds = [
-  'npm run build'
-]
+cmds = ['FORCE_COLOR=0 npm run build']
 
 [phases.start]
 cmd = 'node server.js'
 
 [variables]
-NODE_ENV = 'production'
+NODE_ENV = 'development'
 PORT = '$PORT'
-MCP_PORT = '9001'
-RAILWAY_ENVIRONMENT = 'production'
+RAILWAY_ENVIRONMENT = 'development'

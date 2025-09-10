@@ -10,20 +10,20 @@ class RailwayMCPService {
     this.baseUrl = this.getRailwayMCPUrl();
     this.timeout = 10000; // 10 second timeout
     this.retries = 3;
+    this.token = (process.env.MCP_SERVER_TOKEN || process.env.RAILWAY_MCP_TOKEN || '').trim();
   }
 
   getRailwayMCPUrl() {
-    const environment = process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development';
-    
-    switch (environment) {
-      case 'production':
-        return 'https://sentia-mcp-server-production.up.railway.app';
-      case 'testing':
-        return 'https://sentia-mcp-server-testing.up.railway.app';
-      case 'development':
-      default:
-        return 'https://sentia-mcp-server-development.up.railway.app';
+    // Highest priority: explicit override
+    if (process.env.MCP_SERVER_URL && process.env.MCP_SERVER_URL.trim().length > 0) {
+      return process.env.MCP_SERVER_URL.trim();
     }
+
+    const envName = (process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development').toLowerCase();
+
+    if (envName.includes('prod')) return 'https://sentia-mcp-server-production.up.railway.app';
+    if (envName.includes('test')) return 'https://sentia-mcp-server-testing.up.railway.app';
+    return 'https://sentia-mcp-server-development.up.railway.app';
   }
 
   async healthCheck() {
@@ -125,6 +125,11 @@ class RailwayMCPService {
           },
           signal: controller.signal
         };
+
+        // Attach auth token if provided
+        if (this.token) {
+          options.headers.Authorization = `Bearer ${this.token}`;
+        }
 
         if (body && method !== 'GET') {
           options.body = JSON.stringify(body);

@@ -1343,7 +1343,7 @@ app.get('/api/services/status', authenticateUser, async (req, res) => {
 app.get('/api/mcp/status', async (req, res) => {
   try {
     // Check if MCP server is running
-    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:3001';
+    const mcpServerUrl = process.env.MCP_SERVER_URL;
     
     let mcpStatus = null;
     let aiSystemStatus = null;
@@ -1406,7 +1406,7 @@ app.get('/api/mcp/status', async (req, res) => {
 app.get('/api/ai/system/status', async (req, res) => {
   try {
     // Check AI Central Nervous System status
-    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:3001';
+    const mcpServerUrl = process.env.MCP_SERVER_URL;
     
     let aiSystemStatus = null;
     try {
@@ -1450,7 +1450,7 @@ app.get('/api/ai/system/status', async (req, res) => {
 app.get('/api/integrations/status', async (req, res) => {
   try {
     // Check unified API interface status
-    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:3001';
+    const mcpServerUrl = process.env.MCP_SERVER_URL;
     
     let integrationStatus = null;
     try {
@@ -5155,9 +5155,7 @@ app.post('/api/mcp/sync', async (req, res) => {
 // MCP Server diagnostics endpoint
 app.get('/api/mcp/diagnostics', async (req, res) => {
   try {
-    const mcpServerUrl = process.env.NODE_ENV === 'production' 
-      ? 'http://localhost:3001'  // MCP server runs on port 3001 in same Railway container
-      : 'http://localhost:3001';  // Local MCP server on port 3001
+    const mcpServerUrl = process.env.MCP_SERVER_URL;
 
     // Test connectivity to MCP server
     const healthEndpoint = `${mcpServerUrl}/health`;
@@ -5205,10 +5203,8 @@ app.post('/api/mcp/ai/chat', async (req, res) => {
       context: req.body?.context 
     });
 
-    // Determine MCP server endpoint based on environment
-    const mcpServerUrl = process.env.NODE_ENV === 'production' 
-      ? 'http://localhost:3001'  // MCP server runs on port 3001 in same Railway container
-      : 'http://localhost:3001';  // Local MCP server on port 3001
+    // Determine MCP server endpoint from environment
+    const mcpServerUrl = process.env.MCP_SERVER_URL;
 
     const mcpEndpoint = `${mcpServerUrl}/ai/chat`;
     

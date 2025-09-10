@@ -18,17 +18,3 @@ cmds = [
 
 [phases.start]
 cmd = "node server.js"
-
-[phases.install]
-cmds = ['npm ci --omit=dev']
-
-[phases.build]
-cmds = ['npm run build']
-
-[phases.start]
-cmd = 'node server.js'
-
-[variables]
-NODE_ENV = 'production'
-PORT = '$PORT'
-RAILWAY_ENVIRONMENT = 'production'

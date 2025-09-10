@@ -28,7 +28,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { useUser, UserButton, SignOutButton } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
-import ThemeSelector from '../ui/ThemeSelector'
+import { ThemeToggle } from '../../theming'
 import { useSSE } from '../../hooks/useSSE'
 import { useFeatureFlags } from '../../hooks/useFeatureFlags.jsx'
 import { cn } from '../../lib/utils'
@@ -636,8 +636,8 @@ const Header = () => {
                 size="md"
               />
               
-              {/* Theme Selector */}
-              <ThemeSelector variant="compact" size="medium" />
+              {/* Theme Toggle */}
+              <ThemeToggle variant="secondary" size="md" />
               
               {hasPermission('workingcapital.analyze') && (
                 <QuickActionButton

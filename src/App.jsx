@@ -8,7 +8,11 @@ import { Toaster } from 'react-hot-toast'
 import './index.css'
 import './styles/themes.css'
 import './styles/landing.css'
-import ThemeProvider from './components/ui/ThemeProvider'
+import './styles/theme-system.css'
+import { ThemeProvider } from './theming'
+import { NavigationProvider } from './navigation'
+import { CommandPaletteProvider } from './components/CommandPalette'
+import { ChartProvider } from './charts'
 import { logInfo, logWarn } from './services/observability/structuredLogger.js'
 
 // Import Chart.js setup early to ensure registration
@@ -223,6 +227,9 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             <Router>
+              <NavigationProvider>
+                <CommandPaletteProvider>
+                  <ChartProvider>
             <div className="App">
               <Routes>
                 {/* Public Landing Page */}
@@ -848,7 +855,10 @@ function App() {
                 }}
               />
               
-            </div>
+                  </div>
+                  </ChartProvider>
+                </CommandPaletteProvider>
+              </NavigationProvider>
             </Router>
           </ThemeProvider>
           <ReactQueryDevtools initialIsOpen={false} />

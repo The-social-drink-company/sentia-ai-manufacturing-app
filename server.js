@@ -304,21 +304,24 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYM
   }
 })();
 
-// Middleware
+// Import enterprise security middleware
+// import securityMiddleware from './src/middleware/securityMiddleware.js';
+
+// Basic security middleware for now (enterprise security will be added in next phase)
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:9000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
+  origin: ['http://localhost:3000', 'http://localhost:9000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app', 'https://sentia-manufacturing-dashboard-development.up.railway.app', 'https://sentiatest.financeflo.ai', 'https://sentia-manufacturing-dashboard-production.up.railway.app'],
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Security headers middleware (required by self-healing agent)
+// Basic security headers
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:;");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; connect-src 'self' https: wss:; font-src 'self' https: data:;");
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 });

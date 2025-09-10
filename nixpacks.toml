@@ -1,4 +1,3 @@
-# Railway Nixpacks Configuration - FINAL VERSION
 [phases.setup]
 nixPkgs = ['nodejs_23']
 
@@ -11,7 +10,5 @@ cmds = ['npm run build']
 [phases.start]
 cmd = 'node server.js'
 
-# IMPORTANT: NODE_ENV is set by Railway environment variables
-# Do NOT override NODE_ENV here - let Railway control it per environment
 [variables]
 PORT = '$PORT'

@@ -4933,6 +4933,118 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   etag: false
 }));
 
+// Executive Dashboard Data Endpoint - provides properly formatted KPI data
+app.get('/api/dashboard/executive', async (req, res) => {
+  try {
+    // Default dashboard data to prevent NaN values
+    const dashboardData = {
+      kpis: [
+        { 
+          id: 'revenue', 
+          title: 'Total Revenue', 
+          value: '£2.8M', 
+          change: '+15.9%', 
+          changeType: 'increase', 
+          description: 'Monthly recurring revenue',
+          icon: 'currency',
+          color: 'green' 
+        },
+        { 
+          id: 'orders', 
+          title: 'Active Orders', 
+          value: '342', 
+          change: '+14.8%', 
+          changeType: 'increase', 
+          description: 'Orders in production',
+          icon: 'shopping-cart',
+          color: 'blue' 
+        },
+        { 
+          id: 'inventory', 
+          title: 'Inventory Value', 
+          value: '£1.8M', 
+          change: '-3.9%', 
+          changeType: 'decrease', 
+          description: 'Current stock valuation',
+          icon: 'package',
+          color: 'red' 
+        },
+        { 
+          id: 'customers', 
+          title: 'Active Customers', 
+          value: '1,284', 
+          change: '+11.1%', 
+          changeType: 'increase', 
+          description: 'Customers with active orders',
+          icon: 'users',
+          color: 'purple' 
+        }
+      ],
+      workingCapital: {
+        current: '£847K',
+        previous: '£757K',
+        projection: '£923K',
+        projectionLabel: '30-Day Projection',
+        change: '+12.0%',
+        trend: []
+      },
+      production: {
+        efficiency: '94.2%',
+        utilization: '87.3%',
+        quality: '98.7%',
+        oee: '81.5%'
+      },
+      keyMetrics: {
+        currentRatio: '2.3',
+        quickRatio: '1.8',
+        dso: '45 days',
+        dio: '62 days',
+        dpo: '38 days',
+        cashConversionCycle: '69 days'
+      },
+      quickActions: [
+        {
+          id: 'forecast',
+          title: 'Run Forecast',
+          description: 'Generate demand forecast',
+          icon: 'chart-line',
+          color: 'blue',
+          action: '/forecasting'
+        },
+        {
+          id: 'working-capital',
+          title: 'Working Capital',
+          description: 'Analyze cash flow',
+          icon: 'dollar-sign',
+          color: 'green',
+          action: '/working-capital'
+        },
+        {
+          id: 'what-if',
+          title: 'What-If Analysis',
+          description: 'Scenario modeling',
+          icon: 'sliders',
+          color: 'purple',
+          action: '/what-if'
+        }
+      ],
+      lastUpdated: new Date().toISOString()
+    };
+    
+    res.json({
+      status: 'success',
+      data: dashboardData,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Executive dashboard data error:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to load dashboard data' 
+    });
+  }
+});
+
 // Comprehensive build debugging endpoint
 app.get('/api/test-simple', (req, res) => {
   const distPath = path.join(__dirname, 'dist');

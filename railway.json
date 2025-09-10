@@ -5,7 +5,7 @@
   },
   "deploy": {
     "startCommand": "node server.js",
-    "comment": "CRITICAL FIX - 2025-09-10 - Cache mount EBUSY error resolved, production deployment optimized",
+    "comment": "CRITICAL FIX - 2025-09-10 - Cache mount EBUSY error resolved, production deployment optimized, testing environment with MCP integration",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",

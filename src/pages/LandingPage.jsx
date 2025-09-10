@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '@clerk/clerk-react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ChartBarIcon, 
@@ -14,8 +13,6 @@ import {
 } from '@heroicons/react/24/outline'
 
 const LandingPage = () => {
-  const { isSignedIn } = useAuth()
-  const navigate = useNavigate()
   const [scrollY, setScrollY] = useState(0)
 
   // Handle scroll for parallax effects
@@ -27,13 +24,6 @@ const LandingPage = () => {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
-
-  // Redirect signed-in users to dashboard
-  useEffect(() => {
-    if (isSignedIn) {
-      navigate('/dashboard')
-    }
-  }, [isSignedIn, navigate])
 
   const features = [
     {

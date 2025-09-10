@@ -55,9 +55,40 @@
     <div class="container">
         <h1>SENTIA</h1>
         <h2>Manufacturing Intelligence Platform</h2>
-        <p>✅ React App is Working! If you can see this styled page, the server is running correctly.</p>
+        <p>🔧 Debug Mode - Testing React App Issues</p>
+        <div id="debug-info" style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: left;">
+            <h3>Debug Information:</h3>
+            <div id="debug-content">Loading...</div>
+        </div>
         <a href="/" class="button">Back to React App</a>
         <p><small>Test Page - Server Status: ✅ Online</small></p>
     </div>
+    
+    <script>
+        // Debug script to test what's working
+        document.addEventListener('DOMContentLoaded', function() {
+            const debugContent = document.getElementById('debug-content');
+            
+            let debugInfo = `
+                <p><strong>✅ JavaScript Working:</strong> Yes</p>
+                <p><strong>Current URL:</strong> ${window.location.href}</p>
+                <p><strong>React Root Element:</strong> ${document.getElementById('root') ? '✅ Found' : '❌ Missing'}</p>
+                <p><strong>Total Scripts:</strong> ${document.scripts.length}</p>
+                <p><strong>Window Location:</strong> ${window.location.pathname}</p>
+            `;
+            
+            // Test API connection
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => {
+                    debugInfo += `<p><strong>✅ API Health:</strong> ${data.status} (${data.environment})</p>`;
+                    debugContent.innerHTML = debugInfo;
+                })
+                .catch(error => {
+                    debugInfo += `<p><strong>❌ API Error:</strong> ${error.message}</p>`;
+                    debugContent.innerHTML = debugInfo;
+                });
+        });
+    </script>
 </body>
 </html>

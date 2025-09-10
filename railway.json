@@ -4,8 +4,8 @@
     "buildCommand": "npm run build"
   },
   "deploy": {
-    "startCommand": "npm start",
-    "comment": "FORCE PRODUCTION DEPLOY - 2025-09-09-17:18 - Using npm start to run server.js",
+    "startCommand": "node start-production.js",
+    "comment": "FORCE PRODUCTION DEPLOY - 2025-09-09-17:18 - Using start-production.js for proper process management",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",

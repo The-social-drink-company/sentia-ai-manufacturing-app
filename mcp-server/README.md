@@ -254,4 +254,7 @@ For issues or questions:
 
 ## License
 
+---
+**Last MCP Server Restart**: Tuesday, September 10, 2025 - 7:10 AM GMT
+
 MIT - Sentia Manufacturing Dashboard

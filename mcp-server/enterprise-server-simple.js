@@ -22,12 +22,16 @@ import winston from 'winston';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import compression from 'compression';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const compression = require('compression');
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import AICentralNervousSystem from './ai-orchestration/ai-central-nervous-system.js';
 import UnifiedAPIInterface from './api-integrations/unified-api-interface.js';
+import { SENTIA_KNOWLEDGE_BASE, SentiaKnowledgeRetrieval } from './knowledge-base/sentia-manufacturing-knowledge.js';
+import InteractionLearningSystem from './knowledge-base/interaction-learning-system.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,6 +80,10 @@ class SentiaEnterpriseMCPServer {
     
     // Initialize Unified API Interface
     this.unifiedAPIInterface = new UnifiedAPIInterface();
+    
+    // Initialize Interaction Learning System
+    this.learningSystem = new InteractionLearningSystem();
+    this.learningSystem.startPeriodicSaving(5); // Save learning data every 5 minutes
     
     this.setupMiddleware();
     this.initializeTools();
@@ -1022,6 +1030,21 @@ class SentiaEnterpriseMCPServer {
 
   // HTTP endpoints setup
   setupHTTPEndpoints() {
+    // Root endpoint
+    this.app.get('/', (req, res) => {
+      res.json({
+        service: 'Sentia Enterprise MCP Server',
+        version: SERVER_VERSION,
+        protocol: MCP_PROTOCOL_VERSION,
+        status: 'running',
+        endpoints: {
+          health: '/health',
+          info: '/mcp/info',
+          chat: '/ai/chat'
+        }
+      });
+    });
+
     // Health check endpoint
     this.app.get('/health', (req, res) => {
       res.status(200).json({
@@ -1093,6 +1116,28 @@ class SentiaEnterpriseMCPServer {
       }
     });
 
+    // MCP Initialize endpoint for HTTP clients
+    this.app.post('/mcp/initialize', async (req, res) => {
+      try {
+        const result = await this.handleInitialize(req.body);
+        res.json({
+          jsonrpc: '2.0',
+          id: req.body.id || null,
+          result
+        });
+      } catch (error) {
+        logger.error('HTTP MCP initialization error:', error);
+        res.status(500).json({ 
+          jsonrpc: '2.0',
+          id: req.body.id || null,
+          error: {
+            code: -32603,
+            message: error.message
+          }
+        });
+      }
+    });
+
     // WebSocket endpoint info
     this.app.get('/mcp/ws', (req, res) => {
       res.json({
@@ -1146,6 +1191,183 @@ class SentiaEnterpriseMCPServer {
       }
     });
 
+    // Admin API sync endpoint for environment variables
+    this.app.post('/admin/sync-env', (req, res) => {
+      try {
+        const { variables } = req.body;
+        
+        if (!variables || typeof variables !== 'object') {
+          return res.status(400).json({ error: 'Invalid variables format' });
+        }
+
+        // Update process environment with new API keys
+        Object.entries(variables).forEach(([key, value]) => {
+          if (value && typeof value === 'string') {
+            process.env[key] = value;
+          }
+        });
+
+        // Log the sync for monitoring
+        logger.info('API keys synchronized from admin portal', {
+          keyCount: Object.keys(variables).length,
+          keys: Object.keys(variables),
+          timestamp: new Date().toISOString()
+        });
+
+        // Trigger service reconnection if needed
+        if (this.unifiedAPI) {
+          this.unifiedAPI.refreshConnections();
+        }
+
+        res.json({ 
+          success: true, 
+          message: 'Environment variables synchronized successfully',
+          keyCount: Object.keys(variables).length
+        });
+        
+      } catch (error) {
+        logger.error('Failed to sync environment variables', error);
+        res.status(500).json({ error: 'Failed to sync environment variables' });
+      }
+    });
+
+    // AI Support Chatbot endpoint
+    this.app.post('/ai/chat', async (req, res) => {
+      try {
+        const { message, context, conversation_history } = req.body;
+        
+        if (!message || typeof message !== 'string') {
+          return res.status(400).json({ 
+            error: 'Message is required and must be a string' 
+          });
+        }
+
+        logger.info('AI Chatbot request received', { 
+          message: message.substring(0, 100),
+          context,
+          history_length: conversation_history?.length || 0
+        });
+
+        // Search knowledge base for relevant information
+        const knowledgeResults = SentiaKnowledgeRetrieval.searchKnowledge(message);
+        
+        // Get contextual information based on message content
+        let contextualInfo = '';
+        const lowerMessage = message.toLowerCase();
+        
+        if (lowerMessage.includes('inventory') || lowerMessage.includes('stock')) {
+          const inventoryInfo = SentiaKnowledgeRetrieval.getFeatureInfo('inventory');
+          contextualInfo += `\n\nInventory Management Context:\n${JSON.stringify(inventoryInfo, null, 2)}`;
+        }
+        
+        if (lowerMessage.includes('forecast') || lowerMessage.includes('demand')) {
+          const forecastingInfo = SentiaKnowledgeRetrieval.getFeatureInfo('forecasting');
+          contextualInfo += `\n\nForecasting Context:\n${JSON.stringify(forecastingInfo, null, 2)}`;
+        }
+        
+        if (lowerMessage.includes('working capital') || lowerMessage.includes('cash flow') || lowerMessage.includes('financial')) {
+          const workingCapitalInfo = SentiaKnowledgeRetrieval.getFeatureInfo('workingCapital');
+          contextualInfo += `\n\nWorking Capital Context:\n${JSON.stringify(workingCapitalInfo, null, 2)}`;
+        }
+        
+        if (lowerMessage.includes('onboard') || lowerMessage.includes('getting started') || lowerMessage.includes('new user')) {
+          const onboardingSteps = SentiaKnowledgeRetrieval.getOnboardingSteps();
+          contextualInfo += `\n\nOnboarding Steps:\n${JSON.stringify(onboardingSteps, null, 2)}`;
+        }
+        
+        // Check for troubleshooting requests
+        for (const issue of SENTIA_KNOWLEDGE_BASE.troubleshooting.commonIssues) {
+          if (lowerMessage.includes(issue.issue.toLowerCase().split(' ')[0])) {
+            const troubleshootingHelp = SentiaKnowledgeRetrieval.getTroubleshootingHelp(message);
+            if (troubleshootingHelp) {
+              contextualInfo += `\n\nTroubleshooting Help:\n${JSON.stringify(troubleshootingHelp, null, 2)}`;
+            }
+            break;
+          }
+        }
+
+        // Prepare enhanced system prompt with knowledge base context
+        const systemPrompt = `You are the official AI Support Assistant for Sentia Manufacturing Dashboard with access to comprehensive domain knowledge.
+
+Your role is to:
+- Provide expert support and onboarding for Sentia Manufacturing software users
+- Answer questions about software features, business processes, and manufacturing workflows
+- Help users navigate the dashboard, understand reports, and optimize their operations
+- Educate users on best practices for manufacturing, inventory, forecasting, and financial management
+- Provide 24/7 support with friendly, professional, and knowledgeable assistance
+- Use specific knowledge from the Sentia knowledge base to provide accurate, detailed responses
+
+Platform Overview:
+- Enterprise manufacturing management platform with AI-powered analytics
+- Multi-LLM AI Central Nervous System (Claude 3.5 Sonnet, GPT-4 Turbo, Gemini Pro)
+- Real-time integrations: Xero, Shopify, Amazon SP-API, Unleashed Software
+- Advanced forecasting with 95% accuracy for short-term predictions
+- Working capital optimization and cash flow management
+- Production tracking with OEE monitoring and quality control
+
+Navigation:
+- Main sections: Overview, Planning & Analytics, Financial Management, Data Management, Administration
+- Keyboard shortcuts available (G+O for Overview, G+F for Forecasting, etc.)
+- Role-based access control with different permission levels
+
+Current user context: ${context || 'general_support'}
+
+${contextualInfo ? `\nRelevant Knowledge Base Information:${contextualInfo}` : ''}
+
+Always provide specific, actionable advice based on Sentia's actual capabilities and features. Reference specific page names, features, and workflows when helpful.`;
+
+        // Process through AI Central Nervous System if available
+        let aiResponse;
+        if (this.aiCentralNervousSystem) {
+          try {
+            aiResponse = await this.aiCentralNervousSystem.processRequest({
+              query: message,
+              type: 'support_chat',
+              systemPrompt,
+              conversationHistory: conversation_history,
+              capabilities: ['reasoning', 'manufacturing-intelligence', 'support']
+            });
+          } catch (aiError) {
+            logger.error('AI Central Nervous System error:', aiError);
+            // Fallback to simple response
+            aiResponse = null;
+          }
+        }
+
+        // Generate appropriate response
+        const response = aiResponse?.response || this.generateFallbackResponse(message, context);
+        
+        // Store interaction in learning system for knowledge base building
+        const interactionData = {
+          user_message: message,
+          ai_response: response,
+          context,
+          timestamp: new Date().toISOString(),
+          session_id: req.headers['x-session-id'] || 'anonymous',
+          conversation_history: conversation_history || []
+        };
+
+        // Use learning system instead of simple logging
+        await this.learningSystem.storeInteraction(interactionData);
+
+        res.json({
+          response,
+          context: context || 'sentia_support',
+          ai_provider: aiResponse?.provider || 'fallback',
+          confidence: aiResponse?.confidence || 0.8,
+          timestamp: new Date().toISOString(),
+          capabilities_used: aiResponse?.capabilities || ['support', 'knowledge-base']
+        });
+
+      } catch (error) {
+        logger.error('AI Chatbot error:', error);
+        res.status(500).json({ 
+          error: 'I apologize, but I encountered a technical issue. Please try again or contact support if the problem persists.',
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
+
     // Manufacturing insights demo endpoint
     this.app.get('/demo/inventory-insight', (req, res) => {
       res.json({
@@ -1161,6 +1383,26 @@ class SentiaEnterpriseMCPServer {
         },
         timestamp: new Date().toISOString()
       });
+    });
+
+    // Chatbot analytics endpoint
+    this.app.get('/ai/analytics', (req, res) => {
+      try {
+        const analytics = this.learningSystem.getAnalytics();
+        res.json({
+          chatbot_analytics: analytics,
+          learning_system: {
+            status: 'operational',
+            patterns_learned: analytics.learning_patterns_count,
+            total_interactions: analytics.total_interactions,
+            active_learning: true
+          },
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        logger.error('Failed to get chatbot analytics:', error);
+        res.status(500).json({ error: 'Failed to retrieve analytics' });
+      }
     });
 
     // Root endpoint
@@ -1184,7 +1426,7 @@ class SentiaEnterpriseMCPServer {
 
   // Server lifecycle
   async start() {
-    const port = process.env.PORT || 9001;
+    const port = process.env.PORT || process.env.MCP_PORT || 9001;
     
     // Setup HTTP endpoints
     this.setupHTTPEndpoints();
@@ -1199,9 +1441,23 @@ class SentiaEnterpriseMCPServer {
         endpoints: {
           http: `http://localhost:${port}`,
           websocket: `ws://localhost:${port}/mcp/ws`,
-          health: `http://localhost:${port}/health`
+          health: `http://localhost:${port}/health`,
+          chatbot: `http://localhost:${port}/ai/chat`
+        },
+        ai_systems: {
+          central_nervous_system: this.aiCentralNervousSystem ? 'Active' : 'Inactive',
+          learning_system: this.learningSystem ? 'Active' : 'Inactive',
+          knowledge_base: 'Loaded'
         },
         timestamp: new Date().toISOString()
+      });
+      
+      // Additional log for chatbot readiness
+      logger.info('🤖 AI Chatbot endpoint ready for connections', {
+        endpoint: `/ai/chat`,
+        knowledge_base: 'Sentia Manufacturing Domain',
+        learning_enabled: true,
+        fallback_responses: 'Available'
       });
     });
   }
@@ -1231,6 +1487,134 @@ class SentiaEnterpriseMCPServer {
     
     logger.info('Enterprise MCP Server shutdown complete');
   }
+
+  // Helper method to generate fallback responses for chatbot
+  generateFallbackResponse(message, context) {
+    const lowerMessage = message.toLowerCase();
+    
+    // Greetings and basic interactions
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('help')) {
+      return `Hello! I'm your Sentia Manufacturing AI Assistant. I'm here to help you with:
+
+• Software navigation and features
+• Manufacturing best practices
+• Inventory and demand forecasting
+• Financial management and working capital
+• Production optimization and quality control
+• Data import and integration questions
+
+What would you like to learn about today?`;
+    }
+
+    // Dashboard and navigation help
+    if (lowerMessage.includes('dashboard') || lowerMessage.includes('navigate') || lowerMessage.includes('menu')) {
+      return `I can help you navigate the Sentia Manufacturing Dashboard:
+
+**Main Sections:**
+• **Overview**: Main dashboard with KPIs and real-time monitoring
+• **Planning & Analytics**: Forecasting, inventory management, production tracking
+• **Financial Management**: Working capital, what-if analysis, financial reports  
+• **Data Management**: Import data, templates, and API integrations
+• **Administration**: User management, system configuration, and settings
+
+**Quick Navigation Tips:**
+• Click the Sentia logo to return to the main dashboard
+• Use keyboard shortcuts (G+O for Overview, G+F for Forecasting, etc.)
+• The sidebar shows all available modules based on your permissions
+
+Would you like help with a specific section?`;
+    }
+
+    // Working capital help
+    if (lowerMessage.includes('working capital') || lowerMessage.includes('cash flow') || lowerMessage.includes('financial')) {
+      return `The Working Capital module helps you optimize your cash flow:
+
+**Key Features:**
+• Real-time cash flow monitoring and forecasting
+• Accounts receivable and payable management
+• Working capital optimization recommendations
+• Integration with Xero for live financial data
+• Cash conversion cycle analysis
+
+**Best Practices:**
+• Monitor your cash conversion cycle weekly
+• Set up automated AR/AP aging reports
+• Use predictive analytics for cash flow planning
+• Review working capital ratios monthly
+
+Would you like help with a specific financial metric or report?`;
+    }
+
+    // Inventory and forecasting
+    if (lowerMessage.includes('inventory') || lowerMessage.includes('forecast') || lowerMessage.includes('demand')) {
+      return `Our AI-powered inventory and forecasting tools help optimize your stock levels:
+
+**Inventory Management:**
+• Real-time stock level monitoring
+• Automated reorder point calculations
+• ABC analysis for inventory prioritization
+• Integration with Amazon SP-API and Shopify
+
+**Demand Forecasting:**
+• Machine learning algorithms for accurate predictions
+• Seasonal trend analysis
+• External factor integration (weather, events, etc.)
+• What-if scenario modeling
+
+**Best Practices:**
+• Review forecasts weekly and adjust for market changes
+• Use safety stock calculations for critical items
+• Monitor forecast accuracy and continuously improve models
+
+What specific inventory challenge can I help you solve?`;
+    }
+
+    // Data import and integration
+    if (lowerMessage.includes('import') || lowerMessage.includes('data') || lowerMessage.includes('integration')) {
+      return `Sentia supports multiple data import and integration methods:
+
+**Import Options:**
+• Excel/CSV file uploads with validation
+• API integrations (Xero, Shopify, Amazon SP-API)
+• Real-time data sync and automated imports
+• Custom data templates and mapping
+
+**Supported Data Types:**
+• Financial data (transactions, invoices, payments)
+• Inventory data (stock levels, movements, SKUs)
+• Sales data (orders, customers, products)
+• Production data (jobs, resources, quality metrics)
+
+**Integration Best Practices:**
+• Use our templates to ensure proper data formatting
+• Set up automated sync schedules for real-time updates
+• Validate data quality before importing
+• Monitor integration logs for errors
+
+Need help with a specific data import or integration?`;
+    }
+
+    // General support response
+    return `I'm here to help you get the most out of Sentia Manufacturing Dashboard. 
+
+**Common Topics I Can Help With:**
+• Navigation and software features
+• Manufacturing workflows and best practices  
+• Financial management and working capital optimization
+• Inventory management and demand forecasting
+• Data imports and system integrations
+• Quality control and production tracking
+• Report generation and analytics
+
+**Getting Started Tips:**
+• Explore the main dashboard for an overview of your operations
+• Check out the What-If Analysis tool for scenario planning
+• Set up your data integrations for real-time insights
+• Use the financial reports for monthly business reviews
+
+Feel free to ask me specific questions about any of these topics or anything else related to your manufacturing operations!`;
+  }
+
 }
 
 // Error handling

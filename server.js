@@ -46,6 +46,11 @@ import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
 // Import MCP Orchestrator for Anthropic Model Context Protocol integration
 import MCPOrchestrator from './services/mcp/mcpOrchestrator.js';
+// Import AI Central Nervous System for data analysis
+import AICentralNervousSystem from './mcp-server/ai-orchestration/ai-central-nervous-system.js';
+// Import Enterprise Error Handling and Process Management
+import { errorHandler, expressErrorMiddleware, asyncHandler } from './services/enterprise/errorHandler.js';
+import { processManager } from './services/enterprise/processManager.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -54,11 +59,91 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5000;
+
+// Enable enterprise process management and resource monitoring
+processManager.monitorResources();
+
+// Add enterprise error handling middleware early in the stack
+app.use(expressErrorMiddleware);
+
+// MCP server is handled by start-production.js in Railway production
+// This prevents duplicate MCP server processes and port conflicts
+if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
+  console.log('🤖 MCP server managed by production startup script (start-production.js)');
+} else if (process.env.NODE_ENV !== 'production') {
+  console.log('🤖 MCP server should be started separately in development mode');
+  console.log('💡 Run: cd mcp-server && npm start');
+}
+
 // Server restarted
 
 // Initialize Enterprise MCP Orchestrator for Anthropic Model Context Protocol
 const mcpOrchestrator = new MCPOrchestrator();
+
+// Initialize AI Central Nervous System
+const aiCentralNervousSystem = new AICentralNervousSystem();
+let aiSystemInitialized = false;
+
+// Initialize AI system
+async function initializeAISystem() {
+  try {
+    await aiCentralNervousSystem.initialize();
+    aiSystemInitialized = true;
+    console.log('✅ AI Central Nervous System initialized');
+  } catch (error) {
+    console.warn('⚠️ AI system initialization failed:', error.message);
+    aiSystemInitialized = false;
+  }
+}
+
+// Start AI system initialization
+initializeAISystem();
+
+// AI data analysis function
+async function analyzeDataWithAI(dataType, data, metadata) {
+  if (!aiSystemInitialized) {
+    console.warn('AI system not initialized, skipping analysis');
+    return { status: 'skipped', reason: 'AI system not initialized' };
+  }
+  
+  try {
+    const analysis = await aiCentralNervousSystem.analyzeUploadedData(dataType, data, metadata);
+    console.log('✅ AI analysis completed for', dataType, 'data');
+    return {
+      status: 'completed',
+      insights: analysis.analysis,
+      recommendations: analysis.recommendations,
+      alerts: analysis.alerts,
+      dashboardUpdates: analysis.dashboardUpdates,
+      processingTime: analysis.processingTime
+    };
+  } catch (error) {
+    console.error('AI analysis error:', error.message);
+    return { status: 'failed', error: error.message };
+  }
+}
+
+// WebSocket connections for real-time updates
+const wsConnections = new Set();
+
+// Broadcast function for real-time updates
+function broadcastToClients(event, data) {
+  const message = JSON.stringify({ event, data, timestamp: new Date().toISOString() });
+  
+  wsConnections.forEach(ws => {
+    try {
+      if (ws.readyState === 1) { // WebSocket.OPEN
+        ws.send(message);
+      }
+    } catch (error) {
+      console.warn('WebSocket send failed:', error.message);
+      wsConnections.delete(ws);
+    }
+  });
+  
+  console.log(`📡 Broadcasted ${event} to ${wsConnections.size} clients`);
+}
 
 // Register Enterprise MCP server for integrated data processing (enabled in all environments)
 (async () => {
@@ -69,7 +154,7 @@ const mcpOrchestrator = new MCPOrchestrator();
       type: 'manufacturing-ai-integration',
       endpoint: process.env.NODE_ENV === 'production' 
         ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'
-        : 'http://localhost:7001',
+        : 'http://localhost:3001',
       transport: 'http',
       capabilities: [
         'inventory-optimization',
@@ -2742,12 +2827,42 @@ app.post('/api/data/import/file', authenticateUser, upload.single('file'), async
       validation
     });
     
-    res.json({
-      success: true,
-      importResult,
-      validation,
-      recordsImported: processedData.length
-    });
+    // Trigger AI brain analysis of uploaded data
+    try {
+      const aiAnalysis = await analyzeDataWithAI(dataType, processedData, {
+        filename: file.originalname,
+        importedBy: req.user.id,
+        source: 'file'
+      });
+      
+      // Broadcast AI insights to connected clients
+      if (aiAnalysis && aiAnalysis.insights) {
+        broadcastToClients('ai-analysis-complete', {
+          dataType,
+          insights: aiAnalysis.insights,
+          recommendations: aiAnalysis.recommendations,
+          alerts: aiAnalysis.alerts,
+          dashboardUpdates: aiAnalysis.dashboardUpdates
+        });
+      }
+      
+      res.json({
+        success: true,
+        importResult,
+        validation,
+        recordsImported: processedData.length,
+        aiAnalysis: aiAnalysis || { status: 'pending', message: 'AI analysis initiated' }
+      });
+    } catch (aiError) {
+      console.warn('AI analysis failed, but data import succeeded:', aiError.message);
+      res.json({
+        success: true,
+        importResult,
+        validation,
+        recordsImported: processedData.length,
+        aiAnalysis: { status: 'failed', error: aiError.message }
+      });
+    }
     
   } catch (error) {
     console.error('File import error:', error);
@@ -4397,6 +4512,14 @@ app.get('/api/autonomous/deployments/history', authenticateUser, (req, res) => {
 // Admin API Routes for User Management - Using direct endpoints instead of separate routes file
 // app.use('/api/admin', adminRoutes); // Disabled due to route conflicts with direct endpoints below
 
+// Import and use API Key Management routes
+import apiKeyRoutes from './api/admin/api-keys.js';
+app.use('/api/admin/api-keys', apiKeyRoutes);
+
+// Import and use Comprehensive Health Monitoring routes
+import comprehensiveHealthRoutes from './api/health/comprehensive-health.js';
+app.use('/api/health', comprehensiveHealthRoutes);
+
 // Enterprise Manufacturing APIs - IMMEDIATELY IMPLEMENT MISSING ENDPOINTS
 
 // Demand Forecasting API
@@ -4512,18 +4635,64 @@ app.get('/api/analytics/overview', (req, res) => {
   });
 });
 
+// Debug: Check if dist directory exists in Railway
+const distPath = path.join(__dirname, 'dist');
+try {
+  const distStats = fs.statSync(distPath);
+  const distFiles = fs.readdirSync(distPath);
+  console.log('DIST DEBUG: Directory exists:', distStats.isDirectory());
+  console.log('DIST DEBUG: Files count:', distFiles.length);
+  console.log('DIST DEBUG: Sample files:', distFiles.slice(0, 5));
+} catch (error) {
+  console.error('DIST DEBUG: Directory does not exist or cannot be read:', error.message);
+}
+
 // Serve static files (must be after ALL API routes)
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1d',
   etag: false
 }));
 
-// Simple test endpoint to verify routes are working
+// Comprehensive build debugging endpoint
 app.get('/api/test-simple', (req, res) => {
+  const distPath = path.join(__dirname, 'dist');
+  let distInfo = {};
+  
+  try {
+    const distStats = fs.statSync(distPath);
+    const distFiles = fs.readdirSync(distPath);
+    
+    distInfo = {
+      exists: true,
+      isDirectory: distStats.isDirectory(),
+      totalFiles: distFiles.length,
+      indexHtmlExists: distFiles.includes('index.html'),
+      assetsExists: fs.existsSync(path.join(distPath, 'assets')),
+      sampleFiles: distFiles.slice(0, 10),
+      indexHtmlSize: fs.existsSync(path.join(distPath, 'index.html')) 
+        ? fs.statSync(path.join(distPath, 'index.html')).size 
+        : 0
+    };
+    
+    if (distInfo.assetsExists) {
+      const assetsFiles = fs.readdirSync(path.join(distPath, 'assets'));
+      distInfo.assetsCount = assetsFiles.length;
+      distInfo.mainJSExists = assetsFiles.some(f => f.startsWith('index-') && f.endsWith('.js'));
+      distInfo.sampleAssets = assetsFiles.slice(0, 5);
+    }
+  } catch (error) {
+    distInfo = { exists: false, error: error.message };
+  }
+  
   res.json({ 
     message: 'Route registration is working!', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'production'
+    environment: process.env.NODE_ENV || 'production',
+    workingDirectory: __dirname,
+    railwayEnvironment: process.env.RAILWAY_ENVIRONMENT || 'not-set',
+    distInfo: distInfo,
+    viteClerKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'present' : 'missing',
+    nodeEnv: process.env.NODE_ENV
   });
 });
 
@@ -4536,7 +4705,7 @@ app.get('/api/mcp/status', async (req, res) => {
     // Try to fetch health from local MCP server
     let localMCPHealth = null;
     try {
-      const response = await fetch('http://localhost:7001/health', { timeout: 5000 });
+      const response = await fetch('http://localhost:3001/health', { timeout: 5000 });
       if (response.ok) {
         localMCPHealth = await response.json();
       }
@@ -4557,6 +4726,124 @@ app.get('/api/mcp/status', async (req, res) => {
   }
 });
 
+// MCP Server diagnostics endpoint
+app.get('/api/mcp/diagnostics', async (req, res) => {
+  try {
+    const mcpServerUrl = process.env.NODE_ENV === 'production' 
+      ? 'http://localhost:3001'  // MCP server runs on port 3001 in same Railway container
+      : 'http://localhost:3001';  // Local MCP server on port 3001
+
+    // Test connectivity to MCP server
+    const healthEndpoint = `${mcpServerUrl}/health`;
+    
+    let mcpHealth = null;
+    let mcpError = null;
+    
+    try {
+      const healthResponse = await fetch(healthEndpoint, { timeout: 5000 });
+      if (healthResponse.ok) {
+        mcpHealth = await healthResponse.json();
+      } else {
+        mcpError = `HTTP ${healthResponse.status}: ${healthResponse.statusText}`;
+      }
+    } catch (error) {
+      mcpError = error.message;
+    }
+
+    res.json({
+      mcp_server_url: mcpServerUrl,
+      health_endpoint: healthEndpoint,
+      chatbot_endpoint: `${mcpServerUrl}/ai/chat`,
+      environment: process.env.NODE_ENV || 'development',
+      mcp_health: mcpHealth,
+      mcp_error: mcpError,
+      main_server: {
+        status: 'running',
+        port: process.env.PORT || 5000,
+        uptime: process.uptime()
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logError('MCP diagnostics error', error);
+    res.status(500).json({ error: 'Failed to get MCP diagnostics', details: error.message });
+  }
+});
+
+// AI Chatbot endpoint - proxy to MCP server
+app.post('/api/mcp/ai/chat', async (req, res) => {
+  try {
+    logInfo('AI Chatbot request received', { 
+      path: req.path,
+      message_length: req.body?.message?.length || 0,
+      context: req.body?.context 
+    });
+
+    // Determine MCP server endpoint based on environment
+    const mcpServerUrl = process.env.NODE_ENV === 'production' 
+      ? 'http://localhost:3001'  // MCP server runs on port 3001 in same Railway container
+      : 'http://localhost:3001';  // Local MCP server on port 3001
+
+    const mcpEndpoint = `${mcpServerUrl}/ai/chat`;
+    
+    const response = await fetch(mcpEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-session-id': req.headers['x-session-id'] || 'anonymous'
+      },
+      body: JSON.stringify(req.body),
+      timeout: 30000 // 30 second timeout for AI processing
+    });
+
+    if (!response.ok) {
+      throw new Error(`MCP server returned ${response.status}: ${response.statusText}`);
+    }
+
+    const chatbotResponse = await response.json();
+    
+    logInfo('AI Chatbot response sent', { 
+      ai_provider: chatbotResponse.ai_provider,
+      response_length: chatbotResponse.response?.length || 0,
+      confidence: chatbotResponse.confidence
+    });
+
+    res.json(chatbotResponse);
+
+  } catch (error) {
+    logError('AI Chatbot proxy error', error);
+    
+    // Provide fallback response if MCP server is unavailable
+    res.json({
+      response: `I apologize, but I'm currently experiencing technical difficulties connecting to my AI brain. 
+      
+I'm still here to help! Here are some quick resources while I recover:
+
+**Navigation Help:**
+• Click the Sentia logo to return to the main dashboard
+• Use the sidebar menu to access different modules
+• Try the What-If Analysis for scenario planning
+
+**Quick Support:**
+• Check the Help section in the top navigation
+• Visit our documentation for detailed guides
+• Contact support if you need immediate assistance
+
+I should be back to full functionality shortly. Please try asking your question again in a moment!`,
+      context: 'fallback_mode',
+      ai_provider: 'fallback',
+      confidence: 0.5,
+      timestamp: new Date().toISOString(),
+      error: 'MCP server temporarily unavailable'
+    });
+  }
+});
+
+// Emergency access route during deployments
+app.get('/emergency', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'emergency-dashboard.html'));
+});
+
 // Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
 app.get('*', (req, res) => {
   // Skip API routes - they should have been handled above
@@ -4570,12 +4857,15 @@ app.get('*', (req, res) => {
         '/api/test-simple',
         '/api/services/status',
         '/api/working-capital/overview',
-        '/api/mcp/status'
+        '/api/mcp/status',
+        '/api/mcp/diagnostics',
+        '/api/mcp/ai/chat'
       ]
     });
   }
   
   // Serve the React app for all non-API routes
+  // Note: express.static middleware handles assets before this route
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
@@ -4588,11 +4878,69 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ SENTIA SERVER RUNNING ON PORT ${PORT}`);
-  console.log(`🔗 Dashboard: http://localhost:${PORT}`);
-  console.log(`🔗 API Health: http://localhost:${PORT}/api/health`);
-  console.log(`🔗 Admin Panel: http://localhost:${PORT}/admin`);
-  console.log(`🌐 External URL: ${process.env.RAILWAY_STATIC_URL || 'Railway will provide URL'}`);
-  console.log(`📋 Admin Features: User management, invitations, and approval workflow enabled`);
-});
+// Use enterprise process manager for robust server startup
+(async () => {
+  try {
+    // Start server with enterprise process management
+    const { port } = await processManager.startServer(app, PORT, '0.0.0.0', 'sentia-api');
+    
+    // Log successful startup with enterprise logging
+    logInfo('✅ SENTIA ENTERPRISE SERVER STARTED', {
+      port,
+      environment: process.env.NODE_ENV || 'development',
+      pid: process.pid,
+      endpoints: {
+        dashboard: `http://localhost:${port}`,
+        api: `http://localhost:${port}/api/health`,
+        admin: `http://localhost:${port}/admin`
+      },
+      externalUrl: process.env.RAILWAY_STATIC_URL || 'Not configured',
+      mcpIntegration: process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT,
+      features: [
+        'Enterprise Error Handling',
+        'Process Management', 
+        'API Key Management',
+        'MCP Integration',
+        'User Management',
+        'Real-time Analytics'
+      ]
+    });
+    
+    // Register shutdown handlers for clean database closure
+    processManager.addShutdownHandler('database', async () => {
+      if (global.prisma) {
+        await global.prisma.$disconnect();
+        logInfo('Database connections closed');
+      }
+    });
+    
+    // Add health check for enterprise monitoring
+    app.get('/health', asyncHandler(async (req, res) => {
+      const health = {
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        version: process.env.npm_package_version || '1.0.0',
+        environment: process.env.NODE_ENV || 'development',
+        processManager: processManager.getHealthStatus(),
+        errorHandler: errorHandler.getHealthStatus(),
+        services: {
+          database: global.prisma ? 'connected' : 'disconnected',
+          mcp: process.env.MCP_SERVER_URL ? 'configured' : 'not_configured'
+        }
+      };
+      
+      res.json(health);
+    }));
+    
+  } catch (error) {
+    logError('Failed to start Sentia Enterprise Server', {
+      error: error.message,
+      stack: error.stack,
+      port: PORT
+    });
+    
+    // Attempt graceful shutdown
+    await processManager.gracefulShutdown('startup_failure');
+  }
+})();

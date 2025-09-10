@@ -208,7 +208,6 @@ If main URLs don't work, try these alternatives:
 - **Deployment Guide:** /DEPLOYMENT_FIX_GUIDE.md
 - **Railway Config:** /railway.toml
 - **Nixpacks Config:** /nixpacks.toml
-- **Caddy Config:** /Caddyfile
 
 ### Quick Diagnostics:
 1. Health check returns "OK" → ✅ Server is running

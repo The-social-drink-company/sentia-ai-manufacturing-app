@@ -34,9 +34,9 @@ export default defineConfig({
     }
   },
   server: {
-    port: process.env.PORT || 3000,
+    port: 3000,
     host: true, // Allow external connections
-    strictPort: false, // Allow dynamic port selection
+    strictPort: true, // Force port 3000 exactly
     proxy: {
       '/api': {
         target: 'http://localhost:5000',

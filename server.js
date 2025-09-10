@@ -4931,38 +4931,46 @@ try {
 }
 
 // Serve static files with proper MIME types (must be after ALL API routes)
+// CRITICAL: Serve JS files BEFORE the main dist directory to prevent fallback to HTML
 app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
   maxAge: '1d',
   etag: false,
+  index: false, // Disable directory indexing
+  fallthrough: true, // Allow fallthrough to next middleware if file not found
   setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    }
+    // Use consistent application/javascript for all JS files
+    res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
   }
 }));
 
 app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
   maxAge: '1d',
   etag: false,
+  index: false,
+  fallthrough: true,
   setHeaders: (res, path) => {
     if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
+      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
     } else if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
     }
   }
 }));
 
-// Serve main dist files
+// Serve main dist files (HTML, manifest, etc)
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1d',
   etag: false,
+  index: 'index.html', // Serve index.html for directory requests
+  fallthrough: true,
   setHeaders: (res, path) => {
     // Ensure JavaScript files are served with correct MIME type
     if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'text/javascript');
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
     } else if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
+      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+    } else if (path.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html; charset=UTF-8');
     }
   }
 }));
@@ -5320,12 +5328,17 @@ app.get('*', (req, res) => {
     });
   }
   
-  // Skip asset requests - they should be handled by express.static middleware
-  if (req.path.startsWith('/assets/') || req.path.startsWith('/vite.svg')) {
+  // Skip asset and JS requests - they should be handled by express.static middleware
+  if (req.path.startsWith('/assets/') || 
+      req.path.startsWith('/js/') || 
+      req.path.startsWith('/vite.svg') ||
+      req.path.endsWith('.js') ||
+      req.path.endsWith('.css')) {
+    console.error(`Asset not found: ${req.path}`);
     return res.status(404).json({ 
       error: 'Asset not found', 
       path: req.path,
-      note: 'Assets should be served by static middleware'
+      note: 'File does not exist in dist directory'
     });
   }
   

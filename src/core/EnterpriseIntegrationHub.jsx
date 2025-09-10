@@ -13,7 +13,7 @@ import {
 // Import all enterprise components
 import { ThemeProvider, useTheme } from '../theming/ThemeProvider';
 import { AccessibilityProvider } from '../accessibility/AccessibilityProvider';
-import { ResponsiveProvider } from '../responsive/ResponsiveSystem';
+import { ResponsiveProvider } from '../responsive/ResponsiveProvider';
 import { NavigationProvider } from '../navigation/NavigationProvider';
 import { CommandPalette } from '../components/CommandPalette/CommandPalette';
 import { AIProvider } from '../ai/AIProvider';

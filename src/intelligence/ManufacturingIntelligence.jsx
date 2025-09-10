@@ -14,7 +14,7 @@ import {
 import { useAI } from '../ai';
 import { useRealtime } from '../realtime/RealtimeProvider';
 import { useTheme } from '../theming';
-import { Chart } from '../charts';
+import { LineChart } from '../charts';
 
 export const ManufacturingIntelligence = ({
   className = '',

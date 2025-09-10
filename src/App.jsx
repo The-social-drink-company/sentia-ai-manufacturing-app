@@ -9,7 +9,7 @@ import './index.css'
 import './styles/themes.css'
 import './styles/landing.css'
 import './styles/theme-system.css'
-import { EnterpriseIntegrationHub } from './core/EnterpriseIntegrationHub'
+// import { EnterpriseIntegrationHub } from './core/EnterpriseIntegrationHub' // Temporarily disabled - missing dependencies
 import { logInfo, logWarn } from './services/observability/structuredLogger.js'
 
 // Import Chart.js setup early to ensure registration
@@ -229,7 +229,7 @@ function App() {
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
           <Router>
-            <EnterpriseIntegrationHub>
+            {/* EnterpriseIntegrationHub removed - missing dependencies */}
             <div className="App">
               <Routes>
                 {/* Public Landing Page */}
@@ -935,7 +935,7 @@ function App() {
               />
               
                     </div>
-            </EnterpriseIntegrationHub>
+            {/* EnterpriseIntegrationHub closing tag removed */}
           </Router>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>

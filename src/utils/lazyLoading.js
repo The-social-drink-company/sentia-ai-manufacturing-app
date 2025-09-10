@@ -1,5 +1,5 @@
 // Advanced lazy loading utility with intelligent preloading and error boundaries
-import { lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { LoadingSpinner } from '../components/LoadingStates';
 import ErrorBoundaryFallback from '../components/ErrorBoundary';
 import { logInfo, logWarn, logError } from '../services/observability/structuredLogger.js';

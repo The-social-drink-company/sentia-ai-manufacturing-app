@@ -5,14 +5,13 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   ChartPieIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   DocumentMagnifyingGlassIcon,
   ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline';
 import { useAI } from '../ai';
 import { useRealtime } from '../realtime/RealtimeProvider';
 import { useTheme } from '../theming';
-import { Chart } from '../charts';
 
 export const QualityIntelligence = ({
   className = '',
@@ -410,28 +409,14 @@ export const QualityIntelligence = ({
               Statistical Process Control
             </h3>
             <div className="h-80">
-              <Chart
-                type="line"
-                data={spcChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                      title: {
-                        display: true,
-                        text: 'Defect Rate (%)'
-                      }
-                    }
-                  },
-                  plugins: {
-                    legend: {
-                      display: true
-                    }
-                  }
-                }}
-              />
+              {/* Chart component temporarily disabled - integration pending */}
+              <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="text-center">
+                  <ChartPieIcon className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                  <p className={textSecondaryClasses}>SPC Chart Visualization</p>
+                  <p className={`text-sm ${textMutedClasses}`}>Chart.js integration pending</p>
+                </div>
+              </div>
             </div>
 
             {/* Process Capability */}
@@ -491,9 +476,9 @@ export const QualityIntelligence = ({
                       </h4>
                       <div className="flex items-center">
                         {defect.trend === 'increasing' ? (
-                          <TrendingUpIcon className="w-4 h-4 text-red-500 mr-1" />
+                          <ArrowTrendingUpIcon className="w-4 h-4 text-red-500 mr-1" />
                         ) : defect.trend === 'decreasing' ? (
-                          <TrendingUpIcon className="w-4 h-4 text-green-500 mr-1 rotate-180" />
+                          <ArrowTrendingUpIcon className="w-4 h-4 text-green-500 mr-1 rotate-180" />
                         ) : (
                           <div className="w-4 h-4 bg-gray-400 rounded mr-1" />
                         )}

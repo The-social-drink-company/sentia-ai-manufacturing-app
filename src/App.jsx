@@ -35,7 +35,7 @@ const AdminPanel = createRouteComponent('admin-panel', () => import('./pages/Adm
 // Analytics Components (Standard Priority)
 const WhatIfAnalysis = createRouteComponent('what-if-analysis', () => import('./components/analytics/WhatIfAnalysis'))
 const WhatIfAnalysisDashboard = createRouteComponent('what-if-dashboard', () => import('./components/analytics/WhatIfAnalysisSimple')) // Using simplified version for stability
-const Analytics = createRouteComponent('analytics', () => import('./components/analytics/AnalyticsSimple')) // Using simplified version for stability
+const Analytics = createRouteComponent('analytics', () => import('./components/analytics/AnalyticsBasic')) // Using basic version for stability
 const AdvancedAnalyticsDashboard = createRouteComponent('advanced-analytics', () => import('./components/analytics/AdvancedAnalyticsDashboard'))
 const EnhancedWorkingCapitalAnalysis = createRouteComponent('working-capital-analysis', () => import('./components/analytics/EnhancedWorkingCapitalAnalysis'))
 

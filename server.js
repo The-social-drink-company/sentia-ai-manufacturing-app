@@ -4927,33 +4927,52 @@ try {
   console.error('DIST DEBUG: Directory does not exist or cannot be read:', error.message);
 }
 
-// Serve static files with proper MIME types (must be after ALL API routes)
+// CRITICAL: Serve static files with proper MIME types (must be after ALL API routes but BEFORE catch-all)
+// Priority order is critical - specific routes first, then general routes
+
+// Serve JavaScript files with explicit MIME type
 app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
   maxAge: '1d',
   etag: false,
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    }
+  immutable: true,
+  setHeaders: (res, filePath) => {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    console.log(`[STATIC] Serving JS: ${filePath} with MIME: application/javascript`);
   }
 }));
 
+// Serve CSS and other assets with explicit MIME types
 app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
   maxAge: '1d',
   etag: false,
-  setHeaders: (res, path) => {
-    if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-    } else if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
+  immutable: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=utf-8');
+    } else if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    } else if (filePath.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+    } else if (filePath.endsWith('.svg')) {
+      res.setHeader('Content-Type', 'image/svg+xml');
+    } else if (filePath.endsWith('.ico')) {
+      res.setHeader('Content-Type', 'image/x-icon');
     }
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    console.log(`[STATIC] Serving Asset: ${filePath}`);
   }
 }));
 
-// Serve main dist files
+// Serve root dist files (index.html, manifest.json, etc.)
 app.use(express.static(path.join(__dirname, 'dist'), {
-  maxAge: '1d',
-  etag: false
+  maxAge: '1h',
+  etag: false,
+  index: false, // Prevent automatic index.html serving - we control this in catch-all
+  setHeaders: (res, filePath) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    console.log(`[STATIC] Serving Root: ${filePath}`);
+  }
 }));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
@@ -5309,14 +5328,41 @@ app.get('*', (req, res) => {
     });
   }
   
-  // Skip static asset routes - let them be handled by static middleware or return 404
-  if (req.path.startsWith('/js/') || req.path.startsWith('/assets/') || req.path.startsWith('/css/')) {
-    return res.status(404).json({
-      error: 'Static asset not found',
-      path: req.path,
-      note: 'Static assets should be handled by express.static middleware'
-    });
+  // CRITICAL FIX: Skip static asset routes - they should never reach here
+  // If they do, it means static middleware failed, so return proper 404
+  if (req.path.startsWith('/js/') || 
+      req.path.startsWith('/assets/') || 
+      req.path.startsWith('/css/') ||
+      req.path.startsWith('/fonts/') ||
+      req.path.endsWith('.js') ||
+      req.path.endsWith('.css') ||
+      req.path.endsWith('.map') ||
+      req.path.endsWith('.ico') ||
+      req.path.endsWith('.png') ||
+      req.path.endsWith('.jpg') ||
+      req.path.endsWith('.svg')) {
+    return res.status(404).send('Static asset not found');
   }
+  
+  // Add security headers for HTML responses
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  // Add Content Security Policy for production deployments
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.com https://js.clerk.dev",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com data:",
+    "img-src 'self' data: blob: https:",
+    "connect-src 'self' https://api.clerk.com https://api.clerk.dev https://*.up.railway.app wss://*.up.railway.app",
+    "frame-src 'self' https://js.clerk.com https://js.clerk.dev",
+    "object-src 'none'",
+    "base-uri 'self'"
+  ].join('; ');
+  res.setHeader('Content-Security-Policy', csp);
   
   // Serve the React app for all other routes (SPA routing)
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));

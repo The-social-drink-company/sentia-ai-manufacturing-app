@@ -21,9 +21,10 @@ class RailwayMCPService {
 
     const envName = (process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development').toLowerCase();
 
-    if (envName.includes('prod')) return 'https://sentia-mcp-server-production.up.railway.app';
-    if (envName.includes('test')) return 'https://sentia-mcp-server-testing.up.railway.app';
-    return 'https://sentia-mcp-server-development.up.railway.app';
+    // Use actual Railway MCP service tokens
+    if (envName.includes('prod')) return 'https://web-production-99691282.up.railway.app';
+    if (envName.includes('test')) return 'https://web-testing-02e0c7f6.up.railway.app';
+    return 'https://web-development-f97b65ad.up.railway.app';
   }
 
   async healthCheck() {

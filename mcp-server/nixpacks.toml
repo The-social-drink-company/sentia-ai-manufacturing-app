@@ -13,7 +13,5 @@ PORT = '$PORT'
 LOG_LEVEL = 'info'
 RAILWAY_ENVIRONMENT = 'production'
 
-# Explicitly disable static site providers
-[providers]
-# Disable Caddy - this is a pure Node.js API server
-caddy = false
+# Node.js configuration - no static site providers needed
+# This is a pure Node.js API server, not a static site

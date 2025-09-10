@@ -22,14 +22,16 @@ import {
   Html,
   Billboard,
   Trail,
-  ContactShadows,
+  ContactShadows
+} from '@react-three/drei';
+import {
   EffectComposer,
   Bloom,
   ChromaticAberration,
   DepthOfField,
   Noise,
   Vignette
-} from '@react-three/drei';
+} from '@react-three/postprocessing';
 import { useSpring, animated } from '@react-spring/three';
 import * as THREE from 'three';
 

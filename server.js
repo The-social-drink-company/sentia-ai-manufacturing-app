@@ -36,8 +36,8 @@ if (process.env.RAILWAY_ENVIRONMENT) {
   // Increase database connection timeout for Railway
   process.env.DATABASE_CONNECTION_TIMEOUT = '60000';
   process.env.DATABASE_POOL_TIMEOUT = '60000';
-  // Enable MCP server registration in Railway environments for health checks
-  process.env.ENABLE_MCP_SERVER_REGISTRATION = 'true';
+  // Disable MCP server registration in Railway environments to prevent connection errors
+  process.env.DISABLE_MCP_SERVER_REGISTRATION = 'true';
 }
 
 // Prevent process exits from unhandled promise rejections
@@ -304,24 +304,21 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYM
   }
 })();
 
-// Import enterprise security middleware
-// import securityMiddleware from './src/middleware/securityMiddleware.js';
-
-// Basic security middleware for now (enterprise security will be added in next phase)
+// Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:9000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app', 'https://sentia-manufacturing-dashboard-development.up.railway.app', 'https://sentiatest.financeflo.ai', 'https://sentia-manufacturing-dashboard-production.up.railway.app'],
+  origin: ['http://localhost:3000', 'http://localhost:9000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
   credentials: true
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Basic security headers
+// Security headers middleware (required by self-healing agent)
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; connect-src 'self' https: wss:; font-src 'self' https: data:;");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:;");
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 });
@@ -4931,48 +4928,32 @@ try {
 }
 
 // Serve static files with proper MIME types (must be after ALL API routes)
-// CRITICAL: Serve JS files BEFORE the main dist directory to prevent fallback to HTML
 app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
   maxAge: '1d',
   etag: false,
-  index: false, // Disable directory indexing
-  fallthrough: true, // Allow fallthrough to next middleware if file not found
   setHeaders: (res, path) => {
-    // Use consistent application/javascript for all JS files
-    res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
   }
 }));
 
 app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
   maxAge: '1d',
   etag: false,
-  index: false,
-  fallthrough: true,
   setHeaders: (res, path) => {
     if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+      res.setHeader('Content-Type', 'text/css');
     } else if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+      res.setHeader('Content-Type', 'application/javascript');
     }
   }
 }));
 
-// Serve main dist files (HTML, manifest, etc)
+// Serve main dist files
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1d',
-  etag: false,
-  index: 'index.html', // Serve index.html for directory requests
-  fallthrough: true,
-  setHeaders: (res, path) => {
-    // Ensure JavaScript files are served with correct MIME type
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
-    } else if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
-    } else if (path.endsWith('.html')) {
-      res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-    }
-  }
+  etag: false
 }));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
@@ -5308,7 +5289,7 @@ app.get('/emergency', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'emergency-dashboard.html'));
 });
 
-// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes and assets
+// Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes
 app.get('*', (req, res) => {
   // Skip API routes - they should have been handled above
   if (req.path.startsWith('/api/')) {
@@ -5328,21 +5309,8 @@ app.get('*', (req, res) => {
     });
   }
   
-  // Skip asset and JS requests - they should be handled by express.static middleware
-  if (req.path.startsWith('/assets/') || 
-      req.path.startsWith('/js/') || 
-      req.path.startsWith('/vite.svg') ||
-      req.path.endsWith('.js') ||
-      req.path.endsWith('.css')) {
-    console.error(`Asset not found: ${req.path}`);
-    return res.status(404).json({ 
-      error: 'Asset not found', 
-      path: req.path,
-      note: 'File does not exist in dist directory'
-    });
-  }
-  
-  // Serve the React app for all non-API, non-asset routes
+  // Serve the React app for all non-API routes
+  // Note: express.static middleware handles assets before this route
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 

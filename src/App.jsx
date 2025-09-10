@@ -47,7 +47,7 @@ const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashb
 const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
 const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMonitoring'))
 const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
-const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus'))
+const MCPConnectionStatus = lazy(() => import('./components/AI/MCPConnectionStatus.jsx'))
 const SystemSettings = lazy(() => import('./components/settings/Settings'))
 const APIStatusDiagnostic = lazy(() => import('./components/diagnostics/APIStatusDiagnostic'))
 

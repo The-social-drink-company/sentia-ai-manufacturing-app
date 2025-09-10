@@ -18,10 +18,10 @@
         "RAILWAY_ENVIRONMENT": "development",
         "PORT": "$PORT",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
-        "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq",
+        "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
         "CORS_ORIGINS": "https://sentia-manufacturing-dashboard-development.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M"
+        "OPENAI_API_KEY": "$OPENAI_API_KEY"
       },
       "domains": [
         "sentia-manufacturing-dashboard-development.up.railway.app"
@@ -39,10 +39,10 @@
         "RAILWAY_ENVIRONMENT": "testing",
         "PORT": "$PORT",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
-        "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq",
+        "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
         "CORS_ORIGINS": "https://sentiatest.financeflo.ai,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M"
+        "OPENAI_API_KEY": "$OPENAI_API_KEY"
       },
       "domains": [
         "sentiatest.financeflo.ai"
@@ -60,10 +60,10 @@
         "RAILWAY_ENVIRONMENT": "production",
         "PORT": "$PORT",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        "VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk",
-        "CLERK_SECRET_KEY": "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq",
+        "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
         "CORS_ORIGINS": "https://sentiaprod.financeflo.ai,https://sentia-manufacturing-dashboard-production.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "sk_proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfVY3BlbkFJKx8K8L7v4DlGfJN3yKz9M"
+        "OPENAI_API_KEY": "$OPENAI_API_KEY"
       },
       "domains": [
         "sentia-manufacturing-dashboard-production.up.railway.app",

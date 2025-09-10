@@ -25,7 +25,6 @@ const WorkingCapital = () => {
     queryKey: ['working-capital', dateRange],
     queryFn: async () => {
       try {
-<<<<<<< HEAD
         const response = await fetch(`/api/working-capital/summary?range=${dateRange}`, {
           headers: user ? { 'Authorization': `Bearer ${await user.getToken()}` } : {}
         });
@@ -33,7 +32,6 @@ const WorkingCapital = () => {
         if (!response.ok) {
           throw new Error('API not available');
         }
-        
         return await response.json();
       } catch (error) {
         // No mock data - try alternative endpoint first

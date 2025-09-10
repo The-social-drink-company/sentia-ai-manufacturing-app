@@ -5,10 +5,10 @@ nixPkgs = ['nodejs_20']
 cmds = ['npm install --production=false']
 
 [phases.build] 
-cmds = ['rm -rf dist || true', 'npm ci', 'FORCE_COLOR=0 npm run build']
+cmds = ['npm run build']
 
 [phases.start]
-cmd = 'node start-production.js'
+cmd = 'node server.js'
 
 [variables]
 NODE_ENV = 'production'

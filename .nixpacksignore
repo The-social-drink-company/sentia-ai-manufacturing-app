@@ -9,13 +9,15 @@ dist/.cache
 **/.cache/
 .turbo
 
-# Prevent static site detection
-public/
-build/
-docs/
-
 # Development and temporary files
 *.log
 *.env.local
 .env.example
 .git/
+
+# Documentation and context that aren't needed for runtime
+context/
+docs/README*
+*.md
+!README.md
+!CLAUDE.md

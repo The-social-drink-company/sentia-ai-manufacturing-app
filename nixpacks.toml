@@ -2,15 +2,16 @@
 nixPkgs = ['nodejs_20']
 
 [phases.install]
-cmds = ['cd mcp-server && npm ci --production=false']
+cmds = ['npm ci --production=false']
 
 [phases.build] 
-cmds = ['echo "No build step required for MCP server"']
+cmds = ['npm run build']
 
 [phases.start]
-cmd = 'cd mcp-server && npm start'
+cmd = 'node server.js'
 
 [variables]
 NODE_ENV = 'production'
 PORT = '$PORT'
+MCP_PORT = '9001'
 RAILWAY_ENVIRONMENT = 'production'

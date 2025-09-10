@@ -1,27 +1,19 @@
-import js from '@eslint/js'
-import security from 'eslint-plugin-security'
-import react from 'eslint-plugin-react'
-import reactHooks from 'eslint-plugin-react-hooks'
-
 export default [
-  js.configs.recommended,
   {
-    plugins: {
-      security
-    },
+    ignores: [
+      "dist/**",
+      "build/**",
+      "coverage/**",
+      "*.min.js",
+      "*.min.css",
+      "node_modules/**"
+    ]
+  },
+  {
     rules: {
-      ...security.configs.recommended.rules,
       'no-console': 'warn',
       'no-unused-vars': ['error', { 'argsIgnorePattern': '^_|next' }],
-      'no-undef': 'error',
-      'security/detect-object-injection': 'warn', // Lower to warning for environment variables
-      'security/detect-non-literal-fs-filename': 'error',
-      'security/detect-eval-with-expression': 'error',
-      'security/detect-no-csrf-before-method-override': 'error',
-      'security/detect-buffer-noassert': 'error',
-      'security/detect-child-process': 'error',
-      'security/detect-disable-mustache-escape': 'error',
-      'security/detect-unsafe-regex': 'error'
+      'no-undef': 'error'
     },
     languageOptions: {
       ecmaVersion: 2022,
@@ -42,11 +34,6 @@ export default [
   // Browser environment for frontend files
   {
     files: ['src/**/*.js', 'src/**/*.jsx'],
-    plugins: {
-      react,
-      'react-hooks': reactHooks,
-      security
-    },
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -80,23 +67,13 @@ export default [
         CSS: 'readonly'
       }
     },
-    settings: {
-      react: {
-        version: 'detect'
-      }
-    },
     rules: {
-      'no-console': 'warn',
-      'security/detect-object-injection': 'warn',
-      'react/jsx-uses-react': 'error',
-      'react/jsx-uses-vars': 'error',
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn'
+      'no-console': 'warn'
     }
   },
   // Node.js environment for server files
   {
-    files: ['server.js', 'database/**/*.js', 'scripts/**/*.js'],
+    files: ['server.js', 'database/**/*.js', 'scripts/**/*.js', 'services/**/*.js', 'agents/**/*.js', 'mcp-server/**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',

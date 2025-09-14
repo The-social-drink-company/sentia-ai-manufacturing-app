@@ -11,7 +11,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+// CRITICAL: Railway REQUIRES we use their PORT variable
+const PORT = parseInt(process.env.PORT) || 5000;
 
 console.log(`
 ========================================
@@ -22,6 +23,7 @@ PORT from env: ${process.env.PORT}
 Using PORT: ${PORT}
 NODE_ENV: ${process.env.NODE_ENV}
 PWD: ${process.cwd()}
+Railway: ${process.env.RAILWAY_ENVIRONMENT || 'not detected'}
 ========================================
 `);
 

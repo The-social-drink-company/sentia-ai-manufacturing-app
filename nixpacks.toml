@@ -1,16 +1,17 @@
-# NUCLEAR NIXPACKS CONFIG - MINIMAL AND BULLETPROOF
+# PRODUCTION NIXPACKS CONFIG - OPTIMIZED FOR RAILWAY
 
 [phases.setup]
 nixPkgs = ["nodejs_18"]
 
 [phases.install]
-cmds = ["npm ci --omit=dev || npm ci || npm install"]
+cmds = ["npm ci"]
 
 [phases.build]
 cmds = [
-  "npm run build || echo 'Build failed but continuing'",
-  "ls -la dist/ || echo 'No dist folder'"
+  "npm run build",
+  "echo 'Build completed successfully'",
+  "ls -la dist/"
 ]
 
 [start]
-cmd = "node start.js"
+cmd = "node production-server.cjs"

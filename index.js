@@ -1,7 +1,6 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import compression from 'compression';
 import cors from 'cors';
 import fs from 'fs';
 
@@ -13,7 +12,6 @@ const port = process.env.PORT || 5000;
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Middleware
-app.use(compression());
 app.use(cors({
   origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000'],
   credentials: true

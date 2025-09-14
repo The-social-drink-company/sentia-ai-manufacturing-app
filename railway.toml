@@ -4,8 +4,8 @@ buildCommand = "npm run build:railway"
 watchPatterns = ["src/**/*", "public/**/*", "*.js", "*.json", "services/**/*"]
 
 [deploy]
-startCommand = "node index.js"
-healthcheckPath = "/health"
+startCommand = "node server.js"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10

@@ -1,7 +1,7 @@
 {
   "build": {
     "builder": "nixpacks",
-    "buildCommand": "npm run build:railway"
+    "buildCommand": "npm run build"
   },
   "deploy": {
     "startCommand": "node index.js",

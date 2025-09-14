@@ -5470,8 +5470,15 @@ app.use((error, req, res, next) => {
     const apiStatus = await apiIntegrationManager.initialize();
     logInfo('API integrations initialized', apiStatus);
     
-    // Start server with enterprise process management
-    const { port } = await processManager.startServer(httpServer, PORT, '0.0.0.0', 'sentia-api');
+    // Start server directly (enterprise process management will be re-enabled later)
+    const port = PORT;
+    httpServer.listen(port, '0.0.0.0', () => {
+      logInfo('sentia-api started successfully', {
+        host: '0.0.0.0',
+        port: port,
+        pid: process.pid
+      });
+    });
     
     // Log successful startup with enterprise logging
     logInfo('✅ SENTIA ENTERPRISE SERVER STARTED', {

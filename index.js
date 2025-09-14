@@ -146,9 +146,15 @@ app.listen(port, '0.0.0.0', () => {
     ======================================
     Environment: ${process.env.NODE_ENV || 'development'}
     Port: ${port}
+    PORT env var: ${process.env.PORT || 'not set'}
     Health Check: http://localhost:${port}/health
     ${isProduction ? 'Serving production build from /dist' : 'Development mode - use Vite for frontend'}
     ======================================
   `);
+
+  // Log every 30 seconds to show server is alive
+  setInterval(() => {
+    console.log(`[${new Date().toISOString()}] Server alive on port ${port}`);
+  }, 30000);
 });
 

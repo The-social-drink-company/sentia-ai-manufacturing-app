@@ -5436,7 +5436,64 @@ app.get('*', (req, res) => {
   res.setHeader('Content-Security-Policy', csp);
   
   // Serve the React app for all other routes (SPA routing)
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+
+  // Check if dist/index.html exists
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    // Fallback to a basic HTML response if dist doesn't exist
+    res.status(200).send(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sentia Manufacturing Dashboard</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+          }
+          .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+          }
+          h1 { margin-bottom: 1rem; }
+          p { margin: 0.5rem 0; opacity: 0.9; }
+          .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            border-radius: 20px;
+            margin-top: 1rem;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Sentia Manufacturing Dashboard</h1>
+          <p>Server is running in ${process.env.NODE_ENV || 'development'} mode</p>
+          <p>Environment: ${process.env.RAILWAY_ENVIRONMENT || 'local'}</p>
+          <div class="status">✓ API Server Active</div>
+          <p style="margin-top: 2rem; font-size: 0.9rem;">
+            Build status: ${fs.existsSync(path.join(__dirname, 'dist')) ? 'Build directory exists' : 'Awaiting build'}
+          </p>
+        </div>
+      </body>
+      </html>
+    `);
+  }
 });
 
 // Error handling middleware

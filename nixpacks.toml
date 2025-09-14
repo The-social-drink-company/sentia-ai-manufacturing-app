@@ -3,18 +3,19 @@ nixPkgs = ['nodejs_18']
 
 [phases.install]
 cmds = [
-  "npm ci --only=production"
+  "npm ci"
 ]
 
 [phases.build]
 cmds = [
-  "echo 'Starting Railway build process with auto-fix...'",
-  "npm run build:railway",
-  "echo 'Build completed. Checking dist directory...'",
-  "ls -la dist/ || echo 'Dist directory not found'",
-  "ls -la dist/js/ || echo 'JS directory not found'",
-  "echo 'Auto-fix build verification complete.'",
-  "echo 'Applying 502 Bad Gateway fixes...'"
+  "echo 'Starting Railway build process...'",
+  "echo 'Building React application with Vite...'",
+  "npm run build",
+  "echo 'Build completed. Verifying dist directory...'",
+  "ls -la dist/ || echo 'ERROR: Dist directory not found!'",
+  "ls -la dist/index.html || echo 'ERROR: index.html not found!'",
+  "ls -la dist/assets/ || echo 'WARNING: Assets directory not found'",
+  "echo 'Build verification complete.'"
 ]
 
 [start]

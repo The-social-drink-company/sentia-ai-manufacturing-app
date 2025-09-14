@@ -1,107 +1,14 @@
 {
+  "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "nixpacks",
+    "builder": "NIXPACKS",
     "buildCommand": "npm run build"
   },
   "deploy": {
-    "startCommand": "node server.js",
-    "comment": "CRITICAL FIX - Using server.js for full API + frontend serving",
-    "healthcheckPath": "/api/health",
+    "startCommand": "node railway-server.js",
+    "healthcheckPath": "/health",
     "healthcheckTimeout": 300,
-    "restartPolicyType": "on_failure",
-    "restartPolicyMaxRetries": 3
-  },
-  "environments": {
-    "development": {
-      "variables": {
-        "NODE_ENV": "development",
-        "RAILWAY_ENVIRONMENT": "development",
-        "PORT": "$PORT",
-        "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
-        "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
-        "CORS_ORIGINS": "https://sentia-manufacturing-dashboard-development.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "$OPENAI_API_KEY",
-        "XERO_CLIENT_ID": "$XERO_CLIENT_ID",
-        "XERO_CLIENT_SECRET": "$XERO_CLIENT_SECRET",
-        "XERO_REDIRECT_URI": "https://sentia-manufacturing-dashboard-development.up.railway.app/api/xero/callback"
-      },
-      "domains": [
-        "sentia-manufacturing-dashboard-development.up.railway.app"
-      ],
-      "serviceSettings": {
-        "autoscaling": false,
-        "instanceCount": 1,
-        "memoryLimit": "512MB",
-        "cpuLimit": "500m"
-      }
-    },
-    "testing": {
-      "variables": {
-        "NODE_ENV": "test",
-        "RAILWAY_ENVIRONMENT": "testing",
-        "PORT": "$PORT",
-        "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
-        "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
-        "CORS_ORIGINS": "https://sentiatest.financeflo.ai,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "$OPENAI_API_KEY",
-        "XERO_CLIENT_ID": "$XERO_CLIENT_ID",
-        "XERO_CLIENT_SECRET": "$XERO_CLIENT_SECRET",
-        "XERO_REDIRECT_URI": "https://sentiatest.financeflo.ai/api/xero/callback"
-      },
-      "domains": [
-        "sentiatest.financeflo.ai"
-      ],
-      "serviceSettings": {
-        "autoscaling": false,
-        "instanceCount": 1,
-        "memoryLimit": "512MB",
-        "cpuLimit": "500m"
-      }
-    },
-    "production": {
-      "variables": {
-        "NODE_ENV": "production",
-        "RAILWAY_ENVIRONMENT": "production",
-        "PORT": "$PORT",
-        "DATABASE_URL": "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        "VITE_CLERK_PUBLISHABLE_KEY": "$VITE_CLERK_PUBLISHABLE_KEY",
-        "CLERK_SECRET_KEY": "$CLERK_SECRET_KEY",
-        "CORS_ORIGINS": "https://sentiaprod.financeflo.ai,https://sentia-manufacturing-dashboard-production.up.railway.app,http://localhost:3000,http://localhost:3001,http://localhost:3002",
-        "OPENAI_API_KEY": "$OPENAI_API_KEY",
-        "ANTHROPIC_API_KEY": "$ANTHROPIC_API_KEY",
-        "GOOGLE_AI_API_KEY": "$GOOGLE_AI_API_KEY",
-        "XERO_CLIENT_ID": "$XERO_CLIENT_ID",
-        "XERO_CLIENT_SECRET": "$XERO_CLIENT_SECRET",
-        "XERO_REDIRECT_URI": "https://sentia-manufacturing-dashboard-production.up.railway.app/api/xero/callback",
-        "SHOPIFY_API_KEY": "$SHOPIFY_API_KEY",
-        "SHOPIFY_API_SECRET": "$SHOPIFY_API_SECRET",
-        "AMAZON_SP_API_CLIENT_ID": "$AMAZON_SP_API_CLIENT_ID",
-        "AMAZON_SP_API_CLIENT_SECRET": "$AMAZON_SP_API_CLIENT_SECRET",
-        "UNLEASHED_API_ID": "$UNLEASHED_API_ID",
-        "UNLEASHED_API_KEY": "$UNLEASHED_API_KEY",
-        "REDIS_URL": "$REDIS_URL",
-        "JWT_SECRET": "$JWT_SECRET",
-        "MCP_PORT": "3001",
-        "ENABLE_MCP_SERVER": "true",
-        "ENABLE_AI_FEATURES": "true",
-        "ENABLE_WEBSOCKET": "true",
-        "ENABLE_SSE": "true"
-      },
-      "domains": [
-        "sentia-manufacturing-dashboard-production.up.railway.app",
-        "sentiaprod.financeflo.ai"
-      ],
-      "serviceSettings": {
-        "autoscaling": true,
-        "instanceCount": {
-          "min": 2,
-          "max": 5
-        },
-        "memoryLimit": "1GB",
-        "cpuLimit": "1000m"
-      }
-    }
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
   }
 }

@@ -113,11 +113,11 @@ import { createServer } from 'http';
 import apiIntegrationManager from './services/integrations/api-integration-manager.js';
 // Import route validator
 import routeValidator from './services/route-validator.js';
-// Import Enterprise Components
-import EnterpriseSecurityFramework from './services/security/enterpriseSecurityFramework.js';
-import EnterpriseIntegrationHub from './services/integrations/enterpriseIntegrationHub.js';
-import DualAIOrchestrator from './services/ai/dualAIOrchestrator.js';
-import EnhancedForecastingEngine from './services/forecasting/enhancedForecastingEngine.js';
+// Enterprise Components - Temporarily disabled for deployment fix
+// import EnterpriseSecurityFramework from './services/security/enterpriseSecurityFramework.js';
+// import EnterpriseIntegrationHub from './services/integrations/enterpriseIntegrationHub.js';
+// import DualAIOrchestrator from './services/ai/dualAIOrchestrator.js';
+// import EnhancedForecastingEngine from './services/forecasting/enhancedForecastingEngine.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -312,11 +312,14 @@ let manufacturingData = {
 
 logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYMENT]', { port: PORT, environment: process.env.NODE_ENV || 'development', apiEndpointsActive: true, deploymentTime: new Date().toISOString() });
 
-// Initialize enterprise services
+// Initialize enterprise services - Temporarily disabled for deployment fix
 (async () => {
   try {
-    logInfo('Initializing enterprise services');
+    logInfo('Initializing basic services');
     
+    // Enterprise components temporarily disabled until export issues are resolved
+    // TODO: Re-enable after fixing ES6 module exports
+    /*
     // Initialize Enterprise Security Framework
     const securityFramework = new EnterpriseSecurityFramework({
       auth: {
@@ -356,6 +359,7 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYM
     await forecastingEngine.initialize();
     global.forecastingEngine = forecastingEngine;
     logInfo('Enhanced Forecasting Engine initialized');
+    */
     
     // Initialize Xero service
     const xeroHealth = await xeroService.healthCheck();
@@ -365,7 +369,7 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYM
     const aiHealth = await aiAnalyticsService.healthCheck();
     logInfo('AI Analytics initialized', { status: aiHealth.status, message: 'Vector database ready' });
     
-    logInfo('All enterprise services initialized');
+    logInfo('Basic services initialized - Enterprise features will be added in next deployment');
   } catch (error) {
     logError('Service initialization error', error);
   }

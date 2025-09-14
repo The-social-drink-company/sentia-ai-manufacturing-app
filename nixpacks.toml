@@ -14,4 +14,4 @@ cmds = [
 ]
 
 [start]
-cmd = "node production-server.cjs"
+cmd = "node index.cjs"

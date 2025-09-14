@@ -4,9 +4,9 @@
     "buildCommand": "npm run build:railway"
   },
   "deploy": {
-    "startCommand": "node server.js",
+    "startCommand": "node index.js",
     "comment": "CRITICAL FIX - 2025-09-10 - Cache mount EBUSY error resolved, production deployment optimized, testing environment with MCP integration",
-    "healthcheckPath": "/api/health",
+    "healthcheckPath": "/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "on_failure",
     "restartPolicyMaxRetries": 3

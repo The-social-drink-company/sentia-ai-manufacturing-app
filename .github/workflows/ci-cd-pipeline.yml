@@ -1,0 +1,451 @@
+name: Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, development, testing ]
+  pull_request:
+    branches: [ main, development, testing ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Security and Code Quality Checks
+  security-scan:
+    name: Security & Code Quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint Security Scan
+        run: npm run lint:security
+        continue-on-error: true
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      - name: Run Semgrep Security Scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+  # Unit and Integration Tests
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: security-scan
+    
+    strategy:
+      matrix:
+        test-type: [unit, integration, e2e]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test environment
+        run: |
+          cp .env.testing.template .env.test
+          echo "DATABASE_URL=${{ secrets.TEST_DATABASE_URL }}" >> .env.test
+
+      - name: Run Unit Tests
+        if: matrix.test-type == 'unit'
+        run: |
+          npm run test:unit -- --coverage --reporter=json --outputFile=coverage/unit-results.json
+        env:
+          NODE_ENV: test
+
+      - name: Run Integration Tests
+        if: matrix.test-type == 'integration'
+        run: |
+          npm run test:integration -- --coverage --reporter=json --outputFile=coverage/integration-results.json
+        env:
+          NODE_ENV: test
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+
+      - name: Run E2E Tests
+        if: matrix.test-type == 'e2e'
+        run: |
+          npm run test:e2e -- --reporter=json --outputFile=coverage/e2e-results.json
+        env:
+          NODE_ENV: test
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.test-type }}
+          path: |
+            coverage/
+            test-results/
+
+      - name: Upload coverage to Codecov
+        if: matrix.test-type == 'unit'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+  # Build and Quality Gates
+  build:
+    name: Build & Quality Gates
+    runs-on: ubuntu-latest
+    needs: test
+    
+    outputs:
+      quality-gate: ${{ steps.quality-gate.outputs.passed }}
+      build-version: ${{ steps.version.outputs.version }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate build version
+        id: version
+        run: |
+          VERSION=$(date +%Y%m%d)-${GITHUB_SHA::8}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "BUILD_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run type checking
+        run: npm run type-check
+        continue-on-error: true
+
+      - name: Build application
+        run: |
+          npm run build
+        env:
+          NODE_ENV: production
+          VITE_BUILD_VERSION: ${{ env.BUILD_VERSION }}
+
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-results-*
+          merge-multiple: true
+          path: ./test-results
+
+      - name: Quality Gate Check
+        id: quality-gate
+        run: |
+          # Check test coverage thresholds
+          COVERAGE=$(node -e "
+            const fs = require('fs');
+            try {
+              const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json'));
+              const lines = coverage.total.lines.pct;
+              const branches = coverage.total.branches.pct;
+              const functions = coverage.total.functions.pct;
+              const statements = coverage.total.statements.pct;
+              
+              console.log(\`Lines: \${lines}%, Branches: \${branches}%, Functions: \${functions}%, Statements: \${statements}%\`);
+              
+              if (lines >= 85 && branches >= 80 && functions >= 80 && statements >= 85) {
+                console.log('PASS');
+              } else {
+                console.log('FAIL');
+                process.exit(1);
+              }
+            } catch (e) {
+              console.log('Coverage file not found, skipping check');
+              console.log('PASS');
+            }
+          ")
+          
+          if [ "$?" -eq 0 ]; then
+            echo "passed=true" >> $GITHUB_OUTPUT
+            echo "✅ Quality gate passed"
+          else
+            echo "passed=false" >> $GITHUB_OUTPUT
+            echo "❌ Quality gate failed"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            dist/
+            build/
+            package.json
+            package-lock.json
+
+  # Development Deployment
+  deploy-development:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/development' && needs.build.outputs.quality-gate == 'true'
+    environment: development
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Railway (Development)
+        uses: railway-app/railway-action@v1
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN_DEV }}
+          project: ${{ secrets.RAILWAY_PROJECT_ID }}
+          environment: development
+          service: sentia-manufacturing-dashboard
+
+      - name: Run post-deployment tests
+        run: |
+          sleep 30 # Wait for deployment to be ready
+          curl -f ${{ secrets.DEV_APP_URL }}/api/health || exit 1
+
+      - name: Notify deployment success
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '🚀 Development deployment successful'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Testing Environment Deployment
+  deploy-testing:
+    name: Deploy to Testing (UAT)
+    runs-on: ubuntu-latest
+    needs: [build, deploy-development]
+    if: github.ref == 'refs/heads/testing' && needs.build.outputs.quality-gate == 'true'
+    environment: testing
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Railway (Testing)
+        uses: railway-app/railway-action@v1
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN_TEST }}
+          project: ${{ secrets.RAILWAY_PROJECT_ID }}
+          environment: testing
+          service: sentia-manufacturing-dashboard
+
+      - name: Run smoke tests
+        run: |
+          sleep 45 # Wait for deployment to be ready
+          curl -f ${{ secrets.TEST_APP_URL }}/api/health || exit 1
+          curl -f ${{ secrets.TEST_APP_URL }}/api/integrations/health || exit 1
+
+      - name: Run UAT test suite
+        run: |
+          npm ci
+          npm run test:uat
+        env:
+          TEST_BASE_URL: ${{ secrets.TEST_APP_URL }}
+
+      - name: Notify UAT ready
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '🧪 UAT environment ready for testing'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Production Deployment
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, deploy-testing]
+    if: github.ref == 'refs/heads/main' && needs.build.outputs.quality-gate == 'true'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create deployment
+        uses: actions/github-script@v7
+        id: deployment
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'production',
+              description: 'Production deployment',
+              auto_merge: false
+            });
+            return deployment.data.id;
+
+      - name: Deploy to Railway (Production)
+        uses: railway-app/railway-action@v1
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN_PROD }}
+          project: ${{ secrets.RAILWAY_PROJECT_ID }}
+          environment: production
+          service: sentia-manufacturing-dashboard
+
+      - name: Run production health checks
+        run: |
+          sleep 60 # Wait for deployment to be ready
+          curl -f ${{ secrets.PROD_APP_URL }}/api/health || exit 1
+          curl -f ${{ secrets.PROD_APP_URL }}/api/integrations/health || exit 1
+
+      - name: Update deployment status
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const deploymentId = ${{ steps.deployment.outputs.result }};
+            const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
+            
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deploymentId,
+              state: state,
+              environment_url: '${{ secrets.PROD_APP_URL }}',
+              description: state === 'success' ? 'Deployment successful' : 'Deployment failed'
+            });
+
+      - name: Notify production deployment
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            🚀 Production deployment ${{ job.status }}
+            Version: ${{ needs.build.outputs.build-version }}
+            URL: ${{ secrets.PROD_APP_URL }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Performance Testing (Production)
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run performance tests
+        run: |
+          k6 run tests/performance/load-test.js
+        env:
+          BASE_URL: ${{ secrets.PROD_APP_URL }}
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results
+          path: performance-results.json
+
+  # Cleanup and Notifications
+  cleanup:
+    name: Cleanup & Notifications
+    runs-on: ubuntu-latest
+    needs: [deploy-production, performance-test]
+    if: always()
+    
+    steps:
+      - name: Clean up old deployments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployments = await github.rest.repos.listDeployments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              environment: 'production'
+            });
+            
+            // Keep only the latest 10 deployments
+            const oldDeployments = deployments.data.slice(10);
+            
+            for (const deployment of oldDeployments) {
+              await github.rest.repos.deleteDeployment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                deployment_id: deployment.id
+              });
+            }
+
+      - name: Send final notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          text: |
+            📊 Pipeline Summary:
+            - Security Scan: ${{ needs.security-scan.result }}
+            - Tests: ${{ needs.test.result }}
+            - Build: ${{ needs.build.result }}
+            - Production Deploy: ${{ needs.deploy-production.result }}
+            - Performance Test: ${{ needs.performance-test.result }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+

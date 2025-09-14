@@ -1,17 +1,21 @@
 [build]
 builder = "nixpacks" 
 buildCommand = "npm run build"
-watchPatterns = ["src/**/*", "public/**/*", "*.js", "*.json"]
+watchPatterns = ["src/**/*", "public/**/*", "*.js", "*.json", "services/**/*"]
 
 [deploy]
 startCommand = "node server.js"
 healthcheckPath = "/api/health"
-restartPolicyType = "never"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
 
+# Environment Variables
 [[env]]
 name = "NODE_ENV"
 value = "production"
 
+# Existing Clerk Configuration
 [[env]]
 name = "VITE_CLERK_PUBLISHABLE_KEY" 
 value = "pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
@@ -23,3 +27,127 @@ value = "sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq"
 [[env]]
 name = "VITE_API_BASE_URL"
 value = "https://web-production-1f10.up.railway.app/api"
+
+# Database Configuration - Neon PostgreSQL
+[[env]]
+name = "DATABASE_URL"
+value = "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
+# Flask Configuration
+[[env]]
+name = "FLASK_CONFIG"
+value = "production"
+
+[[env]]
+name = "SECRET_KEY"
+value = "7a91c84993193fe2592863a924eefff4b39fe51bc656fb6475c227d7b969c6fb"
+
+[[env]]
+name = "FLASK_APP"
+value = "run.py"
+
+# Unleashed Software API
+[[env]]
+name = "UNLEASHED_API_ID"
+value = "d5313df6-db35-430c-a69e-ae27dffe0c5a"
+
+[[env]]
+name = "UNLEASHED_API_KEY"
+value = "2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ=="
+
+[[env]]
+name = "UNLEASHED_API_URL"
+value = "https://api.unleashedsoftware.com"
+
+# Shopify UK Store
+[[env]]
+name = "SHOPIFY_UK_API_KEY"
+value = "7a30cd84e7a106b852c8e0fb789de10e"
+
+[[env]]
+name = "SHOPIFY_UK_SECRET"
+value = "8b2d61745c506970c70d8c892f5f977e"
+
+[[env]]
+name = "SHOPIFY_UK_ACCESS_TOKEN"
+value = "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"
+
+[[env]]
+name = "SHOPIFY_UK_SHOP_URL"
+value = "sentiaspirits.myshopify.com"
+
+# Shopify USA Store
+[[env]]
+name = "SHOPIFY_USA_API_KEY"
+value = "83b8903fd8b509ef8bf93d1dbcd6079c"
+
+[[env]]
+name = "SHOPIFY_USA_SECRET"
+value = "d01260e58adb00198cddddd1bd9a9490"
+
+[[env]]
+name = "SHOPIFY_USA_ACCESS_TOKEN"
+value = "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"
+
+[[env]]
+name = "SHOPIFY_USA_SHOP_URL"
+value = "us-sentiaspirits.myshopify.com"
+
+# Amazon SP-API
+[[env]]
+name = "AMAZON_UK_MARKETPLACE_ID"
+value = "A1F83G8C2ARO7P"
+
+[[env]]
+name = "AMAZON_USA_MARKETPLACE_ID"
+value = "ATVPDKIKX0DER"
+
+# Xero API
+[[env]]
+name = "XERO_API_KEY"
+value = "9C0CAB921C134476A249E48BBECB8C4B"
+
+[[env]]
+name = "XERO_SECRET"
+value = "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5"
+
+# Microsoft Email API
+[[env]]
+name = "MS_API_KEY"
+value = "peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM"
+
+[[env]]
+name = "MS_API_SECRET"
+value = "c16d6fba-0e6b-45ea-a016-eb697ff7a7ae"
+
+[[env]]
+name = "MS_EMAIL_ADMIN"
+value = "admin@app.sentiaspirits.com"
+
+[[env]]
+name = "MS_EMAIL_DATA"
+value = "data@app.sentiaspirits.com"
+
+# Slack Integration
+[[env]]
+name = "SLACK_BOT_TOKEN"
+value = "xoxb-5909652898375-9457338164149-OGj9D5ptv8r3GQ7h2soAXRZY"
+
+# AI API Keys
+[[env]]
+name = "OPENAI_API_KEY"
+value = "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"
+
+[[env]]
+name = "CLAUDE_API_KEY"
+value = "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"
+
+# CORS Configuration
+[[env]]
+name = "CORS_ORIGINS"
+value = "http://localhost:3000,http://localhost:5000,sentiadeploy.financeflo.ai"
+
+# JWT Security
+[[env]]
+name = "JWT_SECRET"
+value = "7a91c84993193fe2592863a924eefff4b39fe51bc656fb6475c227d7b969c6fb"

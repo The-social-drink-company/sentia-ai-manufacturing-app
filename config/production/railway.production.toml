@@ -1,0 +1,325 @@
+# Railway Production Deployment Configuration
+# Sentia Manufacturing Dashboard - Enterprise Production Setup
+
+[build]
+builder = "nixpacks"
+buildCommand = "npm ci && npm run build"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+# Production Environment Variables
+[env]
+NODE_ENV = "production"
+PORT = "$PORT"
+
+# Database Configuration - Neon PostgreSQL Production
+DATABASE_URL = "$DATABASE_URL"
+DATABASE_POOL_MIN = "5"
+DATABASE_POOL_MAX = "20"
+DATABASE_TIMEOUT = "30000"
+
+# Security Configuration
+JWT_SECRET = "$JWT_SECRET"
+ENCRYPTION_KEY = "$ENCRYPTION_KEY"
+SESSION_SECRET = "$SESSION_SECRET"
+
+# CORS Configuration
+CORS_ORIGINS = "sentiadeploy.financeflo.ai,https://sentiadeploy.financeflo.ai"
+
+# AI Services Configuration
+OPENAI_API_KEY = "$OPENAI_API_KEY"
+OPENAI_API_BASE = "$OPENAI_API_BASE"
+ANTHROPIC_API_KEY = "$ANTHROPIC_API_KEY"
+
+# Integration APIs
+UNLEASHED_API_ID = "$UNLEASHED_API_ID"
+UNLEASHED_API_KEY = "$UNLEASHED_API_KEY"
+UNLEASHED_API_URL = "$UNLEASHED_API_URL"
+
+# Shopify Integrations
+SHOPIFY_UK_API_KEY = "$SHOPIFY_UK_API_KEY"
+SHOPIFY_UK_SECRET = "$SHOPIFY_UK_SECRET"
+SHOPIFY_UK_ACCESS_TOKEN = "$SHOPIFY_UK_ACCESS_TOKEN"
+SHOPIFY_UK_SHOP_URL = "$SHOPIFY_UK_SHOP_URL"
+
+SHOPIFY_USA_API_KEY = "$SHOPIFY_USA_API_KEY"
+SHOPIFY_USA_SECRET = "$SHOPIFY_USA_SECRET"
+SHOPIFY_USA_ACCESS_TOKEN = "$SHOPIFY_USA_ACCESS_TOKEN"
+SHOPIFY_USA_SHOP_URL = "$SHOPIFY_USA_SHOP_URL"
+
+# Amazon SP-API
+AMAZON_SP_API_CLIENT_ID = "$AMAZON_SP_API_CLIENT_ID"
+AMAZON_SP_API_CLIENT_SECRET = "$AMAZON_SP_API_CLIENT_SECRET"
+AMAZON_SP_API_REFRESH_TOKEN = "$AMAZON_SP_API_REFRESH_TOKEN"
+AMAZON_UK_MARKETPLACE_ID = "$AMAZON_UK_MARKETPLACE_ID"
+AMAZON_USA_MARKETPLACE_ID = "$AMAZON_USA_MARKETPLACE_ID"
+
+# Xero Integration
+XERO_API_KEY = "$XERO_API_KEY"
+XERO_SECRET = "$XERO_SECRET"
+
+# Communication Services
+SLACK_BOT_TOKEN = "$SLACK_BOT_TOKEN"
+MS_ADMIN_EMAIL = "admin@app.sentiaspirits.com"
+MS_DATA_EMAIL = "data@app.sentiaspirits.com"
+MS_API_KEY = "$MS_API_KEY"
+MS_API_SECRET = "$MS_API_SECRET"
+
+# Performance & Monitoring
+MONITORING_ENABLED = "true"
+PERFORMANCE_OPTIMIZATION = "true"
+AUTO_SCALING = "true"
+CACHE_ENABLED = "true"
+REDIS_URL = "$REDIS_URL"
+
+# Logging & Observability
+LOG_LEVEL = "info"
+STRUCTURED_LOGGING = "true"
+METRICS_ENABLED = "true"
+HEALTH_CHECKS_ENABLED = "true"
+
+# Security Headers
+SECURITY_HEADERS = "true"
+RATE_LIMITING = "true"
+IP_BLOCKING = "true"
+
+[services.web]
+# Main application service
+build.buildCommand = "npm ci && npm run build:production"
+deploy.healthcheckPath = "/api/health"
+deploy.healthcheckTimeout = 300
+deploy.replicas = 3
+
+[services.api]
+# API Gateway service
+build.buildCommand = "npm ci && npm run build:api"
+deploy.healthcheckPath = "/health"
+deploy.healthcheckTimeout = 180
+deploy.replicas = 2
+
+[services.worker]
+# Background worker service
+build.buildCommand = "npm ci && npm run build:worker"
+deploy.healthcheckPath = "/worker/health"
+deploy.healthcheckTimeout = 120
+deploy.replicas = 2
+
+[services.scheduler]
+# Workflow scheduler service
+build.buildCommand = "npm ci && npm run build:scheduler"
+deploy.healthcheckPath = "/scheduler/health"
+deploy.healthcheckTimeout = 60
+deploy.replicas = 1
+
+# Resource Allocation
+[resources]
+# Production resource limits
+memory = "2GB"
+cpu = "2vCPU"
+disk = "10GB"
+
+# Auto-scaling configuration
+[scaling]
+enabled = true
+minReplicas = 2
+maxReplicas = 10
+targetCPU = 70
+targetMemory = 80
+
+# Health check configuration
+[healthcheck]
+path = "/health"
+interval = 30
+timeout = 10
+retries = 3
+startPeriod = 60
+
+# Networking
+[networking]
+# Custom domain configuration
+domains = ["sentiadeploy.financeflo.ai"]
+httpsOnly = true
+redirectWww = false
+
+# Load balancer configuration
+[loadBalancer]
+algorithm = "round_robin"
+healthCheck = true
+sessionAffinity = false
+
+# Database connection configuration
+[database]
+connectionPooling = true
+maxConnections = 100
+connectionTimeout = 30000
+idleTimeout = 600000
+
+# Cache configuration
+[cache]
+enabled = true
+provider = "redis"
+ttl = 3600
+maxMemory = "512MB"
+evictionPolicy = "allkeys-lru"
+
+# Monitoring configuration
+[monitoring]
+enabled = true
+metricsInterval = 30
+logsRetention = 30
+alerting = true
+
+# Security configuration
+[security]
+rateLimiting = true
+ipBlocking = true
+securityHeaders = true
+corsEnabled = true
+csrfProtection = true
+
+# Backup configuration
+[backup]
+enabled = true
+schedule = "0 2 * * *"  # Daily at 2 AM
+retention = 30  # 30 days
+
+# Deployment hooks
+[hooks]
+# Pre-deployment validation
+preDeploy = [
+  "npm run test:production",
+  "npm run security:scan",
+  "npm run db:migrate:check"
+]
+
+# Post-deployment verification
+postDeploy = [
+  "npm run health:check",
+  "npm run integration:test",
+  "npm run performance:baseline"
+]
+
+# Rollback hooks
+rollback = [
+  "npm run db:rollback",
+  "npm run cache:clear",
+  "npm run health:verify"
+]
+
+# Environment-specific overrides
+[environments.production]
+replicas = 3
+resources.memory = "4GB"
+resources.cpu = "4vCPU"
+scaling.maxReplicas = 20
+monitoring.alerting = true
+backup.enabled = true
+
+[environments.staging]
+replicas = 1
+resources.memory = "1GB"
+resources.cpu = "1vCPU"
+scaling.maxReplicas = 3
+monitoring.alerting = false
+backup.enabled = false
+
+# Feature flags for production
+[features]
+aiForecasting = true
+advancedReporting = true
+workflowAutomation = true
+enterpriseSecurity = true
+performanceOptimization = true
+realTimeAnalytics = true
+multiRegionSupport = true
+
+# Integration-specific configuration
+[integrations]
+# Unleashed Software
+unleashed.syncInterval = 3600  # 1 hour
+unleashed.retryAttempts = 3
+unleashed.timeout = 30000
+
+# Shopify stores
+shopify.syncInterval = 1800  # 30 minutes
+shopify.retryAttempts = 5
+shopify.timeout = 15000
+
+# Amazon marketplaces
+amazon.syncInterval = 3600  # 1 hour
+amazon.retryAttempts = 3
+amazon.timeout = 45000
+
+# Xero accounting
+xero.syncInterval = 7200  # 2 hours
+xero.retryAttempts = 3
+xero.timeout = 30000
+
+# AI services
+ai.timeout = 60000
+ai.retryAttempts = 2
+ai.rateLimiting = true
+
+# Workflow automation
+[workflows]
+enabled = true
+maxConcurrent = 10
+timeout = 300000  # 5 minutes
+retryAttempts = 3
+retryDelay = 5000
+
+# Notification channels
+[notifications]
+slack.enabled = true
+slack.channels = ["#alerts", "#reports", "#general"]
+email.enabled = true
+email.recipients = ["admin@app.sentiaspirits.com"]
+webhook.enabled = true
+
+# Performance optimization
+[performance]
+caching.enabled = true
+caching.strategy = "adaptive"
+compression.enabled = true
+minification.enabled = true
+bundling.enabled = true
+
+# Security policies
+[securityPolicies]
+passwordPolicy.minLength = 12
+passwordPolicy.complexity = true
+sessionTimeout = 3600000  # 1 hour
+mfaRequired = ["admin", "manager"]
+auditLogging = true
+encryptionAtRest = true
+encryptionInTransit = true
+
+# Compliance settings
+[compliance]
+gdpr.enabled = true
+sox.enabled = true
+dataRetention = 2555  # 7 years in days
+auditRetention = 2555  # 7 years in days
+privacyControls = true
+
+# Disaster recovery
+[disasterRecovery]
+enabled = true
+backupFrequency = "daily"
+recoveryTimeObjective = 4  # 4 hours
+recoveryPointObjective = 1  # 1 hour
+multiRegion = false  # Enable for multi-region deployment
+
+# API rate limiting
+[rateLimiting]
+global.requests = 10000
+global.window = 900  # 15 minutes
+api.requests = 1000
+api.window = 900  # 15 minutes
+auth.requests = 50
+auth.window = 900  # 15 minutes
+

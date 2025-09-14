@@ -1,0 +1,162 @@
+graph TB
+    %% Sentia Manufacturing Dashboard - Deployed Architecture
+    
+    subgraph "Production Environment - Railway"
+        subgraph "Frontend Layer"
+            LP[Landing Page<br/>Marketing Site<br/>Authentication]
+            DA[Dashboard Application<br/>React Frontend<br/>Real-time UI]
+        end
+        
+        subgraph "Authentication Layer"
+            CLERK[Clerk Authentication<br/>Google OAuth<br/>Session Management]
+        end
+        
+        subgraph "Application Core"
+            subgraph "Main Dashboard"
+                OV[Overview Dashboard<br/>KPIs & Metrics<br/>System Status]
+                
+                subgraph "Planning & Analytics"
+                    DF[Demand Forecasting<br/>AI Models: 86.4% accuracy<br/>30-180 day horizons]
+                    IM[Inventory Management<br/>$1.8M tracked<br/>87.3x turnover]
+                    PO[Production Optimization<br/>91.2% accuracy<br/>Resource allocation]
+                    QC[Quality Control<br/>Defect tracking<br/>Compliance monitoring]
+                    AI[AI Analytics<br/>Multiple models<br/>Business intelligence]
+                    AS[AI System Status<br/>Model monitoring<br/>Performance tracking]
+                    RM[Real-Time Monitoring<br/>Live data streams<br/>System health]
+                    MF[Mobile Floor View<br/>Mobile optimized<br/>Field access]
+                end
+                
+                subgraph "Supply Chain"
+                    POR[Purchase Orders<br/>Order management<br/>Supplier tracking]
+                    CT[Cost Tracking<br/>Financial monitoring<br/>Budget analysis]
+                end
+            end
+        end
+        
+        subgraph "AI Engine"
+            subgraph "AI Models"
+                AE[AI Ensemble Model<br/>Primary - 86.4%]
+                DNN[Deep Neural Network<br/>Complex patterns]
+                LSTM[LSTM Time Series<br/>Temporal analysis]
+                SM[Statistical Models<br/>Baseline comparison]
+            end
+            
+            subgraph "AI Features"
+                DF_AI[Demand Forecasting<br/>86.4% accuracy<br/>Active]
+                PO_AI[Production Optimization<br/>91.2% accuracy<br/>Active]
+                QP[Quality Prediction<br/>78.9% accuracy<br/>Training]
+                IO[Inventory Optimization<br/>83.7% accuracy<br/>Active]
+            end
+            
+            subgraph "AI Insights"
+                SP[Seasonal Patterns<br/>94% confidence]
+                DS[Demand Surge<br/>87% confidence]
+                OPT[Optimization<br/>92% confidence]
+                RISK[Supply Risk<br/>79% confidence]
+            end
+        end
+        
+        subgraph "Data Layer"
+            subgraph "Real-Time Data"
+                PL[Production Lines<br/>Status: Online]
+                DI[Data Integration<br/>Status: Connected]
+                AIA[AI Analytics<br/>Status: Active]
+                LD[Live Data Streams<br/>Status: LIVE]
+            end
+            
+            subgraph "Business Metrics"
+                PROD[Production Performance<br/>Efficiency tracking]
+                QUAL[Quality Metrics<br/>Defect rates]
+                INV[Inventory Data<br/>$1.8M value]
+                FIN[Financial Data<br/>$2.8M revenue]
+            end
+        end
+        
+        subgraph "External Factors"
+            WE[Weather Impact<br/>+15.0% influence]
+            MS[Market Sentiment<br/>+8.0% influence]
+            CA[Competitor Activity<br/>-5.0% influence]
+            EI[Economic Indicators<br/>+12.0% influence]
+            PE[Promotional Events<br/>+22.0% influence]
+        end
+    end
+    
+    subgraph "User Interface Features"
+        subgraph "Navigation"
+            SB[Sidebar Navigation<br/>Collapsible<br/>Organized sections]
+            GS[Global Search<br/>Search anything...]
+            AC[AI Copilot<br/>Business Intelligence]
+        end
+        
+        subgraph "Advanced Features"
+            SM_UI[Scenario Mode<br/>What-if analysis]
+            MC[Model Comparison<br/>AI model evaluation]
+            CI[Confidence Intervals<br/>90%, 95%, 99%]
+            EF[External Factors<br/>Market integration]
+        end
+    end
+    
+    %% Connections
+    LP --> CLERK
+    CLERK --> DA
+    DA --> OV
+    
+    OV --> DF
+    OV --> IM
+    OV --> PO
+    OV --> QC
+    OV --> AI
+    OV --> AS
+    OV --> RM
+    OV --> MF
+    OV --> POR
+    OV --> CT
+    
+    DF --> AE
+    PO --> DNN
+    QC --> LSTM
+    IM --> SM
+    
+    AE --> DF_AI
+    DNN --> PO_AI
+    LSTM --> QP
+    SM --> IO
+    
+    DF_AI --> SP
+    PO_AI --> DS
+    QP --> OPT
+    IO --> RISK
+    
+    PL --> PROD
+    DI --> QUAL
+    AIA --> INV
+    LD --> FIN
+    
+    WE --> DF
+    MS --> DF
+    CA --> DF
+    EI --> DF
+    PE --> DF
+    
+    DA --> SB
+    DA --> GS
+    DA --> AC
+    
+    DF --> SM_UI
+    AI --> MC
+    DF_AI --> CI
+    WE --> EF
+    
+    %% Styling
+    classDef frontend fill:#e1f5fe
+    classDef ai fill:#f3e5f5
+    classDef data fill:#e8f5e8
+    classDef auth fill:#fff3e0
+    classDef ui fill:#fce4ec
+    
+    class LP,DA frontend
+    class CLERK auth
+    class AE,DNN,LSTM,SM,DF_AI,PO_AI,QP,IO,SP,DS,OPT,RISK ai
+    class PL,DI,AIA,LD,PROD,QUAL,INV,FIN data
+    class SB,GS,AC,SM_UI,MC,CI,EF ui
+

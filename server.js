@@ -113,6 +113,11 @@ import { createServer } from 'http';
 import apiIntegrationManager from './services/integrations/api-integration-manager.js';
 // Import route validator
 import routeValidator from './services/route-validator.js';
+// Import Enterprise Components
+import EnterpriseSecurityFramework from './services/security/enterpriseSecurityFramework.js';
+import EnterpriseIntegrationHub from './services/integrations/enterpriseIntegrationHub.js';
+import DualAIOrchestrator from './services/ai/dualAIOrchestrator.js';
+import EnhancedForecastingEngine from './services/forecasting/enhancedForecastingEngine.js';
 // FinanceFlo routes temporarily disabled due to import issues
 // import financeFloRoutes from './api/financeflo.js';
 // import adminRoutes from './routes/adminRoutes.js'; // Disabled due to route conflicts with direct endpoints
@@ -311,6 +316,46 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYM
 (async () => {
   try {
     logInfo('Initializing enterprise services');
+    
+    // Initialize Enterprise Security Framework
+    const securityFramework = new EnterpriseSecurityFramework({
+      auth: {
+        mfaRequired: false, // Start with MFA disabled for easier testing
+        jwtSecret: process.env.JWT_SECRET || process.env.SECRET_KEY
+      }
+    });
+    global.securityFramework = securityFramework;
+    logInfo('Enterprise Security Framework initialized');
+    
+    // Initialize Enterprise Integration Hub
+    const integrationHub = new EnterpriseIntegrationHub();
+    await integrationHub.initialize();
+    global.integrationHub = integrationHub;
+    logInfo('Enterprise Integration Hub initialized');
+    
+    // Initialize Dual AI Orchestrator
+    const aiOrchestrator = new DualAIOrchestrator({
+      openai: {
+        apiKey: process.env.OPENAI_API_KEY,
+        model: 'gpt-4'
+      },
+      claude: {
+        apiKey: process.env.CLAUDE_API_KEY,
+        model: 'claude-3-sonnet-20240229'
+      }
+    });
+    await aiOrchestrator.initialize();
+    global.aiOrchestrator = aiOrchestrator;
+    logInfo('Dual AI Orchestrator initialized');
+    
+    // Initialize Enhanced Forecasting Engine
+    const forecastingEngine = new EnhancedForecastingEngine({
+      aiOrchestrator: aiOrchestrator,
+      horizons: [30, 60, 90, 120, 180, 365] // Updated horizons as requested
+    });
+    await forecastingEngine.initialize();
+    global.forecastingEngine = forecastingEngine;
+    logInfo('Enhanced Forecasting Engine initialized');
     
     // Initialize Xero service
     const xeroHealth = await xeroService.healthCheck();

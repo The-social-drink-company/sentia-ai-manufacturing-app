@@ -13,4 +13,4 @@ cmds = [
 ]
 
 [start]
-cmd = "node railway-server.cjs"
+cmd = "node start.js"

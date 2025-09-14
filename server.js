@@ -625,8 +625,19 @@ app.post('/api/auth/microsoft/callback', async (req, res) => {
 // Updated authentication middleware that checks for actual authentication
 const authenticateUser = async (req, res, next) => {
   try {
+    // DEVELOPMENT MODE: Bypass authentication for testing
+    if (process.env.NODE_ENV === 'development' || process.env.BYPASS_AUTH === 'true') {
+      req.user = {
+        id: 'dev-user-001',
+        email: 'dev@sentia.com',
+        role: 'admin',
+        permissions: ['all']
+      };
+      return next();
+    }
+
     const authHeader = req.headers.authorization;
-    
+
     // Check for Authorization header
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ 

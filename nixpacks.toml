@@ -13,8 +13,8 @@ cmds = ["rm -rf node_modules/.cache", "npm ci --legacy-peer-deps"]
 cmds = ["npm run build || echo 'Build failed but continuing for debugging'"]
 
 [start]
-# Start Express server with debugging
-cmd = "echo 'Starting Express server...' && ls -la && node server.js"
+# Temporarily use minimal test server to diagnose Railway issues
+cmd = "echo 'Starting test server...' && ls -la && node railway-health-test.js"
 
 [staticAssets]
 # IMPORTANT: This disables Caddy static file server

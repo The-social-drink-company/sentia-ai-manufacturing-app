@@ -4893,6 +4893,10 @@ app.use('/api/admin/api-keys', apiKeyRoutes);
 import comprehensiveHealthRoutes from './api/health/comprehensive-health.js';
 app.use('/api/health', comprehensiveHealthRoutes);
 
+// MCP Server Integration Routes
+import mcpIntegrationRoutes from './api/mcp-integration.js';
+app.use('/api/mcp', mcpIntegrationRoutes);
+
 // Enterprise Manufacturing APIs - IMMEDIATELY IMPLEMENT MISSING ENDPOINTS
 
 // Demand Forecasting API

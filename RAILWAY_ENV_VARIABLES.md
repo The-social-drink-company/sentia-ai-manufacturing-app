@@ -23,9 +23,9 @@ NODE_ENV=development
 PORT=3000
 CORS_ORIGINS=http://localhost:3000,http://localhost:5000,https://sentia-manufacturing-dashboard-development.up.railway.app
 
-# Database (Neon PostgreSQL)
-DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-DEV_DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+# Database (Neon PostgreSQL - Development Branch)
+DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+DEV_DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 # MCP Server Integration
 MCP_SERVER_URL=https://web-production-99691282.up.railway.app
@@ -49,23 +49,31 @@ XERO_CLIENT_SECRET=f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
 XERO_REDIRECT_URI=https://sentia-manufacturing-dashboard-development.up.railway.app/api/xero/callback
 XERO_TENANT_ID=YOUR_XERO_TENANT_ID
 
-# Shopify Integration (Configured)
-SHOPIFY_API_KEY=7a30cd84e7a106b852c8e0fb789de10e
-SHOPIFY_API_SECRET=YOUR_SHOPIFY_API_SECRET_NEEDED
-SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-SHOPIFY_ACCESS_TOKEN=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
+# Shopify Integration (Configured - Multiple Regions)
+# UK Store
+SHOPIFY_UK_API_KEY=7a30cd84e7a106b852c8e0fb789de10e
+SHOPIFY_UK_SECRET=8b2d61745c506970c70d8c892f5f977e
+SHOPIFY_UK_ACCESS_TOKEN=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
+SHOPIFY_UK_SHOP_URL=sentiaspirits.myshopify.com
+# USA Store
+SHOPIFY_USA_API_KEY=83b8903fd8b509ef8bf93d1dbcd6079c
+SHOPIFY_USA_SECRET=d01260e58adb00198cddddd1bd9a9490
+SHOPIFY_USA_ACCESS_TOKEN=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
+SHOPIFY_USA_SHOP_URL=us-sentiaspirits.myshopify.com
 SHOPIFY_WEBHOOK_SECRET=YOUR_SHOPIFY_WEBHOOK_SECRET
 
-# Amazon SP-API (Optional - Configure if you have credentials)
-AMAZON_SP_API_KEY=YOUR_AMAZON_API_KEY
-AMAZON_SP_API_SECRET=YOUR_AMAZON_API_SECRET
-AMAZON_REFRESH_TOKEN=YOUR_AMAZON_REFRESH_TOKEN
-AMAZON_MARKETPLACE_ID=ATVPDKIKX0DER
+# Amazon SP-API (Configured)
+AMAZON_SP_API_CLIENT_ID=YOUR_AMAZON_CLIENT_ID
+AMAZON_SP_API_CLIENT_SECRET=YOUR_AMAZON_CLIENT_SECRET
+AMAZON_SP_API_REFRESH_TOKEN=YOUR_AMAZON_REFRESH_TOKEN
+AMAZON_UK_MARKETPLACE_ID=A1F83G8C2ARO7P
+AMAZON_USA_MARKETPLACE_ID=ATVPDKIKX0DER
 AMAZON_SELLER_ID=YOUR_SELLER_ID
 
 # Unleashed ERP (Configured)
 UNLEASHED_API_ID=d5313df6-db35-430c-a69e-ae27dffe0c5a
 UNLEASHED_API_KEY=2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+UNLEASHED_API_URL=https://api.unleashedsoftware.com
 
 # AI Services (Configured)
 OPENAI_API_KEY=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
@@ -77,6 +85,13 @@ XERO_SYNC_INTERVAL=*/30 * * * *
 SHOPIFY_SYNC_INTERVAL=*/15 * * * *
 AMAZON_SYNC_INTERVAL=*/60 * * * *
 DATABASE_SYNC_INTERVAL=0 */6 * * *
+
+# Microsoft Graph API (For Excel/Spreadsheet Integration)
+MICROSOFT_CLIENT_ID=c16d6fba-0e6b-45ea-a016-eb697ff7a7ae
+MICROSOFT_CLIENT_SECRET=peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM
+MICROSOFT_TENANT_ID=common
+MICROSOFT_ADMIN_EMAIL=admin@app.sentiaspirits.com
+MICROSOFT_DATA_EMAIL=data@app.sentiaspirits.com
 
 # Redis Cache (Optional)
 REDIS_URL=redis://default:password@redis-server:6379
@@ -110,9 +125,9 @@ NODE_ENV=test
 PORT=3000
 CORS_ORIGINS=https://sentiatest.financeflo.ai,http://localhost:3000
 
-# Database (Neon PostgreSQL)
-DATABASE_URL=postgresql://neondb_owner:RkdOBTlexFfK@ep-aged-cake-a5erf8rx-pooler.us-east-2.aws.neon.tech/sentia_manufacturing_test?sslmode=require
-TEST_DATABASE_URL=postgresql://neondb_owner:RkdOBTlexFfK@ep-aged-cake-a5erf8rx-pooler.us-east-2.aws.neon.tech/sentia_manufacturing_test?sslmode=require
+# Database (Neon PostgreSQL - Test Branch)
+DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-shiny-dream-ab2zho2p-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+TEST_DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-shiny-dream-ab2zho2p-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 # MCP Server Integration
 MCP_SERVER_URL=https://web-production-99691282.up.railway.app
@@ -136,23 +151,31 @@ XERO_CLIENT_SECRET=f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
 XERO_REDIRECT_URI=https://sentiatest.financeflo.ai/api/xero/callback
 XERO_TENANT_ID=YOUR_XERO_TENANT_ID
 
-# Shopify Integration (Configured)
-SHOPIFY_API_KEY=7a30cd84e7a106b852c8e0fb789de10e
-SHOPIFY_API_SECRET=YOUR_SHOPIFY_API_SECRET_NEEDED
-SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-SHOPIFY_ACCESS_TOKEN=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
+# Shopify Integration (Configured - Multiple Regions)
+# UK Store
+SHOPIFY_UK_API_KEY=7a30cd84e7a106b852c8e0fb789de10e
+SHOPIFY_UK_SECRET=8b2d61745c506970c70d8c892f5f977e
+SHOPIFY_UK_ACCESS_TOKEN=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
+SHOPIFY_UK_SHOP_URL=sentiaspirits.myshopify.com
+# USA Store
+SHOPIFY_USA_API_KEY=83b8903fd8b509ef8bf93d1dbcd6079c
+SHOPIFY_USA_SECRET=d01260e58adb00198cddddd1bd9a9490
+SHOPIFY_USA_ACCESS_TOKEN=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
+SHOPIFY_USA_SHOP_URL=us-sentiaspirits.myshopify.com
 SHOPIFY_WEBHOOK_SECRET=YOUR_SHOPIFY_WEBHOOK_SECRET
 
-# Amazon SP-API (Optional - Configure if you have credentials)
-AMAZON_SP_API_KEY=YOUR_AMAZON_API_KEY
-AMAZON_SP_API_SECRET=YOUR_AMAZON_API_SECRET
-AMAZON_REFRESH_TOKEN=YOUR_AMAZON_REFRESH_TOKEN
-AMAZON_MARKETPLACE_ID=ATVPDKIKX0DER
+# Amazon SP-API (Configured)
+AMAZON_SP_API_CLIENT_ID=YOUR_AMAZON_CLIENT_ID
+AMAZON_SP_API_CLIENT_SECRET=YOUR_AMAZON_CLIENT_SECRET
+AMAZON_SP_API_REFRESH_TOKEN=YOUR_AMAZON_REFRESH_TOKEN
+AMAZON_UK_MARKETPLACE_ID=A1F83G8C2ARO7P
+AMAZON_USA_MARKETPLACE_ID=ATVPDKIKX0DER
 AMAZON_SELLER_ID=YOUR_SELLER_ID
 
 # Unleashed ERP (Configured)
 UNLEASHED_API_ID=d5313df6-db35-430c-a69e-ae27dffe0c5a
 UNLEASHED_API_KEY=2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+UNLEASHED_API_URL=https://api.unleashedsoftware.com
 
 # AI Services (Configured)
 OPENAI_API_KEY=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
@@ -164,6 +187,13 @@ XERO_SYNC_INTERVAL=*/30 * * * *
 SHOPIFY_SYNC_INTERVAL=*/15 * * * *
 AMAZON_SYNC_INTERVAL=*/60 * * * *
 DATABASE_SYNC_INTERVAL=0 */6 * * *
+
+# Microsoft Graph API (For Excel/Spreadsheet Integration)
+MICROSOFT_CLIENT_ID=c16d6fba-0e6b-45ea-a016-eb697ff7a7ae
+MICROSOFT_CLIENT_SECRET=peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM
+MICROSOFT_TENANT_ID=common
+MICROSOFT_ADMIN_EMAIL=admin@app.sentiaspirits.com
+MICROSOFT_DATA_EMAIL=data@app.sentiaspirits.com
 
 # Redis Cache (Optional)
 REDIS_URL=redis://default:password@redis-server:6379
@@ -197,8 +227,8 @@ NODE_ENV=production
 PORT=3000
 CORS_ORIGINS=https://sentia-manufacturing-production.up.railway.app,https://web-production-1f10.up.railway.app
 
-# Database (Neon PostgreSQL)
-DATABASE_URL=postgresql://neondb_owner:RkdOBTlexFfK@ep-aged-cake-a5erf8rx-pooler.us-east-2.aws.neon.tech/sentia_manufacturing?sslmode=require
+# Database (Neon PostgreSQL - Production Branch)
+DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 # MCP Server Integration
 MCP_SERVER_URL=https://web-production-99691282.up.railway.app
@@ -250,6 +280,13 @@ XERO_SYNC_INTERVAL=*/30 * * * *
 SHOPIFY_SYNC_INTERVAL=*/15 * * * *
 AMAZON_SYNC_INTERVAL=*/60 * * * *
 DATABASE_SYNC_INTERVAL=0 */6 * * *
+
+# Microsoft Graph API (For Excel/Spreadsheet Integration)
+MICROSOFT_CLIENT_ID=c16d6fba-0e6b-45ea-a016-eb697ff7a7ae
+MICROSOFT_CLIENT_SECRET=peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM
+MICROSOFT_TENANT_ID=common
+MICROSOFT_ADMIN_EMAIL=admin@app.sentiaspirits.com
+MICROSOFT_DATA_EMAIL=data@app.sentiaspirits.com
 
 # Redis Cache (Optional but recommended for production)
 REDIS_URL=redis://default:password@your-redis-server:6379

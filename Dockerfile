@@ -16,8 +16,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Expose port (Railway will override this)
-EXPOSE 3000
+# Expose the port that Railway expects (will be overridden by Railway's PORT env var)
+EXPOSE 5000
 
 # Start the application
 CMD ["node", "railway-ultimate.js"]

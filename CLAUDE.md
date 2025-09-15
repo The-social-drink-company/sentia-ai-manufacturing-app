@@ -44,9 +44,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Issue**: Not following world-class enterprise workflow with proper development → testing → production progression.
 
 **Solution Implemented** (`ENTERPRISE_GIT_WORKFLOW.md`):
-- **Development Branch**: Active coding and development area (https://sentia-manufacturing-dashboard-development.up.railway.app)
-- **Test Branch**: User Acceptance Testing environment (https://sentiatest.financeflo.ai)
-- **Production Branch**: Live production for daily operations (https://sentia-manufacturing-dashboard-production.up.railway.app)
+- **Development Branch**: Active coding and development area (https://sentia-manufacturing-development.up.railway.app)
+- **Test Branch**: User Acceptance Testing environment (https://sentia-manufacturing-testing.up.railway.app)
+- **Production Branch**: Live production for daily operations (https://sentia-manufacturing-production.up.railway.app)
 - **Quality Gates**: Formal UAT process, client approval required before production
 - **Documentation**: Complete workflow documentation with checklists and procedures
 
@@ -249,11 +249,11 @@ scripts/               # Utility scripts
 
 ### Railway Project Structure
 
-#### Main Application Project
-**Project ID**: `b9ca1af1-13c5-4ced-9ab6-68fddd73fc8f`
-- **Development**: `f97b65ad-c306-410a-9d5d-5f5fdc098620` → sentia-manufacturing-dashboard-development.up.railway.app
-- **Testing**: `02e0c7f6-9ca1-4355-af52-ee9eec0b3545` → sentiatest.financeflo.ai
-- **Production**: `3e0053fc-ea90-49ec-9708-e09d58cad4a0` → web-production-1f10.up.railway.app
+#### Main Application Project (NEW SENTIA RAILWAY)
+**Project ID**: `6d1ca9b2-75e2-46c6-86a8-ed05161112fe`
+- **Development**: `e985e174-ebed-4043-81f8-7b1ab2e86cd2` → sentia-manufacturing-development.up.railway.app [primary deployment of all code changes]
+- **Testing**: `92f7cd2f-3dc7-44f4-abd9-1714003c389f` → sentia-manufacturing-testing.up.railway.app [test environment for users]
+- **Production**: `9fd67b0e-7883-4973-85a5-639d9513d343` → sentia-manufacturing-production.up.railway.app [live environment updated after test has passed after UAT]
 
 #### MCP Server Project (AI Central Nervous System)
 **Project ID**: `3adb1ac4-84d8-473b-885f-3a9790fe6140`
@@ -262,9 +262,9 @@ scripts/               # Utility scripts
 ### Development Workflow (Implemented)
 **Enterprise Git Workflow**: Proper development → testing → production progression:
 
-1. **Development Branch**: All coding, fixing, and development work happens in `development` branch
-2. **Test Branch**: Push to `test` branch for user acceptance testing at sentiatest.financeflo.ai
-3. **Production Branch**: Only push to `production` when software is ready to go live
+1. **Development Branch**: All coding, fixing, and development work happens in `development` branch (sentia-manufacturing-development.up.railway.app)
+2. **Test Branch**: Push to `test` branch for user acceptance testing at sentia-manufacturing-testing.up.railway.app
+3. **Production Branch**: Only push to `production` when software is ready to go live at sentia-manufacturing-production.up.railway.app
 
 **Quality Gates**: Formal UAT process with client approval required before production deployment.
 
@@ -582,9 +582,9 @@ const navigationItems = [
 **SUCCESS**: Proper development → testing → production workflow documented and implemented:
 
 #### Git Branch Strategy
-- **development**: Primary coding branch (Railway: development.up.railway.app)
-- **test**: UAT environment for client testing (Railway: sentiatest.financeflo.ai)  
-- **production**: Live operations branch (Railway: production.up.railway.app)
+- **development**: Primary coding branch (Railway: sentia-manufacturing-development.up.railway.app)
+- **test**: UAT environment for client testing (Railway: sentia-manufacturing-testing.up.railway.app)
+- **production**: Live operations branch (Railway: sentia-manufacturing-production.up.railway.app)
 
 #### Quality Gates Established
 ```markdown

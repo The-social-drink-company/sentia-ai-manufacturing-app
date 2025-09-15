@@ -294,6 +294,9 @@ railway restart --service=web --environment=production
 
 ---
 
-**Last Updated**: September 10, 2025
-**Version**: 1.0.0
-**Status**: Ready for Production Deployment
+**Last Updated**: September 15, 2025
+**Version**: 1.0.5
+**Status**: Development Environment - Awaiting Railway Environment Variables
+**Current URL**: https://sentiadeploy.financeflo.ai (502 - needs env vars)
+**Railway Project**: 6d1ca9b2-75e2-46c6-86a8-ed05161112fe
+**Development Service**: e985e174-ebed-4043-81f8-7b1ab2e86cd2

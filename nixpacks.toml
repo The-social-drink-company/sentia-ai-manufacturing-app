@@ -1,22 +1,11 @@
-# Nixpacks configuration for Express.js app
+# Minimal Nixpacks config for debugging Railway 502
 providers = ["node"]
 
 [phases.setup]
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
-# Clear any existing cache issues before install
-cmds = ["rm -rf node_modules/.cache", "npm ci --legacy-peer-deps"]
-
-[phases.build]
-# Build React frontend
-cmds = ["npm run build || echo 'Build failed but continuing for debugging'"]
+cmds = ["npm install express"]
 
 [start]
-# Temporarily use minimal test server to diagnose Railway issues
-cmd = "echo 'Starting test server...' && ls -la && node railway-health-test.js"
-
-[staticAssets]
-# IMPORTANT: This disables Caddy static file server
-# We're running an Express.js server, not a static site
-enabled = false
+cmd = "node railway-health-test.js"

@@ -41,7 +41,17 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Health endpoint
+// Root health endpoint for Railway
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    server: 'app.js'
+  });
+});
+
+// API health endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -169,12 +179,13 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Standalone server running on port ${PORT}`);
+// Start server - BIND TO 0.0.0.0 FOR RAILWAY
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Standalone server running on 0.0.0.0:${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'production'}`);
   console.log(`🏥 Health check: /api/health`);
   console.log(`🧪 Test endpoint: /api/test`);
+  console.log(`✅ Railway deployment ready`);
 });
 
 export default app;

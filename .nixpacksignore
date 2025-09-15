@@ -1,6 +1,27 @@
-# Ignore files that might trigger Caddy detection
+# Ignore all HTML files to prevent Caddy detection
 *.html
-index.html
+**/*.html
+
+# Ignore dist and public directories
 dist/
 public/
 static/
+
+# Ignore test files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Ignore docs
+docs/
+*.md
+
+# Don't deploy Dockerfile since Railway should detect it separately
+Dockerfile
+.dockerignore
+
+# Ignore development config files that might confuse nixpacks
+railway.json
+nixpacks.toml
+nixpacks.toml.backup

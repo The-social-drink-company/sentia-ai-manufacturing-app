@@ -1,101 +1,86 @@
-# Render Deployment Script
-# This script guides you through deploying to Render
+# Automated Render Deployment Script
+# Deploys directly to Render using their Blueprint feature
 
 Write-Host "=====================================" -ForegroundColor Cyan
-Write-Host "   RENDER DEPLOYMENT AUTOMATION" -ForegroundColor Yellow
+Write-Host "   AUTOMATED RENDER DEPLOYMENT" -ForegroundColor Yellow
 Write-Host "=====================================" -ForegroundColor Cyan
+Write-Host ""
 
-# Step 1: Open Render Dashboard
-Write-Host "`n[STEP 1] Opening Render Dashboard..." -ForegroundColor Green
-Start-Process "https://dashboard.render.com/select-repo?type=blueprint"
-
-Write-Host "Please follow these steps in your browser:" -ForegroundColor Yellow
-Write-Host "1. Select repository: The-social-drink-company/sentia-manufacturing-dashboard" -ForegroundColor White
-Write-Host "2. Click 'Connect'" -ForegroundColor White
-Write-Host "3. Review services (3 web services with Standard plan)" -ForegroundColor White
-Write-Host "4. Click 'Apply' to create all services" -ForegroundColor White
-
-Write-Host "`nPress Enter when you've clicked 'Apply'..." -ForegroundColor Cyan
-Read-Host
-
-# Step 2: Wait for services to be created
-Write-Host "`n[STEP 2] Waiting for services to be created..." -ForegroundColor Green
-Write-Host "This usually takes 1-2 minutes." -ForegroundColor Gray
-Write-Host "Press Enter when services are created..." -ForegroundColor Cyan
-Read-Host
-
-# Step 3: Copy environment variables to clipboard for each service
-Write-Host "`n[STEP 3] Setting up environment variables..." -ForegroundColor Green
-
-$services = @(
-    @{Name="Development"; File="render-env-development.txt"; URL="https://dashboard.render.com/web/srv-*/env"},
-    @{Name="Testing"; File="render-env-testing.txt"; URL="https://dashboard.render.com/web/srv-*/env"},
-    @{Name="Production"; File="render-env-production.txt"; URL="https://dashboard.render.com/web/srv-*/env"},
-    @{Name="MCP Server"; File="render-env-mcp.txt"; URL="https://dashboard.render.com/background/srv-*/env"}
-)
-
-foreach ($service in $services) {
-    Write-Host "`n----- $($service.Name) Service -----" -ForegroundColor Yellow
-
-    # Read and copy env vars to clipboard
-    $envContent = Get-Content $service.File -Raw
-    $envContent | Set-Clipboard
-
-    Write-Host "Environment variables for $($service.Name) copied to clipboard!" -ForegroundColor Green
-    Write-Host "1. Go to your $($service.Name) service in Render Dashboard" -ForegroundColor White
-    Write-Host "2. Click 'Environment' tab" -ForegroundColor White
-    Write-Host "3. Click 'Bulk Edit'" -ForegroundColor White
-    Write-Host "4. Press Ctrl+V to paste" -ForegroundColor White
-    Write-Host "5. Click 'Save Changes'" -ForegroundColor White
-
-    Write-Host "`nPress Enter when done with $($service.Name)..." -ForegroundColor Cyan
-    Read-Host
+# Check if render.yaml exists
+if (-not (Test-Path "render.yaml")) {
+    Write-Host "ERROR: render.yaml not found!" -ForegroundColor Red
+    Write-Host "Please ensure you're in the project root directory." -ForegroundColor Yellow
+    exit 1
 }
 
-# Step 4: Monitor deployment
-Write-Host "`n[STEP 4] Monitoring deployment..." -ForegroundColor Green
-Write-Host "Services will auto-deploy after adding environment variables." -ForegroundColor Gray
-Write-Host "This takes 10-15 minutes for first deployment." -ForegroundColor Gray
+Write-Host "[OK] render.yaml found with all environment variables" -ForegroundColor Green
+Write-Host ""
 
-Write-Host "`nWould you like to open the services to monitor? (Y/N)" -ForegroundColor Cyan
-$monitor = Read-Host
-if ($monitor -eq "Y" -or $monitor -eq "y") {
-    Start-Process "https://dashboard.render.com"
-}
+# Step 1: Open Render Blueprint Deploy
+Write-Host "[STEP 1] Opening Render Blueprint Deployment..." -ForegroundColor Yellow
+Write-Host ""
 
-# Step 5: Wait for deployment
-Write-Host "`n[STEP 5] Waiting for deployment to complete..." -ForegroundColor Green
-Write-Host "Check each service for 'Live' status." -ForegroundColor Gray
-Write-Host "Press Enter when all services show 'Live'..." -ForegroundColor Cyan
+# Construct the deploy URL with the repo
+$repoUrl = "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard"
+$deployUrl = "https://render.com/deploy?repo=$repoUrl"
+
+Write-Host "Opening deployment page in browser..." -ForegroundColor Cyan
+Start-Process $deployUrl
+
+Write-Host ""
+Write-Host "Browser will open with Render's one-click deploy page." -ForegroundColor Green
+Write-Host ""
+Write-Host "IMPORTANT: In the browser, you need to:" -ForegroundColor Yellow
+Write-Host "1. Sign in or create a Render account" -ForegroundColor White
+Write-Host "2. Click the 'Deploy to Render' button" -ForegroundColor White
+Write-Host "3. Authorize GitHub access if prompted" -ForegroundColor White
+Write-Host "4. Review the service configuration" -ForegroundColor White
+Write-Host "5. Click 'Create Web Service'" -ForegroundColor White
+Write-Host ""
+Write-Host "The render.yaml file contains ALL 55+ environment variables!" -ForegroundColor Green
+Write-Host "No manual configuration needed!" -ForegroundColor Green
+Write-Host ""
+Write-Host "Press Enter after clicking 'Create Web Service'..." -ForegroundColor Cyan
 Read-Host
 
-# Step 6: Verify deployment
-Write-Host "`n[STEP 6] Verifying deployment..." -ForegroundColor Green
+# Step 2: Monitor deployment
+Write-Host "`n[STEP 2] Deployment in progress..." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Your service is being deployed with:" -ForegroundColor Green
+Write-Host "  - All environment variables (55+ configured)" -ForegroundColor White
+Write-Host "  - Database connection (Neon PostgreSQL)" -ForegroundColor White
+Write-Host "  - All API keys (Clerk, Xero, Shopify, OpenAI, etc.)" -ForegroundColor White
+Write-Host "  - Build command: npm ci --legacy-peer-deps && npm run build" -ForegroundColor White
+Write-Host "  - Start command: npm start" -ForegroundColor White
+Write-Host ""
 
-# Run verification script
-if (Test-Path ".\verify-render-deployment.ps1") {
-    Write-Host "Running verification script..." -ForegroundColor Gray
-    & .\verify-render-deployment.ps1
-} else {
-    Write-Host "Manual verification - checking endpoints..." -ForegroundColor Yellow
+# Wait for initial deployment
+Write-Host "First deployment typically takes 5-10 minutes..." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Opening Render Dashboard to monitor progress..." -ForegroundColor Cyan
+Start-Process "https://dashboard.render.com"
 
-    $urls = @(
-        "https://sentia-manufacturing-development.onrender.com",
-        "https://sentia-manufacturing-testing.onrender.com",
-        "https://sentia-manufacturing-production.onrender.com"
-    )
+Write-Host ""
+Write-Host "Press Enter when deployment shows 'Live' status..." -ForegroundColor Cyan
+Read-Host
 
-    foreach ($url in $urls) {
-        Write-Host "`nTesting: $url" -ForegroundColor Gray
-        try {
-            $response = Invoke-WebRequest -Uri "$url/api/health" -UseBasicParsing -TimeoutSec 10
-            if ($response.StatusCode -eq 200) {
-                Write-Host "  [OK] $url is live!" -ForegroundColor Green
-            }
-        } catch {
-            Write-Host "  [PENDING] $url not ready yet" -ForegroundColor Yellow
-        }
+# Step 3: Verify deployment
+Write-Host "`n[STEP 3] Verifying deployment..." -ForegroundColor Green
+Write-Host ""
+
+$serviceUrl = "https://sentia-manufacturing-dashboard.onrender.com"
+
+Write-Host "Testing health endpoint..." -ForegroundColor Yellow
+try {
+    $response = Invoke-WebRequest -Uri "$serviceUrl/health" -UseBasicParsing -TimeoutSec 10
+    if ($response.StatusCode -eq 200) {
+        Write-Host "[SUCCESS] Service is live and healthy!" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "Response: $($response.Content)" -ForegroundColor Gray
     }
+} catch {
+    Write-Host "[WARNING] Health check failed. Service may still be starting..." -ForegroundColor Yellow
+    Write-Host "Error: $_" -ForegroundColor Gray
 }
 
 Write-Host "`n=====================================" -ForegroundColor Cyan

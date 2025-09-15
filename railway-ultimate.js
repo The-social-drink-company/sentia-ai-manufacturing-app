@@ -93,6 +93,11 @@ app.get('/api/test', (req, res) => {
   });
 });
 
+// Simple text response for root - Railway edge proxy check
+app.head('/', (req, res) => {
+  res.status(200).end();
+});
+
 // Root route
 app.get('/', (req, res) => {
   const distIndexPath = path.join(__dirname, 'dist', 'index.html');

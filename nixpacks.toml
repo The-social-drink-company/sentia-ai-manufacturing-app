@@ -13,8 +13,8 @@ cmds = ["npm run build"]
 [start]
 cmd = "node railway-ultimate.js"
 
-[providers]
-node = true
+# Force Node.js provider only
+providers = ["node"]
 
 # Explicitly disable static file serving
 [phases.caddy]

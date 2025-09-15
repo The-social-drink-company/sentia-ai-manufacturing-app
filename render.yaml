@@ -29,7 +29,7 @@ services:
     name: sentia-manufacturing-development
     runtime: node
     region: oregon
-    plan: starter
+    plan: standard
     branch: development
     buildCommand: npm install && npm run build
     startCommand: npm start
@@ -84,7 +84,7 @@ services:
     name: sentia-manufacturing-testing
     runtime: node
     region: oregon
-    plan: free
+    plan: standard
     branch: test
     buildCommand: npm install && npm run build
     startCommand: npm start
@@ -113,7 +113,7 @@ services:
     name: sentia-manufacturing-production
     runtime: node
     region: oregon
-    plan: starter # $7/month for production
+    plan: standard # $25/month for production with better performance
     branch: production
     buildCommand: npm install && npm run build
     startCommand: npm start

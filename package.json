@@ -281,6 +281,7 @@
     "eslint-plugin-security": "^3.0.1",
     "husky": "^9.0.0",
     "jest-environment-jsdom": "^30.1.2",
+    "js-yaml": "^4.1.0",
     "jsdom": "^23.2.0",
     "lint-staged": "^15.2.0",
     "postcss": "^8.4.27",

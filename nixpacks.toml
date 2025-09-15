@@ -11,8 +11,8 @@ cmds = ["npm ci --legacy-peer-deps"]
 cmds = ["npm run build"]
 
 [start]
-# Ensure PORT is available and start server
-cmd = "PORT=${PORT:-3000} node server.js"
+# Use startup script to check environment before starting server
+cmd = "node railway-start.js"
 
 [staticAssets]
 # IMPORTANT: This disables Caddy static file server

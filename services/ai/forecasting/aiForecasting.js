@@ -758,24 +758,6 @@ export default AIForecastingService;
 
 
 
-
-  /**
-   * Orchestrate AI models based on task type and performance
-   */
-  orchestrateModels(type) {
-    // Simple orchestration: use both models for cashflow, otherwise use the best performing one.
-    if (type === 'cashflow') {
-      return ['openai', 'claude'];
-    }
-
-    const openaiAccuracy = this.getModelAccuracy('openai');
-    const claudeAccuracy = this.getModelAccuracy('claude');
-
-    return openaiAccuracy >= claudeAccuracy ? ['openai'] : ['claude'];
-  }
-
-
-
 _calculate_model_accuracy(predictions, actuals) {
     if (predictions.length !== actuals.length || predictions.length === 0) {
       return 0;

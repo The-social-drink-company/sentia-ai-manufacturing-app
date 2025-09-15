@@ -920,3 +920,137 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
 
 export default EnterprisePerformanceMonitor;
 
+
+
+  /**
+   * Auto-optimize performance based on metrics
+   */
+  autoOptimizePerformance() {
+    const latest = this.getLatestMetrics();
+    const optimizations = [];
+
+    // CPU optimization
+    if (latest.system && latest.system.cpu.usage > 80) {
+      optimizations.push({
+        type: 'cpu',
+        action: 'scale_up',
+        reason: 'High CPU usage detected',
+        value: latest.system.cpu.usage
+      });
+    }
+
+    // Memory optimization
+    if (latest.application && latest.application.cache.hitRate < 70) {
+      optimizations.push({
+        type: 'cache',
+        action: 'optimize_cache',
+        reason: 'Low cache hit rate',
+        value: latest.application.cache.hitRate
+      });
+    }
+
+    // Database optimization
+    if (latest.application && latest.application.database.averageTime > 500) {
+      optimizations.push({
+        type: 'database',
+        action: 'optimize_queries',
+        reason: 'Slow database queries',
+        value: latest.application.database.averageTime
+      });
+    }
+
+    // Apply optimizations
+    optimizations.forEach(opt => {
+      this.applyOptimization(opt);
+    });
+
+    return optimizations;
+  }
+
+  /**
+   * Apply specific optimization
+   */
+  applyOptimization(optimization) {
+    console.log(`🔧 Applying optimization: ${optimization.action} - ${optimization.reason}`);
+    
+    switch (optimization.action) {
+      case 'scale_up':
+        this.emit('scaleUp', optimization);
+        break;
+      case 'optimize_cache':
+        this.emit('optimizeCache', optimization);
+        break;
+      case 'optimize_queries':
+        this.emit('optimizeDatabase', optimization);
+        break;
+    }
+  }
+
+  /**
+   * Get latest metrics from all categories
+   */
+  getLatestMetrics() {
+    return {
+      system: this.metrics.system[this.metrics.system.length - 1],
+      application: this.metrics.application[this.metrics.application.length - 1],
+      business: this.metrics.business[this.metrics.business.length - 1]
+    };
+  }
+
+  /**
+   * Generate performance optimization report
+   */
+  generateOptimizationReport() {
+    const latest = this.getLatestMetrics();
+    const recommendations = [];
+
+    // Analyze trends over the last hour
+    const oneHourAgo = Date.now() - 3600000;
+    const recentMetrics = {
+      system: this.metrics.system.filter(m => m.timestamp > oneHourAgo),
+      application: this.metrics.application.filter(m => m.timestamp > oneHourAgo)
+    };
+
+    // CPU trend analysis
+    if (recentMetrics.system.length > 0) {
+      const avgCPU = recentMetrics.system.reduce((sum, m) => sum + m.cpu.usage, 0) / recentMetrics.system.length;
+      if (avgCPU > 70) {
+        recommendations.push({
+          category: 'performance',
+          priority: 'high',
+          title: 'High CPU Usage Detected',
+          description: `Average CPU usage over the last hour: ${avgCPU.toFixed(1)}%`,
+          recommendation: 'Consider scaling up CPU resources or optimizing CPU-intensive operations',
+          impact: 'high'
+        });
+      }
+    }
+
+    // Response time analysis
+    if (recentMetrics.application.length > 0) {
+      const avgResponseTime = recentMetrics.application.reduce((sum, m) => sum + m.response.avg, 0) / recentMetrics.application.length;
+      if (avgResponseTime > 1000) {
+        recommendations.push({
+          category: 'performance',
+          priority: 'medium',
+          title: 'Slow Response Times',
+          description: `Average response time: ${avgResponseTime.toFixed(0)}ms`,
+          recommendation: 'Implement caching, optimize database queries, or review application code',
+          impact: 'medium'
+        });
+      }
+    }
+
+    return {
+      timestamp: new Date().toISOString(),
+      summary: {
+        totalRecommendations: recommendations.length,
+        highPriority: recommendations.filter(r => r.priority === 'high').length,
+        mediumPriority: recommendations.filter(r => r.priority === 'medium').length,
+        lowPriority: recommendations.filter(r => r.priority === 'low').length
+      },
+      recommendations,
+      metrics: latest
+    };
+  }
+

@@ -1,20 +1,11 @@
-# Railway Nixpacks Configuration
-# CRITICAL: Disable Caddy static asset serving - we're running Node.js Express
+# Railway Nixpacks Configuration - Simplified
+# Just build and run Node.js, no Caddy
 
-[phases.setup]
-nixPkgs = ["nodejs-22_x"]
-
-[phases.install]
-cmds = ["npm ci --cache /tmp/.npm"]
-
-[phases.build]
-cmds = ["npm run build"]
+[build]
+cmds = ["npm ci", "npm run build"]
 
 [start]
 cmd = "node railway-ultimate.js"
-
-[staticAssets]
-enabled = "false"  # CRITICAL: Disable Caddy static file serving (must be string)
 
 [variables]
 NIXPACKS_NODE_VERSION = "22.12.0"

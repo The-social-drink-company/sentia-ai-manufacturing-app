@@ -17,4 +17,4 @@ cmd = "node railway-start.js"
 [staticAssets]
 # IMPORTANT: This disables Caddy static file server
 # We're running an Express.js server, not a static site
-enabled = false
+enabled = "false"

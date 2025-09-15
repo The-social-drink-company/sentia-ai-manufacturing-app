@@ -24,8 +24,8 @@ PORT=3000
 CORS_ORIGINS=http://localhost:3000,http://localhost:5000,https://sentia-manufacturing-dashboard-development.up.railway.app
 
 # Database (Neon PostgreSQL)
-DATABASE_URL=postgresql://neondb_owner:RkdOBTlexFfK@ep-aged-cake-a5erf8rx-pooler.us-east-2.aws.neon.tech/sentia_manufacturing_dev?sslmode=require
-DEV_DATABASE_URL=postgresql://neondb_owner:RkdOBTlexFfK@ep-aged-cake-a5erf8rx-pooler.us-east-2.aws.neon.tech/sentia_manufacturing_dev?sslmode=require
+DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+DEV_DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 # MCP Server Integration
 MCP_SERVER_URL=https://web-production-99691282.up.railway.app
@@ -34,26 +34,26 @@ MCP_JWT_SECRET=dev_mcp_jwt_secret_change_this_in_production_xK9mP2nQ8vL4jF6tR3yW
 MCP_ENABLE_WEBSOCKET=true
 MCP_SERVER_PORT=3001
 
-# Authentication (Clerk)
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_cHJvdWQtcGFuZ29saW4tNjcuY2xlcmsuYWNjb3VudHMuZGV2JA
-CLERK_SECRET_KEY=sk_test_YOUR_CLERK_SECRET_KEY
-CLERK_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET
+# Authentication (Clerk) - CONFIGURED
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+CLERK_WEBHOOK_SECRET=whsec_Wo9P2o1EvXcxuvu1XNTqV+ICP32nB88c
 
 # Session & JWT
 SESSION_SECRET=dev_session_secret_change_this_in_production_aB3dE5gH7jK9mN2pQ4rS
 JWT_SECRET=dev_jwt_secret_change_this_in_production_xY9zA3bC5dE7fG2hJ4kL
 
-# Xero Integration (Optional - Configure if you have credentials)
-XERO_CLIENT_ID=YOUR_XERO_CLIENT_ID
-XERO_CLIENT_SECRET=YOUR_XERO_CLIENT_SECRET
+# Xero Integration (Configured)
+XERO_CLIENT_ID=9C0CAB921C134476A249E48BBECB8C4B
+XERO_CLIENT_SECRET=f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
 XERO_REDIRECT_URI=https://sentia-manufacturing-dashboard-development.up.railway.app/api/xero/callback
 XERO_TENANT_ID=YOUR_XERO_TENANT_ID
 
-# Shopify Integration (Optional - Configure if you have credentials)
-SHOPIFY_API_KEY=YOUR_SHOPIFY_API_KEY
-SHOPIFY_API_SECRET=YOUR_SHOPIFY_API_SECRET
+# Shopify Integration (Configured)
+SHOPIFY_API_KEY=7a30cd84e7a106b852c8e0fb789de10e
+SHOPIFY_API_SECRET=YOUR_SHOPIFY_API_SECRET_NEEDED
 SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-SHOPIFY_ACCESS_TOKEN=YOUR_SHOPIFY_ACCESS_TOKEN
+SHOPIFY_ACCESS_TOKEN=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
 SHOPIFY_WEBHOOK_SECRET=YOUR_SHOPIFY_WEBHOOK_SECRET
 
 # Amazon SP-API (Optional - Configure if you have credentials)
@@ -63,13 +63,13 @@ AMAZON_REFRESH_TOKEN=YOUR_AMAZON_REFRESH_TOKEN
 AMAZON_MARKETPLACE_ID=ATVPDKIKX0DER
 AMAZON_SELLER_ID=YOUR_SELLER_ID
 
-# Unleashed ERP (Optional - Configure if you have credentials)
-UNLEASHED_API_ID=YOUR_UNLEASHED_API_ID
-UNLEASHED_API_KEY=YOUR_UNLEASHED_API_KEY
+# Unleashed ERP (Configured)
+UNLEASHED_API_ID=d5313df6-db35-430c-a69e-ae27dffe0c5a
+UNLEASHED_API_KEY=2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
 
-# AI Services (Optional - Configure if you have API keys)
-OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
+# AI Services (Configured)
+OPENAI_API_KEY=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
+ANTHROPIC_API_KEY=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
 
 # Auto-Sync Configuration
 AUTO_SYNC_ENABLED=false
@@ -121,26 +121,26 @@ MCP_JWT_SECRET=test_mcp_jwt_secret_pL9kM3nB7vX2qW5eR8tY4uI6oP1aS3dF
 MCP_ENABLE_WEBSOCKET=true
 MCP_SERVER_PORT=3001
 
-# Authentication (Clerk)
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_cHJvdWQtcGFuZ29saW4tNjcuY2xlcmsuYWNjb3VudHMuZGV2JA
-CLERK_SECRET_KEY=sk_test_YOUR_CLERK_SECRET_KEY
-CLERK_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET
+# Authentication (Clerk) - CONFIGURED
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+CLERK_WEBHOOK_SECRET=whsec_CdtHP4SJICjWeYEJgLL3Wjnsppu8sUyy
 
 # Session & JWT
 SESSION_SECRET=test_session_secret_nM8kL2jH5gF3dC1aZ9xW7vB4qE6rT3yU
 JWT_SECRET=test_jwt_secret_sD4fG6hJ8kL2mN5pQ7rT9vX3bZ1cE5aW
 
-# Xero Integration (Optional - Configure if you have credentials)
-XERO_CLIENT_ID=YOUR_XERO_CLIENT_ID
-XERO_CLIENT_SECRET=YOUR_XERO_CLIENT_SECRET
+# Xero Integration (Configured)
+XERO_CLIENT_ID=9C0CAB921C134476A249E48BBECB8C4B
+XERO_CLIENT_SECRET=f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
 XERO_REDIRECT_URI=https://sentiatest.financeflo.ai/api/xero/callback
 XERO_TENANT_ID=YOUR_XERO_TENANT_ID
 
-# Shopify Integration (Optional - Configure if you have credentials)
-SHOPIFY_API_KEY=YOUR_SHOPIFY_API_KEY
-SHOPIFY_API_SECRET=YOUR_SHOPIFY_API_SECRET
+# Shopify Integration (Configured)
+SHOPIFY_API_KEY=7a30cd84e7a106b852c8e0fb789de10e
+SHOPIFY_API_SECRET=YOUR_SHOPIFY_API_SECRET_NEEDED
 SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-SHOPIFY_ACCESS_TOKEN=YOUR_SHOPIFY_ACCESS_TOKEN
+SHOPIFY_ACCESS_TOKEN=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
 SHOPIFY_WEBHOOK_SECRET=YOUR_SHOPIFY_WEBHOOK_SECRET
 
 # Amazon SP-API (Optional - Configure if you have credentials)
@@ -150,13 +150,13 @@ AMAZON_REFRESH_TOKEN=YOUR_AMAZON_REFRESH_TOKEN
 AMAZON_MARKETPLACE_ID=ATVPDKIKX0DER
 AMAZON_SELLER_ID=YOUR_SELLER_ID
 
-# Unleashed ERP (Optional - Configure if you have credentials)
-UNLEASHED_API_ID=YOUR_UNLEASHED_API_ID
-UNLEASHED_API_KEY=YOUR_UNLEASHED_API_KEY
+# Unleashed ERP (Configured)
+UNLEASHED_API_ID=d5313df6-db35-430c-a69e-ae27dffe0c5a
+UNLEASHED_API_KEY=2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
 
-# AI Services (Optional - Configure if you have API keys)
-OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
+# AI Services (Configured)
+OPENAI_API_KEY=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
+ANTHROPIC_API_KEY=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
 
 # Auto-Sync Configuration
 AUTO_SYNC_ENABLED=false
@@ -207,26 +207,26 @@ MCP_JWT_SECRET=GENERATE_SECURE_SECRET_HERE_USE_OPENSSL_RAND_BASE64_32
 MCP_ENABLE_WEBSOCKET=true
 MCP_SERVER_PORT=3001
 
-# Authentication (Clerk) - REQUIRED
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_YOUR_PRODUCTION_CLERK_KEY
-CLERK_SECRET_KEY=sk_live_YOUR_PRODUCTION_CLERK_SECRET
-CLERK_WEBHOOK_SECRET=whsec_YOUR_PRODUCTION_WEBHOOK_SECRET
+# Authentication (Clerk) - CONFIGURED (Update with production keys when ready)
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+CLERK_WEBHOOK_SECRET=whsec_a+WOvJWRP3wTbqRyqVCaAJTWw1CgxiPE
 
 # Session & JWT - GENERATE SECURE SECRETS
 SESSION_SECRET=GENERATE_SECURE_SECRET_HERE_USE_OPENSSL_RAND_BASE64_32
 JWT_SECRET=GENERATE_SECURE_SECRET_HERE_USE_OPENSSL_RAND_BASE64_32
 
-# Xero Integration (Configure with your production credentials)
-XERO_CLIENT_ID=YOUR_PRODUCTION_XERO_CLIENT_ID
-XERO_CLIENT_SECRET=YOUR_PRODUCTION_XERO_CLIENT_SECRET
+# Xero Integration (Use production credentials when ready - TEST credentials shown)
+XERO_CLIENT_ID=9C0CAB921C134476A249E48BBECB8C4B
+XERO_CLIENT_SECRET=f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
 XERO_REDIRECT_URI=https://sentia-manufacturing-production.up.railway.app/api/xero/callback
 XERO_TENANT_ID=YOUR_PRODUCTION_XERO_TENANT_ID
 
-# Shopify Integration (Configure with your production credentials)
-SHOPIFY_API_KEY=YOUR_PRODUCTION_SHOPIFY_API_KEY
-SHOPIFY_API_SECRET=YOUR_PRODUCTION_SHOPIFY_API_SECRET
+# Shopify Integration (Use production credentials when ready - TEST credentials shown)
+SHOPIFY_API_KEY=7a30cd84e7a106b852c8e0fb789de10e
+SHOPIFY_API_SECRET=YOUR_SHOPIFY_API_SECRET_NEEDED
 SHOPIFY_STORE_DOMAIN=your-production-store.myshopify.com
-SHOPIFY_ACCESS_TOKEN=YOUR_PRODUCTION_SHOPIFY_ACCESS_TOKEN
+SHOPIFY_ACCESS_TOKEN=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
 SHOPIFY_WEBHOOK_SECRET=YOUR_PRODUCTION_SHOPIFY_WEBHOOK_SECRET
 
 # Amazon SP-API (Configure with your production credentials)

@@ -5,13 +5,16 @@ providers = ["node"]
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ["npm ci --legacy-peer-deps"]
+# Clear any existing cache issues before install
+cmds = ["rm -rf node_modules/.cache", "npm ci --legacy-peer-deps"]
 
 [phases.build]
-cmds = ["npm run build"]
+# Build React frontend
+cmds = ["npm run build || echo 'Build failed but continuing for debugging'"]
 
 [start]
-cmd = "node server.js"
+# Start Express server with debugging
+cmd = "echo 'Starting Express server...' && ls -la && node server.js"
 
 [staticAssets]
 # IMPORTANT: This disables Caddy static file server

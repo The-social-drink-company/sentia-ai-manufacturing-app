@@ -21,7 +21,5 @@ docs/
 Dockerfile
 .dockerignore
 
-# Ignore development config files that might confuse nixpacks
-railway.json
-nixpacks.toml
+# Ignore backup files
 nixpacks.toml.backup

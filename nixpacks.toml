@@ -1,4 +1,5 @@
-# Nixpacks configuration for Railway deployment
+# Nixpacks configuration for Express.js app
+# IMPORTANT: This is NOT a static site - do NOT use Caddy
 providers = ["node"]
 
 [phases.setup]
@@ -15,4 +16,7 @@ cmds = ["npm run build"]
 
 [start]
 # Start the Express server (which serves both API and static files)
-cmd = "npm start"
+cmd = "node server.js"
+
+[variables]
+NODE_ENV = "production"

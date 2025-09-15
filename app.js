@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000; // Changed default to 3000 for Railway
 
 // Security Headers - Addresses HIGH priority security issue
 app.use((req, res, next) => {
@@ -179,13 +179,26 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
+// Log environment for debugging
+console.log('===== ENVIRONMENT DEBUG =====');
+console.log('PORT env var:', process.env.PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('All env vars:', Object.keys(process.env).filter(k => !k.includes('SECRET')).join(', '));
+console.log('=============================');
+
 // Start server - BIND TO 0.0.0.0 FOR RAILWAY
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Standalone server running on 0.0.0.0:${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'production'}`);
-  console.log(`🏥 Health check: /api/health`);
-  console.log(`🧪 Test endpoint: /api/test`);
-  console.log(`✅ Railway deployment ready`);
+  console.log(`🏥 Health check: http://0.0.0.0:${PORT}/health`);
+  console.log(`🧪 Test endpoint: http://0.0.0.0:${PORT}/api/test`);
+  console.log(`✅ Railway deployment ready on port ${PORT}`);
+});
+
+// Handle server errors
+server.on('error', (error) => {
+  console.error('❌ Server error:', error);
+  process.exit(1);
 });
 
 export default app;

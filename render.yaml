@@ -29,7 +29,7 @@ services:
     name: sentia-manufacturing-development
     runtime: node
     region: oregon
-    plan: free
+    plan: starter
     branch: development
     buildCommand: npm install && npm run build
     startCommand: npm start

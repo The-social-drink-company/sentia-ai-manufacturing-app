@@ -317,11 +317,11 @@ process.on('SIGINT', () => {
   });
 });
 
-// Keep-alive heartbeat
+// Keep-alive heartbeat - log every 30 seconds for Railway
 setInterval(() => {
   const now = new Date().toISOString();
   console.log(`[HEARTBEAT] ${now} - Server alive on port ${PORT}`);
-}, 60000); // Every minute
+}, 30000); // Every 30 seconds
 
 // Log unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {

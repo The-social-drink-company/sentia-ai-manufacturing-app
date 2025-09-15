@@ -11,5 +11,5 @@ RUN npm ci --omit=dev
 COPY . .
 RUN npm run build
 
-# Start the simple server with ES modules
+# Start the simple server directly (bypass package.json)
 CMD ["node", "server-simple.mjs"]

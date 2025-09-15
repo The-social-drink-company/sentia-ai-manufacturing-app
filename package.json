@@ -10,6 +10,7 @@
     "dev:internal": "concurrently \"npm run dev:server\" \"npm run dev:client\" --names \"server,client\" --prefix-colors \"blue,green\"",
     "prebuild": "rimraf dist",
     "build": "vite build",
+    "railway:build": "npm ci && npm run build",
     "build:railway": "vite build && echo 'React app build completed for Railway'",
     "start:railway": "NODE_ENV=production node server.js",
     "postbuild": "echo 'Build completed for Railway deployment' && ls -la dist/ && echo 'Assets:' && ls -la dist/assets/ 2>/dev/null || echo 'Assets directory not found' && echo 'Total dist size:' && du -sh dist/ 2>/dev/null || echo 'Dist size check failed'",

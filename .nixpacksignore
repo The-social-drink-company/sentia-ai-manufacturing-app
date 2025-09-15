@@ -1,6 +1,8 @@
 # Ignore all HTML files to prevent Caddy detection
 *.html
 **/*.html
+public/index.html
+index.html
 
 # Ignore dist and public directories
 dist/
@@ -21,7 +23,5 @@ docs/
 Dockerfile
 .dockerignore
 
-# Ignore development config files that might confuse nixpacks
-railway.json
-nixpacks.toml
+# Ignore backup files
 nixpacks.toml.backup

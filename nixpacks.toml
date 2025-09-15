@@ -1,5 +1,20 @@
-# Minimal Railway Nixpacks Configuration
-# Let nixpacks auto-detect Node.js, just override the start command
+# Nixpacks configuration for Express.js app
+providers = ["node"]
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm ci --legacy-peer-deps"]
+
+[phases.build]
+cmds = ["npm run build"]
 
 [start]
-cmd = "node railway-ultimate.js"
+# Use startup script to check environment before starting server
+cmd = "node railway-start.js"
+
+[staticAssets]
+# IMPORTANT: This disables Caddy static file server
+# We're running an Express.js server, not a static site
+enabled = false

@@ -6,7 +6,7 @@
   },
   "deploy": {
     "startCommand": "npm start",
-    "healthcheckPath": "/api/health",
+    "healthcheckPath": "/health",
     "healthcheckTimeout": 30,
     "restartPolicyType": "ALWAYS",
     "restartPolicyMaxRetries": 3,
@@ -15,11 +15,11 @@
   "environments": {
     "development": {
       "branch": "development",
-      "domains": ["sentia-manufacturing-development.up.railway.app"],
+      "domains": ["sentiadeploy.financeflo.ai"],
       "variables": {
         "NODE_ENV": "development",
         "RAILWAY_ENVIRONMENT": "development",
-        "VITE_API_BASE_URL": "https://sentia-manufacturing-development.up.railway.app/api",
+        "VITE_API_BASE_URL": "https://sentiadeploy.financeflo.ai/api",
         "VITE_APP_TITLE": "Sentia Manufacturing Dashboard (Development)",
         "VITE_ENVIRONMENT": "development",
         "ENABLE_AUTONOMOUS_TESTING": "true",
@@ -33,11 +33,11 @@
     },
     "testing": {
       "branch": "test",
-      "domains": ["sentia-manufacturing-testing.up.railway.app"],
+      "domains": ["sentiatest.financeflo.ai"],
       "variables": {
         "NODE_ENV": "test",
         "RAILWAY_ENVIRONMENT": "testing",
-        "VITE_API_BASE_URL": "https://sentia-manufacturing-testing.up.railway.app/api",
+        "VITE_API_BASE_URL": "https://sentiatest.financeflo.ai/api",
         "VITE_APP_TITLE": "Sentia Manufacturing Dashboard (Testing)",
         "VITE_ENVIRONMENT": "testing",
         "ENABLE_AUTONOMOUS_TESTING": "true",
@@ -52,11 +52,11 @@
     },
     "production": {
       "branch": "production",
-      "domains": ["sentia-manufacturing-production.up.railway.app"],
+      "domains": ["sentia.financeflo.ai"],
       "variables": {
         "NODE_ENV": "production",
         "RAILWAY_ENVIRONMENT": "production",
-        "VITE_API_BASE_URL": "https://sentia-manufacturing-production.up.railway.app/api",
+        "VITE_API_BASE_URL": "https://sentia.financeflo.ai/api",
         "VITE_APP_TITLE": "Sentia Manufacturing Dashboard",
         "VITE_ENVIRONMENT": "production",
         "ENABLE_AUTONOMOUS_TESTING": "false",

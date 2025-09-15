@@ -71,6 +71,7 @@ const EnhancedDataImportDashboard = createRouteComponent('enhanced-data-import',
 
 // Monitoring (Standard Priority)
 const RealTimeMonitoring = createRouteComponent('monitoring', () => import('./components/monitoring/RealTimeMonitoring'))
+const MCPMonitoringDashboard = createRouteComponent('mcp-monitoring', () => import('./pages/MCPMonitoringDashboard'))
 const MaintenanceManagement = createRouteComponent('maintenance', () => import('./components/admin/pages/AdminMaintenance'))
 // System Components (Low Priority - administrative)
 const SystemSettings = createLowPriorityComponent(() => import('./components/settings/Settings'), 'SystemSettings')
@@ -704,8 +705,8 @@ function App() {
                   } 
                 />
 
-                <Route 
-                  path="/monitoring" 
+                <Route
+                  path="/monitoring"
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
@@ -714,9 +715,22 @@ function App() {
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
+                <Route
+                  path="/mcp-monitor"
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <MCPMonitoringDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
                 {/* Enhanced Admin System with Nested Routes */}
                 <Route 
                   path="/admin/*" 

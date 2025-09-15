@@ -1,14 +1,18 @@
-# Force pure Node.js - no auto-detection
+# Nixpacks configuration for Railway deployment
 providers = ["node"]
 
 [phases.setup]
-nixPkgs = ["nodejs_18", "npm"]
+# Use Node.js 20 to match package.json engines requirement
+nixPkgs = ["nodejs_20", "npm-9_x"]
 
-[phases.install] 
-cmds = ["npm ci"]
+[phases.install]
+# Install dependencies with legacy peer deps flag for compatibility
+cmds = ["npm ci --legacy-peer-deps"]
 
 [phases.build]
+# Build the React frontend
 cmds = ["npm run build"]
 
 [start]
-cmd = "node server.js"
+# Start the Express server (which serves both API and static files)
+cmd = "npm start"

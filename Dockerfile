@@ -5,11 +5,11 @@ WORKDIR /app
 
 # Copy and install dependencies
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci --legacy-peer-deps
 
 # Copy everything and build
 COPY . .
 RUN npm run build
 
-# Start the simple server directly (bypass package.json)
-CMD ["node", "server-simple.mjs"]
+# Start the railway-ultimate server that handles PORT correctly
+CMD ["node", "railway-ultimate.js"]

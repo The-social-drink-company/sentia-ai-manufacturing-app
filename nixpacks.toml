@@ -5,4 +5,4 @@ cmds = ["npm install", "npm run build"]
 cmd = "node railway-ultimate.js"
 
 [variables]
-NIXPACKS_NODE_VERSION = "20"
+NIXPACKS_NODE_VERSION = "22.12.0"

@@ -1,5 +1,5 @@
 # Minimal Railway Nixpacks Configuration
-# Let nixpacks auto-detect Node.js, just override the start command
+# Let nixpacks auto-detect Node.js and Express server
 
 [start]
-cmd = "node railway-ultimate.js"
+cmd = "npm start"

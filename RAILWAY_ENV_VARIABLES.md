@@ -106,7 +106,7 @@ AUTO_FIX_ENABLED=true
 AUTO_DEPLOY_ENABLED=false
 
 # Development Settings
-VITE_API_BASE_URL=https://sentia-manufacturing-dashboard-development.up.railway.app/api
+VITE_API_BASE_URL=https://sentiadeploy.financeflo.ai/api
 VITE_APP_TITLE=Sentia Manufacturing Dashboard - Development
 VITE_APP_VERSION=1.0.0-dev
 ```

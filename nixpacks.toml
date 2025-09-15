@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs", "npm-9_x", "caddy"]
+nixPkgs = ["nodejs", "npm-9_x"]
 
 [phases.build]
 cmds = ["npm ci --omit=dev", "npm run build"]

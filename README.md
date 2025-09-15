@@ -267,6 +267,35 @@ The application is deployed on Railway with automatic branch deployments:
 - Cache: Redis for sessions and caching
 ```
 
+### Railway Deployment Configuration
+
+#### Important Configuration Notes
+
+**CRITICAL: Railway uses Nixpacks for deployment. DO NOT add the following files as they will conflict:**
+- `railway.toml` - Will override nixpacks.toml and cause build failures
+- `Procfile` - Will override both nixpacks.toml and railway.toml
+- `railway.json` - Deprecated configuration format
+
+**The deployment is configured exclusively through `nixpacks.toml`:**
+```toml
+[build]
+# Uses npm ci with custom cache to avoid Docker mount conflicts
+cmds = ["npm ci --cache /tmp/.npm", "npm run build"]
+
+[start]
+# Starts the dedicated Railway server with health checks
+cmd = "node railway-ultimate.js"
+
+[variables]
+# Node.js 22.12.0 required for Vite compatibility
+NIXPACKS_NODE_VERSION = "22.12.0"
+```
+
+**Why these configuration choices:**
+- `npm ci --cache /tmp/.npm`: Maintains lockfile integrity while avoiding Docker cache mount conflicts
+- `railway-ultimate.js`: Dedicated server with Railway-specific health checks and monitoring
+- Node 22.12.0: Satisfies Vite's engine requirements (20.19+ or 22.12+)
+
 ### Deployment Commands
 
 ```bash

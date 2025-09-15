@@ -2,6 +2,12 @@
 Dockerfile*
 docker-compose*
 
+# CRITICAL: Conflicting configuration files (DO NOT REMOVE THESE ENTRIES)
+# These files will override nixpacks.toml and cause deployment failures
+railway.toml
+railway.json
+Procfile
+
 # Development and test files
 *.log
 .env.local

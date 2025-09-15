@@ -5,11 +5,11 @@ WORKDIR /app
 
 # Copy and install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --omit=dev
 
 # Copy everything and build
 COPY . .
 RUN npm run build
 
-# Start the simple server
-CMD ["node", "server-simple.js"]
+# Start the simple server with ES modules
+CMD ["node", "server-simple.mjs"]

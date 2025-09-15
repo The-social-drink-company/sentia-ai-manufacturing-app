@@ -15,7 +15,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Changed default to 3000 for Railway
+// Railway provides PORT - MUST use it
+const PORT = parseInt(process.env.PORT) || 3000;
+console.log(`[STARTUP] PORT from env: ${process.env.PORT}, using: ${PORT}`);
 
 // Security Headers - Addresses HIGH priority security issue
 app.use((req, res, next) => {
@@ -259,7 +261,32 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 // Handle server errors
 server.on('error', (error) => {
   console.error('❌ Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Check for other processes.`);
+  }
   process.exit(1);
 });
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
+
+// Keep-alive for Railway
+setInterval(() => {
+  console.log(`[HEARTBEAT] ${new Date().toISOString()} - Server alive on port ${PORT}`);
+}, 60000);
 
 export default app;

@@ -8,6 +8,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,7 +31,6 @@ app.use((req, res, next) => {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('dist'));
 
 // Simple test endpoint to verify server is working
 app.get('/api/test', (req, res) => {
@@ -155,28 +155,89 @@ app.post('/api/forecasting/forecast', (req, res) => {
   });
 });
 
-// Security headers middleware
-app.use((req, res, next) => {
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:;");
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  next();
-});
 
-// Catch all for SPA
+// Serve static files from dist
+const distPath = path.join(__dirname, 'dist');
+app.use(express.static(distPath));
+
+// Catch all for SPA - with fallback HTML if dist doesn't exist
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ 
-      error: 'API endpoint not found', 
+    return res.status(404).json({
+      error: 'API endpoint not found',
       path: req.path,
-      method: req.method 
+      method: req.method
     });
   }
-  
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+
+  // Check if dist/index.html exists
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    // Fallback HTML when dist doesn't exist
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Sentia Manufacturing Dashboard</title>
+          <style>
+            body {
+              font-family: system-ui;
+              margin: 0;
+              padding: 40px;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              min-height: 100vh;
+              color: white;
+            }
+            .container {
+              max-width: 800px;
+              margin: 0 auto;
+              text-align: center;
+            }
+            h1 { font-size: 3em; margin-bottom: 0.5em; }
+            .status {
+              background: rgba(255,255,255,0.1);
+              padding: 20px;
+              border-radius: 10px;
+              margin: 20px 0;
+            }
+            .warning {
+              background: rgba(255,100,100,0.2);
+              border: 2px solid rgba(255,100,100,0.5);
+              padding: 20px;
+              border-radius: 10px;
+              margin: 20px 0;
+            }
+            a { color: white; text-decoration: underline; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>🏭 Sentia Manufacturing</h1>
+            <div class="warning">
+              <h2>⚠️ React Build Not Found</h2>
+              <p>The production build is missing. The build process may have failed.</p>
+            </div>
+            <div class="status">
+              <p><strong>Server Status:</strong> Running on port ${PORT}</p>
+              <p><strong>Environment:</strong> ${process.env.NODE_ENV || 'production'}</p>
+              <p><strong>Health Check:</strong> <a href="/health">/health</a></p>
+              <p><strong>API Test:</strong> <a href="/api/test">/api/test</a></p>
+            </div>
+            <div class="status">
+              <h3>Environment Variables Status:</h3>
+              <p>CLERK_SECRET_KEY: ${process.env.CLERK_SECRET_KEY ? '✅ Set' : '❌ Missing'}</p>
+              <p>VITE_CLERK_PUBLISHABLE_KEY: ${process.env.VITE_CLERK_PUBLISHABLE_KEY ? '✅ Set' : '❌ Missing'}</p>
+              <p>DATABASE_URL: ${process.env.DATABASE_URL ? '✅ Set' : '❌ Missing'}</p>
+              <p>PORT: ${process.env.PORT || 'Not set (using default)'}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `);
+  }
 });
 
 // Log environment for debugging

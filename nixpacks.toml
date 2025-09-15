@@ -1,0 +1,14 @@
+[phases.setup]
+nixPkgs = ["nodejs", "npm-9_x"]
+
+[phases.build]
+cmds = ["rm -rf /app/node_modules/.cache || true", "rm -rf node_modules || true", "npm cache clean --force", "npm ci --production=false --cache /tmp/.npm-cache --prefer-offline", "npm run build"]
+
+[start]
+cmd = "node railway-ultimate.js"
+
+[variables]
+NODE_ENV = "production"
+NPM_CONFIG_CACHE = "/tmp/.npm-cache"
+NPM_CONFIG_LOGLEVEL = "warn"
+NPM_CONFIG_UPDATE_NOTIFIER = "false"

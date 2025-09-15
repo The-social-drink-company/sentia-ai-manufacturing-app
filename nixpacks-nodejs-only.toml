@@ -1,0 +1,32 @@
+# Pure Node.js Nixpacks Configuration
+# NO CADDY - Just Node.js Express
+
+[phases.setup]
+nixPkgs = ["nodejs-22_x", "npm-9_x"]
+
+[phases.install]
+cmds = ["npm ci --production=false"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "node railway-ultimate.js"
+
+# Explicitly disable all static asset handling
+[staticAssets]
+enabled = false
+
+# Ensure Node.js environment
+[variables]
+NODE_ENV = "production"
+NIXPACKS_NODE_VERSION = "22"
+
+# Disable any proxy or static file serving
+[phases.caddy]
+dependsOn = []
+cmds = []
+
+# Override any auto-detection
+[providers.node]
+only = true

@@ -15,18 +15,18 @@ export class AIForecastingService extends EventEmitter {
     this.config = {
       openai: {
         apiKey: config.openai?.apiKey || process.env.OPENAI_API_KEY,
-        model: config.openai?.model || 'gpt-4-turbo-preview',
+        model: config.openai?.model || 'gpt-4',
         maxTokens: config.openai?.maxTokens || 4000,
         temperature: config.openai?.temperature || 0.1
       },
       claude: {
         apiKey: config.claude?.apiKey || process.env.ANTHROPIC_API_KEY,
-        model: config.claude?.model || 'claude-3-sonnet-20240229',
+        model: config.claude?.model || 'claude-3-sonnet-20240229', // No change, already using Sonnet
         maxTokens: config.claude?.maxTokens || 4000,
         temperature: config.claude?.temperature || 0.1
       },
       forecasting: {
-        horizons: config.forecasting?.horizons || [30, 60, 90, 120, 180, 365], // days
+        horizhorizons: config.forecasting?.horizons || [30, 60, 90, 120, 180, 365], // days
         confidence: config.forecasting?.confidence || [80, 90, 95], // percentiles
         updateInterval: config.forecasting?.updateInterval || 3600000, // 1 hour
         historicalPeriod: config.forecasting?.historicalPeriod || 365 * 2 // 2 years
@@ -74,10 +74,14 @@ export class AIForecastingService extends EventEmitter {
       const historicalData = await this.prepareHistoricalData(businessData, 'cashflow');
       
       // Generate forecast using both AI models
-      const [openaiAnalysis, claudeAnalysis] = await Promise.all([
-        this.generateOpenAIForecast(historicalData, 'cashflow', horizon),
-        this.generateClaudeForecast(historicalData, 'cashflow', horizon)
-      ]);
+      const modelsToUse = this.orchestrateModels('cashflow');
+      const forecastPromises = modelsToUse.map(model => {
+        if (model === 'openai') {
+          return this.generateOpenAIForecast(historicalData, 'cashflow', horizon);
+        }
+        return this.generateClaudeForecast(historicalData, 'cashflow', horizon);
+      });
+      const [openaiAnalysis, claudeAnalysis] = await Promise.all(forecastPromises);
 
       // Combine and validate forecasts
       const combinedForecast = this.combineForecastResults(openaiAnalysis, claudeAnalysis);
@@ -87,6 +91,12 @@ export class AIForecastingService extends EventEmitter {
       
       // Create actionable insights
       const insights = await this.generateCashFlowInsights(combinedForecast, businessData);
+
+      // Add scenario analysis if provided
+      if (options.scenario) {
+        const scenarioForecast = await this.generateScenarioForecast(businessData, options.scenario, options);
+        forecast.scenarioAnalysis = scenarioForecast;
+      }
       
       const forecast = {
         id: this.generateForecastId('cashflow', horizon),
@@ -135,7 +145,8 @@ export class AIForecastingService extends EventEmitter {
         historical: await this.prepareHistoricalData(productData, 'demand'),
         market: await this.prepareMarketData(marketData),
         seasonal: await this.extractSeasonalPatterns(productData),
-        external: await this.getExternalFactors()
+        external: await this.getExternalFactors(),
+        marketIntelligence: await this.integrateMarketIntelligence(marketData)
       };
 
       // Generate AI-powered demand analysis
@@ -198,12 +209,13 @@ export class AIForecastingService extends EventEmitter {
       };
 
       // Generate AI-powered insights
-      const aiInsights = await this.generateComprehensiveInsights(intelligenceData, analysisType);
+      const aiInsights = await this.generateAIPoweredInsights(intelligenceData);
       
       // Strategic recommendations
       const strategicRecommendations = await this.generateStrategicRecommendations(intelligenceData, aiInsights);
       
       // KPI analysis and predictions
+      const predictiveAnalytics = await this.generatePredictiveAnalytics(businessData, ["sales", "marketing", "operations"]);
       const kpiAnalysis = await this.analyzeKPITrends(businessData, intelligenceData);
       
       // Risk assessment and mitigation
@@ -625,7 +637,10 @@ Return as detailed JSON with actionable insights and specific recommendations.
    */
   getModelAccuracy(type) {
     const performance = this.metrics.models.performance.get(type);
-    return performance ? performance.accuracy : 0.85; // Default accuracy
+    if (performance && performance.predictions && performance.actuals) {
+      return this._calculate_model_accuracy(performance.predictions, performance.actuals);
+    }
+    return 0.88; // Default accuracy
   }
 
   /**
@@ -637,15 +652,7 @@ Return as detailed JSON with actionable insights and specific recommendations.
     const mean = values.reduce((a, b) => a + b, 0) / values.length;
     const std = Math.sqrt(values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length);
     
-    const zScores = { 80: 1.28, 90: 1.645, 95: 1.96 };
-    const zScore = zScores[confidence] || 1.645;
-    
-    return {
-      confidence,
-      lower: mean - (zScore * std),
-      upper: mean + (zScore * std),
-      margin: zScore * std
-    };
+    return this._calculate_bootstrapped_confidence_intervals(values, this.config.forecasting.confidence);
   }
 
   /**
@@ -748,4 +755,201 @@ Return as detailed JSON with actionable insights and specific recommendations.
 }
 
 export default AIForecastingService;
+
+
+
+_calculate_model_accuracy(predictions, actuals) {
+    if (predictions.length !== actuals.length || predictions.length === 0) {
+      return 0;
+    }
+
+    let error = 0;
+    for (let i = 0; i < predictions.length; i++) {
+      error += Math.abs((actuals[i] - predictions[i]) / actuals[i]);
+    }
+
+    const mape = (error / predictions.length) * 100;
+    const accuracy = 100 - mape;
+
+    return accuracy / 100;
+  }
+
+
+
+
+  /**
+   * Generate forecast with advanced scenario planning
+   */
+  async generateScenarioForecast(businessData, scenario, options = {}) {
+    try {
+      const horizon = options.horizon || 90;
+      const confidence = options.confidence || 90;
+
+      // Apply scenario to business data
+      const scenarioData = this.applyScenario(businessData, scenario);
+
+      // Generate forecast using the scenario data
+      const forecast = await this.generateCashFlowForecast(scenarioData, options);
+
+      // Add scenario information to the forecast
+      forecast.scenario = scenario;
+
+      this.emit('scenarioForecastGenerated', forecast);
+
+      return forecast;
+    } catch (error) {
+      console.error('Scenario forecast generation failed:', error);
+      this.emit('scenarioForecastError', { scenario, error: error.message });
+      throw error;
+    }
+  }
+
+  /**
+   * Apply a scenario to business data
+   */
+  applyScenario(businessData, scenario) {
+    // This is a simplified example. In a real application, this would be a complex function
+    // that modifies the business data based on the scenario parameters.
+    const modifiedData = JSON.parse(JSON.stringify(businessData));
+
+    if (scenario.type === 'revenue_growth') {
+      // Apply revenue growth scenario
+      modifiedData.revenue *= (1 + scenario.rate);
+    } else if (scenario.type === 'cost_reduction') {
+      // Apply cost reduction scenario
+      modifiedData.costs *= (1 - scenario.rate);
+    }
+
+    return modifiedData;
+  }
+
+
+
+
+
+  /**
+   * Integrate market intelligence data
+   */
+  async integrateMarketIntelligence(marketData) {
+    // In a real application, this would fetch data from external APIs
+    // (e.g., market research firms, economic indicators, social media trends)
+    const marketIntelligence = {
+      marketTrends: marketData.trends || [],
+      competitorActivity: marketData.competitors || [],
+      economicIndicators: marketData.economicData || {},
+    };
+
+    return marketIntelligence;
+  }
+
+
+
+_calculate_bootstrapped_confidence_intervals(data, confidence_levels, n_bootstraps = 1000) {
+    const results = {};
+    for (const level of confidence_levels) {
+      const bootstrapped_means = [];
+      for (let i = 0; i < n_bootstraps; i++) {
+        const sample = [];
+        for (let j = 0; j < data.length; j++) {
+          sample.push(data[Math.floor(Math.random() * data.length)]);
+        }
+        bootstrapped_means.push(sample.reduce((a, b) => a + b, 0) / sample.length);
+      }
+      bootstrapped_means.sort((a, b) => a - b);
+      const lower_bound = bootstrapped_means[Math.floor(( (1 - level/100) / 2) * n_bootstraps)];
+      const upper_bound = bootstrapped_means[Math.floor((1 - ( (1 - level/100) / 2)) * n_bootstraps)];
+      results[level] = { lower: lower_bound, upper: upper_bound };
+    }
+    return results;
+  }
+
+
+
+
+  /**
+   * Generate AI-powered insights from data
+   */
+  async generateAIPoweredInsights(data, options = {}) {
+    const prompt = `
+Analyze the following data and generate actionable insights:
+
+DATA: ${JSON.stringify(data, null, 2)}
+
+Please provide insights on:
+- Key trends and anomalies
+- Performance drivers
+- Potential risks and opportunities
+- Recommendations for improvement
+
+Format your response as a JSON object with an "insights" array.
+`;
+
+    const response = await this.openai.chat.completions.create({
+      model: this.config.openai.model,
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a business intelligence analyst. Your task is to extract meaningful insights from data.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      max_tokens: 1000,
+      temperature: 0.2,
+      response_format: { type: 'json_object' }
+    });
+
+    return JSON.parse(response.choices[0].message.content);
+  }
+
+
+
+
+
+  /**
+   * Generate predictive analytics for various business areas
+   */
+  async generatePredictiveAnalytics(businessData, areas, options = {}) {
+    const analytics = {};
+
+    for (const area of areas) {
+      const prompt = `
+Analyze the following business data and generate predictive analytics for the "${area}" area:
+
+DATA: ${JSON.stringify(businessData, null, 2)}
+
+Please provide predictions on:
+- Future trends
+- Potential challenges
+- Growth opportunities
+- Key performance indicators (KPIs)
+
+Format your response as a JSON object with a "predictions" array.
+`;
+
+      const response = await this.openai.chat.completions.create({
+        model: this.config.openai.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a predictive analytics expert. Your task is to forecast future business outcomes.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 1500,
+        temperature: 0.3,
+        response_format: { type: 'json_object' }
+      });
+
+      analytics[area] = JSON.parse(response.choices[0].message.content);
+    }
+
+    return analytics;
+  }
+
 

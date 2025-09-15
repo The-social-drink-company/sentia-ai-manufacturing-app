@@ -27,7 +27,17 @@ export default [
         URL: 'readonly',
         URLSearchParams: 'readonly',
         fetch: 'readonly',
-        require: 'readonly'
+        require: 'readonly',
+        global: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        Intl: 'readonly',
+        setImmediate: 'readonly',
+        clearImmediate: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly'
       }
     }
   },

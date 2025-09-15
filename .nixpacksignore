@@ -1,23 +1,27 @@
-# Cache directories that cause mount conflicts
-node_modules/.cache
-node_modules/.vite
-.next
-dist/.cache
-.vite/
-.cache/
-**/cache/
-**/.cache/
-.turbo
+# Ignore all HTML files to prevent Caddy detection
+*.html
+**/*.html
 
-# Development and temporary files
-*.log
-*.env.local
-.env.example
-.git/
+# Ignore dist and public directories
+dist/
+public/
+static/
 
-# Documentation and context that aren't needed for runtime
-context/
-docs/README*
+# Ignore test files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Ignore docs
+docs/
 *.md
-!README.md
-!CLAUDE.md
+
+# Don't deploy Dockerfile since Railway should detect it separately
+Dockerfile
+.dockerignore
+
+# Ignore development config files that might confuse nixpacks
+railway.json
+nixpacks.toml
+nixpacks.toml.backup

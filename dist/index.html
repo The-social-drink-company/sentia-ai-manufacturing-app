@@ -5,16 +5,16 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sentia Manufacturing Dashboard</title>
-    <script type="module" crossorigin src="/js/index-D_sYezzK.js"></script>
-    <link rel="modulepreload" crossorigin href="/js/chunk-CPoxpMGX.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-Bdzhvng1.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-Cl39Cy1-.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-CD0qKuw4.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-B0gV6PC-.js">
+    <script type="module" crossorigin src="/js/index-SVq8HOor.js"></script>
+    <link rel="modulepreload" crossorigin href="/js/chunk-dC5AkcKH.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-DC8y6ASD.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-DCVlP9RZ.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-DmUK-odN.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-BRZ0m90F.js">
     <link rel="modulepreload" crossorigin href="/js/chunk-b9fRcCU5.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-CeZtwEmw.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-CWHszp76.js">
     <link rel="modulepreload" crossorigin href="/js/chunk-Dozjk7Op.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-50VakDq_.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-Ck6Tt8Ih.js">
     <link rel="stylesheet" crossorigin href="/assets/react-core-C9-ySRfk.css">
     <link rel="stylesheet" crossorigin href="/assets/index-NClm3dnH.css">
   </head>
@@ -87,7 +87,7 @@
               box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             ">
               <span style="margin-right: 16px;">A new version of Sentia Manufacturing Dashboard is available!</span>
-              <button id="sw-update-btn" style="
+              <button onclick="window.location.reload()" style="
                 background: white; 
                 color: #2563eb; 
                 border: none; 
@@ -97,7 +97,7 @@
                 cursor: pointer;
                 margin-right: 8px;
               ">Update Now</button>
-              <button id="sw-dismiss-btn" style="
+              <button onclick="this.parentElement.parentElement.remove()" style="
                 background: transparent; 
                 color: white; 
                 border: 1px solid white; 
@@ -109,14 +109,6 @@
             </div>
           `;
           document.body.appendChild(updateBanner);
-          
-          // Add event listeners for CSP compliance
-          document.getElementById('sw-update-btn').addEventListener('click', () => {
-            window.location.reload();
-          });
-          document.getElementById('sw-dismiss-btn').addEventListener('click', (e) => {
-            e.target.closest('div').parentElement.remove();
-          });
         });
       }
     </script>

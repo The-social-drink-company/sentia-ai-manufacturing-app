@@ -1,27 +1,5 @@
-[phases.setup]
-nixPkgs = ['nodejs_18']
-
-[phases.install]
-cmds = [
-  "npm ci --only=production"
-]
-
-[phases.build]
-cmds = [
-  "echo 'Starting Railway build process with auto-fix...'",
-  "npm run build:railway",
-  "echo 'Build completed. Checking dist directory...'",
-  "ls -la dist/ || echo 'Dist directory not found'",
-  "ls -la dist/js/ || echo 'JS directory not found'",
-  "echo 'Auto-fix build verification complete.'",
-  "echo 'Applying 502 Bad Gateway fixes...'"
-]
+# Minimal Railway Nixpacks Configuration
+# Let nixpacks auto-detect Node.js, just override the start command
 
 [start]
-cmd = "NODE_ENV=production node server.js"
-
-[variables]
-NODE_ENV = "production"
-RAILWAY_DEPLOYMENT = "true"
-AUTO_FIX_ENABLED = "true"
-DEPLOYMENT_TIMESTAMP = "2025-09-10T19:45:00.000Z"
+cmd = "node railway-ultimate.js"

@@ -1601,3 +1601,63 @@ model ApiUsageLog {
   @@index([timestamp])
   @@map("api_usage_logs")
 }
+
+// MCP Server Integration Models
+model ExternalAPIData {
+  id         String   @id @default(uuid())
+  source     String   // xero, shopify, amazon, unleashed
+  type       String   // invoices, orders, products, inventory, etc.
+  externalId String   // External system's ID
+  data       Json     // Full data from external API
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([source, type, externalId])
+  @@index([source, type])
+  @@index([updatedAt])
+  @@map("external_api_data")
+}
+
+model SyncStatus {
+  id               String   @id @default(uuid())
+  service          String   @unique // xero, shopify, amazon, unleashed, database
+  lastSync         DateTime
+  status           String   // success, failed, in_progress
+  message          String?
+  recordsProcessed Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([service, lastSync])
+  @@map("sync_status")
+}
+
+model ManufacturingAlert {
+  id        String   @id @default(uuid())
+  type      String   // inventory_low, quality_issue, demand_spike, etc.
+  severity  String   // critical, high, medium, low
+  message   String
+  data      Json?    // Additional alert data
+  timestamp DateTime @default(now())
+  resolved  Boolean  @default(false)
+  resolvedAt DateTime?
+
+  @@index([type, severity])
+  @@index([timestamp])
+  @@map("manufacturing_alerts")
+}
+
+model MCPServerConnection {
+  id            String   @id @default(uuid())
+  serviceId     String   @unique @default("99691282-de66-45b2-98cf-317083dd11ba")
+  url           String   @default("https://web-production-99691282.up.railway.app")
+  status        String   // connected, disconnected, error
+  lastHeartbeat DateTime?
+  environment   String   // development, testing, production
+  neonBranch    String   // development, testing, production
+  projectId     String   @default("dry-mud-a5j3t7xw")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("mcp_server_connections")
+}

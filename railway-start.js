@@ -19,8 +19,13 @@ console.log('  CLERK_PUBLISHABLE_KEY:', process.env.VITE_CLERK_PUBLISHABLE_KEY ?
 console.log('');
 
 // Check if server.js exists
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const serverPath = path.join(process.cwd(), 'server.js');
 if (fs.existsSync(serverPath)) {
@@ -29,7 +34,7 @@ if (fs.existsSync(serverPath)) {
   console.log('========================================');
 
   // Start the actual server
-  require('./server.js');
+  await import('./server.js');
 } else {
   console.error(' ERROR: server.js not found!');
   console.error(' Current directory contents:');
@@ -49,7 +54,7 @@ if (fs.existsSync(serverPath)) {
     if (fs.existsSync(altPath)) {
       console.log(` Found server at alternate location: ${altPath}`);
       console.log(' Starting server from:', altPath);
-      require(altPath);
+      await import(altPath);
       foundServer = true;
       break;
     }
@@ -60,7 +65,7 @@ if (fs.existsSync(serverPath)) {
     console.error(' Creating emergency fallback server...');
 
     // Emergency fallback server
-    const express = require('express');
+    const express = (await import('express')).default;
     const app = express();
     const PORT = process.env.PORT || 3000;
 

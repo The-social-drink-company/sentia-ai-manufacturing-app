@@ -696,6 +696,17 @@ app.get('/api/debug/env', (req, res) => {
   res.json(envInfo);
 });
 
+// Root health check endpoint for Railway
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    server: 'server.js',
+    environment: process.env.NODE_ENV || 'production'
+  });
+});
+
 // Basic health check for Railway deployment (no external service dependencies)
 app.get('/api/health', async (req, res) => {
   try {
@@ -5686,7 +5697,9 @@ app.use((error, req, res, next) => {
     
     // Start server directly (enterprise process management will be re-enabled later)
     const port = PORT;
+    console.log(`[CRITICAL] Starting server on 0.0.0.0:${port} (PORT env: ${process.env.PORT})`);
     httpServer.listen(port, '0.0.0.0', () => {
+      console.log(`[SUCCESS] Server listening on http://0.0.0.0:${port}`);
       logInfo('sentia-api started successfully', {
         host: '0.0.0.0',
         port: port,

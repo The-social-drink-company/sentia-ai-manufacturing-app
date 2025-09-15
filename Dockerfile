@@ -1,23 +1,15 @@
-# Use Node.js 22 Alpine for smaller image
-FROM node:22-alpine
+# Simple working Dockerfile for Railway
+FROM node:20-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy and install dependencies
 COPY package*.json ./
+RUN npm ci
 
-# Install dependencies with legacy peer deps to handle React 19 conflict
-RUN npm ci --legacy-peer-deps
-
-# Copy all files
+# Copy everything and build
 COPY . .
-
-# Build the application
 RUN npm run build
 
-# Expose the port that Railway expects (will be overridden by Railway's PORT env var)
-EXPOSE 5000
-
-# Start the application
-CMD ["node", "railway-ultimate.js"]
+# Start the simple server
+CMD ["node", "server-simple.js"]

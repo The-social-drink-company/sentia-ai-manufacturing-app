@@ -1,3 +1,6 @@
+# IMPORTANT: This is a Node.js Express app, NOT a static site
+providers = ["node"]
+
 [phases.setup]
 nixPkgs = ["nodejs_20"]
 
@@ -8,4 +11,7 @@ cmds = ["npm ci --legacy-peer-deps"]
 cmds = ["npm run build"]
 
 [start]
-cmd = "npm start"
+cmd = "node server.js"
+
+[staticAssets]
+enabled = "false"

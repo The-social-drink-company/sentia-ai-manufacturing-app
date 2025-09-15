@@ -1,0 +1,9 @@
+# Railway configuration - FORCE Node.js Express, NO CADDY
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "node server.js"
+healthcheckPath = "/api/health"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

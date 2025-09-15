@@ -21,7 +21,7 @@ databases:
     databaseName: sentia_manufacturing_prod
     user: sentia_prod
     region: oregon
-    plan: starter # Upgrade to starter for production ($7/month)
+    plan: free # Using free tier for now, upgrade later if needed
 
 services:
   # Development Environment

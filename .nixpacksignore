@@ -1,6 +1,8 @@
 # Ignore all HTML files to prevent Caddy detection
 *.html
 **/*.html
+public/index.html
+index.html
 
 # Ignore dist and public directories
 dist/

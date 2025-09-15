@@ -1,0 +1,5 @@
+# Minimal Railway Nixpacks Configuration
+# Let nixpacks auto-detect Node.js, just override the start command
+
+[start]
+cmd = "node railway-ultimate.js"

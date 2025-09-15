@@ -12,7 +12,7 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CRITICAL: Get PORT from Railway
+// CRITICAL: Get PORT from Railway - DO NOT use parseInt as Railway may pass strings
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
@@ -54,13 +54,16 @@ app.use((req, res, next) => {
 // ============================================
 
 // Root health check - Railway looks for this
+// CRITICAL: Must respond quickly to avoid timeout
 app.get('/health', (req, res) => {
   console.log('[HEALTH CHECK] Responding to /health');
+  // Send response immediately - no async operations
   res.status(200).json({
     status: 'healthy',
     server: 'railway-ultimate',
     port: PORT,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    env_port: process.env.PORT || 'not_set'
   });
 });
 
@@ -283,7 +286,11 @@ app.use((err, req, res, next) => {
 // START SERVER
 // ============================================
 
-const server = app.listen(PORT, HOST, () => {
+const server = app.listen(PORT, HOST, (err) => {
+  if (err) {
+    console.error('Failed to bind to port:', err);
+    process.exit(1);
+  }
   console.log('========================================');
   console.log('🚀 RAILWAY ULTIMATE SERVER STARTED');
   console.log(`🌐 Listening on: http://${HOST}:${PORT}`);
@@ -317,11 +324,11 @@ process.on('SIGINT', () => {
   });
 });
 
-// Keep-alive heartbeat
+// Keep-alive heartbeat - log every 30 seconds for Railway
 setInterval(() => {
   const now = new Date().toISOString();
   console.log(`[HEARTBEAT] ${now} - Server alive on port ${PORT}`);
-}, 60000); // Every minute
+}, 30000); // Every 30 seconds
 
 // Log unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {

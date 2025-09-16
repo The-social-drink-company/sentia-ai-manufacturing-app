@@ -1,0 +1,415 @@
+name: Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches: [development, test, production]
+  pull_request:
+    branches: [development, test, production]
+  schedule:
+    - cron: '0 2 * * *' # Daily security scan at 2 AM
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '8'
+  COVERAGE_THRESHOLD: '80'
+
+jobs:
+  # Code Quality Analysis
+  code-quality:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run ESLint
+        run: |
+          npm run lint -- --format json --output-file eslint-report.json || true
+          npm run lint
+
+      - name: Run Prettier Check
+        run: npm run format:check
+
+      - name: TypeScript Type Check
+        run: npm run typecheck
+
+      - name: Complexity Analysis
+        run: |
+          npx complexity-report src/ --format json > complexity.json
+          echo "Code complexity analyzed"
+
+      - name: Upload Code Quality Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-quality-reports
+          path: |
+            eslint-report.json
+            complexity.json
+
+  # Security Scanning
+  security-scan:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Claude Security Scan
+        uses: anthropics/claude-code-security@v1
+        with:
+          api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          severity: medium
+          fail-on-severity: critical
+
+      - name: Run Trivy Security Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy Results to GitHub
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Dependency Audit
+        run: |
+          npm audit --audit-level=high
+          npm audit --json > audit-report.json || true
+
+      - name: License Check
+        run: |
+          npx license-checker --production --json > licenses.json
+          echo "License compliance checked"
+
+      - name: Secrets Scanning
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+
+  # Unit and Integration Tests
+  test-suite:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [unit, integration, security]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Setup Test Database
+        if: matrix.test-type == 'integration'
+        run: |
+          docker run -d \
+            --name postgres-test \
+            -e POSTGRES_PASSWORD=test \
+            -e POSTGRES_DB=sentia_test \
+            -p 5432:5432 \
+            postgres:14-alpine
+
+      - name: Run ${{ matrix.test-type }} Tests
+        run: |
+          npm run test:${{ matrix.test-type }} -- --coverage
+        env:
+          DATABASE_URL: ${{ matrix.test-type == 'integration' && 'postgresql://postgres:test@localhost:5432/sentia_test' || '' }}
+
+      - name: Upload Coverage Report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: ${{ matrix.test-type }}
+          name: ${{ matrix.test-type }}-coverage
+
+  # E2E Tests
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          npx playwright install --with-deps
+
+      - name: Build Application
+        run: npm run build
+
+      - name: Run E2E Tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  # Build and Bundle Analysis
+  build-analysis:
+    name: Build & Performance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build Production
+        run: |
+          npm run build
+          echo "Build completed successfully"
+
+      - name: Analyze Bundle Size
+        run: |
+          npx bundlesize --config .bundlesizerc.json || true
+          npx webpack-bundle-analyzer dist/stats.json -m json -r bundle-report.json || true
+
+      - name: Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            http://localhost:3000
+            http://localhost:3000/dashboard
+            http://localhost:3000/forecasting
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Performance Budget Check
+        run: |
+          # Check build size
+          DIST_SIZE=$(du -sb dist | cut -f1)
+          MAX_SIZE=$((5 * 1024 * 1024)) # 5MB
+
+          if [ $DIST_SIZE -gt $MAX_SIZE ]; then
+            echo "Build size exceeds limit: $DIST_SIZE > $MAX_SIZE"
+            exit 1
+          fi
+
+          echo "Build size: $DIST_SIZE bytes (within limit)"
+
+  # Docker Build
+  docker-build:
+    name: Docker Image Build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/test'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            sentia/manufacturing-dashboard:${{ github.sha }}
+            sentia/manufacturing-dashboard:${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Database Migration Check
+  migration-check:
+    name: Database Migration Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Setup Test Database
+        run: |
+          docker run -d \
+            --name postgres-migration \
+            -e POSTGRES_PASSWORD=test \
+            -e POSTGRES_DB=migration_test \
+            -p 5433:5432 \
+            postgres:14-alpine
+
+      - name: Run Migration Tests
+        run: |
+          # Test migration up
+          DATABASE_URL="postgresql://postgres:test@localhost:5433/migration_test" npm run db:migrate:deploy
+
+          # Test migration rollback
+          DATABASE_URL="postgresql://postgres:test@localhost:5433/migration_test" npm run db:migrate:reset
+
+          echo "Migration validation successful"
+
+  # Deploy to Environment
+  deploy:
+    name: Deploy to ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    needs: [code-quality, security-scan, test-suite, build-analysis]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/production' || github.ref == 'refs/heads/test' || github.ref == 'refs/heads/development')
+
+    environment:
+      name: ${{ github.ref_name }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build Application
+        run: npm run build
+
+      - name: Deploy to Render
+        id: deploy
+        run: |
+          node scripts/render-deployment.js ${{ github.ref_name }} --skip-tests
+          echo "url=https://sentia-manufacturing-${{ github.ref_name }}.onrender.com" >> $GITHUB_OUTPUT
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+
+      - name: Run Smoke Tests
+        run: |
+          npm run test:smoke -- --url ${{ steps.deploy.outputs.url }}
+
+      - name: Notify Deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          text: |
+            Deployment to ${{ github.ref_name }} ${{ job.status }}
+            URL: ${{ steps.deploy.outputs.url }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Post-Deployment Verification
+  verify-deployment:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Health Check
+        run: |
+          URL="https://sentia-manufacturing-production.onrender.com"
+          for i in {1..10}; do
+            if curl -f "$URL/api/health"; then
+              echo "Health check passed"
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying..."
+            sleep 10
+          done
+          echo "Health check failed"
+          exit 1
+
+      - name: Run Production Smoke Tests
+        run: |
+          npm ci --legacy-peer-deps
+          npm run test:smoke -- --url https://sentia-manufacturing-production.onrender.com
+
+      - name: Performance Test
+        run: |
+          npm install -g @unlighthouse/cli
+          unlighthouse-ci --site https://sentia-manufacturing-production.onrender.com
+
+# Workflow Summary
+summary:
+  name: CI/CD Summary
+  runs-on: ubuntu-latest
+  needs: [code-quality, security-scan, test-suite, build-analysis]
+  if: always()
+
+  steps:
+    - name: Generate Summary
+      run: |
+        echo "# CI/CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Results" >> $GITHUB_STEP_SUMMARY
+        echo "- Code Quality: ${{ needs.code-quality.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Security Scan: ${{ needs.security-scan.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Test Suite: ${{ needs.test-suite.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Build Analysis: ${{ needs.build-analysis.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Commit" >> $GITHUB_STEP_SUMMARY
+        echo "- SHA: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Author: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY

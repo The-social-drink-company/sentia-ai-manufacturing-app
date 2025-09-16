@@ -1,7 +1,7 @@
 services:
   # Web Service - Express.js Application
   - type: web
-    name: sentia-manufacturing-dashboard
+    name: sentia-manufacturing-development
     runtime: node
     region: oregon # or singapore, frankfurt, ohio
     plan: free # or starter, standard, pro
@@ -14,17 +14,17 @@ services:
     envVars:
       # Core Configuration
       - key: NODE_ENV
-        value: production
+        value: development
       - key: PORT
         value: 3000
       - key: CORS_ORIGINS
-        value: https://sentia-manufacturing-dashboard.onrender.com
+        value: https://sentia-manufacturing-development.onrender.com
 
-      # Database (Neon PostgreSQL - Production Branch)
+      # Database (Neon PostgreSQL - Development Branch)
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-damp-wave-abxu46so-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-      - key: PROD_DATABASE_URL
-        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-damp-wave-abxu46so-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+      - key: DEV_DATABASE_URL
+        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
 
       # Authentication (Clerk)
       - key: VITE_CLERK_PUBLISHABLE_KEY
@@ -46,7 +46,7 @@ services:
       - key: XERO_CLIENT_SECRET
         value: f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
       - key: XERO_REDIRECT_URI
-        value: https://sentia-manufacturing-dashboard.onrender.com/api/xero/callback
+        value: https://sentia-manufacturing-development.onrender.com/api/xero/callback
       - key: XERO_TENANT_ID
         sync: false
 
@@ -146,15 +146,15 @@ services:
 
       # Feature Flags
       - key: ENABLE_AUTONOMOUS_TESTING
-        value: false
+        value: true
       - key: AUTO_FIX_ENABLED
-        value: false
+        value: true
       - key: AUTO_DEPLOY_ENABLED
-        value: false
+        value: true
 
       # Application Settings
       - key: VITE_API_BASE_URL
-        value: https://sentia-manufacturing-dashboard.onrender.com/api
+        value: https://sentia-manufacturing-development.onrender.com/api
       - key: VITE_APP_TITLE
         value: Sentia Manufacturing Dashboard
       - key: VITE_APP_VERSION

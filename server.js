@@ -5148,8 +5148,20 @@ app.use('/js', express.static(path.join(__dirname, 'dist', 'js')));
 // Serve CSS and other assets - simplified for Render compatibility
 app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets')));
 
-// Serve root dist files - simplified for Render compatibility
-app.use(express.static(path.join(__dirname, 'dist')));
+// [RENDER FIX] Proper static file serving for production
+// Serve static files from dist folder with proper MIME types
+app.use(express.static(path.join(__dirname, 'dist'), {
+  setHeaders: (res, filePath) => {
+    // Set proper MIME types without logging to prevent crashes
+    if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (filePath.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html');
+    }
+  }
+}));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
 app.get('/api/dashboard/executive', async (req, res) => {
@@ -5632,20 +5644,14 @@ app.get('/emergency', (req, res) => {
 
 // ABSOLUTE PRIORITY - Serve React app on root - MUST BE FIRST ROUTE
 app.get('/', (req, res) => {
-  console.log('[ROOT PRIORITY] Handling root request');
-  console.log('[ROOT PRIORITY] Host:', req.headers.host);
-  console.log('[ROOT PRIORITY] Port:', PORT);
-
+  // [RENDER FIX] Removed all console.log statements that cause crashes
   // ALWAYS serve the React app, no exceptions
   const indexPath = path.join(__dirname, 'dist', 'index.html');
-  console.log('[ROOT PRIORITY] Serving from:', indexPath);
-  console.log('[ROOT PRIORITY] File exists:', fs.existsSync(indexPath));
 
   // Always try to serve the React app first
   try {
     // Check if file exists and serve it
     if (fs.existsSync(indexPath)) {
-      console.log('[ROOT] SUCCESS - Serving React app');
       return res.sendFile(indexPath, (err) => {
         if (err) {
           logError('[ROOT] Error serving file', err);
@@ -5657,13 +5663,6 @@ app.get('/', (req, res) => {
       logError('[ROOT] CRITICAL: dist/index.html does not exist!');
       logInfo('[ROOT] Current directory', { dir: __dirname });
       logInfo('[ROOT] Looking for', { path: indexPath });
-
-      // Try to list what's in the dist directory
-      const distDir = path.join(__dirname, 'dist');
-      if (fs.existsSync(distDir)) {
-        const files = fs.readdirSync(distDir);
-        console.log('[ROOT] Files in dist:', files);
-      }
 
       // Send a clear error message
       return res.status(500).send(`
@@ -5695,6 +5694,17 @@ app.get('/', (req, res) => {
 enterpriseIntegration.createHealthEndpoint(app);
 enterpriseIntegration.createMetricsEndpoint(app);
 logInfo('Enterprise endpoints registered at /api/health/enterprise and /api/metrics');
+
+// Service worker route - must be before catch-all
+app.get('/sw.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store');
+  const swPath = path.join(__dirname, 'dist', 'sw.js');
+  if (fs.existsSync(swPath)) {
+    return res.sendFile(swPath);
+  }
+  return res.status(404).send('// no service worker');
+});
 
 // Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes and static assets
 app.get('*', (req, res) => {
@@ -5745,25 +5755,6 @@ app.get('*', (req, res) => {
   
   // Serve the React app for all other routes (SPA routing)
   const indexPath = path.join(__dirname, 'dist', 'index.html');
-  
-  // Service worker control endpoint: deliver killer SW when disabled
-  app.get('/sw.js', (req, res) => {
-    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-store');
-    if (process.env.DISABLE_SW === 'true') {
-      return res.status(200).send(
-        "self.addEventListener('install', e => self.skipWaiting());\n" +
-        "self.addEventListener('activate', e => {\n" +
-        "  self.registration.unregister().then(() => self.clients.matchAll().then(cs => cs.forEach(c => c.navigate(c.url))));\n" +
-        "});\n"
-      );
-    }
-    const realSwPath = path.join(__dirname, 'public', 'sw.js');
-    if (fs.existsSync(realSwPath)) {
-      return res.sendFile(realSwPath);
-    }
-    return res.status(404).send('// no service worker');
-  });
 
   // Check if dist/index.html exists
   if (fs.existsSync(indexPath)) {

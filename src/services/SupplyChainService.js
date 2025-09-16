@@ -29,9 +29,13 @@ class SupplyChainService {
       await this.generatePerformanceMetrics();
       
       this.isInitialized = true;
-      console.log('Supply Chain Service initialized successfully');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Supply Chain Service initialized successfully');
+      }
     } catch (error) {
-      console.error('Failed to initialize Supply Chain Service:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to initialize Supply Chain Service:', error);
+      }
       throw error;
     }
   }

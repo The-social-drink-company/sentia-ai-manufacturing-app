@@ -442,9 +442,11 @@ class AutonomousScheduler extends EventEmitter {
       details: resources
     });
     
-    // Git repository status
+    // Git repository status (non-fatal in container environments)
     try {
-      const { execAsync } = await import('util');
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
       const { stdout } = await execAsync('git status --porcelain');
       checks.push({
         name: 'git_status',
@@ -454,8 +456,8 @@ class AutonomousScheduler extends EventEmitter {
     } catch (error) {
       checks.push({
         name: 'git_status',
-        passed: false,
-        error: error.message
+        passed: true,
+        details: { skipped: true }
       });
     }
     

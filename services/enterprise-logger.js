@@ -138,28 +138,36 @@ class EnterpriseLogger {
       }));
     }
 
-    // File transport - all logs
-    transports.push(new DailyRotateFile({
-      filename: path.join(config.logDir || 'logs', '%DATE%-combined.log'),
-      datePattern: 'YYYY-MM-DD',
-      zippedArchive: true,
-      maxSize: '20m',
-      maxFiles: '14d',
-      format: winston.format.json(),
-      auditFile: path.join(config.logDir || 'logs', '.audit-combined.json')
-    }));
+    // Only add file transports in development or when not on Render
+    // Render's filesystem is read-only/ephemeral
+    if (!process.env.RENDER && process.env.NODE_ENV !== 'production') {
+      try {
+        // File transport - all logs
+        transports.push(new DailyRotateFile({
+          filename: path.join(config.logDir || 'logs', '%DATE%-combined.log'),
+          datePattern: 'YYYY-MM-DD',
+          zippedArchive: true,
+          maxSize: '20m',
+          maxFiles: '14d',
+          format: winston.format.json(),
+          auditFile: path.join(config.logDir || 'logs', '.audit-combined.json')
+        }));
 
-    // File transport - errors only
-    transports.push(new DailyRotateFile({
-      filename: path.join(config.logDir || 'logs', '%DATE%-error.log'),
-      datePattern: 'YYYY-MM-DD',
-      zippedArchive: true,
-      maxSize: '20m',
-      maxFiles: '30d',
-      level: 'error',
-      format: winston.format.json(),
-      auditFile: path.join(config.logDir || 'logs', '.audit-error.json')
-    }));
+        // File transport - errors only
+        transports.push(new DailyRotateFile({
+          filename: path.join(config.logDir || 'logs', '%DATE%-error.log'),
+          datePattern: 'YYYY-MM-DD',
+          zippedArchive: true,
+          maxSize: '20m',
+          maxFiles: '30d',
+          level: 'error',
+          format: winston.format.json(),
+          auditFile: path.join(config.logDir || 'logs', '.audit-error.json')
+        }));
+      } catch (err) {
+        console.warn('Unable to create file transports:', err.message);
+      }
+    }
 
     // Elasticsearch transport for production (optional - uncomment if using Elasticsearch)
     /*

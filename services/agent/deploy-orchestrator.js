@@ -75,17 +75,29 @@ class DeploymentOrchestrator extends EventEmitter {
   }
 
   async verifyGitRepository() {
+    // In Render/CI containers the working directory may not be a git repo.
+    // Treat missing git context as non-fatal so the orchestrator can operate in no-op mode.
     try {
+      if (process.env.RENDER || process.env.CI) {
+        this.gitAvailable = false;
+        console.warn('⚠️  Skipping git verification in container environment (RENDER/CI detected)');
+        return;
+      }
+
       const { stdout } = await execAsync('git status');
       if (!stdout.includes('On branch')) {
-        throw new Error('Not in a git repository');
+        this.gitAvailable = false;
+        console.warn('⚠️  Git repository not detected; deployment actions will be limited');
+        return;
       }
       
       // Verify remote origins exist
       const remotes = await execAsync('git remote -v');
       console.log('📡 Git remotes configured:', remotes.stdout);
+      this.gitAvailable = true;
     } catch (error) {
-      throw new Error(`Git repository verification failed: ${error.message}`);
+      this.gitAvailable = false;
+      console.warn(`⚠️  Git repository verification failed: ${error.message}. Continuing without git.`);
     }
   }
 

@@ -234,7 +234,9 @@ export const DigitalTwinSystem = ({
 
       return result;
     } catch (error) {
-      console.error('Simulation failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Simulation failed:', error);
+      }
       return null;
     }
   };
@@ -242,7 +244,9 @@ export const DigitalTwinSystem = ({
   // Initialize AR session
   const initializeAR = async () => {
     if (!enableAR || !navigator.xr) {
-      console.warn('AR not supported or disabled');
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('AR not supported or disabled');
+      }
       return;
     }
 
@@ -263,20 +267,26 @@ export const DigitalTwinSystem = ({
         setupARRendering(session);
       }
     } catch (error) {
-      console.error('Failed to initialize AR:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to initialize AR:', error);
+      }
     }
   };
 
   // Setup AR rendering
   const setupARRendering = (session) => {
     // This would include WebXR setup, Three.js integration, etc.
-    console.log('AR rendering setup for session:', session);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('AR rendering setup for session:', session);
+    }
   };
 
   // Initialize VR session
   const initializeVR = async () => {
     if (!enableVR || !navigator.xr) {
-      console.warn('VR not supported or disabled');
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('VR not supported or disabled');
+      }
       return;
     }
 
@@ -294,14 +304,18 @@ export const DigitalTwinSystem = ({
         setupVRRendering(session);
       }
     } catch (error) {
-      console.error('Failed to initialize VR:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to initialize VR:', error);
+      }
     }
   };
 
   // Setup VR rendering
   const setupVRRendering = (session) => {
     // This would include WebXR setup, Three.js integration, etc.
-    console.log('VR rendering setup for session:', session);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('VR rendering setup for session:', session);
+    }
   };
 
   // Calculate twin health score

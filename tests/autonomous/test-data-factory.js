@@ -426,14 +426,22 @@ class TestDataFactory {
   // Helper method to fetch personnel data
   async getPersonnelData(roleType) {
     try {
-      let endpoint = '/api/personnel';
+      // Resolve absolute API base URL for Node environment
+      const apiBase = process.env.API_BASE_URL
+        || process.env.VITE_API_BASE_URL
+        || (process.env.RENDER_EXTERNAL_URL ? `${process.env.RENDER_EXTERNAL_URL}/api` : 'http://localhost:3000/api');
+
+      // Build URL safely using URL + searchParams
+      const url = new URL('personnel', apiBase.endsWith('/') ? apiBase : `${apiBase}/`);
       if (roleType === 'manager') {
-        endpoint += '?role=manager&role=admin';
+        url.searchParams.append('role', 'manager');
+        url.searchParams.append('role', 'admin');
       } else if (roleType === 'technician') {
-        endpoint += '?role=operator&role=manager';
+        url.searchParams.append('role', 'operator');
+        url.searchParams.append('role', 'manager');
       }
-      
-      const response = await fetch(endpoint);
+
+      const response = await fetch(url.toString());
       if (response.ok) {
         const result = await response.json();
         return result.data || [];

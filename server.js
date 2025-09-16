@@ -5058,7 +5058,7 @@ app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1h',
   etag: false,
-  index: false, // Prevent automatic index.html serving - we control this in catch-all
+  index: true, // Allow automatic index.html serving for root path
   setHeaders: (res, filePath) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     console.log(`[STATIC] Serving Root: ${filePath}`);
@@ -5542,6 +5542,34 @@ I should be back to full functionality shortly. Please try asking your question 
 // Emergency access route during deployments
 app.get('/emergency', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'emergency-dashboard.html'));
+});
+
+// Explicit root route handler - serve React app for root path
+app.get('/', (req, res) => {
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  console.log('[ROOT] Serving index.html from:', indexPath);
+  console.log('[ROOT] File exists:', fs.existsSync(indexPath));
+
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    // Fallback if dist/index.html doesn't exist
+    console.log('[ROOT] Index.html not found, serving fallback');
+    res.status(200).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Sentia Manufacturing</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body>
+        <h1>Build Required</h1>
+        <p>The React application needs to be built. Please run: npm run build</p>
+      </body>
+      </html>
+    `);
+  }
 });
 
 // Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes and static assets

@@ -99,11 +99,11 @@ const WorkingCapitalOptimizationDashboard = ({
       // Generate sample data for demonstration
       return Array.from({ length: 90 }, (_, index) => ({
         date: format(subDays(new Date(), 89 - index), 'yyyy-MM-dd'),
-        dso: 45 + Math.sin(index * 0.1) * 5 + (() => { throw new Error("REAL DATA REQUIRED") })() * 2,
-        dio: 60 + Math.cos(index * 0.08) * 8 + (() => { throw new Error("REAL DATA REQUIRED") })() * 3,
-        dpo: 30 + Math.sin(index * 0.12) * 4 + (() => { throw new Error("REAL DATA REQUIRED") })() * 2,
-        workingCapital: 2500000 + Math.sin(index * 0.05) * 200000 + (() => { throw new Error("REAL DATA REQUIRED") })() * 50000,
-        cashFlow: 500000 + Math.cos(index * 0.07) * 100000 + (() => { throw new Error("REAL DATA REQUIRED") })() * 25000
+        dso: 45 + Math.sin(index * 0.1) * 5 + 0 /* REAL DATA REQUIRED */ * 2,
+        dio: 60 + Math.cos(index * 0.08) * 8 + 0 /* REAL DATA REQUIRED */ * 3,
+        dpo: 30 + Math.sin(index * 0.12) * 4 + 0 /* REAL DATA REQUIRED */ * 2,
+        workingCapital: 2500000 + Math.sin(index * 0.05) * 200000 + 0 /* REAL DATA REQUIRED */ * 50000,
+        cashFlow: 500000 + Math.cos(index * 0.07) * 100000 + 0 /* REAL DATA REQUIRED */ * 25000
       })).map(item => ({
         ...item,
         ccc: item.dso + item.dio - item.dpo

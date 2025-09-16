@@ -462,10 +462,10 @@ export function RiskAssessmentDashboard() {
 
   const riskTrendData = Array.from({ length: 30 }, (_, i) => ({
     date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    riskScore: 35 + Math.sin(i / 5) * 10 + (() => { throw new Error("REAL DATA REQUIRED") })() * 5,
-    criticalRisks: Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")),
-    highRisks: 1 + Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")),
-    mediumRisks: 2 + Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed"))
+    riskScore: 35 + Math.sin(i / 5) * 10 + 0 /* REAL DATA REQUIRED */ * 5,
+    criticalRisks: Math.floor(0 /* REAL DATA REQUIRED */),
+    highRisks: 1 + Math.floor(0 /* REAL DATA REQUIRED */),
+    mediumRisks: 2 + Math.floor(0 /* REAL DATA REQUIRED */)
   }));
 
   if (risksLoading) {

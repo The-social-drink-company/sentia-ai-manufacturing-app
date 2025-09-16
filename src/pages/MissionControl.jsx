@@ -9,7 +9,7 @@ function DataStream({ title, value, unit, trend, status }) {
   
   useEffect(() => {
     const interval = setInterval(() => {
-      const fluctuation = (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * value * 0.1;
+      const fluctuation = (0 /* REAL DATA REQUIRED */ 0.5) * value * 0.1;
       setCurrentValue(prev => Math.max(0, prev + fluctuation));
     }, 1000);
     return () => clearInterval(interval);

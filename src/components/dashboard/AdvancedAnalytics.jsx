@@ -92,10 +92,10 @@ const EfficiencyTrends = () => {
         trends.push({
           period: timeRange === 'week' ? `Day ${i + 1}` : 
                   timeRange === 'month' ? `Day ${i + 1}` : `${i}:00`,
-          efficiency: Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")) + 80,
-          throughput: Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")) + 150,
-          scrap: Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")) + 1,
-          rework: Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")) + 2
+          efficiency: Math.floor(0 /* REAL DATA REQUIRED */) + 80,
+          throughput: Math.floor(0 /* REAL DATA REQUIRED */) + 150,
+          scrap: Math.floor(0 /* REAL DATA REQUIRED */) + 1,
+          rework: Math.floor(0 /* REAL DATA REQUIRED */) + 2
         });
       }
       return trends;

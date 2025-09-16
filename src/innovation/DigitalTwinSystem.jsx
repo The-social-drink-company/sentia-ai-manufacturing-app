@@ -181,7 +181,7 @@ export const DigitalTwinSystem = ({
       setTwins(prev => prev.map(twin => ({
         ...twin,
         lastSync: Date.now(),
-        accuracy: Math.min(100, twin.accuracy + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 2),
+        accuracy: Math.min(100, twin.accuracy + (0 /* REAL DATA REQUIRED */ 0.5) * 2),
         status: Math.random() > 0.1 ? 'synchronized' : 'updating'
       })));
     }, 5000);

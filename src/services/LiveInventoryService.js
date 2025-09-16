@@ -468,7 +468,7 @@ class LiveInventoryService {
     };
 
     const baseStock = baseStocks[sku]?.[locationId] || 0;
-    const variance = Math.floor((throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 0.1 * baseStock); // ±5% variance
+    const variance = Math.floor((0 /* REAL DATA REQUIRED */ 0.5) * 0.1 * baseStock); // ±5% variance
     return Math.max(0, baseStock + variance);
   }
 

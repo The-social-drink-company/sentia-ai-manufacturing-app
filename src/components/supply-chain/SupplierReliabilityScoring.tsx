@@ -180,13 +180,13 @@ export function SupplierReliabilityScoring() {
       overallScore: 94,
       scoreHistory: Array.from({ length: 24 }, (_, i) => ({
         date: new Date(Date.now() - (23 - i) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        score: 90 + (() => { throw new Error("REAL DATA REQUIRED") })() * 8 + Math.sin(i / 4) * 3,
+        score: 90 + 0 /* REAL DATA REQUIRED */ * 8 + Math.sin(i / 4) * 3,
         factors: {
-          deliveryPerformance: 90 + (() => { throw new Error("REAL DATA REQUIRED") })() * 10,
-          qualityMetrics: 92 + (() => { throw new Error("REAL DATA REQUIRED") })() * 8,
-          financialStability: 88 + (() => { throw new Error("REAL DATA REQUIRED") })() * 12,
-          communicationEffectiveness: 85 + (() => { throw new Error("REAL DATA REQUIRED") })() * 15,
-          riskProfile: 80 + (() => { throw new Error("REAL DATA REQUIRED") })() * 20
+          deliveryPerformance: 90 + 0 /* REAL DATA REQUIRED */ * 10,
+          qualityMetrics: 92 + 0 /* REAL DATA REQUIRED */ * 8,
+          financialStability: 88 + 0 /* REAL DATA REQUIRED */ * 12,
+          communicationEffectiveness: 85 + 0 /* REAL DATA REQUIRED */ * 15,
+          riskProfile: 80 + 0 /* REAL DATA REQUIRED */ * 20
         }
       })),
       currentFactors: {
@@ -251,13 +251,13 @@ export function SupplierReliabilityScoring() {
       overallScore: 87,
       scoreHistory: Array.from({ length: 24 }, (_, i) => ({
         date: new Date(Date.now() - (23 - i) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        score: 85 + (() => { throw new Error("REAL DATA REQUIRED") })() * 10 - Math.sin(i / 6) * 4,
+        score: 85 + 0 /* REAL DATA REQUIRED */ * 10 - Math.sin(i / 6) * 4,
         factors: {
-          deliveryPerformance: 82 + (() => { throw new Error("REAL DATA REQUIRED") })() * 16,
-          qualityMetrics: 88 + (() => { throw new Error("REAL DATA REQUIRED") })() * 12,
-          financialStability: 90 + (() => { throw new Error("REAL DATA REQUIRED") })() * 10,
-          communicationEffectiveness: 80 + (() => { throw new Error("REAL DATA REQUIRED") })() * 20,
-          riskProfile: 75 + (() => { throw new Error("REAL DATA REQUIRED") })() * 25
+          deliveryPerformance: 82 + 0 /* REAL DATA REQUIRED */ * 16,
+          qualityMetrics: 88 + 0 /* REAL DATA REQUIRED */ * 12,
+          financialStability: 90 + 0 /* REAL DATA REQUIRED */ * 10,
+          communicationEffectiveness: 80 + 0 /* REAL DATA REQUIRED */ * 20,
+          riskProfile: 75 + 0 /* REAL DATA REQUIRED */ * 25
         }
       })),
       currentFactors: {

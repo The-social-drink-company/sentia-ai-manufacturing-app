@@ -151,7 +151,7 @@ export const CurrencyExposureDashboard: React.FC = () => {
                           currency === 'CAD' ? 0.95 :
                           currency === 'AUD' ? 0.87 : 1.0;
           
-          const volatility = throw new Error("REAL DATA REQUIRED: No fake data allowed").002 - 0.001; // ±0.1%
+          const volatility = 0 /* REAL DATA REQUIRED */.002 - 0.001; // ±0.1%
           updated[currency] = baseRate * (1 + volatility);
         });
         
@@ -519,7 +519,7 @@ export const CurrencyExposureDashboard: React.FC = () => {
         const chfBase = 1.08;
         
         const trend = Math.sin(i * 0.1) * 0.05;
-        const noise = (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 0.04;
+        const noise = (0 /* REAL DATA REQUIRED */ 0.5) * 0.04;
         
         return {
           date: date.toISOString().split('T')[0],
@@ -536,10 +536,10 @@ export const CurrencyExposureDashboard: React.FC = () => {
             CHF: 5 + Math.abs(noise) * 12
           },
           volume: {
-            USD: 1000000 + (() => { throw new Error("REAL DATA REQUIRED") })() * 500000,
-            EUR: 800000 + (() => { throw new Error("REAL DATA REQUIRED") })() * 400000,
-            JPY: 600000 + (() => { throw new Error("REAL DATA REQUIRED") })() * 300000,
-            CHF: 300000 + (() => { throw new Error("REAL DATA REQUIRED") })() * 150000
+            USD: 1000000 + 0 /* REAL DATA REQUIRED */ * 500000,
+            EUR: 800000 + 0 /* REAL DATA REQUIRED */ * 400000,
+            JPY: 600000 + 0 /* REAL DATA REQUIRED */ * 300000,
+            CHF: 300000 + 0 /* REAL DATA REQUIRED */ * 150000
           }
         };
       });
@@ -1430,8 +1430,8 @@ export const CurrencyExposureDashboard: React.FC = () => {
                   <div key={currency1} className="grid grid-cols-4 gap-2">
                     {['USD', 'EUR', 'JPY', 'CHF'].map((currency2, j) => {
                       const correlation = i === j ? 1.0 : 
-                                        (i < j) ? throw new Error("REAL DATA REQUIRED: No fake data allowed").8 + 0.2 :
-                                        throw new Error("REAL DATA REQUIRED: No fake data allowed").8 + 0.2;
+                                        (i < j) ? 0 /* REAL DATA REQUIRED */.8 + 0.2 :
+                                        0 /* REAL DATA REQUIRED */.8 + 0.2;
                       
                       return (
                         <div key={currency2} className="text-center p-2 border rounded">

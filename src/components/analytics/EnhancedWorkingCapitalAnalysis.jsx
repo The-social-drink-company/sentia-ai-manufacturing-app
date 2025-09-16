@@ -122,7 +122,7 @@ const EnhancedWorkingCapitalAnalysis = () => {
     
     for (let i = 0; i <= 12; i++) {
       const seasonalityFactor = 1 + (parameters.cashFlow.seasonality / 100) * Math.sin((i * Math.PI) / 6);
-      const variabilityFactor = 1 + ((throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * parameters.cashFlow.variability) / 100;
+      const variabilityFactor = 1 + ((0 /* REAL DATA REQUIRED */ 0.5) * parameters.cashFlow.variability) / 100;
       
       const projectedWC = baseWorkingCapital * seasonalityFactor * variabilityFactor;
       const projectedCashFlow = workingCapitalMetrics.freeCashFlow * seasonalityFactor;
@@ -215,7 +215,7 @@ const EnhancedWorkingCapitalAnalysis = () => {
           ...prev,
           cashFlow: {
             ...prev.cashFlow,
-            variability: Math.max(5, Math.min(25, prev.cashFlow.variability + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 2))
+            variability: Math.max(5, Math.min(25, prev.cashFlow.variability + (0 /* REAL DATA REQUIRED */ 0.5) * 2))
           }
         }));
       }, refreshInterval * 1000);

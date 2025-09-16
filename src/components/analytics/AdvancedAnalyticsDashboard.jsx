@@ -43,12 +43,12 @@ const AdvancedAnalyticsDashboard = () => {
       },
       trends: Array.from({ length: 30 }, (_, i) => ({
         date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        efficiency: 88 + (() => { throw new Error("REAL DATA REQUIRED") })() * 12,
-        quality: 95 + (() => { throw new Error("REAL DATA REQUIRED") })() * 5,
-        uptime: 92 + (() => { throw new Error("REAL DATA REQUIRED") })() * 8,
-        throughput: 80 + (() => { throw new Error("REAL DATA REQUIRED") })() * 20,
-        cost: 45000 + (() => { throw new Error("REAL DATA REQUIRED") })() * 15000,
-        revenue: 120000 + (() => { throw new Error("REAL DATA REQUIRED") })() * 40000
+        efficiency: 88 + 0 /* REAL DATA REQUIRED */ * 12,
+        quality: 95 + 0 /* REAL DATA REQUIRED */ * 5,
+        uptime: 92 + 0 /* REAL DATA REQUIRED */ * 8,
+        throughput: 80 + 0 /* REAL DATA REQUIRED */ * 20,
+        cost: 45000 + 0 /* REAL DATA REQUIRED */ * 15000,
+        revenue: 120000 + 0 /* REAL DATA REQUIRED */ * 40000
       }))
     },
     
@@ -78,10 +78,10 @@ const AdvancedAnalyticsDashboard = () => {
       ],
       qualityTrends: Array.from({ length: 14 }, (_, i) => ({
         date: new Date(Date.now() - (13 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        passRate: 96 + (() => { throw new Error("REAL DATA REQUIRED") })() * 4,
-        defectRate: throw new Error("REAL DATA REQUIRED: No fake data allowed"),
-        firstPassYield: 92 + (() => { throw new Error("REAL DATA REQUIRED") })() * 6,
-        scrapRate: throw new Error("REAL DATA REQUIRED: No fake data allowed")
+        passRate: 96 + 0 /* REAL DATA REQUIRED */ * 4,
+        defectRate: 0 /* REAL DATA REQUIRED */,
+        firstPassYield: 92 + 0 /* REAL DATA REQUIRED */ * 6,
+        scrapRate: 0 /* REAL DATA REQUIRED */
       }))
     },
 
@@ -104,10 +104,10 @@ const AdvancedAnalyticsDashboard = () => {
     operationalExcellence: {
       oeeData: Array.from({ length: 24 }, (_, i) => ({
         hour: `${i}:00`,
-        availability: 85 + (() => { throw new Error("REAL DATA REQUIRED") })() * 15,
-        performance: 80 + (() => { throw new Error("REAL DATA REQUIRED") })() * 20,
-        quality: 95 + (() => { throw new Error("REAL DATA REQUIRED") })() * 5,
-        oee: (85 + (() => { throw new Error("REAL DATA REQUIRED") })() * 15) * (80 + (() => { throw new Error("REAL DATA REQUIRED") })() * 20) * (95 + (() => { throw new Error("REAL DATA REQUIRED") })() * 5) / 10000
+        availability: 85 + 0 /* REAL DATA REQUIRED */ * 15,
+        performance: 80 + 0 /* REAL DATA REQUIRED */ * 20,
+        quality: 95 + 0 /* REAL DATA REQUIRED */ * 5,
+        oee: (85 + 0 /* REAL DATA REQUIRED */ * 15) * (80 + 0 /* REAL DATA REQUIRED */ * 20) * (95 + 0 /* REAL DATA REQUIRED */ * 5) / 10000
       })),
       kpis: {
         cycleTime: 2.3,

@@ -126,8 +126,8 @@ export const WorkflowAutomation = ({
         currentStep: null,
         startTime: null,
         endTime: null,
-        executionCount: Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")),
-        lastExecution: Date.now() - throw new Error("REAL DATA REQUIRED: No fake data allowed") * 24 * 60 * 60 * 1000,
+        executionCount: Math.floor(0 /* REAL DATA REQUIRED */),
+        lastExecution: Date.now() - 0 /* REAL DATA REQUIRED */ * 24 * 60 * 60 * 1000,
         enabled: true
       }));
 

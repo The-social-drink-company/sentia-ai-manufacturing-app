@@ -456,27 +456,11 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  // Set a more permissive CSP for production on Render
-  // Allow all necessary resources for React app and Clerk Auth
-  const globalCsp = [
-    "default-src 'self' https:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.accounts.dev https://*.clerk.accounts.dev https://js.clerk.com https://js.clerk.dev",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://clerk.accounts.dev",
-    "font-src 'self' https://fonts.gstatic.com data:",
-    "img-src 'self' data: https: blob:",
-    "connect-src 'self' https: wss: https://clerk.accounts.dev https://*.clerk.accounts.dev https://api.clerk.com https://api.clerk.dev",
-    "frame-src 'self' https://accounts.dev https://clerk.accounts.dev https://js.clerk.com https://js.clerk.dev",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "worker-src 'self' blob:"
-  ].join('; ');
-
-  // Only apply CSP in production - development is more permissive
-  if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
-    res.setHeader('Content-Security-Policy', globalCsp);
-  } else {
-    res.setHeader('Content-Security-Policy', globalCsp);
-  }
+  // [RENDER FIX] Temporarily disable CSP headers that may cause 502 errors
+  // CSP can be re-enabled once the server is stable
+  // const globalCsp = [...];\n  // if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+  //   res.setHeader('Content-Security-Policy', globalCsp);
+  // }
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 });
@@ -5722,50 +5706,19 @@ app.get('*', (req, res) => {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   
-  // Add more permissive Content Security Policy for production deployments on Render
-  const csp = [
-    "default-src 'self' https:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.com https://js.clerk.dev https://clerk.accounts.dev https://*.clerk.accounts.dev",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://clerk.accounts.dev",
-    "font-src 'self' https://fonts.gstatic.com data:",
-    "img-src 'self' data: blob: https:",
-    "connect-src 'self' https: wss: https://api.clerk.com https://api.clerk.dev https://clerk.accounts.dev https://*.clerk.accounts.dev https://*.onrender.com wss://*.onrender.com",
-    "frame-src 'self' https://js.clerk.com https://js.clerk.dev https://accounts.dev https://clerk.accounts.dev",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "worker-src 'self' blob:"
-  ].join('; ');
-
-  // Apply CSP based on environment
-  if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
-    res.setHeader('Content-Security-Policy', csp);
-  }
+  // [RENDER FIX] CSP temporarily disabled to fix 502 errors
+  // const csp = [...];\n  // if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+  //   res.setHeader('Content-Security-Policy', csp);
+  // }
   
   // Serve the React app for all other routes (SPA routing)
   const indexPath = path.join(__dirname, 'dist', 'index.html');
 
-  // Debug logging for Render deployment
-  console.log('[CATCH-ALL] Request path:', req.path);
-  console.log('[CATCH-ALL] __dirname:', __dirname);
-  console.log('[CATCH-ALL] Looking for index.html at:', indexPath);
-  console.log('[CATCH-ALL] File exists:', fs.existsSync(indexPath));
-
-  // Additional debug: check what's in dist
-  const distPath = path.join(__dirname, 'dist');
-  if (fs.existsSync(distPath)) {
-    const distFiles = fs.readdirSync(distPath);
-    console.log('[CATCH-ALL] Files in dist:', distFiles.slice(0, 10));
-  } else {
-    console.log('[CATCH-ALL] dist directory does not exist at:', distPath);
-  }
-
   // Check if dist/index.html exists
   if (fs.existsSync(indexPath)) {
-    console.log('[CATCH-ALL] Serving React app from:', indexPath);
     res.sendFile(indexPath);
   } else {
     // Fallback to a basic HTML response if dist doesn't exist
-    console.log('[CATCH-ALL] dist/index.html not found, serving fallback');
     res.status(200).send(`
       <!DOCTYPE html>
       <html lang="en">

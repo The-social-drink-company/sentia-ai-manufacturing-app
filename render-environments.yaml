@@ -13,7 +13,7 @@ services:
     branch: development
 
     buildCommand: npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma db push --skip-generate
-    startCommand: node server-render.js
+    startCommand: node server.js
     healthCheckPath: /health
 
     envVars:
@@ -53,7 +53,7 @@ services:
     branch: test
 
     buildCommand: npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma db push --skip-generate
-    startCommand: node server-render.js
+    startCommand: node server.js
     healthCheckPath: /health
 
     envVars:
@@ -93,7 +93,7 @@ services:
     branch: production
 
     buildCommand: npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma migrate deploy
-    startCommand: node server-render.js
+    startCommand: node server.js
     healthCheckPath: /health
 
     envVars:

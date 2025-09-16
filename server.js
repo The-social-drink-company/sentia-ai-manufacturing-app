@@ -5902,9 +5902,16 @@ app.use((error, req, res, next) => {
       stack: error.stack,
       port: PORT
     });
-    
-    // Attempt graceful shutdown
-    await enterpriseIntegration.shutdownEnterpriseServices();
-    await processManager.gracefulShutdown('startup_failure');
+
+    // In production, try to continue running even with initialization errors
+    // This prevents 502 errors if non-critical services fail to initialize
+    if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+      console.error('Server initialization error, but continuing to serve requests:', error.message);
+      // Don't exit - let the server continue running
+    } else {
+      // In development, exit on startup failures for debugging
+      await enterpriseIntegration.shutdownEnterpriseServices();
+      await processManager.gracefulShutdown('startup_failure');
+    }
   }
 })();

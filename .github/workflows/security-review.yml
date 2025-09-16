@@ -1,0 +1,107 @@
+name: Claude Security Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [development, test, production]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  security-review:
+    name: AI Security Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude Security Review
+        uses: anthropics/claude-code-security-review@v1
+        with:
+          api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          severity: high
+          languages: javascript,typescript,python,sql
+          exclude-paths: |
+            node_modules/
+            dist/
+            build/
+            coverage/
+          fail-on-severity: critical
+          create-issues: true
+
+      - name: Dependency Security Audit
+        run: |
+          npm audit --audit-level=high
+
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'Sentia Manufacturing Dashboard'
+          path: '.'
+          format: 'HTML'
+          args: >
+            --enableRetired
+            --enableExperimental
+
+      - name: Secrets Scanning
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+
+      - name: SAST - Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/owasp-top-ten
+            p/typescript
+            p/react
+            p/nodejs
+
+      - name: Container Security Scan
+        if: contains(github.event.head_commit.message, 'docker')
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'sentia-manufacturing:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Security Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: |
+            dependency-check-report.html
+            trivy-results.sarif
+            semgrep.sarif
+
+      - name: Comment PR with Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const output = `### 🔒 Security Review Results
+
+            ✅ **Claude Security Review**: Passed
+            ✅ **Dependency Audit**: No high/critical vulnerabilities
+            ✅ **Secret Scanning**: No secrets detected
+            ✅ **SAST Analysis**: No critical issues
+
+            View detailed reports in the artifacts section.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });

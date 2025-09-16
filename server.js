@@ -416,14 +416,29 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYM
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:9000', 'http://localhost:5000', 'http://localhost:5177', 'https://sentia-manufacturing-production.onrender.com'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:9000',
+    'http://localhost:5000',
+    'http://localhost:5177',
+    'https://sentia-manufacturing-production.onrender.com',
+    'https://sentia-manufacturing-development.onrender.com'
+  ],
   credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Apply enterprise rate limiting to API routes
-app.use('/api/', apiLimiter());
+// Apply enterprise rate limiting to API routes (with dev bypass for specific endpoints)
+const apiLimiterMiddleware = apiLimiter();
+app.use('/api/', (req, res, next) => {
+  // In development/Render dev, relax rate limit for high-traffic dashboards
+  const isDevEnv = (process.env.NODE_ENV !== 'production') || process.env.RENDER;
+  if (isDevEnv && req.path.startsWith('/personnel')) {
+    return next();
+  }
+  return apiLimiterMiddleware(req, res, next);
+});
 app.use('/api/auth/', authLimiter());
 logger.info('Rate limiting middleware applied');
 
@@ -441,7 +456,19 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  // CSP is set later in the catch-all route with proper configuration
+  // Set a sane global CSP to allow Google Fonts and data: fonts; catch-all may override
+  const globalCsp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com data:",
+    "img-src 'self' data: https:",
+    "connect-src 'self' https: wss:",
+    "frame-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'"
+  ].join('; ');
+  res.setHeader('Content-Security-Policy', globalCsp);
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 });

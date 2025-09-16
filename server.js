@@ -456,19 +456,27 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  // Set a sane global CSP to allow Google Fonts and data: fonts; catch-all may override
+  // Set a more permissive CSP for production on Render
+  // Allow all necessary resources for React app and Clerk Auth
   const globalCsp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "default-src 'self' https:",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.accounts.dev https://*.clerk.accounts.dev https://js.clerk.com https://js.clerk.dev",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://clerk.accounts.dev",
     "font-src 'self' https://fonts.gstatic.com data:",
-    "img-src 'self' data: https:",
-    "connect-src 'self' https: wss:",
-    "frame-src 'self'",
+    "img-src 'self' data: https: blob:",
+    "connect-src 'self' https: wss: https://clerk.accounts.dev https://*.clerk.accounts.dev https://api.clerk.com https://api.clerk.dev",
+    "frame-src 'self' https://accounts.dev https://clerk.accounts.dev https://js.clerk.com https://js.clerk.dev",
     "object-src 'none'",
-    "base-uri 'self'"
+    "base-uri 'self'",
+    "worker-src 'self' blob:"
   ].join('; ');
-  res.setHeader('Content-Security-Policy', globalCsp);
+
+  // Only apply CSP in production - development is more permissive
+  if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+    res.setHeader('Content-Security-Policy', globalCsp);
+  } else {
+    res.setHeader('Content-Security-Policy', globalCsp);
+  }
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 });
@@ -5081,6 +5089,11 @@ try {
 // CRITICAL: Serve static files with proper MIME types (must be after ALL API routes but BEFORE catch-all)
 // Priority order is critical - specific routes first, then general routes
 
+// Explicitly serve the main entry point
+app.get('/index.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 // Serve JavaScript files with explicit MIME type
 app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
   maxAge: '1d',
@@ -5713,19 +5726,24 @@ app.get('*', (req, res) => {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   
-  // Add Content Security Policy for production deployments
+  // Add more permissive Content Security Policy for production deployments on Render
   const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.com https://js.clerk.dev",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "default-src 'self' https:",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.com https://js.clerk.dev https://clerk.accounts.dev https://*.clerk.accounts.dev",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://clerk.accounts.dev",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self' https://api.clerk.com https://api.clerk.dev https://*.onrender.com wss://*.onrender.com",
-    "frame-src 'self' https://js.clerk.com https://js.clerk.dev",
+    "connect-src 'self' https: wss: https://api.clerk.com https://api.clerk.dev https://clerk.accounts.dev https://*.clerk.accounts.dev https://*.onrender.com wss://*.onrender.com",
+    "frame-src 'self' https://js.clerk.com https://js.clerk.dev https://accounts.dev https://clerk.accounts.dev",
     "object-src 'none'",
-    "base-uri 'self'"
+    "base-uri 'self'",
+    "worker-src 'self' blob:"
   ].join('; ');
-  res.setHeader('Content-Security-Policy', csp);
+
+  // Apply CSP based on environment
+  if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+    res.setHeader('Content-Security-Policy', csp);
+  }
   
   // Serve the React app for all other routes (SPA routing)
   const indexPath = path.join(__dirname, 'dist', 'index.html');

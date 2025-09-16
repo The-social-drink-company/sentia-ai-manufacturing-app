@@ -46,7 +46,13 @@ class FeatureFlagsService extends EventEmitter {
    */
   async loadFlags() {
     try {
-      // Load from API
+      // In server environment, directly load defaults instead of fetching
+      if (typeof window === 'undefined') {
+        this.loadDefaultFlags();
+        return;
+      }
+
+      // Load from API only in browser environment
       const response = await fetch('/api/feature-flags');
       const data = await response.json();
 

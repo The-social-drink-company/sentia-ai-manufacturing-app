@@ -751,29 +751,30 @@ app.get('/api/debug/env', (req, res) => {
   res.json(envInfo);
 });
 
+// COMMENTED OUT - Duplicate health endpoint causing conflicts
 // Root health check endpoint for Render
-app.get('/health', async (req, res) => {
-  const timer = logger.startTimer('health-check');
-
-  const health = {
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    port: PORT,
-    server: 'server.js',
-    uptime: process.uptime(),
-    enterprise: {
-      cache: cacheManager.getStats(),
-      performance: performanceMonitor.getMetrics(),
-      features: featureFlags.getEnabledFeatures()
-    },
-    environment: process.env.NODE_ENV || 'production'
-  };
-
-  const duration = logger.endTimer(timer);
-  health.responseTime = duration;
-
-  res.json(health);
-});
+// app.get('/health', async (req, res) => {
+//   const timer = logger.startTimer('health-check');
+//
+//   const health = {
+//     status: 'healthy',
+//     timestamp: new Date().toISOString(),
+//     port: PORT,
+//     server: 'server.js',
+//     uptime: process.uptime(),
+//     enterprise: {
+//       cache: cacheManager.getStats(),
+//       performance: performanceMonitor.getMetrics(),
+//       features: featureFlags.getEnabledFeatures()
+//     },
+//     environment: process.env.NODE_ENV || 'production'
+//   };
+//
+//   const duration = logger.endTimer(timer);
+//   health.responseTime = duration;
+//
+//   res.json(health);
+// });
 
 // Basic health check for Render deployment (no external service dependencies)
 app.get('/api/health', async (req, res) => {
@@ -5709,24 +5710,25 @@ app.use((error, req, res, next) => {
       logInfo('Realtime connections closed');
     });
     
+    // COMMENTED OUT - Third duplicate health endpoint
     // Add health check for enterprise monitoring
-    app.get('/health', asyncHandler(async (req, res) => {
-      const health = {
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        version: process.env.npm_package_version || '1.0.0',
-        environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
-        processManager: processManager.getHealthStatus(),
-        errorHandler: errorHandler.getHealthStatus(),
-        services: {
-          database: global.prisma ? 'connected' : 'disconnected',
-          mcp: process.env.MCP_SERVER_URL ? 'configured' : 'not_configured'
-        }
-      };
-      
-      res.json(health);
-    }));
+    // app.get('/health', asyncHandler(async (req, res) => {
+    //   const health = {
+    //     status: 'healthy',
+    //     timestamp: new Date().toISOString(),
+    //     uptime: process.uptime(),
+    //     version: process.env.npm_package_version || '1.0.0',
+    //     environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
+    //     processManager: processManager.getHealthStatus(),
+    //     errorHandler: errorHandler.getHealthStatus(),
+    //     services: {
+    //       database: global.prisma ? 'connected' : 'disconnected',
+    //       mcp: process.env.MCP_SERVER_URL ? 'configured' : 'not_configured'
+    //     }
+    //   };
+    //
+    //   res.json(health);
+    // }));
     
   } catch (error) {
     logError('Failed to start Sentia Enterprise Server', {

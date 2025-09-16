@@ -195,7 +195,7 @@ class QualityControlService {
 
       // Create test result record
       const testResult = {
-        id: `TEST_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `TEST_${Date.now()}_${crypto.randomUUID().substr(2, 9)}`,
         batchId: testData.batchId,
         stationId: testData.stationId,
         testType: testData.testType,
@@ -433,7 +433,7 @@ class QualityControlService {
 
   async calculateStationQualityScore(stationId) {
     // Simulate quality score calculation based on recent test results
-    return Math.round((85 + Math.random() * 12) * 100) / 100; // 85-97%
+    return Math.round((85 + (() => { throw new Error("REAL DATA REQUIRED") })() * 12) * 100) / 100; // 85-97%
   }
 
   async getCurrentBatchBeingTested(stationId) {
@@ -463,8 +463,8 @@ class QualityControlService {
   }
 
   // Placeholder methods for complete integration
-  async getTestsCompletedToday(stationId) { return Math.floor(Math.random() * 20) + 5; }
-  async calculatePassRate(stationId) { return Math.round((92 + Math.random() * 6) * 100) / 100; }
+  async getTestsCompletedToday(stationId) { return Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")) + 5; }
+  async calculatePassRate(stationId) { return Math.round((92 + (() => { throw new Error("REAL DATA REQUIRED") })() * 6) * 100) / 100; }
   async getStationInstruments(stationId) { return []; }
   async getCalibrationStatus(stationId) { return 'current'; }
   async getActiveTests(stationId) { return []; }

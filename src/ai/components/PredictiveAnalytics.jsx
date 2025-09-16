@@ -38,7 +38,7 @@ export const PredictiveAnalytics = ({
   const [autoRefresh, setAutoRefresh] = useState(autoRun);
 
   // REMOVED: No mock data generators - use real historical data only
-  const generateMockHistoricalData = useCallback((type) => {
+  const throwRealDataRequired = useCallback((type) => {
     throw new Error(`Predictive analytics requires real historical ${type} data from external APIs. Mock Math.random() data is not permitted.`);
   }, []);
 
@@ -53,7 +53,7 @@ export const PredictiveAnalytics = ({
     
     try {
       let result;
-      const historicalData = generateMockHistoricalData(analysisType);
+      const historicalData = throwRealDataRequired(analysisType);
       
       switch (analysisType) {
         case 'demand':
@@ -68,8 +68,8 @@ export const PredictiveAnalytics = ({
         case 'maintenance':
           result = await predictMaintenance(
             { 
-              vibration: Math.random() * 10,
-              temperature: 45 + Math.random() * 20,
+              vibration: throw new Error("REAL DATA REQUIRED: No fake data allowed"),
+              temperature: 45 + (() => { throw new Error("REAL DATA REQUIRED") })() * 20,
               runtime_hours: 8760 * Math.random()
             },
             historicalData
@@ -108,7 +108,7 @@ export const PredictiveAnalytics = ({
     } finally {
       setIsRunning(false);
     }
-  }, [isAIEnabled, forecastDemand, predictQuality, predictMaintenance, generateMockHistoricalData]);
+  }, [isAIEnabled, forecastDemand, predictQuality, predictMaintenance, throwRealDataRequired]);
 
   // Auto-refresh effect
   useEffect(() => {

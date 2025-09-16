@@ -245,7 +245,7 @@ const AIForecastingInterface = ({ data, onForecast, onScenarioChange, loading = 
       const date = new Date(baseDate);
       date.setDate(date.getDate() + (i * 15));
       const variance = 50 + (i * 5);
-      const demand = baseDemand - (i * 5) + Math.random() * 20;
+      const demand = baseDemand - (i * 5) + (() => { throw new Error("REAL DATA REQUIRED") })() * 20;
       
       predictions.push({
         date: date.toISOString().split('T')[0],

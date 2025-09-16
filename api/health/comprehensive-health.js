@@ -1,5 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import os from 'os';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -202,8 +203,8 @@ router.get('/metrics', async (req, res) => {
         node_version: process.version,
         platform: process.platform,
         arch: process.arch,
-        os: require('os').type(),
-        hostname: require('os').hostname()
+        os: os.type(),
+        hostname: os.hostname()
       }
     },
     application: {

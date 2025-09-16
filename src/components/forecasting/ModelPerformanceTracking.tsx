@@ -221,15 +221,15 @@ export function ModelPerformanceTracking({
 
   const mockComparisonData: ModelComparison[] = Array.from({ length: 30 }, (_, i) => {
     const date = format(subDays(new Date(), 29 - i), 'yyyy-MM-dd');
-    const actual = 800 + Math.sin(i / 5) * 100 + Math.random() * 50;
+    const actual = 800 + Math.sin(i / 5) * 100 + (() => { throw new Error("REAL DATA REQUIRED") })() * 50;
     
     return {
       date,
       actual,
-      'GPT-4 Ensemble': actual + (Math.random() - 0.5) * 60,
-      'XGBoost Hybrid': actual + (Math.random() - 0.5) * 80,
-      'ARIMA Statistical': actual + (Math.random() - 0.5) * 120,
-      'Neural Prophet': actual + (Math.random() - 0.5) * 70,
+      'GPT-4 Ensemble': actual + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 60,
+      'XGBoost Hybrid': actual + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 80,
+      'ARIMA Statistical': actual + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 120,
+      'Neural Prophet': actual + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 70,
     };
   });
 

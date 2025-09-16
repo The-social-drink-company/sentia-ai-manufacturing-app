@@ -48,7 +48,7 @@ const ProductionChart = () => {
       const hours = Array.from({length: 24}, (_, i) => i);
       return hours.map(hour => ({
         hour: `${hour}:00`,
-        production: Math.floor(Math.random() * 100) + 50,
+        production: Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")) + 50,
         target: 80
       }));
     };
@@ -180,12 +180,12 @@ const ManufacturingDashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setRealTimeData(prev => ({
-        totalProduction: prev.totalProduction + Math.floor(Math.random() * 10),
-        efficiency: +(prev.efficiency + (Math.random() - 0.5) * 0.5).toFixed(1),
-        activeLines: Math.min(10, Math.max(6, prev.activeLines + Math.floor(Math.random() * 3) - 1)),
+        totalProduction: prev.totalProduction + Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")),
+        efficiency: +(prev.efficiency + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 0.5).toFixed(1),
+        activeLines: Math.min(10, Math.max(6, prev.activeLines + Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")) - 1)),
         totalLines: 10,
-        workersOnShift: Math.min(150, Math.max(120, prev.workersOnShift + Math.floor(Math.random() * 6) - 3)),
-        ordersFulfilled: Math.min(100, prev.ordersFulfilled + Math.floor(Math.random() * 2))
+        workersOnShift: Math.min(150, Math.max(120, prev.workersOnShift + Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")) - 3)),
+        ordersFulfilled: Math.min(100, prev.ordersFulfilled + Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")))
       }));
     }, 3000);
 

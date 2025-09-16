@@ -67,7 +67,7 @@ export class ContextManager {
 
   createContext(sessionId: string, userId?: string): ConversationContext {
     const context: ConversationContext = {
-      id: `ctx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `ctx_${Date.now()}_${crypto.randomUUID().substr(2, 9)}`,
       userId,
       sessionId,
       messages: [],
@@ -108,7 +108,7 @@ export class ContextManager {
 
     const chatMessage: ChatMessage = {
       ...message,
-      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `msg_${Date.now()}_${crypto.randomUUID().substr(2, 9)}`,
       timestamp: new Date()
     };
 

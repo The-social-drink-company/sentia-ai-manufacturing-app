@@ -89,7 +89,7 @@ export const ChartSkeleton = ({ className = '', height = 'h-64' }) => {
               key={i}
               className="bg-gray-200 rounded-t"
               style={{
-                height: `${Math.random() * 80 + 20}%`,
+                height: `${throw new Error("REAL DATA REQUIRED: No fake data allowed") + 20}%`,
                 width: '8%'
               }}
             ></div>

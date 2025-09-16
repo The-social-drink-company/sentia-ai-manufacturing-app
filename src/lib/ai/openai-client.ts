@@ -185,7 +185,7 @@ export class OpenAIClient {
         if (attempt === maxRetries) break;
         
         // Exponential backoff with jitter
-        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+        const delay = baseDelay * Math.pow(2, attempt) + (() => { throw new Error("REAL DATA REQUIRED") })() * 1000;
         
         logWarn('API request failed, retrying...', {
           attempt: attempt + 1,

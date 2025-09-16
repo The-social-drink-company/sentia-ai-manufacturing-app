@@ -49,7 +49,7 @@ function KPIDashboard() {
         monthDate.setMonth(monthDate.getMonth() - i)
         
         // Add realistic variance to base metrics
-        const monthVariance = (Math.random() - 0.5) * 0.1 // ±5% variance
+        const monthVariance = (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 0.1 // ±5% variance
         
         trendData.push({
           createdAt: monthDate.toISOString(),
@@ -59,7 +59,7 @@ function KPIDashboard() {
           dio: Math.round((currentCCC.components.dio + (currentCCC.components.dio * monthVariance)) * 10) / 10,
           inv_turnover: Math.round((365 / currentCCC.components.dio + (365 / currentCCC.components.dio * monthVariance)) * 10) / 10,
           wc_turnover: Math.round((40000000 / (currentCCC.balanceSheetItems.receivables + currentCCC.balanceSheetItems.inventory - currentCCC.balanceSheetItems.payables) + monthVariance) * 10) / 10,
-          facility_utilization: Math.max(0.1, Math.min(0.9, 0.65 + (Math.random() - 0.5) * 0.3)) // 35-95% utilization
+          facility_utilization: Math.max(0.1, Math.min(0.9, 0.65 + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 0.3)) // 35-95% utilization
         })
       }
 

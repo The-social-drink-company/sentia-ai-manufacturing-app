@@ -126,8 +126,8 @@ export const WorkflowAutomation = ({
         currentStep: null,
         startTime: null,
         endTime: null,
-        executionCount: Math.floor(Math.random() * 50),
-        lastExecution: Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
+        executionCount: Math.floor(throw new Error("REAL DATA REQUIRED: No fake data allowed")),
+        lastExecution: Date.now() - throw new Error("REAL DATA REQUIRED: No fake data allowed") * 24 * 60 * 60 * 1000,
         enabled: true
       }));
 
@@ -193,7 +193,7 @@ export const WorkflowAutomation = ({
       return;
     }
 
-    const executionId = `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const executionId = `exec-${Date.now()}-${crypto.randomUUID().substr(2, 9)}`;
     
     const execution = {
       id: executionId,

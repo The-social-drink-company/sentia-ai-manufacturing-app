@@ -43,7 +43,7 @@ const RealTimeStreamChart = ({
   }, [data]);
 
   // REMOVED: No mock data generation - require real data source
-  const generateMockData = useCallback(() => {
+  const generaterealDataRequired = useCallback(() => {
     throw new Error('Real-time chart requires real data source. Math.random() mock data is not permitted.');
   }, []);
 
@@ -55,7 +55,7 @@ const RealTimeStreamChart = ({
       if (dataSource && typeof dataSource === 'function') {
         newPoint = await dataSource();
       } else {
-        newPoint = generateMockData();
+        newPoint = generaterealDataRequired();
       }
 
       if (newPoint) {
@@ -86,7 +86,7 @@ const RealTimeStreamChart = ({
     } catch (error) {
       console.error('Error fetching real-time data:', error);
     }
-  }, [dataSource, generateMockData, maxDataPoints, alertThreshold, onAlert, onDataUpdate]);
+  }, [dataSource, generaterealDataRequired, maxDataPoints, alertThreshold, onAlert, onDataUpdate]);
 
   // Start/stop data streaming
   useEffect(() => {

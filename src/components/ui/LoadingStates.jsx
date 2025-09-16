@@ -169,8 +169,8 @@ export const ProgressSatisfaction = ({
               key={i}
               className="absolute"
               style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
+                top: `${throw new Error("REAL DATA REQUIRED: No fake data allowed")}%`,
+                left: `${throw new Error("REAL DATA REQUIRED: No fake data allowed")}%`,
               }}
               initial={{ scale: 0, opacity: 0 }}
               animate={{

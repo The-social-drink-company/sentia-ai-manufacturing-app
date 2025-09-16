@@ -162,7 +162,7 @@ export class ComplianceService {
     expiresInDays?: number
   ): ConsentRecord {
     const consent: ConsentRecord = {
-      consentId: `consent_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      consentId: `consent_${Date.now()}_${crypto.randomUUID().substr(2, 9)}`,
       userId,
       consentType,
       granted,
@@ -244,7 +244,7 @@ export class ComplianceService {
     metadata?: Record<string, any>
   ): DataSubjectRequest {
     const request: DataSubjectRequest = {
-      requestId: `dsr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      requestId: `dsr_${Date.now()}_${crypto.randomUUID().substr(2, 9)}`,
       userId,
       rightType,
       status: 'pending',

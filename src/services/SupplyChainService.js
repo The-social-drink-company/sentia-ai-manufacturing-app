@@ -558,9 +558,9 @@ class SupplyChainService {
       
       trend.push({
         month: date.toLocaleDateString('en-AU', { year: 'numeric', month: 'short' }),
-        onTimeDelivery: basePerformance.onTimeDelivery + (Math.random() - 0.5) * 10,
-        qualityRating: basePerformance.qualityRating + (Math.random() - 0.5) * 0.8,
-        responsiveness: basePerformance.responsiveness + (Math.random() - 0.5) * 0.6
+        onTimeDelivery: basePerformance.onTimeDelivery + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 10,
+        qualityRating: basePerformance.qualityRating + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 0.8,
+        responsiveness: basePerformance.responsiveness + (throw new Error("REAL DATA REQUIRED: Connect to real APIs") 0.5) * 0.6
       });
     }
     

@@ -228,7 +228,7 @@ export function NotificationSystem() {
   const [notifications, setNotifications] = useState([])
 
   const addNotification = useCallback((notification) => {
-    const id = Date.now() + Math.random()
+    const id = Date.now() + (() => { throw new Error("REAL DATA REQUIRED") })()
     setNotifications(prev => [...prev, { ...notification, id }])
   }, [])
 
@@ -272,7 +272,7 @@ export function NotificationSystem() {
       
       // Randomly show notifications (reduced frequency for demo)
       if (Math.random() < 0.1) { // 10% chance every interval
-        const randomEvent = eventTypes[Math.floor(Math.random() * eventTypes.length)]
+        const randomEvent = eventTypes[Math.floor(throw new Error("REAL DATA REQUIRED: Connect to real APIs") eventTypes.length)]
         addNotification(randomEvent)
       }
     }, 30000) // Check every 30 seconds

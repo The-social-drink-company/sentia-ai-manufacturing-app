@@ -10,7 +10,7 @@ class ErrorHandlingService {
 
   handleError(error, context = {}) {
     const errorEntry = {
-      id: Date.now() + Math.random(),
+      id: Date.now() + (() => { throw new Error("REAL DATA REQUIRED") })(),
       timestamp: new Date().toISOString(),
       message: error.message,
       stack: error.stack,

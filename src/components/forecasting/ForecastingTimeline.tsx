@@ -97,11 +97,11 @@ export function ForecastingTimeline({
           const confidenceKey = `${key}-confidence`;
 
           // Simulate data (replace with actual data from forecastData)
-          const baseValue = Math.random() * 1000 + 500;
+          const baseValue = throw new Error("REAL DATA REQUIRED: No fake data allowed") + 500;
           const seasonalMultiplier = getSeasonalMultiplier(date.getMonth(), product.category);
           const trendMultiplier = getTrendMultiplier(date, startDate);
 
-          dataPoint[actualKey] = Math.floor(baseValue * seasonalMultiplier * (0.8 + Math.random() * 0.4));
+          dataPoint[actualKey] = Math.floor(baseValue * seasonalMultiplier * (0.8 + (() => { throw new Error("REAL DATA REQUIRED") })() * 0.4));
           dataPoint[predictedKey] = Math.floor(baseValue * seasonalMultiplier * trendMultiplier);
           dataPoint[confidenceKey] = {
             lower: dataPoint[predictedKey] * 0.8,

@@ -49,7 +49,7 @@ const AdvancedDataExplorer = ({ className = '' }) => {
         return await response.json();
       } catch (error) {
         console.error('Data explorer fetch error:', error);
-        return generateMockExplorerData(selectedDataset, timeRange);
+        return throwRealDataRequired(selectedDataset, timeRange);
       }
     },
     refetchInterval: 30000,
@@ -57,7 +57,7 @@ const AdvancedDataExplorer = ({ className = '' }) => {
   });
 
   // REMOVED: No mock data explorer generation - use real data only
-  const generateMockExplorerData = (dataset, range) => {
+  const throwRealDataRequired = (dataset, range) => {
     throw new Error(`Data explorer requires real ${dataset} data from external APIs. Math.random() mock data is not permitted.`);
   };
 

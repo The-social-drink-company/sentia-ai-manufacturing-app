@@ -266,9 +266,9 @@ export function LeadTimePredictionEngine() {
       },
       historicalPattern: Array.from({ length: 12 }, (_, i) => ({
         date: new Date(Date.now() - (11 - i) * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        actualLeadTime: 14 + Math.sin(i / 2) * 2 + Math.random() * 2,
-        predictedLeadTime: 14.2 + Math.sin(i / 2) * 1.8 + Math.random() * 1.5,
-        accuracy: 85 + Math.random() * 10
+        actualLeadTime: 14 + Math.sin(i / 2) * 2 + (() => { throw new Error("REAL DATA REQUIRED") })() * 2,
+        predictedLeadTime: 14.2 + Math.sin(i / 2) * 1.8 + (() => { throw new Error("REAL DATA REQUIRED") })() * 1.5,
+        accuracy: 85 + (() => { throw new Error("REAL DATA REQUIRED") })() * 10
       })),
       externalFactors: {
         weather: { impact: -0.5, description: 'Favorable conditions expected' },
@@ -318,9 +318,9 @@ export function LeadTimePredictionEngine() {
       },
       historicalPattern: Array.from({ length: 12 }, (_, i) => ({
         date: new Date(Date.now() - (11 - i) * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        actualLeadTime: 2.8 + Math.sin(i / 3) * 0.5 + Math.random() * 0.4,
-        predictedLeadTime: 2.8 + Math.sin(i / 3) * 0.4 + Math.random() * 0.3,
-        accuracy: 90 + Math.random() * 8
+        actualLeadTime: 2.8 + Math.sin(i / 3) * 0.5 + (() => { throw new Error("REAL DATA REQUIRED") })() * 0.4,
+        predictedLeadTime: 2.8 + Math.sin(i / 3) * 0.4 + (() => { throw new Error("REAL DATA REQUIRED") })() * 0.3,
+        accuracy: 90 + (() => { throw new Error("REAL DATA REQUIRED") })() * 8
       })),
       externalFactors: {
         weather: { impact: 0.1, description: 'Minimal weather impact on road transport' },

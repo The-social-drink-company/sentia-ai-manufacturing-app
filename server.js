@@ -5098,12 +5098,22 @@ app.get('/api/analytics/overview', (req, res) => {
 
 // Debug: Check if dist directory exists in Render
 const distPath = path.join(__dirname, 'dist');
+const jsPath = path.join(__dirname, 'dist', 'js');
 try {
   const distStats = fs.statSync(distPath);
   const distFiles = fs.readdirSync(distPath);
   console.log('DIST DEBUG: Directory exists:', distStats.isDirectory());
   console.log('DIST DEBUG: Files count:', distFiles.length);
   console.log('DIST DEBUG: Sample files:', distFiles.slice(0, 5));
+
+  // Check JS directory specifically
+  if (fs.existsSync(jsPath)) {
+    const jsFiles = fs.readdirSync(jsPath);
+    console.log('DIST DEBUG: JS directory exists with', jsFiles.length, 'files');
+    console.log('DIST DEBUG: Sample JS files:', jsFiles.slice(0, 5));
+  } else {
+    console.log('DIST DEBUG: JS directory DOES NOT EXIST at', jsPath);
+  }
 } catch (error) {
   logError('DIST DEBUG: Directory does not exist or cannot be read', error);
 }

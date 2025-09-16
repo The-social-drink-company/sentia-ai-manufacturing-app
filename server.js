@@ -9,17 +9,6 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-// Error handling for production
-process.on('uncaughtException', (err) => {
-  logError('Uncaught Exception', err);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  logError('Unhandled Rejection', { promise: promise.toString(), reason });
-  process.exit(1);
-});
-
 // MCP Server Mode (optional - set MCP_SERVER_MODE=true to enable)
 if (process.env.MCP_SERVER_MODE === 'true') {
   console.log('MCP_SERVER_MODE detected - starting MCP server...');
@@ -55,15 +44,20 @@ if (process.env.RENDER) {
   process.env.DISABLE_MCP_SERVER_REGISTRATION = 'true';
 }
 
-// Prevent process exits from unhandled promise rejections
+// Error handling - log but don't exit to keep server running
 process.on('unhandledRejection', (reason, promise) => {
-  logError('Unhandled Rejection (non-fatal)', { promise: promise.toString(), reason });
+  console.error('Unhandled Rejection:', reason);
   // Don't exit - log and continue
 });
 
 process.on('uncaughtException', (error) => {
-  logError('Uncaught Exception (non-fatal)', error);
-  // Don't exit - log and continue
+  console.error('Uncaught Exception:', error);
+  // Don't exit for most errors - log and continue
+  // Only exit for truly fatal errors
+  if (error.code === 'EADDRINUSE') {
+    console.error('Port already in use, exiting...');
+    process.exit(1);
+  }
 });
 
 // Validate critical environment variables
@@ -71,15 +65,15 @@ const requiredEnvVars = ['DATABASE_URL'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingVars.length > 0) {
-  logError('CRITICAL: Missing required environment variables', { missingVars });
-  logWarn('Available environment variables', {
-    available: Object.keys(process.env).filter(key =>
-      key.includes('DATABASE') || key.includes('CLERK') || key.includes('RENDER')
+  console.warn('Warning: Missing environment variables:', missingVars);
+  console.log('Available environment variables:',
+    Object.keys(process.env).filter(key =>
+      key.includes('DATABASE') || key.includes('CLERK') || key.includes('RENDER') || key.includes('PORT')
     )
-  });
+  );
   // Don't exit - log the issue but try to continue
 } else {
-  console.log('✅ All required environment variables loaded');
+  console.log('All required environment variables loaded');
 }
 import express from 'express';
 import path from 'path';
@@ -130,7 +124,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// Render sets PORT automatically, fallback to 5000 for local development
+const PORT = process.env.PORT || 5000;
 
 // Initialize enterprise services
 async function initializeEnterpriseServices() {
@@ -1378,7 +1373,7 @@ app.get('/api/xero/balance-sheet', authenticateUser, async (req, res) => {
     const balanceSheet = await xeroService.getBalanceSheet();
     res.json(balanceSheet);
   } catch (error) {
-    console.error('Xero balance sheet error:', error);
+    logError('Xero balance sheet error', error);
     res.status(500).json({ error: 'Failed to fetch Xero balance sheet' });
   }
 });
@@ -1388,7 +1383,7 @@ app.get('/api/xero/cash-flow', authenticateUser, async (req, res) => {
     const cashFlow = await xeroService.getCashFlow();
     res.json(cashFlow);
   } catch (error) {
-    console.error('Xero cash flow error:', error);
+    logError('Xero cash flow error', error);
     res.status(500).json({ error: 'Failed to fetch Xero cash flow' });
   }
 });
@@ -1398,7 +1393,7 @@ app.get('/api/xero/profit-loss', authenticateUser, async (req, res) => {
     const profitLoss = await xeroService.getProfitAndLoss();
     res.json(profitLoss);
   } catch (error) {
-    console.error('Xero profit & loss error:', error);
+    logError('Xero profit & loss error', error);
     res.status(500).json({ error: 'Failed to fetch Xero profit & loss' });
   }
 });
@@ -1612,7 +1607,7 @@ app.get('/api/xero/auth', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('Xero auth error:', error);
+    logError('Xero auth error', error);
     res.status(200).json({ 
       status: 'configuration_required',
       message: 'Xero authentication not available in this environment',
@@ -1667,7 +1662,7 @@ app.get('/api/services/status', authenticateUser, async (req, res) => {
       lastCheck: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Services status error:', error);
+    logError('Services status error', error);
     res.status(500).json({ error: 'Failed to get services status' });
   }
 });
@@ -1720,7 +1715,7 @@ app.get('/api/mcp/status', async (req, res) => {
       lastCheck: new Date().toISOString()
     });
   } catch (error) {
-    console.error('MCP status check error:', error);
+    logError('MCP status check error', error);
     res.json({
       status: 'disconnected',
       error: error.message,
@@ -1771,7 +1766,7 @@ app.get('/api/ai/system/status', async (req, res) => {
       lastCheck: new Date().toISOString()
     });
   } catch (error) {
-    console.error('AI system status check error:', error);
+    logError('AI system status check error', error);
     res.json({
       status: 'inactive',
       error: error.message,
@@ -1831,7 +1826,7 @@ app.get('/api/integrations/status', async (req, res) => {
       lastCheck: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Integration status check error:', error);
+    logError('Integration status check error', error);
     res.json({
       status: 'disconnected',
       error: error.message,
@@ -1869,7 +1864,7 @@ app.post('/api/auth/signin', async (req, res) => {
       res.status(401).json({ error: 'Invalid email or password' });
     }
   } catch (error) {
-    console.error('Sign in error:', error);
+    logError('Sign in error', error);
     res.status(500).json({ error: 'Sign in failed' });
   }
 });
@@ -1923,7 +1918,7 @@ app.post('/api/auth/register', async (req, res) => {
       res.status(500).json({ error: 'Failed to create user' });
     }
   } catch (error) {
-    console.error('Registration error:', error);
+    logError('Registration error', error);
     res.status(500).json({ error: 'Registration failed' });
   }
 });
@@ -1993,7 +1988,7 @@ app.post('/api/working-capital/upload-financial-data', authenticateUser, upload.
         });
     }
   } catch (error) {
-    console.error('Financial data upload error:', error);
+    logError('Financial data upload error', error);
     res.status(500).json({ error: 'Failed to process financial data' });
   }
 });
@@ -2007,9 +2002,9 @@ app.get('/api/admin/test', authenticateUser, (req, res) => {
       render: !!process.env.RENDER_SERVICE_NAME,
       user: req.userId 
     });
-    console.log('✅ Admin test endpoint called successfully');
+    logInfo('Admin test endpoint called successfully');
   } catch (error) {
-    console.error('❌ Admin test endpoint error:', error);
+    logError('Admin test endpoint error', error);
     res.status(500).json({ error: 'Admin test failed' });
   }
 });
@@ -2155,8 +2150,10 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('Admin users error:', error?.message || 'Unknown error');
-    console.error('Admin users stack:', error?.stack || 'No stack trace');
+    logError('Admin users error', {
+      message: error?.message || 'Unknown error',
+      stack: error?.stack || 'No stack trace'
+    });
     
     // Comprehensive fallback response
     const fallbackResponse = {
@@ -2272,8 +2269,10 @@ app.get('/api/admin/invitations', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('Admin invitations error:', error?.message || 'Unknown error');
-    console.error('Admin invitations stack:', error?.stack || 'No stack trace');
+    logError('Admin invitations error', {
+      message: error?.message || 'Unknown error',
+      stack: error?.stack || 'No stack trace'
+    });
 
     // Comprehensive fallback response
     const fallbackResponse = {
@@ -2370,8 +2369,10 @@ app.post('/api/admin/invite', async (req, res) => {
       environment: process.env.RENDER_SERVICE_NAME || 'local'
     });
   } catch (error) {
-    console.error('Admin invite error:', error?.message || 'Unknown error');
-    console.error('Admin invite stack:', error?.stack || 'No stack trace');
+    logError('Admin invite error', {
+      message: error?.message || 'Unknown error',
+      stack: error?.stack || 'No stack trace'
+    });
 
     const fallbackResponse = {
       success: false,
@@ -2400,7 +2401,7 @@ app.post('/api/admin/users/:userId/approve', async (req, res) => {
       userId
     });
   } catch (error) {
-    console.error('Admin approve user error:', error);
+    logError('Admin approve user error', error);
     res.status(500).json({ error: 'Failed to approve user' });
   }
 });
@@ -2417,7 +2418,7 @@ app.post('/api/admin/users/:userId/revoke', async (req, res) => {
       userId
     });
   } catch (error) {
-    console.error('Admin revoke user error:', error);
+    logError('Admin revoke user error', error);
     res.status(500).json({ error: 'Failed to revoke user access' });
   }
 });
@@ -2440,7 +2441,7 @@ app.post('/api/admin/users/:userId/role', async (req, res) => {
       newRole: role
     });
   } catch (error) {
-    console.error('Admin update role error:', error);
+    logError('Admin update role error', error);
     res.status(500).json({ error: 'Failed to update user role' });
   }
 });
@@ -2461,7 +2462,7 @@ app.get('/api/admin/system-stats', authenticateUser, (req, res) => {
     console.log('✅ Admin system-stats endpoint called successfully');
     res.json(stats);
   } catch (error) {
-    console.error('❌ Admin system-stats endpoint error:', error);
+    logError('Admin system-stats endpoint error', error);
     res.status(500).json({ error: 'Failed to fetch system stats' });
   }
 });
@@ -2477,9 +2478,9 @@ try {
   console.log('  - POST /api/admin/users/:userId/revoke (authenticateUser middleware)');
   console.log('  - POST /api/admin/users/:userId/role (authenticateUser middleware)');
   console.log('  - GET /api/admin/system-stats (authenticateUser middleware)');
-  console.log('✅ All admin routes registered successfully');
+  logInfo('All admin routes registered successfully');
 } catch (error) {
-  console.error('❌ Admin routes registration logging failed:', error);
+  logError('Admin routes registration logging failed', error);
 }
 
 // File Upload and Data Import APIs
@@ -2546,7 +2547,7 @@ app.post('/api/data/upload', authenticateUser, upload.single('dataFile'), async 
       });
     }
   } catch (error) {
-    console.error('File upload error:', error);
+    logError('File upload error', error);
     res.status(500).json({ error: 'Failed to process uploaded file' });
   }
 });
@@ -2608,7 +2609,7 @@ app.get('/api/analytics/kpis', authenticateUser, async (req, res) => {
     const analysis = await aiAnalyticsService.analyzeProductionData(manufacturingData.production);
     res.json(analysis.kpis);
   } catch (error) {
-    console.error('KPI calculation error:', error);
+    logError('KPI calculation error', error);
     res.status(500).json({ error: 'Failed to calculate KPIs' });
   }
 });
@@ -2618,7 +2619,7 @@ app.get('/api/analytics/trends', authenticateUser, async (req, res) => {
     const analysis = await aiAnalyticsService.analyzeProductionData(manufacturingData.production);
     res.json(analysis.trends);
   } catch (error) {
-    console.error('Trends calculation error:', error);
+    logError('Trends calculation error', error);
     res.status(500).json({ error: 'Failed to calculate trends' });
   }
 });
@@ -2644,7 +2645,7 @@ app.get('/api/analytics/ai-insights', authenticateUser, async (req, res) => {
       lastUpdated: new Date().toISOString()
     });
   } catch (error) {
-    console.error('AI insights error:', error);
+    logError('AI insights error', error);
     res.status(500).json({ error: 'Failed to generate AI insights' });
   }
 });
@@ -2809,7 +2810,7 @@ app.get('/api/analytics/executive-kpis', authenticateUser, async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Executive KPI error:', error);
+    logError('Executive KPI error', error);
     res.status(500).json({ 
       error: 'Failed to generate executive KPIs',
       details: error.message 
@@ -2869,7 +2870,7 @@ app.get('/api/analytics/whatif-analysis/initialize', authenticateUser, async (re
     });
     
   } catch (error) {
-    console.error('What-If Analysis initialization error:', error);
+    logError('What-If Analysis initialization error', error);
     res.status(500).json({ 
       error: 'Failed to initialize What-If Analysis',
       details: error.message 
@@ -2924,7 +2925,7 @@ app.post('/api/analytics/whatif-analysis/calculate', authenticateUser, async (re
     });
     
   } catch (error) {
-    console.error('What-If Analysis calculation error:', error);
+    logError('What-If Analysis calculation error', error);
     res.status(500).json({ 
       error: 'Failed to calculate scenario',
       details: error.message 
@@ -2965,7 +2966,7 @@ app.get('/api/analytics/whatif-analysis/market/:marketId', authenticateUser, asy
     });
     
   } catch (error) {
-    console.error('Market analysis error:', error);
+    logError('Market analysis error', error);
     res.status(500).json({ 
       error: 'Failed to analyze market',
       details: error.message 
@@ -3027,7 +3028,7 @@ app.get('/api/analytics/whatif-analysis/working-capital-breakdown', authenticate
     });
     
   } catch (error) {
-    console.error('Working capital breakdown error:', error);
+    logError('Working capital breakdown error', error);
     res.status(500).json({ 
       error: 'Failed to generate working capital breakdown',
       details: error.message 
@@ -3060,7 +3061,7 @@ app.post('/api/analytics/whatif-analysis/save-scenario', authenticateUser, async
     });
     
   } catch (error) {
-    console.error('Save scenario error:', error);
+    logError('Save scenario error', error);
     res.status(500).json({ 
       error: 'Failed to save scenario',
       details: error.message 
@@ -3095,7 +3096,7 @@ app.get('/api/analytics/whatif-analysis/scenarios', authenticateUser, (req, res)
     });
     
   } catch (error) {
-    console.error('Get scenarios error:', error);
+    logError('Get scenarios error', error);
     res.status(500).json({ 
       error: 'Failed to fetch scenarios',
       details: error.message 
@@ -3110,7 +3111,7 @@ app.get('/api/production/status', authenticateUser, (req, res) => {
     const status = getEnhancedProductionData(line, range);
     res.json(status);
   } catch (error) {
-    console.error('Production status error:', error);
+    logError('Production status error', error);
     res.status(400).json({ 
       error: error.message,
       requiresDataImport: true,
@@ -3137,7 +3138,7 @@ app.post('/api/production/control', authenticateUser, async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Production control error:', error);
+    logError('Production control error', error);
     res.status(500).json({ error: 'Failed to control production line' });
   }
 });
@@ -3167,7 +3168,7 @@ app.post('/api/production/batch/update', authenticateUser, async (req, res) => {
     
     res.json(updatedBatch);
   } catch (error) {
-    console.error('Batch update error:', error);
+    logError('Batch update error', error);
     res.status(500).json({ error: 'Failed to update batch status' });
   }
 });
@@ -3193,7 +3194,7 @@ app.post('/api/quality/test/submit', authenticateUser, async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Test submission error:', error);
+    logError('Test submission error', error);
     res.status(500).json({ error: 'Failed to submit test result' });
   }
 });
@@ -3211,7 +3212,7 @@ app.post('/api/quality/batch/approve', authenticateUser, async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Batch approval error:', error);
+    logError('Batch approval error', error);
     res.status(500).json({ error: 'Failed to approve batch' });
   }
 });
@@ -3222,7 +3223,7 @@ app.post('/api/quality/alert/resolve', authenticateUser, async (req, res) => {
     const result = await resolveQualityAlert(alertId, resolution);
     res.json(result);
   } catch (error) {
-    console.error('Alert resolution error:', error);
+    logError('Alert resolution error', error);
     res.status(500).json({ error: 'Failed to resolve alert' });
   }
 });
@@ -3238,7 +3239,7 @@ app.post('/api/quality/test/schedule', authenticateUser, async (req, res) => {
     const result = await scheduleTest(testData);
     res.json(result);
   } catch (error) {
-    console.error('Test scheduling error:', error);
+    logError('Test scheduling error', error);
     res.status(500).json({ error: 'Failed to schedule test' });
   }
 });
@@ -3266,7 +3267,7 @@ app.post('/api/inventory/adjust', authenticateUser, async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Inventory adjustment error:', error);
+    logError('Inventory adjustment error', error);
     res.status(500).json({ error: 'Failed to adjust inventory level' });
   }
 });
@@ -3283,7 +3284,7 @@ app.post('/api/inventory/add-item', authenticateUser, async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Add inventory item error:', error);
+    logError('Add inventory item error', error);
     res.status(500).json({ error: 'Failed to add inventory item' });
   }
 });
@@ -3309,7 +3310,7 @@ app.post('/api/inventory/reorder', authenticateUser, async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Reorder request error:', error);
+    logError('Reorder request error', error);
     res.status(500).json({ error: 'Failed to create reorder request' });
   }
 });
@@ -3325,7 +3326,7 @@ app.post('/api/inventory/alert/resolve', authenticateUser, async (req, res) => {
     const result = await resolveInventoryAlert(alertId, resolution);
     res.json(result);
   } catch (error) {
-    console.error('Alert resolution error:', error);
+    logError('Alert resolution error', error);
     res.status(500).json({ error: 'Failed to resolve alert' });
   }
 });
@@ -3383,7 +3384,7 @@ app.post('/api/data/import/microsoft', authenticateUser, async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Microsoft import error:', error);
+    logError('Microsoft import error', error);
     res.status(500).json({ error: 'Failed to import Microsoft data' });
   }
 });
@@ -3478,7 +3479,7 @@ app.post('/api/data/import/file', authenticateUser, upload.single('file'), async
     }
     
   } catch (error) {
-    console.error('File import error:', error);
+    logError('File import error', error);
     res.status(500).json({ error: 'Failed to import file data' });
   }
 });
@@ -3521,7 +3522,7 @@ app.get('/api/data/microsoft/files', authenticateUser, async (req, res) => {
     res.json({ files });
     
   } catch (error) {
-    console.error('Error fetching Microsoft files:', error);
+    logError('Error fetching Microsoft files', error);
     res.status(500).json({ error: 'Failed to fetch Microsoft files' });
   }
 });
@@ -3541,7 +3542,7 @@ app.post('/api/data/microsoft/worksheets', authenticateUser, async (req, res) =>
     res.json({ worksheets });
     
   } catch (error) {
-    console.error('Error fetching worksheets:', error);
+    logError('Error fetching worksheets', error);
     res.status(500).json({ error: 'Failed to fetch worksheets' });
   }
 });
@@ -3572,7 +3573,7 @@ app.post('/api/data/preview', authenticateUser, async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Preview error:', error);
+    logError('Preview error', error);
     res.status(500).json({ error: 'Failed to generate preview' });
   }
 });
@@ -3583,7 +3584,7 @@ app.get('/api/data/import/history', authenticateUser, async (req, res) => {
     const history = await getImportHistory(req.user.id, parseInt(limit));
     res.json({ history });
   } catch (error) {
-    console.error('Import history error:', error);
+    logError('Import history error', error);
     res.status(500).json({ error: 'Failed to fetch import history' });
   }
 });
@@ -3600,7 +3601,7 @@ app.get('/api/forecasting/demand', authenticateUser, async (req, res) => {
     );
     res.json(forecast);
   } catch (error) {
-    console.error('Demand forecast error:', error);
+    logError('Demand forecast error', error);
     res.status(500).json({ error: 'Failed to generate demand forecast' });
   }
 });
@@ -3648,7 +3649,7 @@ app.post('/api/forecasting/forecast', authenticateUser, async (req, res) => {
     
     res.json(result);
   } catch (error) {
-    console.error('Forecasting forecast error:', error);
+    logError('Forecasting forecast error', error);
     res.status(500).json({ error: 'Failed to generate forecast' });
   }
 });
@@ -3728,7 +3729,7 @@ app.post('/api/forecasting/run-model', authenticateUser, async (req, res) => {
     
     res.json(results);
   } catch (error) {
-    console.error('AI model execution error:', error);
+    logError('AI model execution error', error);
     res.status(500).json({ error: 'Failed to execute AI model' });
   }
 });
@@ -3841,7 +3842,7 @@ async function fetchShopifyData() {
       dataSource: 'shopify_live'
     };
   } catch (error) {
-    console.error('Shopify API fetch error:', error);
+    logError('Shopify API fetch error', error);
     throw error;
   }
 }
@@ -3928,7 +3929,7 @@ async function calculateWorkingCapitalFromFinancials() {
       lastUpdated: new Date().toISOString()
     };
   } catch (error) {
-    console.error('Error calculating working capital from Shopify data:', error);
+    logError('Error calculating working capital from Shopify data', error);
     
     // Fallback to default values
     return {
@@ -3970,7 +3971,7 @@ async function calculateRealTrendsWithAI() {
         }));
       }
     } catch (error) {
-      console.error('AI trends analysis failed:', error);
+      logError('AI trends analysis failed', error);
     }
   }
 
@@ -4808,7 +4809,7 @@ if (process.env.ENABLE_AUTONOMOUS_TESTING === 'true') {
       await autonomousScheduler.start();
       console.log('🤖 Autonomous testing system started');
     } catch (error) {
-      console.error('❌ Failed to initialize autonomous testing:', error.message);
+      logError('Failed to initialize autonomous testing', error);
     }
   })();
 }
@@ -5047,7 +5048,7 @@ try {
   console.log('DIST DEBUG: Files count:', distFiles.length);
   console.log('DIST DEBUG: Sample files:', distFiles.slice(0, 5));
 } catch (error) {
-  console.error('DIST DEBUG: Directory does not exist or cannot be read:', error.message);
+  logError('DIST DEBUG: Directory does not exist or cannot be read', error);
 }
 
 // CRITICAL: Serve static files with proper MIME types (must be after ALL API routes but BEFORE catch-all)
@@ -5202,7 +5203,7 @@ app.get('/api/dashboard/executive', async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Executive dashboard data error:', error);
+    logError('Executive dashboard data error', error);
     res.status(500).json({ 
       status: 'error', 
       message: 'Failed to load dashboard data' 
@@ -5271,7 +5272,7 @@ app.get('/api/mcp/status', async (req, res) => {
       environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development'
     });
   } catch (error) {
-    console.error('MCP status error:', error);
+    logError('MCP status error', error);
     res.status(500).json({ error: 'Failed to get MCP status' });
   }
 });
@@ -5282,7 +5283,7 @@ app.get('/api/mcp/xero/balance-sheet', async (req, res) => {
     const result = await renderMCPService.getXeroData('balance-sheet');
     res.json(result);
   } catch (error) {
-    console.error('MCP Xero balance-sheet error:', error);
+    logError('MCP Xero balance-sheet error', error);
     res.status(500).json({ error: 'Failed to get balance sheet data' });
   }
 });
@@ -5292,7 +5293,7 @@ app.get('/api/mcp/xero/cash-flow', async (req, res) => {
     const result = await renderMCPService.getXeroData('cash-flow');
     res.json(result);
   } catch (error) {
-    console.error('MCP Xero cash-flow error:', error);
+    logError('MCP Xero cash-flow error', error);
     res.status(500).json({ error: 'Failed to get cash flow data' });
   }
 });
@@ -5302,7 +5303,7 @@ app.get('/api/mcp/xero/profit-loss', async (req, res) => {
     const result = await renderMCPService.getXeroData('profit-loss');
     res.json(result);
   } catch (error) {
-    console.error('MCP Xero profit-loss error:', error);
+    logError('MCP Xero profit-loss error', error);
     res.status(500).json({ error: 'Failed to get profit loss data' });
   }
 });
@@ -5312,7 +5313,7 @@ app.post('/api/mcp/sync', async (req, res) => {
     const result = await renderMCPService.syncData();
     res.json(result);
   } catch (error) {
-    console.error('MCP sync error:', error);
+    logError('MCP sync error', error);
     res.status(500).json({ error: 'Failed to sync data' });
   }
 });
@@ -5595,15 +5596,15 @@ app.get('/', (req, res) => {
       console.log('[ROOT] SUCCESS - Serving React app');
       return res.sendFile(indexPath, (err) => {
         if (err) {
-          console.error('[ROOT] Error serving file:', err);
+          logError('[ROOT] Error serving file', err);
           res.status(500).send('Error loading application');
         }
       });
     } else {
       // File doesn't exist - this shouldn't happen after build
-      console.error('[ROOT] CRITICAL: dist/index.html does not exist!');
-      console.log('[ROOT] Current directory:', __dirname);
-      console.log('[ROOT] Looking for:', indexPath);
+      logError('[ROOT] CRITICAL: dist/index.html does not exist!');
+      logInfo('[ROOT] Current directory', { dir: __dirname });
+      logInfo('[ROOT] Looking for', { path: indexPath });
 
       // Try to list what's in the dist directory
       const distDir = path.join(__dirname, 'dist');
@@ -5632,7 +5633,7 @@ app.get('/', (req, res) => {
       `);
     }
   } catch (error) {
-    console.error('[ROOT] Unexpected error:', error);
+    logError('[ROOT] Unexpected error', error);
     return res.status(500).send('Internal server error');
   }
 });
@@ -5779,7 +5780,7 @@ app.get('*', (req, res) => {
 
 // Error handling middleware
 app.use((error, req, res, next) => {
-  console.error('Server error:', error);
+  logError('Server error', error);
   res.status(500).json({ 
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'

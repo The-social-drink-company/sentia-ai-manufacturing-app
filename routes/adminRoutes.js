@@ -53,7 +53,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-01-15T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/paul',
+        profile_image_url: null, // REMOVED: No placeholder avatars
         phone_numbers: [{ phone_number: '+44 7700 900001' }]
       },
       {
@@ -70,7 +70,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-02-01T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/daniel',
+        profile_image_url: null, // REMOVED: No placeholder avatars
         phone_numbers: [{ phone_number: '+44 7700 900002' }]
       },
       {
@@ -87,7 +87,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-01-20T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/david',
+        profile_image_url: null, // REMOVED: No placeholder avatars
         phone_numbers: [{ phone_number: '+44 7700 900003' }]
       },
       {
@@ -104,7 +104,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-03-10T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/sarah',
+        profile_image_url: null, // REMOVED: No placeholder avatars
         phone_numbers: [{ phone_number: '+44 7700 900004' }]
       },
       {
@@ -122,7 +122,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-02-15T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/michael',
+        profile_image_url: null, // REMOVED: No placeholder avatars
         phone_numbers: [{ phone_number: '+44 7700 900005' }]
       },
       {
@@ -140,7 +140,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
         },
         last_sign_in_at: null,
         created_at: '2024-03-15T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/jennifer',
+        profile_image_url: null, // REMOVED: No placeholder avatars
         phone_numbers: [{ phone_number: '+44 7700 900006' }]
       }
     ];

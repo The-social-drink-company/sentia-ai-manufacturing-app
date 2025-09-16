@@ -4,7 +4,7 @@
  */
 
 import rateLimit from 'express-rate-limit';
-import RedisStore from 'rate-limit-redis';
+// import RedisStore from 'rate-limit-redis'; // Optional - install if using Redis
 import { createClient } from 'redis';
 import crypto from 'crypto';
 
@@ -125,6 +125,8 @@ class RateLimiterService {
       ...options
     };
 
+    // Optional Redis store - uncomment if using Redis
+    /*
     if (this.redisClient) {
       config.store = new RedisStore({
         client: this.redisClient,
@@ -132,6 +134,7 @@ class RateLimiterService {
         sendCommand: (...args) => this.redisClient.sendCommand(args)
       });
     }
+    */
 
     return rateLimit(config);
   }
@@ -151,6 +154,8 @@ class RateLimiterService {
       }
     };
 
+    // Optional Redis store - uncomment if using Redis
+    /*
     if (this.redisClient) {
       config.store = new RedisStore({
         client: this.redisClient,
@@ -158,6 +163,7 @@ class RateLimiterService {
         sendCommand: (...args) => this.redisClient.sendCommand(args)
       });
     }
+    */
 
     return rateLimit(config);
   }

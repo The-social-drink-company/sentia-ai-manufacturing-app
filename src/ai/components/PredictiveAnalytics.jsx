@@ -37,37 +37,9 @@ export const PredictiveAnalytics = ({
   const [analysisHistory, setAnalysisHistory] = useState([]);
   const [autoRefresh, setAutoRefresh] = useState(autoRun);
 
-  // Mock data generators for demo purposes
+  // REMOVED: No mock data generators - use real historical data only
   const generateMockHistoricalData = useCallback((type) => {
-    const now = Date.now();
-    const dataPoints = [];
-    
-    for (let i = 30; i >= 0; i--) {
-      const timestamp = now - (i * 24 * 60 * 60 * 1000); // Daily data for 30 days
-      let value;
-      
-      switch (type) {
-        case 'demand':
-          value = Math.floor(Math.random() * 1000) + 500 + Math.sin(i * 0.2) * 200;
-          break;
-        case 'quality':
-          value = 95 + Math.random() * 5 - Math.random() * 10;
-          break;
-        case 'maintenance':
-          value = Math.random() * 100;
-          break;
-        default:
-          value = Math.random() * 100;
-      }
-      
-      dataPoints.push({
-        timestamp,
-        value,
-        date: new Date(timestamp).toISOString().split('T')[0]
-      });
-    }
-    
-    return dataPoints;
+    throw new Error(`Predictive analytics requires real historical ${type} data from external APIs. Mock Math.random() data is not permitted.`);
   }, []);
 
   // Run predictive analysis

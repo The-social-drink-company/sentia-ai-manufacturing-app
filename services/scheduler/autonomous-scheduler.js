@@ -792,7 +792,20 @@ class AutonomousScheduler extends EventEmitter {
 
   updateNextRunTime() {
     if (this.cronJob) {
-      this.state.nextRun = this.cronJob.nextDate().toISOString();
+      try {
+        const nextDate = this.cronJob.nextDate();
+        if (nextDate && typeof nextDate.toISOString === 'function') {
+          this.state.nextRun = nextDate.toISOString();
+        } else if (nextDate && typeof nextDate.toDate === 'function') {
+          // Handle moment or other date-like objects
+          this.state.nextRun = nextDate.toDate().toISOString();
+        } else {
+          this.state.nextRun = new Date(Date.now() + 600000).toISOString(); // Default to 10 minutes
+        }
+      } catch (error) {
+        console.log('Error getting next run time:', error.message);
+        this.state.nextRun = new Date(Date.now() + 600000).toISOString(); // Default to 10 minutes
+      }
     }
   }
 

@@ -5,7 +5,7 @@
 
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { ElasticsearchTransport } from 'winston-elasticsearch';
+// import { ElasticsearchTransport } from 'winston-elasticsearch'; // Optional - install if using Elasticsearch
 import crypto from 'crypto';
 import os from 'os';
 import path from 'path';
@@ -98,7 +98,6 @@ class EnterpriseLogger {
     const prodFormat = combine(
       timestamp({ format: 'ISO' }),
       errors({ stack: true }),
-      metadata({ fillExcept: ['message', 'level', 'timestamp'] }),
       json()
     );
 
@@ -146,7 +145,8 @@ class EnterpriseLogger {
       zippedArchive: true,
       maxSize: '20m',
       maxFiles: '14d',
-      format: winston.format.json()
+      format: winston.format.json(),
+      auditFile: path.join(config.logDir || 'logs', '.audit-combined.json')
     }));
 
     // File transport - errors only
@@ -157,10 +157,12 @@ class EnterpriseLogger {
       maxSize: '20m',
       maxFiles: '30d',
       level: 'error',
-      format: winston.format.json()
+      format: winston.format.json(),
+      auditFile: path.join(config.logDir || 'logs', '.audit-error.json')
     }));
 
-    // Elasticsearch transport for production
+    // Elasticsearch transport for production (optional - uncomment if using Elasticsearch)
+    /*
     if (process.env.ELASTICSEARCH_URL) {
       transports.push(new ElasticsearchTransport({
         level: 'info',
@@ -175,8 +177,10 @@ class EnterpriseLogger {
         transformer: this.elasticsearchTransformer.bind(this)
       }));
     }
+    */
 
-    // Syslog transport for enterprise logging
+    // Syslog transport for enterprise logging (optional - uncomment if using Syslog)
+    /*
     if (process.env.SYSLOG_HOST) {
       const Syslog = require('winston-syslog').Syslog;
       transports.push(new Syslog({
@@ -186,6 +190,7 @@ class EnterpriseLogger {
         app_name: 'sentia-manufacturing'
       }));
     }
+    */
 
     return transports;
   }

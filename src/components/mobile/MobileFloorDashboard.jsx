@@ -32,57 +32,27 @@ const MobileFloorDashboard = () => {
     staleTime: 0
   });
 
-  // Mock data for mobile interface
-  const mockData = {
-    lines: [
-      {
-        id: 'LINE_01',
-        name: 'Line 1',
-        product: 'Sentia Red',
-        status: 'running',
-        efficiency: 94.2,
-        output: { current: 1250, target: 1500 },
-        operator: 'Sarah J.',
-        alerts: []
-      },
-      {
-        id: 'LINE_02', 
-        name: 'Line 2',
-        product: 'Sentia Gold',
-        status: 'running',
-        efficiency: 89.1,
-        output: { current: 890, target: 1000 },
-        operator: 'Mike C.',
-        alerts: [{ type: 'warning', message: 'Material low' }]
-      },
-      {
-        id: 'LINE_03',
-        name: 'Line 3',
-        product: null,
-        status: 'maintenance',
-        efficiency: 0,
-        output: { current: 0, target: 800 },
-        operator: 'Maintenance',
-        alerts: [{ type: 'info', message: 'Scheduled maintenance' }]
-      }
-    ],
-    shift: {
-      name: 'Day Shift',
-      progress: 67.5,
-      efficiency: 91.4,
-      output: { current: 2140, target: 3300 }
-    },
-    alerts: [
-      { id: 1, line: 'Line 2', message: 'Material inventory low', priority: 'medium', time: '5 min ago' },
-      { id: 2, line: 'Line 1', message: 'Quality check due', priority: 'low', time: '12 min ago' }
-    ]
-  };
-
+  // Use ONLY real data from API - NO MOCK DATA
   const floorData = data?.overview ? {
-    lines: data.overview.lines || mockData.lines,
-    shift: data.overview.currentShift || mockData.shift,
-    alerts: data.overview.alerts || mockData.alerts
-  } : mockData;
+    lines: data.overview.lines || [],
+    shift: data.overview.currentShift || {
+      name: 'No shift data',
+      progress: 0,
+      efficiency: 0,
+      output: { current: 0, target: 0 }
+    },
+    alerts: data.overview.alerts || []
+  } : {
+    lines: [],
+    shift: {
+      name: 'Loading...',
+      progress: 0,
+      efficiency: 0,
+      output: { current: 0, target: 0 }
+    },
+    alerts: [],
+    error: 'Waiting for real production data...'
+  };
 
   const getStatusIcon = (status) => {
     const iconClass = "h-8 w-8";

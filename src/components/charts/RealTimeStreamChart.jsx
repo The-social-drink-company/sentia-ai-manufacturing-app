@@ -42,19 +42,9 @@ const RealTimeStreamChart = ({
     dataRef.current = data;
   }, [data]);
 
-  // Generate mock data if no data source provided
+  // REMOVED: No mock data generation - require real data source
   const generateMockData = useCallback(() => {
-    const now = Date.now();
-    const baseValue = 50;
-    const variation = 20;
-    const trend = Math.sin(now / 10000) * 10;
-    const noise = (Math.random() - 0.5) * variation;
-    
-    return {
-      timestamp: now,
-      value: baseValue + trend + noise,
-      time: new Date(now).toLocaleTimeString()
-    };
+    throw new Error('Real-time chart requires real data source. Math.random() mock data is not permitted.');
   }, []);
 
   // Add new data point

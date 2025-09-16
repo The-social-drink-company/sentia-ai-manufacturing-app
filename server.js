@@ -98,7 +98,16 @@ import renderMCPService from './services/renderMCPService.js';
 import healthMonitorService from './services/healthMonitorService.js';
 // Import Enterprise Error Handling and Process Management
 import { errorHandler, expressErrorMiddleware, asyncHandler } from './services/enterprise/errorHandler.js';
+// Import Enterprise Integration Module
+import enterpriseIntegration from './middleware/enterprise-integration.js';
 import { processManager } from './services/enterprise/processManager.js';
+
+// Import Enterprise Infrastructure Components
+import logger from './services/enterprise-logger.js';
+import { cacheManager } from './services/cache-manager.js';
+import { rateLimiter, apiLimiter, authLimiter } from './middleware/rate-limiter.js';
+import { featureFlags } from './services/feature-flags.js';
+import { performanceMonitor, performanceMiddleware } from './monitoring/performance-monitor.js';
 // Import realtime manager for WebSocket and SSE
 import realtimeManager from './services/realtime/websocket-sse-manager.js';
 import { createServer } from 'http';
@@ -121,8 +130,48 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Initialize enterprise services
+async function initializeEnterpriseServices() {
+  try {
+    // Initialize logger first
+    logger.info('Starting Sentia Manufacturing Dashboard - Enterprise Edition', {
+      environment: process.env.NODE_ENV,
+      port: PORT,
+      render: !!process.env.RENDER
+    });
+
+    // Initialize cache manager
+    await cacheManager.initialize();
+    logger.info('Cache manager initialized');
+
+    // Initialize rate limiter
+    await rateLimiter.initialize();
+    logger.info('Rate limiter initialized');
+
+    // Initialize feature flags
+    await featureFlags.initialize();
+    logger.info('Feature flags initialized');
+
+    // Start performance monitoring
+    performanceMonitor.start();
+    logger.info('Performance monitoring started');
+
+    logger.info('All enterprise services initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize enterprise services', { error: error.message });
+    // Continue anyway - services have fallbacks
+  }
+}
+
+// Initialize services
+initializeEnterpriseServices();
+
 // Enable enterprise process management and resource monitoring
 processManager.monitorResources();
+
+// Enterprise middleware stack
+app.use(logger.middleware()); // Request/response logging
+app.use(performanceMiddleware); // Performance tracking
 
 // Add enterprise error handling middleware early in the stack
 app.use(expressErrorMiddleware);
@@ -375,6 +424,19 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Apply enterprise rate limiting to API routes
+app.use('/api/', apiLimiter());
+app.use('/api/auth/', authLimiter());
+logger.info('Rate limiting middleware applied');
+
+// Apply cache middleware for GET requests
+app.use('/api/', cacheManager.middleware({
+  ttl: 60, // 60 seconds default
+  methods: ['GET'],
+  keyGenerator: (req) => `api:${req.method}:${req.originalUrl}`
+}));
+logger.info('Cache middleware applied');
 
 // Security headers middleware (required by self-healing agent)
 app.use((req, res, next) => {
@@ -690,14 +752,27 @@ app.get('/api/debug/env', (req, res) => {
 });
 
 // Root health check endpoint for Render
-app.get('/health', (req, res) => {
-  res.json({
+app.get('/health', async (req, res) => {
+  const timer = logger.startTimer('health-check');
+
+  const health = {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     port: PORT,
     server: 'server.js',
+    uptime: process.uptime(),
+    enterprise: {
+      cache: cacheManager.getStats(),
+      performance: performanceMonitor.getMetrics(),
+      features: featureFlags.getEnabledFeatures()
+    },
     environment: process.env.NODE_ENV || 'production'
-  });
+  };
+
+  const duration = logger.endTimer(timer);
+  health.responseTime = duration;
+
+  res.json(health);
 });
 
 // Basic health check for Render deployment (no external service dependencies)
@@ -1791,7 +1866,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-01-15T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/paul',
+        profile_image_url: null, // REMOVED: No placeholder avatars - use real user photos only
         phone_numbers: [{ phone_number: '+44 7700 900001' }]
       },
       {
@@ -1808,7 +1883,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-02-01T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/daniel',
+        profile_image_url: null, // REMOVED: No placeholder avatars - use real user photos only
         phone_numbers: [{ phone_number: '+44 7700 900002' }]
       },
       {
@@ -1825,7 +1900,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-01-20T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/david',
+        profile_image_url: null, // REMOVED: No placeholder avatars - use real user photos only
         phone_numbers: [{ phone_number: '+44 7700 900003' }]
       },
       {
@@ -1842,7 +1917,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-03-10T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/sarah',
+        profile_image_url: null, // REMOVED: No placeholder avatars - use real user photos only
         phone_numbers: [{ phone_number: '+44 7700 900004' }]
       },
       {
@@ -1860,7 +1935,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
         },
         last_sign_in_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
         created_at: '2024-02-15T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/michael',
+        profile_image_url: null, // REMOVED: No placeholder avatars - use real user photos only
         phone_numbers: [{ phone_number: '+44 7700 900005' }]
       },
       {
@@ -1878,7 +1953,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
         },
         last_sign_in_at: null,
         created_at: '2024-03-15T00:00:00.000Z',
-        profile_image_url: '/api/placeholder/avatar/jennifer',
+        profile_image_url: null, // REMOVED: No placeholder avatars - use real user photos only
         phone_numbers: [{ phone_number: '+44 7700 900006' }]
       }
     ];
@@ -5756,6 +5831,21 @@ app.use((error, req, res, next) => {
 // Use enterprise process manager for robust server startup
 (async () => {
   try {
+    // Initialize Enterprise Services
+    const enterpriseResult = await enterpriseIntegration.initializeEnterpriseServices();
+    if (enterpriseResult.success) {
+      logInfo('Enterprise services initialized successfully', { services: enterpriseResult.services });
+    } else {
+      logWarn('Some enterprise services failed to initialize', { failed: enterpriseResult.error });
+    }
+
+    // Apply Enterprise Middleware
+    enterpriseIntegration.applyEnterpriseMiddleware(app);
+
+    // Create Enterprise Health and Metrics Endpoints
+    enterpriseIntegration.createHealthEndpoint(app);
+    enterpriseIntegration.createMetricsEndpoint(app);
+
     // Create HTTP server for WebSocket support
     const httpServer = createServer(app);
     
@@ -5855,6 +5945,7 @@ app.use((error, req, res, next) => {
     });
     
     // Attempt graceful shutdown
+    await enterpriseIntegration.shutdownEnterpriseServices();
     await processManager.gracefulShutdown('startup_failure');
   }
 })();

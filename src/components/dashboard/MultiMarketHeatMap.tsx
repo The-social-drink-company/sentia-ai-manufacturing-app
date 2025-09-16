@@ -118,44 +118,74 @@ export const MultiMarketHeatMap: React.FC<MultiMarketHeatMapProps> = ({
   const generateMarketPerformances = (markets: any[], performance: any): MarketPerformance[] => {
     if (!markets || markets.length === 0) return [];
 
-    // Mock performance data for different markets
-    const mockPerformanceData: Record<string, any> = {
-      'lse': {
-        revenue: { value: 8500000, change: 12.5, target: 9000000 },
-        margin: { value: 0.34, change: 2.1, target: 0.36 },
-        orders: { value: 2340, change: 8.7, target: 2500 },
-        customers: { value: 456, change: 5.2, target: 480 },
-        overallScore: 87,
-        status: 'excellent',
-        keyIssues: ['Supply chain delays in Scotland'],
-        opportunities: ['Expansion into Northern Ireland market']
-      },
-      'nyse': {
-        revenue: { value: 12300000, change: -2.3, target: 13000000 },
-        margin: { value: 0.28, change: -1.8, target: 0.32 },
-        orders: { value: 1890, change: -5.2, target: 2200 },
-        customers: { value: 234, change: -2.1, target: 280 },
-        overallScore: 65,
-        status: 'warning',
-        keyIssues: ['Increased competition', 'Raw material costs rising'],
-        opportunities: ['New product line launch', 'Digital transformation']
-      },
-      'euronext': {
-        revenue: { value: 6780000, change: 15.8, target: 7200000 },
-        margin: { value: 0.31, change: 4.2, target: 0.33 },
-        orders: { value: 1560, change: 18.3, target: 1800 },
-        customers: { value: 189, change: 12.7, target: 220 },
-        overallScore: 92,
-        status: 'excellent',
-        keyIssues: [],
-        opportunities: ['German market penetration', 'Green technology adoption']
-      }
-    };
+    // Use REAL performance data from API - NO MOCK DATA
+    // If performance data is not available, return empty structure
+    if (!performanceData || !performanceData.markets) {
+      return markets.map((market): MarketPerformance => {
+        const coordinates = marketCoordinates[market.region] || { lat: 0, lng: 0 };
 
+        return {
+          marketId: market.id,
+          marketName: market.name,
+          marketCode: market.code,
+          country: market.country,
+          flagEmoji: market.flagEmoji,
+          region: market.region,
+          coordinates,
+          performance: {
+            revenue: { value: 0, change: 0, target: 0 },
+            margin: { value: 0, change: 0, target: 0 },
+            orders: { value: 0, change: 0, target: 0 },
+            customers: { value: 0, change: 0, target: 0 }
+          },
+          overallScore: 0,
+          status: 'warning' as const,
+          lastUpdated: new Date(),
+          trends: {
+            revenue: [],
+            margin: [],
+            orders: []
+          },
+          keyIssues: ['Waiting for real market data'],
+          opportunities: []
+        };
+      });
+    }
+
+    // Map real performance data from API
     return markets.map((market): MarketPerformance => {
-      const mockData = mockPerformanceData[market.id] || mockPerformanceData['lse'];
+      const marketData = performanceData.markets[market.id];
       const coordinates = marketCoordinates[market.region] || { lat: 0, lng: 0 };
-      
+
+      if (!marketData) {
+        // No data for this market - return empty structure
+        return {
+          marketId: market.id,
+          marketName: market.name,
+          marketCode: market.code,
+          country: market.country,
+          flagEmoji: market.flagEmoji,
+          region: market.region,
+          coordinates,
+          performance: {
+            revenue: { value: 0, change: 0, target: 0 },
+            margin: { value: 0, change: 0, target: 0 },
+            orders: { value: 0, change: 0, target: 0 },
+            customers: { value: 0, change: 0, target: 0 }
+          },
+          overallScore: 0,
+          status: 'warning' as const,
+          lastUpdated: new Date(),
+          trends: {
+            revenue: [],
+            margin: [],
+            orders: []
+          },
+          keyIssues: ['No data available for this market'],
+          opportunities: []
+        };
+      }
+
       return {
         marketId: market.id,
         marketName: market.name,
@@ -164,36 +194,19 @@ export const MultiMarketHeatMap: React.FC<MultiMarketHeatMapProps> = ({
         flagEmoji: market.flagEmoji,
         region: market.region,
         coordinates,
-        performance: mockData,
-        overallScore: mockData.overallScore,
-        status: mockData.status,
-        lastUpdated: new Date(),
-        trends: {
-          revenue: generateTrendData(mockData.revenue.value, 30),
-          margin: generateTrendData(mockData.margin.value, 30),
-          orders: generateTrendData(mockData.orders.value, 30),
-        },
-        keyIssues: mockData.keyIssues || [],
-        opportunities: mockData.opportunities || [],
+        performance: marketData.performance,
+        overallScore: marketData.overallScore,
+        status: marketData.status,
+        lastUpdated: new Date(marketData.lastUpdated),
+        trends: marketData.trends,
+        keyIssues: marketData.keyIssues || [],
+        opportunities: marketData.opportunities || []
       };
     });
   };
 
-  // Generate trend data
-  const generateTrendData = (baseValue: number, points: number): number[] => {
-    const data = [];
-    let value = baseValue * 0.8; // Start at 80% of current value
-    
-    for (let i = 0; i < points; i++) {
-      const progress = i / (points - 1);
-      const targetValue = baseValue * (0.8 + 0.2 * progress); // Progress to current value
-      const noise = (Math.random() - 0.5) * baseValue * 0.05; // 5% noise
-      value = targetValue + noise;
-      data.push(Math.max(0, value));
-    }
-    
-    return data;
-  };
+  // REMOVED: generateTrendData function - NO MOCK DATA GENERATION
+  // All trend data must come from real API sources
 
   // Update market performance
   const updateMarketPerformance = (marketId: string, newPerformance: any) => {

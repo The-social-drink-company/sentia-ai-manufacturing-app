@@ -1,0 +1,58 @@
+{
+  "project": "Sentia Manufacturing Dashboard",
+  "version": "2.0.0",
+  "platform": "Render",
+  "database": "PostgreSQL with pgvector",
+  "rules": {
+    "security": {
+      "enabled": true,
+      "autoReview": true,
+      "blockOnVulnerability": true,
+      "scanBeforeCommit": true
+    },
+    "testing": {
+      "minimumCoverage": 80,
+      "requireTests": true,
+      "blockOnFailure": true
+    },
+    "documentation": {
+      "requireJSDoc": true,
+      "requireADR": true,
+      "autoGenerate": false
+    },
+    "codeQuality": {
+      "maxComplexity": 10,
+      "maxDuplication": 3,
+      "enforceTypes": true,
+      "strictMode": true
+    }
+  },
+  "forbiddenPatterns": [
+    "railway",
+    "neon",
+    "console.log",
+    "any // TypeScript",
+    "// @ts-ignore",
+    "// eslint-disable",
+    "TODO // without ticket number"
+  ],
+  "requiredPatterns": [
+    "error handling",
+    "input validation",
+    "authentication check",
+    "logging",
+    "type definitions"
+  ],
+  "hooks": {
+    "preCommit": [
+      "/security-review",
+      "npm test",
+      "npm run lint",
+      "npm run type-check"
+    ],
+    "prePush": [
+      "npm run test:coverage",
+      "npm run build"
+    ]
+  }
+}

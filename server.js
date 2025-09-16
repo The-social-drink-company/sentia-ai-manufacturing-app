@@ -5544,13 +5544,16 @@ app.get('/emergency', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'emergency-dashboard.html'));
 });
 
-// Explicit root route handler - serve React app for root path - PRIORITY ROUTE
+// ABSOLUTE PRIORITY - Serve React app on root - MUST BE FIRST ROUTE
 app.get('/', (req, res) => {
-  // Force serve the React app - this takes priority over everything else
+  console.log('[ROOT PRIORITY] Handling root request');
+  console.log('[ROOT PRIORITY] Host:', req.headers.host);
+  console.log('[ROOT PRIORITY] Port:', PORT);
+
+  // ALWAYS serve the React app, no exceptions
   const indexPath = path.join(__dirname, 'dist', 'index.html');
-  console.log('[ROOT] Request from:', req.headers.host);
-  console.log('[ROOT] Serving index.html from:', indexPath);
-  console.log('[ROOT] File exists:', fs.existsSync(indexPath));
+  console.log('[ROOT PRIORITY] Serving from:', indexPath);
+  console.log('[ROOT PRIORITY] File exists:', fs.existsSync(indexPath));
 
   // Always try to serve the React app first
   try {

@@ -48,13 +48,15 @@ if (Test-Path $fullConfigPath) {
 }
 
 # Create the MCP configuration
+$renderApiKey = if ($env:RENDER_API_KEY -and $env:RENDER_API_KEY.Trim() -ne '') { $env:RENDER_API_KEY } else { "rnd_0jchuGfcyltSaCa7AxNj5wDF7XOO" }
+
 $config = @{
     mcpServers = @{
         render = @{
             command = "npx"
             args = @("-y", "@renderco/mcp-server-render")
             env = @{
-                RENDER_API_KEY = "rnd_N8ATSXMmmARD8dOlWdiuKkdvzhLO"
+                RENDER_API_KEY = $renderApiKey
             }
         }
     }

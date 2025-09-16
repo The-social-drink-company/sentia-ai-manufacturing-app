@@ -9,7 +9,7 @@ param(
     [int]$Lines = 50
 )
 
-$apiKey = "rnd_N8ATSXMmmARD8dOlWdiuKkdvzhLO"
+$apiKey = "rnd_0jchuGfcyltSaCa7AxNj5wDF7XOO"
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host " RENDER LOGS VIEWER" -ForegroundColor Yellow

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Sentia Manufacturing Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sentia Manufacturing Dashboard - Debug</h1>
+        
+        <div class="status success">
+            <strong>Server Status:</strong> Running
+        </div>
+        
+        <div class="status info">
+            <strong>Static Files:</strong> Testing...
+            <div id="static-test"></div>
+        </div>
+        
+        <div class="status info">
+            <strong>API Health:</strong> Testing...
+            <div id="api-test"></div>
+        </div>
+        
+        <div class="status info">
+            <strong>JavaScript Loading:</strong> Testing...
+            <div id="js-test"></div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="location.href='/'">Go to Main App</button>
+            <button onclick="location.href='/dashboard?fallback=true'">Simple Dashboard</button>
+            <button onclick="testAll()">Re-test All</button>
+        </div>
+        
+        <pre id="debug-output"></pre>
+    </div>
+    
+    <script>
+        function log(message) {
+            const output = document.getElementById('debug-output');
+            output.textContent += message + '\n';
+        }
+        
+        async function testStatic() {
+            try {
+                const response = await fetch('/js/index-D8-FZsAg.js', { method: 'HEAD' });
+                const result = document.getElementById('static-test');
+                if (response.ok) {
+                    result.innerHTML = '<span style="color: green;">✓ Static files are being served</span>';
+                    log('Static test: SUCCESS');
+                } else {
+                    result.innerHTML = '<span style="color: red;">✗ Static files not found (404)</span>';
+                    log('Static test: FAILED - ' + response.status);
+                }
+            } catch (error) {
+                document.getElementById('static-test').innerHTML = '<span style="color: red;">✗ ' + error.message + '</span>';
+                log('Static test error: ' + error.message);
+            }
+        }
+        
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                const result = document.getElementById('api-test');
+                if (data.status === 'healthy') {
+                    result.innerHTML = '<span style="color: green;">✓ API is healthy</span>';
+                    log('API test: SUCCESS - ' + JSON.stringify(data));
+                } else {
+                    result.innerHTML = '<span style="color: orange;">⚠ API returned: ' + data.status + '</span>';
+                    log('API test: WARNING - ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                document.getElementById('api-test').innerHTML = '<span style="color: red;">✗ ' + error.message + '</span>';
+                log('API test error: ' + error.message);
+            }
+        }
+        
+        async function testJS() {
+            try {
+                // Test if we can load a simple module
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.textContent = `
+                    console.log('Module test successful');
+                    window.moduleTestSuccess = true;
+                `;
+                document.head.appendChild(script);
+                
+                setTimeout(() => {
+                    const result = document.getElementById('js-test');
+                    if (window.moduleTestSuccess) {
+                        result.innerHTML = '<span style="color: green;">✓ JavaScript modules are working</span>';
+                        log('JS test: SUCCESS');
+                    } else {
+                        result.innerHTML = '<span style="color: red;">✗ JavaScript modules not loading</span>';
+                        log('JS test: FAILED');
+                    }
+                }, 100);
+            } catch (error) {
+                document.getElementById('js-test').innerHTML = '<span style="color: red;">✗ ' + error.message + '</span>';
+                log('JS test error: ' + error.message);
+            }
+        }
+        
+        async function testAll() {
+            log('Starting tests at ' + new Date().toISOString());
+            await testStatic();
+            await testAPI();
+            await testJS();
+            log('Tests complete');
+        }
+        
+        // Run tests on load
+        testAll();
+    </script>
+</body>
+</html>

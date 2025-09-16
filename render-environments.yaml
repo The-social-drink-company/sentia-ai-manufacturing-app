@@ -32,9 +32,11 @@ services:
       - key: MCP_JWT_SECRET
         generateValue: true
 
-      # Database - Development
+      # Database - Development (Render PostgreSQL)
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
 
       # Include all other environment variables from main render.yaml
       - key: VITE_CLERK_PUBLISHABLE_KEY
@@ -72,9 +74,11 @@ services:
       - key: MCP_JWT_SECRET
         generateValue: true
 
-      # Database - Testing
+      # Database - Testing (Render PostgreSQL)
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-shiny-dream-ab2zho2p-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+        fromDatabase:
+          name: sentia-db-testing
+          property: connectionString
 
       # Include all other environment variables
       - key: VITE_CLERK_PUBLISHABLE_KEY
@@ -112,9 +116,11 @@ services:
       - key: MCP_JWT_SECRET
         generateValue: true
 
-      # Database - Production
+      # Database - Production (Render PostgreSQL)
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+        fromDatabase:
+          name: sentia-db-production
+          property: connectionString
 
       # Include all other environment variables
       - key: VITE_CLERK_PUBLISHABLE_KEY
@@ -124,3 +130,19 @@ services:
 
 # Note: This is a simplified version.
 # For full deployment, copy all environment variables from the main render.yaml
+
+# ===================================
+# DATABASE DEFINITIONS
+# ===================================
+databases:
+  - name: sentia-db-development
+    plan: free
+    region: oregon
+
+  - name: sentia-db-testing
+    plan: free
+    region: oregon
+
+  - name: sentia-db-production
+    plan: starter # $7/month for production database
+    region: oregon

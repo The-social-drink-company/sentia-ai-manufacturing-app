@@ -5544,31 +5544,60 @@ app.get('/emergency', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'emergency-dashboard.html'));
 });
 
-// Explicit root route handler - serve React app for root path
+// Explicit root route handler - serve React app for root path - PRIORITY ROUTE
 app.get('/', (req, res) => {
+  // Force serve the React app - this takes priority over everything else
   const indexPath = path.join(__dirname, 'dist', 'index.html');
+  console.log('[ROOT] Request from:', req.headers.host);
   console.log('[ROOT] Serving index.html from:', indexPath);
   console.log('[ROOT] File exists:', fs.existsSync(indexPath));
 
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    // Fallback if dist/index.html doesn't exist
-    console.log('[ROOT] Index.html not found, serving fallback');
-    res.status(200).send(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Sentia Manufacturing</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      </head>
-      <body>
-        <h1>Build Required</h1>
-        <p>The React application needs to be built. Please run: npm run build</p>
-      </body>
-      </html>
-    `);
+  // Always try to serve the React app first
+  try {
+    // Check if file exists and serve it
+    if (fs.existsSync(indexPath)) {
+      console.log('[ROOT] SUCCESS - Serving React app');
+      return res.sendFile(indexPath, (err) => {
+        if (err) {
+          console.error('[ROOT] Error serving file:', err);
+          res.status(500).send('Error loading application');
+        }
+      });
+    } else {
+      // File doesn't exist - this shouldn't happen after build
+      console.error('[ROOT] CRITICAL: dist/index.html does not exist!');
+      console.log('[ROOT] Current directory:', __dirname);
+      console.log('[ROOT] Looking for:', indexPath);
+
+      // Try to list what's in the dist directory
+      const distDir = path.join(__dirname, 'dist');
+      if (fs.existsSync(distDir)) {
+        const files = fs.readdirSync(distDir);
+        console.log('[ROOT] Files in dist:', files);
+      }
+
+      // Send a clear error message
+      return res.status(500).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Application Not Found</title>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: sans-serif; padding: 20px;">
+          <h1>React Application Not Found</h1>
+          <p>The application files could not be located at: ${indexPath}</p>
+          <p>Please ensure the build has completed successfully.</p>
+          <p>Environment: ${process.env.NODE_ENV}</p>
+          <p>Timestamp: ${new Date().toISOString()}</p>
+        </body>
+        </html>
+      `);
+    }
+  } catch (error) {
+    console.error('[ROOT] Unexpected error:', error);
+    return res.status(500).send('Internal server error');
   }
 });
 

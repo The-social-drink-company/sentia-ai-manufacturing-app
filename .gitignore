@@ -9,7 +9,7 @@ coverage/
 .nyc_output
 
 # Production
-dist/
+# dist/ - Commented out to allow Render to serve built files
 build/
 
 # Environment files

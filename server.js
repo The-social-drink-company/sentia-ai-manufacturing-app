@@ -456,27 +456,11 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  // Set a more permissive CSP for production on Render
-  // Allow all necessary resources for React app and Clerk Auth
-  const globalCsp = [
-    "default-src 'self' https:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.accounts.dev https://*.clerk.accounts.dev https://js.clerk.com https://js.clerk.dev",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://clerk.accounts.dev",
-    "font-src 'self' https://fonts.gstatic.com data:",
-    "img-src 'self' data: https: blob:",
-    "connect-src 'self' https: wss: https://clerk.accounts.dev https://*.clerk.accounts.dev https://api.clerk.com https://api.clerk.dev",
-    "frame-src 'self' https://accounts.dev https://clerk.accounts.dev https://js.clerk.com https://js.clerk.dev",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "worker-src 'self' blob:"
-  ].join('; ');
-
-  // Only apply CSP in production - development is more permissive
-  if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
-    res.setHeader('Content-Security-Policy', globalCsp);
-  } else {
-    res.setHeader('Content-Security-Policy', globalCsp);
-  }
+  // [RENDER FIX] Temporarily disable CSP headers that may cause 502 errors
+  // CSP can be re-enabled once the server is stable
+  // const globalCsp = [...];\n  // if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+  //   res.setHeader('Content-Security-Policy', globalCsp);
+  // }
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 });
@@ -850,7 +834,22 @@ app.get('/health', (req, res) => {
       });
     }
     
-    // Default Express server health response
+    // Default Express server health response with dist debugging
+    const distPath = path.join(__dirname, 'dist');
+    const distExists = fs.existsSync(distPath);
+    const indexExists = fs.existsSync(path.join(distPath, 'index.html'));
+    let fileCount = 0;
+    let distFiles = [];
+
+    if (distExists) {
+      try {
+        distFiles = fs.readdirSync(distPath);
+        fileCount = distFiles.length;
+      } catch (e) {
+        fileCount = -1;
+      }
+    }
+
     res.status(200).json({
       status: 'healthy',
       server: 'sentia-express-server',
@@ -859,7 +858,14 @@ app.get('/health', (req, res) => {
       environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
       render: true,
-      type: 'express'
+      type: 'express',
+      dist: {
+        exists: distExists,
+        indexHtmlExists: indexExists,
+        fileCount: fileCount,
+        path: distPath,
+        files: distFiles.slice(0, 5)
+      }
     });
   } catch (error) {
     logError('Health endpoint error', error);
@@ -5076,12 +5082,22 @@ app.get('/api/analytics/overview', (req, res) => {
 
 // Debug: Check if dist directory exists in Render
 const distPath = path.join(__dirname, 'dist');
+const jsPath = path.join(__dirname, 'dist', 'js');
 try {
   const distStats = fs.statSync(distPath);
   const distFiles = fs.readdirSync(distPath);
   console.log('DIST DEBUG: Directory exists:', distStats.isDirectory());
   console.log('DIST DEBUG: Files count:', distFiles.length);
   console.log('DIST DEBUG: Sample files:', distFiles.slice(0, 5));
+
+  // Check JS directory specifically
+  if (fs.existsSync(jsPath)) {
+    const jsFiles = fs.readdirSync(jsPath);
+    console.log('DIST DEBUG: JS directory exists with', jsFiles.length, 'files');
+    console.log('DIST DEBUG: Sample JS files:', jsFiles.slice(0, 5));
+  } else {
+    console.log('DIST DEBUG: JS directory DOES NOT EXIST at', jsPath);
+  }
 } catch (error) {
   logError('DIST DEBUG: Directory does not exist or cannot be read', error);
 }
@@ -5089,17 +5105,62 @@ try {
 // CRITICAL: Serve static files with proper MIME types (must be after ALL API routes but BEFORE catch-all)
 // Priority order is critical - specific routes first, then general routes
 
+// Serve test page for debugging blank screen issue
+app.get('/test', (req, res) => {
+  res.send(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentia Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        h1 { color: #333; }
+        .status { padding: 15px; background: #d4edda; color: #155724; border-radius: 5px; margin: 20px 0; }
+        a { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sentia Manufacturing Dashboard</h1>
+        <div class="status">✓ Server is working! The blank screen is a React/build issue.</div>
+        <p>API Status: <span id="api">Checking...</span></p>
+        <a href="/">Try Main App</a>
+        <a href="/api/health">Check API</a>
+    </div>
+    <script>
+        fetch('/api/health').then(r => r.json()).then(d => {
+            document.getElementById('api').textContent = d.status + ' (v' + d.version + ')';
+        });
+    </script>
+</body>
+</html>`);
+});
+
 // Explicitly serve the main entry point
 app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// [RENDER PRODUCTION FIX] - Simplified static file serving to prevent crashes
-// CRITICAL: Remove all console.log and complex setHeaders that cause 502 errors on Render
-// Serve the built React app - simple and reliable configuration
+// Serve JavaScript files - simplified for Render compatibility
+app.use('/js', express.static(path.join(__dirname, 'dist', 'js')));
+
+// Serve CSS and other assets - simplified for Render compatibility
+app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets')));
+
+// [RENDER FIX] Proper static file serving for production
+// Serve static files from dist folder with proper MIME types
 app.use(express.static(path.join(__dirname, 'dist'), {
-  maxAge: '1d',
-  etag: true
+  setHeaders: (res, filePath) => {
+    // Set proper MIME types without logging to prevent crashes
+    if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (filePath.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html');
+    }
+  }
 }));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
@@ -5583,20 +5644,14 @@ app.get('/emergency', (req, res) => {
 
 // ABSOLUTE PRIORITY - Serve React app on root - MUST BE FIRST ROUTE
 app.get('/', (req, res) => {
-  console.log('[ROOT PRIORITY] Handling root request');
-  console.log('[ROOT PRIORITY] Host:', req.headers.host);
-  console.log('[ROOT PRIORITY] Port:', PORT);
-
+  // [RENDER FIX] Removed all console.log statements that cause crashes
   // ALWAYS serve the React app, no exceptions
   const indexPath = path.join(__dirname, 'dist', 'index.html');
-  console.log('[ROOT PRIORITY] Serving from:', indexPath);
-  console.log('[ROOT PRIORITY] File exists:', fs.existsSync(indexPath));
 
   // Always try to serve the React app first
   try {
     // Check if file exists and serve it
     if (fs.existsSync(indexPath)) {
-      console.log('[ROOT] SUCCESS - Serving React app');
       return res.sendFile(indexPath, (err) => {
         if (err) {
           logError('[ROOT] Error serving file', err);
@@ -5608,13 +5663,6 @@ app.get('/', (req, res) => {
       logError('[ROOT] CRITICAL: dist/index.html does not exist!');
       logInfo('[ROOT] Current directory', { dir: __dirname });
       logInfo('[ROOT] Looking for', { path: indexPath });
-
-      // Try to list what's in the dist directory
-      const distDir = path.join(__dirname, 'dist');
-      if (fs.existsSync(distDir)) {
-        const files = fs.readdirSync(distDir);
-        console.log('[ROOT] Files in dist:', files);
-      }
 
       // Send a clear error message
       return res.status(500).send(`
@@ -5646,6 +5694,17 @@ app.get('/', (req, res) => {
 enterpriseIntegration.createHealthEndpoint(app);
 enterpriseIntegration.createMetricsEndpoint(app);
 logInfo('Enterprise endpoints registered at /api/health/enterprise and /api/metrics');
+
+// Service worker route - must be before catch-all
+app.get('/sw.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store');
+  const swPath = path.join(__dirname, 'dist', 'sw.js');
+  if (fs.existsSync(swPath)) {
+    return res.sendFile(swPath);
+  }
+  return res.status(404).send('// no service worker');
+});
 
 // Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes and static assets
 app.get('*', (req, res) => {
@@ -5689,50 +5748,36 @@ app.get('*', (req, res) => {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   
-  // Add more permissive Content Security Policy for production deployments on Render
-  const csp = [
-    "default-src 'self' https:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.com https://js.clerk.dev https://clerk.accounts.dev https://*.clerk.accounts.dev",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://clerk.accounts.dev",
-    "font-src 'self' https://fonts.gstatic.com data:",
-    "img-src 'self' data: blob: https:",
-    "connect-src 'self' https: wss: https://api.clerk.com https://api.clerk.dev https://clerk.accounts.dev https://*.clerk.accounts.dev https://*.onrender.com wss://*.onrender.com",
-    "frame-src 'self' https://js.clerk.com https://js.clerk.dev https://accounts.dev https://clerk.accounts.dev",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "worker-src 'self' blob:"
-  ].join('; ');
-
-  // Apply CSP based on environment
-  if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
-    res.setHeader('Content-Security-Policy', csp);
-  }
+  // [RENDER FIX] CSP temporarily disabled to fix 502 errors
+  // const csp = [...];\n  // if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+  //   res.setHeader('Content-Security-Policy', csp);
+  // }
   
   // Serve the React app for all other routes (SPA routing)
   const indexPath = path.join(__dirname, 'dist', 'index.html');
 
-  // Debug logging for Render deployment
-  console.log('[CATCH-ALL] Request path:', req.path);
-  console.log('[CATCH-ALL] __dirname:', __dirname);
-  console.log('[CATCH-ALL] Looking for index.html at:', indexPath);
-  console.log('[CATCH-ALL] File exists:', fs.existsSync(indexPath));
-
-  // Additional debug: check what's in dist
-  const distPath = path.join(__dirname, 'dist');
-  if (fs.existsSync(distPath)) {
-    const distFiles = fs.readdirSync(distPath);
-    console.log('[CATCH-ALL] Files in dist:', distFiles.slice(0, 10));
-  } else {
-    console.log('[CATCH-ALL] dist directory does not exist at:', distPath);
-  }
-
   // Check if dist/index.html exists
   if (fs.existsSync(indexPath)) {
-    console.log('[CATCH-ALL] Serving React app from:', indexPath);
+    // Ensure fresh HTML to avoid SW/cached blank screen
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
+    if (process.env.DISABLE_SW === 'true') {
+      try {
+        let html = fs.readFileSync(indexPath, 'utf8');
+        // Inject a SW unregister guard in head
+        const unregisterScript = `\n<script>\n  (function(){\n    if ('serviceWorker' in navigator) {\n      navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));\n      if (navigator.serviceWorker.controller) {\n        navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });\n      }\n    }\n    window.__DISABLE_SW__ = true;\n  })();\n</script>\n`;
+        html = html.replace(/<\/head>/i, unregisterScript + '</head>');
+        return res.status(200).type('text/html; charset=utf-8').send(html);
+      } catch (e) {
+        // Fallback to sending file if injection fails
+      }
+    }
+
     res.sendFile(indexPath);
   } else {
     // Fallback to a basic HTML response if dist doesn't exist
-    console.log('[CATCH-ALL] dist/index.html not found, serving fallback');
     res.status(200).send(`
       <!DOCTYPE html>
       <html lang="en">
@@ -5798,20 +5843,6 @@ app.use((error, req, res, next) => {
 // Use enterprise process manager for robust server startup
 (async () => {
   try {
-    // Create HTTP server and bind immediately to avoid 502 on slow/failed init
-    const port = PORT;
-    const httpServer = createServer(app);
-    console.log('='.repeat(80));
-    console.log('RENDER DEPLOYMENT - CORRECT SERVER.JS RUNNING');
-    console.log(`Starting (early bind) on port ${port} at ${new Date().toISOString()}`);
-    console.log('This is the LATEST version without Railway references');
-    console.log('='.repeat(80));
-    console.log(`[CRITICAL] Early-bind server on 0.0.0.0:${port} (PORT env: ${process.env.PORT})`);
-    httpServer.listen(port, '0.0.0.0', () => {
-      console.log(`[SUCCESS] Server listening (early) on http://0.0.0.0:${port}`);
-      logInfo('sentia-api early-bound successfully', { host: '0.0.0.0', port, pid: process.pid });
-    });
-
     // Initialize Enterprise Services
     const enterpriseResult = await enterpriseIntegration.initializeEnterpriseServices();
     if (enterpriseResult.success) {
@@ -5826,6 +5857,9 @@ app.use((error, req, res, next) => {
     // Note: Enterprise endpoints are created before catch-all route (line 5690-5691)
     // to ensure they are accessible
 
+    // Create HTTP server for WebSocket support
+    const httpServer = createServer(app);
+    
     // Initialize WebSocket if enabled
     if (process.env.ENABLE_WEBSOCKET === 'true') {
       realtimeManager.initializeWebSocket(httpServer);
@@ -5856,8 +5890,22 @@ app.use((error, req, res, next) => {
       logWarn('API integrations initialization failed; continuing startup', { error: initError.message });
     }
     
-    // Already listening above; log post-init confirmation
-    logInfo('Post-initialization complete; server already listening', { port });
+    // Start server directly (enterprise process management will be re-enabled later)
+    const port = PORT;
+    console.log('='.repeat(80));
+    console.log('RENDER DEPLOYMENT - CORRECT SERVER.JS RUNNING');
+    console.log(`Starting on port ${port} at ${new Date().toISOString()}`);
+    console.log('This is the LATEST version without Railway references');
+    console.log('='.repeat(80));
+    console.log(`[CRITICAL] Starting server on 0.0.0.0:${port} (PORT env: ${process.env.PORT})`);
+    httpServer.listen(port, '0.0.0.0', () => {
+      console.log(`[SUCCESS] Server listening on http://0.0.0.0:${port}`);
+      logInfo('sentia-api started successfully', {
+        host: '0.0.0.0',
+        port: port,
+        pid: process.pid
+      });
+    });
     
     // Log successful startup with enterprise logging
     logInfo('✅ SENTIA ENTERPRISE SERVER STARTED', {

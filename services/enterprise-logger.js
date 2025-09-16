@@ -138,9 +138,10 @@ class EnterpriseLogger {
       }));
     }
 
-    // Only add file transports in development or when not on Render
-    // Render's filesystem is read-only/ephemeral
-    if (!process.env.RENDER && process.env.NODE_ENV !== 'production') {
+    // Only add file transports in development or when not on Railway/Render
+    // Railway/Render filesystems are read-only/ephemeral
+    const isCloudPlatform = process.env.RENDER || process.env.RAILWAY_ENVIRONMENT || process.env.RENDER_EXTERNAL_URL;
+    if (!isCloudPlatform && process.env.NODE_ENV !== 'production') {
       try {
         // File transport - all logs
         transports.push(new DailyRotateFile({
@@ -207,24 +208,68 @@ class EnterpriseLogger {
    * Create exception handlers
    */
   createExceptionHandlers() {
-    return [
-      new winston.transports.File({
-        filename: 'logs/exceptions.log',
-        format: winston.format.json()
-      })
-    ];
+    // Don't create file handlers on Railway/Render
+    if (process.env.RENDER || process.env.RAILWAY_ENVIRONMENT || process.env.RENDER_EXTERNAL_URL) {
+      return [
+        new winston.transports.Console({
+          format: winston.format.json()
+        })
+      ];
+    }
+
+    // Only create file handlers in development
+    if (process.env.NODE_ENV !== 'production') {
+      try {
+        return [
+          new winston.transports.File({
+            filename: 'logs/exceptions.log',
+            format: winston.format.json()
+          })
+        ];
+      } catch (err) {
+        return [
+          new winston.transports.Console({
+            format: winston.format.json()
+          })
+        ];
+      }
+    }
+
+    return [];
   }
 
   /**
    * Create rejection handlers
    */
   createRejectionHandlers() {
-    return [
-      new winston.transports.File({
-        filename: 'logs/rejections.log',
-        format: winston.format.json()
-      })
-    ];
+    // Don't create file handlers on Railway/Render
+    if (process.env.RENDER || process.env.RAILWAY_ENVIRONMENT || process.env.RENDER_EXTERNAL_URL) {
+      return [
+        new winston.transports.Console({
+          format: winston.format.json()
+        })
+      ];
+    }
+
+    // Only create file handlers in development
+    if (process.env.NODE_ENV !== 'production') {
+      try {
+        return [
+          new winston.transports.File({
+            filename: 'logs/rejections.log',
+            format: winston.format.json()
+          })
+        ];
+      } catch (err) {
+        return [
+          new winston.transports.Console({
+            format: winston.format.json()
+          })
+        ];
+      }
+    }
+
+    return [];
   }
 
   /**

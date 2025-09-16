@@ -5819,9 +5819,23 @@ app.use((error, req, res, next) => {
       logInfo('SSE endpoints initialized');
     }
     
-    // Initialize API integrations
-    const apiStatus = await apiIntegrationManager.initialize();
-    logInfo('API integrations initialized', apiStatus);
+    // Initialize API integrations (non-blocking in container environments)
+    try {
+      if (process.env.SKIP_ENTERPRISE_INIT === 'true') {
+        logWarn('Skipping API/enterprise integrations at startup by flag', { flag: 'SKIP_ENTERPRISE_INIT' });
+      } else {
+        const initTimeoutMs = Number(process.env.INIT_TIMEOUT_MS || 10000);
+        const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ timeout: true }), initTimeoutMs));
+        const initResult = await Promise.race([apiIntegrationManager.initialize(), timeoutPromise]);
+        if (initResult && initResult.timeout) {
+          logWarn('API integrations initialization timed out; continuing startup without blocking', { timeoutMs: initTimeoutMs });
+        } else {
+          logInfo('API integrations initialized', initResult);
+        }
+      }
+    } catch (initError) {
+      logWarn('API integrations initialization failed; continuing startup', { error: initError.message });
+    }
     
     // Start server directly (enterprise process management will be re-enabled later)
     const port = PORT;

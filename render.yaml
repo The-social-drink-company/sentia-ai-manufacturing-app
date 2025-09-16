@@ -20,11 +20,15 @@ services:
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-development.onrender.com
 
-      # Database (Neon PostgreSQL - Development Branch)
+      # Database (Render PostgreSQL - Internal Connection)
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
       - key: DEV_DATABASE_URL
-        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
 
       # Authentication (Clerk)
       - key: VITE_CLERK_PUBLISHABLE_KEY
@@ -162,8 +166,31 @@ services:
       - key: VITE_APP_VERSION
         value: 1.0.0
 
-# Optional: Add a PostgreSQL database
-# databases:
-#   - name: sentia-db
-#     plan: free # or starter, standard, pro
-#     region: oregon # Must match service region
+# PostgreSQL Databases (One for each environment)
+databases:
+  # Development Database
+  - name: sentia-db-development
+    plan: free # Free plan for development
+    region: oregon # Must match service region
+    databaseName: sentia_manufacturing_dev
+    user: sentia_dev_user
+
+  # Testing Database
+  - name: sentia-db-testing
+    plan: free # Free plan for testing
+    region: oregon # Must match service region
+    databaseName: sentia_manufacturing_test
+    user: sentia_test_user
+
+  # Production Database
+  - name: sentia-db-production
+    plan: starter # Paid plan for production (includes backups)
+    region: oregon # Must match service region
+    databaseName: sentia_manufacturing_prod
+    user: sentia_prod_user
+    # Production benefits with starter plan:
+    # - Daily automatic backups
+    # - Point-in-time recovery
+    # - SSL/TLS encryption
+    # - Connection pooling
+    # - 1GB storage (upgradeable)

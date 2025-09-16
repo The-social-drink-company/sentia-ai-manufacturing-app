@@ -46,9 +46,11 @@
       - key: LOCAL_LLM_MODEL
         value: llama2
 
-      # Database Connection (Shared with main app)
+      # Database Connection (Using Render PostgreSQL from main app)
+      # Note: This will use the same database as the main application
+      # The connection string will be provided via environment group
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+        sync: false # Will be set from Render environment group or dashboard
 
       # External Service APIs (For unified interface)
       - key: XERO_CLIENT_ID

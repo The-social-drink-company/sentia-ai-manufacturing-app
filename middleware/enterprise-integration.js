@@ -215,7 +215,7 @@ export function createMetricsEndpoint(app) {
     try {
       const metrics = {
         timestamp: new Date().toISOString(),
-        performance: performanceMonitor.exportMetrics(),
+        performance: performanceMonitor.getMetrics(),
         cache: cacheManager.getStats(),
         logs: logger.getMetrics(),
         uptime: process.uptime(),

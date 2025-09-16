@@ -5139,7 +5139,7 @@ app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1h',
   etag: false,
-  index: true, // Allow automatic index.html serving for root path
+  index: ['index.html'], // Allow automatic index.html serving for root path - must be array or false
   setHeaders: (res, filePath) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     console.log(`[STATIC] Serving Root: ${filePath}`);
@@ -5685,6 +5685,12 @@ app.get('/', (req, res) => {
   }
 });
 
+// Create Enterprise Health and Metrics Endpoints BEFORE catch-all routes
+// This ensures they are accessible - MUST be before the '*' catch-all
+enterpriseIntegration.createHealthEndpoint(app);
+enterpriseIntegration.createMetricsEndpoint(app);
+logInfo('Enterprise endpoints registered at /api/health/enterprise and /api/metrics');
+
 // Catch all for SPA (must be ABSOLUTELY LAST route) - EXCLUDE API routes and static assets
 app.get('*', (req, res) => {
   // Skip API routes - they should have been handled above
@@ -5842,9 +5848,8 @@ app.use((error, req, res, next) => {
     // Apply Enterprise Middleware
     enterpriseIntegration.applyEnterpriseMiddleware(app);
 
-    // Create Enterprise Health and Metrics Endpoints
-    enterpriseIntegration.createHealthEndpoint(app);
-    enterpriseIntegration.createMetricsEndpoint(app);
+    // Note: Enterprise endpoints are created before catch-all route (line 5690-5691)
+    // to ensure they are accessible
 
     // Create HTTP server for WebSocket support
     const httpServer = createServer(app);

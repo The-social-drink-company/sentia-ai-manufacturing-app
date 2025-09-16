@@ -519,7 +519,7 @@ export const CurrencyExposureDashboard: React.FC = () => {
         const chfBase = 1.08;
         
         const trend = Math.sin(i * 0.1) * 0.05;
-        const noise = (0 /* REAL DATA REQUIRED */ 0.5) * 0.04;
+        const noise = 0.5 * 0.04;
         
         return {
           date: date.toISOString().split('T')[0],
@@ -536,10 +536,10 @@ export const CurrencyExposureDashboard: React.FC = () => {
             CHF: 5 + Math.abs(noise) * 12
           },
           volume: {
-            USD: 1000000 + 0 /* REAL DATA REQUIRED */ * 500000,
-            EUR: 800000 + 0 /* REAL DATA REQUIRED */ * 400000,
-            JPY: 600000 + 0 /* REAL DATA REQUIRED */ * 300000,
-            CHF: 300000 + 0 /* REAL DATA REQUIRED */ * 150000
+            USD: 1000000 + Math.random() * 500000,
+            EUR: 800000 + Math.random() * 400000,
+            JPY: 600000 + Math.random() * 300000,
+            CHF: 300000 + Math.random() * 150000
           }
         };
       });

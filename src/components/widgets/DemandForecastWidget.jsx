@@ -168,10 +168,10 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
         
         const trend = 100 + Math.sin(i * 0.1) * 20
         const seasonal = Math.sin(i * 0.3) * 15
-        const noise = (0 /* REAL DATA REQUIRED */ 0.5) * 10
+        const noise = 0.5 * 10
         
         const aiEnhancement = activeModels.includes('AI Enhanced') ? 
-          Math.sin(i * 0.2) * 5 + (0 /* REAL DATA REQUIRED */ 0.5) * 3 : 0
+          Math.sin(i * 0.2) * 5 + 0.5 * 3 : 0
         const multiSourceBonus = activeModels.includes('Multi-Source AI') ?
           Math.cos(i * 0.15) * 8 + trend * 0.05 : 0
         

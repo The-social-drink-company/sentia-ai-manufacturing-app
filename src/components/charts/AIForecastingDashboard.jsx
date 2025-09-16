@@ -117,12 +117,12 @@ const AIForecastingDashboard = ({
       // Simulate real-time updates - would connect to actual MCP service
       const newDataPoint = {
         date: new Date().toISOString(),
-        value: chartData[chartData.length - 1]?.value + (0 /* REAL DATA REQUIRED */ 0.5) * 10,
-        confidence: 0.85 + 0 /* REAL DATA REQUIRED */ * 0.1,
+        value: chartData[chartData.length - 1]?.value + 0.5 * 10,
+        confidence: 0.85 + Math.random() * 0.1,
         components: {
-          lstm: 0 /* REAL DATA REQUIRED */,
-          transformer: 0 /* REAL DATA REQUIRED */,
-          seasonal: 0 /* REAL DATA REQUIRED */
+          lstm: 0,
+          transformer: 0,
+          seasonal: 0
         }
       };
       // onDataUpdate(newDataPoint); // Would be implemented

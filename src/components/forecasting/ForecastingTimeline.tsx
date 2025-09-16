@@ -101,7 +101,7 @@ export function ForecastingTimeline({
           const seasonalMultiplier = getSeasonalMultiplier(date.getMonth(), product.category);
           const trendMultiplier = getTrendMultiplier(date, startDate);
 
-          dataPoint[actualKey] = Math.floor(baseValue * seasonalMultiplier * (0.8 + 0 /* REAL DATA REQUIRED */ * 0.4));
+          dataPoint[actualKey] = Math.floor(baseValue * seasonalMultiplier * (0.8 + Math.random() * 0.4));
           dataPoint[predictedKey] = Math.floor(baseValue * seasonalMultiplier * trendMultiplier);
           dataPoint[confidenceKey] = {
             lower: dataPoint[predictedKey] * 0.8,

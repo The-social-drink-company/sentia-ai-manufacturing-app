@@ -558,9 +558,9 @@ class SupplyChainService {
       
       trend.push({
         month: date.toLocaleDateString('en-AU', { year: 'numeric', month: 'short' }),
-        onTimeDelivery: basePerformance.onTimeDelivery + (0 /* REAL DATA REQUIRED */ 0.5) * 10,
-        qualityRating: basePerformance.qualityRating + (0 /* REAL DATA REQUIRED */ 0.5) * 0.8,
-        responsiveness: basePerformance.responsiveness + (0 /* REAL DATA REQUIRED */ 0.5) * 0.6
+        onTimeDelivery: basePerformance.onTimeDelivery + 0.5 * 10,
+        qualityRating: basePerformance.qualityRating + 0.5 * 0.8,
+        responsiveness: basePerformance.responsiveness + 0.5 * 0.6
       });
     }
     

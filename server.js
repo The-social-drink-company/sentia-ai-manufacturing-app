@@ -11,12 +11,12 @@ process.on('SIGINT', () => {
 
 // Error handling for production
 process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
+  logError('Uncaught Exception', err);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logError('Unhandled Rejection', { promise: promise.toString(), reason });
   process.exit(1);
 });
 
@@ -57,12 +57,12 @@ if (process.env.RENDER) {
 
 // Prevent process exits from unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logError('Unhandled Rejection (non-fatal)', { promise: promise.toString(), reason });
   // Don't exit - log and continue
 });
 
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
+  logError('Uncaught Exception (non-fatal)', error);
   // Don't exit - log and continue
 });
 
@@ -71,10 +71,12 @@ const requiredEnvVars = ['DATABASE_URL'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingVars.length > 0) {
-  console.error('❌ CRITICAL: Missing required environment variables:', missingVars);
-  console.error('Available environment variables:', Object.keys(process.env).filter(key => 
-    key.includes('DATABASE') || key.includes('CLERK') || key.includes('RENDER')
-  ));
+  logError('CRITICAL: Missing required environment variables', { missingVars });
+  logWarn('Available environment variables', {
+    available: Object.keys(process.env).filter(key =>
+      key.includes('DATABASE') || key.includes('CLERK') || key.includes('RENDER')
+    )
+  });
   // Don't exit - log the issue but try to continue
 } else {
   console.log('✅ All required environment variables loaded');
@@ -229,7 +231,7 @@ async function analyzeDataWithAI(dataType, data, metadata) {
       processingTime: analysis.processingTime
     };
   } catch (error) {
-    console.error('AI analysis error:', error.message);
+    logError('AI analysis error', error);
     return { status: 'failed', error: error.message };
   }
 }
@@ -512,18 +514,16 @@ import { testDatabaseConnection } from './lib/prisma.js';
       await initializeDefaultUsers();
       logInfo('Default users initialized successfully');
     } else {
-      console.error('❌ Database connection failed, skipping user initialization');
-      logError('Database connection failed during startup');
+      logError('Database connection failed, skipping user initialization');
     }
   } catch (error) {
-    console.error('❌ Server initialization error:', error.message);
-    console.log('⚠️  Server will continue without database initialization');
-    logError('Failed to initialize default users', error);
+    logError('Server initialization error', error);
+    logWarn('Server will continue without database initialization');
     // Don't throw - let server continue
   }
 })().catch(error => {
-  console.error('🚨 Database initialization completely failed:', error.message);
-  console.log('📡 Express server will still start...');
+  logError('Database initialization completely failed', error);
+  logInfo('Express server will still start...');
 });
 
 // Authentication endpoints
@@ -609,7 +609,7 @@ app.post('/api/auth/microsoft/callback', async (req, res) => {
     
     if (!tokenResponse.ok) {
       const error = await tokenResponse.json();
-      console.error('Microsoft token exchange failed:', error);
+      logError('Microsoft token exchange failed', { error });
       return res.status(400).json({ error: 'Failed to exchange authorization code for token' });
     }
     
@@ -624,7 +624,7 @@ app.post('/api/auth/microsoft/callback', async (req, res) => {
     });
     
     if (!profileResponse.ok) {
-      console.error('Failed to fetch user profile from Microsoft Graph');
+      logError('Failed to fetch user profile from Microsoft Graph');
       return res.status(400).json({ error: 'Failed to fetch user profile' });
     }
     
@@ -672,7 +672,7 @@ app.post('/api/auth/microsoft/callback', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Microsoft OAuth callback error:', error);
+    logError('Microsoft OAuth callback error', error);
     res.status(500).json({ error: 'Microsoft OAuth authentication failed' });
   }
 });
@@ -722,7 +722,7 @@ const authenticateUser = async (req, res, next) => {
     
     next();
   } catch (error) {
-    console.error('Authentication error:', error);
+    logError('Authentication error', error);
     return res.status(401).json({ 
       error: 'Unauthorized', 
       message: 'Authentication failed' 
@@ -793,7 +793,7 @@ app.get('/api/health', async (req, res) => {
 
     res.status(statusCode).json(health);
   } catch (error) {
-    console.error('Health check error:', error);
+    logError('Health check error', error);
     res.status(500).json({ 
       status: 'error',
       timestamp: new Date().toISOString(),
@@ -832,7 +832,7 @@ app.get('/health', (req, res) => {
       type: 'express'
     });
   } catch (error) {
-    console.error('Health endpoint error:', error);
+    logError('Health endpoint error', error);
     res.status(500).json({
       status: 'error',
       message: error.message,
@@ -855,7 +855,7 @@ app.get('/api/routes/validate', async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Route validation error:', error);
+    logError('Route validation error', error);
     res.status(500).json({ error: 'Failed to validate routes' });
   }
 });
@@ -1134,7 +1134,7 @@ app.get('/api/manufacturing/dashboard', authenticateUser, async (req, res) => {
     
     res.json(dashboard);
   } catch (error) {
-    console.error('Manufacturing dashboard error:', error);
+    logError('Manufacturing dashboard error', error);
     res.status(500).json({ error: 'Failed to fetch manufacturing dashboard' });
   }
 });
@@ -1254,7 +1254,7 @@ app.get('/api/shopify/dashboard-data', authenticateUser, async (req, res) => {
     const shopifyData = await fetchShopifyData();
     res.json(shopifyData);
   } catch (error) {
-    console.error('Shopify API error:', error);
+    logError('Shopify API error', error);
     res.status(500).json({ 
       error: 'Failed to fetch real Shopify data',
       message: 'Check Shopify API credentials and connection'
@@ -1267,7 +1267,7 @@ app.get('/api/shopify/orders', authenticateUser, async (req, res) => {
     const orders = await fetchShopifyOrders();
     res.json(orders);
   } catch (error) {
-    console.error('Shopify orders error:', error);
+    logError('Shopify orders error', error);
     res.status(500).json({ error: 'Failed to fetch orders' });
   }
 });
@@ -1278,7 +1278,7 @@ app.get('/api/working-capital/metrics', authenticateUser, async (req, res) => {
     const metrics = await xeroService.calculateWorkingCapital();
     res.json(metrics);
   } catch (error) {
-    console.error('Working capital calculation error:', error);
+    logError('Working capital calculation error', error);
     res.status(500).json({ error: 'Failed to calculate working capital metrics' });
   }
 });
@@ -1289,7 +1289,7 @@ app.get('/api/working-capital/projections', authenticateUser, async (req, res) =
     const projections = await aiAnalyticsService.generateCashFlowForecast(cashFlowData.data || []);
     res.json(projections);
   } catch (error) {
-    console.error('Cash flow projection error:', error);
+    logError('Cash flow projection error', error);
     res.status(500).json({ error: 'Failed to generate cash flow projections' });
   }
 });
@@ -1301,7 +1301,7 @@ app.get('/api/working-capital/ai-recommendations', authenticateUser, async (req,
     const recommendations = await aiAnalyticsService.analyzeFinancialData(workingCapitalData);
     res.json(recommendations);
   } catch (error) {
-    console.error('AI recommendations error:', error);
+    logError('AI recommendations error', error);
     res.status(500).json({ error: 'Failed to generate AI recommendations' });
   }
 });
@@ -1326,7 +1326,7 @@ app.get('/api/working-capital/overview', async (req, res) => {
     
     res.json(overview);
   } catch (error) {
-    console.error('Working capital overview error:', error);
+    logError('Working capital overview error', error);
     res.status(500).json({ error: 'Failed to fetch working capital overview' });
   }
 });
@@ -1367,7 +1367,7 @@ app.get('/api/financial/working-capital', authenticateUser, async (req, res) => 
     
     res.json(financialData);
   } catch (error) {
-    console.error('Financial working capital error:', error);
+    logError('Financial working capital error', error);
     res.status(500).json({ error: 'Failed to fetch working capital data' });
   }
 });

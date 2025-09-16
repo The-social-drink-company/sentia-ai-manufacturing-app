@@ -92,10 +92,10 @@ const EfficiencyTrends = () => {
         trends.push({
           period: timeRange === 'week' ? `Day ${i + 1}` : 
                   timeRange === 'month' ? `Day ${i + 1}` : `${i}:00`,
-          efficiency: Math.floor(0 /* REAL DATA REQUIRED */) + 80,
-          throughput: Math.floor(0 /* REAL DATA REQUIRED */) + 150,
-          scrap: Math.floor(0 /* REAL DATA REQUIRED */) + 1,
-          rework: Math.floor(0 /* REAL DATA REQUIRED */) + 2
+          efficiency: Math.floor(Math.random() * 100) + 80,
+          throughput: Math.floor(Math.random() * 100) + 150,
+          scrap: Math.floor(Math.random() * 100) + 1,
+          rework: Math.floor(Math.random() * 100) + 2
         });
       }
       return trends;

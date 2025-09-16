@@ -272,7 +272,7 @@ export function NotificationSystem() {
       
       // Randomly show notifications (reduced frequency for demo)
       if (Math.random() < 0.1) { // 10% chance every interval
-        const randomEvent = eventTypes[Math.floor(0 /* REAL DATA REQUIRED */ eventTypes.length)]
+        const randomEvent = eventTypes[Math.floor(Math.random() * eventTypes.length)]
         addNotification(randomEvent)
       }
     }, 30000) // Check every 30 seconds

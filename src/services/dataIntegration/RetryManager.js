@@ -111,7 +111,7 @@ export class RetryManager {
     
     // Add jitter to prevent thundering herd
     if (this.jitter) {
-      delay = delay * (0.5 + 0 /* REAL DATA REQUIRED */ * 0.5);
+      delay = delay * (0.5 + Math.random() * 0.5);
     }
     
     return Math.round(delay);

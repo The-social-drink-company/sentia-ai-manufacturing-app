@@ -55,21 +55,21 @@ const DigitalTwin3D = ({ digitalTwinData = {}, className = "" }) => {
           mixingTanks: prevState.mixingTanks.map(tank => ({
             ...tank,
             progress: tank.status === 'active' ? 
-              Math.min(100, tank.progress + 0 /* REAL DATA REQUIRED */ * 2) : tank.progress,
+              Math.min(100, tank.progress + Math.random() * 2) : tank.progress,
             current: tank.status === 'active' ? 
-              Math.min(tank.capacity, tank.current + 0 /* REAL DATA REQUIRED */ * 10) : tank.current
+              Math.min(tank.capacity, tank.current + Math.random() * 10) : tank.current
           })),
           bottlingLines: prevState.bottlingLines.map(line => ({
             ...line,
             progress: line.status === 'running' ? 
-              (line.progress + 0 /* REAL DATA REQUIRED */ * 5) % 100 : line.progress,
+              (line.progress + Math.random() * 5) % 100 : line.progress,
             efficiency: line.status === 'running' ? 
-              90 + 0 /* REAL DATA REQUIRED */ * 10 : line.efficiency
+              90 + Math.random() * 10 : line.efficiency
           })),
           environmentalSensors: {
             ...prevState.environmentalSensors,
-            temperature: 20 + 0 /* REAL DATA REQUIRED */ * 4,
-            humidity: 40 + 0 /* REAL DATA REQUIRED */ * 20
+            temperature: 20 + Math.random() * 4,
+            humidity: 40 + Math.random() * 20
           }
         }));
         

@@ -68,8 +68,8 @@ export const PredictiveAnalytics = ({
         case 'maintenance':
           result = await predictMaintenance(
             { 
-              vibration: 0 /* REAL DATA REQUIRED */,
-              temperature: 45 + 0 /* REAL DATA REQUIRED */ * 20,
+              vibration: 0,
+              temperature: 45 + Math.random() * 20,
               runtime_hours: 8760 * Math.random()
             },
             historicalData

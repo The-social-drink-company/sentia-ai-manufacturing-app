@@ -62,7 +62,7 @@ const generateTimeSeriesData = (points: number, baseValue: number, volatility: n
     const date = new Date();
     date.setDate(date.getDate() - (points - i));
     
-    value += (0 /* REAL DATA REQUIRED */ 0.5) * baseValue * volatility;
+    value += 0.5 * baseValue * volatility;
     data.push({
       x: date.toISOString().split('T')[0],
       y: Math.round(value * 100) / 100

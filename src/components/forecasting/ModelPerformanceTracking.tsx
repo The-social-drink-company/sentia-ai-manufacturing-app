@@ -221,15 +221,15 @@ export function ModelPerformanceTracking({
 
   const mockComparisonData: ModelComparison[] = Array.from({ length: 30 }, (_, i) => {
     const date = format(subDays(new Date(), 29 - i), 'yyyy-MM-dd');
-    const actual = 800 + Math.sin(i / 5) * 100 + 0 /* REAL DATA REQUIRED */ * 50;
+    const actual = 800 + Math.sin(i / 5) * 100 + Math.random() * 50;
     
     return {
       date,
       actual,
-      'GPT-4 Ensemble': actual + (0 /* REAL DATA REQUIRED */ 0.5) * 60,
-      'XGBoost Hybrid': actual + (0 /* REAL DATA REQUIRED */ 0.5) * 80,
-      'ARIMA Statistical': actual + (0 /* REAL DATA REQUIRED */ 0.5) * 120,
-      'Neural Prophet': actual + (0 /* REAL DATA REQUIRED */ 0.5) * 70,
+      'GPT-4 Ensemble': actual + 0.5 * 60,
+      'XGBoost Hybrid': actual + 0.5 * 80,
+      'ARIMA Statistical': actual + 0.5 * 120,
+      'Neural Prophet': actual + 0.5 * 70,
     };
   });
 

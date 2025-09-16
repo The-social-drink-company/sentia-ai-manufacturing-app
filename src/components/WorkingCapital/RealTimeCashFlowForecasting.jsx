@@ -109,7 +109,7 @@ const RealTimeCashFlowForecasting = () => {
 
     return baseData.forecasts.map((forecast, index) => {
       const monthFactor = 1 + (index * growthMultiplier * 0.01) // Compound growth
-      const randomFactor = 1 + ((0 /* REAL DATA REQUIRED */ 0.5) * volatility) // Volatility
+      const randomFactor = 1 + (0.5 * volatility) // Volatility
 
       return {
         ...forecast,

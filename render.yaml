@@ -25,6 +25,10 @@ services:
       #   value: 3000
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-development.onrender.com
+      - key: SKIP_ENTERPRISE_INIT
+        value: "true"
+      - key: INIT_TIMEOUT_MS
+        value: "8000"
 
       # Database - Render PostgreSQL Development
       - key: DATABASE_URL

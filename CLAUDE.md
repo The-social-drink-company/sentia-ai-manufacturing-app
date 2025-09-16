@@ -58,10 +58,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **AI Central Nervous System** (`mcp-server/ai-orchestration/ai-central-nervous-system.js`): Multi-LLM orchestration with Claude 3.5 Sonnet, GPT-4 Turbo, Gemini Pro
 - **Unified API Interface** (`mcp-server/api-integrations/unified-api-interface.js`): Centralized management of 7 external services (Xero, Amazon SP-API, Shopify, etc.)
 - **10 Enterprise MCP Tools**: AI manufacturing requests, system status, unified API calls, inventory optimization, demand forecasting
-- **Vector Database Integration**: 4-category semantic memory system for manufacturing intelligence
+- **Vector Database Integration**: 4-category semantic memory system for manufacturing intelligence with pgvector
 - **Real-time Decision Engine**: Automated manufacturing rules with AI-powered analysis
 - **WebSocket Broadcasting**: Live AI responses and decisions pushed to all clients
-- **Production Deployment**: Complete integration deployed to Railway with health monitoring
+- **Production Deployment**: Complete integration deployed to Render with health monitoring
 
 ### **SECURITY VULNERABILITIES IDENTIFIED** ⚠️
 **GitHub Security Alert**: 7 vulnerabilities detected (4 high, 1 moderate, 2 low)
@@ -126,8 +126,8 @@ Required environment variables:
 
 #### Backend (Node.js)
 - `NODE_ENV`: Environment mode (development/test/production)
-- `PORT`: Server port (default: 5000)
-- `DATABASE_URL`: PostgreSQL connection string (Neon)
+- `PORT`: Server port (default: 5000, auto-set by Render)
+- `DATABASE_URL`: PostgreSQL connection string (Render PostgreSQL with pgvector)
 - `DEV_DATABASE_URL`: Development database URL
 - `TEST_DATABASE_URL`: Test database URL
 - `CORS_ORIGINS`: Allowed CORS origins (comma-separated)
@@ -150,7 +150,7 @@ Required environment variables:
 - **Frontend**: React 18 + Vite 4 + Tailwind CSS - User interface (port 3000)
 - **Backend**: Node.js + Express - REST API and business logic (port 5000)
 - **MCP Server**: Enterprise AI Central Nervous System - Multi-LLM orchestration (port 3001)
-- **Database**: Neon PostgreSQL with Prisma ORM
+- **Database**: Render PostgreSQL with pgvector extension and Prisma ORM
 - **Authentication**: Clerk for user authentication and RBAC
 - **Real-time**: Server-Sent Events (SSE) + WebSocket for live AI updates
 - **AI Integration**: Model Context Protocol v2024-11-05 for unified AI operations
@@ -229,10 +229,11 @@ scripts/               # Utility scripts
 ## Database & Data Management
 
 ### Database Configuration
-- **Primary**: Neon PostgreSQL with connection pooling
+- **Primary**: Render PostgreSQL with pgvector extension
 - **ORM**: Prisma for type-safe database operations
 - **Migrations**: Prisma migrations for schema management
-- **Development**: Automatic database setup with local PostgreSQL
+- **Vector Support**: pgvector for embeddings and semantic search
+- **Development**: Fallback mode for local development without external dependencies
 
 ### Key Data Models
 - **Users**: Authentication and role management
@@ -247,17 +248,20 @@ scripts/               # Utility scripts
 - `test` - User acceptance testing environment
 - `production` - Live production environment
 
-### Railway Project Structure
+### Render Deployment Configuration
 
-#### Main Application Project (NEW SENTIA RAILWAY)
-**Project ID**: `6d1ca9b2-75e2-46c6-86a8-ed05161112fe`
-- **Development**: `e985e174-ebed-4043-81f8-7b1ab2e86cd2` → sentia-manufacturing-development.up.railway.app [primary deployment of all code changes]
-- **Testing**: `92f7cd2f-3dc7-44f4-abd9-1714003c389f` → sentia-manufacturing-testing.up.railway.app [test environment for users]
-- **Production**: `9fd67b0e-7883-4973-85a5-639d9513d343` → sentia-manufacturing-production.up.railway.app [live environment updated after test has passed after UAT]
+#### Main Application Deployments
+- **Development**: sentia-manufacturing-development.onrender.com [primary deployment of all code changes]
+- **Testing**: sentia-manufacturing-testing.onrender.com [test environment for users]
+- **Production**: sentia-manufacturing-production.onrender.com [live environment updated after test has passed after UAT]
 
-#### MCP Server Project (AI Central Nervous System)
-**Project ID**: `3adb1ac4-84d8-473b-885f-3a9790fe6140`
-- **MCP Server**: `99691282-de66-45b2-98cf-317083dd11ba` → web-production-99691282.up.railway.app
+#### MCP Server (AI Central Nervous System)
+- **MCP Server**: mcp-server-tkyu.onrender.com
+
+#### Database Configuration
+- All environments use Render PostgreSQL with pgvector extension
+- Automatic connection string injection via render.yaml
+- Support for vector embeddings and semantic search
 
 ### Development Workflow (Implemented)
 **Enterprise Git Workflow**: Proper development → testing → production progression:
@@ -777,7 +781,10 @@ The enterprise navigation system, Git workflow, local development environment, a
 
 This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase analysis (September 2025) and establishes enterprise-grade development standards for the Sentia Manufacturing Dashboard.
 
-### Railway Platform Configuration Notes
-- Deployment uses Railway with Nixpacks builder for all environments (never use Docker or Caddy)
-- Application is an Express/Node.js server (not a static site); no Caddy reverse proxy is used
-- Auto-deployment configured for all three branches with corresponding databases
+### Render Platform Configuration Notes
+- Deployment uses Render for all environments (development, testing, production)
+- Application is an Express/Node.js server serving both API and static React build
+- PostgreSQL databases with pgvector extension for AI/ML capabilities
+- Auto-deployment configured for all three branches via render.yaml
+- Environment variables automatically injected from Render dashboard
+- Health checks configured at `/health` endpoint

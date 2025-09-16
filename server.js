@@ -5105,6 +5105,38 @@ try {
 // CRITICAL: Serve static files with proper MIME types (must be after ALL API routes but BEFORE catch-all)
 // Priority order is critical - specific routes first, then general routes
 
+// Serve test page for debugging blank screen issue
+app.get('/test', (req, res) => {
+  res.send(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentia Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        h1 { color: #333; }
+        .status { padding: 15px; background: #d4edda; color: #155724; border-radius: 5px; margin: 20px 0; }
+        a { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sentia Manufacturing Dashboard</h1>
+        <div class="status">✓ Server is working! The blank screen is a React/build issue.</div>
+        <p>API Status: <span id="api">Checking...</span></p>
+        <a href="/">Try Main App</a>
+        <a href="/api/health">Check API</a>
+    </div>
+    <script>
+        fetch('/api/health').then(r => r.json()).then(d => {
+            document.getElementById('api').textContent = d.status + ' (v' + d.version + ')';
+        });
+    </script>
+</body>
+</html>`);
+});
+
 // Explicitly serve the main entry point
 app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
@@ -5713,9 +5745,45 @@ app.get('*', (req, res) => {
   
   // Serve the React app for all other routes (SPA routing)
   const indexPath = path.join(__dirname, 'dist', 'index.html');
+  
+  // Service worker control endpoint: deliver killer SW when disabled
+  app.get('/sw.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+    if (process.env.DISABLE_SW === 'true') {
+      return res.status(200).send(
+        "self.addEventListener('install', e => self.skipWaiting());\n" +
+        "self.addEventListener('activate', e => {\n" +
+        "  self.registration.unregister().then(() => self.clients.matchAll().then(cs => cs.forEach(c => c.navigate(c.url))));\n" +
+        "});\n"
+      );
+    }
+    const realSwPath = path.join(__dirname, 'public', 'sw.js');
+    if (fs.existsSync(realSwPath)) {
+      return res.sendFile(realSwPath);
+    }
+    return res.status(404).send('// no service worker');
+  });
 
   // Check if dist/index.html exists
   if (fs.existsSync(indexPath)) {
+    // Ensure fresh HTML to avoid SW/cached blank screen
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
+    if (process.env.DISABLE_SW === 'true') {
+      try {
+        let html = fs.readFileSync(indexPath, 'utf8');
+        // Inject a SW unregister guard in head
+        const unregisterScript = `\n<script>\n  (function(){\n    if ('serviceWorker' in navigator) {\n      navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));\n      if (navigator.serviceWorker.controller) {\n        navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });\n      }\n    }\n    window.__DISABLE_SW__ = true;\n  })();\n</script>\n`;
+        html = html.replace(/<\/head>/i, unregisterScript + '</head>');
+        return res.status(200).type('text/html; charset=utf-8').send(html);
+      } catch (e) {
+        // Fallback to sending file if injection fails
+      }
+    }
+
     res.sendFile(indexPath);
   } else {
     // Fallback to a basic HTML response if dist doesn't exist

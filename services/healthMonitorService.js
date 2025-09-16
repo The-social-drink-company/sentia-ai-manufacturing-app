@@ -3,7 +3,7 @@
  * Comprehensive health checking for all system components
  */
 
-import railwayMCPService from './railwayMCPService.js';
+import renderMCPService from './renderMCPService.js';
 import xeroService from './xeroService.js';
 import aiAnalyticsService from './aiAnalyticsService.js';
 
@@ -30,7 +30,7 @@ class HealthMonitorService {
     const results = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
+      environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
       version: '2.0.0',
       components: {},
@@ -168,19 +168,19 @@ class HealthMonitorService {
 
   async checkMCPServer() {
     try {
-      const health = await railwayMCPService.healthCheck();
+      const health = await renderMCPService.healthCheck();
       return {
         status: health.status === 'connected' ? 'healthy' : 'degraded',
-        provider: 'railway-hosted',
-        endpoint: railwayMCPService.baseUrl,
-        details: health.error || 'Railway MCP server check completed',
+        provider: 'render-hosted',
+        endpoint: renderMCPService.baseUrl,
+        details: health.error || 'Render MCP server check completed',
         timestamp: new Date().toISOString()
       };
     } catch (error) {
       return {
         status: 'down',
-        provider: 'railway-hosted',
-        endpoint: railwayMCPService.baseUrl,
+        provider: 'render-hosted',
+        endpoint: renderMCPService.baseUrl,
         error: error.message,
         timestamp: new Date().toISOString()
       };
@@ -208,7 +208,7 @@ class HealthMonitorService {
     const apiChecks = {
       openai: !!process.env.OPENAI_API_KEY,
       clerk: !!process.env.CLERK_SECRET_KEY,
-      railway: !!process.env.RAILWAY_ENVIRONMENT
+      render: !!process.env.RENDER
     };
 
     const configuredCount = Object.values(apiChecks).filter(Boolean).length;

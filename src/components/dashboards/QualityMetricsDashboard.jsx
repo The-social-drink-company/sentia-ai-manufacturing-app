@@ -42,62 +42,37 @@ const QualityMetricsDashboard = () => {
 
   const loadMetrics = async () => {
     try {
-      // In production, this would fetch from API
-      const mockData = generateMockMetrics();
-      setMetrics(mockData);
+      // Fetch real quality metrics from API
+      const response = await fetch('/api/quality/metrics');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const realData = await response.json();
+      setMetrics(realData);
     } catch (error) {
       console.error('Failed to load quality metrics:', error);
+      // Set empty state when API fails - NO MOCK DATA
+      setMetrics({
+        overall: { score: 0, trend: 'none', change: 0 },
+        categories: {
+          codeQuality: { score: 0, target: 90, status: 'unknown' },
+          testCoverage: { score: 0, target: 85, status: 'unknown' },
+          performance: { score: 0, target: 95, status: 'unknown' },
+          security: { score: 0, target: 98, status: 'unknown' },
+          documentation: { score: 0, target: 80, status: 'unknown' },
+          deployment: { score: 0, target: 95, status: 'unknown' }
+        },
+        trends: [],
+        recentDeployments: [],
+        qualityGates: [],
+        error: 'Unable to fetch real quality metrics. Please check API connection.'
+      });
     }
   };
 
-  const generateMockMetrics = () => {
-    const now = new Date();
-    const trends = Array.from({ length: 30 }, (_, i) => {
-      const date = new Date(now);
-      date.setDate(date.getDate() - (29 - i));
-      return {
-        date: date.toISOString().split('T')[0],
-        overall: 90 + Math.random() * 8,
-        codeQuality: 88 + Math.random() * 10,
-        testCoverage: 83 + Math.random() * 12,
-        performance: 92 + Math.random() * 8,
-        security: 96 + Math.random() * 4
-      };
-    });
-
-    const recentDeployments = [
-      {
-        id: 'dep-001',
-        branch: 'development',
-        commit: 'feat: Enterprise frameworks',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        status: 'success',
-        qualityScore: 96,
-        duration: '5m 32s'
-      },
-      {
-        id: 'dep-002',
-        branch: 'test',
-        commit: 'fix: Railway deployment',
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-        status: 'success',
-        qualityScore: 94,
-        duration: '4m 18s'
-      },
-      {
-        id: 'dep-003',
-        branch: 'production',
-        commit: 'chore: Update dependencies',
-        timestamp: new Date(Date.now() - 10800000).toISOString(),
-        status: 'warning',
-        qualityScore: 89,
-        duration: '6m 45s'
-      }
-    ];
-
-    const qualityGates = [
-      { name: 'Build Success', status: 'passed', threshold: '100%', actual: '100%' },
-      { name: 'Test Coverage', status: 'passed', threshold: '85%', actual: '87%' },
+  // REMOVED: generateMockMetrics function
+  // This component now only uses REAL DATA from the API
+  // No mock, fake, or static data is generated
       { name: 'Code Quality', status: 'passed', threshold: '90', actual: '92' },
       { name: 'Security Scan', status: 'passed', threshold: '0 critical', actual: '0 critical' },
       { name: 'Performance', status: 'passed', threshold: '<1.5s', actual: '1.2s' },

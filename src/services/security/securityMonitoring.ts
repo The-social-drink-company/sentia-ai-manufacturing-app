@@ -351,7 +351,7 @@ export class SecurityMonitoringService extends EventEmitter {
   // Create security incident
   private createIncident(details: Omit<SecurityIncident, 'incidentId' | 'timestamp' | 'status'>): SecurityIncident {
     const incident: SecurityIncident = {
-      incidentId: `inc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      incidentId: `inc_${Date.now()}_${crypto.randomUUID().substr(2, 9)}`,
       timestamp: new Date(),
       status: 'detected',
       ...details

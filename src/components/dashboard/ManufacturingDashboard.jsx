@@ -180,12 +180,12 @@ const ManufacturingDashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setRealTimeData(prev => ({
-        totalProduction: prev.totalProduction + Math.floor(Math.random() * 10),
-        efficiency: +(prev.efficiency + (Math.random() - 0.5) * 0.5).toFixed(1),
-        activeLines: Math.min(10, Math.max(6, prev.activeLines + Math.floor(Math.random() * 3) - 1)),
+        totalProduction: prev.totalProduction + Math.floor(Math.random() * 100),
+        efficiency: +(prev.efficiency + 0.5 * 0.5).toFixed(1),
+        activeLines: Math.min(10, Math.max(6, prev.activeLines + Math.floor(Math.random() * 100) - 1)),
         totalLines: 10,
-        workersOnShift: Math.min(150, Math.max(120, prev.workersOnShift + Math.floor(Math.random() * 6) - 3)),
-        ordersFulfilled: Math.min(100, prev.ordersFulfilled + Math.floor(Math.random() * 2))
+        workersOnShift: Math.min(150, Math.max(120, prev.workersOnShift + Math.floor(Math.random() * 100) - 3)),
+        ordersFulfilled: Math.min(100, prev.ordersFulfilled + Math.floor(Math.random() * 100))
       }));
     }, 3000);
 

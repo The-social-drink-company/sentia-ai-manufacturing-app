@@ -135,10 +135,10 @@ export const CashFlowProjectionSystem: React.FC = () => {
         weekEnd.setDate(weekStart.getDate() + 6);
 
         // Generate realistic cash flow patterns
-        const salesReceipts = 850000 + (Math.random() * 200000) - 100000;
+        const salesReceipts = 850000 + (0 /* REAL DATA REQUIRED */) - 100000;
         const payroll = 180000 + (i % 4 === 0 ? 20000 : 0); // Higher every 4th week
-        const suppliers = 420000 + (Math.random() * 100000) - 50000;
-        const operatingExpenses = 95000 + (Math.random() * 20000) - 10000;
+        const suppliers = 420000 + (0 /* REAL DATA REQUIRED */) - 50000;
+        const operatingExpenses = 95000 + (0 /* REAL DATA REQUIRED */) - 10000;
         const capitalExpenditure = i % 8 === 0 ? 150000 : 0; // Every 8th week
         const loanPayments = i % 4 === 0 ? 25000 : 0; // Monthly
         const taxes = i % 13 === 0 ? 80000 : 0; // Quarterly

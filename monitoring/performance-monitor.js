@@ -301,4 +301,81 @@ if (process.argv[1] === __filename) {
   }
 }
 
+// Create singleton instance
+const performanceMonitor = new PerformanceMonitor();
+
+// Add start and stop methods to the singleton
+performanceMonitor.start = function() {
+  console.log('Performance monitoring started');
+  this.startPerformanceMonitoring(15); // 15 minute intervals
+};
+
+performanceMonitor.stop = function() {
+  console.log('Performance monitoring stopped');
+  if (this.monitoringInterval) {
+    clearInterval(this.monitoringInterval);
+  }
+};
+
+// Add timer methods for tracking request durations
+performanceMonitor.timers = new Map();
+
+performanceMonitor.startTimer = function(name) {
+  const timerId = `${name}_${Date.now()}_${Math.random()}`;
+  this.timers.set(timerId, Date.now());
+  return timerId;
+};
+
+performanceMonitor.endTimer = function(timerId) {
+  const startTime = this.timers.get(timerId);
+  if (!startTime) return 0;
+
+  const duration = Date.now() - startTime;
+  this.timers.delete(timerId);
+  return duration;
+};
+
+// Add recordMetric method for tracking custom metrics
+performanceMonitor.metrics = [];
+
+performanceMonitor.recordMetric = function(name, value, meta = {}) {
+  const metric = {
+    name,
+    value,
+    meta,
+    timestamp: Date.now()
+  };
+
+  this.metrics.push(metric);
+
+  // Keep only last 1000 metrics
+  if (this.metrics.length > 1000) {
+    this.metrics = this.metrics.slice(-1000);
+  }
+};
+
+performanceMonitor.getMetrics = function() {
+  return {
+    count: this.metrics.length,
+    recent: this.metrics.slice(-10)
+  };
+};
+
+// Create middleware
+const performanceMiddleware = (req, res, next) => {
+  const timer = performanceMonitor.startTimer(`${req.method} ${req.path}`);
+
+  res.on('finish', () => {
+    const duration = performanceMonitor.endTimer(timer);
+    performanceMonitor.recordMetric('request', duration, {
+      method: req.method,
+      path: req.path,
+      statusCode: res.statusCode
+    });
+  });
+
+  next();
+};
+
+export { performanceMonitor, performanceMiddleware };
 export default PerformanceMonitor;

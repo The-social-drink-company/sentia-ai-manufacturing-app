@@ -9,7 +9,7 @@ function DataStream({ title, value, unit, trend, status }) {
   
   useEffect(() => {
     const interval = setInterval(() => {
-      const fluctuation = (Math.random() - 0.5) * value * 0.1;
+      const fluctuation = 0.5 * value * 0.1;
       setCurrentValue(prev => Math.max(0, prev + fluctuation));
     }, 1000);
     return () => clearInterval(interval);

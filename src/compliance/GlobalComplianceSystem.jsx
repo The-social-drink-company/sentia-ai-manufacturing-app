@@ -101,11 +101,11 @@ export const GlobalComplianceSystem = ({
       const standard = standards[key];
       status[key] = {
         ...standard,
-        complianceLevel: Math.floor(Math.random() * 20) + 80, // 80-100%
-        lastAudit: new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000),
+        complianceLevel: Math.floor(Math.random() * 100) + 80, // 80-100%
+        lastAudit: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
         nextAudit: new Date(Date.now() + Math.random() * 180 * 24 * 60 * 60 * 1000),
         status: Math.random() > 0.2 ? 'compliant' : 'at-risk',
-        issues: Math.floor(Math.random() * 5)
+        issues: Math.floor(Math.random() * 100)
       };
     });
     

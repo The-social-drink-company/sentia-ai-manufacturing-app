@@ -160,8 +160,8 @@ const DataImportSimple = () => {
             size: formatFileSize(file.size),
             status: 'completed',
             uploadedAt: new Date().toLocaleString(),
-            records: Math.floor(Math.random() * 5000) + 100,
-            errors: Math.floor(Math.random() * 10)
+            records: Math.floor(Math.random() * 100) + 100,
+            errors: Math.floor(Math.random() * 100)
           }));
           
           setUploadedFiles(prev => [...newFiles, ...prev]);

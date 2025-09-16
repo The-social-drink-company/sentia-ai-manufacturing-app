@@ -45,10 +45,8 @@ const ManufacturingAnalytics = () => {
       const baseTime = new Date()
       baseTime.setHours(baseTime.getHours() - hours + (i * interval))
       
-      // Simulate realistic manufacturing data with trends
-      const cyclicFactor = Math.sin(i * 0.1) * 0.1
-      const trendFactor = i * 0.001
-      const randomFactor = (Math.random() - 0.5) * 0.05
+      // REMOVED: Fake data simulation - Real manufacturing data required
+      throw new Error('Real API connection required - Manufacturing analytics must use actual production data from SCADA systems');
       
       return {
         time: baseTime.toISOString(),
@@ -285,7 +283,7 @@ const ManufacturingAnalytics = () => {
                         Production efficiency below target threshold
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {Math.floor(Math.random() * 30)} minutes ago • Line {i + 1}
+                        Real-time alert required • Line {i + 1}
                       </p>
                     </div>
                   </div>

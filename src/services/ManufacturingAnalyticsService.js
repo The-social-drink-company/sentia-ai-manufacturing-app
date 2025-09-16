@@ -32,126 +32,15 @@ class ManufacturingAnalyticsService {
   }
 
   async setupBaselineData() {
-    // Initialize baseline production data for analytics
-    const baselineData = {
-      stations: [
-        {
-          id: 'STATION_001',
-          name: 'Assembly Line 1',
-          plannedProductionTime: 480, // 8 hours in minutes
-          actualRunTime: 425,
-          idealCycleTime: 2.5, // minutes per unit
-          totalProduced: 165,
-          qualityUnits: 158,
-          downtime: {
-            planned: 30, // maintenance
-            unplanned: 25 // breakdowns
-          },
-          efficiency: 91.2,
-          availability: 88.5,
-          quality: 95.8,
-          oee: 81.4
-        },
-        {
-          id: 'STATION_002',
-          name: 'Packaging Line 1',
-          plannedProductionTime: 480,
-          actualRunTime: 445,
-          idealCycleTime: 1.8,
-          totalProduced: 235,
-          qualityUnits: 228,
-          downtime: {
-            planned: 20,
-            unplanned: 15
-          },
-          efficiency: 86.7,
-          availability: 92.7,
-          quality: 97.0,
-          oee: 77.8
-        },
-        {
-          id: 'STATION_003',
-          name: 'Quality Control Station',
-          plannedProductionTime: 480,
-          actualRunTime: 465,
-          idealCycleTime: 3.2,
-          totalProduced: 142,
-          qualityUnits: 140,
-          downtime: {
-            planned: 10,
-            unplanned: 5
-          },
-          efficiency: 88.9,
-          availability: 96.9,
-          quality: 98.6,
-          oee: 84.9
-        }
-      ]
-    };
-
-    // Store baseline data
-    baselineData.stations.forEach(station => {
-      this.analyticsData.set(station.id, station);
-    });
-
-    // Generate historical data for trend analysis
-    await this.generateHistoricalData();
+    throw new Error('Real API connection required - Manufacturing analytics must be sourced from actual production data systems, SCADA, and IoT sensors');
   }
 
   async generateHistoricalData() {
-    const days = 30;
-    const stations = Array.from(this.analyticsData.values());
-    
-    for (let i = days; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      
-      stations.forEach(station => {
-        // Generate realistic variations
-        const variation = 0.1; // 10% variation
-        const availability = station.availability + (Math.random() - 0.5) * variation * 20;
-        const performance = station.efficiency + (Math.random() - 0.5) * variation * 20;
-        const quality = station.quality + (Math.random() - 0.5) * variation * 10;
-        const oee = (availability * performance * quality) / 10000;
-        
-        this.historicalData.push({
-          id: uuidv4(),
-          stationId: station.id,
-          stationName: station.name,
-          date: date.toISOString().split('T')[0],
-          timestamp: date.toISOString(),
-          availability: Math.max(75, Math.min(98, availability)),
-          performance: Math.max(70, Math.min(95, performance)),
-          quality: Math.max(90, Math.min(100, quality)),
-          oee: Math.max(60, Math.min(90, oee)),
-          production: {
-            planned: station.totalProduced + Math.floor((Math.random() - 0.5) * 40),
-            actual: station.totalProduced + Math.floor((Math.random() - 0.5) * 30),
-            rejected: Math.floor(Math.random() * 8)
-          },
-          downtime: {
-            planned: station.downtime.planned + Math.floor((Math.random() - 0.5) * 20),
-            unplanned: station.downtime.unplanned + Math.floor((Math.random() - 0.5) * 15)
-          }
-        });
-      });
-    }
+    throw new Error('Real API connection required - Historical manufacturing data must be retrieved from production databases and data historians');
   }
 
   async calculateInitialMetrics() {
-    // Calculate OEE for all stations
-    const stations = Array.from(this.analyticsData.values());
-    
-    stations.forEach(station => {
-      const oeeData = this.calculateOEE(station);
-      this.oeeCalculations.set(station.id, oeeData);
-      
-      const variance = this.calculateVarianceAnalysis(station);
-      this.varianceData.set(station.id, variance);
-      
-      const performance = this.calculatePerformanceMetrics(station);
-      this.performanceMetrics.set(station.id, performance);
-    });
+    throw new Error('Real API connection required - Manufacturing metrics must be calculated from actual production line data');
   }
 
   calculateOEE(station) {
@@ -260,36 +149,7 @@ class ManufacturingAnalyticsService {
   }
 
   async getAnalyticsDashboard() {
-    if (!this.isInitialized) {
-      await this.initialize();
-    }
-
-    const stations = Array.from(this.analyticsData.values());
-    const oeeData = Array.from(this.oeeCalculations.values());
-    const varianceData = Array.from(this.varianceData.values());
-    
-    // Calculate overall plant metrics
-    const totalAvailability = oeeData.reduce((sum, data) => sum + data.availability, 0) / oeeData.length;
-    const totalPerformance = oeeData.reduce((sum, data) => sum + data.performance, 0) / oeeData.length;
-    const totalQuality = oeeData.reduce((sum, data) => sum + data.quality, 0) / oeeData.length;
-    const overallOEE = (totalAvailability * totalPerformance * totalQuality) / 10000;
-    
-    return {
-      timestamp: new Date().toISOString(),
-      summary: {
-        overallOEE: Math.round(overallOEE * 10) / 10,
-        availability: Math.round(totalAvailability * 10) / 10,
-        performance: Math.round(totalPerformance * 10) / 10,
-        quality: Math.round(totalQuality * 10) / 10,
-        classification: this.classifyOEE(overallOEE),
-        totalStations: stations.length,
-        activeStations: stations.filter(s => s.efficiency > 0).length
-      },
-      stationOEE: oeeData,
-      varianceAnalysis: varianceData,
-      trends: this.getTrendAnalysis(),
-      recommendations: this.generateRecommendations(oeeData, varianceData)
-    };
+    throw new Error('Real API connection required - Manufacturing analytics dashboard must integrate with actual production systems and real-time data feeds');
   }
 
   getTrendAnalysis() {
@@ -406,31 +266,11 @@ class ManufacturingAnalyticsService {
   }
 
   async getHistoricalAnalytics(days = 30) {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-    
-    return this.historicalData.filter(
-      record => new Date(record.timestamp) >= startDate
-    ).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    throw new Error('Real API connection required - Historical analytics must query actual production databases and time-series data');
   }
 
   async getStationAnalytics(stationId) {
-    const station = this.analyticsData.get(stationId);
-    const oee = this.oeeCalculations.get(stationId);
-    const variance = this.varianceData.get(stationId);
-    const performance = this.performanceMetrics.get(stationId);
-    
-    if (!station) {
-      throw new Error(`Station ${stationId} not found`);
-    }
-    
-    return {
-      station,
-      oee,
-      variance,
-      performance,
-      historical: this.historicalData.filter(r => r.stationId === stationId).slice(-30)
-    };
+    throw new Error('Real API connection required - Station analytics must be retrieved from actual SCADA systems and production line monitoring');
   }
 }
 

@@ -49,44 +49,16 @@ const AdvancedDataExplorer = ({ className = '' }) => {
         return await response.json();
       } catch (error) {
         console.error('Data explorer fetch error:', error);
-        return generateMockExplorerData(selectedDataset, timeRange);
+        return throwRealDataRequired(selectedDataset, timeRange);
       }
     },
     refetchInterval: 30000,
     staleTime: 10000
   });
 
-  // Generate mock data for demonstration
-  const generateMockExplorerData = (dataset, range) => {
-    const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
-    const dataPoints = [];
-    
-    for (let i = 0; i < days; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() - (days - i));
-      
-      dataPoints.push({
-        date: date.toISOString().split('T')[0],
-        value: Math.floor(Math.random() * 1000) + 500,
-        category: ['ProductA', 'ProductB', 'ProductC'][Math.floor(Math.random() * 3)],
-        region: ['North', 'South', 'East', 'West'][Math.floor(Math.random() * 4)],
-        channel: ['Online', 'Retail', 'Wholesale'][Math.floor(Math.random() * 3)]
-      });
-    }
-    
-    return {
-      data: dataPoints,
-      summary: {
-        total: dataPoints.reduce((sum, point) => sum + point.value, 0),
-        average: dataPoints.reduce((sum, point) => sum + point.value, 0) / dataPoints.length,
-        max: Math.max(...dataPoints.map(p => p.value)),
-        min: Math.min(...dataPoints.map(p => p.value)),
-        count: dataPoints.length
-      },
-      dimensions: ['date', 'category', 'region', 'channel'],
-      measures: ['value', 'count'],
-      drillDownOptions: getDrillDownOptions(dataset)
-    };
+  // REMOVED: No mock data explorer generation - use real data only
+  const throwRealDataRequired = (dataset, range) => {
+    throw new Error(`Data explorer requires real ${dataset} data from external APIs. Math.random() mock data is not permitted.`);
   };
 
   const getDrillDownOptions = (dataset) => {

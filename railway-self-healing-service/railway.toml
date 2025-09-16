@@ -1,6 +1,0 @@
-[build]
-builder = "nixpacks"
-
-[deploy]
-startCommand = "node enterprise-self-healing-agent.js"
-restartPolicyType = "always"

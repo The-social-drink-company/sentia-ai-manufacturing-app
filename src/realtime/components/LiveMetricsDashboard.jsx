@@ -43,16 +43,21 @@ export const LiveMetricsDashboard = ({
   // Handle production metrics updates
   const handleProductionData = useCallback((data) => {
     const timestamp = Date.now();
+
+    if (!data.unitsPerHour || !data.efficiency) {
+      throw new Error('Real API connection required - Production metrics must include unitsPerHour and efficiency from IoT sensors');
+    }
+
     setLiveMetrics(prev => ({
       ...prev,
       production: [...prev.production, {
         timestamp,
-        value: data.unitsPerHour || Math.floor(Math.random() * 100) + 200,
-        efficiency: data.efficiency || Math.random() * 100,
+        value: data.unitsPerHour,
+        efficiency: data.efficiency,
         label: new Date(timestamp).toLocaleTimeString()
       }].slice(-maxDataPoints)
     }));
-    
+
     setCurrentValues(prev => ({
       ...prev,
       production: data
@@ -63,16 +68,21 @@ export const LiveMetricsDashboard = ({
   // Handle quality data updates
   const handleQualityData = useCallback((data) => {
     const timestamp = Date.now();
+
+    if (!data.qualityScore || data.defectRate === undefined) {
+      throw new Error('Real API connection required - Quality data must include qualityScore and defectRate from quality control systems');
+    }
+
     setLiveMetrics(prev => ({
       ...prev,
       quality: [...prev.quality, {
         timestamp,
-        value: data.qualityScore || 95 + Math.random() * 5,
-        defectRate: data.defectRate || Math.random() * 2,
+        value: data.qualityScore,
+        defectRate: data.defectRate,
         label: new Date(timestamp).toLocaleTimeString()
       }].slice(-maxDataPoints)
     }));
-    
+
     setCurrentValues(prev => ({
       ...prev,
       quality: data
@@ -83,17 +93,22 @@ export const LiveMetricsDashboard = ({
   // Handle equipment status updates
   const handleEquipmentData = useCallback((data) => {
     const timestamp = Date.now();
+
+    if (!data.temperature || !data.vibration || !data.status) {
+      throw new Error('Real API connection required - Equipment data must include temperature, vibration, and status from IoT sensors');
+    }
+
     setLiveMetrics(prev => ({
       ...prev,
       equipment: [...prev.equipment, {
         timestamp,
-        temperature: data.temperature || 45 + Math.random() * 20,
-        vibration: data.vibration || Math.random() * 10,
-        status: data.status || 'operational',
+        temperature: data.temperature,
+        vibration: data.vibration,
+        status: data.status,
         label: new Date(timestamp).toLocaleTimeString()
       }].slice(-maxDataPoints)
     }));
-    
+
     setCurrentValues(prev => ({
       ...prev,
       equipment: data
@@ -104,16 +119,21 @@ export const LiveMetricsDashboard = ({
   // Handle energy consumption updates
   const handleEnergyData = useCallback((data) => {
     const timestamp = Date.now();
+
+    if (!data.kwh || data.cost === undefined) {
+      throw new Error('Real API connection required - Energy data must include kwh consumption and cost from energy monitoring systems');
+    }
+
     setLiveMetrics(prev => ({
       ...prev,
       energy: [...prev.energy, {
         timestamp,
-        consumption: data.kwh || 100 + Math.random() * 50,
-        cost: data.cost || Math.random() * 100,
+        consumption: data.kwh,
+        cost: data.cost,
         label: new Date(timestamp).toLocaleTimeString()
       }].slice(-maxDataPoints)
     }));
-    
+
     setCurrentValues(prev => ({
       ...prev,
       energy: data
@@ -137,33 +157,24 @@ export const LiveMetricsDashboard = ({
     };
   }, [isConnected, subscribe, handleProductionData, handleQualityData, handleEquipmentData, handleEnergyData]);
 
-  // Simulate real-time data when not connected (for demo)
+  // REMOVED: Fake data simulation - Real IoT sensor data required
   useEffect(() => {
     if (isConnected || !isAutoRefresh) return;
 
-    const interval = setInterval(() => {
-      // Simulate incoming data
-      handleProductionData({ 
-        unitsPerHour: 180 + Math.floor(Math.random() * 40),
-        efficiency: 85 + Math.random() * 15 
-      });
-      handleQualityData({ 
-        qualityScore: 95 + Math.random() * 5,
-        defectRate: Math.random() * 2 
-      });
-      handleEquipmentData({ 
-        temperature: 45 + Math.random() * 20,
-        vibration: Math.random() * 10,
-        status: Math.random() > 0.9 ? 'warning' : 'operational'
-      });
-      handleEnergyData({ 
-        kwh: 100 + Math.random() * 50,
-        cost: 50 + Math.random() * 50 
-      });
-    }, refreshInterval);
+    // Display error message when not connected to real data sources
+    console.error('CRITICAL ERROR: Real IoT sensor connection required. No fake data simulation allowed.');
 
-    return () => clearInterval(interval);
-  }, [isConnected, isAutoRefresh, refreshInterval, handleProductionData, handleQualityData, handleEquipmentData, handleEnergyData]);
+    // Show user-friendly error in dashboard
+    setCurrentValues({
+      error: 'Real-time manufacturing data requires IoT sensor connections. Please configure data sources.',
+      connectionStatus: 'disconnected',
+      requiredSources: ['Production IoT sensors', 'Quality control systems', 'Equipment monitoring', 'Energy meters']
+    });
+
+    return () => {
+      // No cleanup needed for error state
+    };
+  }, [isConnected, isAutoRefresh]);
 
   // Format time ago
   const formatTimeAgo = (timestamp) => {

@@ -373,7 +373,7 @@ class ShopifyAPIService {
         data: {
           shopifyOrders: {
             value: summary.totalOrders,
-            change: Math.round((Math.random() * 25 - 10) * 10) / 10,
+            change: Math.round((0 /* REAL DATA REQUIRED */ - 10) * 10) / 10,
             changeType: 'positive',
             status: 'good',
             trustLevel: 'excellent',
@@ -383,7 +383,7 @@ class ShopifyAPIService {
           },
           shopifyRevenue: {
             value: Math.round(summary.totalRevenue * 100) / 100,
-            change: Math.round((Math.random() * 20 - 5) * 10) / 10,
+            change: Math.round((0 /* REAL DATA REQUIRED */ - 5) * 10) / 10,
             changeType: 'positive',
             status: 'good',
             trustLevel: 'excellent',
@@ -393,7 +393,7 @@ class ShopifyAPIService {
           },
           averageOrderValue: {
             value: Math.round(summary.averageOrderValue * 100) / 100,
-            change: Math.round((Math.random() * 15 - 7) * 10) / 10,
+            change: Math.round((0 /* REAL DATA REQUIRED */ - 7) * 10) / 10,
             changeType: Math.random() > 0.5 ? 'positive' : 'negative',
             status: 'good',
             trustLevel: 'good',
@@ -403,7 +403,7 @@ class ShopifyAPIService {
           },
           customerRetentionRate: {
             value: Math.round(summary.repeatCustomerRate * 10) / 10,
-            change: Math.round((Math.random() * 8 - 3) * 10) / 10,
+            change: Math.round((0 /* REAL DATA REQUIRED */ - 3) * 10) / 10,
             changeType: Math.random() > 0.4 ? 'positive' : 'negative',
             status: summary.repeatCustomerRate > 25 ? 'good' : 'warning',
             trustLevel: 'good',

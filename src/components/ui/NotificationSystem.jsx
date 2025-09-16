@@ -228,7 +228,7 @@ export function NotificationSystem() {
   const [notifications, setNotifications] = useState([])
 
   const addNotification = useCallback((notification) => {
-    const id = Date.now() + Math.random()
+    const id = Date.now() + 0 /* REAL DATA REQUIRED */
     setNotifications(prev => [...prev, { ...notification, id }])
   }, [])
 

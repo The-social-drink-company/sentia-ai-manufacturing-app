@@ -149,17 +149,8 @@ class IoTSensorPlatform {
       { id: 'FLOW_001', type: 'flow', location: 'Cooling System', gateway: 'GW_003' }
     ];
 
-    sampleSensors.forEach(sensor => {
-      this.registerSensor({
-        ...sensor,
-        status: 'active',
-        batteryLevel: 85 + Math.random() * 15,
-        signalStrength: -30 - Math.random() * 40,
-        lastSeen: Date.now(),
-        firmware: '1.2.' + Math.floor(Math.random() * 10),
-        protocol: Object.keys(IOT_PROTOCOLS)[Math.floor(Math.random() * Object.keys(IOT_PROTOCOLS).length)]
-      });
-    });
+    // REMOVED: No fake sensor data generation - connect to real IoT sensors only
+    throw new Error('IoT sensor platform requires real sensor connections. Fake Math.random() sensor data is not permitted.');
 
     // Initialize gateways
     const sampleGateways = [

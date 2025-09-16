@@ -59,6 +59,33 @@ const createStructuredLogger = () => {
     version: process.env.VERSION || process.env.npm_package_version || 'unknown'
   };
   
+  // Don't use file transports in production environments like Render
+  // File system may be read-only or ephemeral
+  const transports = [];
+
+  // Only add file transports in true local development (avoid container/Render/CI)
+  const isContainer = !!(process.env.RENDER || process.env.RENDER_SERVICE_ID || process.env.RENDER_EXTERNAL_URL || process.env.CI);
+  if (process.env.NODE_ENV === 'development' && !isContainer) {
+    try {
+      transports.push(
+        new winston.transports.File({
+          filename: 'logs/error.log',
+          level: 'error',
+          maxsize: 10485760, // 10MB
+          maxFiles: 5
+        }),
+        new winston.transports.File({
+          filename: 'logs/combined.log',
+          maxsize: 10485760, // 10MB
+          maxFiles: 10
+        })
+      );
+    } catch (err) {
+      // Silently ignore file transport errors
+      console.warn('Unable to create file transports for logger');
+    }
+  }
+
   const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
     defaultMeta,
@@ -67,19 +94,7 @@ const createStructuredLogger = () => {
       winston.format.errors({ stack: true }),
       structuredFormat
     ),
-    transports: [
-      new winston.transports.File({ 
-        filename: 'logs/error.log', 
-        level: 'error',
-        maxsize: 10485760, // 10MB
-        maxFiles: 5
-      }),
-      new winston.transports.File({ 
-        filename: 'logs/combined.log',
-        maxsize: 10485760, // 10MB
-        maxFiles: 10
-      })
-    ]
+    transports
   });
   
   // Add console transport for non-production

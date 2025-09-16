@@ -321,11 +321,10 @@ class ProductionIntegrationService {
     const lineConfig = this.productionLines.get(lineId);
     if (!lineConfig) return 0;
     
-    // Simulate current output with some variance
+    // REAL DATA REQUIRED: Must connect to actual MES/SCADA systems
     const baseOutput = lineConfig.plannedOutput;
-    const variance = (Math.random() - 0.5) * 0.2; // ±10% variance
-    
-    return Math.round(baseOutput * (1 + variance));
+    // Variance must come from real production data, not random
+    throw new Error('REAL DATA REQUIRED: Connect to MES/SCADA for actual production output');
   }
 
   async calculateEfficiency(lineId) {
@@ -336,30 +335,23 @@ class ProductionIntegrationService {
   }
 
   async calculateAvailability(lineId) {
-    // Simulate availability calculation (runtime / planned runtime)
-    return 85 + Math.random() * 10; // 85-95% availability
+    // REAL DATA REQUIRED: Must calculate from actual runtime vs planned runtime
+    throw new Error('REAL DATA REQUIRED: Connect to MES for actual availability metrics');
   }
 
   async calculatePerformance(lineId) {
-    // Simulate performance calculation (actual output / target output)
-    return 80 + Math.random() * 15; // 80-95% performance
+    // REAL DATA REQUIRED: Must calculate from actual vs target output
+    throw new Error('REAL DATA REQUIRED: Connect to production systems for performance data');
   }
 
   async calculateQualityRate(lineId) {
-    // Simulate quality rate (good parts / total parts)
-    return 90 + Math.random() * 8; // 90-98% quality
+    // REAL DATA REQUIRED: Must calculate from actual quality control data
+    throw new Error('REAL DATA REQUIRED: Connect to LIMS for actual quality metrics');
   }
 
   weightedRandomChoice(items, weights) {
-    const random = Math.random();
-    let sum = 0;
-    
-    for (let i = 0; i < weights.length; i++) {
-      sum += weights[i];
-      if (random <= sum) return items[i];
-    }
-    
-    return items[0];
+    // REAL DATA REQUIRED: Status must come from actual equipment state
+    throw new Error('REAL DATA REQUIRED: Connect to PLCs/SCADA for real equipment status');
   }
 
   calculateDaysUntil(date) {

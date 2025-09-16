@@ -503,55 +503,13 @@ async function createProductBySku(sku, name) {
  * Sample data generation functions
  */
 async function generateSampleXeroData() {
-  // Generate sample financial data and update working capital
-  const sampleData = {
-    current_assets: 125000 + Math.random() * 50000,
-    current_liabilities: 75000 + Math.random() * 25000,
-    working_capital: 0,
-    working_capital_ratio: 0,
-    revenue: 250000 + Math.random() * 100000,
-    calculation_date: new Date()
-  }
-  
-  sampleData.working_capital = sampleData.current_assets - sampleData.current_liabilities
-  sampleData.working_capital_ratio = sampleData.current_assets / sampleData.current_liabilities
-  
-  await updateWorkingCapitalData(sampleData)
-  
-  return {
-    balanceSheet: 15,
-    profitLoss: 8,
-    cashFlow: 12,
-    workingCapital: sampleData,
-    source: 'sample_data'
-  }
+  // CRITICAL ERROR: No fake financial data generation allowed
+  throw new Error('Financial data must come from real Xero API integration. Math.random() fake data is not permitted.');
 }
 
 async function generateSampleUnleashedData() {
-  // Generate sample inventory data
-  const sampleProducts = Array.from({ length: 20 }, (_, i) => ({
-    ProductCode: `SKU-${1000 + i}`,
-    ProductDescription: `Sample Product ${i + 1}`,
-    AvailableQty: Math.floor(Math.random() * 500) + 10,
-    AverageUnitCost: (Math.random() * 50 + 5).toFixed(2)
-  }))
-  
-  const inventoryData = sampleProducts.map(product => ({
-    sku: product.ProductCode,
-    product_name: product.ProductDescription,
-    available_quantity: product.AvailableQty,
-    unit_cost: parseFloat(product.AverageUnitCost),
-    total_value: product.AvailableQty * parseFloat(product.AverageUnitCost),
-    source: 'sample_data'
-  }))
-  
-  await updateInventoryData(inventoryData)
-  
-  return {
-    products: sampleProducts.length,
-    totalValue: inventoryData.reduce((sum, item) => sum + item.total_value, 0),
-    source: 'sample_data'
-  }
+  // CRITICAL ERROR: No fake inventory data generation allowed
+  throw new Error('Inventory data must come from real Unleashed API integration. Math.random() fake data is not permitted.');
 }
 
 export default {

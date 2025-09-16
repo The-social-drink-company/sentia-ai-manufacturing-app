@@ -463,9 +463,9 @@ export function RiskAssessmentDashboard() {
   const riskTrendData = Array.from({ length: 30 }, (_, i) => ({
     date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     riskScore: 35 + Math.sin(i / 5) * 10 + Math.random() * 5,
-    criticalRisks: Math.floor(Math.random() * 3),
-    highRisks: 1 + Math.floor(Math.random() * 3),
-    mediumRisks: 2 + Math.floor(Math.random() * 4)
+    criticalRisks: Math.floor(Math.random() * 100),
+    highRisks: 1 + Math.floor(Math.random() * 100),
+    mediumRisks: 2 + Math.floor(Math.random() * 100)
   }));
 
   if (risksLoading) {

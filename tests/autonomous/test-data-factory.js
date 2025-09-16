@@ -61,7 +61,7 @@ class TestDataFactory {
     for (let i = 0; i < count; i++) {
       const role = this.weightedChoice(roles, [0.1, 0.2, 0.5, 0.2]);
       const user = {
-        id: `user_${faker.datatype.uuid()}`,
+        id: `user_${faker.string.uuid()}`,
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         email: faker.internet.email().toLowerCase(),
@@ -120,8 +120,8 @@ class TestDataFactory {
 
   generateAuthTokens() {
     return {
-      accessToken: faker.datatype.uuid(),
-      refreshToken: faker.datatype.uuid(),
+      accessToken: faker.string.uuid(),
+      refreshToken: faker.string.uuid(),
       expiresAt: faker.date.future(),
       expired: false,
       scope: 'full_access'
@@ -153,7 +153,7 @@ class TestDataFactory {
           const actualOutput = Math.floor(baseOutput * (efficiency / 100));
           
           const record = {
-            id: `prod_${faker.datatype.uuid()}`,
+            id: `prod_${faker.string.uuid()}`,
             timestamp: recordTime.toISOString(),
             date: recordTime.toISOString().split('T')[0],
             time: recordTime.toTimeString().split(' ')[0],
@@ -294,7 +294,7 @@ class TestDataFactory {
         const testPassed = Math.random() < basePassRate;
         
         const record = {
-          id: `qc_${faker.datatype.uuid()}`,
+          id: `qc_${faker.string.uuid()}`,
           timestamp: testTime.toISOString(),
           date: testTime.toISOString().split('T')[0],
           testName: selectedTest.name,
@@ -426,14 +426,22 @@ class TestDataFactory {
   // Helper method to fetch personnel data
   async getPersonnelData(roleType) {
     try {
-      let endpoint = '/api/personnel';
+      // Resolve absolute API base URL for Node environment
+      const apiBase = process.env.API_BASE_URL
+        || process.env.VITE_API_BASE_URL
+        || (process.env.RENDER_EXTERNAL_URL ? `${process.env.RENDER_EXTERNAL_URL}/api` : 'http://localhost:3000/api');
+
+      // Build URL safely using URL + searchParams
+      const url = new URL('personnel', apiBase.endsWith('/') ? apiBase : `${apiBase}/`);
       if (roleType === 'manager') {
-        endpoint += '?role=manager&role=admin';
+        url.searchParams.append('role', 'manager');
+        url.searchParams.append('role', 'admin');
       } else if (roleType === 'technician') {
-        endpoint += '?role=operator&role=manager';
+        url.searchParams.append('role', 'operator');
+        url.searchParams.append('role', 'manager');
       }
-      
-      const response = await fetch(endpoint);
+
+      const response = await fetch(url.toString());
       if (response.ok) {
         const result = await response.json();
         return result.data || [];
@@ -515,7 +523,7 @@ class TestDataFactory {
     for (let i = 0; i < itemCount; i++) {
       const category = faker.helpers.arrayElement(categories);
       const item = {
-        id: `inv_${faker.datatype.uuid()}`,
+        id: `inv_${faker.string.uuid()}`,
         sku: faker.commerce.product().replace(/\s+/g, '-').toUpperCase() + `-${faker.datatype.number({ min: 100, max: 999 })}`,
         name: this.generateInventoryItemName(category),
         category,
@@ -665,7 +673,7 @@ class TestDataFactory {
         const amount = baseAmount * scenarioModifiers[account.type.toLowerCase()] * (1 + Math.random() * 0.1 - 0.05);
 
         const record = {
-          id: `fin_${faker.datatype.uuid()}`,
+          id: `fin_${faker.string.uuid()}`,
           date: recordDate.toISOString().split('T')[0],
           accountCode: account.code,
           accountName: account.name,
@@ -898,8 +906,8 @@ class TestDataFactory {
     return {
       users: this.generateUserData(scenario, 20),
       sessions: Array.from({ length: 10 }, () => ({
-        id: `sess_${faker.datatype.uuid()}`,
-        userId: `user_${faker.datatype.uuid()}`,
+        id: `sess_${faker.string.uuid()}`,
+        userId: `user_${faker.string.uuid()}`,
         status: 'active',
         lastActiveAt: faker.date.recent({ hours: 24 }),
         expireAt: faker.date.future({ days: 7 })

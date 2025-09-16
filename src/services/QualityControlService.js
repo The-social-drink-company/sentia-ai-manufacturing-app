@@ -195,7 +195,7 @@ class QualityControlService {
 
       // Create test result record
       const testResult = {
-        id: `TEST_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `TEST_${Date.now()}_${crypto.randomUUID().substr(2, 9)}`,
         batchId: testData.batchId,
         stationId: testData.stationId,
         testType: testData.testType,
@@ -463,7 +463,7 @@ class QualityControlService {
   }
 
   // Placeholder methods for complete integration
-  async getTestsCompletedToday(stationId) { return Math.floor(Math.random() * 20) + 5; }
+  async getTestsCompletedToday(stationId) { return Math.floor(Math.random() * 100) + 5; }
   async calculatePassRate(stationId) { return Math.round((92 + Math.random() * 6) * 100) / 100; }
   async getStationInstruments(stationId) { return []; }
   async getCalibrationStatus(stationId) { return 'current'; }

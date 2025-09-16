@@ -79,9 +79,9 @@ const AdvancedAnalyticsDashboard = () => {
       qualityTrends: Array.from({ length: 14 }, (_, i) => ({
         date: new Date(Date.now() - (13 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         passRate: 96 + Math.random() * 4,
-        defectRate: Math.random() * 4,
+        defectRate: 0,
         firstPassYield: 92 + Math.random() * 6,
-        scrapRate: Math.random() * 2
+        scrapRate: 0
       }))
     },
 

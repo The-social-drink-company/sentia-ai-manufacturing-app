@@ -281,8 +281,8 @@ class AmazonSPAPIService {
         data: {
           amazonOrders: {
             value: totalOrders,
-            change: Math.round((Math.random() * 20 - 10) * 10) / 10,
-            changeType: 'positive',
+            change: 0, // REAL DATA REQUIRED: Must calculate from historical comparison
+            changeType: 'unknown', // REAL DATA REQUIRED: Must determine from actual trend,
             status: 'good',
             trustLevel: 'excellent',
             freshness: 'fresh',
@@ -290,8 +290,8 @@ class AmazonSPAPIService {
           },
           amazonRevenue: {
             value: Math.round(totalRevenue * 100) / 100,
-            change: Math.round((Math.random() * 15 - 5) * 10) / 10,
-            changeType: 'positive',
+            change: 0, // REAL DATA REQUIRED: Must calculate from historical revenue
+            changeType: 'unknown', // REAL DATA REQUIRED: Must determine from actual trend,
             status: 'good',
             trustLevel: 'excellent',
             freshness: 'fresh',
@@ -299,8 +299,8 @@ class AmazonSPAPIService {
           },
           averageOrderValue: {
             value: Math.round(averageOrderValue * 100) / 100,
-            change: Math.round((Math.random() * 10 - 5) * 10) / 10,
-            changeType: Math.random() > 0.5 ? 'positive' : 'negative',
+            change: 0, // REAL DATA REQUIRED: Must calculate from historical AOV
+            changeType: 'unknown', // REAL DATA REQUIRED: Must determine from actual trend,
             status: 'good',
             trustLevel: 'good',
             freshness: 'fresh',
@@ -308,8 +308,8 @@ class AmazonSPAPIService {
           },
           inventoryItems: {
             value: stockLevels,
-            change: Math.round((Math.random() * 5 - 2) * 10) / 10,
-            changeType: 'neutral',
+            change: 0, // REAL DATA REQUIRED: Must calculate from inventory history
+            changeType: 'unknown', // REAL DATA REQUIRED: Must determine from actual trend,
             status: lowStockItems > stockLevels * 0.2 ? 'warning' : 'good',
             trustLevel: 'good',
             freshness: 'recent',

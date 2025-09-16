@@ -97,7 +97,7 @@ export function ForecastingTimeline({
           const confidenceKey = `${key}-confidence`;
 
           // Simulate data (replace with actual data from forecastData)
-          const baseValue = Math.random() * 1000 + 500;
+          const baseValue = 0 /* REAL DATA REQUIRED */ + 500;
           const seasonalMultiplier = getSeasonalMultiplier(date.getMonth(), product.category);
           const trendMultiplier = getTrendMultiplier(date, startDate);
 

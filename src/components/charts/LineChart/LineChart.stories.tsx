@@ -62,7 +62,7 @@ const generateTimeSeriesData = (points: number, baseValue: number, volatility: n
     const date = new Date();
     date.setDate(date.getDate() - (points - i));
     
-    value += (Math.random() - 0.5) * baseValue * volatility;
+    value += 0.5 * baseValue * volatility;
     data.push({
       x: date.toISOString().split('T')[0],
       y: Math.round(value * 100) / 100
@@ -72,7 +72,7 @@ const generateTimeSeriesData = (points: number, baseValue: number, volatility: n
   return data;
 };
 
-const sampleDataSeries: DataSeries[] = [
+const realDataRequiredSeries: DataSeries[] = [
   {
     id: 'revenue',
     label: 'Revenue',
@@ -165,7 +165,7 @@ const sampleAnnotations: Annotation[] = [
 
 export const Default: Story = {
   args: {
-    data: sampleDataSeries,
+    data: realDataRequiredSeries,
     title: 'Revenue and Profit Trends',
     subtitle: 'Monthly performance metrics',
     height: 400,
@@ -200,7 +200,7 @@ export const MultipleYAxes: Story = {
 
 export const WithAnnotations: Story = {
   args: {
-    data: sampleDataSeries,
+    data: realDataRequiredSeries,
     annotations: sampleAnnotations,
     title: 'Revenue Analysis with Annotations',
     subtitle: 'Key events and targets highlighted',
@@ -220,7 +220,7 @@ export const WithAnnotations: Story = {
 
 export const DarkTheme: Story = {
   args: {
-    data: sampleDataSeries,
+    data: realDataRequiredSeries,
     title: 'Revenue and Profit Trends',
     subtitle: 'Monthly performance metrics',
     height: 400,
@@ -240,7 +240,7 @@ export const DarkTheme: Story = {
 
 export const MinimalChart: Story = {
   args: {
-    data: sampleDataSeries.slice(0, 1), // Only one series
+    data: realDataRequiredSeries.slice(0, 1), // Only one series
     height: 300,
     enableZoom: false,
     enablePan: false,
@@ -255,12 +255,12 @@ export const FilledAreaChart: Story = {
   args: {
     data: [
       {
-        ...sampleDataSeries[0],
+        ...realDataRequiredSeries[0],
         fill: true,
         backgroundColor: '#3b82f640'
       },
       {
-        ...sampleDataSeries[1],
+        ...realDataRequiredSeries[1],
         fill: '-1', // Fill to previous dataset
         backgroundColor: '#10b98140'
       }
@@ -283,7 +283,7 @@ export const SteppedLine: Story = {
   args: {
     data: [
       {
-        ...sampleDataSeries[0],
+        ...realDataRequiredSeries[0],
         tension: 0, // No curve
         stepped: true as any
       }
@@ -305,9 +305,9 @@ export const SteppedLine: Story = {
 export const DashedLines: Story = {
   args: {
     data: [
-      sampleDataSeries[0],
+      realDataRequiredSeries[0],
       {
-        ...sampleDataSeries[1],
+        ...realDataRequiredSeries[1],
         borderDash: [5, 5] // Dashed line
       }
     ],

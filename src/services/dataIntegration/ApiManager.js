@@ -336,7 +336,7 @@ export class ApiManager {
   
   // Utility methods
   generateRequestId() {
-    return `req_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+    return `req_${Date.now()}_${crypto.randomUUID().substring(2)}`;
   }
   
   generateCacheKey(method, endpoint, data, options) {

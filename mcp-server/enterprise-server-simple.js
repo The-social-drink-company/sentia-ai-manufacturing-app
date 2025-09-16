@@ -738,9 +738,8 @@ class SentiaEnterpriseMCPServer {
   async handleInventoryOptimize({ sku, timeHorizon = 90, optimizationGoal = 'balanced' }) {
     logger.info('Optimizing inventory', { sku, timeHorizon, optimizationGoal });
     
-    // Simplified inventory optimization logic
-    const currentStock = Math.floor(Math.random() * 1000) + 100;
-    const avgDailyDemand = Math.floor(Math.random() * 20) + 5;
+    // CRITICAL ERROR: No fake inventory data allowed
+    throw new Error('Inventory optimization requires real data from warehouse management systems. Math.random() fake data is not permitted.');
     const leadTime = 7; // days
     
     let safetyStockMultiplier;
@@ -785,9 +784,8 @@ class SentiaEnterpriseMCPServer {
   async handleDemandForecast({ sku, horizon = 30, includeSeasonality = true, confidenceInterval = 0.95 }) {
     logger.info('Generating demand forecast', { sku, horizon, includeSeasonality });
     
-    // Simulate demand forecast with realistic patterns
-    const baseDemand = Math.floor(Math.random() * 20) + 10;
-    const trend = (Math.random() - 0.5) * 0.02; // ±1% daily trend
+    // CRITICAL ERROR: No fake demand forecasting data allowed
+    throw new Error('Demand forecasting requires real historical sales data from external APIs. Math.random() fake data is not permitted.');
     const seasonality = includeSeasonality ? this.generateSeasonalPattern(horizon) : null;
     
     const predictions = [];
@@ -841,8 +839,8 @@ class SentiaEnterpriseMCPServer {
   async handleWorkingCapitalAnalysis({ scenario = 'current', timeframe = 12, includeProjections = true }) {
     logger.info('Analyzing working capital', { scenario, timeframe, includeProjections });
     
-    // Simulate working capital analysis
-    const baseWorkingCapital = 150000 + Math.random() * 100000;
+    // CRITICAL ERROR: No fake working capital data allowed
+    throw new Error('Working capital analysis requires real financial data from accounting systems (Xero, etc.). Math.random() fake data is not permitted.');
     const scenarioMultipliers = {
       current: 1.0,
       optimistic: 1.15,

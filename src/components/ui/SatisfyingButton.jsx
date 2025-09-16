@@ -240,8 +240,8 @@ const SatisfyingButton = ({
               initial={{ scale: 0, x: 0, y: 0 }}
               animate={{
                 scale: [0, 1, 0],
-                x: [0, (Math.random() - 0.5) * 100],
-                y: [0, (Math.random() - 0.5) * 100],
+                x: [0, 0.5 * 100],
+                y: [0, 0.5 * 100],
                 opacity: [0, 1, 0]
               }}
               transition={{

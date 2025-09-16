@@ -39,68 +39,28 @@ const PredictiveAnalyticsWidget = ({ className = '' }) => {
         return await response.json();
       } catch (error) {
         console.error('Predictive analytics fetch error:', error);
-        return generateMockPredictiveData(selectedMetric, selectedTimeframe);
+        // Return empty data structure - NO MOCK DATA
+        return {
+          historical: [],
+          forecast: [],
+          upperBound: [],
+          lowerBound: [],
+          accuracy: 0,
+          trend: 'unknown',
+          volatility: 'unknown',
+          anomalies: [],
+          insights: ['Unable to fetch real predictive analytics data'],
+          error: 'API connection failed - waiting for real data'
+        };
       }
     },
     refetchInterval: 60000, // Refresh every minute
     staleTime: 30000
   });
 
-  // Generate mock data for demonstration
-  const generateMockPredictiveData = (metric, timeframe) => {
-    const days = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : 90;
-    const historical = [];
-    const forecast = [];
-    const upperBound = [];
-    const lowerBound = [];
-    
-    // Generate historical data
-    for (let i = -days; i <= 0; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() + i);
-      const baseValue = 100 + Math.sin(i * 0.1) * 20 + Math.random() * 10;
-      historical.push({
-        date: date.toISOString().split('T')[0],
-        value: Math.round(baseValue),
-        actual: true
-      });
-    }
-    
-    // Generate forecast data
-    for (let i = 1; i <= Math.floor(days / 2); i++) {
-      const date = new Date();
-      date.setDate(date.getDate() + i);
-      const baseValue = 100 + Math.sin(i * 0.1) * 20;
-      const forecastValue = baseValue + (Math.random() - 0.5) * 5;
-      
-      forecast.push({
-        date: date.toISOString().split('T')[0],
-        value: Math.round(forecastValue),
-        confidence: 0.85 - (i * 0.02)
-      });
-      
-      upperBound.push(Math.round(forecastValue * 1.15));
-      lowerBound.push(Math.round(forecastValue * 0.85));
-    }
-    
-    return {
-      historical,
-      forecast,
-      upperBound,
-      lowerBound,
-      accuracy: 0.923,
-      trend: 'increasing',
-      volatility: 'medium',
-      anomalies: [
-        { date: '2024-01-15', severity: 'high', description: 'Unusual spike detected' }
-      ],
-      insights: [
-        'Demand trending upward by 12% over forecast period',
-        'Seasonal pattern suggests peak in next 14 days',
-        'Supply chain constraints may impact ability to meet demand'
-      ]
-    };
-  };
+  // REMOVED: generateMockPredictiveData function
+  // This widget now uses ONLY REAL DATA from the MCP AI server
+  // No mock, fake, or static data is generated
 
   const chartData = useMemo(() => {
     if (!analyticsData) return null;

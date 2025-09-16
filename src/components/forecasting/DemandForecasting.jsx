@@ -69,39 +69,12 @@ const DemandForecasting = () => {
         const dayOfWeekMultipliers = [0.8, 0.85, 1.1, 1.15, 1.0, 0.9, 0.7]; // Sun-Sat
         const dayMultiplier = dayOfWeekMultipliers[dateInfo.dayOfWeek];
         
-        // Product-specific demand
-        const selectedProduct = selectedProducts[0];
-        const dailyDemand = Math.round(
-          (baseDemand[selectedProduct] || baseDemand['all']) * 
-          seasonalMultiplier * 
-          dayMultiplier *
-          (1 + (Math.random() - 0.5) * 0.2) // ±10% random variation
-        );
-        
-        cumulativeDemand += dailyDemand;
-        
-        forecastData.push({
-          date: dateInfo.dateString,
-          predicted: dailyDemand,
-          historical: index < 7 ? dailyDemand * (0.9 + Math.random() * 0.2) : null, // Historical for past week only
-          seasonalFactor: seasonalMultiplier,
-          dayOfWeekFactor: dayMultiplier,
-          isBusinessDay: dateInfo.isBusinessDay
-        });
+        // REMOVED: Fake demand generation - Real forecasting API required
+        throw new Error('Real API connection required - Demand forecasting must use actual historical sales data and ML models');
       });
 
-      // Generate realistic forecast response
-      return {
-        totalDemand: cumulativeDemand,
-        confidence: Math.max(80, Math.min(95, 87 + (Math.random() - 0.5) * 10)), // 80-95% confidence
-        peakDay: `Day ${Math.floor(Math.random() * periodDays) + 1}`,
-        accuracy: Math.max(85, Math.min(95, 89 + (Math.random() - 0.5) * 8)), // 85-95% accuracy
-        forecastData: forecastData,
-        productBreakdown: generateProductBreakdown(selectedProduct, cumulativeDemand),
-        seasonalPatterns: generateSeasonalPatterns(),
-        riskFactors: generateRiskFactors(),
-        insights: generateInsights(cumulativeDemand, periodDays)
-      };
+      // REMOVED: All fake forecast data generation
+      throw new Error('Real API connection required - Demand forecasting must integrate with actual ERP/CRM systems and historical sales data');
     },
     refetchInterval: 60000,
   });
@@ -121,40 +94,17 @@ const DemandForecasting = () => {
     }
   };
 
-  const generateSeasonalPatterns = () => [
-    { period: 'Q1', intensity: 85 + Math.round(Math.random() * 10) },
-    { period: 'Q2', intensity: 90 + Math.round(Math.random() * 10) },
-    { period: 'Q3', intensity: 75 + Math.round(Math.random() * 10) },
-    { period: 'Q4', intensity: 95 + Math.round(Math.random() * 10) }
-  ];
+  const generateSeasonalPatterns = () => {
+    throw new Error('Real API connection required - Seasonal patterns must be calculated from actual historical sales data');
+  };
 
-  const generateRiskFactors = () => [
-    {
-      factor: 'Supply Chain Reliability',
-      level: Math.random() > 0.7 ? 'medium' : 'low',
-      description: 'Current supply chain status and potential disruptions'
-    },
-    {
-      factor: 'Market Demand Volatility', 
-      level: Math.random() > 0.8 ? 'high' : 'medium',
-      description: 'Market demand patterns and economic indicators'
-    }
-  ];
+  const generateRiskFactors = () => {
+    throw new Error('Real API connection required - Risk factors must be analyzed from actual supply chain and market data');
+  };
 
-  const generateInsights = (totalDemand, periodDays) => [
-    {
-      title: 'Production Capacity Planning',
-      priority: totalDemand / periodDays > 2500 ? 'High' : 'Medium',
-      description: `Forecast shows ${Math.round(totalDemand / periodDays)} daily demand average`,
-      impact: '+12% revenue potential'
-    },
-    {
-      title: 'Inventory Optimization',
-      priority: 'Medium',
-      description: 'Adjust safety stock levels based on seasonal patterns',
-      impact: '6% cost reduction'
-    }
-  ];
+  const generateInsights = (totalDemand, periodDays) => {
+    throw new Error('Real API connection required - Business insights must be generated from actual performance data and ML analysis');
+  };
 
   const runForecastMutation = useMutation({
     mutationFn: async () => {
@@ -181,7 +131,7 @@ const DemandForecasting = () => {
     }
   });
 
-  const data = forecastData || mockForecastData;
+  const data = forecastData || { error: 'Real forecasting API required - No fake data allowed' };
 
   const products = [
     { id: 'all', name: 'All Products' },
@@ -429,7 +379,7 @@ const ProductBreakdown = ({ data }) => {
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Product Breakdown</h3>
       <div className="space-y-4">
-        {(data || mockProductData).map((product, index) => (
+        {(data.productBreakdown || []).map((product, index) => (
           <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
             <div className="flex items-center space-x-3">
               <div className={`w-3 h-3 rounded-full ${
@@ -459,7 +409,7 @@ const SeasonalPatterns = ({ patterns }) => {
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Seasonal Patterns</h3>
       <div className="space-y-3">
-        {(patterns || mockSeasonalData).map((pattern, index) => (
+        {(patterns || []).map((pattern, index) => (
           <div key={index} className="flex items-center justify-between">
             <span className="text-sm text-gray-600">{pattern.period}</span>
             <div className="flex items-center space-x-2">
@@ -483,7 +433,7 @@ const RiskFactors = ({ risks }) => {
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Risk Factors</h3>
       <div className="space-y-3">
-        {(risks || mockRiskData).map((risk, index) => (
+        {(risks || []).map((risk, index) => (
           <div key={index} className={`p-3 rounded-lg border-l-4 ${
             risk.level === 'high' ? 'border-red-400 bg-red-50' :
             risk.level === 'medium' ? 'border-yellow-400 bg-yellow-50' :
@@ -510,7 +460,7 @@ const ActionableInsights = ({ insights }) => {
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold mb-6">Actionable Insights</h3>
       <div className="space-y-4">
-        {(insights || mockInsightsData).map((insight, index) => (
+        {(insights || []).map((insight, index) => (
           <div key={index} className="p-4 border border-gray-200 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-medium text-gray-900">{insight.title}</h4>
@@ -529,61 +479,6 @@ const ActionableInsights = ({ insights }) => {
   );
 };
 
-// Mock data for development
-const mockForecastData = {
-  totalDemand: 25420,
-  confidence: 87.3,
-  peakDay: 'Day 15',
-  accuracy: 89.2,
-  forecastData: [
-    { date: 'Jan 1', predicted: 850, historical: 820 },
-    { date: 'Jan 2', predicted: 920, historical: 890 },
-    { date: 'Jan 3', predicted: 780, historical: 750 },
-    { date: 'Jan 4', predicted: 1050, historical: 1020 },
-    { date: 'Jan 5', predicted: 1150, historical: null }
-  ]
-};
-
-const mockProductData = [
-  { name: 'GABA Red 500ml', category: 'Premium', forecast: 12500 },
-  { name: 'GABA Clear 500ml', category: 'Premium', forecast: 8900 },
-  { name: 'GABA Red 250ml', category: 'Standard', forecast: 2800 },
-  { name: 'GABA Clear 250ml', category: 'Standard', forecast: 1220 }
-];
-
-const mockSeasonalData = [
-  { period: 'Q1', intensity: 85 },
-  { period: 'Q2', intensity: 92 },
-  { period: 'Q3', intensity: 78 },
-  { period: 'Q4', intensity: 96 }
-];
-
-const mockRiskData = [
-  {
-    factor: 'Supply Chain Disruption',
-    level: 'medium',
-    description: 'Potential delays from primary supplier'
-  },
-  {
-    factor: 'Market Volatility',
-    level: 'low',
-    description: 'Economic indicators show stable demand'
-  }
-];
-
-const mockInsightsData = [
-  {
-    title: 'Increase Production Capacity',
-    priority: 'High',
-    description: 'Demand forecast shows 25% increase in Q2',
-    impact: '+15% revenue potential'
-  },
-  {
-    title: 'Optimize Inventory Levels',
-    priority: 'Medium',
-    description: 'Adjust safety stock for seasonal variations',
-    impact: '8% cost reduction'
-  }
-];
+// REMOVED: All mock data - Real forecasting API required
 
 export default DemandForecasting;

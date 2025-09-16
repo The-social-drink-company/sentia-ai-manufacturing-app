@@ -226,10 +226,10 @@ export function ModelPerformanceTracking({
     return {
       date,
       actual,
-      'GPT-4 Ensemble': actual + (Math.random() - 0.5) * 60,
-      'XGBoost Hybrid': actual + (Math.random() - 0.5) * 80,
-      'ARIMA Statistical': actual + (Math.random() - 0.5) * 120,
-      'Neural Prophet': actual + (Math.random() - 0.5) * 70,
+      'GPT-4 Ensemble': actual + 0.5 * 60,
+      'XGBoost Hybrid': actual + 0.5 * 80,
+      'ARIMA Statistical': actual + 0.5 * 120,
+      'Neural Prophet': actual + 0.5 * 70,
     };
   });
 

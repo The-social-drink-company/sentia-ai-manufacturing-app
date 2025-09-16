@@ -4091,107 +4091,19 @@ function generateQualityBaseData() {
 }
 
 function generateQualityAlerts() {
-  const alerts = [
-    {
-      id: 'qa-alert-001',
-      title: 'pH Level Critical',
-      description: 'Batch 2024-001 pH level is outside acceptable range (7.8 vs 6.5-7.2)',
-      severity: 'high',
-      batchId: '2024-001',
-      time: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-      status: 'open',
-      category: 'chemical'
-    },
-    {
-      id: 'qa-alert-002',
-      title: 'Test Equipment Calibration Due',
-      description: 'pH meter #3 requires calibration - last calibrated 90 days ago',
-      severity: 'medium',
-      time: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      status: 'open',
-      category: 'equipment'
-    },
-    {
-      id: 'qa-alert-003',
-      title: 'Sample Storage Temperature',
-      description: 'Cold storage unit temperature exceeded limit (8°C vs <5°C)',
-      severity: 'medium',
-      time: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-      status: 'investigating',
-      category: 'storage'
-    }
-  ];
-  
-  return alerts.filter(() => Math.random() > 0.3); // Show random subset
+  throw new Error('Real API connection required - Quality alerts must be generated from actual production monitoring systems and LIMS');
 }
 
 function generateTestSchedule() {
-  const currentTime = new Date();
-  return [
-    {
-      id: 'sched-001',
-      testName: 'Microbiological Analysis',
-      category: 'microbiological',
-      batchId: '2024-003',
-      priority: 'urgent',
-      scheduledTime: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000).toISOString(),
-      estimatedDuration: '4 hours',
-      assignedTechnician: 'Mike Brown',
-      status: 'scheduled'
-    },
-    {
-      id: 'sched-002',
-      testName: 'Chemical Stability',
-      category: 'chemical',
-      batchId: '2024-004',
-      priority: 'high',
-      scheduledTime: new Date(currentTime.getTime() + 18 * 60 * 60 * 1000).toISOString(),
-      estimatedDuration: '2 hours',
-      assignedTechnician: 'Sarah Johnson',
-      status: 'scheduled'
-    },
-    {
-      id: 'sched-003',
-      testName: 'Sensory Evaluation',
-      category: 'physical',
-      batchId: '2024-002',
-      priority: 'normal',
-      scheduledTime: new Date(currentTime.getTime() + 26 * 60 * 60 * 1000).toISOString(),
-      estimatedDuration: '1 hour',
-      assignedTechnician: 'Lisa Davis',
-      status: 'scheduled'
-    }
-  ];
+  throw new Error('Real API connection required - Test schedules must be managed through actual LIMS and production planning systems');
 }
 
 function generateQualityTrends() {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-  return months.map(month => ({
-    month,
-    passRate: Math.floor(Math.random() * 5) + 95,
-    testsCompleted: Math.floor(Math.random() * 50) + 100,
-    failureRate: Math.floor(Math.random() * 3) + 1,
-    avgTestTime: Math.floor(Math.random() * 30) + 60 // minutes
-  }));
+  throw new Error('Real API connection required - Quality trends must be calculated from actual historical test data and production records');
 }
 
 async function submitTestResult(testData) {
-  // Simulate test result processing
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  const isPass = Math.random() > 0.15; // 85% pass rate
-  
-  return {
-    testId: testData.testId,
-    status: isPass ? 'passed' : 'failed',
-    result: testData.result,
-    specification: testData.specification,
-    technician: testData.technician,
-    completedAt: new Date().toISOString(),
-    confidence: Math.random() * 0.1 + 0.9, // 90-100% confidence
-    notes: testData.notes || '',
-    success: true
-  };
+  throw new Error('Real API connection required - Test results must be submitted to actual LIMS and validated against real specifications');
 }
 
 async function approveBatch(batchId, approvalData) {
@@ -4704,18 +4616,7 @@ function calculateQualityTrends(records) {
 // Demand forecasting is now handled by aiAnalyticsService
 
 function generateForecastPredictions() {
-  const days = 30;
-  const predictions = [];
-  
-  for (let i = 1; i <= days; i++) {
-    predictions.push({
-      day: i,
-      demand: Math.floor(Math.random() * 200) + 800,
-      confidence: Math.random() * 0.3 + 0.7
-    });
-  }
-  
-  return predictions;
+  throw new Error('Real API connection required - Demand forecasting must use actual sales data and ML models from production systems');
 }
 
 
@@ -4881,29 +4782,7 @@ app.use('/api/mcp', mcpIntegrationRoutes);
 // Enterprise Manufacturing APIs - IMMEDIATELY IMPLEMENT MISSING ENDPOINTS
 
 // Demand Forecasting API
-app.get('/api/forecasting/demand', (req, res) => {
-  const { period = 30, products = 'all', type = 'demand' } = req.query;
-  
-  // Mock demand forecast data
-  const forecast = Array.from({ length: parseInt(period) }, (_, i) => ({
-    date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    demand: 1000 + Math.sin(i / 7) * 200 + Math.random() * 100,
-    confidence: 0.85 + Math.random() * 0.1,
-    upper_bound: 1200 + Math.sin(i / 7) * 250 + Math.random() * 150,
-    lower_bound: 800 + Math.sin(i / 7) * 150 + Math.random() * 50
-  }));
-
-  res.json({
-    status: 'success',
-    period: parseInt(period),
-    products: products,
-    type: type,
-    forecast: forecast,
-    accuracy: 87.3,
-    model: 'ARIMA-LSTM Ensemble',
-    generated_at: new Date().toISOString()
-  });
-});
+// REMOVED: Duplicate endpoint with fake data - Real endpoint at line 3426 uses aiAnalyticsService
 
 // Production Tracking API - Duplicate removed to fix routing conflict
 

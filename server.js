@@ -5126,50 +5126,14 @@ app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Serve JavaScript files with explicit MIME type
-app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
-  maxAge: '1d',
-  etag: false,
-  immutable: true,
-  setHeaders: (res, filePath) => {
-    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    console.log(`[STATIC] Serving JS: ${filePath} with MIME: application/javascript`);
-  }
-}));
+// Serve JavaScript files - simplified for Render compatibility
+app.use('/js', express.static(path.join(__dirname, 'dist', 'js')));
 
-// Serve CSS and other assets with explicit MIME types
-app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
-  maxAge: '1d',
-  etag: false,
-  immutable: true,
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css; charset=utf-8');
-    } else if (filePath.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    } else if (filePath.endsWith('.png')) {
-      res.setHeader('Content-Type', 'image/png');
-    } else if (filePath.endsWith('.svg')) {
-      res.setHeader('Content-Type', 'image/svg+xml');
-    } else if (filePath.endsWith('.ico')) {
-      res.setHeader('Content-Type', 'image/x-icon');
-    }
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    console.log(`[STATIC] Serving Asset: ${filePath}`);
-  }
-}));
+// Serve CSS and other assets - simplified for Render compatibility
+app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets')));
 
-// Serve root dist files (index.html, manifest.json, etc.)
-app.use(express.static(path.join(__dirname, 'dist'), {
-  maxAge: '1h',
-  etag: false,
-  index: ['index.html'], // Allow automatic index.html serving for root path - must be array or false
-  setHeaders: (res, filePath) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    console.log(`[STATIC] Serving Root: ${filePath}`);
-  }
-}));
+// Serve root dist files - simplified for Render compatibility
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
 app.get('/api/dashboard/executive', async (req, res) => {

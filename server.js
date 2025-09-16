@@ -704,11 +704,17 @@ app.get('/health', (req, res) => {
 app.get('/api/health', async (req, res) => {
   try {
     const health = await healthMonitorService.getComprehensiveHealth();
-    
+
+    // Add clear identification this is the correct server
+    health.server = 'server.js (LATEST RENDER VERSION)';
+    health.NO_RAILWAY = true;
+    health.correctVersion = true;
+    health.port = PORT;
+
     // Set appropriate status code based on health
-    const statusCode = health.status === 'healthy' ? 200 : 
+    const statusCode = health.status === 'healthy' ? 200 :
                       health.status === 'degraded' ? 200 : 503;
-    
+
     res.status(statusCode).json(health);
   } catch (error) {
     console.error('Health check error:', error);
@@ -5771,6 +5777,11 @@ app.use((error, req, res, next) => {
     
     // Start server directly (enterprise process management will be re-enabled later)
     const port = PORT;
+    console.log('='.repeat(80));
+    console.log('RENDER DEPLOYMENT - CORRECT SERVER.JS RUNNING');
+    console.log(`Starting on port ${port} at ${new Date().toISOString()}`);
+    console.log('This is the LATEST version without Railway references');
+    console.log('='.repeat(80));
     console.log(`[CRITICAL] Starting server on 0.0.0.0:${port} (PORT env: ${process.env.PORT})`);
     httpServer.listen(port, '0.0.0.0', () => {
       console.log(`[SUCCESS] Server listening on http://0.0.0.0:${port}`);

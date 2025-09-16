@@ -20,8 +20,9 @@ services:
       # Core Configuration
       - key: NODE_ENV
         value: development
-      - key: PORT
-        value: 3000
+      # PORT is automatically set by Render - DO NOT override
+      # - key: PORT
+      #   value: 3000
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-development.onrender.com
 
@@ -189,8 +190,9 @@ services:
       # Core Configuration
       - key: NODE_ENV
         value: test
-      - key: PORT
-        value: 3000
+      # PORT is automatically set by Render - DO NOT override
+      # - key: PORT
+      #   value: 3000
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-testing.onrender.com
 
@@ -358,8 +360,9 @@ services:
       # Core Configuration
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3000
+      # PORT is automatically set by Render - DO NOT override
+      # - key: PORT
+      #   value: 3000
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-production.onrender.com
 

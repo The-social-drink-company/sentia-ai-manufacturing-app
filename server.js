@@ -539,7 +539,7 @@ app.post('/api/auth/signin', async (req, res) => {
     
     if (user) {
       // Create session token (in production, use JWT or proper session management)
-      const sessionToken = `session_${Date.now()}_${Math.random().toString(36)}`;
+      const sessionToken = `session_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`;
       
       // Store session (in production, use Redis or database)
       // For now, just return user data
@@ -4087,100 +4087,7 @@ function getQualityControlData(batch = 'all', testType = 'all') {
 }
 
 function generateQualityBaseData() {
-  const currentTime = new Date();
-  
-  return {
-    overallPassRate: 98.7,
-    passRateChange: 0.5,
-    testsCompleted: Math.floor(Math.random() * 50) + 120,
-    testsCompletedChange: Math.floor(Math.random() * 20) + 5,
-    pendingTests: Math.floor(Math.random() * 10) + 5,
-    pendingTestsChange: Math.floor(Math.random() * 5) + 1,
-    failedTests: Math.floor(Math.random() * 5) + 1,
-    failedTestsChange: Math.floor(Math.random() * 3),
-    recentTests: [
-      {
-        id: 'QC-001',
-        testName: 'pH Analysis',
-        category: 'chemical',
-        batchId: '2024-001',
-        status: Math.random() > 0.1 ? 'passed' : 'failed',
-        result: (Math.random() * 1.4 + 6.3).toFixed(1),
-        specification: '6.5-7.2',
-        technician: 'Sarah Johnson',
-        completedAt: new Date(currentTime - Math.random() * 8 * 60 * 60 * 1000).toISOString(),
-        priority: 'high'
-      },
-      {
-        id: 'QC-002',
-        testName: 'Microbiological Count',
-        category: 'microbiological',
-        batchId: '2024-002',
-        status: Math.random() > 0.05 ? 'passed' : 'failed',
-        result: Math.random() > 0.9 ? Math.floor(Math.random() * 50) + ' CFU/ml' : '<10 CFU/ml',
-        specification: '<100 CFU/ml',
-        technician: 'Mike Brown',
-        completedAt: new Date(currentTime - Math.random() * 12 * 60 * 60 * 1000).toISOString(),
-        priority: 'high'
-      },
-      {
-        id: 'QC-003',
-        testName: 'Alcohol Content',
-        category: 'chemical',
-        batchId: '2024-001',
-        status: Math.random() > 0.15 ? 'passed' : 'failed',
-        result: (Math.random() * 1.0 + 11.8).toFixed(1) + '%',
-        specification: '12.0-12.5%',
-        technician: 'Lisa Davis',
-        completedAt: new Date(currentTime - Math.random() * 16 * 60 * 60 * 1000).toISOString(),
-        priority: 'medium'
-      },
-      {
-        id: 'QC-004',
-        testName: 'Viscosity Test',
-        category: 'physical',
-        batchId: '2024-003',
-        status: 'testing',
-        result: 'Pending',
-        specification: '1.2-1.8 cP',
-        technician: 'John Wilson',
-        completedAt: null,
-        priority: 'low'
-      }
-    ],
-    activeBatches: [
-      {
-        id: '2024-001',
-        product: 'GABA Red 500ml',
-        qcStatus: 'testing',
-        testsCompleted: Math.floor(Math.random() * 3) + 3,
-        totalTests: 6,
-        startDate: new Date(currentTime - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        priority: 'high'
-      },
-      {
-        id: '2024-002',
-        product: 'GABA Clear 500ml',
-        qcStatus: Math.random() > 0.3 ? 'approved' : 'testing',
-        testsCompleted: Math.floor(Math.random() * 2) + 4,
-        totalTests: 5,
-        startDate: new Date(currentTime - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        priority: 'medium'
-      },
-      {
-        id: '2024-003',
-        product: 'GABA Red 250ml',
-        qcStatus: 'pending',
-        testsCompleted: Math.floor(Math.random() * 2) + 1,
-        totalTests: 5,
-        startDate: new Date(currentTime - 0.5 * 24 * 60 * 60 * 1000).toISOString(),
-        priority: 'low'
-      }
-    ],
-    alerts: generateQualityAlerts(),
-    testSchedule: generateTestSchedule(),
-    trends: generateQualityTrends()
-  };
+  throw new Error('Real API connection required - Quality control data must be sourced from actual LIMS (Laboratory Information Management System) and production testing equipment');
 }
 
 function generateQualityAlerts() {

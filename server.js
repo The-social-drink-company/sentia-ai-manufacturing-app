@@ -5835,6 +5835,20 @@ app.use((error, req, res, next) => {
 // Use enterprise process manager for robust server startup
 (async () => {
   try {
+    // Create HTTP server and bind immediately to avoid 502 on slow/failed init
+    const port = PORT;
+    const httpServer = createServer(app);
+    console.log('='.repeat(80));
+    console.log('RENDER DEPLOYMENT - CORRECT SERVER.JS RUNNING');
+    console.log(`Starting (early bind) on port ${port} at ${new Date().toISOString()}`);
+    console.log('This is the LATEST version without Railway references');
+    console.log('='.repeat(80));
+    console.log(`[CRITICAL] Early-bind server on 0.0.0.0:${port} (PORT env: ${process.env.PORT})`);
+    httpServer.listen(port, '0.0.0.0', () => {
+      console.log(`[SUCCESS] Server listening (early) on http://0.0.0.0:${port}`);
+      logInfo('sentia-api early-bound successfully', { host: '0.0.0.0', port, pid: process.pid });
+    });
+
     // Initialize Enterprise Services
     const enterpriseResult = await enterpriseIntegration.initializeEnterpriseServices();
     if (enterpriseResult.success) {
@@ -5849,9 +5863,6 @@ app.use((error, req, res, next) => {
     // Note: Enterprise endpoints are created before catch-all route (line 5690-5691)
     // to ensure they are accessible
 
-    // Create HTTP server for WebSocket support
-    const httpServer = createServer(app);
-    
     // Initialize WebSocket if enabled
     if (process.env.ENABLE_WEBSOCKET === 'true') {
       realtimeManager.initializeWebSocket(httpServer);
@@ -5882,22 +5893,8 @@ app.use((error, req, res, next) => {
       logWarn('API integrations initialization failed; continuing startup', { error: initError.message });
     }
     
-    // Start server directly (enterprise process management will be re-enabled later)
-    const port = PORT;
-    console.log('='.repeat(80));
-    console.log('RENDER DEPLOYMENT - CORRECT SERVER.JS RUNNING');
-    console.log(`Starting on port ${port} at ${new Date().toISOString()}`);
-    console.log('This is the LATEST version without Railway references');
-    console.log('='.repeat(80));
-    console.log(`[CRITICAL] Starting server on 0.0.0.0:${port} (PORT env: ${process.env.PORT})`);
-    httpServer.listen(port, '0.0.0.0', () => {
-      console.log(`[SUCCESS] Server listening on http://0.0.0.0:${port}`);
-      logInfo('sentia-api started successfully', {
-        host: '0.0.0.0',
-        port: port,
-        pid: process.pid
-      });
-    });
+    // Already listening above; log post-init confirmation
+    logInfo('Post-initialization complete; server already listening', { port });
     
     // Log successful startup with enterprise logging
     logInfo('✅ SENTIA ENTERPRISE SERVER STARTED', {

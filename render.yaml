@@ -26,6 +26,12 @@ services:
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-development.onrender.com
 
+      # Startup Configuration (prevent 502 errors)
+      - key: SKIP_ENTERPRISE_INIT
+        value: "true"
+      - key: INIT_TIMEOUT_MS
+        value: "8000"
+
       # Database - Render PostgreSQL Development
       - key: DATABASE_URL
         fromDatabase:
@@ -196,6 +202,12 @@ services:
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-testing.onrender.com
 
+      # Startup Configuration (prevent 502 errors)
+      - key: SKIP_ENTERPRISE_INIT
+        value: "true"
+      - key: INIT_TIMEOUT_MS
+        value: "8000"
+
       # Database - Render PostgreSQL Testing
       - key: DATABASE_URL
         fromDatabase:
@@ -365,6 +377,12 @@ services:
       #   value: 3000
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-production.onrender.com
+
+      # Startup Configuration (prevent 502 errors)
+      - key: SKIP_ENTERPRISE_INIT
+        value: "true"
+      - key: INIT_TIMEOUT_MS
+        value: "8000"
 
       # Database - Render PostgreSQL Production
       - key: DATABASE_URL

@@ -850,7 +850,22 @@ app.get('/health', (req, res) => {
       });
     }
     
-    // Default Express server health response
+    // Default Express server health response with dist debugging
+    const distPath = path.join(__dirname, 'dist');
+    const distExists = fs.existsSync(distPath);
+    const indexExists = fs.existsSync(path.join(distPath, 'index.html'));
+    let fileCount = 0;
+    let distFiles = [];
+
+    if (distExists) {
+      try {
+        distFiles = fs.readdirSync(distPath);
+        fileCount = distFiles.length;
+      } catch (e) {
+        fileCount = -1;
+      }
+    }
+
     res.status(200).json({
       status: 'healthy',
       server: 'sentia-express-server',
@@ -859,7 +874,14 @@ app.get('/health', (req, res) => {
       environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
       render: true,
-      type: 'express'
+      type: 'express',
+      dist: {
+        exists: distExists,
+        indexHtmlExists: indexExists,
+        fileCount: fileCount,
+        path: distPath,
+        files: distFiles.slice(0, 5)
+      }
     });
   } catch (error) {
     logError('Health endpoint error', error);

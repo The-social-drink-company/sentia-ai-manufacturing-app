@@ -5094,49 +5094,12 @@ app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Serve JavaScript files with explicit MIME type
-app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
-  maxAge: '1d',
-  etag: false,
-  immutable: true,
-  setHeaders: (res, filePath) => {
-    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    console.log(`[STATIC] Serving JS: ${filePath} with MIME: application/javascript`);
-  }
-}));
-
-// Serve CSS and other assets with explicit MIME types
-app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
-  maxAge: '1d',
-  etag: false,
-  immutable: true,
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css; charset=utf-8');
-    } else if (filePath.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    } else if (filePath.endsWith('.png')) {
-      res.setHeader('Content-Type', 'image/png');
-    } else if (filePath.endsWith('.svg')) {
-      res.setHeader('Content-Type', 'image/svg+xml');
-    } else if (filePath.endsWith('.ico')) {
-      res.setHeader('Content-Type', 'image/x-icon');
-    }
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    console.log(`[STATIC] Serving Asset: ${filePath}`);
-  }
-}));
-
-// Serve root dist files (index.html, manifest.json, etc.)
+// [RENDER PRODUCTION FIX] - Simplified static file serving to prevent crashes
+// CRITICAL: Remove all console.log and complex setHeaders that cause 502 errors on Render
+// Serve the built React app - simple and reliable configuration
 app.use(express.static(path.join(__dirname, 'dist'), {
-  maxAge: '1h',
-  etag: false,
-  index: ['index.html'], // Allow automatic index.html serving for root path - must be array or false
-  setHeaders: (res, filePath) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    console.log(`[STATIC] Serving Root: ${filePath}`);
-  }
+  maxAge: '1d',
+  etag: true
 }));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data

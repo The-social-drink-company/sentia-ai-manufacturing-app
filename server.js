@@ -5603,11 +5603,28 @@ app.get('*', (req, res) => {
   // Serve the React app for all other routes (SPA routing)
   const indexPath = path.join(__dirname, 'dist', 'index.html');
 
+  // Debug logging for Render deployment
+  console.log('[CATCH-ALL] Request path:', req.path);
+  console.log('[CATCH-ALL] __dirname:', __dirname);
+  console.log('[CATCH-ALL] Looking for index.html at:', indexPath);
+  console.log('[CATCH-ALL] File exists:', fs.existsSync(indexPath));
+
+  // Additional debug: check what's in dist
+  const distPath = path.join(__dirname, 'dist');
+  if (fs.existsSync(distPath)) {
+    const distFiles = fs.readdirSync(distPath);
+    console.log('[CATCH-ALL] Files in dist:', distFiles.slice(0, 10));
+  } else {
+    console.log('[CATCH-ALL] dist directory does not exist at:', distPath);
+  }
+
   // Check if dist/index.html exists
   if (fs.existsSync(indexPath)) {
+    console.log('[CATCH-ALL] Serving React app from:', indexPath);
     res.sendFile(indexPath);
   } else {
     // Fallback to a basic HTML response if dist doesn't exist
+    console.log('[CATCH-ALL] dist/index.html not found, serving fallback');
     res.status(200).send(`
       <!DOCTYPE html>
       <html lang="en">

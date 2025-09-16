@@ -723,8 +723,9 @@ class AutonomousScheduler extends EventEmitter {
   // Utility methods
   async checkSystemResources() {
     const memUsage = process.memoryUsage();
-    const totalMemory = require('os').totalmem();
-    const freeMemory = require('os').freemem();
+    const { totalmem, freemem } = await import('os');
+    const totalMemory = totalmem();
+    const freeMemory = freemem();
     
     return {
       memory: {

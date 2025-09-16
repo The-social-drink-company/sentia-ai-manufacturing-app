@@ -1,4 +1,4 @@
-// AUTO-FIX: Railway deployment improvements
+// Graceful shutdown handlers for Render deployment
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
   process.exit(0);
@@ -9,7 +9,7 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-// Auto-Fix: Better error handling for Railway
+// Error handling for production
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
   process.exit(1);
@@ -20,16 +20,9 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-// RAILWAY MCP SERVER REDIRECT
-// If this is the sentia-mcp-server Railway service, start MCP server instead
-if (process.env.RAILWAY_SERVICE_NAME === 'sentia-mcp-server' || 
-    process.env.RAILWAY_ENVIRONMENT && process.argv.includes('--mcp-server')) {
-  console.log('🚂 Railway detected - redirecting to MCP server...');
-  import('./mcp-startup.js');
-  // Exit to prevent main Express server from starting
-  process.exit = () => {}; // Override exit to let MCP startup handle it
-} else if (process.env.MCP_SERVER_MODE === 'true') {
-  console.log('🔧 MCP_SERVER_MODE detected - starting MCP server...');
+// MCP Server Mode (optional - set MCP_SERVER_MODE=true to enable)
+if (process.env.MCP_SERVER_MODE === 'true') {
+  console.log('MCP_SERVER_MODE detected - starting MCP server...');
   import('./mcp-startup.js');
   process.exit = () => {};
 }
@@ -45,7 +38,7 @@ process.on('warning', (warning) => {
   console.warn(warning.name + ': ' + warning.message);
 });
 
-// Environment variable loading - prioritize Railway environment first
+// Environment variable loading
 import dotenv from 'dotenv';
 
 // Only load .env file if we're not in Railway (Railway provides vars directly)

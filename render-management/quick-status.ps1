@@ -1,7 +1,47 @@
 # Quick Render Status Check
 # Shows all services and their current status
 
-$apiKey = "rnd_N8ATSXMmmARD8dOlWdiuKkdvzhLO"
+$apiKey = $env:RENDER_API_KEY
+
+function Get-RenderLogs {
+    param(
+        [string]$ServiceId,
+        [string]$ServiceName,
+        [int]$Limit = 10
+    )
+    
+    $headers = @{
+        "Authorization" = "Bearer $apiKey"
+        "Accept" = "application/json"
+    }
+    
+    Write-Host "`nFetching last $Limit log entries for $ServiceName..." -ForegroundColor Yellow
+    
+    try {
+        # Note: Render's log endpoint may vary - check their API docs
+        $uri = "https://api.render.com/v1/services/$ServiceId/logs?limit=$Limit"
+        $logs = Invoke-RestMethod -Uri $uri -Headers $headers -Method GET
+        
+        foreach ($entry in $logs) {
+            $timestamp = $entry.timestamp
+            $level = $entry.level
+            $message = $entry.message
+            
+            $color = switch($level) {
+                "ERROR" { "Red" }
+                "WARN" { "Yellow" }
+                "INFO" { "White" }
+                default { "Gray" }
+            }
+            
+            Write-Host "[$timestamp] " -NoNewline -ForegroundColor Cyan
+            Write-Host "[$level] " -NoNewline -ForegroundColor $color
+            Write-Host $message
+        }
+    } catch {
+        Write-Host "Error fetching logs: $_" -ForegroundColor Red
+    }
+}
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host " RENDER SERVICES STATUS CHECK" -ForegroundColor Yellow

@@ -41,17 +41,17 @@ process.on('warning', (warning) => {
 // Environment variable loading
 import dotenv from 'dotenv';
 
-// Only load .env file if we're not in Railway (Railway provides vars directly)
-if (!process.env.RAILWAY_ENVIRONMENT) {
+// Only load .env file if we're not in Render (Render provides vars directly)
+if (!process.env.RENDER) {
   dotenv.config();
 }
 
-// Railway-specific database connection handling
-if (process.env.RAILWAY_ENVIRONMENT) {
-  // Increase database connection timeout for Railway
+// Render-specific database connection handling
+if (process.env.RENDER) {
+  // Increase database connection timeout for Render
   process.env.DATABASE_CONNECTION_TIMEOUT = '60000';
   process.env.DATABASE_POOL_TIMEOUT = '60000';
-  // Disable MCP server registration in Railway environments to prevent connection errors
+  // Disable MCP server registration in Render environments to prevent connection errors
   process.env.DISABLE_MCP_SERVER_REGISTRATION = 'true';
 }
 
@@ -73,7 +73,7 @@ const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 if (missingVars.length > 0) {
   console.error('❌ CRITICAL: Missing required environment variables:', missingVars);
   console.error('Available environment variables:', Object.keys(process.env).filter(key => 
-    key.includes('DATABASE') || key.includes('CLERK') || key.includes('RAILWAY')
+    key.includes('DATABASE') || key.includes('CLERK') || key.includes('RENDER')
   ));
   // Don't exit - log the issue but try to continue
 } else {
@@ -93,8 +93,8 @@ import fetch from 'node-fetch';
 import xeroService from './services/xeroService.js';
 import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';
-// Railway-hosted MCP service integration
-import railwayMCPService from './services/railwayMCPService.js';
+// Render-hosted MCP service integration
+import renderMCPService from './services/renderMCPService.js';
 import healthMonitorService from './services/healthMonitorService.js';
 // Import Enterprise Error Handling and Process Management
 import { errorHandler, expressErrorMiddleware, asyncHandler } from './services/enterprise/errorHandler.js';
@@ -127,9 +127,9 @@ processManager.monitorResources();
 // Add enterprise error handling middleware early in the stack
 app.use(expressErrorMiddleware);
 
-// MCP server is handled by start-production.js in Railway production
+// MCP server is handled by start-production.js in Render production
 // This prevents duplicate MCP server processes and port conflicts
-if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
+if (process.env.NODE_ENV === 'production' && process.env.RENDER) {
   console.log('🤖 MCP server managed by production startup script (start-production.js)');
 } else if (process.env.NODE_ENV !== 'production') {
   console.log('🤖 MCP server should be started separately in development mode');
@@ -139,7 +139,7 @@ if (process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT) {
 // Server restarted
 
 // Initialize Enterprise MCP Orchestrator for Anthropic Model Context Protocol
-// MCP services disabled - using Railway-hosted MCP server instead
+// MCP services disabled - using Render-hosted MCP server instead
 // const mcpOrchestrator = new MCPOrchestrator();
 // const aiCentralNervousSystem = new AICentralNervousSystem();
 let aiSystemInitialized = false;
@@ -147,10 +147,10 @@ let aiSystemInitialized = false;
 // Initialize AI system
 async function initializeAISystem() {
   try {
-    // AI system initialization disabled - using Railway-hosted services
+    // AI system initialization disabled - using Render-hosted services
     // await aiCentralNervousSystem.initialize();
     aiSystemInitialized = true;
-    console.log('✅ AI system ready (Railway-hosted)');
+    console.log('✅ AI system ready (Render-hosted)');
   } catch (error) {
     console.warn('⚠️ AI system initialization failed:', error.message);
     aiSystemInitialized = false;
@@ -168,7 +168,7 @@ async function analyzeDataWithAI(dataType, data, metadata) {
   }
   
   try {
-    // AI analysis disabled - using Railway-hosted services
+    // AI analysis disabled - using Render-hosted services
     const analysis = { status: 'success', message: 'Data uploaded successfully', dataType, recordCount: data.length };
     console.log('✅ AI analysis completed for', dataType, 'data');
     return {
@@ -214,7 +214,7 @@ function broadcastToClients(event, data) {
       name: 'Sentia Enterprise MCP Server',
       type: 'manufacturing-ai-integration',
       endpoint: process.env.NODE_ENV === 'production' 
-        ? 'https://sentia-manufacturing-dashboard-production.up.railway.app'
+        ? 'https://sentia-manufacturing-production.onrender.com'
         : 'http://localhost:3001',
       transport: 'http',
       capabilities: [
@@ -244,8 +244,8 @@ function broadcastToClients(event, data) {
       }
     };
     
-    // MCP server registration disabled - using Railway-hosted MCP server
-    const result = { success: true, message: 'Railway-hosted MCP server active' };
+    // MCP server registration disabled - using Render-hosted MCP server
+    const result = { success: true, message: 'Render-hosted MCP server active' };
     if (result.success) {
       logInfo('Enterprise MCP Server registered successfully', { 
         serverId: result.serverId,
@@ -370,7 +370,7 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYM
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:9000', 'http://localhost:5000', 'http://localhost:5177', 'https://web-production-1f10.up.railway.app'],
+  origin: ['http://localhost:3000', 'http://localhost:9000', 'http://localhost:5000', 'http://localhost:5177', 'https://sentia-manufacturing-production.onrender.com'],
   credentials: true
 }));
 app.use(express.json());
@@ -540,7 +540,7 @@ app.post('/api/auth/microsoft/callback', async (req, res) => {
         client_secret: process.env.MICROSOFT_CLIENT_SECRET,
         code: code,
         grant_type: 'authorization_code',
-        redirect_uri: `${process.env.NODE_ENV === 'production' ? 'https://sentia-manufacturing-dashboard-production.up.railway.app' : 'http://localhost:3000'}/auth/microsoft/callback`,
+        redirect_uri: `${process.env.NODE_ENV === 'production' ? 'https://sentia-manufacturing-production.onrender.com' : 'http://localhost:3000'}/auth/microsoft/callback`,
         scope: 'openid profile email User.Read'
       })
     });
@@ -677,19 +677,19 @@ app.get('/api/test', (req, res) => {
 app.get('/api/debug/env', (req, res) => {
   const envInfo = {
     NODE_ENV: process.env.NODE_ENV,
-    RAILWAY_ENVIRONMENT: process.env.RAILWAY_ENVIRONMENT,
+    RENDER: process.env.RENDER,
     PORT: process.env.PORT,
     DATABASE_URL_EXISTS: !!process.env.DATABASE_URL,
     CLERK_SECRET_EXISTS: !!process.env.CLERK_SECRET_KEY,
     availableEnvVars: Object.keys(process.env).filter(key => 
-      key.includes('NODE') || key.includes('RAILWAY') || key.includes('PORT') || 
+      key.includes('NODE') || key.includes('RENDER') || key.includes('PORT') || 
       key.includes('DATABASE') || key.includes('CLERK')
     )
   };
   res.json(envInfo);
 });
 
-// Root health check endpoint for Railway
+// Root health check endpoint for Render
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -700,7 +700,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Basic health check for Railway deployment (no external service dependencies)
+// Basic health check for Render deployment (no external service dependencies)
 app.get('/api/health', async (req, res) => {
   try {
     const health = await healthMonitorService.getComprehensiveHealth();
@@ -720,7 +720,7 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Railway health check endpoint (without /api prefix)
+// Render health check endpoint (without /api prefix)
 app.get('/health', (req, res) => {
   try {
     // Check if this should behave as MCP server
@@ -733,7 +733,7 @@ app.get('/health', (req, res) => {
         uptime: process.uptime(),
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || 'development',
-        railway: true,
+        render: true,
         mcp_mode: true
       });
     }
@@ -744,9 +744,9 @@ app.get('/health', (req, res) => {
       server: 'sentia-express-server',
       timestamp: new Date().toISOString(),
       version: '2.0.0',
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
+      environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
       uptime: Math.floor(process.uptime()),
-      railway: true,
+      render: true,
       type: 'express'
     });
   } catch (error) {
@@ -778,7 +778,7 @@ app.get('/api/routes/validate', async (req, res) => {
   }
 });
 
-// Enhanced health check with external services (may timeout in Railway)
+// Enhanced health check with external services (may timeout in Render)
 app.get('/api/health/detailed', async (req, res) => {
   const startTime = Date.now();
   
@@ -807,7 +807,7 @@ app.get('/api/health/detailed', async (req, res) => {
       status: 'healthy', 
       timestamp: new Date().toISOString(),
       version: '2.0.0',
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
+      environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
       services: {
         xero: xeroHealth,
         ai_analytics: aiHealth
@@ -1757,7 +1757,7 @@ app.get('/api/admin/test', authenticateUser, (req, res) => {
     res.json({ 
       status: 'Admin API working', 
       timestamp: new Date().toISOString(), 
-      railway: !!process.env.RAILWAY_ENVIRONMENT_NAME,
+      render: !!process.env.RENDER_SERVICE_NAME,
       user: req.userId 
     });
     console.log('✅ Admin test endpoint called successfully');
@@ -1769,7 +1769,7 @@ app.get('/api/admin/test', authenticateUser, (req, res) => {
 
 app.get('/api/admin/users', authenticateUser, async (req, res) => {
   try {
-    // Enhanced demo user data with Railway-compatible fallbacks
+    // Enhanced demo user data with Render-compatible fallbacks
     const users = [
       {
         id: 'user_001',
@@ -1903,7 +1903,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
         }
       },
       timestamp: new Date().toISOString(),
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'local'
+      environment: process.env.RENDER_SERVICE_NAME || 'local'
     };
 
     res.json(response);
@@ -1927,7 +1927,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
       },
       details: process.env.NODE_ENV === 'development' ? (error?.message || 'Unknown error') : 'Service temporarily unavailable',
       timestamp: new Date().toISOString(),
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'local',
+      environment: process.env.RENDER_SERVICE_NAME || 'local',
       retry_after: 30
     };
     
@@ -1939,7 +1939,7 @@ app.get('/api/admin/users', authenticateUser, async (req, res) => {
 // Admin API - Get invitations
 app.get('/api/admin/invitations', async (req, res) => {
   try {
-    // Enhanced invitations data with Railway-compatible fallbacks
+    // Enhanced invitations data with Render-compatible fallbacks
     const invitations = [
       {
         id: 'inv-001',
@@ -2020,7 +2020,7 @@ app.get('/api/admin/invitations', async (req, res) => {
         ).length : 0
       },
       timestamp: new Date().toISOString(),
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'local'
+      environment: process.env.RENDER_SERVICE_NAME || 'local'
     };
 
     res.json(response);
@@ -2042,7 +2042,7 @@ app.get('/api/admin/invitations', async (req, res) => {
       },
       details: process.env.NODE_ENV === 'development' ? (error?.message || 'Unknown error') : 'Service temporarily unavailable',
       timestamp: new Date().toISOString(),
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'local',
+      environment: process.env.RENDER_SERVICE_NAME || 'local',
       retry_after: 30
     };
 
@@ -2120,7 +2120,7 @@ app.post('/api/admin/invite', async (req, res) => {
         'User must accept invitation to gain access'
       ],
       timestamp: new Date().toISOString(),
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'local'
+      environment: process.env.RENDER_SERVICE_NAME || 'local'
     });
   } catch (error) {
     console.error('Admin invite error:', error?.message || 'Unknown error');
@@ -2132,7 +2132,7 @@ app.post('/api/admin/invite', async (req, res) => {
       fallback: true,
       details: process.env.NODE_ENV === 'development' ? (error?.message || 'Unknown error') : 'Service temporarily unavailable',
       timestamp: new Date().toISOString(),
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'local',
+      environment: process.env.RENDER_SERVICE_NAME || 'local',
       retry_after: 30
     };
 
@@ -2203,7 +2203,7 @@ app.get('/api/admin/system-stats', authenticateUser, (req, res) => {
     const stats = {
       uptime: '99.9%',
       version: '1.2.0',
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
+      environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
       deployedAt: '2025-01-06 10:30 UTC',
       lastBackup: '2025-01-06 02:00 UTC',
       totalUsers: 4,
@@ -5005,7 +5005,7 @@ app.get('/api/analytics/overview', (req, res) => {
   });
 });
 
-// Debug: Check if dist directory exists in Railway
+// Debug: Check if dist directory exists in Render
 const distPath = path.join(__dirname, 'dist');
 try {
   const distStats = fs.statSync(distPath);
@@ -5213,7 +5213,7 @@ app.get('/api/test-simple', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production',
     workingDirectory: __dirname,
-    railwayEnvironment: process.env.RAILWAY_ENVIRONMENT || 'not-set',
+    renderEnvironment: process.env.RENDER || 'not-set',
     distInfo: distInfo,
     viteClerKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'present' : 'missing',
     nodeEnv: process.env.NODE_ENV
@@ -5224,18 +5224,18 @@ app.get('/api/test-simple', (req, res) => {
 app.get('/api/mcp/status', async (req, res) => {
   try {
     // Get MCP status from orchestrator
-    // Get MCP status from Railway-hosted server
-    const mcpStatus = await railwayMCPService.getMCPStatus();
+    // Get MCP status from Render-hosted server
+    const mcpStatus = await renderMCPService.getMCPStatus();
     
-    // Get health from Railway-hosted MCP server
-    const mcpHealth = await railwayMCPService.healthCheck();
+    // Get health from Render-hosted MCP server
+    const mcpHealth = await renderMCPService.healthCheck();
 
     res.json({
       status: mcpHealth.status === 'connected' ? 'operational' : 'degraded',
       mcp_server: mcpHealth,
       mcp_status: mcpStatus,
       timestamp: new Date().toISOString(),
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development'
+      environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development'
     });
   } catch (error) {
     console.error('MCP status error:', error);
@@ -5243,10 +5243,10 @@ app.get('/api/mcp/status', async (req, res) => {
   }
 });
 
-// Railway MCP Server Xero endpoints
+// Render MCP Server Xero endpoints
 app.get('/api/mcp/xero/balance-sheet', async (req, res) => {
   try {
-    const result = await railwayMCPService.getXeroData('balance-sheet');
+    const result = await renderMCPService.getXeroData('balance-sheet');
     res.json(result);
   } catch (error) {
     console.error('MCP Xero balance-sheet error:', error);
@@ -5256,7 +5256,7 @@ app.get('/api/mcp/xero/balance-sheet', async (req, res) => {
 
 app.get('/api/mcp/xero/cash-flow', async (req, res) => {
   try {
-    const result = await railwayMCPService.getXeroData('cash-flow');
+    const result = await renderMCPService.getXeroData('cash-flow');
     res.json(result);
   } catch (error) {
     console.error('MCP Xero cash-flow error:', error);
@@ -5266,7 +5266,7 @@ app.get('/api/mcp/xero/cash-flow', async (req, res) => {
 
 app.get('/api/mcp/xero/profit-loss', async (req, res) => {
   try {
-    const result = await railwayMCPService.getXeroData('profit-loss');
+    const result = await renderMCPService.getXeroData('profit-loss');
     res.json(result);
   } catch (error) {
     console.error('MCP Xero profit-loss error:', error);
@@ -5276,7 +5276,7 @@ app.get('/api/mcp/xero/profit-loss', async (req, res) => {
 
 app.post('/api/mcp/sync', async (req, res) => {
   try {
-    const result = await railwayMCPService.syncData();
+    const result = await renderMCPService.syncData();
     res.json(result);
   } catch (error) {
     console.error('MCP sync error:', error);
@@ -5310,7 +5310,7 @@ app.get('/api/mcp/diagnostics', async (req, res) => {
       mcp_server_url: mcpServerUrl,
       health_endpoint: healthEndpoint,
       chatbot_endpoint: `${mcpServerUrl}/ai/chat`,
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
+      environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
       mcp_health: mcpHealth,
       mcp_error: mcpError,
       main_server: {
@@ -5650,7 +5650,7 @@ app.get('*', (req, res) => {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self' https://api.clerk.com https://api.clerk.dev https://*.up.railway.app wss://*.up.railway.app",
+    "connect-src 'self' https://api.clerk.com https://api.clerk.dev https://*.onrender.com wss://*.onrender.com",
     "frame-src 'self' https://js.clerk.com https://js.clerk.dev",
     "object-src 'none'",
     "base-uri 'self'"
@@ -5723,7 +5723,7 @@ app.get('*', (req, res) => {
         <div class="container">
           <h1>Sentia Manufacturing Dashboard</h1>
           <p>Server is running in ${process.env.NODE_ENV || 'development'} mode</p>
-          <p>Environment: ${process.env.RAILWAY_ENVIRONMENT || 'local'}</p>
+          <p>Environment: ${process.env.RENDER || 'local'}</p>
           <div class="status">✓ API Server Active</div>
           <p style="margin-top: 2rem; font-size: 0.9rem;">
             Build status: ${fs.existsSync(path.join(__dirname, 'dist')) ? 'Build directory exists' : 'Awaiting build'}
@@ -5781,15 +5781,15 @@ app.use((error, req, res, next) => {
     // Log successful startup with enterprise logging
     logInfo('✅ SENTIA ENTERPRISE SERVER STARTED', {
       port,
-      environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
+      environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
       pid: process.pid,
       endpoints: {
         dashboard: `http://localhost:${port}`,
         api: `http://localhost:${port}/api/health`,
         admin: `http://localhost:${port}/admin`
       },
-      externalUrl: process.env.RAILWAY_STATIC_URL || 'Not configured',
-      mcpIntegration: process.env.NODE_ENV === 'production' && process.env.RAILWAY_ENVIRONMENT,
+      externalUrl: process.env.RENDER_EXTERNAL_URL || 'Not configured',
+      mcpIntegration: process.env.NODE_ENV === 'production' && process.env.RENDER,
       features: [
         'Enterprise Error Handling',
         'Process Management', 
@@ -5821,7 +5821,7 @@ app.use((error, req, res, next) => {
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         version: process.env.npm_package_version || '1.0.0',
-        environment: process.env.RAILWAY_ENVIRONMENT_NAME || process.env.NODE_ENV || 'development',
+        environment: process.env.RENDER_SERVICE_NAME || process.env.NODE_ENV || 'development',
         processManager: processManager.getHealthStatus(),
         errorHandler: errorHandler.getHealthStatus(),
         services: {

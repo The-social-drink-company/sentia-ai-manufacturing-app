@@ -1,0 +1,337 @@
+/* Dashboard Grid Custom Styles */
+
+/* Grid container */
+.dashboard-grid-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: #f3f4f6;
+}
+
+.dark .dashboard-grid-container {
+  background-color: #111827;
+}
+
+/* React Grid Layout Overrides */
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top, width, height;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.dark .react-grid-item {
+  background: #1f2937;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform, width, height;
+}
+
+.react-grid-item.resizing {
+  transition: none;
+  z-index: 20;
+  will-change: width, height;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 30;
+  will-change: transform;
+  cursor: move;
+  opacity: 0.9;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .react-grid-item.react-draggable-dragging {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.react-grid-item.dropping {
+  visibility: hidden;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: #3b82f6;
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;
+  user-select: none;
+}
+
+/* Resize handle */
+.react-resizable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  box-sizing: border-box;
+  background-image: none;
+  background-position: bottom right;
+  padding: 0 3px 3px 0;
+  z-index: 10;
+}
+
+.react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid rgba(0, 0, 0, 0.4);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+}
+
+.dark .react-resizable-handle::after {
+  border-right-color: rgba(255, 255, 255, 0.4);
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+.react-resizable-handle-sw {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+}
+
+.react-resizable-handle-se {
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+}
+
+.react-resizable-handle-nw {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+}
+
+.react-resizable-handle-ne {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+}
+
+.react-resizable-handle-w,
+.react-resizable-handle-e {
+  top: 50%;
+  margin-top: -10px;
+  cursor: ew-resize;
+}
+
+.react-resizable-handle-w {
+  left: 0;
+}
+
+.react-resizable-handle-e {
+  right: 0;
+}
+
+.react-resizable-handle-n,
+.react-resizable-handle-s {
+  left: 50%;
+  margin-left: -10px;
+  cursor: ns-resize;
+}
+
+.react-resizable-handle-n {
+  top: 0;
+}
+
+.react-resizable-handle-s {
+  bottom: 0;
+}
+
+/* Dashboard Widget Container */
+.dashboard-widget-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Widget Header (drag handle) */
+.widget-header {
+  background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+  border-bottom: 1px solid #d1d5db;
+  user-select: none;
+}
+
+.dark .widget-header {
+  background: linear-gradient(to right, #374151, #4b5563);
+  border-bottom-color: #4b5563;
+}
+
+.widget-header:hover {
+  background: linear-gradient(to right, #e5e7eb, #d1d5db);
+}
+
+.dark .widget-header:hover {
+  background: linear-gradient(to right, #4b5563, #6b7280);
+}
+
+/* Edit mode styling */
+.edit-mode .react-grid-item {
+  border: 2px dashed #3b82f6;
+}
+
+.edit-mode .react-grid-item:hover {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dark.edit-mode .react-grid-item:hover {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Widget content area */
+.dashboard-widget-container > div:last-child {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Fullscreen widget */
+.fullscreen-widget {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: white;
+  padding: 1rem;
+}
+
+.dark .fullscreen-widget {
+  background: #111827;
+}
+
+/* Widget catalog items */
+.widget-catalog-item {
+  transition: all 200ms ease;
+}
+
+.widget-catalog-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Empty state */
+.dashboard-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+}
+
+.dark .dashboard-empty-state {
+  background: #1f2937;
+  border-color: #4b5563;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .react-grid-item {
+    border-radius: 0.25rem;
+  }
+
+  .widget-header {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .react-resizable-handle {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.react-grid-item.new-widget {
+  animation: fadeIn 300ms ease;
+}
+
+/* Loading state */
+.widget-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Scrollbar styling for widgets */
+.dashboard-widget-container > div:last-child::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.dashboard-widget-container > div:last-child::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.dark .dashboard-widget-container > div:last-child::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+.dashboard-widget-container > div:last-child::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.dashboard-widget-container > div:last-child::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Control bar */
+.dashboard-control-bar {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dark .dashboard-control-bar {
+  background: #1f2937;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+}

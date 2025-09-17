@@ -25,7 +25,7 @@ import {
 import { ShareButton } from '../ui/ShareButton'
 import { Menu, Transition } from '@headlessui/react'
 // ENTERPRISE: Full Clerk integration restored
-import { useUser, UserButton, SignOutButton } from '@clerk/clerk-react'
+import { useUser, UserButton, SignOutButton, useAuth } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
 import { ThemeToggle } from '../../theming'
@@ -458,18 +458,22 @@ const CurrencyControl = () => {
 
 const Header = () => {
   const navigate = useNavigate()
-  // Clerk user integration
+  // Enhanced Clerk user integration
   const { user, isLoaded, isSignedIn } = useUser()
-  const { 
-    theme, 
-    toggleTheme, 
-    sidebarCollapsed, 
-    toggleSidebar, 
-    isEditing, 
+  const { signOut } = useAuth()
+  const {
+    theme,
+    toggleTheme,
+    sidebarCollapsed,
+    toggleSidebar,
+    isEditing,
     setEditing,
     generateShareableLayout
   } = useLayoutStore()
   const { role, hasPermission, getUserDisplayName } = useAuthRole()
+
+  // Get user's first name for personalized greeting
+  const userFirstName = user?.firstName || user?.username || 'User'
   const { isConnected } = useSSE({ enabled: true })
   const { hasGlobalTabs, hasCFOFeatures } = useFeatureFlags()
   
@@ -725,15 +729,26 @@ const Header = () => {
               
               {/* User Profile - Clerk Pro Integration */}
               <div className="flex items-center space-x-3">
-                {/* User Info Display */}
-                <div className="hidden sm:flex flex-col text-right">
-                  <span className="text-sm text-secondary font-medium">
-                    {getUserDisplayName()}
-                  </span>
-                  <span className="text-xs text-tertiary">
-                    {role}
-                  </span>
-                </div>
+                {/* User Info Display with Welcome Message */}
+                {isSignedIn && user ? (
+                  <div className="hidden sm:flex flex-col text-right">
+                    <span className="text-sm text-secondary font-medium">
+                      Welcome, {userFirstName}
+                    </span>
+                    <span className="text-xs text-tertiary">
+                      {role} • {user?.emailAddresses?.[0]?.emailAddress?.split('@')[0]}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="hidden sm:flex flex-col text-right">
+                    <span className="text-sm text-secondary font-medium">
+                      {getUserDisplayName()}
+                    </span>
+                    <span className="text-xs text-tertiary">
+                      {role}
+                    </span>
+                  </div>
+                )}
                 
                 {/* Clerk UserButton with Pro Features */}
                 <UserButton

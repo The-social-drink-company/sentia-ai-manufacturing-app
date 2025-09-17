@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, UserButton } from '@clerk/clerk-react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -22,6 +22,12 @@ import { LoadingSpinner } from './components/LoadingStates'
 import ErrorBoundaryFallback from './components/ErrorBoundary'
 // Import enhanced lazy loading utilities
 import { createRouteComponent, createPriorityComponent, createLowPriorityComponent } from './utils/lazyLoading'
+// Import authentication components
+import RoleGuard from './components/auth/RoleGuard'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
+import SessionManager from './components/auth/SessionManager'
+import UserOnboarding from './components/auth/UserOnboarding'
 
 // High-Priority Components (Core dashboard functionality)
 const LandingPage = createPriorityComponent(() => import('./pages/LandingPage'), 'LandingPage')
@@ -227,17 +233,40 @@ function App() {
   return (
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
-          <Router>
-            {/* EnterpriseIntegrationHub removed - missing dependencies */}
-            <div className="App">
-              <Routes>
+          <SessionManager warningTime={300000}>
+            <Router>
+              {/* EnterpriseIntegrationHub removed - missing dependencies */}
+              <div className="App">
+                <Routes>
                 {/* Public Landing Page */}
                 <Route path="/" element={
                   <Suspense fallback={<LoadingSpinner />}>
                     <LandingPage />
                   </Suspense>
                 } />
-                
+
+                {/* Authentication Routes */}
+                <Route path="/login" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <LoginPage />
+                  </Suspense>
+                }/>
+
+                <Route path="/signup" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <SignupPage />
+                  </Suspense>
+                }/>
+
+                {/* Onboarding Route for New Users */}
+                <Route path="/onboarding" element={
+                  <ProtectedRoute allowGuest={false}>
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <UserOnboarding onComplete={() => window.location.href = '/dashboard'} />
+                    </Suspense>
+                  </ProtectedRoute>
+                }/>
+
                 {/* Protected Routes with World-Class Layout - Guest Access Enabled */}
                 <Route 
                   path="/dashboard/*" 
@@ -729,14 +758,16 @@ function App() {
                   }
                 />
 
-                {/* Enhanced Admin System with Nested Routes */}
-                <Route 
-                  path="/admin/*" 
+                {/* Enhanced Admin System with Role-Based Access Control */}
+                <Route
+                  path="/admin/*"
                   element={
-                    <ProtectedRoute allowGuest={true}>
-                      <Suspense fallback={<LoadingSpinner />}>
-                        <AdminLayout />
-                      </Suspense>
+                    <ProtectedRoute allowGuest={false}>
+                      <RoleGuard allowedRoles={['admin', 'manager']}>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AdminLayout />
+                        </Suspense>
+                      </RoleGuard>
                     </ProtectedRoute>
                   }
                 >
@@ -800,8 +831,8 @@ function App() {
                 </Route>
                 
                 {/* Financial Management Routes */}
-                <Route 
-                  path="/financial-reports" 
+                <Route
+                  path="/financial"
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
@@ -810,7 +841,20 @@ function App() {
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
-                  } 
+                  }
+                />
+
+                <Route
+                  path="/financial-reports"
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <FinancialReports />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  }
                 />
                 
                 <Route 
@@ -947,8 +991,9 @@ function App() {
               />
               
                     </div>
-            {/* EnterpriseIntegrationHub closing tag removed */}
-          </Router>
+              {/* EnterpriseIntegrationHub closing tag removed */}
+            </Router>
+          </SessionManager>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>

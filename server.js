@@ -114,6 +114,11 @@ import apiIntegrationManager from './services/integrations/api-integration-manag
 import routeValidator from './services/route-validator.js';
 // Import Prisma client for database connection
 import { prisma, testDatabaseConnection } from './lib/prisma.js';
+// Import API route modules
+import productionRoutes from './api/routes/production.js';
+import inventoryRoutes from './api/routes/inventory.js';
+import financialRoutes from './api/routes/financial.js';
+import qualityRoutes from './api/routes/quality.js';
 // Enterprise Components - Temporarily disabled for deployment fix
 // import EnterpriseSecurityFramework from './services/security/enterpriseSecurityFramework.js';
 // import EnterpriseIntegrationHub from './services/integrations/enterpriseIntegrationHub.js';
@@ -913,6 +918,16 @@ app.get('/api/routes/validate', async (req, res) => {
     logError('Route validation error', error);
     res.status(500).json({ error: 'Failed to validate routes' });
   }
+});
+
+// Register API Routes
+app.use('/api/production', productionRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/financial', financialRoutes);
+app.use('/api/quality', qualityRoutes);
+
+logInfo('API routes registered', {
+  routes: ['/api/production', '/api/inventory', '/api/financial', '/api/quality']
 });
 
 // Enhanced health check with external services (may timeout in Render)

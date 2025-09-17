@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  ArrowTrendingUpIcon, 
-  CogIcon, 
+import { useUser } from '@clerk/clerk-react';
+import {
+  ArrowTrendingUpIcon,
+  CogIcon,
   ChartBarIcon,
   BoltIcon,
   CpuChipIcon,
   BeakerIcon,
   BanknotesIcon,
   ShieldCheckIcon,
-  CloudIcon
+  CloudIcon,
+  Squares2X2Icon,
+  ViewColumnsIcon
 } from '@heroicons/react/24/outline';
+
+// Import Dashboard Grid System
+import DashboardGrid from '../components/Dashboard/DashboardGrid';
+import '../styles/dashboard-grid.css';
 
 // Import AI and MCP components
 import AIAnalyticsDashboard from '../components/AI/AIAnalyticsDashboard';
@@ -20,9 +27,11 @@ import { useSSE } from '../hooks/useSSE';
 
 export default function EnhancedDashboard() {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedView, setSelectedView] = useState('overview');
+  const [selectedView, setSelectedView] = useState('grid');
+  const [userRole, setUserRole] = useState('viewer');
 
   // Real-time data connection
   const { data: realtimeData, isConnected } = useSSE('/api/kpis/realtime');
@@ -55,6 +64,14 @@ export default function EnhancedDashboard() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Get user role from Clerk metadata
+    const role = user?.publicMetadata?.role ||
+                 user?.unsafeMetadata?.role ||
+                 'viewer';
+    setUserRole(role);
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -92,19 +109,64 @@ export default function EnhancedDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Sentia Manufacturing Dashboard</h1>
-          <p className="text-gray-600 mt-2">Enterprise Manufacturing Analytics & Control Center</p>
-          <div className="mt-2 flex items-center space-x-4">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-              ● Live Data
-            </span>
-            <span className="text-gray-500 text-sm">Last updated: {new Date().toLocaleTimeString()}</span>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Sentia Manufacturing Dashboard
+              </h1>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                Welcome back, {user?.firstName || 'User'} • Role: <span className="font-medium capitalize">{userRole}</span>
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* View Toggle */}
+              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => setSelectedView('grid')}
+                  className={`px-3 py-1 rounded flex items-center space-x-2 ${
+                    selectedView === 'grid'
+                      ? 'bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400'
+                      : 'text-gray-600 dark:text-gray-300'
+                  }`}
+                >
+                  <Squares2X2Icon className="h-4 w-4" />
+                  <span className="text-sm">Grid View</span>
+                </button>
+                <button
+                  onClick={() => setSelectedView('classic')}
+                  className={`px-3 py-1 rounded flex items-center space-x-2 ${
+                    selectedView === 'classic'
+                      ? 'bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400'
+                      : 'text-gray-600 dark:text-gray-300'
+                  }`}
+                >
+                  <ViewColumnsIcon className="h-4 w-4" />
+                  <span className="text-sm">Classic View</span>
+                </button>
+              </div>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                ● Live Data
+              </span>
+              <span className="text-gray-500 dark:text-gray-400 text-sm">
+                {new Date().toLocaleTimeString()}
+              </span>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Main Content */}
+      {selectedView === 'grid' ? (
+        <div className="p-4 lg:p-6">
+          <DashboardGrid userRole={userRole} />
+        </div>
+      ) : (
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
 
         {/* KPI Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -293,6 +355,9 @@ export default function EnhancedDashboard() {
           </div>
         </div>
       </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

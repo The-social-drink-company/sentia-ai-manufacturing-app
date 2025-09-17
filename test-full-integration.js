@@ -5,9 +5,7 @@
  * Tests end-to-end workflow with real business data and AI capabilities
  */
 
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const http = require('http');
+import http from 'http';
 
 const MAIN_APP_HOST = 'localhost';
 const MAIN_APP_PORT = 5002;

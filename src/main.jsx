@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
-// import App from './App.jsx'
-import TestApp from './TestApp.jsx'
+import App from './App.jsx'
+// import TestApp from './TestApp.jsx'
 import './index.css'
 import './styles/sidebar.css'
 
@@ -119,7 +119,7 @@ if (clerkPubKey && !bypassClerk) {
       }}
     >
       <Suspense fallback={<LoadingFallback />}>
-        <TestApp />
+        <App />
       </Suspense>
     </ClerkProvider>
   )
@@ -128,7 +128,7 @@ if (clerkPubKey && !bypassClerk) {
   console.log('Rendering app without Clerk authentication (bypass mode)');
   root.render(
     <Suspense fallback={<LoadingFallback />}>
-      <TestApp />
+      <App />
     </Suspense>
   )
 }

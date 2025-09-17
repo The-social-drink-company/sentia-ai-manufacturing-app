@@ -6503,6 +6503,10 @@ app.use((error, req, res, next) => {
         console.error('❌ Database connection failed:', error);
         logError('Database connection failed', { error: error.message });
       }
+
+      // Start Shopify scheduled sync
+      console.log('🛍️  Starting Shopify scheduled sync...');
+      startShopifySync();
     });
     
     // Log successful startup with enterprise logging

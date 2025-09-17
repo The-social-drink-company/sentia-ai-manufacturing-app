@@ -121,16 +121,14 @@ class AmazonIntegration {
     } catch (error) {
       console.error('Amazon sync error:', error);
 
-      // Log error to database
-      await prisma.integrationLog.create({
-        data: {
-          integration: 'amazon',
-          marketplace: marketplace,
-          action: 'sync_sales_data',
-          status: 'error',
-          error: error.message,
-          timestamp: new Date()
-        }
+      // Log error to mock database
+      mockDatabase.integrationLogs.push({
+        integration: 'amazon',
+        marketplace: marketplace,
+        action: 'sync_sales_data',
+        status: 'error',
+        error: error.message,
+        timestamp: new Date()
       });
 
       throw error;
@@ -151,35 +149,32 @@ class AmazonIntegration {
 
       // Store FBA inventory levels
       for (const item of inventory.inventorySummaries || []) {
-        await prisma.inventory.upsert({
-          where: {
-            sku_marketplace: {
-              sku: item.sellerSku,
-              marketplace: marketplace
-            }
-          },
-          update: {
-            fbaQuantity: item.totalQuantity,
-            fbaInbound: item.inboundQuantity,
-            fbaAvailable: item.availableQuantity,
-            fbaReserved: item.reservedQuantity,
-            fbaUnsellable: item.unsellableQuantity,
-            updatedAt: new Date()
-          },
-          create: {
-            sku: item.sellerSku,
-            asin: item.asin,
-            marketplace: marketplace,
-            fbaQuantity: item.totalQuantity,
-            fbaInbound: item.inboundQuantity,
-            fbaAvailable: item.availableQuantity,
-            fbaReserved: item.reservedQuantity,
-            fbaUnsellable: item.unsellableQuantity,
-            location: 'Amazon FBA',
-            fnsku: item.fnsku,
-            productName: item.productName
-          }
-        });
+        // Store inventory in mock database
+        const inventoryKey = `${item.sellerSku}_${marketplace}`;
+        const existingIndex = mockDatabase.inventory.findIndex(
+          i => `${i.sku}_${i.marketplace}` === inventoryKey
+        );
+
+        const inventoryData = {
+          sku: item.sellerSku,
+          asin: item.asin,
+          marketplace: marketplace,
+          fbaQuantity: item.totalQuantity,
+          fbaInbound: item.inboundQuantity,
+          fbaAvailable: item.availableQuantity,
+          fbaReserved: item.reservedQuantity,
+          fbaUnsellable: item.unsellableQuantity,
+          location: 'Amazon FBA',
+          fnsku: item.fnsku,
+          productName: item.productName,
+          updatedAt: new Date()
+        };
+
+        if (existingIndex >= 0) {
+          mockDatabase.inventory[existingIndex] = inventoryData;
+        } else {
+          mockDatabase.inventory.push(inventoryData);
+        }
       }
 
       return inventory.inventorySummaries;
@@ -373,20 +368,19 @@ class AmazonIntegration {
 
       // Process returns
       for (const returnItem of returns) {
-        await prisma.productReturn.create({
-          data: {
-            externalId: `amazon_${returnItem.ReturnId}`,
-            marketplace: marketplace,
-            orderId: returnItem.AmazonOrderId,
-            sku: returnItem.SellerSKU,
-            asin: returnItem.ASIN,
-            quantity: returnItem.Quantity,
-            reason: returnItem.ReturnReason,
-            status: returnItem.Status,
-            returnDate: new Date(returnItem.ReturnDate),
-            refundAmount: parseFloat(returnItem.RefundAmount?.Amount || 0),
-            currency: returnItem.RefundAmount?.CurrencyCode
-          }
+        // Store return in mock database
+        mockDatabase.productReturns.push({
+          externalId: `amazon_${returnItem.ReturnId}`,
+          marketplace: marketplace,
+          orderId: returnItem.AmazonOrderId,
+          sku: returnItem.SellerSKU,
+          asin: returnItem.ASIN,
+          quantity: returnItem.Quantity,
+          reason: returnItem.ReturnReason,
+          status: returnItem.Status,
+          returnDate: new Date(returnItem.ReturnDate),
+          refundAmount: parseFloat(returnItem.RefundAmount?.Amount || 0),
+          currency: returnItem.RefundAmount?.CurrencyCode
         });
       }
 

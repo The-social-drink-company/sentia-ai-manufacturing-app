@@ -22,3 +22,7 @@
 {"timestamp":"2025-09-17T14:00:52.331Z","healthy":true,"failures":0,"errors":[]}
 {"timestamp":"2025-09-17T14:01:53.075Z","healthy":true,"failures":0,"errors":[]}
 {"timestamp":"2025-09-17T14:02:54.085Z","healthy":true,"failures":0,"errors":[]}
+{"timestamp":"2025-09-17T14:04:36.596Z","healthy":false,"failures":1,"errors":[{"type":"SERVER_ERROR","description":"Server error: 502"}]}
+{"timestamp":"2025-09-17T14:05:38.419Z","healthy":true,"failures":0,"errors":[]}
+{"timestamp":"2025-09-17T14:06:39.138Z","healthy":true,"failures":0,"errors":[]}
+{"timestamp":"2025-09-17T14:07:39.869Z","healthy":true,"failures":0,"errors":[]}

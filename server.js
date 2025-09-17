@@ -5403,6 +5403,20 @@ app.get('/api/test-simple', (req, res) => {
     viteClerKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'present' : 'missing',
     nodeEnv: process.env.NODE_ENV
   });
+
+  // Personnel API - returns users optionally filtered by role
+  app.get('/api/personnel', async (req, res) => {
+    try {
+      const { role } = req.query;
+      const roles = Array.isArray(role) ? role : role ? [role] : undefined;
+      const where = roles ? { role: { in: roles } } : {};
+      const personnel = await prisma.user.findMany({ where });
+      res.json({ success: true, data: personnel });
+    } catch (error) {
+      console.error('Personnel API error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
 });
 
 // Move MCP status route BEFORE catch-all

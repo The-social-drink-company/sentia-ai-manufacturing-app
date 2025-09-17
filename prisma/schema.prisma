@@ -1763,3 +1763,426 @@ model UserPreferences {
   @@index([userId])
   @@map("user_preferences")
 }
+
+// ===== PRODUCTION MANAGEMENT MODELS =====
+
+model ProductionLine {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String   @db.VarChar(255)
+  code           String   @unique @db.VarChar(50)
+  status         String   @db.VarChar(50) // running, idle, maintenance
+  efficiency     Float    @default(0) @db.Real
+  currentProduct String?  @map("current_product") @db.VarChar(255)
+  capacity       Int      @default(0) // units per hour
+  location       String?  @db.VarChar(100)
+  description    String?  @db.Text
+  isActive       Boolean  @default(true) @map("is_active")
+  metrics        ProductionMetrics[]
+  schedules      ProductionSchedule[]
+  batches        BatchProduction[]
+  downtime       ProductionDowntime[]
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy      String?  @map("created_by") @db.VarChar(255)
+
+  @@index([status])
+  @@index([code])
+  @@map("production_lines")
+}
+
+model ProductionMetrics {
+  id            String   @id @default(uuid()) @db.Uuid
+  lineId        String   @map("line_id") @db.Uuid
+  line          ProductionLine @relation(fields: [lineId], references: [id])
+  productId     String?  @map("product_id") @db.VarChar(255)
+  timestamp     DateTime @default(now()) @db.Timestamptz(6)
+  unitsProduced Int      @map("units_produced")
+  targetUnits   Int      @map("target_units")
+  defectCount   Int      @default(0) @map("defect_count")
+  defectRate    Float    @default(0) @map("defect_rate") @db.Real
+  efficiency    Float    @default(0) @db.Real
+  oee           Float    @default(0) @db.Real // Overall Equipment Effectiveness
+  availability  Float    @default(0) @db.Real
+  performance   Float    @default(0) @db.Real
+  quality       Float    @default(0) @db.Real
+  downtime      Int      @default(0) // minutes
+  shiftId       String?  @map("shift_id") @db.VarChar(50)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([lineId])
+  @@index([timestamp])
+  @@index([productId])
+  @@index([lineId, timestamp])
+  @@map("production_metrics")
+}
+
+model ProductionSchedule {
+  id            String   @id @default(uuid()) @db.Uuid
+  lineId        String   @map("line_id") @db.Uuid
+  line          ProductionLine @relation(fields: [lineId], references: [id])
+  productId     String   @map("product_id") @db.VarChar(255)
+  productName   String   @map("product_name") @db.VarChar(255)
+  quantity      Int
+  scheduledDate DateTime @map("scheduled_date") @db.Date
+  startTime     String   @map("start_time") @db.VarChar(10) // HH:MM format
+  endTime       String   @map("end_time") @db.VarChar(10)
+  shiftId       String?  @map("shift_id") @db.VarChar(50)
+  priority      String   @default("medium") @db.VarChar(20) // low, medium, high, urgent
+  status        String   @default("scheduled") @db.VarChar(50) // scheduled, in-progress, completed, cancelled
+  notes         String?  @db.Text
+  createdBy     String   @map("created_by") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([lineId])
+  @@index([scheduledDate])
+  @@index([status])
+  @@index([lineId, scheduledDate])
+  @@map("production_schedule")
+}
+
+model BatchProduction {
+  id            String   @id @default(uuid()) @db.Uuid
+  batchNumber   String   @unique @map("batch_number") @db.VarChar(100)
+  lineId        String   @map("line_id") @db.Uuid
+  line          ProductionLine @relation(fields: [lineId], references: [id])
+  productId     String   @map("product_id") @db.VarChar(255)
+  productName   String   @map("product_name") @db.VarChar(255)
+  quantity      Int
+  targetQuantity Int     @map("target_quantity")
+  startTime     DateTime @map("start_time") @db.Timestamptz(6)
+  endTime       DateTime? @map("end_time") @db.Timestamptz(6)
+  status        String   @default("in-progress") @db.VarChar(50) // in-progress, completed, failed
+  qualityCheckPassed Boolean? @map("quality_check_passed")
+  qualityCheckDate   DateTime? @map("quality_check_date") @db.Timestamptz(6)
+  notes         String?  @db.Text
+  createdBy     String   @map("created_by") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([batchNumber])
+  @@index([lineId])
+  @@index([status])
+  @@index([startTime])
+  @@map("batch_production")
+}
+
+model ProductionDowntime {
+  id            String   @id @default(uuid()) @db.Uuid
+  lineId        String   @map("line_id") @db.Uuid
+  line          ProductionLine @relation(fields: [lineId], references: [id])
+  startTime     DateTime @map("start_time") @db.Timestamptz(6)
+  endTime       DateTime? @map("end_time") @db.Timestamptz(6)
+  duration      Int?     // minutes
+  reason        String   @db.VarChar(255)
+  category      String   @db.VarChar(50) // maintenance, breakdown, changeover, other
+  description   String?  @db.Text
+  impactLevel   String   @default("medium") @map("impact_level") @db.VarChar(20) // low, medium, high, critical
+  resolved      Boolean  @default(false)
+  resolvedBy    String?  @map("resolved_by") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([lineId])
+  @@index([startTime])
+  @@index([category])
+  @@map("production_downtime")
+}
+
+// ===== ENHANCED INVENTORY MODELS =====
+
+model InventoryMovement {
+  id           String   @id @default(uuid()) @db.Uuid
+  inventoryId  String?  @map("inventory_id") @db.Uuid
+  sku          String   @db.VarChar(100)
+  type         String   @db.VarChar(50) // receipt, shipment, adjustment, transfer, count
+  quantity     Int
+  fromLocation String?  @map("from_location") @db.VarChar(100)
+  toLocation   String?  @map("to_location") @db.VarChar(100)
+  reference    String?  @db.VarChar(255) // PO number, SO number, etc.
+  reason       String?  @db.Text
+  status       String   @default("completed") @db.VarChar(50) // scheduled, completed, cancelled
+  scheduledDate DateTime? @map("scheduled_date") @db.Date
+  timestamp    DateTime @default(now()) @db.Timestamptz(6)
+  userId       String?  @map("user_id") @db.VarChar(255)
+  createdBy    String   @map("created_by") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([sku])
+  @@index([type])
+  @@index([timestamp])
+  @@index([inventoryId])
+  @@map("inventory_movements")
+}
+
+model StockTake {
+  id            String   @id @default(uuid()) @db.Uuid
+  location      String   @db.VarChar(100)
+  performedBy   String   @map("performed_by") @db.VarChar(255)
+  totalItems    Int      @map("total_items")
+  totalVariance Decimal  @map("total_variance") @db.Decimal(15, 2)
+  status        String   @default("in-progress") @db.VarChar(50) // in-progress, completed, approved
+  notes         String?  @db.Text
+  approvedBy    String?  @map("approved_by") @db.VarChar(255)
+  approvedDate  DateTime? @map("approved_date") @db.Timestamptz(6)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  completedAt   DateTime? @map("completed_at") @db.Timestamptz(6)
+
+  @@index([location])
+  @@index([status])
+  @@index([createdAt])
+  @@map("stock_takes")
+}
+
+// ===== QUALITY MANAGEMENT MODELS =====
+
+model QualityInspection {
+  id              String   @id @default(uuid()) @db.Uuid
+  batchId         String?  @map("batch_id") @db.VarChar(100)
+  productId       String   @map("product_id") @db.VarChar(255)
+  productName     String   @map("product_name") @db.VarChar(255)
+  inspectionDate  DateTime @map("inspection_date") @db.Timestamptz(6)
+  inspectorId     String   @map("inspector_id") @db.VarChar(255)
+  inspectorName   String   @map("inspector_name") @db.VarChar(255)
+  type            String   @db.VarChar(50) // incoming, in-process, final, random
+  sampleSize      Int      @map("sample_size")
+  passCount       Int      @map("pass_count")
+  failCount       Int      @map("fail_count")
+  defectTypes     Json?    @map("defect_types") @db.Json // Array of defect categories and counts
+  criteria        Json?    @db.Json // Inspection criteria and results
+  overallResult   String   @map("overall_result") @db.VarChar(20) // pass, fail, conditional
+  notes           String?  @db.Text
+  correctiveActions String? @map("corrective_actions") @db.Text
+  createdBy       String   @map("created_by") @db.VarChar(255)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([batchId])
+  @@index([productId])
+  @@index([inspectionDate])
+  @@index([overallResult])
+  @@map("quality_inspections")
+}
+
+model QualityDefect {
+  id               String   @id @default(uuid()) @db.Uuid
+  productId        String   @map("product_id") @db.VarChar(255)
+  productName      String   @map("product_name") @db.VarChar(255)
+  batchId          String?  @map("batch_id") @db.VarChar(100)
+  lineId           String?  @map("line_id") @db.Uuid
+  category         String   @db.VarChar(50) // critical, major, minor, cosmetic
+  type             String   @db.VarChar(100)
+  description      String   @db.Text
+  quantity         Int
+  rootCause        String?  @map("root_cause") @db.Text
+  correctiveAction String?  @map("corrective_action") @db.Text
+  preventiveAction String?  @map("preventive_action") @db.Text
+  status           String   @default("open") @db.VarChar(50) // open, investigating, resolved, closed
+  inspectionId     String?  @map("inspection_id") @db.Uuid
+  resolvedAt       DateTime? @map("resolved_at") @db.Timestamptz(6)
+  closedAt         DateTime? @map("closed_at") @db.Timestamptz(6)
+  createdBy        String   @map("created_by") @db.VarChar(255)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([productId])
+  @@index([batchId])
+  @@index([category])
+  @@index([status])
+  @@index([createdAt])
+  @@map("quality_defects")
+}
+
+model QualityMetrics {
+  id            String   @id @default(uuid()) @db.Uuid
+  date          DateTime @db.Date
+  productId     String?  @map("product_id") @db.VarChar(255)
+  lineId        String?  @map("line_id") @db.Uuid
+  totalProduced Int      @map("total_produced")
+  defects       Int      @default(0)
+  rework        Int      @default(0)
+  scrap         Int      @default(0)
+  firstPassYield Float   @map("first_pass_yield") @db.Real
+  defectRate    Float    @map("defect_rate") @db.Real // DPPM (defects per million)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([date])
+  @@index([productId])
+  @@index([lineId])
+  @@unique([date, productId, lineId])
+  @@map("quality_metrics")
+}
+
+model QualitySpecification {
+  id            String   @id @default(uuid()) @db.Uuid
+  productId     String   @map("product_id") @db.VarChar(255)
+  parameter     String   @db.VarChar(100)
+  unit          String   @db.VarChar(20)
+  nominal       Float    @db.Real
+  upperLimit    Float    @map("upper_limit") @db.Real
+  lowerLimit    Float    @map("lower_limit") @db.Real
+  critical      Boolean  @default(false)
+  description   String?  @db.Text
+  testMethod    String?  @map("test_method") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([productId, parameter])
+  @@index([productId])
+  @@map("quality_specifications")
+}
+
+model QualityCertification {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String   @db.VarChar(255)
+  type          String   @db.VarChar(100) // ISO, FDA, CE, etc.
+  certNumber    String   @map("cert_number") @db.VarChar(100)
+  issuer        String   @db.VarChar(255)
+  issueDate     DateTime @map("issue_date") @db.Date
+  expiryDate    DateTime @map("expiry_date") @db.Date
+  status        String   @default("valid") @db.VarChar(50) // valid, expired, pending
+  documentUrl   String?  @map("document_url") @db.Text
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([status])
+  @@index([expiryDate])
+  @@map("quality_certifications")
+}
+
+model QualityMeasurement {
+  id            String   @id @default(uuid()) @db.Uuid
+  productId     String   @map("product_id") @db.VarChar(255)
+  batchId       String?  @map("batch_id") @db.VarChar(100)
+  parameter     String   @db.VarChar(100)
+  value         Float    @db.Real
+  unit          String   @db.VarChar(20)
+  measuredAt    DateTime @map("measured_at") @db.Timestamptz(6)
+  measuredBy    String   @map("measured_by") @db.VarChar(255)
+  equipment     String?  @db.VarChar(100)
+  inSpec        Boolean  @map("in_spec") // Within specification limits
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([productId])
+  @@index([batchId])
+  @@index([parameter])
+  @@index([measuredAt])
+  @@map("quality_measurements")
+}
+
+// ===== MAINTENANCE MANAGEMENT =====
+
+model MaintenanceSchedule {
+  id            String   @id @default(uuid()) @db.Uuid
+  equipmentId   String   @map("equipment_id") @db.VarChar(255)
+  equipmentName String   @map("equipment_name") @db.VarChar(255)
+  type          String   @db.VarChar(50) // preventive, corrective, predictive
+  scheduledDate DateTime @map("scheduled_date") @db.Date
+  frequency     String?  @db.VarChar(50) // daily, weekly, monthly, quarterly, yearly
+  description   String   @db.Text
+  assignedTo    String?  @map("assigned_to") @db.VarChar(255)
+  priority      String   @default("medium") @db.VarChar(20) // low, medium, high, critical
+  status        String   @default("scheduled") @db.VarChar(50) // scheduled, in-progress, completed, overdue
+  completedDate DateTime? @map("completed_date") @db.Timestamptz(6)
+  completedBy   String?  @map("completed_by") @db.VarChar(255)
+  notes         String?  @db.Text
+  createdBy     String   @map("created_by") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([equipmentId])
+  @@index([scheduledDate])
+  @@index([status])
+  @@index([type])
+  @@map("maintenance_schedule")
+}
+
+// ===== SUPPLY CHAIN MODELS =====
+
+model PurchaseOrder {
+  id            String   @id @default(uuid()) @db.Uuid
+  orderNumber   String   @unique @map("order_number") @db.VarChar(100)
+  supplierId    String   @map("supplier_id") @db.VarChar(255)
+  supplierName  String   @map("supplier_name") @db.VarChar(255)
+  orderDate     DateTime @map("order_date") @db.Date
+  deliveryDate  DateTime? @map("delivery_date") @db.Date
+  status        String   @default("pending") @db.VarChar(50) // pending, approved, shipped, delivered, cancelled
+  items         Json     @db.Json // Array of {sku, quantity, unitPrice, description}
+  subtotal      Decimal  @db.Decimal(15, 2)
+  tax           Decimal  @default(0) @db.Decimal(15, 2)
+  shipping      Decimal  @default(0) @db.Decimal(15, 2)
+  totalAmount   Decimal  @map("total_amount") @db.Decimal(15, 2)
+  currency      String   @default("USD") @db.VarChar(3)
+  paymentTerms  String?  @map("payment_terms") @db.VarChar(100)
+  notes         String?  @db.Text
+  approvedBy    String?  @map("approved_by") @db.VarChar(255)
+  approvedDate  DateTime? @map("approved_date") @db.Timestamptz(6)
+  createdBy     String   @map("created_by") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([supplierId])
+  @@index([orderDate])
+  @@index([status])
+  @@map("purchase_orders")
+}
+
+// ===== AI/ML MODELS =====
+
+model Embedding {
+  id          String   @id @default(uuid()) @db.Uuid
+  content     String   @db.Text
+  embedding   Unsupported("vector")?  // This will use pgvector extension
+  metadata    Json?    @db.Json
+  category    String?  @db.VarChar(50) // product, customer, supplier, document
+  entityId    String?  @map("entity_id") @db.VarChar(255) // Reference to related entity
+  dimension   Int      @default(1536) // OpenAI embedding dimension
+  model       String   @default("text-embedding-ada-002") @db.VarChar(100)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([category])
+  @@index([entityId])
+  @@map("embeddings")
+}
+
+// ===== ENHANCED FINANCIAL MODELS =====
+
+model CashFlow {
+  id          String   @id @default(uuid()) @db.Uuid
+  date        DateTime @db.Date
+  type        String   @db.VarChar(20) // inflow, outflow
+  category    String   @db.VarChar(50) // operating, investing, financing
+  subCategory String?  @map("sub_category") @db.VarChar(100)
+  description String   @db.Text
+  amount      Decimal  @db.Decimal(15, 2)
+  reference   String?  @db.VarChar(255)
+  accountId   String?  @map("account_id") @db.Uuid
+  createdBy   String   @map("created_by") @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([date])
+  @@index([type])
+  @@index([category])
+  @@map("cash_flows")
+}
+
+model CashBalance {
+  id            String   @id @default(uuid()) @db.Uuid
+  date          DateTime @unique @db.Date
+  openingBalance Decimal @map("opening_balance") @db.Decimal(15, 2)
+  inflows       Decimal  @db.Decimal(15, 2)
+  outflows      Decimal  @db.Decimal(15, 2)
+  closingBalance Decimal @map("closing_balance") @db.Decimal(15, 2)
+  balance       Decimal  @db.Decimal(15, 2) // Current balance for compatibility
+  reconciled    Boolean  @default(false)
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([date])
+  @@map("cash_balances")
+}

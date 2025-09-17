@@ -16,19 +16,28 @@ import {
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0)
 
-  // Safely use Clerk hooks and components only when provider exists
-  const [hasClerkProvider, setHasClerkProvider] = useState(false)
+  // Check if Clerk is available
+  const [clerkAvailable] = useState(() => {
+    try {
+      // Try to access Clerk - this will throw if not available
+      return window.Clerk !== undefined
+    } catch {
+      return false
+    }
+  })
+
+  // Safely use useUser with fallback
   let isSignedIn = false
   let user = null
-  try {
-    const userHook = useUser()
-    isSignedIn = userHook.isSignedIn
-    user = userHook.user
-    // If hook resolved without throwing, we likely have a provider
-    setHasClerkProvider(true)
-  } catch (e) {
-    // Clerk not available, running in bypass mode
-    console.log('Running without Clerk authentication')
+  if (clerkAvailable) {
+    try {
+      const userHook = useUser()
+      isSignedIn = userHook.isSignedIn
+      user = userHook.user
+    } catch (e) {
+      // Clerk hook failed
+      console.log('Running without Clerk authentication')
+    }
   }
 
   // Handle scroll for parallax effects
@@ -168,7 +177,7 @@ const LandingPage = () => {
                     </motion.button>
                   </Link>
                 ) : (
-                  hasClerkProvider ? (
+                  clerkAvailable ? (
                     <SignUpButton mode="modal" redirectUrl="/dashboard">
                       <motion.button
                         className="group px-8 py-4 bg-white text-black rounded-lg font-semibold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center"
@@ -193,7 +202,7 @@ const LandingPage = () => {
                   )
                 )}
 
-                {hasClerkProvider ? (
+                {clerkAvailable ? (
                   <SignInButton mode="modal" redirectUrl="/dashboard">
                     <motion.button
                       className="px-8 py-4 border border-white/20 text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center backdrop-blur-sm"

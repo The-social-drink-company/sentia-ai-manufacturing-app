@@ -963,8 +963,104 @@ app.use('/api/user', userRoutes);
 app.use('/api/supply-chain', supplyChainRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 
+// Xero Integration Routes
+import xeroIntegration from './services/xeroIntegration.js';
+
+// Xero OAuth Routes
+app.get('/api/xero/auth', async (req, res) => {
+  try {
+    const consentUrl = await xeroIntegration.buildConsentUrl();
+    res.json({
+      success: true,
+      url: consentUrl
+    });
+  } catch (error) {
+    logError('Failed to generate Xero consent URL', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to initiate Xero authentication'
+    });
+  }
+});
+
+app.get('/api/xero/callback', async (req, res) => {
+  try {
+    const success = await xeroIntegration.handleCallback(req.url);
+    if (success) {
+      res.redirect('/dashboard?xero=connected');
+    } else {
+      res.redirect('/dashboard?xero=failed');
+    }
+  } catch (error) {
+    logError('Xero OAuth callback failed', error);
+    res.redirect('/dashboard?xero=error');
+  }
+});
+
+// Xero Data Sync Routes
+app.post('/api/xero/sync', async (req, res) => {
+  try {
+    const result = await xeroIntegration.triggerManualSync();
+    res.json(result);
+  } catch (error) {
+    logError('Manual Xero sync failed', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/xero/status', async (req, res) => {
+  try {
+    const status = await xeroIntegration.checkConnectionStatus();
+    res.json(status);
+  } catch (error) {
+    logError('Failed to check Xero status', error);
+    res.status(500).json({
+      connected: false,
+      status: 'error',
+      message: error.message
+    });
+  }
+});
+
+// Xero Webhook Endpoint
+app.post('/api/xero/webhook', async (req, res) => {
+  try {
+    const signature = req.headers['x-xero-signature'];
+    const success = await xeroIntegration.processWebhook(req.body, signature);
+
+    if (success) {
+      res.status(200).send('OK');
+    } else {
+      res.status(401).send('Unauthorized');
+    }
+  } catch (error) {
+    logError('Xero webhook processing failed', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Xero Disconnect Route
+app.post('/api/xero/disconnect', async (req, res) => {
+  try {
+    const success = await xeroIntegration.disconnect();
+    res.json({
+      success,
+      message: success ? 'Xero disconnected successfully' : 'Failed to disconnect Xero'
+    });
+  } catch (error) {
+    logError('Failed to disconnect Xero', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 logInfo('API routes registered', {
-  routes: ['/api/production', '/api/inventory', '/api/financial', '/api/quality']
+  routes: ['/api/production', '/api/inventory', '/api/financial', '/api/quality', '/api/xero']
 });
 
 // Enhanced health check with external services (may timeout in Render)

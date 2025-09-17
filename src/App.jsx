@@ -183,26 +183,30 @@ const ProtectedRoute = ({ children, allowGuest = false }) => {
 const DashboardRoute = () => {
   const [searchParams] = useSearchParams()
   const fallback = searchParams.get('fallback')
-  
+
   if (fallback === 'true') {
-    return <SimpleDashboard />
+    return (
+      <WorldClassLayout>
+        <SimpleDashboard />
+      </WorldClassLayout>
+    )
   }
-  
+
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       FallbackComponent={({ error, resetErrorBoundary }) => (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Dashboard Error</h2>
             <p className="text-gray-600 mb-4">Enterprise dashboard failed to load.</p>
             <div className="flex space-x-3">
-              <button 
+              <button
                 onClick={resetErrorBoundary}
                 className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
                 Retry
               </button>
-              <button 
+              <button
                 onClick={() => window.location.href = '/dashboard?fallback=true'}
                 className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
               >

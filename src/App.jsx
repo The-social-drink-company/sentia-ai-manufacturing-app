@@ -30,7 +30,7 @@ import SignupPage from './pages/SignupPage'
 import UserOnboarding from './components/auth/UserOnboarding'
 
 // High-Priority Components (Core dashboard functionality)
-const LandingPage = createPriorityComponent(() => import('./pages/LandingPageWithAuth'), 'LandingPage')
+const LandingPage = createPriorityComponent(() => import('./pages/LandingPageSimple'), 'LandingPage')
 const WorldClassDashboard = createPriorityComponent(() => import('./pages/WorldClassDashboard'), 'WorldClassDashboard')
 const SimpleDashboard = createPriorityComponent(() => import('./pages/SimpleDashboard'), 'SimpleDashboard')
 

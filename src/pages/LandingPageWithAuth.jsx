@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useSignIn, useUser, useClerk } from '@clerk/clerk-react'
 import {
   ChartBarIcon,
   CurrencyDollarIcon,
@@ -16,8 +15,22 @@ import {
 const LandingPageWithAuth = () => {
   const [scrollY, setScrollY] = useState(0)
   const navigate = useNavigate()
-  const { isSignedIn, user } = useUser()
-  const { openSignIn, openSignUp } = useClerk()
+
+  // Check if Clerk is available
+  let isSignedIn = false
+  let openSignIn = null
+  let openSignUp = null
+
+  try {
+    const { useUser, useClerk } = require('@clerk/clerk-react')
+    const userHook = useUser()
+    const clerkHook = useClerk()
+    isSignedIn = userHook?.isSignedIn || false
+    openSignIn = clerkHook?.openSignIn
+    openSignUp = clerkHook?.openSignUp
+  } catch (error) {
+    console.log('Clerk not configured, using fallback authentication')
+  }
 
   // Handle scroll for parallax effects
   const handleScroll = useCallback(() => {
@@ -75,14 +88,24 @@ const LandingPageWithAuth = () => {
 
   // Handle sign in button click
   const handleSignIn = () => {
-    console.log('Opening Clerk sign in modal')
-    openSignIn()
+    if (openSignIn) {
+      console.log('Opening Clerk sign in modal')
+      openSignIn()
+    } else {
+      console.log('Navigating to dashboard (Clerk not configured)')
+      navigate('/dashboard')
+    }
   }
 
   // Handle sign up button click
   const handleSignUp = () => {
-    console.log('Opening Clerk sign up modal')
-    openSignUp()
+    if (openSignUp) {
+      console.log('Opening Clerk sign up modal')
+      openSignUp()
+    } else {
+      console.log('Navigating to dashboard (Clerk not configured)')
+      navigate('/dashboard')
+    }
   }
 
   return (

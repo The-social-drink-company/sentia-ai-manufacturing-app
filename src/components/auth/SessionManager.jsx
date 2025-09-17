@@ -32,7 +32,7 @@ const SessionManager = ({ children, warningTime = 300000 }) => { // 5 minutes wa
       // Get a fresh token from Clerk
       const token = await getToken({ template: 'default' });
       if (token) {
-        // // console.log('Session refreshed successfully');
+        // // // console.log('Session refreshed successfully');
         setShowWarning(false);
         // Update session expiry time
         if (session?.lastActiveAt) {

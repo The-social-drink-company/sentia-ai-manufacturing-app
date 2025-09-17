@@ -36,7 +36,7 @@ const AIAnalyticsDashboard = () => {
           throw new Error('AI Analytics API unavailable');
         }
         const data = await response.json();
-        // // console.log('AI Analytics data loaded from API:', data);
+        // // // console.log('AI Analytics data loaded from API:', data);
         return data;
       } catch (error) {
         logWarn('AI Analytics API unavailable, using fallback data');

@@ -83,6 +83,7 @@ import ExcelJS from 'exceljs';
 import csv from 'csv-parser';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import fetch from 'node-fetch';
 // NextAuth will be handled by the frontend - server doesn't need direct NextAuth integration
 // import { getSession } from './lib/auth.js';
@@ -111,6 +112,8 @@ import { createServer } from 'http';
 import apiIntegrationManager from './services/integrations/api-integration-manager.js';
 // Import route validator
 import routeValidator from './services/route-validator.js';
+// Import Prisma client for database connection
+import { prisma, testDatabaseConnection } from './lib/prisma.js';
 // Enterprise Components - Temporarily disabled for deployment fix
 // import EnterpriseSecurityFramework from './services/security/enterpriseSecurityFramework.js';
 // import EnterpriseIntegrationHub from './services/integrations/enterpriseIntegrationHub.js';
@@ -508,7 +511,6 @@ function sendSSEEvent(eventType, data) {
 import { verifyUserCredentials, initializeDefaultUsers } from './lib/user-service.js';
 
 // Test database connection and initialize default users on server startup
-import { testDatabaseConnection } from './lib/prisma.js';
 
 // Initialize database connection asynchronously (non-blocking)
 (async () => {
@@ -800,6 +802,23 @@ app.get('/api/health', async (req, res) => {
     health.NO_RAILWAY = true;
     health.correctVersion = true;
     health.port = PORT;
+
+    // Add database connection status
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      health.database = {
+        status: 'connected',
+        provider: 'PostgreSQL (Render)',
+        message: '✅ Database connected successfully'
+      };
+    } catch (dbError) {
+      health.database = {
+        status: 'disconnected',
+        provider: 'PostgreSQL (Render)',
+        message: '❌ Database connection failed',
+        error: dbError.message
+      };
+    }
 
     // Set appropriate status code based on health
     const statusCode = health.status === 'healthy' ? 200 :
@@ -2519,10 +2538,63 @@ try {
   console.log('  - POST /api/admin/users/:userId/revoke (authenticateUser middleware)');
   console.log('  - POST /api/admin/users/:userId/role (authenticateUser middleware)');
   console.log('  - GET /api/admin/system-stats (authenticateUser middleware)');
-  logInfo('All admin routes registered successfully');
+  console.log('  - GET /api/personnel (public access)');
+  logInfo('All admin and personnel routes registered successfully');
 } catch (error) {
   logError('Admin routes registration logging failed', error);
 }
+
+// Personnel API Endpoint - Returns users based on role filter
+app.get('/api/personnel', async (req, res) => {
+  try {
+    const { role } = req.query;
+
+    // Build where clause based on role filter
+    const where = role ? {
+      role: {
+        in: Array.isArray(role) ? role : [role]
+      }
+    } : {};
+
+    // Fetch personnel from database
+    const personnel = await prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        first_name: true,
+        last_name: true,
+        display_name: true,
+        role: true,
+        department: true,
+        isActive: true,
+        organizationId: true,
+        last_login: true
+      },
+      orderBy: {
+        display_name: 'asc'
+      }
+    });
+
+    res.json({
+      success: true,
+      data: personnel,
+      count: personnel.length
+    });
+  } catch (error) {
+    console.error('Personnel API error:', error);
+    logError('Personnel API failed', { error: error.message });
+
+    // Return empty data on error to prevent frontend crashes
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: [],
+      count: 0
+    });
+  }
+});
 
 // File Upload and Data Import APIs
 app.post('/api/data/upload', authenticateUser, upload.single('dataFile'), async (req, res) => {
@@ -5137,30 +5209,21 @@ app.get('/test', (req, res) => {
 </html>`);
 });
 
-// Explicitly serve the main entry point
-app.get('/index.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
-
-// Serve JavaScript files - simplified for Render compatibility
-app.use('/js', express.static(path.join(__dirname, 'dist', 'js')));
-
-// Serve CSS and other assets - simplified for Render compatibility
-app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets')));
-
-// [RENDER FIX] Proper static file serving for production
-// Serve static files from dist folder with proper MIME types
-app.use(express.static(path.join(__dirname, 'dist'), {
+// Serve static files from dist folder - simplified and fixed
+app.use(express.static(join(__dirname, 'dist'), {
   setHeaders: (res, filePath) => {
-    // Set proper MIME types without logging to prevent crashes
+    // Set proper MIME types
     if (filePath.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
     } else if (filePath.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
+      res.setHeader('Content-Type', 'text/css; charset=utf-8');
     } else if (filePath.endsWith('.html')) {
-      res.setHeader('Content-Type', 'text/html');
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    } else if (filePath.endsWith('.json')) {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
     }
-  }
+  },
+  index: false // Disable automatic index.html serving to handle it in catch-all
 }));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
@@ -5754,7 +5817,7 @@ app.get('*', (req, res) => {
   // }
   
   // Serve the React app for all other routes (SPA routing)
-  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  const indexPath = join(__dirname, 'dist', 'index.html');
 
   // Check if dist/index.html exists
   if (fs.existsSync(indexPath)) {
@@ -5898,13 +5961,23 @@ app.use((error, req, res, next) => {
     console.log('This is the LATEST version without Railway references');
     console.log('='.repeat(80));
     console.log(`[CRITICAL] Starting server on 0.0.0.0:${port} (PORT env: ${process.env.PORT})`);
-    httpServer.listen(port, '0.0.0.0', () => {
+    httpServer.listen(port, '0.0.0.0', async () => {
       console.log(`[SUCCESS] Server listening on http://0.0.0.0:${port}`);
       logInfo('sentia-api started successfully', {
         host: '0.0.0.0',
         port: port,
         pid: process.pid
       });
+
+      // Test database connection after server starts
+      try {
+        await prisma.$connect();
+        console.log('✅ Database connected successfully');
+        logInfo('Database connection established');
+      } catch (error) {
+        console.error('❌ Database connection failed:', error);
+        logError('Database connection failed', { error: error.message });
+      }
     });
     
     // Log successful startup with enterprise logging

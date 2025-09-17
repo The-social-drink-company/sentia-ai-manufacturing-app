@@ -221,27 +221,10 @@ const FallbackAuthProvider = ({ children }) => {
 }
 
 function App() {
-  // Use ClerkProvider if key is available, otherwise use fallback
-  const AuthProvider = clerkPubKey ? ClerkProvider : FallbackAuthProvider
-  const authProps = clerkPubKey ? {
-    publishableKey: clerkPubKey,
-    afterSignOutUrl: "/",
-    // Add Clerk configuration to prevent blocking
-    appearance: {
-      elements: {
-        rootBox: "clerk-root-box"
-      }
-    },
-    // Skip redirect on error
-    navigate: (to) => {
-      if (to && !to.includes('error')) {
-        window.location.href = to
-      }
-    }
-  } : {}
+  // ClerkProvider is now handled in main.jsx
+  // This component focuses on routing and app structure
 
   return (
-    <AuthProvider {...authProps}>
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
           <Router>
@@ -969,7 +952,6 @@ function App() {
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>
-    </AuthProvider>
   )
 }
 

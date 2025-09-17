@@ -12,7 +12,7 @@
  * @created 2025-01-20
  */
 
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 
 class GlobalReadinessRepository {
   constructor() {
@@ -446,4 +446,4 @@ class GlobalReadinessRepository {
   }
 }
 
-module.exports = GlobalReadinessRepository;
+export default GlobalReadinessRepository;

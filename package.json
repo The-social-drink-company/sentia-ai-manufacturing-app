@@ -201,6 +201,7 @@
     "seedrandom": "^3.0.5",
     "shopify-api-node": "^3.15.0",
     "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "^1.14.0",
     "three": "^0.180.0",
     "web-vitals": "^5.1.0",

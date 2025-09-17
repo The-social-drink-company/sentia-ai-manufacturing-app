@@ -5209,6 +5209,44 @@ app.get('/test', (req, res) => {
 </html>`);
 });
 
+// Debug logging for Render deployment
+console.log('='.repeat(60));
+console.log('🚀 RENDER DEPLOYMENT DEBUG INFO');
+console.log('='.repeat(60));
+console.log('📁 Serving static files from:', join(__dirname, 'dist'));
+console.log('🔌 Server running on port:', PORT);
+console.log('🌍 Environment:', process.env.NODE_ENV || 'development');
+console.log('☁️  Render deployment:', process.env.RENDER ? 'YES' : 'NO');
+console.log('🔗 External URL:', process.env.RENDER_EXTERNAL_URL || 'Not set');
+console.log('📂 __dirname:', __dirname);
+console.log('📂 Current working directory:', process.cwd());
+
+// Check if dist folder exists
+const distPath = join(__dirname, 'dist');
+if (fs.existsSync(distPath)) {
+  const distFiles = fs.readdirSync(distPath);
+  console.log('✅ Dist folder exists with', distFiles.length, 'files');
+  console.log('📄 index.html exists:', fs.existsSync(join(distPath, 'index.html')));
+  console.log('📁 assets folder exists:', fs.existsSync(join(distPath, 'assets')));
+  console.log('📁 js folder exists:', fs.existsSync(join(distPath, 'js')));
+} else {
+  console.error('❌ CRITICAL: Dist folder not found at', distPath);
+}
+
+// Database connection debug
+if (process.env.DATABASE_URL) {
+  const dbUrl = process.env.DATABASE_URL;
+  const maskedUrl = dbUrl.substring(0, 30) + '...' + (dbUrl.includes('?') ? dbUrl.substring(dbUrl.indexOf('?')) : '');
+  console.log('🗄️  Database URL configured:', maskedUrl);
+} else {
+  console.warn('⚠️  DATABASE_URL not set');
+}
+
+// Clerk configuration debug
+console.log('🔐 Clerk Publishable Key:', process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT SET');
+console.log('🔑 Clerk Secret Key:', process.env.CLERK_SECRET_KEY ? 'SET' : 'NOT SET');
+console.log('='.repeat(60));
+
 // Serve static files from dist folder - simplified and fixed
 app.use(express.static(join(__dirname, 'dist'), {
   setHeaders: (res, filePath) => {
@@ -5962,11 +6000,21 @@ app.use((error, req, res, next) => {
     console.log('='.repeat(80));
     console.log(`[CRITICAL] Starting server on 0.0.0.0:${port} (PORT env: ${process.env.PORT})`);
     httpServer.listen(port, '0.0.0.0', async () => {
-      console.log(`[SUCCESS] Server listening on http://0.0.0.0:${port}`);
+      console.log('='.repeat(60));
+      console.log(`✅ [SUCCESS] Server listening on http://0.0.0.0:${port}`);
+      console.log('📍 Access URLs:');
+      console.log(`   Local: http://localhost:${port}`);
+      if (process.env.RENDER_EXTERNAL_URL) {
+        console.log(`   External: ${process.env.RENDER_EXTERNAL_URL}`);
+      }
+      console.log('='.repeat(60));
+
       logInfo('sentia-api started successfully', {
         host: '0.0.0.0',
         port: port,
-        pid: process.pid
+        pid: process.pid,
+        render: !!process.env.RENDER,
+        distExists: fs.existsSync(join(__dirname, 'dist'))
       });
 
       // Test database connection after server starts

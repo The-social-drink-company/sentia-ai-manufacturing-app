@@ -5153,11 +5153,11 @@ app.get('/api/analytics/overview', (req, res) => {
 });
 
 // Debug: Check if dist directory exists in Render
-const distPath = path.join(__dirname, 'dist');
+const distPathDebug1 = path.join(__dirname, 'dist');
 const jsPath = path.join(__dirname, 'dist', 'js');
 try {
-  const distStats = fs.statSync(distPath);
-  const distFiles = fs.readdirSync(distPath);
+  const distStats = fs.statSync(distPathDebug1);
+  const distFiles = fs.readdirSync(distPathDebug1);
   console.log('DIST DEBUG: Directory exists:', distStats.isDirectory());
   console.log('DIST DEBUG: Files count:', distFiles.length);
   console.log('DIST DEBUG: Sample files:', distFiles.slice(0, 5));
@@ -5222,15 +5222,15 @@ console.log('📂 __dirname:', __dirname);
 console.log('📂 Current working directory:', process.cwd());
 
 // Check if dist folder exists
-const distPath = join(__dirname, 'dist');
-if (fs.existsSync(distPath)) {
-  const distFiles = fs.readdirSync(distPath);
+const distPathDebug2 = join(__dirname, 'dist');
+if (fs.existsSync(distPathDebug2)) {
+  const distFiles = fs.readdirSync(distPathDebug2);
   console.log('✅ Dist folder exists with', distFiles.length, 'files');
-  console.log('📄 index.html exists:', fs.existsSync(join(distPath, 'index.html')));
-  console.log('📁 assets folder exists:', fs.existsSync(join(distPath, 'assets')));
-  console.log('📁 js folder exists:', fs.existsSync(join(distPath, 'js')));
+  console.log('📄 index.html exists:', fs.existsSync(join(distPathDebug2, 'index.html')));
+  console.log('📁 assets folder exists:', fs.existsSync(join(distPathDebug2, 'assets')));
+  console.log('📁 js folder exists:', fs.existsSync(join(distPathDebug2, 'js')));
 } else {
-  console.error('❌ CRITICAL: Dist folder not found at', distPath);
+  console.error('❌ CRITICAL: Dist folder not found at', distPathDebug2);
 }
 
 // Database connection debug
@@ -5378,27 +5378,27 @@ app.get('/api/dashboard/executive', async (req, res) => {
 
 // Comprehensive build debugging endpoint
 app.get('/api/test-simple', (req, res) => {
-  const distPath = path.join(__dirname, 'dist');
+  const distPathDebug3 = path.join(__dirname, 'dist');
   let distInfo = {};
-  
+
   try {
-    const distStats = fs.statSync(distPath);
-    const distFiles = fs.readdirSync(distPath);
-    
+    const distStats = fs.statSync(distPathDebug3);
+    const distFiles = fs.readdirSync(distPathDebug3);
+
     distInfo = {
       exists: true,
       isDirectory: distStats.isDirectory(),
       totalFiles: distFiles.length,
       indexHtmlExists: distFiles.includes('index.html'),
-      assetsExists: fs.existsSync(path.join(distPath, 'assets')),
+      assetsExists: fs.existsSync(path.join(distPathDebug3, 'assets')),
       sampleFiles: distFiles.slice(0, 10),
-      indexHtmlSize: fs.existsSync(path.join(distPath, 'index.html')) 
-        ? fs.statSync(path.join(distPath, 'index.html')).size 
+      indexHtmlSize: fs.existsSync(path.join(distPathDebug3, 'index.html'))
+        ? fs.statSync(path.join(distPathDebug3, 'index.html')).size
         : 0
     };
-    
+
     if (distInfo.assetsExists) {
-      const assetsFiles = fs.readdirSync(path.join(distPath, 'assets'));
+      const assetsFiles = fs.readdirSync(path.join(distPathDebug3, 'assets'));
       distInfo.assetsCount = assetsFiles.length;
       distInfo.mainJSExists = assetsFiles.some(f => f.startsWith('index-') && f.endsWith('.js'));
       distInfo.sampleAssets = assetsFiles.slice(0, 5);

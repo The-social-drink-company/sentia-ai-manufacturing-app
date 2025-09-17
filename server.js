@@ -2592,6 +2592,15 @@ try {
   logError('Admin routes registration logging failed', error);
 }
 
+// Simple Personnel Test Endpoint
+app.get('/api/personnel/test', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Personnel API test endpoint working',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Personnel API Endpoint - Returns users based on role filter with timeout and fallback
 app.get('/api/personnel', async (req, res) => {
   try {
@@ -2601,7 +2610,8 @@ app.get('/api/personnel', async (req, res) => {
     // Build where clause based on role filter
     const where = {};
     if (role) {
-      where.role = Array.isArray(role) ? { in: role } : role;
+      // Handle both single role and array of roles
+      where.role = Array.isArray(role) ? { in: role } : { equals: role };
     }
 
     // Create timeout promise (5 seconds)
@@ -2610,7 +2620,7 @@ app.get('/api/personnel', async (req, res) => {
     );
 
     // Create database query promise
-    const queryPromise = prisma.user.findMany({
+    const queryPromise = prisma.User.findMany({
       where,
       select: {
         id: true,

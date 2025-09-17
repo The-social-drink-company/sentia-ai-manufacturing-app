@@ -26,7 +26,7 @@ import { createRouteComponent, createPriorityComponent, createLowPriorityCompone
 import RoleGuard from './components/auth/RoleGuard'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
-import SessionManager from './components/auth/SessionManager'
+// import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
 import UserOnboarding from './components/auth/UserOnboarding'
 
 // High-Priority Components (Core dashboard functionality)
@@ -233,10 +233,10 @@ function App() {
   return (
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
-          <SessionManager warningTime={300000}>
-            <Router>
-              {/* EnterpriseIntegrationHub removed - missing dependencies */}
-              <div className="App">
+          {/* SessionManager temporarily disabled - uses Clerk hooks */}
+          <Router>
+            {/* EnterpriseIntegrationHub removed - missing dependencies */}
+            <div className="App">
                 <Routes>
                 {/* Public Landing Page */}
                 <Route path="/" element={
@@ -993,7 +993,7 @@ function App() {
                     </div>
               {/* EnterpriseIntegrationHub closing tag removed */}
             </Router>
-          </SessionManager>
+          {/* SessionManager closing tag removed */}
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>

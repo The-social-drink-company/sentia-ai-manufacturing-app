@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SignInButton, SignUpButton, useUser, UserButton } from '@clerk/clerk-react'
-import { 
-  ChartBarIcon, 
-  CurrencyDollarIcon, 
+import {
+  ChartBarIcon,
+  CurrencyDollarIcon,
   LightBulbIcon,
   ShieldCheckIcon,
   BanknotesIcon,
@@ -15,7 +15,18 @@ import {
 
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0)
-  const { isSignedIn, user } = useUser()
+
+  // Safely use useUser with fallback
+  let isSignedIn = false
+  let user = null
+  try {
+    const userHook = useUser()
+    isSignedIn = userHook.isSignedIn
+    user = userHook.user
+  } catch (e) {
+    // Clerk not available, running in bypass mode
+    console.log('Running without Clerk authentication')
+  }
 
   // Handle scroll for parallax effects
   const handleScroll = useCallback(() => {

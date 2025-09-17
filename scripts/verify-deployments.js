@@ -5,7 +5,7 @@
  * Verifies that all three Railway deployments are working correctly
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 
 const environments = {
   development: 'https://dev.sentia-manufacturing.railway.app',

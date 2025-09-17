@@ -6,7 +6,7 @@
  * Runs every 10 minutes to check system health and auto-fix issues
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import { exec } from 'child_process';
 import util from 'util';
 const execPromise = util.promisify(exec);

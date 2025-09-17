@@ -4,7 +4,7 @@
  */
 
 import { logInfo, logError, logWarn } from '../observability/structuredLogger.js';
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 
 class APIIntegrationManager {
   constructor() {

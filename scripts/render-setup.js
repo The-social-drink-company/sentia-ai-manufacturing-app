@@ -5,7 +5,7 @@
  * Sets up environment variables for Render services
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import fs from 'fs';
 import path from 'path';
 

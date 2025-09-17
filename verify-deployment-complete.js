@@ -4,7 +4,7 @@
  * Checks all 7 points from the verification checklist
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import { JSDOM } from 'jsdom';
 
 const RENDER_URL = 'https://sentia-manufacturing-development.onrender.com';

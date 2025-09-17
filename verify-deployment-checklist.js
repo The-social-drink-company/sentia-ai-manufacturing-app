@@ -4,7 +4,7 @@
  * Comprehensive test suite to verify all critical functionality
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';

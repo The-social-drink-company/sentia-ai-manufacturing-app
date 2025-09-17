@@ -85,7 +85,6 @@ import csv from 'csv-parser';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import fetch from 'node-fetch';
 // NextAuth will be handled by the frontend - server doesn't need direct NextAuth integration
 // import { getSession } from './lib/auth.js';
 import xeroService from './services/xeroService.js';

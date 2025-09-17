@@ -3,7 +3,7 @@
  * Handles Shopify API integration for sales and product data
  */
 
-import fetch from 'node-fetch'
+// Node 18+ has global fetch
 import { logInfo, logWarn, logError } from './observability/structuredLogger.js'
 
 class ShopifyService {

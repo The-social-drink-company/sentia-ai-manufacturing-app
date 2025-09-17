@@ -4,7 +4,7 @@
  * Checks the deployment status and helps diagnose issues
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import dotenv from 'dotenv';
 
 // Load environment variables

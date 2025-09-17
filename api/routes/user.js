@@ -1,7 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { authenticate } from '../../middleware/auth.js';
-import { rateLimiters } from '../../middleware/rateLimiter.js';
+import { authenticate } from '../middleware/auth.js';
+import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler } from '../../lib/asyncHandler.js';
 
 const router = express.Router();

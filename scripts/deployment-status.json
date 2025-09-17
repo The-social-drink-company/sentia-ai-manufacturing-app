@@ -30,3 +30,6 @@
 {"timestamp":"2025-09-17T14:10:31.510Z","healthy":true,"failures":0,"errors":[]}
 {"timestamp":"2025-09-17T14:11:32.302Z","healthy":true,"failures":0,"errors":[]}
 {"timestamp":"2025-09-17T14:12:33.047Z","healthy":true,"failures":0,"errors":[]}
+{"timestamp":"2025-09-17T14:14:19.297Z","healthy":false,"failures":1,"errors":[{"type":"SERVER_ERROR","description":"Server error: 502"},{"type":"SERVER_ERROR","description":"Server error: 502"},{"type":"SERVER_ERROR","description":"Server error: 502"}]}
+{"timestamp":"2025-09-17T14:15:21.896Z","healthy":true,"failures":0,"errors":[]}
+{"timestamp":"2025-09-17T14:16:22.775Z","healthy":true,"failures":0,"errors":[]}

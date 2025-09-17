@@ -5405,20 +5405,59 @@ console.log('🔐 Clerk Publishable Key:', process.env.VITE_CLERK_PUBLISHABLE_KE
 console.log('🔑 Clerk Secret Key:', process.env.CLERK_SECRET_KEY ? 'SET' : 'NOT SET');
 console.log('='.repeat(60));
 
-// Serve static files from dist folder with proper MIME types
+// Serve static files from dist folder with proper MIME types and cache control
 app.use(express.static(join(__dirname, 'dist'), {
+  maxAge: '1h', // Cache static assets for 1 hour
+  etag: true,
+  lastModified: true,
   setHeaders: (res, path) => {
+    // Set proper MIME types
     if (path.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
     } else if (path.endsWith('.css')) {
       res.setHeader('Content-Type', 'text/css; charset=UTF-8');
     } else if (path.endsWith('.html')) {
       res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+      // Don't cache HTML files
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     } else if (path.endsWith('.json')) {
       res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    } else if (path.endsWith('.svg')) {
+      res.setHeader('Content-Type', 'image/svg+xml');
+    } else if (path.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+    } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+    } else if (path.endsWith('.ico')) {
+      res.setHeader('Content-Type', 'image/x-icon');
     }
   }
 }));
+
+// Debug endpoint to verify static file serving
+app.get('/api/debug/static-files', (req, res) => {
+  const distPath = join(__dirname, 'dist');
+  const indexPath = join(distPath, 'index.html');
+  const jsPath = join(distPath, 'js');
+  const assetsPath = join(distPath, 'assets');
+
+  res.json({
+    status: 'ok',
+    paths: {
+      __dirname,
+      distPath,
+      indexPath,
+      distExists: fs.existsSync(distPath),
+      indexExists: fs.existsSync(indexPath),
+      jsExists: fs.existsSync(jsPath),
+      assetsExists: fs.existsSync(assetsPath)
+    },
+    files: {
+      jsFiles: fs.existsSync(jsPath) ? fs.readdirSync(jsPath).slice(0, 5) : [],
+      cssFiles: fs.existsSync(assetsPath) ? fs.readdirSync(assetsPath).filter(f => f.endsWith('.css')) : []
+    }
+  });
+});
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
 app.get('/api/dashboard/executive', async (req, res) => {

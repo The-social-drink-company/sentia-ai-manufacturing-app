@@ -107,6 +107,7 @@ import { featureFlags } from './services/feature-flags.js';
 import { performanceMonitor, performanceMiddleware } from './monitoring/performance-monitor.js';
 // Import realtime manager for WebSocket and SSE
 import realtimeManager from './services/realtime/websocket-sse-manager.js';
+import websocketService from './services/websocketService.js';
 import { createServer } from 'http';
 // Import API integration manager
 import apiIntegrationManager from './services/integrations/api-integration-manager.js';
@@ -6192,6 +6193,10 @@ app.use((error, req, res, next) => {
       realtimeManager.initializeWebSocket(httpServer);
       logInfo('WebSocket server initialized');
     }
+
+    // Initialize enhanced WebSocket service for real-time dashboard updates
+    websocketService.initialize(httpServer);
+    logInfo('Enhanced WebSocket service initialized for real-time updates');
     
     // Initialize SSE if enabled
     if (process.env.ENABLE_SSE === 'true') {

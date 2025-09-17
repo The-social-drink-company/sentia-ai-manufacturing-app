@@ -354,9 +354,8 @@ export default function EnhancedDashboard() {
             </div>
           </div>
         </div>
-      </div>
-          </div>
         </div>
+      </div>
       )}
     </div>
   );

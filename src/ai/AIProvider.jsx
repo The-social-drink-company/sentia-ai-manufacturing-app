@@ -39,11 +39,13 @@ export const AIProvider = ({ children }) => {
   const [modelPerformance, setModelPerformance] = useState({});
   const [insights, setInsights] = useState([]);
   const [isAIEnabled, setIsAIEnabled] = useState(true);
-  const [apiEndpoint] = useState(
-    process.env.NODE_ENV === 'production' 
+  const [apiEndpoint] = useState(() => {
+    const env = typeof import.meta !== 'undefined' ? import.meta.env : {};
+    const nodeEnv = env.MODE || env.NODE_ENV || 'development';
+    return nodeEnv === 'production' 
       ? 'https://web-production-99691282.up.railway.app/mcp'
-      : 'http://localhost:3001/mcp'
-  );
+      : 'http://localhost:3001/mcp';
+  });
 
   // Initialize AI services
   useEffect(() => {

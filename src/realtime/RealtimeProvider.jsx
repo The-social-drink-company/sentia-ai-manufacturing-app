@@ -52,11 +52,13 @@ export const RealtimeProvider = ({ children }) => {
   const connectionStartTimeRef = useRef(null);
   const latencyMeasurements = useRef([]);
 
-  const [wsEndpoint] = useState(
-    process.env.NODE_ENV === 'production' 
+  const [wsEndpoint] = useState(() => {
+    const env = typeof import.meta !== 'undefined' ? import.meta.env : {};
+    const nodeEnv = env.MODE || env.NODE_ENV || 'development';
+    return nodeEnv === 'production' 
       ? 'wss://web-production-99691282.up.railway.app/ws'
-      : 'ws://localhost:3001/ws'
-  );
+      : 'ws://localhost:3001/ws';
+  });
 
   // Initialize real-time connection
   const connect = useCallback(() => {

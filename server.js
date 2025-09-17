@@ -5415,6 +5415,22 @@ console.log('🔐 Clerk Publishable Key:', process.env.VITE_CLERK_PUBLISHABLE_KE
 console.log('🔑 Clerk Secret Key:', process.env.CLERK_SECRET_KEY ? 'SET' : 'NOT SET');
 console.log('='.repeat(60));
 
+// Enhanced debug logging for Render deployment verification
+console.log('📁 STATIC FILE SERVING DEBUG:');
+console.log('  - __dirname:', __dirname);
+console.log('  - dist path:', join(__dirname, 'dist'));
+console.log('  - dist exists:', fs.existsSync(join(__dirname, 'dist')));
+if (fs.existsSync(join(__dirname, 'dist'))) {
+  const files = fs.readdirSync(join(__dirname, 'dist'));
+  console.log('  - dist contents:', files.slice(0, 10).join(', '), files.length > 10 ? '...' : '');
+  const indexPath = join(__dirname, 'dist', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    const stats = fs.statSync(indexPath);
+    console.log('  - index.html size:', stats.size, 'bytes');
+  }
+}
+console.log('='.repeat(60));
+
 // Serve static files from dist folder with proper MIME types and cache control
 app.use(express.static(join(__dirname, 'dist'), {
   maxAge: '1h', // Cache static assets for 1 hour

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { SignInButton, SignUpButton, useUser, UserButton } from '@clerk/clerk-react'
 import {
   ChartBarIcon,
   CurrencyDollarIcon,
@@ -13,30 +12,40 @@ import {
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
 
+// Conditionally import Clerk components
+let SignInButton, SignUpButton, useUser, UserButton
+try {
+  const clerkComponents = require('@clerk/clerk-react')
+  SignInButton = clerkComponents.SignInButton
+  SignUpButton = clerkComponents.SignUpButton
+  useUser = clerkComponents.useUser
+  UserButton = clerkComponents.UserButton
+} catch (e) {
+  // Clerk not available
+}
+
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0)
+  const [isSignedIn, setIsSignedIn] = useState(false)
+  const [clerkAvailable, setClerkAvailable] = useState(false)
 
-  // Check if Clerk is available
-  const [clerkAvailable] = useState(() => {
-    try {
-      // Try to access Clerk - this will throw if not available
-      return window.Clerk !== undefined
-    } catch {
-      return false
+  // Check if Clerk is available and user is signed in
+  useEffect(() => {
+    // Check if Clerk components are available
+    if (useUser) {
+      setClerkAvailable(true)
     }
-  })
+  }, [])
 
-  // Safely use useUser with fallback
-  let isSignedIn = false
+  // Use Clerk hooks if available
   let user = null
-  if (clerkAvailable) {
+  if (clerkAvailable && useUser) {
     try {
       const userHook = useUser()
-      isSignedIn = userHook.isSignedIn
+      setIsSignedIn(userHook.isSignedIn || false)
       user = userHook.user
     } catch (e) {
-      // Clerk hook failed
-      console.log('Running without Clerk authentication')
+      console.log('Clerk not initialized')
     }
   }
 

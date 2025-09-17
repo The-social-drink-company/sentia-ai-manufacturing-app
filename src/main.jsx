@@ -102,8 +102,8 @@ const LoadingFallback = () => (
 // Render app with ClerkProvider if key exists, otherwise render directly
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
-// TEMPORARY: Bypass Clerk for testing
-const bypassClerk = true;
+// Enable Clerk authentication
+const bypassClerk = false;
 
 if (clerkPubKey && !bypassClerk) {
   root.render(

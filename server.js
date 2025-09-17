@@ -1723,20 +1723,8 @@ app.get('/api/dashboard/overview', async (req, res) => {
   }
 });
 
-// Xero Status endpoint
-app.get('/api/xero/status', async (req, res) => {
-  try {
-    const configured = !!process.env.XERO_CLIENT_ID && !!process.env.XERO_CLIENT_SECRET;
-    res.json({
-      configured,
-      connected: configured,
-      lastSync: configured ? new Date().toISOString() : null,
-      status: configured ? 'active' : 'not_configured'
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to check Xero status' });
-  }
-});
+// Xero Status endpoint - REMOVED DUPLICATE FAKE ENDPOINT
+// The real Xero status endpoint is at line 1014 using xeroIntegration.checkConnectionStatus()
 
 // Shopify Status endpoint
 app.get('/api/shopify/status', async (req, res) => {

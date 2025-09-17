@@ -5247,8 +5247,20 @@ console.log('🔐 Clerk Publishable Key:', process.env.VITE_CLERK_PUBLISHABLE_KE
 console.log('🔑 Clerk Secret Key:', process.env.CLERK_SECRET_KEY ? 'SET' : 'NOT SET');
 console.log('='.repeat(60));
 
-// Serve static files from dist folder - simplified
-app.use(express.static(join(__dirname, 'dist')));
+// Serve static files from dist folder with proper MIME types
+app.use(express.static(join(__dirname, 'dist'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    } else if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+    } else if (path.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+    } else if (path.endsWith('.json')) {
+      res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    }
+  }
+}));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
 app.get('/api/dashboard/executive', async (req, res) => {

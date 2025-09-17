@@ -32,7 +32,7 @@ const SessionManager = ({ children, warningTime = 300000 }) => { // 5 minutes wa
       // Get a fresh token from Clerk
       const token = await getToken({ template: 'default' });
       if (token) {
-        console.log('Session refreshed successfully');
+        // console.log('Session refreshed successfully');
         setShowWarning(false);
         // Update session expiry time
         if (session?.lastActiveAt) {
@@ -41,7 +41,7 @@ const SessionManager = ({ children, warningTime = 300000 }) => { // 5 minutes wa
         }
       }
     } catch (error) {
-      console.error('Failed to refresh session:', error);
+      logError('Failed to refresh session:', error);
     } finally {
       setIsRefreshing(false);
     }
@@ -199,7 +199,7 @@ export const useSessionManager = () => {
       const token = await getToken({ template: 'default' });
       return !!token;
     } catch (error) {
-      console.error('Session refresh failed:', error);
+      logError('Session refresh failed:', error);
       return false;
     }
   };

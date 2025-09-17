@@ -33,7 +33,7 @@ const DebugDashboard = () => {
 }
 
 function App() {
-  console.log('🏭 Sentia Debug App Loading...')
+  // console.log('🏭 Sentia Debug App Loading...')
   
   return (
     <Router>

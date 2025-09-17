@@ -154,7 +154,7 @@ const DashboardGrid = ({ userRole = 'viewer' }) => {
             }
           }
         } catch (error) {
-          console.error('Failed to load layout from database:', error);
+          logError('Failed to load layout from database:', error);
         }
       }
 
@@ -265,7 +265,7 @@ const DashboardGrid = ({ userRole = 'viewer' }) => {
   // Save layout to database (API call)
   const saveLayoutToDatabase = async () => {
     if (!user?.id) {
-      console.warn('Cannot save layout: User not authenticated');
+      logWarn('Cannot save layout: User not authenticated');
       return;
     }
 
@@ -285,7 +285,7 @@ const DashboardGrid = ({ userRole = 'viewer' }) => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Layout saved to database:', data.message);
+        // console.log('Layout saved to database:', data.message);
         // Show success notification (you can add a toast notification here)
         const successDiv = document.createElement('div');
         successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
@@ -294,10 +294,10 @@ const DashboardGrid = ({ userRole = 'viewer' }) => {
         setTimeout(() => successDiv.remove(), 3000);
       } else {
         const error = await response.json();
-        console.error('Failed to save layout:', error);
+        logError('Failed to save layout:', error);
       }
     } catch (error) {
-      console.error('Failed to save layout:', error);
+      logError('Failed to save layout:', error);
     }
   };
 

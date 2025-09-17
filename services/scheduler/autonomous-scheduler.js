@@ -761,13 +761,61 @@ class AutonomousScheduler extends EventEmitter {
     if (run.duration) {
       this.metrics.runDurations.push(run.duration);
     }
-    
+
     // Keep only last 100 metrics
     Object.keys(this.metrics).forEach(key => {
       if (Array.isArray(this.metrics[key]) && this.metrics[key].length > 100) {
         this.metrics[key] = this.metrics[key].slice(-100);
       }
     });
+  }
+
+  /**
+   * Track performance metrics for monitoring
+   * @param {string} metric - The metric name
+   * @param {number|object} value - The metric value
+   */
+  trackPerformance(metric, value) {
+    try {
+      // Store in appropriate metrics collection
+      switch (metric) {
+        case 'runDuration':
+          this.metrics.runDurations.push(value);
+          break;
+        case 'resourceUsage':
+          this.metrics.resourceUsage.push(value);
+          break;
+        case 'errorRate':
+          this.metrics.errorRates.push(value);
+          break;
+        case 'fixSuccessRate':
+          this.metrics.fixSuccessRates.push(value);
+          break;
+        case 'deploymentTime':
+          this.metrics.deploymentTimes.push(value);
+          break;
+        default:
+          // Store custom metrics
+          if (!this.metrics[metric]) {
+            this.metrics[metric] = [];
+          }
+          this.metrics[metric].push({
+            value,
+            timestamp: new Date().toISOString()
+          });
+      }
+
+      // Keep only last 100 entries per metric
+      if (this.metrics[metric] && Array.isArray(this.metrics[metric]) && this.metrics[metric].length > 100) {
+        this.metrics[metric] = this.metrics[metric].slice(-100);
+      }
+
+      // Emit metric event for real-time monitoring
+      this.emit('metricTracked', { metric, value, timestamp: new Date() });
+
+    } catch (error) {
+      console.error(`Failed to track performance metric ${metric}:`, error.message);
+    }
   }
 
   async saveRunRecord(run) {

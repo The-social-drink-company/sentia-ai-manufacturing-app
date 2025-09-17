@@ -5,6 +5,8 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // Connection pool settings for better performance
+  connectionLimit = 10
 }
 
 model User {
@@ -1660,4 +1662,89 @@ model MCPServerConnection {
   updatedAt     DateTime @updatedAt
 
   @@map("mcp_server_connections")
+}
+
+// Financial Models for Working Capital API
+model Invoice {
+  id            String   @id @default(uuid()) @db.Uuid
+  invoiceNumber String   @unique @map("invoice_number") @db.VarChar(50)
+  customerName  String   @map("customer_name") @db.VarChar(255)
+  customerEmail String?  @map("customer_email") @db.VarChar(255)
+  totalAmount   Decimal  @map("total_amount") @db.Decimal(15, 2)
+  taxAmount     Decimal  @map("tax_amount") @db.Decimal(10, 2)
+  status        String   @db.VarChar(20) // draft, pending, paid, overdue, cancelled
+  dueDate       DateTime @map("due_date") @db.Date
+  paidDate      DateTime? @map("paid_date") @db.Date
+  terms         String?  @db.Text
+  notes         String?  @db.Text
+  items         Json     @db.Json
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([status])
+  @@index([dueDate])
+  @@index([createdAt])
+  @@index([status, dueDate])
+  @@map("invoices")
+}
+
+model Expense {
+  id             String   @id @default(uuid()) @db.Uuid
+  vendor         String   @db.VarChar(255)
+  category       String   @db.VarChar(50) // materials, labor, overhead, utilities, maintenance, other
+  amount         Decimal  @db.Decimal(15, 2)
+  description    String   @db.Text
+  date           DateTime @db.Date
+  paymentMethod  String?  @map("payment_method") @db.VarChar(50) // cash, credit, bank_transfer, check
+  reference      String?  @db.VarChar(100)
+  status         String   @db.VarChar(20) // pending, approved, paid, rejected
+  approvedBy     String?  @map("approved_by") @db.Uuid
+  approvedDate   DateTime? @map("approved_date") @db.Timestamptz(6)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([status])
+  @@index([category])
+  @@index([date])
+  @@index([status, date])
+  @@index([category, date])
+  @@map("expenses")
+}
+
+model CashAccount {
+  id            String   @id @default(uuid()) @db.Uuid
+  accountName   String   @map("account_name") @db.VarChar(255)
+  accountType   String   @map("account_type") @db.VarChar(50) // checking, savings, petty_cash
+  balance       Decimal  @db.Decimal(15, 2)
+  currency      String   @db.VarChar(3)
+  isPrimary     Boolean  @default(false) @map("is_primary")
+  bankName      String?  @map("bank_name") @db.VarChar(255)
+  accountNumber String?  @map("account_number") @db.VarChar(50)
+  lastUpdated   DateTime @map("last_updated") @db.Timestamptz(6)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([isPrimary])
+  @@map("cash_accounts")
+}
+
+model Inventory {
+  id           String   @id @default(uuid()) @db.Uuid
+  productCode  String   @unique @map("product_code") @db.VarChar(100)
+  productName  String   @map("product_name") @db.VarChar(255)
+  quantity     Int
+  unitCost     Decimal  @map("unit_cost") @db.Decimal(10, 2)
+  totalValue   Decimal  @map("total_value") @db.Decimal(15, 2)
+  warehouse    String   @db.VarChar(100)
+  lastRestocked DateTime? @map("last_restocked") @db.Date
+  reorderPoint  Int?     @map("reorder_point")
+  reorderQuantity Int?   @map("reorder_quantity")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([productCode])
+  @@index([warehouse])
+  @@index([quantity])
+  @@index([warehouse, productCode])
+  @@map("inventory")
 }

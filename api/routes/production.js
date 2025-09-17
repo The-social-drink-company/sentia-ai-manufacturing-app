@@ -1,4 +1,5 @@
 import express from 'express';
+import NodeCache from 'node-cache';
 import prisma from '../../config/database.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
@@ -12,6 +13,9 @@ import {
 
 const router = express.Router();
 
+// Initialize cache with 60 second TTL
+const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
+
 /**
  * GET /api/production/metrics
  * Get production metrics with filters
@@ -23,6 +27,17 @@ router.get('/metrics',
     // Validate query parameters
     const query = productionMetricsSchema.query.parse(req.query);
 
+    // Generate cache key based on query params
+    const cacheKey = `production-metrics-${JSON.stringify(query)}`;
+    const cached = cache.get(cacheKey);
+
+    if (cached) {
+      console.log('[Cache Hit] Production metrics');
+      return res.json(cached);
+    }
+
+    console.log('[Cache Miss] Production metrics - fetching from database');
+
     // Build where clause
     const where = {};
     if (query.startDate || query.endDate) {
@@ -33,15 +48,36 @@ router.get('/metrics',
     if (query.lineId) where.lineId = query.lineId;
     if (query.productId) where.productId = query.productId;
 
-    // Fetch metrics
+    // Fetch metrics with optimized fields
     const metrics = await prisma.productionMetrics.findMany({
       where,
-      take: query.limit,
+      take: Math.min(query.limit || 100, 100), // Limit max results to 100
       skip: query.offset,
       orderBy: { timestamp: 'desc' },
-      include: {
-        line: true,
-        product: true
+      select: {
+        id: true,
+        timestamp: true,
+        lineId: true,
+        productId: true,
+        unitsProduced: true,
+        efficiency: true,
+        quality: true,
+        oee: true,
+        downtime: true,
+        line: {
+          select: {
+            id: true,
+            name: true,
+            status: true
+          }
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            sku: true
+          }
+        }
       }
     });
 
@@ -59,7 +95,7 @@ router.get('/metrics',
       }
     });
 
-    res.json({
+    const result = {
       success: true,
       data: {
         metrics,
@@ -70,7 +106,12 @@ router.get('/metrics',
           total: await prisma.productionMetrics.count({ where })
         }
       }
-    });
+    };
+
+    // Cache the result
+    cache.set(cacheKey, result);
+
+    res.json(result);
   })
 );
 

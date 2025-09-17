@@ -1,4 +1,5 @@
 import express from 'express';
+import NodeCache from 'node-cache';
 import prisma from '../../config/database.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
@@ -12,6 +13,9 @@ import {
 
 const router = express.Router();
 
+// Initialize cache with 60 second TTL for frequently accessed data
+const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
+
 /**
  * GET /api/inventory/levels
  * Get current inventory levels with filters
@@ -22,6 +26,17 @@ router.get('/levels',
   asyncHandler(async (req, res) => {
     // Validate query parameters
     const query = inventoryLevelSchema.query.parse(req.query);
+
+    // Check cache
+    const cacheKey = `inventory-levels-${JSON.stringify(query)}`;
+    const cached = cache.get(cacheKey);
+
+    if (cached) {
+      console.log('[Cache Hit] Inventory levels');
+      return res.json(cached);
+    }
+
+    console.log('[Cache Miss] Inventory levels - fetching from database');
 
     // Build where clause
     const where = {};

@@ -1,7 +1,8 @@
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
-import App from './App.jsx'
+// import App from './App.jsx'
+import TestApp from './TestApp.jsx'
 import './index.css'
 import './styles/sidebar.css'
 
@@ -118,7 +119,7 @@ if (clerkPubKey && !bypassClerk) {
       }}
     >
       <Suspense fallback={<LoadingFallback />}>
-        <App />
+        <TestApp />
       </Suspense>
     </ClerkProvider>
   )

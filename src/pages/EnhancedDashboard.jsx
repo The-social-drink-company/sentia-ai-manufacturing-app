@@ -17,7 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 // Import Dashboard Grid System
-import DashboardGrid from '../components/Dashboard/DashboardGrid';
+import DashboardGrid from '../components/dashboard/DashboardGrid';
 import '../styles/dashboard-grid.css';
 
 // Import AI and MCP components

@@ -39,11 +39,17 @@ class UnifiedAPIInterface extends EventEmitter {
     });
     
     this.registerService('shopify-multistore', {
-      type: 'e-commerce', 
+      type: 'e-commerce',
       name: 'Shopify Multi-Store API',
       capabilities: ['product-management', 'order-processing', 'customer-management', 'analytics']
     });
-    
+
+    this.registerService('unleashed-erp', {
+      type: 'erp',
+      name: 'Unleashed ERP System',
+      capabilities: ['inventory-management', 'production-tracking', 'quality-control', 'resource-planning', 'batch-tracking']
+    });
+
     this.registerService('neon-postgresql', {
       type: 'database',
       name: 'Neon PostgreSQL Database',

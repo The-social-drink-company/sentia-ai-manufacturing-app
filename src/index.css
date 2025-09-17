@@ -1,11 +1,11 @@
-/* Import custom animations first - all @import rules must come before other CSS */
+/* Tailwind CSS v3 directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import custom animations - all @import rules must come before other CSS */
 @import './components/ui/animations.css';
 @import './components/ui/enhanced-interactions.css';
-
-/* Import Tailwind CSS v4 */
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -78,49 +78,69 @@ button:focus-visible {
 }
 
 /* Enhanced micro-interactions and animations */
-@layer components {
-  /* Smooth transitions for all interactive elements */
-  .smooth-transition {
-    @apply transition-all duration-200 ease-out;
-  }
+/* Smooth transitions for all interactive elements */
+.smooth-transition {
+  transition: all 200ms ease-out;
+}
 
-  /* Hover effects */
-  .hover-lift:hover {
-    @apply transform -translate-y-1 shadow-lg;
-  }
+/* Hover effects */
+.hover-lift:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
 
-  .hover-glow:hover {
-    @apply shadow-lg ring-2 ring-blue-200 ring-opacity-50;
-  }
+.hover-glow:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  outline: 2px solid rgb(191 219 254 / 0.5);
+  outline-offset: 2px;
+}
 
-  .hover-scale:hover {
-    @apply transform scale-105;
-  }
+.hover-scale:hover {
+  transform: scale(1.05);
+}
 
-  /* Focus styles for accessibility */
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
-  }
+/* Focus styles for accessibility */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
 
-  /* Button animations */
-  .btn-press {
-    @apply active:scale-95 transition-transform duration-100;
-  }
+/* Button animations */
+.btn-press:active {
+  transform: scale(0.95);
+  transition: transform 100ms;
+}
 
-  /* Loading states */
-  .loading-pulse {
-    @apply animate-pulse bg-gray-200;
-  }
+/* Loading states */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background-color: rgb(229 231 235);
+}
 
-  /* Success states */
-  .success-flash {
-    animation: flash-success 0.6s ease-out;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
   }
+  50% {
+    opacity: .5;
+  }
+}
 
-  /* Error states */
-  .error-shake {
-    animation: shake 0.5s ease-in-out;
-  }
+/* Success states */
+.success-flash {
+  animation: flash-success 0.6s ease-out;
+}
+
+/* Error states */
+.error-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
 @keyframes flash-success {

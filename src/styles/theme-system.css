@@ -139,7 +139,7 @@
 .theme-input:focus {
   outline: none;
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px var(--border-focus)25; /* 25 = 15% opacity in hex */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .theme-input::placeholder {
@@ -316,25 +316,25 @@
 }
 
 .theme-alert-info {
-  background-color: var(--status-info)15; /* 15 = ~8% opacity in hex */
+  background-color: rgba(59, 130, 246, 0.08);
   border-left-color: var(--status-info);
   color: var(--text-primary);
 }
 
 .theme-alert-success {
-  background-color: var(--status-success)15;
+  background-color: rgba(34, 197, 94, 0.08);
   border-left-color: var(--status-success);
   color: var(--text-primary);
 }
 
 .theme-alert-warning {
-  background-color: var(--status-warning)15;
+  background-color: rgba(251, 191, 36, 0.08);
   border-left-color: var(--status-warning);
   color: var(--text-primary);
 }
 
 .theme-alert-error {
-  background-color: var(--status-error)15;
+  background-color: rgba(239, 68, 68, 0.08);
   border-left-color: var(--status-error);
   color: var(--text-primary);
 }

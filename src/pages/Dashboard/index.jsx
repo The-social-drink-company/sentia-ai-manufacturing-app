@@ -1,9 +1,9 @@
 import React from 'react';
-import EnhancedDashboard from '../EnhancedDashboard';
+import EnterpriseDashboard from './EnterpriseDashboard';
 
-// Main Dashboard component that routes to the enhanced dashboard
+// Main Dashboard component that routes to the enterprise dashboard
 const Dashboard = () => {
-  return <EnhancedDashboard />;
+  return <EnterpriseDashboard />;
 };
 
 export default Dashboard;

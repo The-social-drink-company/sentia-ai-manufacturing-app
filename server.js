@@ -415,11 +415,36 @@ logInfo('SENTIA MANUFACTURING DASHBOARD SERVER STARTING [ENVIRONMENT FIX DEPLOYM
     // Initialize Xero service
     const xeroHealth = await xeroService.healthCheck();
     logInfo('Xero Service initialized', { status: xeroHealth.status, message: xeroHealth.message || 'Ready' });
-    
+
+    // Initialize Unleashed ERP service
+    const unleashedConnected = await unleashedERPService.connect();
+    if (unleashedConnected) {
+      logInfo('Unleashed ERP Service initialized', { status: 'connected', endpoint: unleashedERPService.baseUrl });
+    } else {
+      logWarn('Unleashed ERP Service initialization failed', { status: 'disconnected' });
+    }
+
     // Initialize AI Analytics service
     const aiHealth = await aiAnalyticsService.healthCheck();
     logInfo('AI Analytics initialized', { status: aiHealth.status, message: 'Vector database ready' });
-    
+
+    // Initialize Unleashed Inventory Sync
+    try {
+      const { getUnleashedSync } = await import('./services/unleashed/inventorySync.js');
+      const syncService = getUnleashedSync();
+      const syncInitialized = await syncService.initialize();
+      if (syncInitialized) {
+        logInfo('Unleashed inventory sync initialized successfully', {
+          syncInterval: syncService.syncInterval,
+          status: syncService.getStatus()
+        });
+      } else {
+        logWarn('Unleashed inventory sync not initialized - API credentials may be missing');
+      }
+    } catch (error) {
+      logWarn('Unleashed inventory sync initialization failed', { error: error.message });
+    }
+
     logInfo('Basic services initialized - Enterprise features will be added in next deployment');
   } catch (error) {
     logError('Service initialization error', error);
@@ -965,6 +990,15 @@ app.use('/api/maintenance', maintenanceRoutes);
 
 // Xero Integration Routes
 import xeroIntegration from './services/xeroIntegration.js';
+import unleashedERPService from './services/unleashed-erp.js';
+import unleashedAPIRouter from './services/api/unleashed.js';
+
+// Mount Unleashed API routes
+app.use('/api/unleashed', unleashedAPIRouter);
+
+// Mount Unleashed Inventory API routes
+import unleashedInventoryRouter from './services/api/unleashed-inventory.js';
+app.use('/api/unleashed/inventory', unleashedInventoryRouter);
 
 // Xero OAuth Routes
 app.get('/api/xero/auth', async (req, res) => {

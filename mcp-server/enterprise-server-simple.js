@@ -29,6 +29,7 @@ import { fileURLToPath } from 'url';
 import AICentralNervousSystem from './ai-orchestration/ai-central-nervous-system.js';
 import UnifiedAPIInterface from './api-integrations/unified-api-interface.js';
 import xeroIntegration from './api-integrations/xero-integration.js';
+import unleashedIntegration from './api-integrations/unleashed-integration.js';
 import { SENTIA_KNOWLEDGE_BASE, SentiaKnowledgeRetrieval } from './knowledge-base/sentia-manufacturing-knowledge.js';
 import InteractionLearningSystem from './knowledge-base/interaction-learning-system.js';
 
@@ -366,6 +367,59 @@ class SentiaEnterpriseMCPServer {
         }
       },
       handler: this.handleSystemHealth.bind(this)
+    });
+
+    // UNLEASHED ERP INTEGRATION TOOLS
+    this.registerTool({
+      name: 'unleashed_inventory_sync',
+      description: 'Sync inventory data from Unleashed ERP system',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          syncType: {
+            type: 'string',
+            enum: ['full', 'products', 'stock', 'movements', 'orders'],
+            description: 'Type of sync to perform',
+            default: 'stock'
+          },
+          realtime: { type: 'boolean', description: 'Get real-time data', default: false }
+        }
+      },
+      handler: this.handleUnleashedInventorySync.bind(this)
+    });
+
+    this.registerTool({
+      name: 'unleashed_stock_levels',
+      description: 'Get real-time stock levels from Unleashed',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          productCode: { type: 'string', description: 'Specific product code (optional)' },
+          warehouse: { type: 'string', description: 'Warehouse location (optional)' },
+          includeAllocated: { type: 'boolean', description: 'Include allocated quantities', default: true }
+        }
+      },
+      handler: this.handleUnleashedStockLevels.bind(this)
+    });
+
+    this.registerTool({
+      name: 'unleashed_purchase_orders',
+      description: 'Manage purchase orders through Unleashed',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          action: {
+            type: 'string',
+            enum: ['list', 'get', 'sync'],
+            description: 'Action to perform',
+            default: 'list'
+          },
+          orderNumber: { type: 'string', description: 'Order number for specific operations' },
+          status: { type: 'string', description: 'Filter by status' }
+        },
+        required: ['action']
+      },
+      handler: this.handleUnleashedPurchaseOrders.bind(this)
     });
 
     logger.info(`Registered ${this.availableTools.length} enterprise MCP tools`);
@@ -1004,7 +1058,7 @@ class SentiaEnterpriseMCPServer {
       },
       tools: {
         available: this.availableTools.length,
-        categories: ['inventory', 'forecasting', 'financial', 'ai-insights', 'system']
+        categories: ['inventory', 'forecasting', 'financial', 'ai-insights', 'system', 'unleashed-erp']
       }
     };
 
@@ -1018,6 +1072,146 @@ class SentiaEnterpriseMCPServer {
     }
 
     return health;
+  }
+
+  // UNLEASHED ERP HANDLERS
+  async handleUnleashedInventorySync({ syncType = 'stock', realtime = false }) {
+    logger.info('Processing Unleashed inventory sync', { syncType, realtime });
+
+    try {
+      await unleashedIntegration.initialize();
+
+      if (!unleashedIntegration.isConnected) {
+        return {
+          success: false,
+          error: 'Unleashed API not configured. Please check API credentials.'
+        };
+      }
+
+      let result;
+
+      switch (syncType) {
+        case 'full':
+          result = await unleashedIntegration.syncAllData();
+          break;
+        case 'products':
+          result = await unleashedIntegration.syncProducts();
+          break;
+        case 'stock':
+          result = await unleashedIntegration.getInventoryData({ realtime });
+          break;
+        case 'movements':
+          result = await unleashedIntegration.getStockMovements();
+          break;
+        case 'orders':
+          const poResult = await unleashedIntegration.getPurchaseOrders();
+          const soResult = await unleashedIntegration.getSalesOrders();
+          result = {
+            success: true,
+            purchaseOrders: poResult,
+            salesOrders: soResult
+          };
+          break;
+        default:
+          result = await unleashedIntegration.getInventoryData({ realtime });
+      }
+
+      return {
+        success: true,
+        syncType,
+        realtime,
+        timestamp: new Date().toISOString(),
+        data: result
+      };
+    } catch (error) {
+      logger.error('Unleashed sync failed', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async handleUnleashedStockLevels({ productCode, warehouse, includeAllocated = true }) {
+    logger.info('Fetching Unleashed stock levels', { productCode, warehouse });
+
+    try {
+      await unleashedIntegration.initialize();
+
+      if (!unleashedIntegration.isConnected) {
+        return {
+          success: false,
+          error: 'Unleashed API not configured'
+        };
+      }
+
+      const stockData = await unleashedIntegration.getInventoryData({
+        productCode,
+        warehouse,
+        includeAllocated
+      });
+
+      return {
+        success: true,
+        productCode,
+        warehouse,
+        stockLevels: stockData.data,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      logger.error('Failed to get stock levels', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async handleUnleashedPurchaseOrders({ action = 'list', orderNumber, status }) {
+    logger.info('Processing Unleashed purchase orders', { action, orderNumber, status });
+
+    try {
+      await unleashedIntegration.initialize();
+
+      if (!unleashedIntegration.isConnected) {
+        return {
+          success: false,
+          error: 'Unleashed API not configured'
+        };
+      }
+
+      let result;
+
+      switch (action) {
+        case 'list':
+          result = await unleashedIntegration.getPurchaseOrders({ status });
+          break;
+        case 'get':
+          if (!orderNumber) {
+            return { success: false, error: 'Order number required for get action' };
+          }
+          result = await unleashedIntegration.getPurchaseOrder(orderNumber);
+          break;
+        case 'sync':
+          result = await unleashedIntegration.syncPurchaseOrders();
+          break;
+        default:
+          result = await unleashedIntegration.getPurchaseOrders({ status });
+      }
+
+      return {
+        success: true,
+        action,
+        data: result,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      logger.error('Failed to process purchase orders', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
   }
 
   // Utility methods

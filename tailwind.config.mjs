@@ -1,3 +1,4 @@
+// ESM-compatible Tailwind configuration for production builds
 import tailwindcssAnimate from 'tailwindcss-animate';
 
 /** @type {import('tailwindcss').Config} */

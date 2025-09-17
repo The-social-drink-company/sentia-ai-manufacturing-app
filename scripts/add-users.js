@@ -5,14 +5,14 @@
  * Uses Clerk Backend API to programmatically create users
  */
 
-import { clerkClient } from '@clerk/clerk-sdk-node';
+import { createClerkClient } from '@clerk/backend';
 import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
 
 // Initialize Clerk client with secret key from environment
-const clerk = clerkClient;
+const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 // Default users to add (you can modify these)
 const defaultUsers = [

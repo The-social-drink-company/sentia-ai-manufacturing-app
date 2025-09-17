@@ -1,16 +1,26 @@
 import express from 'express';
-import { createRequire } from 'module';
 import { logError } from '../services/logger.js';
-
-const require = createRequire(import.meta.url);
-const EmailService = require('../services/email/EmailService.cjs');
-const NotificationService = require('../services/email/NotificationService.cjs');
 
 const router = express.Router();
 
-// Initialize services
-const emailService = new EmailService();
-const notificationService = new NotificationService();
+// Dynamic imports for .cjs files
+let EmailService, NotificationService;
+let emailService, notificationService;
+
+// Initialize services asynchronously
+async function initializeServices() {
+  if (!EmailService) {
+    const { default: EmailServiceModule } = await import('../services/email/EmailService.cjs');
+    EmailService = EmailServiceModule;
+    emailService = new EmailService();
+  }
+
+  if (!NotificationService) {
+    const { default: NotificationServiceModule } = await import('../services/email/NotificationService.cjs');
+    NotificationService = NotificationServiceModule;
+    notificationService = new NotificationService();
+  }
+}
 
 /**
  * Test email configuration

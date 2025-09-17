@@ -3,7 +3,7 @@
  * Handles integration with Render-hosted MCP server
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 
 class RenderMCPService {
   constructor() {

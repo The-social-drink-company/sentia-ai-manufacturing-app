@@ -4,7 +4,7 @@
  * Test script to verify Clerk connection and list existing users
  */
 
-import { clerkClient } from '@clerk/clerk-sdk-node';
+import { createClerkClient } from '@clerk/backend';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -12,15 +12,18 @@ dotenv.config();
 async function testClerkConnection() {
   try {
     console.log('🔍 Testing Clerk connection...\n');
-    
+
     // Check environment
     if (!process.env.CLERK_SECRET_KEY) {
       console.error('❌ CLERK_SECRET_KEY not found');
       process.exit(1);
     }
-    
+
     console.log('✅ Secret key found:', process.env.CLERK_SECRET_KEY.substring(0, 15) + '...');
-    
+
+    // Create Clerk client with the new SDK
+    const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+
     // Test API connection by listing users
     console.log('📋 Fetching existing users...');
     const users = await clerkClient.users.getUserList();

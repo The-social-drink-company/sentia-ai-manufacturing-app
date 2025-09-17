@@ -23,11 +23,11 @@
  * @author Sentia Enterprise Team
  */
 
-const EventEmitter = require('events');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const speakeasy = require('speakeasy');
+import EventEmitter from 'events';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import speakeasy from 'speakeasy';
 
 class EnterpriseSecurityFramework extends EventEmitter {
     constructor(config = {}) {
@@ -1549,5 +1549,5 @@ class EnterpriseSecurityFramework extends EventEmitter {
     }
 }
 
-module.exports = EnterpriseSecurityFramework;
+export default EnterpriseSecurityFramework;
 

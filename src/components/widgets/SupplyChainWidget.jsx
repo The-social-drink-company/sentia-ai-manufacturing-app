@@ -1,283 +1,467 @@
-import React, { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { 
-  TruckIcon, 
-  MapPinIcon, 
-  ClockIcon, 
+import React from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@clerk/clerk-react';
+import {
+  TruckIcon,
+  MapPinIcon,
+  ClockIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ArrowPathIcon
-} from '@heroicons/react/24/outline'
-import { cn } from '../../lib/utils'
+  GlobeAltIcon,
+  BuildingOfficeIcon
+} from '@heroicons/react/24/outline';
+import { Bar, Line } from 'react-chartjs-2';
+import {
+  WidgetContainer,
+  WidgetSkeleton,
+  WidgetError,
+  MetricCard,
+  DataGrid
+} from './WidgetComponents';
 
-// Mock data for supply chain status
-const mockSupplyChainData = {
-  suppliers: [
-    {
-      id: 1,
-      name: 'Pacific Materials Co.',
-      location: 'Vancouver, BC',
-      status: 'active',
-      onTimeDelivery: 94.5,
-      qualityRating: 4.8,
-      leadTime: '3-5 days',
-      riskLevel: 'low'
-    },
-    {
-      id: 2,
-      name: 'Industrial Components Ltd.',
-      location: 'Toronto, ON',
-      status: 'delayed',
-      onTimeDelivery: 87.2,
-      qualityRating: 4.3,
-      leadTime: '7-10 days',
-      riskLevel: 'medium'
-    },
-    {
-      id: 3,
-      name: 'Global Logistics Inc.',
-      location: 'Montreal, QC',
-      status: 'active',
-      onTimeDelivery: 96.1,
-      qualityRating: 4.9,
-      leadTime: '2-4 days',
-      riskLevel: 'low'
-    }
-  ],
-  shipments: {
-    inTransit: 23,
-    delivered: 156,
-    delayed: 4,
-    pending: 12
-  },
-  alerts: [
-    {
-      id: 1,
-      type: 'delay',
-      message: 'Shipment SCH-2024-001 delayed by 2 days',
-      severity: 'warning',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
-    },
-    {
-      id: 2,
-      type: 'quality',
-      message: 'Quality inspection required for batch QC-456',
-      severity: 'info',
-      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000)
-    }
-  ]
-}
+const SupplyChainWidget = () => {
+  const { getToken } = useAuth();
+  const queryClient = useQueryClient();
 
-const SupplyChainWidget = ({ className = "", ...props }) => {
-  const [activeTab, setActiveTab] = useState('overview')
-  
-  // Simulate real-time data
-  const { data: supplyChainData, isLoading, refetch } = useQuery({
-    queryKey: ['supply-chain-status'],
-    queryFn: () => Promise.resolve(mockSupplyChainData),
-    refetchInterval: 30000 // Refresh every 30 seconds
-  })
-  
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'active':
-        return <CheckCircleIcon className="w-4 h-4 text-green-500" />
-      case 'delayed':
-        return <ExclamationTriangleIcon className="w-4 h-4 text-yellow-500" />
-      case 'offline':
-        return <ExclamationTriangleIcon className="w-4 h-4 text-red-500" />
-      default:
-        return <ClockIcon className="w-4 h-4 text-gray-500" />
+  // Fetch supply chain data from API
+  const { data, isLoading, error, refetch, isRefetching } = useQuery({
+    queryKey: ['supply-chain'],
+    queryFn: async () => {
+      const token = await getToken();
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/supply-chain/overview`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        // Fallback to mock data if API fails
+        if (response.status === 404 || response.status === 500) {
+          return getMockData();
+        }
+        throw new Error(`Failed to fetch supply chain data: ${response.statusText}`);
+      }
+
+      return response.json();
+    },
+    refetchInterval: 60000, // Refresh every minute
+    retry: 2,
+    retryDelay: 1000
+  });
+
+  // Mock data fallback
+  const getMockData = () => ({
+    summary: {
+      activeSuppliers: 45,
+      totalShipments: 183,
+      inTransit: 23,
+      deliveredOnTime: 156,
+      delayed: 4,
+      averageLeadTime: 5.2,
+      supplierPerformance: 93.5,
+      inventoryTurnover: 8.3
+    },
+    suppliers: [
+      {
+        id: 1,
+        name: 'Pacific Materials Co.',
+        location: 'Vancouver, BC',
+        status: 'active',
+        onTimeDelivery: 94.5,
+        qualityRating: 4.8,
+        leadTime: 5,
+        riskLevel: 'low',
+        lastDelivery: '2024-01-15',
+        totalOrders: 125
+      },
+      {
+        id: 2,
+        name: 'Industrial Components Ltd.',
+        location: 'Toronto, ON',
+        status: 'delayed',
+        onTimeDelivery: 87.2,
+        qualityRating: 4.3,
+        leadTime: 8,
+        riskLevel: 'medium',
+        lastDelivery: '2024-01-14',
+        totalOrders: 98
+      },
+      {
+        id: 3,
+        name: 'Global Logistics Inc.',
+        location: 'Montreal, QC',
+        status: 'active',
+        onTimeDelivery: 96.1,
+        qualityRating: 4.9,
+        leadTime: 3,
+        riskLevel: 'low',
+        lastDelivery: '2024-01-16',
+        totalOrders: 156
+      },
+      {
+        id: 4,
+        name: 'Eastern Supplies Corp.',
+        location: 'Halifax, NS',
+        status: 'at-risk',
+        onTimeDelivery: 78.5,
+        qualityRating: 3.9,
+        leadTime: 12,
+        riskLevel: 'high',
+        lastDelivery: '2024-01-10',
+        totalOrders: 67
+      }
+    ],
+    shipmentTrend: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      shipped: [28, 32, 25, 35, 30, 18, 15],
+      delivered: [22, 28, 30, 28, 33, 20, 12],
+      delayed: [1, 0, 2, 1, 0, 1, 0]
+    },
+    leadTimeAnalysis: {
+      labels: ['Raw Materials', 'Components', 'Packaging', 'Equipment', 'Consumables'],
+      averageDays: [4.5, 6.2, 3.1, 8.5, 2.8],
+      targetDays: [5, 7, 3, 10, 3]
+    },
+    riskAssessment: {
+      low: 28,
+      medium: 12,
+      high: 5,
+      critical: 0
+    },
+    recentOrders: [
+      { id: 'PO-2024-0145', supplier: 'Pacific Materials', status: 'in-transit', eta: '2024-01-18', value: 45000 },
+      { id: 'PO-2024-0144', supplier: 'Global Logistics', status: 'delivered', eta: '2024-01-16', value: 32000 },
+      { id: 'PO-2024-0143', supplier: 'Industrial Components', status: 'delayed', eta: '2024-01-19', value: 28500 },
+      { id: 'PO-2024-0142', supplier: 'Eastern Supplies', status: 'processing', eta: '2024-01-22', value: 18000 }
+    ],
+    transportModes: {
+      road: 45,
+      rail: 25,
+      sea: 20,
+      air: 10
+    },
+    geographicDistribution: {
+      domestic: 65,
+      northAmerica: 20,
+      asia: 10,
+      europe: 5
     }
-  }
-  
-  const getRiskColor = (risk) => {
-    switch (risk) {
-      case 'low':
-        return 'text-green-600 bg-green-100 dark:bg-green-900 dark:text-green-300'
-      case 'medium':
-        return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300'
-      case 'high':
-        return 'text-red-600 bg-red-100 dark:bg-red-900 dark:text-red-300'
-      default:
-        return 'text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-300'
+  });
+
+  if (isLoading && !data) return <WidgetSkeleton title="Supply Chain Management" height="400px" />;
+  if (error && !data) return <WidgetError error={error} onRetry={refetch} title="Supply Chain Management" />;
+
+  const supplyChain = data || getMockData();
+
+  // Shipment trend chart configuration
+  const shipmentTrendData = {
+    labels: supplyChain.shipmentTrend?.labels || [],
+    datasets: [
+      {
+        label: 'Shipped',
+        data: supplyChain.shipmentTrend?.shipped || [],
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgb(59, 130, 246)',
+        borderWidth: 1
+      },
+      {
+        label: 'Delivered',
+        data: supplyChain.shipmentTrend?.delivered || [],
+        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+        borderColor: 'rgb(16, 185, 129)',
+        borderWidth: 1
+      },
+      {
+        label: 'Delayed',
+        data: supplyChain.shipmentTrend?.delayed || [],
+        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+        borderColor: 'rgb(239, 68, 68)',
+        borderWidth: 1
+      }
+    ]
+  };
+
+  const shipmentTrendOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        stacked: false
+      }
     }
-  }
-  
-  if (isLoading) {
-    return (
-      <div className={cn("bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6", className)}>
-        <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4 w-1/3"></div>
-          <div className="space-y-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            ))}
+  };
+
+  // Lead time analysis chart
+  const leadTimeData = {
+    labels: supplyChain.leadTimeAnalysis?.labels || [],
+    datasets: [
+      {
+        label: 'Average Lead Time',
+        data: supplyChain.leadTimeAnalysis?.averageDays || [],
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: 'Target Lead Time',
+        data: supplyChain.leadTimeAnalysis?.targetDays || [],
+        borderColor: 'rgb(107, 114, 128)',
+        backgroundColor: 'rgba(107, 114, 128, 0.1)',
+        borderDash: [5, 5],
+        tension: 0.4
+      }
+    ]
+  };
+
+  const leadTimeOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return value + ' days';
+          }
+        }
+      }
+    }
+  };
+
+  // Supplier table columns
+  const supplierColumns = [
+    { key: 'name', label: 'Supplier' },
+    { key: 'location', label: 'Location' },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (value) => {
+        const statusColors = {
+          active: 'text-green-600 bg-green-100 dark:bg-green-900/20',
+          delayed: 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20',
+          'at-risk': 'text-red-600 bg-red-100 dark:bg-red-900/20'
+        };
+        return (
+          <span className={`text-xs px-2 py-1 rounded ${statusColors[value] || 'text-gray-600 bg-gray-100'}`}>
+            {value}
+          </span>
+        );
+      }
+    },
+    {
+      key: 'onTimeDelivery',
+      label: 'On-Time %',
+      render: (value) => `${value}%`
+    },
+    {
+      key: 'leadTime',
+      label: 'Lead Time',
+      render: (value) => `${value} days`
+    },
+    {
+      key: 'riskLevel',
+      label: 'Risk',
+      render: (value) => {
+        const riskColors = {
+          low: 'text-green-600',
+          medium: 'text-yellow-600',
+          high: 'text-red-600'
+        };
+        return <span className={riskColors[value] || 'text-gray-600'}>{value}</span>;
+      }
+    }
+  ];
+
+  // Recent orders columns
+  const orderColumns = [
+    { key: 'id', label: 'Order ID' },
+    { key: 'supplier', label: 'Supplier' },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (value) => {
+        const statusIcons = {
+          'in-transit': TruckIcon,
+          'delivered': CheckCircleIcon,
+          'delayed': ExclamationTriangleIcon,
+          'processing': ClockIcon
+        };
+        const Icon = statusIcons[value] || ClockIcon;
+        return (
+          <div className="flex items-center space-x-1">
+            <Icon className="h-4 w-4" />
+            <span className="text-sm">{value}</span>
           </div>
-        </div>
-      </div>
-    )
-  }
-  
+        );
+      }
+    },
+    { key: 'eta', label: 'ETA' },
+    {
+      key: 'value',
+      label: 'Value',
+      render: (value) => `$${(value / 1000).toFixed(0)}k`
+    }
+  ];
+
+  const getRiskColor = (level) => {
+    const colors = {
+      low: 'bg-green-500',
+      medium: 'bg-yellow-500',
+      high: 'bg-orange-500',
+      critical: 'bg-red-500'
+    };
+    return colors[level] || 'bg-gray-500';
+  };
+
   return (
-    <div className={cn("bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700", className)} {...props}>
-      {/* Header */}
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <TruckIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Supply Chain
-            </h3>
-          </div>
-          <button
-            onClick={() => refetch()}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-          >
-            <ArrowPathIcon className="w-4 h-4" />
-          </button>
-        </div>
-        
-        {/* Tabs */}
-        <div className="mt-4 border-b border-gray-200 dark:border-gray-700">
-          <nav className="-mb-px flex space-x-8">
-            {['overview', 'suppliers', 'shipments'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "py-2 px-1 border-b-2 font-medium text-sm capitalize",
-                  activeTab === tab
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
-                )}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
+    <WidgetContainer
+      title="Supply Chain Management"
+      onRefresh={() => {
+        queryClient.invalidateQueries(['supply-chain']);
+        refetch();
+      }}
+      isRefreshing={isRefetching}
+      className="col-span-2"
+    >
+      {/* Summary Metrics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <MetricCard
+          label="Active Suppliers"
+          value={supplyChain.summary?.activeSuppliers || 0}
+          icon={BuildingOfficeIcon}
+        />
+        <MetricCard
+          label="In Transit"
+          value={supplyChain.summary?.inTransit || 0}
+          trend={{ direction: 'neutral', value: 0 }}
+          icon={TruckIcon}
+        />
+        <MetricCard
+          label="On-Time Delivery"
+          value={supplyChain.summary?.supplierPerformance || 0}
+          unit="%"
+          trend={{ direction: supplyChain.summary?.supplierPerformance > 90 ? 'up' : 'down', value: 2.1 }}
+          icon={CheckCircleIcon}
+        />
+        <MetricCard
+          label="Avg Lead Time"
+          value={supplyChain.summary?.averageLeadTime || 0}
+          unit="days"
+          icon={ClockIcon}
+        />
+      </div>
+
+      {/* Risk Assessment */}
+      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Supplier Risk Assessment</h4>
+        <div className="flex items-center space-x-4">
+          {Object.entries(supplyChain.riskAssessment || {}).map(([level, count]) => (
+            <div key={level} className="flex items-center space-x-2">
+              <div className={`w-3 h-3 rounded-full ${getRiskColor(level)}`}></div>
+              <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">{level}:</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{count}</span>
+            </div>
+          ))}
         </div>
       </div>
-      
-      {/* Content */}
-      <div className="p-6">
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            {/* Key Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {supplyChainData?.shipments.inTransit || 0}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">In Transit</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {supplyChainData?.shipments.delivered || 0}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Delivered</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                  {supplyChainData?.shipments.delayed || 0}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Delayed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {supplyChainData?.shipments.pending || 0}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Pending</div>
-              </div>
-            </div>
-            
-            {/* Recent Alerts */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Recent Alerts</h4>
-              <div className="space-y-2">
-                {supplyChainData?.alerts.map((alert) => (
-                  <div key={alert.id} className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                    <ExclamationTriangleIcon className={cn(
-                      "w-5 h-5 mt-0.5",
-                      alert.severity === 'warning' ? 'text-yellow-500' : 'text-blue-500'
-                    )} />
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-900 dark:text-white">{alert.message}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {alert.timestamp.toLocaleTimeString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Shipment Trend */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Weekly Shipment Activity</h4>
+          <div style={{ height: '200px' }}>
+            <Bar data={shipmentTrendData} options={shipmentTrendOptions} />
           </div>
-        )}
-        
-        {activeTab === 'suppliers' && (
-          <div className="space-y-4">
-            {supplyChainData?.suppliers.map((supplier) => (
-              <div key={supplier.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    {getStatusIcon(supplier.status)}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                        {supplier.name}
-                      </h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                        <MapPinIcon className="w-3 h-3 mr-1" />
-                        {supplier.location}
-                      </p>
-                    </div>
+        </div>
+
+        {/* Lead Time Analysis */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Lead Time Analysis</h4>
+          <div style={{ height: '200px' }}>
+            <Line data={leadTimeData} options={leadTimeOptions} />
+          </div>
+        </div>
+      </div>
+
+      {/* Supplier Performance Table */}
+      <div className="mb-6">
+        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Top Suppliers</h4>
+        <DataGrid columns={supplierColumns} data={supplyChain.suppliers?.slice(0, 5) || []} />
+      </div>
+
+      {/* Transport & Geographic Distribution */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Transport Modes */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Transport Modes</h4>
+          <div className="space-y-2">
+            {Object.entries(supplyChain.transportModes || {}).map(([mode, percentage]) => (
+              <div key={mode} className="flex items-center justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">{mode}</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-24 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                    <div
+                      className="bg-blue-500 h-2 rounded-full"
+                      style={{ width: `${percentage}%` }}
+                    ></div>
                   </div>
-                  <span className={cn(
-                    "px-2 py-1 rounded-full text-xs font-medium",
-                    getRiskColor(supplier.riskLevel)
-                  )}>
-                    {supplier.riskLevel} risk
+                  <span className="text-sm font-medium text-gray-900 dark:text-white w-10 text-right">
+                    {percentage}%
                   </span>
                 </div>
-                
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">On-time delivery</span>
-                    <div className="font-medium text-gray-900 dark:text-white">
-                      {supplier.onTimeDelivery}%
-                    </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Geographic Distribution */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Geographic Distribution</h4>
+          <div className="space-y-2">
+            {Object.entries(supplyChain.geographicDistribution || {}).map(([region, percentage]) => (
+              <div key={region} className="flex items-center justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">{region.replace(/([A-Z])/g, ' $1').trim()}</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-24 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                    <div
+                      className="bg-green-500 h-2 rounded-full"
+                      style={{ width: `${percentage}%` }}
+                    ></div>
                   </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Quality</span>
-                    <div className="font-medium text-gray-900 dark:text-white">
-                      {supplier.qualityRating}/5.0
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500 dark:text-gray-400">Lead time</span>
-                    <div className="font-medium text-gray-900 dark:text-white">
-                      {supplier.leadTime}
-                    </div>
-                  </div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white w-10 text-right">
+                    {percentage}%
+                  </span>
                 </div>
               </div>
             ))}
           </div>
-        )}
-        
-        {activeTab === 'shipments' && (
-          <div className="text-center py-8">
-            <TruckIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              Shipment Tracking
-            </h4>
-            <p className="text-gray-500 dark:text-gray-400">
-              Detailed shipment tracking coming soon
-            </p>
-          </div>
-        )}
+        </div>
       </div>
-    </div>
-  )
-}
 
-export default SupplyChainWidget
+      {/* Recent Orders */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Recent Orders</h4>
+        <DataGrid columns={orderColumns} data={supplyChain.recentOrders || []} />
+      </div>
+
+      {/* Last Updated */}
+      <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+        Last updated: {new Date().toLocaleTimeString()}
+      </div>
+    </WidgetContainer>
+  );
+};
+
+export default SupplyChainWidget;

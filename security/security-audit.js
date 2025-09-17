@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

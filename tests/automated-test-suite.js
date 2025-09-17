@@ -5,12 +5,17 @@
  * Comprehensive testing for production deployment
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const http = require('http');
-const https = require('https');
-const { URL } = require('url');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import http from 'http';
+import https from 'https';
+import { URL } from 'url';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Test configuration
 const TEST_CONFIG = {
@@ -588,8 +593,8 @@ process.on('uncaughtException', (error) => {
 });
 
 // Check if running directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { TestOrchestrator, TestResults };
+export { TestOrchestrator, TestResults };

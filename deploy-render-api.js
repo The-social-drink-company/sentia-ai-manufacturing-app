@@ -5,9 +5,9 @@
  * Automatically creates service with all environment variables
  */
 
-const https = require('https');
-const fs = require('fs');
-const yaml = require('js-yaml');
+import https from 'https';
+import fs from 'fs';
+import yaml from 'js-yaml';
 
 // Parse render.yaml to get all environment variables
 const renderConfig = yaml.load(fs.readFileSync('render.yaml', 'utf8'));

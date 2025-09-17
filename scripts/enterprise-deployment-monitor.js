@@ -5,9 +5,14 @@
  * Real-time monitoring and alerting system for all Railway environments
  */
 
-const https = require('https');
-const fs = require('fs').promises;
-const path = require('path');
+import https from 'https';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 class EnterpriseDeploymentMonitor {
   constructor() {
@@ -322,8 +327,8 @@ async function main() {
   }
 }
 
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }
 
-module.exports = EnterpriseDeploymentMonitor;
+export default EnterpriseDeploymentMonitor;

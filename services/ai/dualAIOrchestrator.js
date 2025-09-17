@@ -17,9 +17,9 @@
  * @author Sentia Enterprise Team
  */
 
-const OpenAI = require('openai');
-const Anthropic = require('@anthropic-ai/sdk');
-const EventEmitter = require('events');
+import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
+import EventEmitter from 'events';
 
 class DualAIOrchestrator extends EventEmitter {
     constructor(config = {}) {
@@ -755,5 +755,5 @@ class DualAIOrchestrator extends EventEmitter {
     }
 }
 
-module.exports = DualAIOrchestrator;
+export default DualAIOrchestrator;
 

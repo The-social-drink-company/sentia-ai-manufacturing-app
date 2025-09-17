@@ -17,7 +17,9 @@ const mcpService = {
 
 class IntelligenceService {
   constructor() {
-    this.mcpBaseUrl = process.env.MCP_SERVER_URL || 'https://web-production-99691282.up.railway.app';
+    const viteEnv = typeof import.meta !== 'undefined' ? import.meta.env : {};
+    const browserEnv = (typeof process !== 'undefined' && process.env) ? process.env : {};
+    this.mcpBaseUrl = viteEnv.VITE_MCP_SERVER_URL || browserEnv.VITE_MCP_SERVER_URL || 'https://web-production-99691282.up.railway.app';
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
   }

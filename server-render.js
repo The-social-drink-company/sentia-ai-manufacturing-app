@@ -69,7 +69,7 @@ import ExcelJS from 'exceljs';
 import csv from 'csv-parser';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import xeroService from './services/xeroService.js';
 import aiAnalyticsService from './services/aiAnalyticsService.js';
 import { logInfo, logError, logWarn } from './services/observability/structuredLogger.js';

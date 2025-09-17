@@ -5,7 +5,7 @@
  * Verifies deployment status and health of Render services
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 
 const services = {
   development: 'https://sentia-manufacturing-development.onrender.com',

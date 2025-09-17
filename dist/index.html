@@ -5,18 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sentia Manufacturing Dashboard</title>
-    <script type="module" crossorigin src="/js/index-D8-FZsAg.js"></script>
-    <link rel="modulepreload" crossorigin href="/js/chunk-zfoVI_BJ.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-DiTG-A4l.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-D1RFofiz.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-Wtzm-LW2.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-q-XdqQu1.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-B0LCvgW6.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-Doi-WXVS.js">
+    <script type="module" crossorigin src="/js/index-Ns7yFE9m.js"></script>
+    <link rel="modulepreload" crossorigin href="/js/chunk-C3DITRU1.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-BC7Dcwdl.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-BHfUfMK7.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-rwMzC66e.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-CSoZPqtx.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-GD9X1rNN.js">
     <link rel="modulepreload" crossorigin href="/js/chunk-Dozjk7Op.js">
-    <link rel="modulepreload" crossorigin href="/js/chunk-B9uBa7JB.js">
+    <link rel="modulepreload" crossorigin href="/js/chunk-CZvSV-v7.js">
     <link rel="stylesheet" crossorigin href="/assets/react-core-C9-ySRfk.css">
-    <link rel="stylesheet" crossorigin href="/assets/index-BYigNjGC.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-Dj2x4v9o.css">
   </head>
   <body>
     <div id="root"></div>
@@ -74,41 +73,50 @@
         window.addEventListener('sw-update-available', () => {
           const updateBanner = document.createElement('div');
           updateBanner.innerHTML = `
-            <div style="
-              position: fixed; 
-              top: 0; 
-              left: 0; 
-              right: 0; 
-              background: #2563eb; 
-              color: white; 
-              padding: 12px 16px; 
-              text-align: center; 
+            <div id="sw-update-banner" style="
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              background: #2563eb;
+              color: white;
+              padding: 12px 16px;
+              text-align: center;
               z-index: 9999;
               box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             ">
               <span style="margin-right: 16px;">A new version of Sentia Manufacturing Dashboard is available!</span>
-              <button onclick="window.location.reload()" style="
-                background: white; 
-                color: #2563eb; 
-                border: none; 
-                padding: 6px 12px; 
-                border-radius: 4px; 
-                font-weight: 500; 
+              <button id="sw-update-now" style="
+                background: white;
+                color: #2563eb;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-weight: 500;
                 cursor: pointer;
                 margin-right: 8px;
               ">Update Now</button>
-              <button onclick="this.parentElement.parentElement.remove()" style="
-                background: transparent; 
-                color: white; 
-                border: 1px solid white; 
-                padding: 6px 12px; 
-                border-radius: 4px; 
-                font-weight: 500; 
+              <button id="sw-update-later" style="
+                background: transparent;
+                color: white;
+                border: 1px solid white;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-weight: 500;
                 cursor: pointer;
               ">Later</button>
             </div>
           `;
           document.body.appendChild(updateBanner);
+
+          // Add event listeners instead of inline onclick
+          document.getElementById('sw-update-now').addEventListener('click', () => {
+            window.location.reload();
+          });
+
+          document.getElementById('sw-update-later').addEventListener('click', () => {
+            document.getElementById('sw-update-banner').parentElement.remove();
+          });
         });
       }
     </script>

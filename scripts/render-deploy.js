@@ -5,7 +5,7 @@
  * Deploys Sentia Manufacturing Dashboard to Render
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import { execSync } from 'child_process';
 
 const RENDER_API_KEY = process.env.RENDER_API_KEY || 'rnd_mYUAytWRkb2Pj5GJROqNYubYt25J';

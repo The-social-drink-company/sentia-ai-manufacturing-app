@@ -118,29 +118,12 @@ const LandingPage = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              {isSignedIn ? (
-                <div className="flex items-center space-x-4">
-                  <Link to="/dashboard">
-                    <button className="px-6 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium">
-                      Dashboard
-                    </button>
-                  </Link>
-                  <UserButton afterSignOutUrl="/" />
-                </div>
-              ) : (
-                <>
-                  <SignInButton mode="modal" redirectUrl="/dashboard">
-                    <button className="px-6 py-2 text-white hover:text-gray-300 transition-colors font-medium">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal" redirectUrl="/dashboard">
-                    <button className="px-6 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium">
-                      Get Started
-                    </button>
-                  </SignUpButton>
-                </>
-              )}
+              {/* For bypass mode, always show Dashboard button */}
+              <Link to="/dashboard">
+                <button className="px-6 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                  Enter Dashboard
+                </button>
+              </Link>
             </motion.div>
           </div>
         </div>

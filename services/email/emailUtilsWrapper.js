@@ -1,6 +1,4 @@
-// ES Module wrapper for emailUtils.js
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const EmailUtils = require('./emailUtils.cjs');
+// ES Module wrapper for emailUtils.cjs
+import EmailUtils from './emailUtils.cjs';
 
 export default EmailUtils;

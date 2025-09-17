@@ -5247,22 +5247,8 @@ console.log('🔐 Clerk Publishable Key:', process.env.VITE_CLERK_PUBLISHABLE_KE
 console.log('🔑 Clerk Secret Key:', process.env.CLERK_SECRET_KEY ? 'SET' : 'NOT SET');
 console.log('='.repeat(60));
 
-// Serve static files from dist folder - simplified and fixed
-app.use(express.static(join(__dirname, 'dist'), {
-  setHeaders: (res, filePath) => {
-    // Set proper MIME types
-    if (filePath.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    } else if (filePath.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css; charset=utf-8');
-    } else if (filePath.endsWith('.html')) {
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    } else if (filePath.endsWith('.json')) {
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    }
-  },
-  index: false // Disable automatic index.html serving to handle it in catch-all
-}));
+// Serve static files from dist folder - simplified
+app.use(express.static(join(__dirname, 'dist')));
 
 // Executive Dashboard Data Endpoint - provides properly formatted KPI data
 app.get('/api/dashboard/executive', async (req, res) => {

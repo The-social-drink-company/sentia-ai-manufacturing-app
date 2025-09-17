@@ -815,6 +815,130 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API routing is working', timestamp: new Date().toISOString() });
 });
 
+// ============================================
+// Amazon SP-API Integration Endpoints
+// ============================================
+
+// Sync Amazon sales data
+app.get('/api/amazon/sales', authenticateUser, async (req, res) => {
+  try {
+    const { marketplace = 'uk' } = req.query;
+    const { default: amazonIntegration } = await import('./api/integrations/amazon.js');
+    const data = await amazonIntegration.syncSalesData(marketplace);
+    res.json(data);
+  } catch (error) {
+    logError('Amazon sales sync error', error);
+    res.status(500).json({
+      error: 'Failed to sync Amazon sales data',
+      message: error.message
+    });
+  }
+});
+
+// Get FBA inventory levels
+app.get('/api/amazon/inventory', authenticateUser, async (req, res) => {
+  try {
+    const { marketplace = 'uk' } = req.query;
+    const { default: amazonIntegration } = await import('./api/integrations/amazon.js');
+    const inventory = await amazonIntegration.getFBAInventory(marketplace);
+    res.json({
+      success: true,
+      marketplace,
+      data: inventory
+    });
+  } catch (error) {
+    logError('Amazon inventory fetch error', error);
+    res.status(500).json({
+      error: 'Failed to fetch FBA inventory',
+      message: error.message
+    });
+  }
+});
+
+// Get Amazon financial events
+app.get('/api/amazon/financial-events', authenticateUser, async (req, res) => {
+  try {
+    const { marketplace = 'uk' } = req.query;
+    const { default: amazonIntegration } = await import('./api/integrations/amazon.js');
+    const events = await amazonIntegration.getFinancialEvents(marketplace);
+    res.json({
+      success: true,
+      marketplace,
+      data: events
+    });
+  } catch (error) {
+    logError('Amazon financial events error', error);
+    res.status(500).json({
+      error: 'Failed to fetch financial events',
+      message: error.message
+    });
+  }
+});
+
+// Get Amazon returns
+app.get('/api/amazon/returns', authenticateUser, async (req, res) => {
+  try {
+    const { marketplace = 'uk' } = req.query;
+    const { default: amazonIntegration } = await import('./api/integrations/amazon.js');
+    const returns = await amazonIntegration.getReturns(marketplace);
+    res.json(returns);
+  } catch (error) {
+    logError('Amazon returns fetch error', error);
+    res.status(500).json({
+      error: 'Failed to fetch returns data',
+      message: error.message
+    });
+  }
+});
+
+// Create FBA shipment
+app.post('/api/amazon/create-shipment', authenticateUser, async (req, res) => {
+  try {
+    const { items, marketplace = 'uk' } = req.body;
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'Items array is required'
+      });
+    }
+
+    const { default: amazonIntegration } = await import('./api/integrations/amazon.js');
+    const shipment = await amazonIntegration.createFBAShipment(items, marketplace);
+    res.json({
+      success: true,
+      marketplace,
+      data: shipment
+    });
+  } catch (error) {
+    logError('FBA shipment creation error', error);
+    res.status(500).json({
+      error: 'Failed to create FBA shipment',
+      message: error.message
+    });
+  }
+});
+
+// Get product performance metrics
+app.get('/api/amazon/product-performance', authenticateUser, async (req, res) => {
+  try {
+    const { marketplace = 'uk' } = req.query;
+    const { default: amazonIntegration } = await import('./api/integrations/amazon.js');
+    const performance = await amazonIntegration.getProductPerformance(marketplace);
+    res.json({
+      success: true,
+      marketplace,
+      data: performance
+    });
+  } catch (error) {
+    logError('Amazon product performance error', error);
+    res.status(500).json({
+      error: 'Failed to fetch product performance',
+      message: error.message
+    });
+  }
+});
+
 // Diagnostic endpoint to check environment variables
 app.get('/api/debug/env', (req, res) => {
   const envInfo = {
@@ -987,6 +1111,10 @@ app.use('/api/quality', qualityRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/supply-chain', supplyChainRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
+
+// Shopify Integration Routes for real sales data
+import shopifyRouter, { startShopifySync } from './api/routes/shopify.js';
+app.use('/api/shopify', shopifyRouter);
 
 // Xero Integration Routes
 import xeroIntegration from './services/xeroIntegration.js';

@@ -1,0 +1,32 @@
+{
+  "name": "autonomous-render-monitor",
+  "version": "1.0.0",
+  "description": "24/7 Autonomous Render Monitor with Anthropic AI for intelligent error detection and auto-fixing",
+  "type": "module",
+  "main": "autonomous-monitor.js",
+  "scripts": {
+    "start": "node autonomous-monitor.js",
+    "dev": "node --watch autonomous-monitor.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.3",
+    "express": "^4.18.2",
+    "dotenv": "^16.4.5"
+  },
+  "keywords": [
+    "monitoring",
+    "render",
+    "ai",
+    "anthropic",
+    "claude",
+    "devops",
+    "auto-fix",
+    "self-healing"
+  ],
+  "author": "Sentia Manufacturing",
+  "license": "MIT"
+}

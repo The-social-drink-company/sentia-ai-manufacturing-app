@@ -558,3 +558,73 @@ databases:
     # - SSL/TLS encryption
     # - Connection pooling
     # - 1GB storage (upgradeable at $0.30/GB)
+
+  # ===================================
+  # AUTONOMOUS RENDER MONITOR WITH AI
+  # ===================================
+  - type: web
+    name: autonomous-render-monitor
+    runtime: node
+    region: oregon
+    plan: starter # $7/month for 24/7 operation
+    branch: production
+    rootDir: render-monitor
+
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+
+    envVars:
+      # Core Configuration
+      - key: NODE_ENV
+        value: production
+
+      # Anthropic AI Configuration
+      - key: ANTHROPIC_API_KEY
+        value: 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
+
+      # GitHub Configuration for Auto-Fix
+      - key: GITHUB_TOKEN
+        sync: false # Add via Render dashboard
+      - key: GITHUB_REPO
+        value: The-social-drink-company/sentia-manufacturing-dashboard
+      - key: GITHUB_BRANCH
+        value: production
+
+      # Render API Configuration (for triggering redeployments)
+      - key: RENDER_API_KEY
+        sync: false # Add via Render dashboard
+
+      # Monitoring Configuration
+      - key: CHECK_INTERVAL
+        value: "60000" # 1 minute
+      - key: AI_ANALYSIS_INTERVAL
+        value: "300000" # 5 minutes
+      - key: AUTO_FIX_INTERVAL
+        value: "600000" # 10 minutes
+
+      # Deployment URLs to Monitor
+      - key: MONITOR_DEVELOPMENT_URL
+        value: https://sentia-manufacturing-development.onrender.com
+      - key: MONITOR_TESTING_URL
+        value: https://sentia-manufacturing-testing.onrender.com
+      - key: MONITOR_PRODUCTION_URL
+        value: https://sentia-manufacturing-production.onrender.com
+      - key: MONITOR_MCP_URL
+        value: https://mcp-server-tkyu.onrender.com
+
+      # Feature Flags
+      - key: ENABLE_AUTO_FIX
+        value: "true"
+      - key: ENABLE_AI_ANALYSIS
+        value: "true"
+      - key: ENABLE_PATTERN_DETECTION
+        value: "true"
+      - key: ENABLE_STRATEGIC_RECOMMENDATIONS
+        value: "true"
+
+      # Logging
+      - key: LOG_LEVEL
+        value: info
+      - key: LOG_FORMAT
+        value: json

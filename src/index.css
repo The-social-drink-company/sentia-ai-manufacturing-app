@@ -2,10 +2,10 @@
 @import './components/ui/animations.css';
 @import './components/ui/enhanced-interactions.css';
 
-/* Import Tailwind CSS */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Import Tailwind CSS v4 */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

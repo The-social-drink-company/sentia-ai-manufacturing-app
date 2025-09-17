@@ -120,6 +120,7 @@ import productionRoutes from './api/routes/production.js';
 import inventoryRoutes from './api/routes/inventory.js';
 import financialRoutes from './api/routes/financial.js';
 import qualityRoutes from './api/routes/quality.js';
+import userRoutes from './api/routes/user.js';
 // Enterprise Components - Temporarily disabled for deployment fix
 // import EnterpriseSecurityFramework from './services/security/enterpriseSecurityFramework.js';
 // import EnterpriseIntegrationHub from './services/integrations/enterpriseIntegrationHub.js';
@@ -956,6 +957,7 @@ app.use('/api/production', productionRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/financial', financialRoutes);
 app.use('/api/quality', qualityRoutes);
+app.use('/api/user', userRoutes);
 
 logInfo('API routes registered', {
   routes: ['/api/production', '/api/inventory', '/api/financial', '/api/quality']

@@ -1746,3 +1746,20 @@ model Inventory {
   @@index([warehouse, productCode])
   @@map("inventory")
 }
+
+// User preferences for dashboard customization
+model UserPreferences {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @unique @map("user_id") @db.VarChar(255)
+  theme            String   @default("light") @db.VarChar(20)
+  notifications    Boolean  @default(true)
+  language         String   @default("en") @db.VarChar(10)
+  timezone         String   @default("UTC") @db.VarChar(50)
+  dashboardLayout  Json?    @map("dashboard_layout") @db.Json
+  dashboardWidgets Json?    @map("dashboard_widgets") @db.Json
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([userId])
+  @@map("user_preferences")
+}

@@ -8,10 +8,12 @@ import {
   ArrowsPointingInIcon,
   XMarkIcon,
   Squares2X2Icon,
-  ViewColumnsIcon
+  ViewColumnsIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import '../../styles/dashboard-grid.css';
 
 // Import all widget components
 import ProductionMetricsWidget from '../widgets/ProductionMetricsWidget';
@@ -128,18 +130,48 @@ const DashboardGrid = ({ userRole = 'viewer' }) => {
   const [fullscreenWidget, setFullscreenWidget] = useState(null);
   const [selectedPreset, setSelectedPreset] = useState(userRole);
 
-  // Load saved layout from localStorage or use preset
+  // Load saved layout from database, then localStorage, then use preset
   useEffect(() => {
-    const savedLayout = localStorage.getItem(`dashboardLayout_${user?.id}`);
-    const savedWidgets = localStorage.getItem(`dashboardWidgets_${user?.id}`);
+    const loadDashboardLayout = async () => {
+      if (user?.id) {
+        try {
+          // First try to load from database
+          const response = await fetch('/api/user/dashboard-layout', {
+            headers: {
+              'Authorization': `Bearer ${await user.getToken()}`
+            }
+          });
 
-    if (savedLayout && savedWidgets) {
-      setLayouts(JSON.parse(savedLayout));
-      setActiveWidgets(JSON.parse(savedWidgets));
-    } else {
-      // Use preset layout for user role
-      loadPresetLayout(userRole);
-    }
+          if (response.ok) {
+            const data = await response.json();
+            if (data.layouts && data.widgets) {
+              setLayouts(data.layouts);
+              setActiveWidgets(data.widgets);
+              // Save to localStorage as cache
+              localStorage.setItem(`dashboardLayout_${user.id}`, JSON.stringify(data.layouts));
+              localStorage.setItem(`dashboardWidgets_${user.id}`, JSON.stringify(data.widgets));
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load layout from database:', error);
+        }
+      }
+
+      // Fallback to localStorage
+      const savedLayout = localStorage.getItem(`dashboardLayout_${user?.id}`);
+      const savedWidgets = localStorage.getItem(`dashboardWidgets_${user?.id}`);
+
+      if (savedLayout && savedWidgets) {
+        setLayouts(JSON.parse(savedLayout));
+        setActiveWidgets(JSON.parse(savedWidgets));
+      } else {
+        // Use preset layout for user role
+        loadPresetLayout(userRole);
+      }
+    };
+
+    loadDashboardLayout();
   }, [user, userRole]);
 
   // Load a preset layout
@@ -232,21 +264,37 @@ const DashboardGrid = ({ userRole = 'viewer' }) => {
 
   // Save layout to database (API call)
   const saveLayoutToDatabase = async () => {
+    if (!user?.id) {
+      console.warn('Cannot save layout: User not authenticated');
+      return;
+    }
+
     try {
+      const token = await user.getToken();
       const response = await fetch('/api/user/dashboard-layout', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          userId: user?.id,
           layouts,
           widgets: activeWidgets
         })
       });
 
       if (response.ok) {
-        console.log('Layout saved to database');
+        const data = await response.json();
+        console.log('Layout saved to database:', data.message);
+        // Show success notification (you can add a toast notification here)
+        const successDiv = document.createElement('div');
+        successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        successDiv.textContent = 'Dashboard layout saved successfully!';
+        document.body.appendChild(successDiv);
+        setTimeout(() => successDiv.remove(), 3000);
+      } else {
+        const error = await response.json();
+        console.error('Failed to save layout:', error);
       }
     } catch (error) {
       console.error('Failed to save layout:', error);

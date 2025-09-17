@@ -16,13 +16,16 @@ import {
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0)
 
-  // Safely use useUser with fallback
+  // Safely use Clerk hooks and components only when provider exists
+  const [hasClerkProvider, setHasClerkProvider] = useState(false)
   let isSignedIn = false
   let user = null
   try {
     const userHook = useUser()
     isSignedIn = userHook.isSignedIn
     user = userHook.user
+    // If hook resolved without throwing, we likely have a provider
+    setHasClerkProvider(true)
   } catch (e) {
     // Clerk not available, running in bypass mode
     console.log('Running without Clerk authentication')
@@ -165,28 +168,54 @@ const LandingPage = () => {
                     </motion.button>
                   </Link>
                 ) : (
-                  <SignUpButton mode="modal" redirectUrl="/dashboard">
+                  hasClerkProvider ? (
+                    <SignUpButton mode="modal" redirectUrl="/dashboard">
+                      <motion.button
+                        className="group px-8 py-4 bg-white text-black rounded-lg font-semibold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span>Get Started</span>
+                        <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </motion.button>
+                    </SignUpButton>
+                  ) : (
+                    <Link to="/dashboard">
+                      <motion.button
+                        className="group px-8 py-4 bg-white text-black rounded-lg font-semibold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span>Get Started</span>
+                        <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </motion.button>
+                    </Link>
+                  )
+                )}
+
+                {hasClerkProvider ? (
+                  <SignInButton mode="modal" redirectUrl="/dashboard">
                     <motion.button
-                      className="group px-8 py-4 bg-white text-black rounded-lg font-semibold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center"
+                      className="px-8 py-4 border border-white/20 text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center backdrop-blur-sm"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <span>Get Started</span>
-                      <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      <span>{isSignedIn ? 'Dashboard' : 'Sign In'}</span>
+                      <ChartBarIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </motion.button>
-                  </SignUpButton>
+                  </SignInButton>
+                ) : (
+                  <Link to="/dashboard">
+                    <motion.button
+                      className="px-8 py-4 border border-white/20 text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center backdrop-blur-sm"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span>Enter Dashboard</span>
+                      <ChartBarIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </motion.button>
+                  </Link>
                 )}
-
-                <SignInButton mode="modal" redirectUrl="/dashboard">
-                  <motion.button
-                    className="px-8 py-4 border border-white/20 text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center backdrop-blur-sm"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span>{isSignedIn ? 'Dashboard' : 'Sign In'}</span>
-                    <ChartBarIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </motion.button>
-                </SignInButton>
               </div>
             </motion.div>
           </div>

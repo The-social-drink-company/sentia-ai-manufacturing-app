@@ -524,7 +524,7 @@ class TestDataFactory {
       const category = faker.helpers.arrayElement(categories);
       const item = {
         id: `inv_${faker.string.uuid()}`,
-        sku: faker.commerce.product().replace(/\s+/g, '-').toUpperCase() + `-${faker.datatype.number({ min: 100, max: 999 })}`,
+        sku: faker.commerce.product().replace(/\s+/g, '-').toUpperCase() + `-${faker.number.int({ min: 100, max: 999 })}`,
         name: this.generateInventoryItemName(category),
         category,
         description: faker.commerce.productDescription(),
@@ -538,7 +538,7 @@ class TestDataFactory {
         lastUpdated: faker.date.recent({ days: 7 }),
         lastOrdered: faker.date.past({ months: 2 }),
         expirationDate: this.getExpirationDate(category),
-        batchNumber: `BATCH_${faker.datatype.number({ min: 1000, max: 9999 })}`,
+        batchNumber: `BATCH_${faker.number.int({ min: 1000, max: 9999 })}`,
         qualityStatus: this.getQualityStatus(scenario),
         unitOfMeasure: this.getUnitOfMeasure(category),
         // Movement tracking
@@ -813,14 +813,14 @@ class TestDataFactory {
 
   generateShopifyData(scenario) {
     const products = this.products.map(p => ({
-      id: faker.datatype.number({ min: 1000000, max: 9999999 }),
+      id: faker.number.int({ min: 1000000, max: 9999999 }),
       title: p.name,
       handle: p.name.toLowerCase().replace(/\s+/g, '-'),
       product_type: p.category,
       vendor: 'Sentia Spirits',
       status: 'active',
       variants: [{
-        id: faker.datatype.number({ min: 10000000, max: 99999999 }),
+        id: faker.number.int({ min: 10000000, max: 99999999 }),
         sku: p.sku,
         price: p.sellingPrice.toString(),
         inventory_quantity: Math.floor(Math.random() * 1000) + 100
@@ -830,8 +830,8 @@ class TestDataFactory {
     const orders = [];
     for (let i = 0; i < 50; i++) {
       const order = {
-        id: faker.datatype.number({ min: 1000, max: 9999 }),
-        order_number: faker.datatype.number({ min: 1000, max: 9999 }),
+        id: faker.number.int({ min: 1000, max: 9999 }),
+        order_number: faker.number.int({ min: 1000, max: 9999 }),
         email: faker.internet.email(),
         created_at: faker.date.recent({ days: 30 }).toISOString(),
         total_price: faker.commerce.price(20, 200, 2),
@@ -839,13 +839,13 @@ class TestDataFactory {
         financial_status: faker.helpers.arrayElement(['paid', 'pending', 'refunded']),
         fulfillment_status: faker.helpers.arrayElement(['fulfilled', 'partial', 'unfulfilled']),
         line_items: [{
-          id: faker.datatype.number({ min: 1000000, max: 9999999 }),
+          id: faker.number.int({ min: 1000000, max: 9999999 }),
           product_id: faker.helpers.arrayElement(products).id,
           quantity: Math.floor(Math.random() * 5) + 1,
           price: faker.commerce.price(15, 50, 2)
         }],
         customer: {
-          id: faker.datatype.number({ min: 1000000, max: 9999999 }),
+          id: faker.number.int({ min: 1000000, max: 9999999 }),
           email: faker.internet.email(),
           first_name: faker.person.firstName(),
           last_name: faker.person.lastName()

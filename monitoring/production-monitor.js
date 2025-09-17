@@ -3,11 +3,11 @@
  * Real-time monitoring and alerting for production environment
  */
 
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const WebSocket = require('ws');
-const os = require('os');
-const { performance } = require('perf_hooks');
+import WebSocket from 'ws';
+import os from 'os';
+import { performance } from 'perf_hooks';
 
 // Monitoring configuration
 const MONITORING_CONFIG = {
@@ -445,7 +445,7 @@ const setupWebSocket = (server) => {
   });
 };
 
-module.exports = {
+export {
   router,
   requestTracker,
   setupWebSocket,

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { chromium } from 'playwright';
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 
 /**
  * COMPREHENSIVE SYSTEM INTEGRATION TESTS

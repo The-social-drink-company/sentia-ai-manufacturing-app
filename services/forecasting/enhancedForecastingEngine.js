@@ -17,8 +17,8 @@
  * @author Sentia Enterprise Team
  */
 
-const DualAIOrchestrator = require('../ai/dualAIOrchestrator');
-const EventEmitter = require('events');
+import DualAIOrchestrator from '../ai/dualAIOrchestrator.js';
+import EventEmitter from 'events';
 
 class EnhancedForecastingEngine extends EventEmitter {
     constructor(config = {}) {
@@ -1341,5 +1341,5 @@ class EnhancedForecastingEngine extends EventEmitter {
     }
 }
 
-module.exports = EnhancedForecastingEngine;
+export default EnhancedForecastingEngine;
 

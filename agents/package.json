@@ -9,9 +9,7 @@
     "test": "node code-quality-agent.js",
     "pm2": "pm2 start autonomous-orchestrator.js --name autonomous-system"
   },
-  "dependencies": {
-    "node-fetch": "^3.3.2"
-  },
+  "dependencies": {},
   "engines": {
     "node": ">=18.0.0"
   }

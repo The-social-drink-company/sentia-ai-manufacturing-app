@@ -5,11 +5,16 @@
  * Analyzes and optimizes application performance
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-const zlib = require('zlib');
-const crypto = require('crypto');
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import zlib from 'zlib';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Colors for console output
 const colors = {

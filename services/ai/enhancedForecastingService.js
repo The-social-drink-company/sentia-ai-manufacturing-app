@@ -827,7 +827,7 @@ class EnhancedForecastingService {
         lastModelUpdate: this.lastModelUpdate
       };
       
-      require('fs').writeFileSync(
+      (await import('fs')).default.writeFileSync(
         `${basePath}/metadata.json`, 
         JSON.stringify(metadata, null, 2)
       );
@@ -847,19 +847,19 @@ class EnhancedForecastingService {
     
     try {
       // Load TensorFlow models
-      if (require('fs').existsSync(`${basePath}/et-lstm`)) {
+      if ((await import('fs')).default.existsSync(`${basePath}/et-lstm`)) {
         this.models.etLstm = await tf.loadLayersModel(`file://${basePath}/et-lstm/model.json`);
       }
-      if (require('fs').existsSync(`${basePath}/enhanced-lstm`)) {
+      if ((await import('fs')).default.existsSync(`${basePath}/enhanced-lstm`)) {
         this.models.lstm = await tf.loadLayersModel(`file://${basePath}/enhanced-lstm/model.json`);
       }
-      if (require('fs').existsSync(`${basePath}/transformer`)) {
+      if ((await import('fs')).default.existsSync(`${basePath}/transformer`)) {
         this.models.transformer = await tf.loadLayersModel(`file://${basePath}/transformer/model.json`);
       }
       
       // Load metadata
-      if (require('fs').existsSync(`${basePath}/metadata.json`)) {
-        const metadata = JSON.parse(require('fs').readFileSync(`${basePath}/metadata.json`, 'utf8'));
+      if ((await import('fs')).default.existsSync(`${basePath}/metadata.json`)) {
+        const metadata = JSON.parse((await import('fs')).default.readFileSync(`${basePath}/metadata.json`, 'utf8'));
         this.modelWeights = metadata.modelWeights || this.modelWeights;
         this.performanceHistory = metadata.performanceHistory || [];
         this.lastModelUpdate = metadata.lastModelUpdate ? new Date(metadata.lastModelUpdate) : null;

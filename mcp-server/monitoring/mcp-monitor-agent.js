@@ -6,7 +6,7 @@
 
 import express from 'express';
 import WebSocket from 'ws';
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import { EventEmitter } from 'events';
 import winston from 'winston';
 import os from 'os';

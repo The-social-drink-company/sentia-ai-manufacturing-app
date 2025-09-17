@@ -5,8 +5,8 @@
  * Ensures all required variables are set for Render deployment
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 // Complete list of required environment variables by category
 const ENV_VARIABLES = {

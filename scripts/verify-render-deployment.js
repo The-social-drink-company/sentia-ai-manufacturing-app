@@ -5,10 +5,10 @@
  * Checks all environments and ensures everything is properly configured
  */
 
-const https = require('https');
-const { exec } = require('child_process');
-const util = require('util');
-const execPromise = util.promisify(exec);
+import https from 'https';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+const execPromise = promisify(exec);
 
 // Environment configurations
 const ENVIRONMENTS = {

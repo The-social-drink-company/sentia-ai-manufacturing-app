@@ -413,7 +413,7 @@ router.get('/benchmark', async (req, res) => {
       },
       cpu: {
         usage: process.cpuUsage(),
-        load_average: require('os').loadavg()
+        load_average: os.loadavg()
       },
       uptime: Math.floor(process.uptime()),
       performance_grade: this.calculatePerformanceGrade(dbTime, memAfter.heapUsed, memAfter.heapTotal)

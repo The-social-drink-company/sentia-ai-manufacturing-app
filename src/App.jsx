@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, UserButton } from '@clerk/clerk-react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -22,9 +22,15 @@ import { LoadingSpinner } from './components/LoadingStates'
 import ErrorBoundaryFallback from './components/ErrorBoundary'
 // Import enhanced lazy loading utilities
 import { createRouteComponent, createPriorityComponent, createLowPriorityComponent } from './utils/lazyLoading'
+// Import authentication components
+import RoleGuard from './components/auth/RoleGuard'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
+// import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
+import UserOnboarding from './components/auth/UserOnboarding'
 
 // High-Priority Components (Core dashboard functionality)
-const LandingPage = createPriorityComponent(() => import('./pages/LandingPage'), 'LandingPage')
+const LandingPage = createPriorityComponent(() => import('./pages/LandingPageSimple'), 'LandingPage')
 const WorldClassDashboard = createPriorityComponent(() => import('./pages/WorldClassDashboard'), 'WorldClassDashboard')
 const SimpleDashboard = createPriorityComponent(() => import('./pages/SimpleDashboard'), 'SimpleDashboard')
 
@@ -177,26 +183,30 @@ const ProtectedRoute = ({ children, allowGuest = false }) => {
 const DashboardRoute = () => {
   const [searchParams] = useSearchParams()
   const fallback = searchParams.get('fallback')
-  
+
   if (fallback === 'true') {
-    return <SimpleDashboard />
+    return (
+      <WorldClassLayout>
+        <SimpleDashboard />
+      </WorldClassLayout>
+    )
   }
-  
+
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       FallbackComponent={({ error, resetErrorBoundary }) => (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Dashboard Error</h2>
             <p className="text-gray-600 mb-4">Enterprise dashboard failed to load.</p>
             <div className="flex space-x-3">
-              <button 
+              <button
                 onClick={resetErrorBoundary}
                 className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
                 Retry
               </button>
-              <button 
+              <button
                 onClick={() => window.location.href = '/dashboard?fallback=true'}
                 className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
               >
@@ -221,40 +231,46 @@ const FallbackAuthProvider = ({ children }) => {
 }
 
 function App() {
-  // Use ClerkProvider if key is available, otherwise use fallback
-  const AuthProvider = clerkPubKey ? ClerkProvider : FallbackAuthProvider
-  const authProps = clerkPubKey ? {
-    publishableKey: clerkPubKey,
-    afterSignOutUrl: "/",
-    // Add Clerk configuration to prevent blocking
-    appearance: {
-      elements: {
-        rootBox: "clerk-root-box"
-      }
-    },
-    // Skip redirect on error
-    navigate: (to) => {
-      if (to && !to.includes('error')) {
-        window.location.href = to
-      }
-    }
-  } : {}
+  // ClerkProvider is now handled in main.jsx
+  // This component focuses on routing and app structure
 
   return (
-    <AuthProvider {...authProps}>
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
         <QueryClientProvider client={queryClient}>
+          {/* SessionManager temporarily disabled - uses Clerk hooks */}
           <Router>
             {/* EnterpriseIntegrationHub removed - missing dependencies */}
             <div className="App">
-              <Routes>
+                <Routes>
                 {/* Public Landing Page */}
                 <Route path="/" element={
                   <Suspense fallback={<LoadingSpinner />}>
                     <LandingPage />
                   </Suspense>
                 } />
-                
+
+                {/* Authentication Routes */}
+                <Route path="/login" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <LoginPage />
+                  </Suspense>
+                }/>
+
+                <Route path="/signup" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <SignupPage />
+                  </Suspense>
+                }/>
+
+                {/* Onboarding Route for New Users */}
+                <Route path="/onboarding" element={
+                  <ProtectedRoute allowGuest={false}>
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <UserOnboarding onComplete={() => window.location.href = '/dashboard'} />
+                    </Suspense>
+                  </ProtectedRoute>
+                }/>
+
                 {/* Protected Routes with World-Class Layout - Guest Access Enabled */}
                 <Route 
                   path="/dashboard/*" 
@@ -746,14 +762,16 @@ function App() {
                   }
                 />
 
-                {/* Enhanced Admin System with Nested Routes */}
-                <Route 
-                  path="/admin/*" 
+                {/* Enhanced Admin System with Role-Based Access Control */}
+                <Route
+                  path="/admin/*"
                   element={
-                    <ProtectedRoute allowGuest={true}>
-                      <Suspense fallback={<LoadingSpinner />}>
-                        <AdminLayout />
-                      </Suspense>
+                    <ProtectedRoute allowGuest={false}>
+                      <RoleGuard allowedRoles={['admin', 'manager']}>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AdminLayout />
+                        </Suspense>
+                      </RoleGuard>
                     </ProtectedRoute>
                   }
                 >
@@ -817,8 +835,8 @@ function App() {
                 </Route>
                 
                 {/* Financial Management Routes */}
-                <Route 
-                  path="/financial-reports" 
+                <Route
+                  path="/financial"
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
@@ -827,7 +845,20 @@ function App() {
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
-                  } 
+                  }
+                />
+
+                <Route
+                  path="/financial-reports"
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <FinancialReports />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  }
                 />
                 
                 <Route 
@@ -964,12 +995,12 @@ function App() {
               />
               
                     </div>
-            {/* EnterpriseIntegrationHub closing tag removed */}
-          </Router>
+              {/* EnterpriseIntegrationHub closing tag removed */}
+            </Router>
+          {/* SessionManager closing tag removed */}
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>
-    </AuthProvider>
   )
 }
 

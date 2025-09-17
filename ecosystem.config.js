@@ -1,6 +1,6 @@
 // PM2 Ecosystem Configuration for Production Deployment
 
-module.exports = {
+export default {
   apps: [
     {
       name: 'sentia-dashboard',

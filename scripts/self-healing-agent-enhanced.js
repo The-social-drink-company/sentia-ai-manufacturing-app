@@ -7,7 +7,7 @@
  * Updated for production deployment with real data requirements
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import { exec } from 'child_process';
 import util from 'util';
 const execPromise = util.promisify(exec);

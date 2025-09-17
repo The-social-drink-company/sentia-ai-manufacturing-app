@@ -1,7 +1,7 @@
 // Production Configuration
-const path = require('path');
+import path from 'path';
 
-module.exports = {
+export default {
   // Application Settings
   app: {
     name: process.env.APP_NAME || 'Sentia Manufacturing Dashboard',

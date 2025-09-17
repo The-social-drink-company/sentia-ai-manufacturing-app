@@ -3,11 +3,14 @@
  * Provides comprehensive system health information
  */
 
-const express = require('express');
+import express from 'express';
+import os from 'os';
+import fs from 'fs';
+import path from 'path';
+import { Pool } from 'pg';
+import Redis from 'redis';
+
 const router = express.Router();
-const os = require('os');
-const { Pool } = require('pg');
-const Redis = require('redis');
 
 // System start time
 const startTime = Date.now();
@@ -281,9 +284,6 @@ async function checkExternalAPIs() {
  * Check file system
  */
 function checkFileSystem() {
-  const fs = require('fs');
-  const path = require('path');
-
   try {
     const testFile = path.join(os.tmpdir(), 'health-check-test.txt');
     fs.writeFileSync(testFile, 'test');
@@ -303,6 +303,7 @@ function checkFileSystem() {
       status: HealthStatus.UNHEALTHY,
       error: error.message
     };
+  }
   }
 }
 
@@ -537,13 +538,13 @@ function measureEventLoopDelay() {
 /**
  * Get GC stats (if available)
  */
-function getGCStats() {
+async function getGCStats() {
   try {
-    const v8 = require('v8');
-    return v8.getHeapStatistics();
+    const v8 = await import('v8');
+    return v8.default.getHeapStatistics();
   } catch (error) {
     return null;
   }
 }
 
-module.exports = router;
+export default router;

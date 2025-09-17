@@ -17,7 +17,7 @@
  * - Comprehensive Error Recovery
  */
 
-import fetch from 'node-fetch';
+// Node 18+ has global fetch
 import { exec } from 'child_process';
 import util from 'util';
 import fs from 'fs';

@@ -22,8 +22,8 @@
  * @author Sentia Enterprise Team
  */
 
-const EventEmitter = require('events');
-const axios = require('axios');
+import EventEmitter from 'events';
+import axios from 'axios';
 
 class EnterpriseIntegrationHub extends EventEmitter {
     constructor(config = {}) {
@@ -1326,5 +1326,5 @@ class EnterpriseIntegrationHub extends EventEmitter {
     }
 }
 
-module.exports = EnterpriseIntegrationHub;
+export default EnterpriseIntegrationHub;
 

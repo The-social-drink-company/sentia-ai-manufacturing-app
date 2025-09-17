@@ -5,7 +5,7 @@
  * Ensures 100% functionality across all Railway deployments
  */
 
-const fetch = require('node-fetch');
+// Node 18+ has global fetch
 const { execSync } = require('child_process');
 
 // Configuration

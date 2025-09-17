@@ -28,6 +28,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import AICentralNervousSystem from './ai-orchestration/ai-central-nervous-system.js';
 import UnifiedAPIInterface from './api-integrations/unified-api-interface.js';
+import xeroIntegration from './api-integrations/xero-integration.js';
 import { SENTIA_KNOWLEDGE_BASE, SentiaKnowledgeRetrieval } from './knowledge-base/sentia-manufacturing-knowledge.js';
 import InteractionLearningSystem from './knowledge-base/interaction-learning-system.js';
 
@@ -835,10 +836,53 @@ class SentiaEnterpriseMCPServer {
   }
 
   async handleWorkingCapitalAnalysis({ scenario = 'current', timeframe = 12, includeProjections = true }) {
-    logger.info('Analyzing working capital', { scenario, timeframe, includeProjections });
-    
-    // CRITICAL ERROR: No fake working capital data allowed
-    throw new Error('Working capital analysis requires real financial data from accounting systems (Xero, etc.). Math.random() fake data is not permitted.');
+    logger.info('Analyzing working capital using real Xero data', { scenario, timeframe, includeProjections });
+
+    try {
+      // Initialize Xero if not already done
+      await xeroIntegration.initialize();
+
+      // Get real working capital data from Xero
+      const xeroData = await xeroIntegration.getFinancialData('working-capital', {
+        scenario,
+        timeframe
+      });
+
+      if (!xeroData.success) {
+        throw new Error(`Failed to get Xero data: ${xeroData.error}`);
+      }
+
+      // Return real working capital analysis
+      return {
+        success: true,
+        source: 'Xero Accounting System',
+        timestamp: new Date().toISOString(),
+        workingCapital: xeroData.data.workingCapital,
+        currentAssets: xeroData.data.currentAssets,
+        currentLiabilities: xeroData.data.currentLiabilities,
+        currentRatio: xeroData.data.currentRatio,
+        accountsReceivable: xeroData.data.accountsReceivable,
+        accountsPayable: xeroData.data.accountsPayable,
+        cashConversionCycle: xeroData.data.cashConversionCycle,
+        scenario,
+        timeframe,
+        includeProjections,
+        message: 'Real working capital data retrieved from Xero'
+      };
+    } catch (error) {
+      logger.error('Failed to get working capital from Xero', { error: error.message });
+
+      // If Xero is not configured, provide clear instructions
+      if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
+        throw new Error('Xero integration not configured. Please set XERO_CLIENT_ID and XERO_CLIENT_SECRET environment variables and authenticate with Xero.');
+      }
+
+      throw new Error(`Working capital analysis failed: ${error.message}`);
+    }
+  }
+
+  async handleWorkingCapitalLegacy({ scenario = 'current', timeframe = 12, includeProjections = true }) {
+    // Legacy function kept for reference - not used anymore
     const scenarioMultipliers = {
       current: 1.0,
       optimistic: 1.15,

@@ -128,7 +128,7 @@ if (clerkPubKey && !bypassClerk) {
   console.log('Rendering app without Clerk authentication (bypass mode)');
   root.render(
     <Suspense fallback={<LoadingFallback />}>
-      <App />
+      <TestApp />
     </Suspense>
   )
 }

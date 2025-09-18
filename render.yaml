@@ -372,7 +372,7 @@ services:
       npm ci --legacy-peer-deps
       npx vite build
       npx prisma generate
-      echo "y" | npx prisma db push --accept-data-loss || true
+      npx prisma db push --accept-data-loss || true
     startCommand: node server.js
     healthCheckPath: /health
 

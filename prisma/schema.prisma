@@ -2134,7 +2134,7 @@ model PurchaseOrder {
 model Embedding {
   id          String   @id @default(uuid()) @db.Uuid
   content     String   @db.Text
-  // embedding   Unsupported("vector")?  // Commented out temporarily - requires pgvector extension
+  embedding   Unsupported("vector")?  // pgvector extension is now installed on Render
   metadata    Json?    @db.Json
   category    String?  @db.VarChar(50) // product, customer, supplier, document
   entityId    String?  @map("entity_id") @db.VarChar(255) // Reference to related entity

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth System Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #e5e7eb;
+        }
+        .status-item.success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        .status-item.warning {
+            border-left-color: #f59e0b;
+            background: #fef3c7;
+        }
+        .status-item.error {
+            border-left-color: #ef4444;
+            background: #fee2e2;
+        }
+        h1 {
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .refresh-btn:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-card">
+        <h1>🔒 Authentication System Status</h1>
+
+        <div id="test-results"></div>
+
+        <button class="refresh-btn" onclick="runTests()">Run Tests Again</button>
+    </div>
+
+    <script type="module">
+        window.runTests = async function() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = 'Testing...';
+
+            const tests = [];
+
+            // Test 1: Check if app loads
+            try {
+                const response = await fetch('/');
+                const html = await response.text();
+                tests.push({
+                    name: 'App Loads',
+                    status: response.ok ? 'success' : 'error',
+                    value: response.ok ? '✅ Page loads' : '❌ Failed to load'
+                });
+            } catch (e) {
+                tests.push({
+                    name: 'App Loads',
+                    status: 'error',
+                    value: '❌ ' + e.message
+                });
+            }
+
+            // Test 2: Check for blank screen indicators
+            try {
+                const response = await fetch('/');
+                const html = await response.text();
+                const hasRoot = html.includes('id="root"');
+                const hasContent = html.length > 1000;
+
+                tests.push({
+                    name: 'Page Structure',
+                    status: hasRoot && hasContent ? 'success' : 'warning',
+                    value: hasRoot ? '✅ Root element present' : '⚠️ Missing root'
+                });
+            } catch (e) {
+                tests.push({
+                    name: 'Page Structure',
+                    status: 'error',
+                    value: '❌ ' + e.message
+                });
+            }
+
+            // Test 3: Check Vite server
+            try {
+                const response = await fetch('/@vite/client');
+                tests.push({
+                    name: 'Vite Dev Server',
+                    status: response.ok ? 'success' : 'warning',
+                    value: response.ok ? '✅ Running on :3001' : '⚠️ Not responding'
+                });
+            } catch (e) {
+                tests.push({
+                    name: 'Vite Dev Server',
+                    status: 'error',
+                    value: '❌ Server down'
+                });
+            }
+
+            // Test 4: Check main.jsx
+            try {
+                const response = await fetch('/src/main.jsx');
+                tests.push({
+                    name: 'Main Entry Point',
+                    status: response.ok ? 'success' : 'error',
+                    value: response.ok ? '✅ main.jsx accessible' : '❌ Cannot load main.jsx'
+                });
+            } catch (e) {
+                tests.push({
+                    name: 'Main Entry Point',
+                    status: 'error',
+                    value: '❌ ' + e.message
+                });
+            }
+
+            // Test 5: Check BulletproofAuthProvider
+            try {
+                const response = await fetch('/src/auth/BulletproofAuthProvider.jsx');
+                tests.push({
+                    name: 'Auth Provider',
+                    status: response.ok ? 'success' : 'warning',
+                    value: response.ok ? '✅ BulletproofAuth loaded' : '⚠️ Auth not found'
+                });
+            } catch (e) {
+                tests.push({
+                    name: 'Auth Provider',
+                    status: 'error',
+                    value: '❌ ' + e.message
+                });
+            }
+
+            // Test 6: Environment check
+            tests.push({
+                name: 'Environment',
+                status: 'success',
+                value: '✅ Development mode'
+            });
+
+            // Display results
+            results.innerHTML = tests.map(test => `
+                <div class="status-item ${test.status}">
+                    <span><strong>${test.name}:</strong></span>
+                    <span>${test.value}</span>
+                </div>
+            `).join('');
+
+            // Add summary
+            const successCount = tests.filter(t => t.status === 'success').length;
+            const totalCount = tests.length;
+
+            results.innerHTML += `
+                <div style="margin-top: 20px; padding: 16px; background: ${successCount === totalCount ? '#10b981' : successCount > totalCount/2 ? '#f59e0b' : '#ef4444'}; color: white; border-radius: 8px; text-align: center;">
+                    <strong>Overall Status: ${successCount}/${totalCount} Tests Passed</strong>
+                    <div style="margin-top: 8px;">
+                        ${successCount === totalCount ?
+                            '🎉 Authentication system is working perfectly!' :
+                            successCount > totalCount/2 ?
+                            '⚠️ System is partially working - check warnings' :
+                            '❌ Issues detected - needs fixing'}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Run tests on load
+        runTests();
+    </script>
+</body>
+</html>

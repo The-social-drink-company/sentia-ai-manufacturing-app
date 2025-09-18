@@ -146,6 +146,9 @@ model Product {
   forecasts           Forecast[]
   historicalSales     HistoricalSale[]
   inventoryLevels     InventoryLevel[]
+  productionMetrics   ProductionMetrics[]
+  qualityInspections  QualityInspection[]
+  batchProductions    BatchProduction[]
   creator             User?             @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   workingCapital      WorkingCapital[]
   inventory_policies  InventoryPolicy[]
@@ -1795,6 +1798,7 @@ model ProductionMetrics {
   lineId        String   @map("line_id") @db.Uuid
   line          ProductionLine @relation(fields: [lineId], references: [id])
   productId     String?  @map("product_id") @db.VarChar(255)
+  product       Product? @relation(fields: [productId], references: [sku])
   timestamp     DateTime @default(now()) @db.Timestamptz(6)
   unitsProduced Int      @map("units_produced")
   targetUnits   Int      @map("target_units")
@@ -1847,6 +1851,7 @@ model BatchProduction {
   lineId        String   @map("line_id") @db.Uuid
   line          ProductionLine @relation(fields: [lineId], references: [id])
   productId     String   @map("product_id") @db.VarChar(255)
+  product       Product  @relation(fields: [productId], references: [sku])
   productName   String   @map("product_name") @db.VarChar(255)
   quantity      Int
   targetQuantity Int     @map("target_quantity")
@@ -1940,6 +1945,7 @@ model QualityInspection {
   id              String   @id @default(uuid()) @db.Uuid
   batchId         String?  @map("batch_id") @db.VarChar(100)
   productId       String   @map("product_id") @db.VarChar(255)
+  product         Product  @relation(fields: [productId], references: [sku])
   productName     String   @map("product_name") @db.VarChar(255)
   inspectionDate  DateTime @map("inspection_date") @db.Timestamptz(6)
   inspectorId     String   @map("inspector_id") @db.VarChar(255)

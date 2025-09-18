@@ -368,7 +368,7 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: bash scripts/production-build.sh
+    buildCommand: "npm ci --legacy-peer-deps && npx vite build && npx prisma generate"
     startCommand: node server.js
     healthCheckPath: /health
 

@@ -59,9 +59,9 @@ const CONFIG = {
 
   // Notification settings
   notifications: {
-    logFile: './logs/render-monitor.log',
-    statusFile: './monitoring-status.json',
-    alertFile: './alerts.json'
+    logFile: './monitoring/logs/render-monitor.log',
+    statusFile: './monitoring/monitoring-status.json',
+    alertFile: './monitoring/alerts.json'
   }
 };
 
@@ -435,7 +435,7 @@ class RenderMonitor {
 
     // Save report to file
     try {
-      const reportFile = `./logs/report-${new Date().toISOString().split('T')[0]}.json`;
+      const reportFile = `./monitoring/logs/report-${new Date().toISOString().split('T')[0]}.json`;
       await fs.writeFile(reportFile, JSON.stringify(report, null, 2));
     } catch (error) {
       console.error('Failed to save report:', error);
@@ -453,11 +453,12 @@ class MonitoringAgent {
   }
 
   async initialize() {
-    // Ensure logs directory exists
+    // Ensure monitoring directories exist
     try {
-      await fs.mkdir('./logs', { recursive: true });
+      await fs.mkdir('./monitoring/logs', { recursive: true });
+      await fs.mkdir('./monitoring', { recursive: true });
     } catch (error) {
-      console.error('Failed to create logs directory:', error);
+      console.error('Failed to create monitoring directories:', error);
     }
 
     await MonitoringUtils.writeLog('='.repeat(60));
@@ -541,85 +542,108 @@ class MonitoringAgent {
 }
 
 // Express server for monitoring dashboard
-const express = require('express');
-const cors = require('cors');
-
-const app = express();
-const PORT = process.env.MONITOR_PORT || 3002;
-
-app.use(cors());
-app.use(express.json());
+let express, cors;
+try {
+  express = require('express');
+  cors = require('cors');
+} catch (error) {
+  console.error('Express/CORS not available. Running in standalone mode.');
+  // Run without web dashboard if express not available
+  express = null;
+  cors = null;
+}
 
 // Initialize monitoring agent
 const agent = new MonitoringAgent();
 
-// API endpoints
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    agent: agent.isRunning ? 'running' : 'stopped',
-    timestamp: new Date().toISOString()
+// Initialize Express app if available
+let app;
+const PORT = process.env.MONITOR_PORT || 3005;
+
+if (express) {
+  app = express();
+
+  if (cors) {
+    app.use(cors());
+  }
+  app.use(express.json());
+
+  // API endpoints
+  app.get('/health', (req, res) => {
+    res.json({
+      status: 'healthy',
+      agent: agent.isRunning ? 'running' : 'stopped',
+      timestamp: new Date().toISOString()
+    });
   });
-});
 
-app.get('/status', async (req, res) => {
-  const status = await agent.getStatus();
-  res.json(status);
-});
+  app.get('/status', async (req, res) => {
+    const status = await agent.getStatus();
+    res.json(status);
+  });
 
-app.get('/deployments', (req, res) => {
-  res.json(STATE.deploymentStatus);
-});
+  app.get('/deployments', (req, res) => {
+    res.json(STATE.deploymentStatus);
+  });
 
-app.get('/metrics', (req, res) => {
-  res.json(STATE.metrics);
-});
+  app.get('/metrics', (req, res) => {
+    res.json(STATE.metrics);
+  });
 
-app.get('/report', (req, res) => {
-  if (STATE.lastReport) {
-    res.json(STATE.lastReport);
-  } else {
-    res.status(404).json({ error: 'No report available yet' });
-  }
-});
+  app.get('/report', (req, res) => {
+    if (STATE.lastReport) {
+      res.json(STATE.lastReport);
+    } else {
+      res.status(404).json({ error: 'No report available yet' });
+    }
+  });
 
-app.post('/start', (req, res) => {
-  agent.start();
-  res.json({ message: 'Monitoring agent started' });
-});
+  app.post('/start', (req, res) => {
+    agent.start();
+    res.json({ message: 'Monitoring agent started' });
+  });
 
-app.post('/stop', (req, res) => {
-  agent.stop();
-  res.json({ message: 'Monitoring agent stopped' });
-});
+  app.post('/stop', (req, res) => {
+    agent.stop();
+    res.json({ message: 'Monitoring agent stopped' });
+  });
 
-app.post('/check/:deployment', async (req, res) => {
-  const { deployment } = req.params;
+  app.post('/check/:deployment', async (req, res) => {
+    const { deployment } = req.params;
 
-  if (!CONFIG.deployments[deployment]) {
-    return res.status(404).json({ error: 'Deployment not found' });
-  }
+    if (!CONFIG.deployments[deployment]) {
+      return res.status(404).json({ error: 'Deployment not found' });
+    }
 
-  const result = await RenderMonitor.checkDeploymentHealth(
-    deployment,
-    CONFIG.deployments[deployment]
-  );
+    const result = await RenderMonitor.checkDeploymentHealth(
+      deployment,
+      CONFIG.deployments[deployment]
+    );
 
-  res.json(result);
-});
+    res.json(result);
+  });
+}
 
 // Start server and monitoring agent
 async function main() {
   await agent.initialize();
   agent.start();
 
-  app.listen(PORT, () => {
-    console.log(`Render Monitor Agent running on port ${PORT}`);
-    console.log(`Dashboard: http://localhost:${PORT}/status`);
+  // Only start web server if Express is available
+  if (express) {
+    app.listen(PORT, () => {
+      console.log(`Render Monitor Agent running on port ${PORT}`);
+      console.log(`Dashboard: http://localhost:${PORT}/status`);
+      console.log('='.repeat(60));
+      console.log('24/7 AUTONOMOUS MONITORING ACTIVE');
+      console.log('='.repeat(60));
+    });
+  } else {
     console.log('='.repeat(60));
-    console.log('24/7 AUTONOMOUS MONITORING ACTIVE');
+    console.log('24/7 AUTONOMOUS MONITORING ACTIVE (Standalone Mode)');
+    console.log('Web dashboard unavailable - Express not installed');
     console.log('='.repeat(60));
-  });
+  }
 
   // Graceful shutdown
   process.on('SIGTERM', () => {

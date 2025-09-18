@@ -24,6 +24,26 @@ class UnleashedInventorySync {
   }
 
   /**
+   * Safely parse date string to avoid Invalid Date errors
+   */
+  safeParseDate(dateString, defaultValue = new Date()) {
+    if (!dateString) return defaultValue;
+
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        logWarn('Invalid date string received', { dateString });
+        return defaultValue;
+      }
+      return date;
+    } catch (error) {
+      logWarn('Date parsing error', { dateString, error: error.message });
+      return defaultValue;
+    }
+  }
+
+  /**
    * Initialize sync service and start scheduled sync
    */
   async initialize() {
@@ -180,7 +200,7 @@ class UnleashedInventorySync {
               location: item.binLocation || item.warehouseName,
               unitCost: item.averageCost,
               totalValue: item.totalValue,
-              lastModified: item.lastModified ? new Date(item.lastModified) : new Date(),
+              lastModified: this.safeParseDate(item.lastModified),
               updatedAt: new Date()
             },
             create: {
@@ -195,7 +215,7 @@ class UnleashedInventorySync {
               totalValue: item.totalValue,
               reorderPoint: 0, // Will be calculated based on movement history
               reorderQuantity: 0,
-              lastModified: item.lastModified ? new Date(item.lastModified) : new Date()
+              lastModified: this.safeParseDate(item.lastModified)
             }
           });
         }
@@ -244,8 +264,8 @@ class UnleashedInventorySync {
             update: {
               supplier: po.supplier,
               supplierCode: po.supplierCode,
-              orderDate: new Date(po.orderDate),
-              requiredDate: po.requiredDate ? new Date(po.requiredDate) : null,
+              orderDate: this.safeParseDate(po.orderDate),
+              requiredDate: this.safeParseDate(po.requiredDate, null),
               status: po.status,
               subTotal: po.subTotal,
               tax: po.tax,
@@ -258,8 +278,8 @@ class UnleashedInventorySync {
               orderNumber: po.orderNumber,
               supplier: po.supplier,
               supplierCode: po.supplierCode,
-              orderDate: new Date(po.orderDate),
-              requiredDate: po.requiredDate ? new Date(po.requiredDate) : null,
+              orderDate: this.safeParseDate(po.orderDate),
+              requiredDate: this.safeParseDate(po.requiredDate, null),
               status: po.status,
               subTotal: po.subTotal,
               tax: po.tax,
@@ -308,8 +328,8 @@ class UnleashedInventorySync {
             update: {
               customer: so.customer,
               customerCode: so.customerCode,
-              orderDate: new Date(so.orderDate),
-              requiredDate: so.requiredDate ? new Date(so.requiredDate) : null,
+              orderDate: this.safeParseDate(so.orderDate),
+              requiredDate: this.safeParseDate(so.requiredDate, null),
               status: so.status,
               subTotal: so.subTotal,
               tax: so.tax,
@@ -322,8 +342,8 @@ class UnleashedInventorySync {
               orderNumber: so.orderNumber,
               customer: so.customer,
               customerCode: so.customerCode,
-              orderDate: new Date(so.orderDate),
-              requiredDate: so.requiredDate ? new Date(so.requiredDate) : null,
+              orderDate: this.safeParseDate(so.orderDate),
+              requiredDate: this.safeParseDate(so.requiredDate, null),
               status: so.status,
               subTotal: so.subTotal,
               tax: so.tax,
@@ -391,7 +411,7 @@ class UnleashedInventorySync {
               totalCost: movement.totalCost,
               reference: movement.reference,
               orderNumber: movement.orderNumber,
-              completedDate: new Date(movement.completedDate),
+              completedDate: this.safeParseDate(movement.completedDate),
               reason: movement.reason,
               customerSupplier: movement.customerSupplier
             }

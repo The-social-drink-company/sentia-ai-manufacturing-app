@@ -1,0 +1,64 @@
+[
+  {
+    "timestamp": "2025-09-18T21:33:59.404Z",
+    "deployment": "production",
+    "issue": "Health check failed - Status: 502",
+    "severity": "CRITICAL",
+    "resolved": false
+  },
+  {
+    "timestamp": "2025-09-18T21:35:01.612Z",
+    "deployment": "testing",
+    "issue": "Health check failed - Status: 502",
+    "severity": "CRITICAL",
+    "resolved": true,
+    "resolvedAt": "2025-09-18T21:36:01.295Z"
+  },
+  {
+    "timestamp": "2025-09-18T21:39:02.396Z",
+    "deployment": "testing",
+    "issue": "Health check failed - Status: 502",
+    "severity": "CRITICAL",
+    "resolved": true,
+    "resolvedAt": "2025-09-18T21:40:01.012Z"
+  },
+  {
+    "timestamp": "2025-09-18T21:41:01.027Z",
+    "deployment": "testing",
+    "issue": "Health check failed - Status: 502",
+    "severity": "CRITICAL",
+    "resolved": true,
+    "resolvedAt": "2025-09-18T21:42:01.013Z"
+  },
+  {
+    "timestamp": "2025-09-18T21:44:02.081Z",
+    "deployment": "testing",
+    "issue": "Health check failed - Status: 502",
+    "severity": "CRITICAL",
+    "resolved": true,
+    "resolvedAt": "2025-09-18T21:45:01.063Z"
+  },
+  {
+    "timestamp": "2025-09-18T21:52:02.426Z",
+    "deployment": "testing",
+    "issue": "Health check failed - Status: 502",
+    "severity": "CRITICAL",
+    "resolved": true,
+    "resolvedAt": "2025-09-18T21:53:01.426Z"
+  },
+  {
+    "timestamp": "2025-09-18T21:57:01.324Z",
+    "deployment": "testing",
+    "issue": "Health check failed - Status: 502",
+    "severity": "CRITICAL",
+    "resolved": true,
+    "resolvedAt": "2025-09-18T21:58:01.094Z"
+  },
+  {
+    "timestamp": "2025-09-18T22:05:13.804Z",
+    "deployment": "testing",
+    "issue": "Slow response time: 13272ms",
+    "severity": "WARNING",
+    "resolved": false
+  }
+]

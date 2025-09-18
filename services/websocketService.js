@@ -324,10 +324,8 @@ class WebSocketService {
           status: { in: ['open', 'investigating'] }
         },
         take: 10,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          batch: true
-        }
+        orderBy: { createdAt: 'desc' }
+        // Note: batch relation not defined in schema
       });
 
       return defects;
@@ -425,7 +423,7 @@ class WebSocketService {
         alerts.push({
           type: 'critical',
           category: 'maintenance',
-          message: `OVERDUE: ${task.equipment.name} maintenance`,
+          message: `OVERDUE: ${task.equipmentName} maintenance`,
           equipmentId: task.equipmentId,
           timestamp: new Date()
         });
@@ -433,7 +431,7 @@ class WebSocketService {
         alerts.push({
           type: 'warning',
           category: 'maintenance',
-          message: `${task.equipment.name} maintenance due in ${Math.round(hoursUntilDue)} hours`,
+          message: `${task.equipmentName} maintenance due in ${Math.round(hoursUntilDue)} hours`,
           equipmentId: task.equipmentId,
           timestamp: new Date()
         });

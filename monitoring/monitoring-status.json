@@ -1,0 +1,164 @@
+{
+  "state": {
+    "startTime": "2025-09-18T21:33:57.323Z",
+    "deploymentStatus": {
+      "development": {
+        "name": "development",
+        "url": "https://sentia-manufacturing-development.onrender.com",
+        "healthy": true,
+        "status": 200,
+        "responseTime": 657,
+        "lastCheck": "2025-09-18T22:08:00.923Z",
+        "uptime": 2043028,
+        "downtime": 0,
+        "details": {
+          "status": "healthy",
+          "server": "sentia-express-server",
+          "timestamp": "2025-09-18T22:08:03.752Z",
+          "version": "2.0.0",
+          "environment": "sentia-manufacturing-development",
+          "uptime": 9398,
+          "render": true,
+          "type": "express",
+          "port": "10000",
+          "node_version": "v22.12.0"
+        },
+        "lastCheckHealthy": true
+      },
+      "testing": {
+        "name": "testing",
+        "url": "https://sentia-manufacturing-testing.onrender.com",
+        "healthy": true,
+        "status": 200,
+        "responseTime": 287,
+        "lastCheck": "2025-09-18T22:08:01.219Z",
+        "uptime": 1319636,
+        "downtime": 0,
+        "details": {
+          "status": "healthy",
+          "server": "sentia-express-server",
+          "timestamp": "2025-09-18T22:08:04.062Z",
+          "version": "2.0.0",
+          "environment": "sentia-manufacturing-testing",
+          "uptime": 1966,
+          "render": true,
+          "type": "express",
+          "port": "5000",
+          "node_version": "v22.12.0"
+        },
+        "lastCheckHealthy": true
+      },
+      "production": {
+        "name": "production",
+        "url": "https://sentia-manufacturing-production.onrender.com",
+        "healthy": false,
+        "status": 502,
+        "responseTime": 1330,
+        "lastCheck": "2025-09-18T22:08:02.558Z",
+        "uptime": 0,
+        "downtime": 2043168,
+        "lastCheckHealthy": false
+      },
+      "mcp_server": {
+        "name": "mcp_server",
+        "url": "https://mcp-server-tkyu.onrender.com",
+        "healthy": true,
+        "status": 200,
+        "responseTime": 279,
+        "lastCheck": "2025-09-18T22:08:02.847Z",
+        "uptime": 2042836,
+        "downtime": 0,
+        "details": {
+          "status": "healthy",
+          "server": "sentia-enterprise-mcp-server",
+          "version": "2.0.0-enterprise-simple",
+          "protocol": "2024-11-05",
+          "uptime": 87193.335275444,
+          "connections": 0,
+          "features": {
+            "manufacturing": true,
+            "multiProvider": true,
+            "aiIntegration": true,
+            "realTime": true,
+            "enterprise": true
+          },
+          "timestamp": "2025-09-18T22:08:05.696Z"
+        },
+        "lastCheckHealthy": true
+      }
+    },
+    "metrics": {
+      "totalChecks": 160,
+      "successfulChecks": 99,
+      "failedChecks": 61,
+      "recoveryAttempts": 10,
+      "alerts": [
+        {
+          "timestamp": "2025-09-18T21:33:59.404Z",
+          "deployment": "production",
+          "issue": "Health check failed - Status: 502",
+          "severity": "CRITICAL",
+          "resolved": false
+        },
+        {
+          "timestamp": "2025-09-18T21:35:01.612Z",
+          "deployment": "testing",
+          "issue": "Health check failed - Status: 502",
+          "severity": "CRITICAL",
+          "resolved": true,
+          "resolvedAt": "2025-09-18T21:36:01.295Z"
+        },
+        {
+          "timestamp": "2025-09-18T21:39:02.396Z",
+          "deployment": "testing",
+          "issue": "Health check failed - Status: 502",
+          "severity": "CRITICAL",
+          "resolved": true,
+          "resolvedAt": "2025-09-18T21:40:01.012Z"
+        },
+        {
+          "timestamp": "2025-09-18T21:41:01.027Z",
+          "deployment": "testing",
+          "issue": "Health check failed - Status: 502",
+          "severity": "CRITICAL",
+          "resolved": true,
+          "resolvedAt": "2025-09-18T21:42:01.013Z"
+        },
+        {
+          "timestamp": "2025-09-18T21:44:02.081Z",
+          "deployment": "testing",
+          "issue": "Health check failed - Status: 502",
+          "severity": "CRITICAL",
+          "resolved": true,
+          "resolvedAt": "2025-09-18T21:45:01.063Z"
+        },
+        {
+          "timestamp": "2025-09-18T21:52:02.426Z",
+          "deployment": "testing",
+          "issue": "Health check failed - Status: 502",
+          "severity": "CRITICAL",
+          "resolved": true,
+          "resolvedAt": "2025-09-18T21:53:01.426Z"
+        },
+        {
+          "timestamp": "2025-09-18T21:57:01.324Z",
+          "deployment": "testing",
+          "issue": "Health check failed - Status: 502",
+          "severity": "CRITICAL",
+          "resolved": true,
+          "resolvedAt": "2025-09-18T21:58:01.094Z"
+        },
+        {
+          "timestamp": "2025-09-18T22:05:13.804Z",
+          "deployment": "testing",
+          "issue": "Slow response time: 13272ms",
+          "severity": "WARNING",
+          "resolved": true,
+          "resolvedAt": "2025-09-18T22:06:01.175Z"
+        }
+      ]
+    },
+    "lastReport": null
+  },
+  "timestamp": "2025-09-18T22:08:02.851Z"
+}

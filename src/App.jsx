@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
-// Clerk imports removed - using BulletproofAuthProvider instead
-// Authentication is now handled at the provider level
+// Bulletproof Clerk Authentication - solves server-side auth issues
+import { BulletproofClerkProvider, useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -223,14 +223,15 @@ const FallbackAuthProvider = ({ children }) => {
 }
 
 function App() {
-  // ClerkProvider is now handled in main.jsx
-  // This component focuses on routing and app structure
+  // Get Clerk publishable key from environment
+  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
   return (
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-        <QueryClientProvider client={queryClient}>
-          {/* SessionManager temporarily disabled - uses Clerk hooks */}
-          <Router>
+        <BulletproofClerkProvider publishableKey={clerkPublishableKey}>
+          <QueryClientProvider client={queryClient}>
+            {/* SessionManager temporarily disabled - uses Clerk hooks */}
+            <Router>
             {/* EnterpriseIntegrationHub removed - missing dependencies */}
             <div className="App">
                 {/* Auth Verification Status - Shows current auth state */}
@@ -1006,6 +1007,7 @@ function App() {
           {/* SessionManager closing tag removed */}
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
+        </BulletproofClerkProvider>
       </ErrorBoundary>
   )
 }

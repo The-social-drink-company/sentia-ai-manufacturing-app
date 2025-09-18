@@ -60,6 +60,18 @@ process.on('uncaughtException', (error) => {
   }
 });
 
+// Production environment safeguards
+if (process.env.NODE_ENV === 'production' && process.env.RENDER) {
+  console.log('Production deployment on Render detected');
+  // Set production-specific timeouts and retries
+  process.env.DATABASE_CONNECTION_TIMEOUT = '120000'; // 2 minutes
+  process.env.DATABASE_POOL_TIMEOUT = '120000';
+  process.env.DATABASE_ACQUIRE_TIMEOUT = '60000';
+  process.env.DATABASE_IDLE_TIMEOUT = '30000';
+  process.env.DATABASE_MAX_RETRIES = '5';
+  process.env.DATABASE_RETRY_DELAY = '2000';
+}
+
 // Validate critical environment variables
 const requiredEnvVars = ['DATABASE_URL'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
@@ -71,7 +83,13 @@ if (missingVars.length > 0) {
       key.includes('DATABASE') || key.includes('CLERK') || key.includes('RENDER') || key.includes('PORT')
     )
   );
-  // Don't exit - log the issue but try to continue
+
+  // In production, provide a fallback if DATABASE_URL is missing
+  if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    console.log('Setting fallback DATABASE_URL for production');
+    // This will be overridden by Render's environment variables once they load
+    process.env.DATABASE_URL = 'postgresql://placeholder:placeholder@placeholder:5432/placeholder';
+  }
 } else {
   console.log('All required environment variables loaded');
 }

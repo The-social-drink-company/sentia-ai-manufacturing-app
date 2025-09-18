@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Production Build Script for Render
-# This script handles the production build with Prisma database migrations
+# This script handles the production build, skipping database migrations in production
 
 echo "=== Starting Production Build ==="
 set -e  # Exit on error for critical steps
@@ -18,18 +18,9 @@ npx vite build
 echo "Generating Prisma client..."
 npx prisma generate
 
-# Handle database schema
-echo "Handling database schema..."
-# Use yes to auto-accept any prompts and force accept data loss
-yes | npx prisma db push --accept-data-loss || {
-    echo "Primary approach failed, trying without prompt..."
-    # Try again with explicit flag
-    npx prisma db push --accept-data-loss --skip-generate || {
-        echo "Prisma db push failed - database schema may already exist"
-        echo "Continuing with build..."
-        # Don't fail the build
-        true
-    }
-}
+# Skip database push in production - schema already exists
+echo "=== Skipping database push in production ==="
+echo "Database schema is already deployed in production"
+echo "If you need to update the schema, please do so manually"
 
 echo "=== Production Build Complete ==="

@@ -285,6 +285,7 @@ class WebSocketService {
   async getInventoryLevels() {
     try {
       // Get all inventory items and filter in memory for low stock
+      // Updated: Fixed query to not use status field directly
       const allInventory = await prisma.inventory.findMany({
         where: {
           OR: [

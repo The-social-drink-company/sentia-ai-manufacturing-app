@@ -28,6 +28,8 @@ import RoleGuard from './components/auth/RoleGuard'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import UniversalLogin from './pages/UniversalLogin'
+import ClerkSignIn from './pages/ClerkSignIn'
+import ClerkSignUp from './pages/ClerkSignUp'
 // import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
 import UserOnboarding from './components/auth/UserOnboarding'
 import AuthVerification from './components/AuthVerification'
@@ -242,9 +244,21 @@ function App() {
                 } />
 
                 {/* Authentication Routes */}
+                <Route path="/sign-in" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ClerkSignIn />
+                  </Suspense>
+                }/>
+
+                <Route path="/sign-up" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ClerkSignUp />
+                  </Suspense>
+                }/>
+
                 <Route path="/login" element={
                   <Suspense fallback={<LoadingSpinner />}>
-                    <UniversalLogin />
+                    <ClerkSignIn />
                   </Suspense>
                 }/>
 

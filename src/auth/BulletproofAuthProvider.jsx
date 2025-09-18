@@ -105,13 +105,16 @@ export function BulletproofAuthProvider({ children }) {
 
   // Get and validate Clerk key
   const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+  // Your key: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+  // This appears to be a valid Clerk test key
   const isValidKey = Boolean(
     clerkKey &&
     clerkKey.startsWith('pk_') &&
-    clerkKey.length > 30 &&
+    clerkKey.length > 20 &&
     !clerkKey.includes('undefined') &&
-    !clerkKey.includes('YOUR_') &&
-    !clerkKey.includes('test_your')
+    !clerkKey.includes('YOUR_KEY') &&
+    !clerkKey.includes('your_key_here')
   );
 
   const initialize = useCallback(() => {
@@ -126,13 +129,19 @@ export function BulletproofAuthProvider({ children }) {
 
     // Check if we should use Clerk or fallback
     if (isValidKey) {
-      // For valid keys, try to use Clerk
-      console.info('Valid Clerk key detected, attempting to initialize Clerk...');
+      // Force Clerk mode for valid keys
+      console.info('Valid Clerk key detected, initializing Clerk...');
+      console.info('Key info:', {
+        keyStart: clerkKey?.substring(0, 30) + '...',
+        keyLength: clerkKey?.length,
+        domain: 'champion-bulldog-92.clerk.accounts.dev'
+      });
       clearTimeout(timeout);
+      // Force Clerk mode
       setAuthMode('clerk');
     } else {
       clearTimeout(timeout);
-      console.info('No valid Clerk key found - using fallback mode');
+      console.warn('Invalid Clerk key - using fallback mode');
       console.info('Clerk key status:', {
         hasKey: !!clerkKey,
         keyStart: clerkKey?.substring(0, 20),

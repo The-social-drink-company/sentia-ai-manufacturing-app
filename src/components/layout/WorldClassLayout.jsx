@@ -58,7 +58,7 @@ const WorldClassLayout = ({ children }) => {
         className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-all duration-300"
         style={{
           marginLeft: isMobile ? '0' : sidebarCollapsed ? '64px' : '256px',
-          paddingTop: '64px'
+          paddingTop: '64px'  // Matches h-16 header height
         }}
       >
         <div className="p-6">

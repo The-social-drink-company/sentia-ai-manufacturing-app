@@ -12,6 +12,8 @@
     "build:db": "npx prisma db push --accept-data-loss --skip-generate || echo 'Database push completed'",
     "prisma:safe-push": "npx prisma db push --accept-data-loss --skip-generate || true",
     "build:render": "bash scripts/render-build.sh",
+    "build:render-fix": "bash scripts/render-deploy-fix.sh",
+    "render:build": "npm ci --legacy-peer-deps && npx vite build && npx prisma generate && npm run prisma:safe-push",
     "start": "node server.js",
     "start:prod": "npx prisma migrate deploy && node server.js",
     "preview": "vite preview",

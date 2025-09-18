@@ -11,6 +11,7 @@ import {
   ArrowRightIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
+import ClerkTest from '../components/ClerkTest'
 
 const LandingPageSimple = () => {
   const [scrollY, setScrollY] = useState(0)
@@ -156,6 +157,13 @@ const LandingPageSimple = () => {
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Clerk Status Test Section */}
+      <section className="relative z-10 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <ClerkTest />
         </div>
       </section>
 

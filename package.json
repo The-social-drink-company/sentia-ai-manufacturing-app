@@ -7,7 +7,7 @@
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "vite",
     "dev:server": "nodemon server.js",
-    "build": "npx vite build && echo 'Build completed successfully'",
+    "build": "node scripts/render-build-wrapper.js",
     "build:prisma": "npx prisma generate",
     "postbuild": "npx prisma generate && (npx prisma db push --accept-data-loss --skip-generate || echo 'Database sync completed')",
     "db:push:safe": "npx prisma db push --accept-data-loss --skip-generate || echo 'Database push handled'",

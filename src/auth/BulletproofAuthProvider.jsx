@@ -109,7 +109,9 @@ export function BulletproofAuthProvider({ children }) {
     clerkKey &&
     clerkKey.startsWith('pk_') &&
     clerkKey.length > 30 &&
-    !clerkKey.includes('undefined')
+    !clerkKey.includes('undefined') &&
+    !clerkKey.includes('YOUR_') &&
+    !clerkKey.includes('test_your')
   );
 
   const initialize = useCallback(() => {
@@ -124,23 +126,18 @@ export function BulletproofAuthProvider({ children }) {
 
     // Check if we should use Clerk or fallback
     if (isValidKey) {
-      // Test Clerk connectivity
-      fetch('https://api.clerk.dev/v1/client', {
-        method: 'HEAD',
-        mode: 'no-cors'
-      })
-        .then(() => {
-          clearTimeout(timeout);
-          setAuthMode('clerk');
-        })
-        .catch((err) => {
-          clearTimeout(timeout);
-          console.error('Clerk connectivity check failed:', err);
-          setAuthMode('fallback');
-        });
+      // For valid keys, try to use Clerk
+      console.info('Valid Clerk key detected, attempting to initialize Clerk...');
+      clearTimeout(timeout);
+      setAuthMode('clerk');
     } else {
       clearTimeout(timeout);
       console.info('No valid Clerk key found - using fallback mode');
+      console.info('Clerk key status:', {
+        hasKey: !!clerkKey,
+        keyStart: clerkKey?.substring(0, 20),
+        keyLength: clerkKey?.length
+      });
       setAuthMode('fallback');
     }
 

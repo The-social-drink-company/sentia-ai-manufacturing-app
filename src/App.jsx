@@ -27,6 +27,7 @@ import { createRouteComponent, createPriorityComponent, createLowPriorityCompone
 import RoleGuard from './components/auth/RoleGuard'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import UniversalLogin from './pages/UniversalLogin'
 // import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
 import UserOnboarding from './components/auth/UserOnboarding'
 import AuthVerification from './components/AuthVerification'
@@ -228,10 +229,10 @@ function App() {
         <QueryClientProvider client={queryClient}>
           {/* SessionManager temporarily disabled - uses Clerk hooks */}
           <Router>
-            {/* Auth Verification Status - Shows current auth state */}
-            <AuthVerification />
             {/* EnterpriseIntegrationHub removed - missing dependencies */}
             <div className="App">
+                {/* Auth Verification Status - Shows current auth state */}
+                {process.env.NODE_ENV === 'development' && <AuthVerification />}
                 <Routes>
                 {/* Public Landing Page */}
                 <Route path="/" element={
@@ -243,7 +244,7 @@ function App() {
                 {/* Authentication Routes */}
                 <Route path="/login" element={
                   <Suspense fallback={<LoadingSpinner />}>
-                    <LoginPage />
+                    <UniversalLogin />
                   </Suspense>
                 }/>
 

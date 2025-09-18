@@ -100,11 +100,17 @@ const LandingPageSimple = () => {
             </div>
 
             <div className="flex items-center space-x-4">
+              <Link
+                to="/login"
+                className="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Sign In
+              </Link>
               <button
                 onClick={handleDashboardNavigation}
                 className="text-gray-300 hover:text-white transition-colors px-3 py-2"
               >
-                Enter Dashboard
+                Guest Access
               </button>
             </div>
           </div>

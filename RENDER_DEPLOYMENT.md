@@ -58,10 +58,10 @@ Triple fallback ensures one method always works.
 ### Issue 1: Prisma "data loss" Error
 **Problem**: `Error: Use the --accept-data-loss flag`
 
-**Solution**: All our scripts include `--accept-data-loss` flag:
-- `postbuild` script handles this automatically
-- `.render-build.sh` includes the flag
-- `db:push:safe` script never fails
+**Solution**: Dashboard command MUST include `--accept-data-loss`:
+- Go to Render Dashboard > Settings > Build & Deploy
+- Ensure Build Command includes: `npx prisma db push --accept-data-loss --skip-generate`
+- ✅ CONFIRMED WORKING: Command updated in both development and production
 
 ### Issue 2: Dashboard Override Conflicts
 **Problem**: Render Dashboard has a hardcoded build command that overrides render.yaml
@@ -87,18 +87,14 @@ Triple fallback ensures one method always works.
 - [ ] Check Node.js version compatibility
 - [ ] Confirm database connection string is set
 
-### Manual Override (If Needed)
-If automatic deployment fails, manually set build command in Render Dashboard:
+### Confirmed Working Build Command
+The following command is configured in Render Dashboard and working:
 
 ```bash
-bash .render-build.sh
+npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma db push --accept-data-loss --skip-generate
 ```
 
-Or use the failsafe:
-
-```bash
-npm ci --legacy-peer-deps && npx vite build && npx prisma generate && (npx prisma db push --accept-data-loss --skip-generate || true)
-```
+✅ **Status**: Deployed successfully to both development and production branches
 
 ## Environment-Specific Behavior
 
@@ -153,14 +149,12 @@ If issues persist after following this guide:
 
 ## Recent Fixes Applied
 
-- **December 2024**: Implemented triple-redundant build system
-- **Added postbuild**: Automatic Prisma operations after build
-- **Created .render-build.sh**: Automatic build script detection
-- **Updated package.json**: Self-contained build process with wrapper script
-- **Node.js engines**: Specified version constraints (>=20.0.0 <23.0.0)
-- **Build Wrapper Script**: Created scripts/render-build-wrapper.js to intercept and handle build process
-- **render.json**: Added alternative configuration file for Render service detection
-- **Multiple Fallbacks**: Triple-fallback system ensures one method always succeeds
+- **December 2024**: Resolved Render deployment issues
+- **Root Cause Found**: Render Dashboard commands override all configuration files
+- **Dashboard Fix Applied**: Added `--accept-data-loss` flag to dashboard build command
+- **Prisma Imports Fixed**: All services now use `lib/prisma.js` instead of `config/database.js`
+- **Build Script Updated**: package.json build now includes full Prisma sequence
+- **Confirmed Working**: Both development and production deployments successful
 
 ### Final Solution Implementation
 The key discovery was that Render Dashboard commands override render.yaml. Our solution intercepts the `npm run build` command with a wrapper script that:

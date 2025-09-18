@@ -304,7 +304,6 @@ function checkFileSystem() {
       error: error.message
     };
   }
-  }
 }
 
 /**

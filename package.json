@@ -7,7 +7,7 @@
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "vite",
     "dev:server": "nodemon server.js",
-    "build": "vite build",
+    "build": "npx vite build",
     "build:prisma": "npx prisma generate",
     "build:db": "npx prisma db push --accept-data-loss",
     "build:render": "bash scripts/render-build.sh",

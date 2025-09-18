@@ -284,22 +284,31 @@ class WebSocketService {
 
   async getInventoryLevels() {
     try {
-      const inventory = await prisma.inventory.findMany({
+      // Get all inventory items and filter in memory for low stock
+      const allInventory = await prisma.inventory.findMany({
         where: {
           OR: [
-            // { quantity: { lte: reorderPoint } }, // TODO: Add reorderPoint comparison
-            { status: 'low-stock' },
-            { status: 'out-of-stock' }
+            // Out of stock: quantity is 0
+            { quantity: 0 },
+            // Low stock: has reorder point set (we'll filter quantity comparison in memory)
+            { reorderPoint: { not: null } }
           ]
         },
         orderBy: { quantity: 'asc' },
-        take: 20
+        take: 50 // Get more to filter in memory
       });
+
+      // Filter for actual low stock items
+      const inventory = allInventory.filter(item => 
+        item.quantity === 0 || 
+        (item.reorderPoint && item.quantity <= item.reorderPoint)
+      ).slice(0, 20);
 
       return inventory.map(item => ({
         ...item,
-        stockPercentage: (item.quantity / item.reorderPoint) * 100,
-        criticalLevel: item.quantity <= item.reorderPoint * 0.5
+        stockPercentage: item.reorderPoint ? (item.quantity / item.reorderPoint) * 100 : 0,
+        criticalLevel: item.reorderPoint ? item.quantity <= item.reorderPoint * 0.5 : false,
+        status: item.quantity === 0 ? 'out-of-stock' : 'low-stock'
       }));
     } catch (error) {
       logError('Error fetching inventory levels', error);
@@ -353,20 +362,20 @@ class WebSocketService {
     const alerts = [];
 
     inventory.forEach(item => {
-      if (item.quantity === 0) {
+      if (item.availableQuantity === 0) {
         alerts.push({
           type: 'critical',
           category: 'inventory',
-          message: `${item.name} is OUT OF STOCK`,
-          sku: item.sku,
+          message: `${item.productName || item.name} is OUT OF STOCK`,
+          sku: item.productCode || item.sku,
           timestamp: new Date()
         });
       } else if (item.criticalLevel) {
         alerts.push({
           type: 'warning',
           category: 'inventory',
-          message: `${item.name} is critically low (${item.quantity} units)`,
-          sku: item.sku,
+          message: `${item.productName || item.name} is critically low (${item.availableQuantity} units)`,
+          sku: item.productCode || item.sku,
           timestamp: new Date()
         });
       }

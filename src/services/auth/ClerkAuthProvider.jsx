@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ClerkProvider as BaseClerkProvider } from '@clerk/clerk-react';
+import { ClerkProvider as BaseClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from '@clerk/clerk-react';
 
 /**
  * BULLETPROOF CLERK AUTHENTICATION SYSTEM
@@ -375,12 +375,9 @@ export function ClerkAuthProvider({ children }) {
 export function useSafeAuth() {
   // Try to use Clerk hooks first
   try {
-    const clerkContext = require('@clerk/clerk-react');
-    if (clerkContext && clerkContext.useAuth) {
-      const clerkAuth = clerkContext.useAuth();
-      if (clerkAuth && clerkAuth.isLoaded) {
-        return clerkAuth;
-      }
+    const clerkAuth = useClerkAuth();
+    if (clerkAuth && clerkAuth.isLoaded) {
+      return clerkAuth;
     }
   } catch (e) {
     // Clerk not available, use fallback
@@ -395,12 +392,9 @@ export function useSafeAuth() {
 export function useSafeUser() {
   // Try to use Clerk hooks first
   try {
-    const clerkContext = require('@clerk/clerk-react');
-    if (clerkContext && clerkContext.useUser) {
-      const clerkUser = clerkContext.useUser();
-      if (clerkUser && clerkUser.isLoaded) {
-        return clerkUser;
-      }
+    const clerkUser = useClerkUser();
+    if (clerkUser && clerkUser.isLoaded) {
+      return clerkUser;
     }
   } catch (e) {
     // Clerk not available, use fallback

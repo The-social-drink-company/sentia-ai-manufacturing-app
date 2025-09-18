@@ -13,7 +13,9 @@ export default defineConfig({
     ['list']
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.BASE_URL || process.env.CI
+      ? 'https://sentia-manufacturing-development.onrender.com'
+      : 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -42,17 +44,17 @@ export default defineConfig({
       use: { ...devices['iPhone 12'] }
     }
   ],
-  webServer: {
-    command: 'npm run dev',
-    port: 3000,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000
-  },
+  webServer: process.env.CI || process.env.BASE_URL
+    ? undefined
+    : {
+        command: 'npm run dev',
+        port: 3000,
+        reuseExistingServer: true,
+        timeout: 120000
+      },
   expect: {
     timeout: 10000,
     toHaveScreenshot: { maxDiffPixels: 100 }
   },
-  outputDir: 'test-results/',
-  globalSetup: './tests/e2e/global-setup.ts',
-  globalTeardown: './tests/e2e/global-teardown.ts'
+  outputDir: 'test-results/'
 });

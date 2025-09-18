@@ -467,9 +467,10 @@ class UnleashedInventorySync {
           totalValue: metrics._sum.totalValue || 0,
           lowStockItems: await prisma.inventory.count({
             where: {
-              quantity: {
-                lte: prisma.inventory.fields.reorderPoint
-              }
+              AND: [
+                { quantity: { gt: 0 } },
+                { reorderPoint: { not: null } }
+              ]
             }
           }),
           outOfStockItems: await prisma.inventory.count({

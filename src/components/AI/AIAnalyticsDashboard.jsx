@@ -1,7 +1,7 @@
 import { devLog } from '../../lib/devLog.js';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser, useAuth } from '@clerk/clerk-react';
+import { useBulletproofAuth } from '../../auth/BulletproofAuthProvider';
 
 import {
   CpuChipIcon as Brain, 
@@ -18,8 +18,7 @@ import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 import { ChartJS } from '../../lib/chartSetup';
 
 const AIAnalyticsDashboard = () => {
-  const { user } = useUser();
-  const { getToken } = useAuth();
+  const { user, getToken } = useBulletproofAuth();
   const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);
 

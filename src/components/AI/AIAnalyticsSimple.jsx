@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser, useAuth } from '@clerk/clerk-react';
+import { useBulletproofAuth } from '../../auth/BulletproofAuthProvider';
 import {
   CpuChipIcon as Brain,
   ArrowTrendingUpIcon as TrendingUp,
@@ -14,8 +14,7 @@ import {
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const AIAnalyticsSimple = () => {
-  const { user } = useUser();
-  const { getToken } = useAuth();
+  const { user, getToken } = useBulletproofAuth();
   const [selectedModel, setSelectedModel] = useState('all');
   const [timeRange, setTimeRange] = useState('7d');
 

@@ -5,7 +5,7 @@
  */
 
 import { getMCPClient } from './mcp-client.js';
-import prisma from '../config/database.js';
+import prisma from '../lib/prisma.js';
 
 class APIIntegrationService {
   constructor() {

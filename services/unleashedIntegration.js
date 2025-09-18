@@ -7,7 +7,7 @@
 import crypto from 'crypto';
 import axios from 'axios';
 import cron from 'node-cron';
-import prisma from '../config/database.js';
+import prisma from '../lib/prisma.js';
 import { logInfo, logError, logWarn } from '../services/observability/structuredLogger.js';
 
 class UnleashedIntegrationService {

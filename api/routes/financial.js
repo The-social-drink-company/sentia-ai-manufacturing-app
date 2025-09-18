@@ -1,6 +1,6 @@
 import express from 'express';
 import NodeCache from 'node-cache';
-import prisma from '../../config/database.js';
+import prisma from '../../lib/prisma.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';

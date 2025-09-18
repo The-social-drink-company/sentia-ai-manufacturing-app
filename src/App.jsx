@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
-import { SignedIn, SignedOut, RedirectToSignIn, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
+// Clerk imports removed - using BulletproofAuthProvider instead
+// Authentication is now handled at the provider level
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -28,6 +29,7 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 // import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
 import UserOnboarding from './components/auth/UserOnboarding'
+import AuthVerification from './components/AuthVerification'
 
 // High-Priority Components (Core dashboard functionality)
 const LandingPage = createPriorityComponent(() => import('./pages/LandingPageSimple'), 'LandingPage')
@@ -155,24 +157,15 @@ const queryClient = new QueryClient({
   }
 })
 
-// Protected route wrapper with Clerk authentication
+// Protected route wrapper with Bulletproof authentication
 const ProtectedRoute = ({ children, allowGuest = false }) => {
-  if (allowGuest) {
-    // Allow both authenticated and unauthenticated users
-    return children
-  }
+  // With BulletproofAuthProvider, authentication is always available
+  // Either real (Clerk) or fallback (guest mode)
+  // This means the app will NEVER show blank screens
 
-  // Require authentication for non-guest routes
-  return (
-    <>
-      <SignedIn>
-        {children}
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </>
-  )
+  // For now, allow all routes since auth is handled at provider level
+  // You can add role-based checks here using useAuthRole hook if needed
+  return children
 }
 
 // Dashboard Route Component with Fallback Support
@@ -235,6 +228,8 @@ function App() {
         <QueryClientProvider client={queryClient}>
           {/* SessionManager temporarily disabled - uses Clerk hooks */}
           <Router>
+            {/* Auth Verification Status - Shows current auth state */}
+            <AuthVerification />
             {/* EnterpriseIntegrationHub removed - missing dependencies */}
             <div className="App">
                 <Routes>

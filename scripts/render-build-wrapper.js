@@ -46,7 +46,19 @@ runCommand('npx vite build', 'Building frontend', true);
 // Step 2: Generate Prisma client (critical)
 runCommand('npx prisma generate', 'Generating Prisma client', true);
 
-// Step 3: Handle database push (non-critical)
+// Step 3: Create pgvector extension if needed (non-critical)
+if (process.env.DATABASE_URL) {
+  console.log('\n>> Checking pgvector extension...');
+
+  // Try to create pgvector extension - non-critical if it fails
+  runCommand(
+    `npx prisma db execute --sql "CREATE EXTENSION IF NOT EXISTS vector" || true`,
+    'pgvector extension setup',
+    false
+  );
+}
+
+// Step 4: Handle database push (non-critical)
 // This is the step that Render's command fails on
 if (process.env.NODE_ENV === 'production') {
   console.log('\n>> Production environment - skipping database push');
@@ -65,7 +77,7 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 
-// Step 4: Verify build output
+// Step 5: Verify build output
 const distExists = fs.existsSync('dist');
 if (distExists) {
   console.log('\n✓ Build artifacts created successfully');
@@ -73,7 +85,7 @@ if (distExists) {
   console.log('\n⚠ Warning: dist directory not found');
 }
 
-// Step 5: Create success marker
+// Step 6: Create success marker
 fs.writeFileSync('.build-complete', new Date().toISOString());
 
 console.log('\n' + '='.repeat(60));

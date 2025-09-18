@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUser, UserButton } from '@clerk/clerk-react';
+import { useBulletproofAuth } from '../../auth/BulletproofAuthProvider';
 import {
   BellIcon,
   MagnifyingGlassIcon,
@@ -21,7 +21,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
-  const { user } = useUser();
+  const { user, mode } = useBulletproofAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showNotifications, setShowNotifications] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(false);
@@ -310,23 +310,14 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
                 {user?.publicMetadata?.role || 'User'}
               </div>
             </div>
-            {user ? (
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox: "w-10 h-10",
-                    userButtonPopoverCard: "rounded-lg"
-                  }
-                }}
-              />
-            ) : (
-              <div className="relative">
-                <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-                  <UserCircleIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                </div>
+            <div className="relative">
+              <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                <UserCircleIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
               </div>
-            )}
+              {mode === 'clerk' && (
+                <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" title="Authenticated" />
+              )}
+            </div>
           </div>
         </div>
       </div>

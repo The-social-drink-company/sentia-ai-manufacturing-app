@@ -5,7 +5,7 @@
 
 import { getAPIIntegrationService } from './api-integration-service.js';
 import { getWebSocketMonitor } from './websocket-monitor.js';
-import prisma from '../config/database.js';
+import prisma from '../lib/prisma.js';
 import cron from 'node-cron';
 
 class AutoSyncManager {

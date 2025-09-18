@@ -15,7 +15,7 @@ fi
 
 # Step 1: Build the Vite application
 echo "Building Vite application..."
-npm run vite build
+npx vite build
 if [ $? -ne 0 ]; then
   echo "Vite build failed!"
   exit 1

@@ -236,8 +236,7 @@ class WebSocketService {
         take: 10,
         orderBy: { timestamp: 'desc' },
         include: {
-          line: true,
-          product: true
+          line: true
         }
       });
 
@@ -272,7 +271,6 @@ class WebSocketService {
         },
         orderBy: { scheduledDate: 'asc' },
         include: {
-          product: true,
           line: true
         }
       });
@@ -289,7 +287,7 @@ class WebSocketService {
       const inventory = await prisma.inventory.findMany({
         where: {
           OR: [
-            { quantity: { lte: prisma.raw('"reorderPoint"') } },
+            // { quantity: { lte: reorderPoint } }, // TODO: Add reorderPoint comparison
             { status: 'low-stock' },
             { status: 'out-of-stock' }
           ]
@@ -318,7 +316,6 @@ class WebSocketService {
         take: 10,
         orderBy: { createdAt: 'desc' },
         include: {
-          product: true,
           batch: true
         }
       });
@@ -341,9 +338,7 @@ class WebSocketService {
           status: { in: ['scheduled', 'overdue'] }
         },
         orderBy: { scheduledDate: 'asc' },
-        include: {
-          equipment: true
-        }
+        // Note: equipment relation not defined in schema
       });
 
       return maintenance;

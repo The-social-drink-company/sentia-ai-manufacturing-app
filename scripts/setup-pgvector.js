@@ -10,8 +10,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Render database connection - TEST DATABASE
-const DATABASE_URL = 'postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a.oregon-postgres.render.com/sentia_manufacturing_test';
+// Render database connection - PRODUCTION DATABASE
+const DATABASE_URL = 'postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com/sentia_manufacturing_prod';
 
 async function setupPgVector() {
   const client = new pg.Client({

@@ -11,7 +11,7 @@ import {
   ArrowRightIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
-import ClerkTest from '../components/ClerkTest'
+// ClerkTest removed - was causing errors with Clerk hooks
 
 const LandingPageSimple = () => {
   const [scrollY, setScrollY] = useState(0)
@@ -160,12 +160,7 @@ const LandingPageSimple = () => {
         </div>
       </section>
 
-      {/* Clerk Status Test Section */}
-      <section className="relative z-10 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          <ClerkTest />
-        </div>
-      </section>
+      {/* Clerk test removed - AuthVerification component handles this now */}
 
       {/* Features Section */}
       <section className="relative z-10 py-32 bg-gradient-to-b from-transparent to-gray-900/50">

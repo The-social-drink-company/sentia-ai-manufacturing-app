@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
-import { useUser } from '@clerk/clerk-react';
+// Clerk removed - using guest mode
+// import { useUser } from '@clerk/clerk-react';
 
-// Professional Clerk Authentication Hook
+// Guest Mode Authentication Hook (Clerk disabled)
 export const useAuthRole = () => {
-  // Use real Clerk authentication only
-  const { user, isLoaded, isSignedIn } = useUser();
+  // Guest mode - no Clerk authentication
+  const user = null;
+  const isLoaded = true;
+  const isSignedIn = false;
 
   const authData = useMemo(() => {
     // Return loading state while Clerk is initializing

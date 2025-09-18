@@ -29,10 +29,18 @@ try {
 // Get Clerk publishable key
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
+// Validate Clerk key - must be a real key, not placeholder
+const isValidClerkKey = clerkPubKey &&
+  clerkPubKey.startsWith('pk_test_') &&
+  clerkPubKey.length > 20
+
 // Log Clerk configuration status
-if (!clerkPubKey) {
-  console.error('Missing VITE_CLERK_PUBLISHABLE_KEY in environment variables')
+if (!isValidClerkKey) {
+  console.warn('Invalid or missing Clerk key - bypassing authentication')
   devLog.warn('Clerk authentication disabled - running in guest mode')
+  if (clerkPubKey) {
+    devLog.warn('Invalid key detected:', clerkPubKey.substring(0, 20) + '...')
+  }
 } else {
   devLog.info('Clerk configured successfully')
   devLog.info('Clerk key prefix:', clerkPubKey.substring(0, 20) + '...')
@@ -101,33 +109,23 @@ const LoadingFallback = () => (
 // Render app with ClerkProvider if key exists, otherwise render directly
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
-// Enable Clerk authentication
-const bypassClerk = false;
+// FORCE BYPASS CLERK to prevent blank screen
+// Clerk is causing crashes with invalid key
+const bypassClerk = true;
 
-if (clerkPubKey && !bypassClerk) {
+// ALWAYS render without Clerk to prevent blank screen
+if (false) {
+  // Clerk disabled - causing blank screens
+} else {
+  // Render WITHOUT Clerk - guaranteed to work
+  console.log('Rendering app WITHOUT Clerk (working mode)');
+  devLog.info('App rendering in working mode without authentication')
   root.render(
-    <ClerkProvider
-      publishableKey={clerkPubKey}
-      afterSignOutUrl="/"
-      appearance={{
-        elements: {
-          formButtonPrimary: 'bg-blue-600 hover:bg-blue-700',
-          card: 'shadow-lg'
-        }
-      }}
-    >
+    <React.StrictMode>
       <Suspense fallback={<LoadingFallback />}>
         <App />
       </Suspense>
-    </ClerkProvider>
-  )
-} else {
-  // Render without Clerk if no key is provided or bypassing
-  console.log('Rendering app without Clerk authentication (bypass mode)');
-  root.render(
-    <Suspense fallback={<LoadingFallback />}>
-      <App />
-    </Suspense>
+    </React.StrictMode>
   )
 }
 

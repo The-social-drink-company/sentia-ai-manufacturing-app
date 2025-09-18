@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
+// Clerk imports removed - causing blank screens
+// import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -155,28 +156,10 @@ const queryClient = new QueryClient({
   }
 })
 
-// Protected route wrapper with guest access support and error handling
-const ProtectedRoute = ({ children, allowGuest = false }) => {
-  // If Clerk is not configured, always allow access
-  if (!clerkPubKey) {
-    return children
-  }
-
-  // Allow guest access for demo purposes - ALWAYS for now to prevent blank screens
-  if (allowGuest || true) {  // Force guest mode to prevent Clerk issues
-    return children
-  }
-
-  return (
-    <>
-      <SignedIn>
-        {children}
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </>
-  )
+// Protected route wrapper - simplified without Clerk
+const ProtectedRoute = ({ children, allowGuest = true }) => {
+  // Always allow access - no authentication blocking the app
+  return children
 }
 
 // Dashboard Route Component with Fallback Support

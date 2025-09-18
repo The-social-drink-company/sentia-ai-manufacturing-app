@@ -55,8 +55,11 @@ const WorldClassLayout = ({ children }) => {
 
       {/* Main Content Area */}
       <main
-        className="pt-16 min-h-screen"
-        style={{ marginLeft: isMobile ? '0' : '256px' }}
+        className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-all duration-300"
+        style={{
+          marginLeft: isMobile ? '0' : sidebarCollapsed ? '64px' : '256px',
+          paddingTop: '64px'
+        }}
       >
         <div className="p-6">
           {children}

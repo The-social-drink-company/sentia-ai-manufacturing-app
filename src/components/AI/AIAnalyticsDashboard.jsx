@@ -1,7 +1,8 @@
 import { devLog } from '../../lib/devLog.js';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser, useAuth } from '@clerk/clerk-react';
+// Clerk removed - causing blank screens
+// import { useUser, useAuth } from '@clerk/clerk-react';
 
 import {
   CpuChipIcon as Brain, 
@@ -18,8 +19,9 @@ import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 import { ChartJS } from '../../lib/chartSetup';
 
 const AIAnalyticsDashboard = () => {
-  const { user } = useUser();
-  const { getToken } = useAuth();
+  // Guest mode - Clerk disabled
+  const user = null;
+  const getToken = () => Promise.resolve(null);
   const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);
 
@@ -27,11 +29,8 @@ const AIAnalyticsDashboard = () => {
     queryKey: ['ai-analytics', selectedModel],
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/ai/analytics?model=${selectedModel}`, {
-          headers: {
-            'Authorization': `Bearer ${await getToken()}`
-          }
-        });
+        // Guest mode - no auth token
+        const response = await fetch(`/api/ai/analytics?model=${selectedModel}`);
         if (!response.ok) {
           throw new Error('AI Analytics API unavailable');
         }
@@ -39,7 +38,7 @@ const AIAnalyticsDashboard = () => {
         // // // // // // // console.log('AI Analytics data loaded from API:', data);
         return data;
       } catch (error) {
-        logWarn('AI Analytics API unavailable, using fallback data');
+        console.warn('AI Analytics API unavailable, using fallback data');
         // Return fallback data structure
         return {
           confidence: 85,

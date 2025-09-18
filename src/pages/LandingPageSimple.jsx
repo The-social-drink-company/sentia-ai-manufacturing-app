@@ -64,6 +64,7 @@ const LandingPageSimple = () => {
 
   // Handle navigation to dashboard
   const handleDashboardNavigation = () => {
+    console.log('Button clicked - navigating to dashboard')
     navigate('/dashboard')
   }
 

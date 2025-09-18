@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUser, UserButton } from '@clerk/clerk-react';
+// Clerk removed - using guest mode
+// import { useUser, UserButton } from '@clerk/clerk-react';
 import {
   BellIcon,
   MagnifyingGlassIcon,
@@ -16,11 +17,13 @@ import {
   BookmarkIcon,
   SparklesIcon,
   LightBulbIcon,
-  Bars3Icon
+  Bars3Icon,
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
 
 const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
-  const { user } = useUser();
+  // Guest mode - no Clerk authentication
+  const user = null;
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showNotifications, setShowNotifications] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(false);
@@ -81,62 +84,43 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
       variants={headerVariants}
       animate={sidebarCollapsed ? "collapsed" : "expanded"}
       transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed top-0 right-0 left-0 h-20 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 z-30"
-      style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%)'
-      }}
+      className="fixed top-0 right-0 left-0 h-16 bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 z-30"
     >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 pointer-events-none" />
       
-      <div className="flex items-center justify-between h-full px-8 relative z-10">
+      <div className="flex items-center justify-between h-full px-6">
         {/* Left Section - Mobile Menu & Breadcrumbs & Live Stats */}
         <div className="flex items-center space-x-6">
           {/* Mobile Menu Button */}
           {isMobile && (
             <motion.button
               onClick={onToggleSidebar}
-              className="p-3 rounded-2xl bg-white/60 border border-gray-200/50 hover:bg-white/80 transition-all backdrop-blur-sm group"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Bars3Icon className="w-6 h-6 text-gray-700 group-hover:text-blue-600 transition-colors" />
+              <Bars3Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </motion.button>
           )}
 
-          {/* Dynamic Breadcrumbs */}
-          <motion.div 
-            className="flex items-center space-x-3"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="text-sm text-gray-500">
+          {/* Breadcrumbs */}
+          <div className="flex items-center space-x-3">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               <span>Dashboard</span>
               <span className="mx-2">•</span>
-              <span className="text-gray-900 font-semibold">Manufacturing Intelligence</span>
+              <span className="text-gray-900 dark:text-white font-medium">Manufacturing</span>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Live System Status */}
-          <motion.div 
-            className="flex items-center space-x-4 pl-6 border-l border-gray-200"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
+          {/* System Status */}
+          <div className="flex items-center space-x-4 pl-4 border-l border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-2">
-              <motion.div
-                className="w-3 h-3 bg-green-500 rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <span className="text-sm font-medium text-gray-600">All Systems Operational</span>
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">All Systems Operational</span>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               {currentTime.toLocaleTimeString()}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Right Section - Actions & User */}
@@ -147,32 +131,24 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search anything..."
-              className="w-80 pl-12 pr-6 py-3 bg-white/60 border border-gray-200/50 rounded-2xl text-sm font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all backdrop-blur-sm"
+              placeholder="Search..."
+              className="w-64 pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-1 text-xs text-gray-400 font-mono">
-              <kbd className="px-2 py-1 bg-gray-100 rounded border text-gray-500">⌘</kbd>
-              <span>K</span>
-            </div>
           </motion.div>
 
           {/* Quick Actions Button */}
           <motion.div className="relative">
             <motion.button
               onClick={() => setShowQuickActions(!showQuickActions)}
-              className="relative p-3 rounded-2xl bg-white/60 border border-gray-200/50 hover:bg-white/80 transition-all backdrop-blur-sm group"
+              className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <BoltIcon className="w-6 h-6 text-gray-700 group-hover:text-blue-600 transition-colors" />
-              <motion.div
-                className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              />
+              <BoltIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full" />
             </motion.button>
 
             {/* Quick Actions Dropdown */}
@@ -183,7 +159,7 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="absolute top-full right-0 mt-2 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 p-4"
+                  className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4"
                 >
                   <div className="mb-3">
                     <h3 className="text-lg font-bold text-gray-900">Quick Actions</h3>
@@ -200,16 +176,16 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
                         whileHover="hover"
                         transition={{ delay: index * 0.05 }}
                         onClick={action.action}
-                        className={`p-4 rounded-xl text-left transition-all group bg-gradient-to-r ${
-                          action.color === 'blue' ? 'from-blue-500/10 to-blue-600/10 hover:from-blue-500/20 hover:to-blue-600/20' :
-                          action.color === 'green' ? 'from-green-500/10 to-green-600/10 hover:from-green-500/20 hover:to-green-600/20' :
-                          action.color === 'purple' ? 'from-purple-500/10 to-purple-600/10 hover:from-purple-500/20 hover:to-purple-600/20' :
-                          action.color === 'orange' ? 'from-orange-500/10 to-orange-600/10 hover:from-orange-500/20 hover:to-orange-600/20' :
-                          action.color === 'pink' ? 'from-pink-500/10 to-pink-600/10 hover:from-pink-500/20 hover:to-pink-600/20' :
-                          'from-yellow-500/10 to-yellow-600/10 hover:from-yellow-500/20 hover:to-yellow-600/20'
+                        className={`p-3 rounded-lg text-left transition-all hover:shadow-md ${
+                          action.color === 'blue' ? 'bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30' :
+                          action.color === 'green' ? 'bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/30' :
+                          action.color === 'purple' ? 'bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30' :
+                          action.color === 'orange' ? 'bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30' :
+                          action.color === 'pink' ? 'bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/20 dark:hover:bg-pink-900/30' :
+                          'bg-yellow-50 hover:bg-yellow-100 dark:bg-yellow-900/20 dark:hover:bg-yellow-900/30'
                         }`}
                       >
-                        <action.icon className={`w-6 h-6 mb-2 ${
+                        <action.icon className={`w-5 h-5 mb-2 ${
                           action.color === 'blue' ? 'text-blue-600' :
                           action.color === 'green' ? 'text-green-600' :
                           action.color === 'purple' ? 'text-purple-600' :
@@ -230,21 +206,17 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
           <motion.div className="relative">
             <motion.button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-3 rounded-2xl bg-white/60 border border-gray-200/50 hover:bg-white/80 transition-all backdrop-blur-sm group"
+              className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <BellIcon className="w-6 h-6 text-gray-700 group-hover:text-blue-600 transition-colors" />
+              <BellIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               {notifications.filter(n => n.unread).length > 0 && (
-                <motion.div
-                  className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <span className="text-xs font-bold text-white">
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-xs font-semibold text-white">
                     {notifications.filter(n => n.unread).length}
                   </span>
-                </motion.div>
+                </div>
               )}
             </motion.button>
 
@@ -256,11 +228,11 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="absolute top-full right-0 mt-2 w-96 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 max-h-96 overflow-y-auto"
+                  className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto"
                 >
-                  <div className="p-4 border-b border-gray-200/50">
-                    <h3 className="text-lg font-bold text-gray-900">Notifications</h3>
-                    <p className="text-sm text-gray-600">Stay updated with system events</p>
+                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">System events</p>
                   </div>
                   
                   <div className="divide-y divide-gray-200/50">
@@ -301,7 +273,7 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
           {/* Theme Toggle */}
           <motion.button
             onClick={() => setDarkMode(!darkMode)}
-            className="p-3 rounded-2xl bg-white/60 border border-gray-200/50 hover:bg-white/80 transition-all backdrop-blur-sm group"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -314,7 +286,7 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
                   exit={{ rotate: 90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <SunIcon className="w-6 h-6 text-yellow-600" />
+                  <SunIcon className="w-5 h-5 text-yellow-500" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -324,49 +296,29 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
                   exit={{ rotate: -90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <MoonIcon className="w-6 h-6 text-gray-700 group-hover:text-blue-600" />
+                  <MoonIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.button>
 
           {/* User Profile */}
-          <motion.div 
-            className="flex items-center space-x-3 pl-4 border-l border-gray-200"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-          >
+          <div className="flex items-center space-x-3 pl-4 border-l border-gray-200 dark:border-gray-700">
             <div className="text-right hidden sm:block">
-              <div className="text-sm font-semibold text-gray-900">
-                {user?.firstName} {user?.lastName}
+              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                Guest User
               </div>
-              <div className="text-xs text-gray-600 capitalize">
-                {user?.publicMetadata?.role || 'User'} • Enterprise
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                Dashboard Access
               </div>
             </div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative"
-            >
-              <UserButton 
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox: "w-12 h-12 rounded-2xl shadow-lg border-2 border-white/50"
-                  }
-                }}
-              />
-              <motion.div
-                className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-30 blur-lg"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  opacity: [0.3, 0.5, 0.3]
-                }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
-            </motion.div>
-          </motion.div>
+            <div className="relative">
+              {/* Guest User Icon */}
+              <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                <UserCircleIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

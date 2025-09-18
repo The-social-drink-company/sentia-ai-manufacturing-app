@@ -372,7 +372,7 @@ services:
       npm ci --legacy-peer-deps
       npx vite build
       npx prisma generate
-      npx prisma db push --accept-data-loss || true
+      echo "Skipping Prisma db push in production - schema already exists"
     startCommand: node server.js
     healthCheckPath: /health
 

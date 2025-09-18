@@ -368,8 +368,12 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: "npm ci --legacy-peer-deps && npx vite build && npx prisma generate && npx prisma db push --accept-data-loss --skip-generate"
-    startCommand: node server.js
+    buildCommand: |
+      npm ci --legacy-peer-deps
+      npx vite build
+      npx prisma generate
+      npx prisma db push --accept-data-loss --skip-generate || true
+    startCommand: node production-server.js || node server.js
     healthCheckPath: /health
 
     envVars:

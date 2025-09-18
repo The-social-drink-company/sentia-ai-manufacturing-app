@@ -12,7 +12,7 @@ services:
     plan: free # Free for development
     branch: development
 
-    buildCommand: "node render-build.js || bash scripts/render-deploy-fix.sh || npm run render:build"
+    buildCommand: "node scripts/deploy-optimize.js && npm run render:build"
     startCommand: node server.js
     healthCheckPath: /health
 
@@ -192,7 +192,7 @@ services:
     plan: starter # $7/month for reliable testing
     branch: test
 
-    buildCommand: "node render-build.js || bash scripts/render-deploy-fix.sh || npm run render:build"
+    buildCommand: "node scripts/deploy-optimize.js && npm run render:build"
     startCommand: node server.js
     healthCheckPath: /health
 
@@ -368,7 +368,7 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: "node render-build.js || bash scripts/render-deploy-fix.sh || npm run render:build"
+    buildCommand: "node scripts/deploy-optimize.js && npm run render:build"
     startCommand: node server.js
     healthCheckPath: /health
 

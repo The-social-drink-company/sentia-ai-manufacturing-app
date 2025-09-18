@@ -10,8 +10,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Render database connection - using the actual URL since env var isn't working
-const DATABASE_URL = 'postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_dev';
+// Render database connection - TEST DATABASE
+const DATABASE_URL = 'postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a.oregon-postgres.render.com/sentia_manufacturing_test';
 
 async function setupPgVector() {
   const client = new pg.Client({

@@ -12,7 +12,7 @@ services:
     plan: free # Free for development
     branch: development
 
-    buildCommand: npm ci --legacy-peer-deps && npm run build:render
+    buildCommand: npm ci --legacy-peer-deps && npx vite build && npx prisma generate && npx prisma db push --accept-data-loss --skip-generate
     startCommand: node server.js
     healthCheckPath: /health
 
@@ -192,7 +192,7 @@ services:
     plan: starter # $7/month for reliable testing
     branch: test
 
-    buildCommand: npm ci --legacy-peer-deps && npm run build:render
+    buildCommand: npm ci --legacy-peer-deps && npx vite build && npx prisma generate && npx prisma db push --accept-data-loss --skip-generate
     startCommand: node server.js
     healthCheckPath: /health
 
@@ -368,7 +368,7 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: npm ci --legacy-peer-deps && npm run build:render
+    buildCommand: npm ci --legacy-peer-deps && npx vite build && npx prisma generate && npx prisma db push --accept-data-loss --skip-generate
     startCommand: node server.js
     healthCheckPath: /health
 

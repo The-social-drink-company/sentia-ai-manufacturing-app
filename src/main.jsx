@@ -109,17 +109,23 @@ const LoadingFallback = () => (
 // Render app with ClerkProvider if key exists, otherwise render directly
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
-// FORCE BYPASS CLERK to prevent blank screen
-// Clerk is causing crashes with invalid key
-const bypassClerk = true;
-
-// ALWAYS render without Clerk to prevent blank screen
-if (false) {
-  // Clerk disabled - causing blank screens
+// Render app with Clerk authentication
+if (isValidClerkKey) {
+  console.log('Rendering app with Clerk authentication');
+  devLog.info('Clerk authentication enabled')
+  root.render(
+    <React.StrictMode>
+      <ClerkProvider publishableKey={clerkPubKey}>
+        <Suspense fallback={<LoadingFallback />}>
+          <App />
+        </Suspense>
+      </ClerkProvider>
+    </React.StrictMode>
+  )
 } else {
-  // Render WITHOUT Clerk - guaranteed to work
-  console.log('Rendering app WITHOUT Clerk (working mode)');
-  devLog.info('App rendering in working mode without authentication')
+  // Fallback to guest mode if Clerk is not configured
+  console.log('Rendering app in guest mode (no Clerk key)');
+  devLog.info('App rendering in guest mode without authentication')
   root.render(
     <React.StrictMode>
       <Suspense fallback={<LoadingFallback />}>

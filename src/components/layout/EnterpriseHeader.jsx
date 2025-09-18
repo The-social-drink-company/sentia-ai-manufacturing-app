@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Clerk removed - using guest mode
-// import { useUser, UserButton } from '@clerk/clerk-react';
+import { useUser, UserButton } from '@clerk/clerk-react';
 import {
   BellIcon,
   MagnifyingGlassIcon,
@@ -22,8 +21,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
-  // Guest mode - no Clerk authentication
-  const user = null;
+  const { user } = useUser();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showNotifications, setShowNotifications] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(false);
@@ -306,18 +304,29 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
           <div className="flex items-center space-x-3 pl-4 border-l border-gray-200 dark:border-gray-700">
             <div className="text-right hidden sm:block">
               <div className="text-sm font-medium text-gray-900 dark:text-white">
-                Guest User
+                {user?.firstName} {user?.lastName}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400">
-                Dashboard Access
+                {user?.publicMetadata?.role || 'User'}
               </div>
             </div>
-            <div className="relative">
-              {/* Guest User Icon */}
-              <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-                <UserCircleIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            {user ? (
+              <UserButton
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-10 h-10",
+                    userButtonPopoverCard: "rounded-lg"
+                  }
+                }}
+              />
+            ) : (
+              <div className="relative">
+                <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                  <UserCircleIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

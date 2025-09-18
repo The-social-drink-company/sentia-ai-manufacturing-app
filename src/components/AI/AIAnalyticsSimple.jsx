@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-// Clerk removed - causing blank screens
-// import { useUser } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import {
   CpuChipIcon as Brain,
   ArrowTrendingUpIcon as TrendingUp,
@@ -15,8 +14,8 @@ import {
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const AIAnalyticsSimple = () => {
-  // Guest mode - Clerk disabled
-  const user = null;
+  const { user } = useUser();
+  const { getToken } = useAuth();
   const [selectedModel, setSelectedModel] = useState('all');
   const [timeRange, setTimeRange] = useState('7d');
 
@@ -24,8 +23,8 @@ const AIAnalyticsSimple = () => {
   const { data: aiData, isLoading, isError, refetch } = useQuery({
     queryKey: ['ai-analytics', selectedModel, timeRange],
     queryFn: async () => {
-      // Guest mode - no auth header
-      const authHeader = {};
+      const token = await getToken();
+      const authHeader = token ? { 'Authorization': `Bearer ${token}` } : {};
       
       // Try multiple real AI analytics API endpoints
       const endpoints = [

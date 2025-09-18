@@ -1,8 +1,7 @@
 import { devLog } from '../../lib/devLog.js';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-// Clerk removed - causing blank screens
-// import { useUser, useAuth } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 
 import {
   CpuChipIcon as Brain, 
@@ -19,9 +18,8 @@ import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 import { ChartJS } from '../../lib/chartSetup';
 
 const AIAnalyticsDashboard = () => {
-  // Guest mode - Clerk disabled
-  const user = null;
-  const getToken = () => Promise.resolve(null);
+  const { user } = useUser();
+  const { getToken } = useAuth();
   const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);
 
@@ -29,8 +27,12 @@ const AIAnalyticsDashboard = () => {
     queryKey: ['ai-analytics', selectedModel],
     queryFn: async () => {
       try {
-        // Guest mode - no auth token
-        const response = await fetch(`/api/ai/analytics?model=${selectedModel}`);
+        const token = await getToken();
+        const response = await fetch(`/api/ai/analytics?model=${selectedModel}`, {
+          headers: token ? {
+            'Authorization': `Bearer ${token}`
+          } : {}
+        });
         if (!response.ok) {
           throw new Error('AI Analytics API unavailable');
         }

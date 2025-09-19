@@ -470,7 +470,7 @@ class XeroIntegrationMCP {
   }
 
   // Verify webhook signature
-  verifyWebhookSignature(payload, signature) {
+  async verifyWebhookSignature(payload, signature) {
     const crypto = await import('crypto');
     const webhookKey = process.env.XERO_WEBHOOK_KEY || '';
 

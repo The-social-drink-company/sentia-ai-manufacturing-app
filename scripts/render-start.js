@@ -24,37 +24,44 @@ console.log('  DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Missing');
 console.log('  RENDER:', process.env.RENDER ? 'Yes' : 'No');
 
 // Start the main server with error handling
-try {
-  console.log('Starting server.js...');
-  require('../server.js');
-} catch (error) {
+console.log('Starting server.js...');
+
+// Use dynamic import for ES modules
+import('../server.js').catch(error => {
   console.error('FATAL: Failed to start server:', error);
 
   // Start minimal fallback server on error
   console.log('Starting fallback server...');
-  const express = require('express');
-  const app = express();
-  const PORT = process.env.PORT || 10000;
 
-  // Simple health check that always works
-  app.get('/health', (req, res) => {
-    res.json({
-      status: 'degraded',
-      error: 'Main server failed to start',
-      timestamp: new Date().toISOString()
+  // Use dynamic imports for ES modules
+  import('express').then(expressModule => {
+    const express = expressModule.default;
+    const app = express();
+    const PORT = process.env.PORT || 10000;
+
+    // Simple health check that always works
+    app.get('/health', (req, res) => {
+      res.json({
+        status: 'degraded',
+        error: 'Main server failed to start',
+        timestamp: new Date().toISOString()
+      });
     });
-  });
 
-  // Catch all routes
-  app.get('*', (req, res) => {
-    res.status(503).json({
-      error: 'Service temporarily unavailable',
-      message: 'The server is starting up. Please try again in a moment.',
-      path: req.path
+    // Catch all routes
+    app.get('*', (req, res) => {
+      res.status(503).json({
+        error: 'Service temporarily unavailable',
+        message: 'The server is starting up. Please try again in a moment.',
+        path: req.path
+      });
     });
-  });
 
-  app.listen(PORT, () => {
-    console.log(`Fallback server running on port ${PORT}`);
+    app.listen(PORT, () => {
+      console.log(`Fallback server running on port ${PORT}`);
+    });
+  }).catch(err => {
+    console.error('Could not start fallback server:', err);
+    process.exit(1);
   });
-}
+});

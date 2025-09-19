@@ -1071,11 +1071,23 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Render health check endpoint (without /api prefix) - ALWAYS returns 200 for Render
+// [RENDER FIX] Main health check endpoint - MUST come before static file serving
+// This endpoint is critical for Render health monitoring
 app.get('/health', (req, res) => {
   // CRITICAL: Always return 200 OK to prevent Render 502 errors
-  // Even in degraded state, the service is still running
+  // This must be a simple, fast response that doesn't depend on external services
 
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    server: 'sentia-manufacturing',
+    environment: process.env.NODE_ENV || 'development',
+    render: !!process.env.RENDER
+  });
+});
+
+// Original health check logic moved to a separate endpoint for detailed checks
+app.get('/health/detailed', (req, res) => {
   try {
     // Check if this should behave as MCP server
     if (process.env.MCP_SERVER_MODE === 'true' || req.query.mcp === 'true') {

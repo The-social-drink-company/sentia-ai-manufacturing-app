@@ -310,31 +310,53 @@ const fallbackHTML = `<!DOCTYPE html>
 if (distExists) {
   console.log('Serving static files from dist folder');
 
-  // Serve JS files from dist/js
+  // CRITICAL: Serve static files with proper MIME types
+  // Serve JS files with correct module type
   app.use('/js', express.static(join(distPath, 'js'), {
     maxAge: '1d',
     setHeaders: (res, path) => {
       res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
     }
   }));
 
-  // Serve CSS files from dist/assets
+  // Serve CSS files
   app.use('/assets', express.static(join(distPath, 'assets'), {
     maxAge: '1d',
     setHeaders: (res, path) => {
       if (path.endsWith('.css')) {
         res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+      } else if (path.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
       }
     }
   }));
 
-  // Serve other static files
+  // Serve all static files from dist
   app.use(express.static(distPath, {
     index: false,
     maxAge: '1h',
     setHeaders: (res, path) => {
+      // Set proper MIME types
       if (path.endsWith('.html')) {
+        res.setHeader('Content-Type', 'text/html; charset=UTF-8');
         res.setHeader('Cache-Control', 'no-cache');
+      } else if (path.endsWith('.js') || path.endsWith('.mjs')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+      } else if (path.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+      } else if (path.endsWith('.json')) {
+        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+      } else if (path.endsWith('.svg')) {
+        res.setHeader('Content-Type', 'image/svg+xml');
+      } else if (path.endsWith('.png')) {
+        res.setHeader('Content-Type', 'image/png');
+      } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+        res.setHeader('Content-Type', 'image/jpeg');
       }
     }
   }));

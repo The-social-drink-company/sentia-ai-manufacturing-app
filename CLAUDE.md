@@ -68,41 +68,53 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Action Required**: Address security issues before production deployment
 - **Location**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/security/dependabot
 
-## Development Commands
+## RENDER-ONLY DEPLOYMENT (NO LOCAL DEVELOPMENT)
 
-### Frontend Commands (React + Vite)
-- `npm run dev:client` - Start React development client only on localhost:3000
-- `npm run build` - Build production React app
-- `npm run preview` - Preview production build locally
-- `npm run serve` - Serve production build on port 3000
+### 🚀 WE ARE 100% CLOUD-BASED - NO LOCAL DEVELOPMENT
+All development, testing, and production runs exclusively on Render.
 
-### Backend Commands (Node.js + Express)
-- `npm run dev:server` - Start Node.js/Express API server with nodemon
-- `node server.js` - Start production Node.js server
-- `npm start` - Production start command (same as above)
+### Live Environments
+- **Development**: https://sentia-manufacturing-development.onrender.com
+- **Testing**: https://sentia-manufacturing-testing.onrender.com
+- **Production**: https://sentia-manufacturing-production.onrender.com
+- **MCP Server**: https://mcp-server-tkyu.onrender.com
 
-### MCP Server Commands (AI Central Nervous System)
-- `cd mcp-server && npm start` - Start enterprise MCP server on port 3001
-- `cd mcp-server && PORT=8001 npm start` - Start MCP server on custom port
-- `curl http://localhost:3001/health` - Test MCP server health endpoint
-- `curl http://localhost:3001/mcp/status` - Get comprehensive AI system status
+### Deployment Commands
+```bash
+# Push to development (auto-deploys)
+git push origin development
 
-### Full Stack Development
-- `npm run dev` - Start both frontend and backend concurrently
-- `npm install` - Install all Node.js dependencies
+# Push to test (auto-deploys)
+git push origin test
 
-### Testing Commands
-- `npm test` - Run Vitest unit tests in watch mode
-- `npm run test:run` - Run tests once
-- `npm run test:coverage` - Run tests with coverage report
-- `npm run test:ui` - Run tests with UI interface
-- `npm run test:e2e` - Run Playwright end-to-end tests
-- `npm run test:e2e:ui` - Run E2E tests with UI
-- `npm run test:setup` - Install Playwright browsers
+# Push to production (auto-deploys)
+git push origin production
+```
 
-### Linting & Quality
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Auto-fix ESLint issues
+### Render Build Commands (Automated - Do Not Run Locally)
+- `npm run render:build` - Used by Render for building
+- `npm run render:start` - Used by Render for starting
+- These run automatically on Render after git push
+
+### ❌ DEPRECATED - DO NOT USE
+- ~~`npm run dev`~~ - No local development
+- ~~`npm run dev:client`~~ - No local frontend
+- ~~`npm run dev:server`~~ - No local backend
+- ~~`localhost:3000`~~ - Use Render URLs
+- ~~`localhost:5000`~~ - Use Render URLs
+- ~~`.env` files~~ - Use Render environment variables
+
+### Managing Environment Variables
+1. Go to https://dashboard.render.com
+2. Select your service
+3. Click "Environment" tab
+4. Add/update variables
+5. Service auto-redeploys
+
+### Monitoring
+- **Logs**: Render Dashboard → Service → Logs
+- **Health**: `{service-url}/health`
+- **Metrics**: Render Dashboard → Service → Metrics
 
 ## Environment Setup
 

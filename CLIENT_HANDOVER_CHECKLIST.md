@@ -14,16 +14,19 @@
 
 #### Main Application Deployments
 - **Development**: https://sentia-manufacturing-development.onrender.com
-  - Status: 🔄 Rebuilding (ETA: 5-10 minutes)
+  - Status: ⚠️ Service running but routes not configured (404)
   - Purpose: Active development and testing
+  - Action: Investigating Render configuration
 
 - **Testing**: https://sentia-manufacturing-testing.onrender.com
-  - Status: 🔄 Rebuilding (ETA: 5-10 minutes)
+  - Status: ⚠️ Service running but routes not configured (404)
   - Purpose: User Acceptance Testing (UAT)
+  - Action: Investigating Render configuration
 
 - **Production**: https://sentia-manufacturing-production.onrender.com
-  - Status: 🔄 Rebuilding (ETA: 5-10 minutes)
+  - Status: ⚠️ Service running but routes not configured (404)
   - Purpose: Live production for daily operations
+  - Action: Investigating Render configuration
 
 ### 🔐 AUTHENTICATION
 

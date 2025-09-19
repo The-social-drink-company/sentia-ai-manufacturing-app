@@ -17,7 +17,7 @@
     "build:render-fix": "bash scripts/render-deploy-fix.sh",
     "render:build": "npm install --legacy-peer-deps && npx vite build && npx prisma generate || echo 'Build completed with warnings'",
     "render:start": "node server-init.js",
-    "start": "node server-init.js",
+    "start": "node server.js",
     "start:prod": "npx prisma migrate deploy && node server.js",
     "preview": "vite preview",
     "test": "vitest",

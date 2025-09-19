@@ -499,16 +499,31 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS Middleware
+// CORS Middleware - Updated to include all Render environments
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:9000',
-    'http://localhost:5000',
-    'http://localhost:5177',
-    'https://sentia-manufacturing-production.onrender.com',
-    'https://sentia-manufacturing-development.onrender.com'
-  ],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:9000',
+      'http://localhost:5000',
+      'http://localhost:5177',
+      'https://sentia-manufacturing-production.onrender.com',
+      'https://sentia-manufacturing-development.onrender.com',
+      'https://sentia-manufacturing-testing.onrender.com'
+    ];
+
+    // Allow any Render deployment
+    if (origin.includes('.onrender.com') || origin.includes('localhost')) {
+      callback(null, true);
+    } else if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -1056,11 +1071,23 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Render health check endpoint (without /api prefix) - ALWAYS returns 200 for Render
+// [RENDER FIX] Main health check endpoint - MUST come before static file serving
+// This endpoint is critical for Render health monitoring
 app.get('/health', (req, res) => {
   // CRITICAL: Always return 200 OK to prevent Render 502 errors
-  // Even in degraded state, the service is still running
+  // This must be a simple, fast response that doesn't depend on external services
 
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    server: 'sentia-manufacturing',
+    environment: process.env.NODE_ENV || 'development',
+    render: !!process.env.RENDER
+  });
+});
+
+// Original health check logic moved to a separate endpoint for detailed checks
+app.get('/health/detailed', (req, res) => {
   try {
     // Check if this should behave as MCP server
     if (process.env.MCP_SERVER_MODE === 'true' || req.query.mcp === 'true') {
@@ -5701,8 +5728,21 @@ if (fs.existsSync(join(__dirname, 'dist'))) {
 }
 console.log('='.repeat(60));
 
+// [RENDER FIX] Protect API routes from being served as static files
+// This middleware runs BEFORE express.static to ensure API routes are never handled by static middleware
+app.use((req, res, next) => {
+  // Skip static file middleware for API routes and health checks
+  if (req.path.startsWith('/api/') || req.path === '/health' || req.path.startsWith('/auth/')) {
+    // Skip directly to the next middleware after static files
+    return next('route');
+  }
+  next();
+});
+
 // Serve static files from dist folder with proper MIME types and cache control
+// IMPORTANT: Add index:false to prevent serving index.html for API routes
 app.use(express.static(join(__dirname, 'dist'), {
+  index: false, // Don't serve index.html for directory requests - let catch-all handle it
   maxAge: '1h', // Cache static assets for 1 hour
   etag: true,
   lastModified: true,

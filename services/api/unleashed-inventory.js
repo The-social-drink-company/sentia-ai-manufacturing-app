@@ -276,9 +276,10 @@ router.post('/sync', async (req, res) => {
     syncService.triggerManualSync().then(result => {
       logInfo('Manual sync completed', result);
 
-      // Broadcast completion
-      const wsService = WebSocketService.getInstance();
-      wsService.broadcast('unleashed-sync-complete', result);
+      // Broadcast completion via inventory namespace
+      if (WebSocketService && WebSocketService.inventoryIO) {
+        WebSocketService.inventoryIO.emit('unleashed-sync-complete', result);
+      }
     });
 
     res.json({

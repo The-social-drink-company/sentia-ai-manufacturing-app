@@ -64,44 +64,83 @@ class UnleashedIntegrationMCP {
   }
 
   /**
-   * Make authenticated request to Unleashed API
+   * Make authenticated request to Unleashed API with retry logic
    */
-  async makeRequest(endpoint, params = {}, method = 'GET', data = null) {
+  async makeRequest(endpoint, params = {}, method = 'GET', data = null, retries = 3) {
     if (!this.apiId || !this.apiKey) {
       throw new Error('Unleashed API not configured');
     }
 
-    try {
-      const query = new URLSearchParams(params).toString();
-      const signature = this.getSignature(query);
+    let lastError;
+    let baseDelay = 1000; // Start with 1 second delay
 
-      const config = {
-        method,
-        url: `${this.baseUrl}${endpoint}`,
-        params,
-        headers: {
-          'api-auth-id': this.apiId,
-          'api-auth-signature': signature,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000
-      };
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const query = new URLSearchParams(params).toString();
+        const signature = this.getSignature(query);
 
-      if (data) {
-        config.data = data;
+        const config = {
+          method,
+          url: `${this.baseUrl}${endpoint}`,
+          params,
+          headers: {
+            'api-auth-id': this.apiId,
+            'api-auth-signature': signature,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          timeout: 60000 // Increased to 60 seconds
+        };
+
+        if (data) {
+          config.data = data;
+        }
+
+        // Log attempt info for debugging
+        if (attempt > 0) {
+          this.logger.info(`Retry attempt ${attempt} for ${endpoint}`);
+        }
+
+        const response = await axios(config);
+        return response.data;
+      } catch (error) {
+        lastError = error;
+
+        // Check if it's a timeout or network error
+        const isRetriableError = error.code === 'ECONNABORTED' ||
+                                 error.code === 'ETIMEDOUT' ||
+                                 error.code === 'ENOTFOUND' ||
+                                 error.code === 'ECONNREFUSED' ||
+                                 (error.response && error.response.status >= 500);
+
+        if (attempt < retries && isRetriableError) {
+          // Calculate exponential backoff delay with jitter
+          const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+
+          this.logger.warn(`Request to ${endpoint} failed, retrying in ${Math.round(delay)}ms`, {
+            error: error.message,
+            attempt: attempt + 1,
+            maxRetries: retries
+          });
+
+          // Wait before retrying
+          await new Promise(resolve => setTimeout(resolve, delay));
+        } else {
+          // Final attempt failed or non-retriable error
+          this.logger.error(`Unleashed API request failed: ${endpoint}`, {
+            error: error.message,
+            endpoint,
+            method,
+            attempts: attempt + 1,
+            code: error.code,
+            status: error.response?.status
+          });
+          throw error;
+        }
       }
-
-      const response = await axios(config);
-      return response.data;
-    } catch (error) {
-      this.logger.error(`Unleashed API request failed: ${endpoint}`, {
-        error: error.message,
-        endpoint,
-        method
-      });
-      throw error;
     }
+
+    throw lastError;
   }
 
   /**
@@ -118,7 +157,7 @@ class UnleashedIntegrationMCP {
     }
   }
 
-  // MCP Tool: Get Inventory Data
+  // MCP Tool: Get Inventory Data with automatic pagination
   async getInventoryData(params = {}) {
     try {
       if (!this.isInitialized) {
@@ -129,24 +168,57 @@ class UnleashedIntegrationMCP {
         productCode,
         warehouse,
         includeAllocated = true,
-        pageSize = 200
+        pageSize = 200,
+        maxPages = 10 // Safety limit to prevent infinite loops
       } = params;
 
       let endpoint = '/StockOnHand';
-      const queryParams = { pageSize };
+      const allStockItems = [];
+      let currentPage = 1;
+      let hasMorePages = true;
+      let totalPages = 0;
 
-      if (productCode) {
-        queryParams.productCode = productCode;
-      }
-      if (warehouse) {
-        queryParams.warehouseCode = warehouse;
-      }
+      // Fetch all pages of inventory data
+      while (hasMorePages && currentPage <= maxPages) {
+        const queryParams = {
+          pageSize,
+          page: currentPage
+        };
 
-      const response = await this.makeRequest(endpoint, queryParams);
-      const stockItems = response.Items || [];
+        if (productCode) {
+          queryParams.productCode = productCode;
+        }
+        if (warehouse) {
+          queryParams.warehouseCode = warehouse;
+        }
+
+        this.logger.info(`Fetching inventory page ${currentPage}`, {
+          endpoint,
+          pageSize,
+          productCode,
+          warehouse
+        });
+
+        const response = await this.makeRequest(endpoint, queryParams);
+        const pageItems = response.Items || [];
+
+        // Add items from this page to the collection
+        allStockItems.push(...pageItems);
+
+        // Check pagination info
+        const pagination = response.Pagination || {};
+        totalPages = pagination.NumberOfPages || 1;
+        hasMorePages = currentPage < totalPages;
+        currentPage++;
+
+        // Log progress
+        if (hasMorePages) {
+          this.logger.info(`Fetched page ${currentPage - 1} of ${totalPages}, ${pageItems.length} items`);
+        }
+      }
 
       // Process and format inventory data
-      const inventory = stockItems.map(item => ({
+      const inventory = allStockItems.map(item => ({
         sku: item.ProductCode,
         productName: item.ProductDescription,
         warehouse: item.WarehouseCode,
@@ -169,7 +241,8 @@ class UnleashedIntegrationMCP {
         totalAvailable: inventory.reduce((sum, item) => sum + item.quantityAvailable, 0)
       };
 
-      this.logger.info('Retrieved inventory data from Unleashed', {
+      this.logger.info('Retrieved all inventory data from Unleashed', {
+        totalPages: currentPage - 1,
         itemCount: inventory.length,
         totals
       });

@@ -12,8 +12,8 @@ services:
     plan: free # Free for development
     branch: development
 
-    buildCommand: "npm run render:build"
-    startCommand: node server.js
+    buildCommand: npm run render:build
+    startCommand: npm run render:start
     healthCheckPath: /health
 
     envVars:
@@ -186,8 +186,8 @@ services:
     plan: starter # $7/month for reliable testing
     branch: test
 
-    buildCommand: "npm run render:build"
-    startCommand: node server.js
+    buildCommand: npm run render:build
+    startCommand: npm run render:start
     healthCheckPath: /health
 
     envVars:
@@ -362,8 +362,8 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: "npm run render:build"
-    startCommand: node server.js
+    buildCommand: npm run render:build
+    startCommand: npm run render:start
     healthCheckPath: /health
 
     envVars:

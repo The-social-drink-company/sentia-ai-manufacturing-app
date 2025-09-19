@@ -241,8 +241,8 @@ class UnleashedIntegrationService {
             paymentTerms: po.PaymentTerms || null,
             notes: po.Comments || null,
             approvedBy: po.ApprovedBy || null,
-            approvedDate: po.ApprovedDate ? new Date(po.ApprovedDate) : null,
-            updatedAt: new Date()
+            approvedDate: po.ApprovedDate ? new Date(po.ApprovedDate) : null
+            // updatedAt is handled automatically by Prisma @updatedAt
           },
           create: {
             orderNumber: po.OrderNumber,

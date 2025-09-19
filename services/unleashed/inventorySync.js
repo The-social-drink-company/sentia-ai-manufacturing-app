@@ -302,8 +302,8 @@ class UnleashedInventorySync {
               paymentTerms: po.paymentTerms || null,
               notes: po.comments || null,
               approvedBy: po.approvedBy || null,
-              approvedDate: po.approvedDate ? this.safeParseDate(po.approvedDate, null) : null,
-              updatedAt: new Date()
+              approvedDate: po.approvedDate ? this.safeParseDate(po.approvedDate, null) : null
+              // updatedAt is handled automatically by Prisma @updatedAt
             },
             create: {
               orderNumber: po.orderNumber,

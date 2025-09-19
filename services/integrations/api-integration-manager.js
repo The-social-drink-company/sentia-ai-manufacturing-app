@@ -117,7 +117,19 @@ class APIIntegrationManager {
     // Check if required environment variables exist
     const missingVars = this.checkRequiredEnvVars(serviceId, config.requiredEnvVars);
     if (missingVars.length > 0) {
-      logWarn(`Missing environment variables for ${config.name}`, { missingVars });
+      // Define optional services that are expected to be unconfigured
+      const optionalServices = ['shopify', 'amazon', 'forecasting'];
+
+      if (optionalServices.includes(serviceId)) {
+        // Log as info instead of warning for optional services
+        logInfo(`⚠️ ${config.name} not configured (optional service - this is expected)`);
+      } else {
+        logWarn(`Missing environment variables for ${config.name}`, { missingVars });
+        logWarn(`⚠️ ${config.name} not configured (missing credentials)`);
+      }
+
+      // Mark service as not configured
+      this.healthStatus[serviceId] = 'not_configured';
       return null;
     }
     
@@ -145,6 +157,60 @@ class APIIntegrationManager {
     }
     
     return service;
+  }
+
+  /**
+   * Check required environment variables with aliasing support
+   */
+  checkRequiredEnvVars(serviceId, requiredVars) {
+    const missingVars = [];
+
+    // Define environment variable aliases
+    const envAliases = {
+      shopify: {
+        'SHOPIFY_API_KEY': ['SHOPIFY_UK_API_KEY', 'SHOPIFY_USA_API_KEY'],
+        'SHOPIFY_API_SECRET': ['SHOPIFY_UK_SECRET', 'SHOPIFY_UK_API_SECRET', 'SHOPIFY_USA_SECRET'],
+        'SHOPIFY_ACCESS_TOKEN': ['SHOPIFY_UK_ACCESS_TOKEN', 'SHOPIFY_USA_ACCESS_TOKEN']
+      }
+    };
+
+    // Define optional services that should not show warnings
+    const optionalServices = ['shopify', 'amazon', 'forecasting'];
+
+    // Skip warnings for optional services that are not yet configured
+    if (optionalServices.includes(serviceId)) {
+      // Still check but don't warn loudly - these are expected to be missing
+      requiredVars.forEach(varName => {
+        if (!process.env[varName]) {
+          missingVars.push(varName);
+        }
+      });
+      return missingVars;
+    }
+
+    requiredVars.forEach(varName => {
+      let found = false;
+
+      // Check primary variable name
+      if (process.env[varName]) {
+        found = true;
+      } else if (envAliases[serviceId] && envAliases[serviceId][varName]) {
+        // Check aliases for this service
+        const aliases = envAliases[serviceId][varName];
+        for (const alias of aliases) {
+          if (process.env[alias]) {
+            found = true;
+            break;
+          }
+        }
+      }
+
+      if (!found) {
+        missingVars.push(varName);
+      }
+    });
+
+    return missingVars;
   }
 
   /**

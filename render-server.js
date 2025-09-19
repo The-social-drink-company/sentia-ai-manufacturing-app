@@ -424,14 +424,25 @@ app.get('*', (req, res) => {
 
     const envScript = `
     <script>
+      // Critical: Set environment variables for Clerk and other services
       window.VITE_CLERK_PUBLISHABLE_KEY = '${clerkKey}';
       window.VITE_MCP_SERVER_URL = '${mcpServer}';
       window.VITE_API_BASE_URL = '${process.env.VITE_API_BASE_URL || '/api'}';
+
+      // Ensure import.meta.env is available for Vite modules
+      if (!window.import) window.import = {};
+      if (!window.import.meta) window.import.meta = {};
+      if (!window.import.meta.env) window.import.meta.env = {};
+      window.import.meta.env.VITE_CLERK_PUBLISHABLE_KEY = '${clerkKey}';
+      window.import.meta.env.VITE_MCP_SERVER_URL = '${mcpServer}';
+      window.import.meta.env.VITE_API_BASE_URL = '${process.env.VITE_API_BASE_URL || '/api'}';
     </script>
     `;
 
-    // Inject before closing head tag or body tag
-    if (html.includes('</head>')) {
+    // Inject before the first script tag or before closing head
+    if (html.includes('<script type="module"')) {
+      html = html.replace('<script type="module"', envScript + '<script type="module"');
+    } else if (html.includes('</head>')) {
       html = html.replace('</head>', envScript + '</head>');
     } else if (html.includes('<body>')) {
       html = html.replace('<body>', '<body>' + envScript);

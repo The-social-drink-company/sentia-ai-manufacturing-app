@@ -92,18 +92,31 @@ class AutonomousScheduler extends EventEmitter {
 
   initializeComponents() {
     console.log('🔧 Initializing autonomous components...');
-    
+
     try {
-      this.selfHealingAgent = new SelfHealingAgent(this.config.agent);
-      this.testDataFactory = new TestDataFactory();
-      this.resultAnalyzer = new TestResultAnalyzer();
-      this.codeCorrector = new CodeCorrectionEngine();
-      this.deployOrchestrator = new DeploymentOrchestrator();
-      
-      // Setup event listeners
-      this.setupEventListeners();
-      
-      console.log('✅ All autonomous components initialized');
+      // Only initialize testing components in development/test environments
+      const isProduction = process.env.NODE_ENV === 'production';
+
+      if (!isProduction && this.config.testing?.enabled !== false) {
+        this.selfHealingAgent = new SelfHealingAgent(this.config.agent);
+        this.testDataFactory = new TestDataFactory();
+        this.resultAnalyzer = new TestResultAnalyzer();
+        this.codeCorrector = new CodeCorrectionEngine();
+        this.deployOrchestrator = new DeploymentOrchestrator();
+
+        // Setup event listeners
+        this.setupEventListeners();
+
+        console.log('✅ All autonomous components initialized');
+      } else {
+        console.log('ℹ️ Autonomous testing components disabled in production');
+        // Initialize empty stubs to prevent undefined errors
+        this.selfHealingAgent = null;
+        this.testDataFactory = null;
+        this.resultAnalyzer = null;
+        this.codeCorrector = null;
+        this.deployOrchestrator = null;
+      }
     } catch (error) {
       console.error('❌ Failed to initialize components:', error.message);
       throw error;
@@ -111,11 +124,16 @@ class AutonomousScheduler extends EventEmitter {
   }
 
   setupEventListeners() {
+    // Only setup listeners if components are initialized
+    if (!this.selfHealingAgent || !this.deployOrchestrator) {
+      return;
+    }
+
     // Self-healing agent events
     this.selfHealingAgent.on('cycleCompleted', (analysis) => {
       this.handleCycleCompleted(analysis);
     });
-    
+
     this.selfHealingAgent.on('emergencyStop', () => {
       this.handleEmergencyStop();
     });
@@ -124,7 +142,7 @@ class AutonomousScheduler extends EventEmitter {
     this.deployOrchestrator.on('deploymentCompleted', (deployment) => {
       this.metrics.deploymentTimes.push(deployment.duration);
     });
-    
+
     this.deployOrchestrator.on('deploymentFailed', (deployment) => {
       console.error(`🚨 Deployment ${deployment.id} failed`);
       this.handleDeploymentFailure(deployment);

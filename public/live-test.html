@@ -1,295 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Authentication Test</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .test-card {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .status { padding: 8px 16px; border-radius: 4px; display: inline-block; margin: 5px 0; }
-    .success { background: #d4edda; color: #155724; }
-    .error { background: #f8d7da; color: #721c24; }
-    .warning { background: #fff3cd; color: #856404; }
-    .info { background: #d1ecf1; color: #0c5460; }
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 5px;
-    }
-    button:hover { background: #1d4ed8; }
-    iframe {
-      width: 100%;
-      height: 600px;
-      border: 2px solid #e5e5e5;
-      border-radius: 8px;
-      margin: 10px 0;
-    }
-    .test-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-  </style>
+    <title>Live Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        .fail { color: #f00; }
+    </style>
 </head>
 <body>
-  <h1>Live Authentication & Page Verification Test</h1>
+    <h1>LIVE TEST</h1>
+    <div id="test"></div>
+    <script>
+        const test = document.getElementById('test');
 
-  <div class="test-card">
-    <h2>Test Results Summary</h2>
-    <div id="summary">Running tests...</div>
-  </div>
+        // Test if React app loads
+        fetch('/').then(r => r.text()).then(html => {
+            if (html.includes('id="root"')) {
+                test.innerHTML += '<div>✓ HTML loads</div>';
+            } else {
+                test.innerHTML += '<div class="fail">✗ No HTML</div>';
+            }
+        });
 
-  <div class="test-grid">
-    <div class="test-card">
-      <h3>1. Landing Page Test</h3>
-      <p>Testing if landing page loads without blank screen</p>
-      <button onclick="testLandingPage()">Test Landing Page</button>
-      <div id="landing-result"></div>
-    </div>
+        // Test Vite
+        fetch('/@vite/client').then(r => {
+            if (r.ok) {
+                test.innerHTML += '<div>✓ Vite server running</div>';
+            } else {
+                test.innerHTML += '<div class="fail">✗ Vite not running</div>';
+            }
+        });
 
-    <div class="test-card">
-      <h3>2. Clerk Authentication Test</h3>
-      <p>Testing if Clerk sign-in/sign-up pages work</p>
-      <button onclick="testClerkAuth()">Test Sign In</button>
-      <button onclick="testClerkSignUp()">Test Sign Up</button>
-      <div id="clerk-result"></div>
-    </div>
-
-    <div class="test-card">
-      <h3>3. Dashboard Access Test</h3>
-      <p>Testing if dashboard loads without authentication errors</p>
-      <button onclick="testDashboard()">Test Dashboard</button>
-      <div id="dashboard-result"></div>
-    </div>
-
-    <div class="test-card">
-      <h3>4. AI Analytics Pages Test</h3>
-      <p>Testing if AI Analytics pages load without blank screens</p>
-      <button onclick="testAIAnalytics()">Test AI Analytics</button>
-      <button onclick="testAISimple()">Test AI Simple</button>
-      <div id="ai-result"></div>
-    </div>
-  </div>
-
-  <div class="test-card">
-    <h3>Live Page Preview</h3>
-    <p>Current page being tested:</p>
-    <div id="current-test-info"></div>
-    <iframe id="test-frame" src="/"></iframe>
-  </div>
-
-  <script>
-    const testFrame = document.getElementById('test-frame');
-    const currentTestInfo = document.getElementById('current-test-info');
-    let testResults = {
-      landingPage: null,
-      clerkAuth: null,
-      dashboard: null,
-      aiAnalytics: null
-    };
-
-    function updateSummary() {
-      const summary = document.getElementById('summary');
-      const passed = Object.values(testResults).filter(r => r === true).length;
-      const failed = Object.values(testResults).filter(r => r === false).length;
-      const pending = Object.values(testResults).filter(r => r === null).length;
-
-      summary.innerHTML = `
-        <div class="status success">Passed: ${passed}</div>
-        <div class="status error">Failed: ${failed}</div>
-        <div class="status warning">Pending: ${pending}</div>
-        <div style="margin-top: 10px;">
-          <strong>Authentication Status:</strong>
-          ${testResults.clerkAuth === true ? '<span class="status success">WORKING</span>' :
-            testResults.clerkAuth === false ? '<span class="status error">NOT WORKING</span>' :
-            '<span class="status warning">NOT TESTED</span>'}
-        </div>
-        <div style="margin-top: 10px;">
-          <strong>Blank Screen Issues:</strong>
-          ${failed > 0 ? '<span class="status error">DETECTED</span>' :
-            passed > 0 ? '<span class="status success">NONE DETECTED</span>' :
-            '<span class="status warning">TESTING...</span>'}
-        </div>
-      `;
-    }
-
-    function testLandingPage() {
-      currentTestInfo.innerHTML = '<div class="status info">Testing Landing Page...</div>';
-      testFrame.src = '/';
-
-      setTimeout(() => {
-        // Check if frame loaded
-        try {
-          const frameDoc = testFrame.contentDocument || testFrame.contentWindow.document;
-          const hasContent = frameDoc.body && frameDoc.body.innerHTML.length > 100;
-          const hasSignInButton = frameDoc.body.innerHTML.includes('Sign In') || frameDoc.body.innerHTML.includes('sign-in');
-
-          if (hasContent && hasSignInButton) {
-            document.getElementById('landing-result').innerHTML = '<div class="status success">SUCCESS: Landing page loaded with Sign In button</div>';
-            testResults.landingPage = true;
-          } else if (hasContent) {
-            document.getElementById('landing-result').innerHTML = '<div class="status warning">WARNING: Page loaded but no Sign In button found</div>';
-            testResults.landingPage = true;
-          } else {
-            document.getElementById('landing-result').innerHTML = '<div class="status error">FAIL: Blank or minimal content</div>';
-            testResults.landingPage = false;
-          }
-        } catch(e) {
-          document.getElementById('landing-result').innerHTML = '<div class="status success">SUCCESS: Page loaded (cross-origin check passed)</div>';
-          testResults.landingPage = true;
-        }
-        updateSummary();
-      }, 2000);
-    }
-
-    function testClerkAuth() {
-      currentTestInfo.innerHTML = '<div class="status info">Testing Clerk Sign In Page...</div>';
-      testFrame.src = '/sign-in';
-
-      setTimeout(() => {
-        try {
-          const frameDoc = testFrame.contentDocument || testFrame.contentWindow.document;
-          const hasContent = frameDoc.body && frameDoc.body.innerHTML.length > 100;
-          const hasClerkForm = frameDoc.body.innerHTML.includes('clerk') ||
-                               frameDoc.body.innerHTML.includes('Sign in') ||
-                               frameDoc.body.innerHTML.includes('Email') ||
-                               frameDoc.body.innerHTML.includes('Continue as Guest');
-
-          if (hasClerkForm) {
-            document.getElementById('clerk-result').innerHTML = '<div class="status success">SUCCESS: Clerk authentication page loaded</div>';
-            testResults.clerkAuth = true;
-          } else if (hasContent) {
-            document.getElementById('clerk-result').innerHTML = '<div class="status warning">WARNING: Page loaded but Clerk form not detected</div>';
-            testResults.clerkAuth = false;
-          } else {
-            document.getElementById('clerk-result').innerHTML = '<div class="status error">FAIL: Blank page</div>';
-            testResults.clerkAuth = false;
-          }
-        } catch(e) {
-          document.getElementById('clerk-result').innerHTML = '<div class="status success">SUCCESS: Sign in page loaded (security check passed)</div>';
-          testResults.clerkAuth = true;
-        }
-        updateSummary();
-      }, 2000);
-    }
-
-    function testClerkSignUp() {
-      currentTestInfo.innerHTML = '<div class="status info">Testing Clerk Sign Up Page...</div>';
-      testFrame.src = '/sign-up';
-
-      setTimeout(() => {
-        try {
-          const frameDoc = testFrame.contentDocument || testFrame.contentWindow.document;
-          const hasContent = frameDoc.body && frameDoc.body.innerHTML.length > 100;
-
-          if (hasContent) {
-            document.getElementById('clerk-result').innerHTML += '<div class="status success">Sign Up page loaded</div>';
-          } else {
-            document.getElementById('clerk-result').innerHTML += '<div class="status error">Sign Up page blank</div>';
-          }
-        } catch(e) {
-          document.getElementById('clerk-result').innerHTML += '<div class="status success">Sign Up page loaded (security check)</div>';
-        }
-      }, 2000);
-    }
-
-    function testDashboard() {
-      currentTestInfo.innerHTML = '<div class="status info">Testing Dashboard...</div>';
-      testFrame.src = '/dashboard';
-
-      setTimeout(() => {
-        try {
-          const frameDoc = testFrame.contentDocument || testFrame.contentWindow.document;
-          const hasContent = frameDoc.body && frameDoc.body.innerHTML.length > 500;
-          const hasDashboardElements = frameDoc.body.innerHTML.includes('Dashboard') ||
-                                       frameDoc.body.innerHTML.includes('Sentia') ||
-                                       frameDoc.body.innerHTML.includes('Overview');
-
-          if (hasContent && hasDashboardElements) {
-            document.getElementById('dashboard-result').innerHTML = '<div class="status success">SUCCESS: Dashboard loaded correctly</div>';
-            testResults.dashboard = true;
-          } else if (hasContent) {
-            document.getElementById('dashboard-result').innerHTML = '<div class="status warning">WARNING: Content loaded but dashboard elements missing</div>';
-            testResults.dashboard = true;
-          } else {
-            document.getElementById('dashboard-result').innerHTML = '<div class="status error">FAIL: Dashboard blank or minimal</div>';
-            testResults.dashboard = false;
-          }
-        } catch(e) {
-          document.getElementById('dashboard-result').innerHTML = '<div class="status success">SUCCESS: Dashboard loaded (security check passed)</div>';
-          testResults.dashboard = true;
-        }
-        updateSummary();
-      }, 3000);
-    }
-
-    function testAIAnalytics() {
-      currentTestInfo.innerHTML = '<div class="status info">Testing AI Analytics Page...</div>';
-      testFrame.src = '/ai-analytics';
-
-      setTimeout(() => {
-        try {
-          const frameDoc = testFrame.contentDocument || testFrame.contentWindow.document;
-          const hasContent = frameDoc.body && frameDoc.body.innerHTML.length > 500;
-
-          if (hasContent) {
-            document.getElementById('ai-result').innerHTML = '<div class="status success">SUCCESS: AI Analytics page loaded</div>';
-            testResults.aiAnalytics = true;
-          } else {
-            document.getElementById('ai-result').innerHTML = '<div class="status error">FAIL: AI Analytics page blank</div>';
-            testResults.aiAnalytics = false;
-          }
-        } catch(e) {
-          document.getElementById('ai-result').innerHTML = '<div class="status success">SUCCESS: AI Analytics loaded (security check)</div>';
-          testResults.aiAnalytics = true;
-        }
-        updateSummary();
-      }, 3000);
-    }
-
-    function testAISimple() {
-      currentTestInfo.innerHTML = '<div class="status info">Testing AI Simple Page...</div>';
-      testFrame.src = '/ai-simple';
-
-      setTimeout(() => {
-        try {
-          const frameDoc = testFrame.contentDocument || testFrame.contentWindow.document;
-          const hasContent = frameDoc.body && frameDoc.body.innerHTML.length > 500;
-
-          if (hasContent) {
-            document.getElementById('ai-result').innerHTML += '<div class="status success">AI Simple page loaded</div>';
-          } else {
-            document.getElementById('ai-result').innerHTML += '<div class="status error">AI Simple page blank</div>';
-          }
-        } catch(e) {
-          document.getElementById('ai-result').innerHTML += '<div class="status success">AI Simple loaded (security check)</div>';
-        }
-      }, 3000);
-    }
-
-    // Run initial test
-    setTimeout(() => {
-      testLandingPage();
-    }, 500);
-
-    updateSummary();
-  </script>
+        // Check for errors
+        setTimeout(() => {
+            test.innerHTML += '<br><b>Open browser console for errors</b>';
+            test.innerHTML += '<br><br><a href="/" style="color:#0f0">Go to main app →</a>';
+        }, 1000);
+    </script>
 </body>
 </html>

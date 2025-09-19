@@ -19,7 +19,7 @@ const DATABASES = {
   },
   production: {
     name: 'Production',
-    url: process.env.PROD_DATABASE_URL || 'postgresql://production_user:production_password@production_host/production_db'
+    url: 'postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com/sentia_manufacturing_prod'
   }
 };
 

@@ -115,7 +115,7 @@ class APIIntegrationManager {
    */
   async initializeService(serviceId, config) {
     // Check if required environment variables exist
-    const missingVars = config.requiredEnvVars.filter(v => !process.env[v]);
+    const missingVars = this.checkRequiredEnvVars(serviceId, config.requiredEnvVars);
     if (missingVars.length > 0) {
       logWarn(`Missing environment variables for ${config.name}`, { missingVars });
       return null;
@@ -160,9 +160,11 @@ class APIIntegrationManager {
         creds.tenantId = process.env.XERO_TENANT_ID;
         break;
       case 'shopify':
-        creds.apiKey = process.env.SHOPIFY_API_KEY;
-        creds.apiSecret = process.env.SHOPIFY_API_SECRET;
-        creds.accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+        // Check for region-specific variables first (UK/USA), then fall back to generic
+        creds.apiKey = process.env.SHOPIFY_UK_API_KEY || process.env.SHOPIFY_API_KEY;
+        creds.apiSecret = process.env.SHOPIFY_UK_SECRET || process.env.SHOPIFY_API_SECRET || process.env.SHOPIFY_UK_API_SECRET;
+        creds.accessToken = process.env.SHOPIFY_UK_ACCESS_TOKEN || process.env.SHOPIFY_ACCESS_TOKEN;
+        creds.shopUrl = process.env.SHOPIFY_UK_SHOP_URL || process.env.SHOPIFY_SHOP_URL || process.env.SHOPIFY_SHOP_DOMAIN;
         break;
       case 'amazon':
         creds.clientId = process.env.AMAZON_SP_API_CLIENT_ID;

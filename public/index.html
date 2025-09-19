@@ -10,17 +10,20 @@
     <link rel="preconnect" href="https://clerk.accounts.dev" />
     <link rel="preconnect" href="https://api.clerk.dev" />
 
+    <!-- Load Clerk environment configuration from server -->
+    <script src="/clerk-init.js"></script>
+
     <!-- Initialize environment variables for client -->
     <script>
       // Set global environment variables for client-side access
       window.__APP_ENV__ = {
-        VITE_CLERK_PUBLISHABLE_KEY: import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY ||
+        VITE_CLERK_PUBLISHABLE_KEY:
           window.VITE_CLERK_PUBLISHABLE_KEY ||
           'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk',
-        VITE_API_BASE_URL: import.meta.env?.VITE_API_BASE_URL ||
+        VITE_API_BASE_URL:
           window.VITE_API_BASE_URL ||
           '/api',
-        VITE_MCP_SERVER_URL: import.meta.env?.VITE_MCP_SERVER_URL ||
+        VITE_MCP_SERVER_URL:
           window.VITE_MCP_SERVER_URL ||
           'https://mcp-server-tkyu.onrender.com'
       };
@@ -29,7 +32,12 @@
       if (!window.import) window.import = {};
       if (!window.import.meta) window.import.meta = {};
       if (!window.import.meta.env) window.import.meta.env = {};
-      Object.assign(window.import.meta.env, window.__APP_ENV__);
+
+      // Merge with any existing values
+      Object.keys(window.__APP_ENV__).forEach(key => {
+        window.import.meta.env[key] = window.__APP_ENV__[key];
+        window[key] = window.__APP_ENV__[key];
+      });
     </script>
   </head>
   <body>

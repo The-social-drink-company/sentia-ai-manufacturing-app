@@ -18,7 +18,7 @@
     "render:build": "npm install --legacy-peer-deps --production=false && npx vite build && npx prisma generate && node build-verify.js || echo 'Build completed with warnings'",
     "render:start": "node render-server.js",
     "start": "node render-server.js",
-    "start:prod": "npx prisma migrate deploy && node server.js",
+    "start:backup": "node server.js",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",

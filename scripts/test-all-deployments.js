@@ -175,7 +175,7 @@ async function runTests() {
         console.log(`  Services: ${results.api.data.services ? Object.keys(results.api.data.services).length : 0}`);
       }
     } else {
-      console.log(chalk.yellow(`⚠ API: ${results.api?.status || 'ERROR'}`);
+      console.log(chalk.yellow(`Warning API: ${results.api?.status || 'ERROR'}`));
     }
     
     // Errors

@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
-// Clerk imports removed - using BulletproofAuthProvider instead
-// Authentication is now handled at the provider level
+// Bulletproof Clerk Authentication - solves server-side auth issues
+import { BulletproofClerkProvider, useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -28,6 +28,8 @@ import RoleGuard from './components/auth/RoleGuard'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import UniversalLogin from './pages/UniversalLogin'
+import ClerkSignIn from './pages/ClerkSignIn'
+import ClerkSignUp from './pages/ClerkSignUp'
 // import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
 import UserOnboarding from './components/auth/UserOnboarding'
 import AuthVerification from './components/AuthVerification'
@@ -221,14 +223,15 @@ const FallbackAuthProvider = ({ children }) => {
 }
 
 function App() {
-  // ClerkProvider is now handled in main.jsx
-  // This component focuses on routing and app structure
+  // Get Clerk publishable key from environment
+  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
   return (
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-        <QueryClientProvider client={queryClient}>
-          {/* SessionManager temporarily disabled - uses Clerk hooks */}
-          <Router>
+        <BulletproofClerkProvider publishableKey={clerkPublishableKey}>
+          <QueryClientProvider client={queryClient}>
+            {/* SessionManager temporarily disabled - uses Clerk hooks */}
+            <Router>
             {/* EnterpriseIntegrationHub removed - missing dependencies */}
             <div className="App">
                 {/* Auth Verification Status - Shows current auth state */}
@@ -242,9 +245,21 @@ function App() {
                 } />
 
                 {/* Authentication Routes */}
+                <Route path="/sign-in" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ClerkSignIn />
+                  </Suspense>
+                }/>
+
+                <Route path="/sign-up" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ClerkSignUp />
+                  </Suspense>
+                }/>
+
                 <Route path="/login" element={
                   <Suspense fallback={<LoadingSpinner />}>
-                    <UniversalLogin />
+                    <ClerkSignIn />
                   </Suspense>
                 }/>
 
@@ -992,6 +1007,7 @@ function App() {
           {/* SessionManager closing tag removed */}
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
+        </BulletproofClerkProvider>
       </ErrorBoundary>
   )
 }

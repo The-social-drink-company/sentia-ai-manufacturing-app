@@ -46,7 +46,7 @@ export class ProductionDataIntegrator {
 
       // Get production data from multiple sources
       const [
-        productionJobs,
+        batchProductions,
         downtimeEvents,
         qualityMetrics,
         resourceUtilization,
@@ -61,7 +61,7 @@ export class ProductionDataIntegrator {
 
       // Calculate comprehensive metrics
       const metrics = await this.calculateComprehensiveMetrics({
-        productionJobs,
+        batchProductions,
         downtimeEvents,
         qualityMetrics,
         resourceUtilization,
@@ -78,7 +78,7 @@ export class ProductionDataIntegrator {
       });
 
       logInfo('Production metrics calculated successfully', {
-        totalJobs: productionJobs.length,
+        totalJobs: batchProductions.length,
         oeeScore: metrics.oee?.overall || 0,
         efficiency: metrics.efficiency?.overall || 0
       });
@@ -109,7 +109,7 @@ export class ProductionDataIntegrator {
         whereClause.lineId = lineId;
       }
 
-      const jobs = await this.databaseService.prisma.productionJob.findMany({
+      const jobs = await this.databaseService.prisma.batchProduction.findMany({
         where: whereClause,
         include: {
           product: true,
@@ -272,7 +272,7 @@ export class ProductionDataIntegrator {
 
   async calculateComprehensiveMetrics(data) {
     const {
-      productionJobs,
+      batchProductions,
       downtimeEvents,
       qualityMetrics,
       resourceUtilization,
@@ -283,25 +283,25 @@ export class ProductionDataIntegrator {
     } = data;
 
     // Calculate OEE (Overall Equipment Effectiveness)
-    const oee = this.calculateOEE(productionJobs, downtimeEvents, qualityMetrics, startDate, endDate);
+    const oee = this.calculateOEE(batchProductions, downtimeEvents, qualityMetrics, startDate, endDate);
     
     // Calculate production efficiency
-    const efficiency = this.calculateEfficiency(productionJobs, resourceUtilization);
+    const efficiency = this.calculateEfficiency(batchProductions, resourceUtilization);
     
     // Calculate availability metrics
-    const availability = this.calculateAvailability(productionJobs, downtimeEvents, startDate, endDate);
+    const availability = this.calculateAvailability(batchProductions, downtimeEvents, startDate, endDate);
     
     // Calculate quality metrics
-    const quality = this.calculateQualityMetrics(qualityMetrics, productionJobs);
+    const quality = this.calculateQualityMetrics(qualityMetrics, batchProductions);
     
     // Calculate throughput metrics
-    const throughput = this.calculateThroughput(productionJobs, startDate, endDate);
+    const throughput = this.calculateThroughput(batchProductions, startDate, endDate);
     
     // Calculate cost metrics
-    const costs = this.calculateProductionCosts(productionJobs, resourceUtilization, downtimeEvents);
+    const costs = this.calculateProductionCosts(batchProductions, resourceUtilization, downtimeEvents);
     
     // Calculate performance trends
-    const trends = this.calculateTrends(productionJobs, downtimeEvents, qualityMetrics);
+    const trends = this.calculateTrends(batchProductions, downtimeEvents, qualityMetrics);
 
     // Generate alerts and recommendations
     const alerts = this.generateAlerts(oee, efficiency, availability, quality, maintenanceSchedule);
@@ -326,11 +326,11 @@ export class ProductionDataIntegrator {
       
       // Operational data
       production: {
-        totalJobs: productionJobs.length,
-        completedJobs: productionJobs.filter(j => j.status === 'COMPLETED').length,
-        inProgressJobs: productionJobs.filter(j => j.status === 'IN_PROGRESS').length,
-        totalUnitsProduced: productionJobs.reduce((sum, job) => sum + (job.actualQuantity || job.plannedQuantity), 0),
-        totalPlannedQuantity: productionJobs.reduce((sum, job) => sum + job.plannedQuantity, 0)
+        totalJobs: batchProductions.length,
+        completedJobs: batchProductions.filter(j => j.status === 'COMPLETED').length,
+        inProgressJobs: batchProductions.filter(j => j.status === 'IN_PROGRESS').length,
+        totalUnitsProduced: batchProductions.reduce((sum, job) => sum + (job.actualQuantity || job.plannedQuantity), 0),
+        totalPlannedQuantity: batchProductions.reduce((sum, job) => sum + job.plannedQuantity, 0)
       },
       
       downtime: {
@@ -357,11 +357,11 @@ export class ProductionDataIntegrator {
       
       // Data quality indicators
       dataQuality: {
-        productionJobs: productionJobs.length > 0 ? 'good' : 'poor',
+        batchProductions: batchProductions.length > 0 ? 'good' : 'poor',
         downtimeEvents: downtimeEvents.length >= 0 ? 'good' : 'poor',
         qualityMetrics: qualityMetrics ? 'good' : 'limited',
         resourceUtilization: resourceUtilization ? 'good' : 'limited',
-        overall: this.assessOverallDataQuality(productionJobs, downtimeEvents, qualityMetrics, resourceUtilization)
+        overall: this.assessOverallDataQuality(batchProductions, downtimeEvents, qualityMetrics, resourceUtilization)
       },
       
       calculatedAt: new Date(),
@@ -369,7 +369,7 @@ export class ProductionDataIntegrator {
     };
   }
 
-  calculateOEE(productionJobs, downtimeEvents, qualityMetrics, startDate, endDate) {
+  calculateOEE(batchProductions, downtimeEvents, qualityMetrics, startDate, endDate) {
     // OEE = Availability × Performance × Quality
     
     const totalTime = (endDate - startDate) / (1000 * 60); // Total time in minutes
@@ -380,8 +380,8 @@ export class ProductionDataIntegrator {
     const availability = totalTime > 0 ? availableTime / totalTime : 0;
     
     // Performance = (Total Count × Ideal Cycle Time) / Operating Time
-    const totalProduced = productionJobs.reduce((sum, job) => sum + (job.actualQuantity || job.plannedQuantity), 0);
-    const totalPlanned = productionJobs.reduce((sum, job) => sum + job.plannedQuantity, 0);
+    const totalProduced = batchProductions.reduce((sum, job) => sum + (job.actualQuantity || job.plannedQuantity), 0);
+    const totalPlanned = batchProductions.reduce((sum, job) => sum + job.plannedQuantity, 0);
     const performance = totalPlanned > 0 ? totalProduced / totalPlanned : 0;
     
     // Quality = Good Units / Total Units
@@ -407,8 +407,8 @@ export class ProductionDataIntegrator {
     };
   }
 
-  calculateEfficiency(productionJobs, resourceUtilization) {
-    const completedJobs = productionJobs.filter(j => j.status === 'COMPLETED');
+  calculateEfficiency(batchProductions, resourceUtilization) {
+    const completedJobs = batchProductions.filter(j => j.status === 'COMPLETED');
     
     if (completedJobs.length === 0) {
       return {
@@ -443,7 +443,7 @@ export class ProductionDataIntegrator {
     };
   }
 
-  calculateAvailability(productionJobs, downtimeEvents, startDate, endDate) {
+  calculateAvailability(batchProductions, downtimeEvents, startDate, endDate) {
     const totalTime = (endDate - startDate) / (1000 * 60 * 60); // Total time in hours
     const downtimeHours = downtimeEvents.reduce((sum, event) => sum + this.calculateEventDuration(event) / 60, 0);
     const availableTime = totalTime - downtimeHours;
@@ -463,7 +463,7 @@ export class ProductionDataIntegrator {
     };
   }
 
-  calculateQualityMetrics(qualityMetrics, productionJobs) {
+  calculateQualityMetrics(qualityMetrics, batchProductions) {
     if (!qualityMetrics) {
       return {
         overall: 0.95, // Default assumption
@@ -483,31 +483,31 @@ export class ProductionDataIntegrator {
     };
   }
 
-  calculateThroughput(productionJobs, startDate, endDate) {
-    const totalUnits = productionJobs.reduce((sum, job) => sum + (job.actualQuantity || job.plannedQuantity), 0);
+  calculateThroughput(batchProductions, startDate, endDate) {
+    const totalUnits = batchProductions.reduce((sum, job) => sum + (job.actualQuantity || job.plannedQuantity), 0);
     const totalHours = (endDate - startDate) / (1000 * 60 * 60);
     
     return {
       unitsPerHour: totalHours > 0 ? totalUnits / totalHours : 0,
       totalUnits,
       totalHours,
-      unitsPerJob: productionJobs.length > 0 ? totalUnits / productionJobs.length : 0
+      unitsPerJob: batchProductions.length > 0 ? totalUnits / batchProductions.length : 0
     };
   }
 
-  calculateProductionCosts(productionJobs, resourceUtilization, downtimeEvents) {
+  calculateProductionCosts(batchProductions, resourceUtilization, downtimeEvents) {
     // Simplified cost calculation
     const laborCostPerHour = 25; // £25/hour average
     const downtimeCostPerHour = 500; // £500/hour downtime cost
     
-    const totalLaborHours = productionJobs.reduce((sum, job) => sum + this.calculateJobDuration(job) / 60, 0);
+    const totalLaborHours = batchProductions.reduce((sum, job) => sum + this.calculateJobDuration(job) / 60, 0);
     const totalDowntimeHours = downtimeEvents.reduce((sum, event) => sum + this.calculateEventDuration(event) / 60, 0);
     
     const laborCosts = totalLaborHours * laborCostPerHour;
     const downtimeCosts = totalDowntimeHours * downtimeCostPerHour;
     const totalCosts = laborCosts + downtimeCosts;
     
-    const totalUnits = productionJobs.reduce((sum, job) => sum + (job.actualQuantity || job.plannedQuantity), 0);
+    const totalUnits = batchProductions.reduce((sum, job) => sum + (job.actualQuantity || job.plannedQuantity), 0);
     const costPerUnit = totalUnits > 0 ? totalCosts / totalUnits : 0;
 
     return {
@@ -524,11 +524,11 @@ export class ProductionDataIntegrator {
     };
   }
 
-  calculateTrends(productionJobs, downtimeEvents, qualityMetrics) {
+  calculateTrends(batchProductions, downtimeEvents, qualityMetrics) {
     // Simple trend analysis - compare first half vs second half
-    const midPoint = Math.floor(productionJobs.length / 2);
-    const firstHalf = productionJobs.slice(0, midPoint);
-    const secondHalf = productionJobs.slice(midPoint);
+    const midPoint = Math.floor(batchProductions.length / 2);
+    const firstHalf = batchProductions.slice(0, midPoint);
+    const secondHalf = batchProductions.slice(midPoint);
     
     const firstHalfEfficiency = this.calculateJobsEfficiency(firstHalf);
     const secondHalfEfficiency = this.calculateJobsEfficiency(secondHalf);
@@ -720,12 +720,12 @@ export class ProductionDataIntegrator {
     return 'poor';
   }
 
-  assessOverallDataQuality(productionJobs, downtimeEvents, qualityMetrics, resourceUtilization) {
+  assessOverallDataQuality(batchProductions, downtimeEvents, qualityMetrics, resourceUtilization) {
     const scores = [];
     
-    if (productionJobs.length > 10) scores.push(3);
-    else if (productionJobs.length > 5) scores.push(2);
-    else if (productionJobs.length > 0) scores.push(1);
+    if (batchProductions.length > 10) scores.push(3);
+    else if (batchProductions.length > 5) scores.push(2);
+    else if (batchProductions.length > 0) scores.push(1);
     else scores.push(0);
     
     if (downtimeEvents.length >= 0) scores.push(2);

@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import { BulletproofAuthProvider } from './auth/BulletproofAuthProvider.jsx'
+import { BulletproofClerkProvider } from './auth/BulletproofClerkProvider.jsx'
 import './index.css'
 
 // Performance monitoring with web-vitals
@@ -99,11 +99,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 
 root.render(
   <React.StrictMode>
-    <BulletproofAuthProvider>
-      <Suspense fallback={<LoadingFallback />}>
-        <App />
-      </Suspense>
-    </BulletproofAuthProvider>
+    <Suspense fallback={<LoadingFallback />}>
+      <App />
+    </Suspense>
   </React.StrictMode>
 )
 

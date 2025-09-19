@@ -279,13 +279,17 @@ class UnleashedInventorySync {
       // Store purchase orders in database with increased timeout
       await prisma.$transaction(async (tx) => {
         for (const po of purchaseOrders) {
+          // Ensure supplierId is always provided
+          const supplierId = po.supplierCode || po.supplierId || `SUPPLIER_${po.orderNumber}`;
+          const supplierName = po.supplier || po.supplierName || 'Unknown Supplier';
+
           await tx.purchaseOrder.upsert({
             where: {
               orderNumber: po.orderNumber
             },
             update: {
-              supplierId: po.supplierCode || 'UNKNOWN',
-              supplierName: po.supplier || 'Unknown Supplier',
+              supplierId: supplierId,
+              supplierName: supplierName,
               orderDate: this.safeParseDate(po.orderDate),
               deliveryDate: this.safeParseDate(po.requiredDate, null),
               status: (po.status || 'pending').toLowerCase(),
@@ -301,8 +305,8 @@ class UnleashedInventorySync {
             },
             create: {
               orderNumber: po.orderNumber,
-              supplierId: po.supplierCode || 'UNKNOWN',
-              supplierName: po.supplier || 'Unknown Supplier',
+              supplierId: supplierId,
+              supplierName: supplierName,
               orderDate: this.safeParseDate(po.orderDate),
               deliveryDate: this.safeParseDate(po.requiredDate, null),
               status: (po.status || 'pending').toLowerCase(),
@@ -313,7 +317,8 @@ class UnleashedInventorySync {
               totalAmount: po.total || 0,
               currency: po.currency || 'USD',
               paymentTerms: po.paymentTerms || null,
-              notes: po.comments || null
+              notes: po.comments || null,
+              data: po // Store original data for reference
             }
           });
         }

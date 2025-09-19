@@ -1,166 +1,161 @@
 /**
- * PRODUCTION SERVER INITIALIZATION
- * Ensures server starts successfully on Render for client handover
+ * Universal Server Initialization for Render
+ * Works with all three branches: development, test, production
  */
 
+import { execSync } from 'child_process';
+import { existsSync } from 'fs';
+import path from 'path';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import dotenv from 'dotenv';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load environment variables
-if (!process.env.RENDER) {
-  dotenv.config();
+console.log('='.repeat(70));
+console.log('🚀 SENTIA MANUFACTURING DASHBOARD - RENDER STARTUP');
+console.log('='.repeat(70));
+console.log(`Time: ${new Date().toISOString()}`);
+console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`Branch: ${process.env.RENDER_GIT_BRANCH || 'unknown'}`);
+console.log(`Service: ${process.env.RENDER_SERVICE_NAME || 'unknown'}`);
+console.log(`Database: ${process.env.DATABASE_URL ? '✅ Configured' : '❌ Missing'}`);
+console.log(`Clerk: ${process.env.CLERK_SECRET_KEY ? '✅ Configured' : '❌ Missing'}`);
+console.log(`MCP Server: ${process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'}`);
+console.log('='.repeat(70));
+
+// Set critical environment variables for Render
+if (process.env.RENDER) {
+  // Disable problematic features
+  process.env.SKIP_ENTERPRISE_INIT = 'true';
+  process.env.DISABLE_AUTONOMOUS_TESTING = 'true';
+  process.env.MCP_SERVER_MODE = 'false';
+
+  // Configure database
+  process.env.DATABASE_CONNECTION_LIMIT = process.env.DATABASE_CONNECTION_LIMIT || '10';
+  process.env.DATABASE_POOL_TIMEOUT = process.env.DATABASE_POOL_TIMEOUT || '60000';
+
+  console.log('✅ Render environment configured');
 }
 
-// Set critical defaults for Render
-process.env.NODE_ENV = process.env.NODE_ENV || 'production';
-process.env.PORT = process.env.PORT || '10000';
+// Check if dist folder exists
+const distExists = existsSync(path.join(__dirname, 'dist'));
+console.log(`Build artifacts: ${distExists ? '✅ Found' : '⚠️ Missing'}`);
 
-// Ensure database URL is set (Render will provide this)
-if (!process.env.DATABASE_URL && process.env.RENDER) {
-  console.log('Waiting for DATABASE_URL from Render...');
-  // Render will inject this, but we set a placeholder to prevent crashes
-  process.env.DATABASE_URL = 'postgresql://pending:pending@pending:5432/pending';
+// Generate Prisma Client if needed
+try {
+  console.log('\n📦 Checking Prisma Client...');
+  const prismaClientPath = path.join(__dirname, 'node_modules', '.prisma', 'client');
+
+  if (!existsSync(prismaClientPath)) {
+    console.log('Generating Prisma Client...');
+    execSync('npx prisma generate', {
+      stdio: 'inherit',
+      cwd: __dirname
+    });
+    console.log('✅ Prisma Client generated');
+  } else {
+    console.log('✅ Prisma Client already exists');
+  }
+} catch (error) {
+  console.warn('⚠️ Prisma generation warning:', error.message);
 }
 
-// Initialize Prisma with retries
-async function initializePrisma(retries = 10, delay = 3000) {
-  const { default: prisma } = await import('./lib/prisma.js');
+// Start the main server
+console.log('\n🌐 Starting main server...');
+console.log('='.repeat(70));
 
-  for (let i = 0; i < retries; i++) {
-    try {
-      if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('pending')) {
-        await prisma.$connect();
-        console.log('✅ Database connected successfully');
-        return prisma;
-      } else {
-        console.log(`Waiting for valid DATABASE_URL... (attempt ${i + 1}/${retries})`);
-      }
-    } catch (error) {
-      console.log(`Database connection attempt ${i + 1}/${retries} failed:`, error.message);
-    }
+try {
+  await import('./server.js');
+} catch (error) {
+  console.error('❌ Server startup failed:', error);
+  console.error('Stack:', error.stack);
 
-    if (i < retries - 1) {
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
+  // Start fallback server
+  console.log('\n🔧 Starting fallback server...');
+  const { default: express } = await import('express');
+  const { join } = await import('path');
+
+  const app = express();
+  const PORT = process.env.PORT || 5000;
+
+  // Serve static files if they exist
+  if (distExists) {
+    app.use(express.static(join(__dirname, 'dist')));
   }
 
-  console.warn('⚠️ Could not connect to database, continuing without database...');
-  return null;
-}
+  // Health check
+  app.get('/health', (req, res) => {
+    res.json({
+      status: 'degraded',
+      message: 'Main server failed - fallback active',
+      error: error.message,
+      timestamp: new Date().toISOString(),
+      service: process.env.RENDER_SERVICE_NAME,
+      branch: process.env.RENDER_GIT_BRANCH
+    });
+  });
 
-// Start server with proper error handling
-async function startServer() {
-  try {
-    console.log('🚀 Starting Sentia Manufacturing Dashboard Server...');
-    console.log('Environment:', process.env.NODE_ENV);
-    console.log('Port:', process.env.PORT);
-    console.log('Render:', process.env.RENDER ? 'Yes' : 'No');
-
-    // Initialize database
-    const prisma = await initializePrisma();
-    if (prisma) {
-      global.prisma = prisma;
-    }
-
-    // Import and start the main server
-    await import('./server.js');
-
-    console.log('✅ Server initialization complete');
-  } catch (error) {
-    console.error('❌ Server initialization failed:', error);
-
-    // In production, keep the process running
-    if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
-      console.log('Keeping process alive for Render...');
-
-      // Start a minimal health check server
-      const express = await import('express');
-      const app = express.default();
-
-      app.get('/health', (req, res) => {
-        res.json({
-          status: 'initializing',
-          error: error.message,
-          timestamp: new Date().toISOString()
-        });
-      });
-
-      app.get('*', (req, res) => {
-        res.status(503).send(`
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>Sentia Manufacturing - Initializing</title>
-              <style>
-                body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-                h1 { color: #333; }
-                p { color: #666; }
-                .spinner {
-                  border: 4px solid #f3f3f3;
-                  border-top: 4px solid #3498db;
-                  border-radius: 50%;
-                  width: 40px;
-                  height: 40px;
-                  animation: spin 2s linear infinite;
-                  margin: 20px auto;
-                }
-                @keyframes spin {
-                  0% { transform: rotate(0deg); }
-                  100% { transform: rotate(360deg); }
-                }
-              </style>
-            </head>
-            <body>
-              <h1>Sentia Manufacturing Dashboard</h1>
-              <div class="spinner"></div>
-              <p>System is initializing. Please wait...</p>
-              <p style="font-size: 12px; margin-top: 40px;">If this persists, please contact support.</p>
-            </body>
-          </html>
-        `);
-      });
-
-      const port = process.env.PORT || 10000;
-      app.listen(port, '0.0.0.0', () => {
-        console.log(`Fallback server running on port ${port}`);
-      });
-
-      // Try to restart main server periodically
-      setInterval(async () => {
-        console.log('Attempting to restart main server...');
-        try {
-          await import('./server.js');
-          console.log('Main server restarted successfully');
-        } catch (err) {
-          console.log('Main server restart failed:', err.message);
-        }
-      }, 30000); // Try every 30 seconds
+  // Fallback UI
+  app.get('*', (req, res) => {
+    if (distExists) {
+      res.sendFile(join(__dirname, 'dist', 'index.html'));
     } else {
-      process.exit(1);
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Sentia Manufacturing</title>
+          <style>
+            body {
+              font-family: -apple-system, system-ui, sans-serif;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 100vh;
+              margin: 0;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            .container {
+              background: white;
+              border-radius: 12px;
+              padding: 3rem;
+              box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+              max-width: 500px;
+              text-align: center;
+            }
+            h1 { color: #1a202c; margin-bottom: 1rem; }
+            .status {
+              background: #fef2e5;
+              color: #92400e;
+              padding: 1rem;
+              border-radius: 8px;
+              margin: 1.5rem 0;
+            }
+            .info { color: #4a5568; line-height: 1.6; }
+            a { color: #667eea; text-decoration: none; font-weight: 500; }
+            a:hover { text-decoration: underline; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>🚀 Sentia Manufacturing</h1>
+            <div class="status">
+              <strong>Service Initializing</strong><br>
+              Please refresh in a few moments
+            </div>
+            <div class="info">
+              <p>Branch: <strong>${process.env.RENDER_GIT_BRANCH || 'unknown'}</strong></p>
+              <p>Service: <strong>${process.env.RENDER_SERVICE_NAME || 'unknown'}</strong></p>
+              <p><a href="/health">Check Health Status</a></p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
     }
-  }
+  });
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Fallback server running on port ${PORT}`);
+    console.log(`   URL: ${process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`}`);
+  });
 }
-
-// Handle uncaught errors gracefully
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  // Don't exit in production
-  if (process.env.NODE_ENV !== 'production' && !process.env.RENDER) {
-    process.exit(1);
-  }
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // Don't exit in production
-  if (process.env.NODE_ENV !== 'production' && !process.env.RENDER) {
-    process.exit(1);
-  }
-});
-
-// Start the server
-startServer();

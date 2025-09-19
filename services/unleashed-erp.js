@@ -6,7 +6,7 @@ class UnleashedERPService {
   constructor() {
     this.apiId = process.env.UNLEASHED_API_ID;
     this.apiKey = process.env.UNLEASHED_API_KEY;
-    this.baseUrl = process.env.UNLEASHED_BASE_URL || 'https://api.unleashedsoftware.com';
+    this.baseUrl = process.env.UNLEASHED_API_URL || 'https://api.unleashedsoftware.com';
     this.isConnected = false;
     this.syncInterval = null;
     this.syncFrequency = 15 * 60 * 1000; // 15 minutes
@@ -44,26 +44,25 @@ class UnleashedERPService {
       throw new Error('UNLEASHED ERP: Missing API credentials');
     }
 
-    const timestamp = new Date().toISOString();
-    const signature = this.generateSignature(config.method?.toUpperCase() || 'GET', config.url || '', timestamp);
+    // Extract query string from URL if present
+    const url = config.url || '';
+    const queryString = url.includes('?') ? url.split('?')[1] : '';
+    const signature = this.generateSignature(queryString);
 
     config.headers = {
       ...config.headers,
       'api-auth-id': this.apiId,
-      'api-auth-signature': signature,
-      'api-auth-timestamp': timestamp
+      'api-auth-signature': signature
     };
 
     return config;
   }
 
-  generateSignature(method, url, timestamp) {
-    const queryString = url.includes('?') ? url.split('?')[1] : '';
-    const signatureText = `${method}${url}${this.apiId}${timestamp}${queryString}`;
-    
+  generateSignature(queryString) {
+    // Unleashed API expects simple HMAC-SHA256 of query string only
     return crypto
       .createHmac('sha256', this.apiKey)
-      .update(signatureText)
+      .update(queryString || '')
       .digest('base64');
   }
 
@@ -75,10 +74,12 @@ class UnleashedERPService {
         throw new Error('Missing Unleashed ERP API credentials');
       }
 
-      // Test connection with a simple API call
-      const response = await this.client.get('/Products/1');
-      
-      if (response.status === 200 || response.status === 404) {
+      // Test connection with a safe API call
+      const response = await this.client.get('/Currencies', {
+        params: { pageSize: 1 }
+      });
+
+      if (response.status === 200) {
         this.isConnected = true;
         console.log('UNLEASHED ERP: Connected successfully');
         await this.startSyncScheduler();

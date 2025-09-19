@@ -267,7 +267,7 @@ class SentiaSupplyChainIntelligence extends EventEmitter {
   initializeUnleashedClient() {
     const apiId = process.env.UNLEASHED_API_ID;
     const apiKey = process.env.UNLEASHED_API_KEY;
-    const baseUrl = process.env.UNLEASHED_BASE_URL || 'https://api.unleashedsoftware.com';
+    const baseUrl = process.env.UNLEASHED_API_URL || 'https://api.unleashedsoftware.com';
 
     if (!apiId || !apiKey) {
       logWarn('Unleashed API credentials not configured');

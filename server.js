@@ -93,6 +93,26 @@ if (missingVars.length > 0) {
 } else {
   console.log('All required environment variables loaded');
 }
+
+// Database connection with retry logic for Render
+async function connectDatabase(retries = 5, delay = 5000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const prisma = (await import('./lib/prisma.js')).default;
+      await prisma.$connect();
+      console.log('✅ Database connected successfully');
+      return true;
+    } catch (error) {
+      console.log(`Database connection attempt ${i + 1}/${retries} failed:`, error.message);
+      if (i < retries - 1) {
+        console.log(`Retrying in ${delay/1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  console.error('❌ Failed to connect to database after all retries');
+  return false;
+}
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
@@ -5522,7 +5542,9 @@ app.use('/api/health', comprehensiveHealthRoutes);
 
 // MCP Server Integration Routes
 import mcpIntegrationRoutes from './api/mcp-integration.js';
+import xeroRoutes from './api/xero.js';
 app.use('/api/mcp', mcpIntegrationRoutes);
+app.use('/api/xero', xeroRoutes);
 
 // Enterprise Manufacturing APIs - IMMEDIATELY IMPLEMENT MISSING ENDPOINTS
 
@@ -6554,14 +6576,16 @@ app.use((error, req, res, next) => {
         distExists: fs.existsSync(join(__dirname, 'dist'))
       });
 
-      // Test database connection after server starts
-      try {
-        await prisma.$connect();
-        console.log('✅ Database connected successfully');
+      // Use our retry logic for database connection
+      const dbConnected = await connectDatabase();
+      if (dbConnected) {
         logInfo('Database connection established');
-      } catch (error) {
-        console.error('❌ Database connection failed:', error);
-        logError('Database connection failed', { error: error.message });
+      } else {
+        logError('Database connection failed after retries');
+        // Don't crash the server, continue running without database
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('⚠️ Running without database connection - some features may not work');
+        }
       }
 
       // Start Shopify scheduled sync

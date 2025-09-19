@@ -98,16 +98,60 @@ class XeroService {
 
   async exchangeCodeForToken(code) {
     this.ensureInitialized();
-    
+
     if (!this.xero) {
       throw new Error('Xero client not initialized');
     }
-    
+
     try {
       const tokenSet = await this.xero.apiCallback(code);
       this.tokenSet = tokenSet;
       this.xero.setTokenSet(tokenSet);
       this.isConnected = true;
+
+      // Store token in database for persistence
+      const prisma = (await import('../lib/prisma.js')).default;
+
+      // Get tenant/organization info
+      const tenants = await this.xero.updateTenants();
+      if (tenants && tenants.length > 0) {
+        this.organizationId = tenants[0].tenantId;
+
+        // Store the token in database
+        try {
+          await prisma.apiToken.upsert({
+            where: { service: 'xero' },
+            update: {
+              accessToken: tokenSet.access_token,
+              refreshToken: tokenSet.refresh_token,
+              expiresAt: new Date(Date.now() + (tokenSet.expires_in || 1800) * 1000),
+              metadata: {
+                organizationId: this.organizationId,
+                tenantId: tenants[0].tenantId,
+                tenantName: tenants[0].tenantName,
+                scopes: tokenSet.scope
+              }
+            },
+            create: {
+              service: 'xero',
+              accessToken: tokenSet.access_token,
+              refreshToken: tokenSet.refresh_token,
+              expiresAt: new Date(Date.now() + (tokenSet.expires_in || 1800) * 1000),
+              metadata: {
+                organizationId: this.organizationId,
+                tenantId: tenants[0].tenantId,
+                tenantName: tenants[0].tenantName,
+                scopes: tokenSet.scope
+              }
+            }
+          });
+          console.log('✅ Xero token stored in database');
+        } catch (dbError) {
+          console.error('⚠️ Could not store token in database:', dbError.message);
+          // Continue even if database storage fails
+        }
+      }
+
       console.log('✅ Xero authenticated successfully');
       return tokenSet;
     } catch (error) {

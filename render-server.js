@@ -3,6 +3,7 @@
 /**
  * RENDER PRODUCTION SERVER
  * Robust server with extensive fallbacks for Render deployment
+ * WITH CLERK AUTHENTICATION SUPPORT
  */
 
 import express from 'express';
@@ -10,6 +11,10 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';
 import { createServer } from 'http';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,7 +26,15 @@ console.log('Starting time:', new Date().toISOString());
 console.log('Environment:', process.env.NODE_ENV || 'production');
 console.log('Port:', process.env.PORT || 5000);
 console.log('Directory:', __dirname);
+console.log('Clerk Key:', process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'CONFIGURED' : 'MISSING');
+console.log('MCP Server:', process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com');
 console.log('='.repeat(70));
+
+// CRITICAL: Set Clerk key for client
+if (!process.env.VITE_CLERK_PUBLISHABLE_KEY) {
+  process.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
+  console.log('WARNING: Using default Clerk publishable key');
+}
 
 // Create Express app
 const app = express();
@@ -31,11 +44,36 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS headers for all routes
+// CRITICAL: Content Security Policy for Clerk Authentication
 app.use((req, res, next) => {
+  // Set CSP headers for Clerk to work properly
+  const clerkDomains = [
+    'https://*.clerk.accounts.dev',
+    'https://clerk.accounts.dev',
+    'https://api.clerk.dev',
+    'https://*.clerk.com',
+    'wss://*.clerk.accounts.dev',
+    'https://img.clerk.com'
+  ];
+
+  const cspHeader = [
+    "default-src 'self'",
+    `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${clerkDomains.join(' ')}`,
+    `connect-src 'self' ${clerkDomains.join(' ')} ${process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'}`,
+    `frame-src 'self' ${clerkDomains.join(' ')}`,
+    `img-src 'self' data: blob: ${clerkDomains.join(' ')}`,
+    `style-src 'self' 'unsafe-inline' ${clerkDomains.join(' ')}`,
+    "font-src 'self' data:",
+    "worker-src 'self' blob:"
+  ].join('; ');
+
+  res.setHeader('Content-Security-Policy', cspHeader);
+
+  // CORS headers
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
@@ -86,13 +124,18 @@ console.log('Build artifacts check:');
 console.log('- dist folder:', distExists ? 'EXISTS' : 'MISSING');
 console.log('- index.html:', indexExists ? 'EXISTS' : 'MISSING');
 
-// Fallback HTML for when build artifacts are missing
+// Fallback HTML with Clerk initialization
 const fallbackHTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sentia Manufacturing Dashboard</title>
+  <script>
+    // Set Clerk publishable key for client
+    window.VITE_CLERK_PUBLISHABLE_KEY = '${process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk'}';
+    window.VITE_MCP_SERVER_URL = '${process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'}';
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -341,7 +384,7 @@ app.get('/api/dashboard/stats', (req, res) => {
   });
 });
 
-// Catch all route - serve index.html or fallback
+// Catch all route - serve index.html or fallback with Clerk env
 app.get('*', (req, res) => {
   // Don't serve HTML for API routes
   if (req.path.startsWith('/api/')) {
@@ -350,7 +393,29 @@ app.get('*', (req, res) => {
 
   if (indexExists) {
     console.log(`Serving index.html for ${req.path}`);
-    res.sendFile(indexPath);
+    // Read index.html and inject Clerk key
+    let html = fs.readFileSync(indexPath, 'utf-8');
+
+    // Inject Clerk key into the HTML
+    const clerkKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
+    const mcpServer = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
+
+    const envScript = `
+    <script>
+      window.VITE_CLERK_PUBLISHABLE_KEY = '${clerkKey}';
+      window.VITE_MCP_SERVER_URL = '${mcpServer}';
+      window.VITE_API_BASE_URL = '${process.env.VITE_API_BASE_URL || '/api'}';
+    </script>
+    `;
+
+    // Inject before closing head tag or body tag
+    if (html.includes('</head>')) {
+      html = html.replace('</head>', envScript + '</head>');
+    } else if (html.includes('<body>')) {
+      html = html.replace('<body>', '<body>' + envScript);
+    }
+
+    res.send(html);
   } else {
     console.log(`Serving fallback HTML for ${req.path}`);
     res.send(fallbackHTML);

@@ -136,8 +136,6 @@ router.post('/levels',
     const item = await prisma.inventory.create({
       data: {
         ...data,
-        status: data.quantity === 0 ? 'out-of-stock' :
-                data.quantity <= data.reorderPoint ? 'low-stock' : 'in-stock',
         createdBy: req.userId
       }
     });
@@ -236,8 +234,6 @@ router.post('/levels/:id/adjust',
         where: { id },
         data: {
           quantity: newQuantity,
-          status: newQuantity === 0 ? 'out-of-stock' :
-                  newQuantity <= item.reorderPoint ? 'low-stock' : 'in-stock',
           lastCountDate: data.type === 'count' ? new Date() : item.lastCountDate,
           updatedAt: new Date()
         }

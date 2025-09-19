@@ -66,9 +66,12 @@ export default defineConfig({
       output: {
         // Advanced chunk splitting for optimal caching
         manualChunks: (id) => {
-          // Core React libraries
-          if (id.includes('react') || id.includes('react-dom')) {
-            return 'react-core'
+          // Core React libraries - split into smaller chunks
+          if (id.includes('react-dom')) {
+            return 'react-dom'
+          }
+          if (id.includes('react') && !id.includes('react-dom')) {
+            return 'react'
           }
           // Router and navigation
           if (id.includes('react-router') || id.includes('react-router-dom')) {
@@ -78,40 +81,108 @@ export default defineConfig({
           if (id.includes('@clerk') || id.includes('clerk')) {
             return 'auth'
           }
-          // Data management
-          if (id.includes('@tanstack/react-query') || id.includes('zustand')) {
-            return 'data-management'
+          // Data management - split query and state
+          if (id.includes('@tanstack/react-query')) {
+            return 'react-query'
           }
-          // Charts and visualization
-          if (id.includes('recharts') || id.includes('chart.js') || id.includes('react-chartjs-2')) {
-            return 'charts'
+          if (id.includes('zustand')) {
+            return 'zustand'
           }
-          // UI components
-          if (id.includes('@radix-ui') || id.includes('@headlessui')) {
-            return 'ui-components'
+          // Charts and visualization - split by library
+          if (id.includes('recharts/es6')) {
+            return 'recharts-core'
           }
-          // Icons
-          if (id.includes('@heroicons') || id.includes('lucide-react')) {
-            return 'icons'
+          if (id.includes('recharts')) {
+            return 'recharts'
+          }
+          if (id.includes('chart.js')) {
+            return 'chartjs'
+          }
+          if (id.includes('react-chartjs-2')) {
+            return 'react-chartjs'
+          }
+          // UI components - split by library
+          if (id.includes('@radix-ui/react-dialog')) {
+            return 'radix-dialog'
+          }
+          if (id.includes('@radix-ui/react-dropdown-menu')) {
+            return 'radix-dropdown'
+          }
+          if (id.includes('@radix-ui')) {
+            return 'radix-ui'
+          }
+          if (id.includes('@headlessui')) {
+            return 'headless-ui'
+          }
+          // Icons - split by library
+          if (id.includes('@heroicons/react/24/outline')) {
+            return 'heroicons-outline'
+          }
+          if (id.includes('@heroicons/react/24/solid')) {
+            return 'heroicons-solid'
+          }
+          if (id.includes('@heroicons')) {
+            return 'heroicons'
+          }
+          if (id.includes('lucide-react')) {
+            return 'lucide'
           }
           // 3D and animations
-          if (id.includes('three') || id.includes('@react-three') || id.includes('framer-motion')) {
-            return 'graphics'
+          if (id.includes('three')) {
+            return 'three'
           }
-          // AI and ML libraries
-          if (id.includes('openai') || id.includes('ml-')) {
-            return 'ai-ml'
+          if (id.includes('@react-three')) {
+            return 'react-three'
           }
-          // Large external APIs
-          if (id.includes('amazon-sp-api') || id.includes('shopify') || id.includes('xero')) {
-            return 'external-apis'
+          if (id.includes('framer-motion')) {
+            return 'framer-motion'
+          }
+          // Grid layout - separate library
+          if (id.includes('react-grid-layout')) {
+            return 'grid-layout'
+          }
+          // Date utilities
+          if (id.includes('date-fns')) {
+            return 'date-fns'
           }
           // Utilities
-          if (id.includes('lodash') || id.includes('date-fns') || id.includes('clsx')) {
-            return 'utilities'
+          if (id.includes('lodash')) {
+            return 'lodash'
           }
-          // Node modules (vendor)
+          if (id.includes('clsx') || id.includes('tailwind-merge')) {
+            return 'styling-utils'
+          }
+          // Form libraries
+          if (id.includes('react-hook-form')) {
+            return 'react-hook-form'
+          }
+          // PDF libraries
+          if (id.includes('pdfjs')) {
+            return 'pdfjs'
+          }
+          // Large libraries that should be separate
+          if (id.includes('axios')) {
+            return 'axios'
+          }
+          if (id.includes('d3')) {
+            return 'd3'
+          }
+          // Polyfills
+          if (id.includes('core-js') || id.includes('regenerator')) {
+            return 'polyfills'
+          }
+          // Split remaining vendor code by size
           if (id.includes('node_modules')) {
+            // Get package name from path
+            const packageMatch = id.match(/node_modules\/(@[^/]+\/[^/]+|[^/]+)/)
+            if (packageMatch) {
+              const packageName = packageMatch[1]
+              // Group small packages together, separate large ones
+              const largePackages = ['@mui', '@emotion', '@babel', 'typescript', '@types']
+              if (largePackages.some(pkg => packageName.includes(pkg))) {
+                return `vendor-${packageName.replace(/[@/]/g, '-')}`
+              }
+            }
             return 'vendor'
           }
         },

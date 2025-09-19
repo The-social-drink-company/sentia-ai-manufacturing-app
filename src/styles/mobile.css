@@ -1,4 +1,5 @@
 /* Mobile-First Responsive CSS */
+@import "tailwindcss";
 
 /* Base mobile styles (0-639px) */
 @layer base {

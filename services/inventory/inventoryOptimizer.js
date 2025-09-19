@@ -628,21 +628,11 @@ export class InventoryOptimizer {
 
   async getHistoricalDemandData(companyId, periodDays) {
     if (!this.databaseService.isConnected) {
-      // Generate mock historical data
-      const mockData = [];
-      const endDate = new Date();
-      
-      for (let i = 0; i < periodDays; i += 7) {
-        const date = new Date(endDate.getTime() - i * 24 * 60 * 60 * 1000);
-        mockData.push({
-          productId: 'PROD001',
-          date,
-          quantity: Math.floor(Math.random() * 20) + 5,
-          revenue: (Math.floor(Math.random() * 20) + 5) * 50
-        });
-      }
-      
-      return mockData;
+      // PRODUCTION: No mock data - return empty array or throw error
+      this.logger.error('Database not connected - cannot retrieve historical demand data');
+      throw new Error('Database connection required for historical demand data');
+      // Alternative: return empty array if you prefer graceful degradation
+      // return [];
     }
 
     try {

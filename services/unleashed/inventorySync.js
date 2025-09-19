@@ -25,11 +25,27 @@ class UnleashedInventorySync {
 
   /**
    * Safely parse date string to avoid Invalid Date errors
+   * Handles both ISO format and Unleashed's /Date(timestamp)/ format
    */
   safeParseDate(dateString, defaultValue = new Date()) {
     if (!dateString) return defaultValue;
 
     try {
+      // Check if it's Unleashed's /Date(timestamp)/ format
+      if (typeof dateString === 'string' && dateString.startsWith('/Date(')) {
+        const match = dateString.match(/\/Date\((\d+)\)\//);
+        if (match) {
+          const timestamp = parseInt(match[1], 10);
+          const date = new Date(timestamp);
+          if (!isNaN(date.getTime())) {
+            return date;
+          }
+        }
+        logWarn('Invalid Unleashed date format', { dateString });
+        return defaultValue;
+      }
+
+      // Try standard date parsing
       const date = new Date(dateString);
       // Check if date is valid
       if (isNaN(date.getTime())) {

@@ -417,6 +417,15 @@ class UnleashedInventorySync {
    * Sync stock movements from Unleashed
    */
   async syncStockMovements() {
+    // Check if StockMovements endpoint is disabled via environment variable
+    const disabledEndpoints = (process.env.UNLEASHED_DISABLE_ENDPOINTS || '').split(',').map(e => e.trim());
+    if (disabledEndpoints.includes('StockMovements')) {
+      logInfo('StockMovements sync is disabled via configuration');
+      // Try to calculate movements from other data sources
+      await this.calculateStockMovementsFromOrders();
+      return;
+    }
+
     try {
       logInfo('Syncing stock movements from Unleashed');
 
@@ -427,11 +436,13 @@ class UnleashedInventorySync {
       if (!result.success) {
         // Handle 403 Forbidden - likely due to API permission restrictions
         if (result.error && result.error.includes('403')) {
-          logWarn('Stock movements API returned 403 Forbidden - skipping sync', {
+          logWarn('Stock movements API returned 403 Forbidden - calculating from other sources', {
             error: result.error,
             note: 'This endpoint may require additional permissions in Unleashed'
           });
-          return; // Skip stock movements sync
+          // Try alternative calculation method
+          await this.calculateStockMovementsFromOrders();
+          return; // Skip direct stock movements sync
         }
         throw new Error(result.error);
       }
@@ -485,6 +496,82 @@ class UnleashedInventorySync {
     } catch (error) {
       logError('Failed to sync stock movements', error);
       this.syncStats.errors.push(`Movement sync: ${error.message}`);
+    }
+  }
+
+  /**
+   * Calculate stock movements from purchase and sales orders
+   * This is an alternative when StockMovements endpoint is not available
+   */
+  async calculateStockMovementsFromOrders() {
+    try {
+      logInfo('Calculating stock movements from purchase and sales orders');
+
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      // Get recent purchase orders (stock in)
+      const purchaseOrders = await prisma.purchaseOrder.findMany({
+        where: {
+          orderDate: {
+            gte: thirtyDaysAgo
+          }
+        },
+        orderBy: {
+          orderDate: 'desc'
+        }
+      });
+
+      // Process purchase orders as inbound movements
+      for (const po of purchaseOrders) {
+        if (po.items && Array.isArray(po.items)) {
+          for (const item of po.items) {
+            const movementId = `PO_${po.orderNumber}_${item.productCode || item.sku}_IN`;
+
+            await prisma.stockMovement.upsert({
+              where: { movementId },
+              update: {
+                quantity: item.quantity || 0,
+                unitCost: item.unitCost || 0,
+                totalCost: (item.quantity || 0) * (item.unitCost || 0),
+                reference: `PO-${po.orderNumber}`,
+                orderNumber: po.orderNumber,
+                reason: 'Purchase Order Receipt',
+                customerSupplier: po.supplierName,
+                updatedAt: new Date()
+              },
+              create: {
+                movementId,
+                productCode: item.productCode || item.sku || 'UNKNOWN',
+                productName: item.productName || item.description || 'Unknown Product',
+                warehouse: item.warehouse || 'Main',
+                movementType: 'Receipt',
+                quantity: item.quantity || 0,
+                unitCost: item.unitCost || 0,
+                totalCost: (item.quantity || 0) * (item.unitCost || 0),
+                reference: `PO-${po.orderNumber}`,
+                orderNumber: po.orderNumber,
+                completedDate: po.deliveryDate || po.orderDate,
+                reason: 'Purchase Order Receipt',
+                customerSupplier: po.supplierName
+              }
+            });
+          }
+        }
+      }
+
+      // Note: Sales orders would be processed similarly as outbound movements
+      // but SalesOrder model doesn't exist in the current schema
+
+      logInfo('Stock movements calculated from orders', {
+        purchaseOrdersProcessed: purchaseOrders.length,
+        note: 'This is a fallback calculation when direct API access is unavailable'
+      });
+
+      this.syncStats.itemsSynced += purchaseOrders.length;
+    } catch (error) {
+      logError('Failed to calculate stock movements from orders', error);
+      this.syncStats.errors.push(`Movement calculation: ${error.message}`);
     }
   }
 

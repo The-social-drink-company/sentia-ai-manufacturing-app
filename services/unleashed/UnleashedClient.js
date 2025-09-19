@@ -11,6 +11,19 @@ class UnleashedClient {
     this.retryCount = 3;
     this.retryDelay = 1000; // 1 second
 
+    // Track endpoints that return 403 to avoid repeated attempts
+    this.blacklistedEndpoints = new Set();
+    this.endpointFailures = new Map(); // Track failure count per endpoint
+
+    // Parse disabled endpoints from environment variable
+    this.disabledEndpoints = new Set(
+      (process.env.UNLEASHED_DISABLE_ENDPOINTS || '')
+        .split(',')
+        .map(e => e.trim())
+        .filter(e => e)
+        .map(e => e.startsWith('/') ? e : `/${e}`)
+    )
+
     // Validate credentials
     if (!this.apiId || !this.apiKey) {
       logWarn('Unleashed API credentials not configured', {
@@ -35,11 +48,54 @@ class UnleashedClient {
   }
 
   /**
+   * Check if an endpoint is disabled or blacklisted
+   */
+  isEndpointDisabled(endpoint) {
+    // Check if endpoint is explicitly disabled via environment variable
+    if (this.disabledEndpoints.has(endpoint)) {
+      logInfo('Unleashed endpoint is disabled via configuration', { endpoint });
+      return true;
+    }
+
+    // Check if endpoint is blacklisted due to repeated 403 errors
+    if (this.blacklistedEndpoints.has(endpoint)) {
+      logInfo('Unleashed endpoint is blacklisted due to repeated 403 errors', { endpoint });
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Handle endpoint failure and potentially blacklist it
+   */
+  handleEndpointFailure(endpoint, statusCode) {
+    if (statusCode === 403) {
+      const failures = (this.endpointFailures.get(endpoint) || 0) + 1;
+      this.endpointFailures.set(endpoint, failures);
+
+      // Blacklist endpoint after 3 consecutive 403 errors
+      if (failures >= 3) {
+        this.blacklistedEndpoints.add(endpoint);
+        logWarn('Unleashed endpoint blacklisted after repeated 403 errors', {
+          endpoint,
+          failures
+        });
+      }
+    }
+  }
+
+  /**
    * Make authenticated request to Unleashed API
    */
   async request(endpoint, params = {}, method = 'GET') {
     if (!this.apiId || !this.apiKey) {
       throw new Error('Unleashed API credentials not configured');
+    }
+
+    // Check if endpoint is disabled or blacklisted
+    if (this.isEndpointDisabled(endpoint)) {
+      throw new Error(`Endpoint ${endpoint} is disabled or blacklisted`);
     }
 
     const query = new URLSearchParams(params).toString();
@@ -89,6 +145,11 @@ class UnleashedClient {
             message: error.response.data?.Message || error.message,
             attempt
           });
+
+          // Handle 403 specifically for blacklisting
+          if (error.response.status === 403) {
+            this.handleEndpointFailure(endpoint, 403);
+          }
 
           // Don't retry client errors (4xx)
           if (error.response.status >= 400 && error.response.status < 500) {
@@ -208,6 +269,16 @@ class UnleashedClient {
    * Get stock movements
    */
   async getStockMovements(productCode = null, startDate = null, endDate = null) {
+    // Check if StockMovements endpoint is disabled
+    if (this.isEndpointDisabled('/StockMovements')) {
+      logWarn('StockMovements endpoint is disabled, returning empty result');
+      return {
+        items: [],
+        total: 0,
+        disabled: true
+      };
+    }
+
     try {
       const params = {};
       if (productCode) params.productCode = productCode;

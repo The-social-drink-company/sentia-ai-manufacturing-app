@@ -268,36 +268,43 @@ export const useBulletproofAuth = () => {
 // Enhanced auth hook that works with both Clerk and fallback
 export const useAuth = () => {
   const bulletproofAuth = useBulletproofAuth();
-  const clerkAuth = useClerkAuth();
-  const clerkUser = useClerkUser();
 
   // If we're in fallback mode, return fallback state
-  if (bulletproofAuth.isFallbackMode) {
+  if (bulletproofAuth?.isFallbackMode) {
     return bulletproofAuth;
   }
 
-  // If Clerk is available and loaded, use Clerk data
-  if (clerkAuth.isLoaded && clerkUser) {
-    return {
-      ...clerkAuth,
-      user: clerkUser,
-      isFallbackMode: false
-    };
-  }
+  // Try to use Clerk auth if available
+  try {
+    const clerkAuth = useClerkAuth();
+    const clerkUser = useClerkUser();
 
-  // If Clerk is still loading, return loading state
-  if (!clerkAuth.isLoaded) {
-    return {
-      isLoaded: false,
-      isSignedIn: false,
-      user: null,
-      isLoading: true,
-      isFallbackMode: false
-    };
+    // If Clerk is available and loaded, use Clerk data
+    if (clerkAuth?.isLoaded && clerkUser?.user) {
+      return {
+        ...clerkAuth,
+        user: clerkUser.user,
+        isFallbackMode: false
+      };
+    }
+
+    // If Clerk is still loading, return loading state
+    if (!clerkAuth?.isLoaded) {
+      return {
+        isLoaded: false,
+        isSignedIn: false,
+        user: null,
+        isLoading: true,
+        isFallbackMode: false
+      };
+    }
+  } catch (error) {
+    // If Clerk hooks fail (not in ClerkProvider), use fallback
+    console.warn('Clerk auth hooks not available, using fallback:', error.message);
   }
 
   // Fallback to bulletproof auth if Clerk fails
-  return bulletproofAuth;
+  return bulletproofAuth || FALLBACK_AUTH_STATE;
 };
 
 // Enhanced user hook

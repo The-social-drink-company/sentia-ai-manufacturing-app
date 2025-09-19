@@ -1999,7 +1999,7 @@ model QualityDefect {
   updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   // Relations
-  batch BatchProduction? @relation(fields: [batchId], references: [id])
+  batch BatchProduction? @relation(fields: [batchId], references: [batchNumber])
   line  ProductionLine?  @relation(fields: [lineId], references: [id])
 
   @@index([productId])

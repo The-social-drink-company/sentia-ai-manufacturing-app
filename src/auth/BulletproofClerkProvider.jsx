@@ -109,6 +109,9 @@ const AuthErrorRecovery = ({ error, onRetry, onFallback }) => (
 
 // Main Bulletproof Auth Provider
 export const BulletproofClerkProvider = ({ children, publishableKey }) => {
+  // Use fallback key if none provided
+  const effectiveKey = publishableKey || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
+
   const [authState, setAuthState] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -148,6 +151,18 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
   // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
+      console.log('[BulletproofAuth] Starting initialization...');
+      console.log('[BulletproofAuth] Publishable Key:', publishableKey ? 'Present' : 'Missing');
+      console.log('[BulletproofAuth] Environment:', window.location.hostname);
+
+      // If no publishable key, immediately use fallback
+      if (!publishableKey) {
+        console.log('[BulletproofAuth] No Clerk key provided, using fallback mode');
+        setAuthState(FALLBACK_AUTH_STATE);
+        setIsLoading(false);
+        setUseFallback(true);
+        return;
+      }
       setIsLoading(true);
       setError(null);
 

@@ -5766,6 +5766,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve public folder files (clerk-init.js, diagnostic.html, etc.)
+// This must come before dist folder to ensure public files are served correctly
+app.use(express.static(join(__dirname, 'public'), {
+  index: false, // Don't serve index.html from public
+  maxAge: '10m', // Cache public files for 10 minutes
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    } else if (path.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  }
+}));
+
 // Serve static files from dist folder with proper MIME types and cache control
 // IMPORTANT: Add index:false to prevent serving index.html for API routes
 app.use(express.static(join(__dirname, 'dist'), {

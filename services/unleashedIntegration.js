@@ -227,39 +227,41 @@ class UnleashedIntegrationService {
             orderNumber: po.OrderNumber
           },
           update: {
-            supplier: po.Supplier?.SupplierName || 'Unknown',
+            supplierId: po.Supplier?.SupplierCode || `SUPPLIER_${po.OrderNumber}`,
+            supplierName: po.Supplier?.SupplierName || 'Unknown',
             orderDate: new Date(po.OrderDate),
-            requiredDate: po.RequiredDate ? new Date(po.RequiredDate) : null,
-            status: po.OrderStatus,
-            subTotal: po.SubTotal || 0,
-            taxTotal: po.TaxTotal || 0,
-            total: po.Total || 0,
+            deliveryDate: po.RequiredDate ? new Date(po.RequiredDate) : null,
+            status: (po.OrderStatus || 'pending').toLowerCase(),
+            items: po.PurchaseOrderLines || [],
+            subtotal: po.SubTotal || 0,
+            tax: po.TaxTotal || 0,
+            shipping: po.FreightTotal || 0,
+            totalAmount: po.Total || 0,
             currency: po.Currency?.Code || 'USD',
-            deliveryAddress: po.DeliveryAddress,
-            comments: po.Comments,
-            metadata: {
-              guid: po.Guid,
-              supplierCode: po.Supplier?.SupplierCode,
-              lines: po.PurchaseOrderLines
-            }
+            paymentTerms: po.PaymentTerms || null,
+            notes: po.Comments || null,
+            approvedBy: po.ApprovedBy || null,
+            approvedDate: po.ApprovedDate ? new Date(po.ApprovedDate) : null,
+            updatedAt: new Date()
           },
           create: {
             orderNumber: po.OrderNumber,
-            supplier: po.Supplier?.SupplierName || 'Unknown',
+            supplierId: po.Supplier?.SupplierCode || `SUPPLIER_${po.OrderNumber}`,
+            supplierName: po.Supplier?.SupplierName || 'Unknown',
             orderDate: new Date(po.OrderDate),
-            requiredDate: po.RequiredDate ? new Date(po.RequiredDate) : null,
-            status: po.OrderStatus,
-            subTotal: po.SubTotal || 0,
-            taxTotal: po.TaxTotal || 0,
-            total: po.Total || 0,
+            deliveryDate: po.RequiredDate ? new Date(po.RequiredDate) : null,
+            status: (po.OrderStatus || 'pending').toLowerCase(),
+            items: po.PurchaseOrderLines || [],
+            subtotal: po.SubTotal || 0,
+            tax: po.TaxTotal || 0,
+            shipping: po.FreightTotal || 0,
+            totalAmount: po.Total || 0,
             currency: po.Currency?.Code || 'USD',
-            deliveryAddress: po.DeliveryAddress,
-            comments: po.Comments,
-            metadata: {
-              guid: po.Guid,
-              supplierCode: po.Supplier?.SupplierCode,
-              lines: po.PurchaseOrderLines
-            }
+            paymentTerms: po.PaymentTerms || null,
+            notes: po.Comments || null,
+            approvedBy: po.ApprovedBy || null,
+            approvedDate: po.ApprovedDate ? new Date(po.ApprovedDate) : null,
+            createdBy: po.CreatedBy || 'unleashed-sync' // Required field
           }
         });
         syncedCount++;

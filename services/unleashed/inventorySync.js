@@ -301,6 +301,8 @@ class UnleashedInventorySync {
               currency: po.currency || 'USD',
               paymentTerms: po.paymentTerms || null,
               notes: po.comments || null,
+              approvedBy: po.approvedBy || null,
+              approvedDate: po.approvedDate ? this.safeParseDate(po.approvedDate, null) : null,
               updatedAt: new Date()
             },
             create: {
@@ -318,7 +320,9 @@ class UnleashedInventorySync {
               currency: po.currency || 'USD',
               paymentTerms: po.paymentTerms || null,
               notes: po.comments || null,
-              data: po // Store original data for reference
+              approvedBy: po.approvedBy || null,
+              approvedDate: po.approvedDate ? this.safeParseDate(po.approvedDate, null) : null,
+              createdBy: po.createdBy || 'unleashed-sync' // Required field
             }
           });
         }

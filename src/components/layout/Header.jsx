@@ -24,8 +24,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { ShareButton } from '../ui/ShareButton'
 import { Menu, Transition } from '@headlessui/react'
-// ENTERPRISE: Full Clerk integration restored
-import { useUser, UserButton, SignOutButton, useAuth } from '@clerk/clerk-react'
+// Use Bulletproof auth hooks that handle dynamic Clerk loading
+import { useAuth, useUser } from '../../auth/BulletproofClerkProvider'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
 import { ThemeToggle } from '../../theming'

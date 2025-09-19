@@ -306,6 +306,56 @@ const fallbackHTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
+// CRITICAL: Serve clerk-init.js BEFORE static middleware to ensure proper injection
+app.get('/clerk-init.js', (req, res) => {
+  console.log('[Clerk Init] Serving dynamically generated clerk-init.js');
+
+  const clerkPublishableKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
+  const mcpServerUrl = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
+  const apiBaseUrl = process.env.VITE_API_BASE_URL || '/api';
+
+  const clerkInitScript = `
+// Clerk Environment Initialization - Server Injected
+(function() {
+  if (typeof window === 'undefined') return;
+
+  const clerkEnv = {
+    VITE_CLERK_PUBLISHABLE_KEY: '${clerkPublishableKey}',
+    VITE_MCP_SERVER_URL: '${mcpServerUrl}',
+    VITE_API_BASE_URL: '${apiBaseUrl}',
+    VITE_CLERK_SIGN_IN_URL: '/sign-in',
+    VITE_CLERK_SIGN_UP_URL: '/sign-up',
+    VITE_CLERK_AFTER_SIGN_IN_URL: '/dashboard',
+    VITE_CLERK_AFTER_SIGN_UP_URL: '/dashboard',
+    VITE_CLERK_SIGN_OUT_URL: '/'
+  };
+
+  // Store on window for global access
+  window.clerkEnv = clerkEnv;
+
+  // Also store directly on window for compatibility
+  window.VITE_CLERK_PUBLISHABLE_KEY = clerkEnv.VITE_CLERK_PUBLISHABLE_KEY;
+
+  // Create import.meta.env if it doesn't exist
+  if (!window.import) window.import = {};
+  if (!window.import.meta) window.import.meta = {};
+  if (!window.import.meta.env) window.import.meta.env = {};
+
+  // Inject all environment variables
+  Object.keys(clerkEnv).forEach(key => {
+    window.import.meta.env[key] = clerkEnv[key];
+  });
+
+  console.log('[Clerk Init] Environment initialized successfully');
+  console.log('[Clerk Init] Publishable Key:', clerkEnv.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT SET');
+})();`;
+
+  res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.send(clerkInitScript);
+});
+
 // Serve static files from dist folder
 if (distExists) {
   console.log('Serving static files from dist folder');
@@ -333,42 +383,6 @@ if (distExists) {
       }
     }
   }));
-
-  // Special route for clerk-init.js - serve with injected environment
-  app.get('/clerk-init.js', (req, res) => {
-    const clerkInitScript = `
-// Clerk Environment Initialization - Server Injected
-(function() {
-  if (typeof window === 'undefined') return;
-
-  const clerkEnv = {
-    VITE_CLERK_PUBLISHABLE_KEY: '${process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk'}',
-    VITE_MCP_SERVER_URL: '${process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'}',
-    VITE_API_BASE_URL: '${process.env.VITE_API_BASE_URL || '/api'}',
-    VITE_CLERK_SIGN_IN_URL: '/sign-in',
-    VITE_CLERK_SIGN_UP_URL: '/sign-up',
-    VITE_CLERK_AFTER_SIGN_IN_URL: '/dashboard',
-    VITE_CLERK_AFTER_SIGN_UP_URL: '/dashboard',
-    VITE_CLERK_SIGN_OUT_URL: '/'
-  };
-
-  window.clerkEnv = clerkEnv;
-
-  if (!window.import) window.import = {};
-  if (!window.import.meta) window.import.meta = {};
-  if (!window.import.meta.env) window.import.meta.env = {};
-
-  Object.keys(clerkEnv).forEach(key => {
-    window.import.meta.env[key] = clerkEnv[key];
-  });
-
-  console.log('[Clerk] Environment initialized');
-})();`;
-
-    res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.send(clerkInitScript);
-  });
 
   // Serve all static files from dist
   app.use(express.static(distPath, {

@@ -12,42 +12,54 @@ import {
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
 
-// Conditionally import Clerk components
-let SignInButton, SignUpButton, useUser, UserButton
-try {
-  const clerkComponents = require('@clerk/clerk-react')
-  SignInButton = clerkComponents.SignInButton
-  SignUpButton = clerkComponents.SignUpButton
-  useUser = clerkComponents.useUser
-  UserButton = clerkComponents.UserButton
-} catch (e) {
-  // Clerk not available
-}
-
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0)
   const [isSignedIn, setIsSignedIn] = useState(false)
   const [clerkAvailable, setClerkAvailable] = useState(false)
+  const [clerkComponents, setClerkComponents] = useState({
+    SignInButton: null,
+    SignUpButton: null,
+    useUser: null,
+    UserButton: null,
+    isLoaded: false
+  })
 
-  // Check if Clerk is available and user is signed in
+  // Dynamically load Clerk components
   useEffect(() => {
-    // Check if Clerk components are available
-    if (useUser) {
-      setClerkAvailable(true)
+    const loadClerk = async () => {
+      try {
+        const clerkModule = await import('@clerk/clerk-react')
+        if (clerkModule) {
+          setClerkComponents({
+            SignInButton: clerkModule.SignInButton,
+            SignUpButton: clerkModule.SignUpButton,
+            useUser: clerkModule.useUser,
+            UserButton: clerkModule.UserButton,
+            isLoaded: true
+          })
+          setClerkAvailable(true)
+        }
+      } catch (error) {
+        console.log('Clerk module not available, using fallback navigation')
+        setClerkAvailable(false)
+      }
     }
+    loadClerk()
   }, [])
 
   // Use Clerk hooks if available
   let user = null
-  if (clerkAvailable && useUser) {
-    try {
-      const userHook = useUser()
-      setIsSignedIn(userHook.isSignedIn || false)
-      user = userHook.user
-    } catch (e) {
-      console.log('Clerk not initialized')
+  useEffect(() => {
+    if (clerkAvailable && clerkComponents.useUser) {
+      try {
+        // Note: Clerk hooks must be used within ClerkProvider
+        // This will be handled by BulletproofClerkProvider
+        console.log('Clerk components loaded successfully')
+      } catch (e) {
+        console.log('Clerk not initialized in provider context')
+      }
     }
-  }
+  }, [clerkAvailable, clerkComponents.useUser])
 
   // Handle scroll for parallax effects
   const handleScroll = useCallback(() => {
@@ -186,8 +198,8 @@ const LandingPage = () => {
                     </motion.button>
                   </Link>
                 ) : (
-                  clerkAvailable ? (
-                    <SignUpButton mode="modal" redirectUrl="/dashboard">
+                  clerkAvailable && clerkComponents.SignUpButton ? (
+                    <clerkComponents.SignUpButton mode="modal" redirectUrl="/dashboard">
                       <motion.button
                         className="group px-8 py-4 bg-white text-black rounded-lg font-semibold text-lg hover:bg-gray-200 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center"
                         whileHover={{ scale: 1.05 }}
@@ -196,7 +208,7 @@ const LandingPage = () => {
                         <span>Get Started</span>
                         <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                       </motion.button>
-                    </SignUpButton>
+                    </clerkComponents.SignUpButton>
                   ) : (
                     <Link to="/dashboard">
                       <motion.button
@@ -211,8 +223,8 @@ const LandingPage = () => {
                   )
                 )}
 
-                {clerkAvailable ? (
-                  <SignInButton mode="modal" redirectUrl="/dashboard">
+                {clerkAvailable && clerkComponents.SignInButton ? (
+                  <clerkComponents.SignInButton mode="modal" redirectUrl="/dashboard">
                     <motion.button
                       className="px-8 py-4 border border-white/20 text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center backdrop-blur-sm"
                       whileHover={{ scale: 1.05 }}
@@ -221,7 +233,7 @@ const LandingPage = () => {
                       <span>{isSignedIn ? 'Dashboard' : 'Sign In'}</span>
                       <ChartBarIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </motion.button>
-                  </SignInButton>
+                  </clerkComponents.SignInButton>
                 ) : (
                   <Link to="/dashboard">
                     <motion.button

@@ -214,15 +214,29 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
+      '@clerk/clerk-react',
       '@tanstack/react-query',
       'recharts',
-      'date-fns'
+      'date-fns',
+      'framer-motion'
     ],
     exclude: ['@testing-library/react'],
-    force: true // Force rebuild of dependencies - replaces --force flag
+    force: true, // Force rebuild of dependencies - replaces --force flag
+    esbuildOptions: {
+      // Ensure ES module output format
+      format: 'esm',
+      target: 'es2020'
+    }
   },
   define: {
     // Enable React Query devtools only in development
-    __DEV__: process.env.NODE_ENV === 'development'
+    __DEV__: process.env.NODE_ENV === 'development',
+    // Ensure global is defined for certain packages
+    'global': 'globalThis'
+  },
+  // Ensure external scripts are properly handled
+  esbuild: {
+    target: 'es2020',
+    format: 'esm'
   }
 })

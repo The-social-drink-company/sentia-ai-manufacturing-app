@@ -9,12 +9,13 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-// MCP Server Mode (optional - set MCP_SERVER_MODE=true to enable)
-if (process.env.MCP_SERVER_MODE === 'true') {
-  console.log('MCP_SERVER_MODE detected - starting MCP server...');
-  import('./mcp-startup.js');
-  process.exit = () => {};
-}
+// MCP Server Mode - Disabled (using separate MCP server deployment)
+// The MCP server runs separately at https://mcp-server-tkyu.onrender.com
+// if (process.env.MCP_SERVER_MODE === 'true') {
+//   console.log('MCP_SERVER_MODE detected - starting MCP server...');
+//   import('./mcp-startup.js');
+//   process.exit = () => {};
+// }
 
 // Suppress Node.js deprecation warnings in production
 process.removeAllListeners('warning');

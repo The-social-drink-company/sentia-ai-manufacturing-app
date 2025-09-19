@@ -284,30 +284,36 @@ class UnleashedInventorySync {
               orderNumber: po.orderNumber
             },
             update: {
-              supplier: po.supplier,
-              supplierCode: po.supplierCode,
+              supplierId: po.supplierCode || 'UNKNOWN',
+              supplierName: po.supplier || 'Unknown Supplier',
               orderDate: this.safeParseDate(po.orderDate),
-              requiredDate: this.safeParseDate(po.requiredDate, null),
-              status: po.status,
-              subTotal: po.subTotal,
-              tax: po.tax,
-              total: po.total,
-              currency: po.currency,
-              data: po, // Store complete order data as JSON
+              deliveryDate: this.safeParseDate(po.requiredDate, null),
+              status: (po.status || 'pending').toLowerCase(),
+              items: po.lines || [],
+              subtotal: po.subTotal || 0,
+              tax: po.tax || 0,
+              shipping: po.freight || 0,
+              totalAmount: po.total || 0,
+              currency: po.currency || 'USD',
+              paymentTerms: po.paymentTerms || null,
+              notes: po.comments || null,
               updatedAt: new Date()
             },
             create: {
               orderNumber: po.orderNumber,
-              supplier: po.supplier,
-              supplierCode: po.supplierCode,
+              supplierId: po.supplierCode || 'UNKNOWN',
+              supplierName: po.supplier || 'Unknown Supplier',
               orderDate: this.safeParseDate(po.orderDate),
-              requiredDate: this.safeParseDate(po.requiredDate, null),
-              status: po.status,
-              subTotal: po.subTotal,
-              tax: po.tax,
-              total: po.total,
-              currency: po.currency,
-              data: po
+              deliveryDate: this.safeParseDate(po.requiredDate, null),
+              status: (po.status || 'pending').toLowerCase(),
+              items: po.lines || [],
+              subtotal: po.subTotal || 0,
+              tax: po.tax || 0,
+              shipping: po.freight || 0,
+              totalAmount: po.total || 0,
+              currency: po.currency || 'USD',
+              paymentTerms: po.paymentTerms || null,
+              notes: po.comments || null
             }
           });
         }
@@ -343,6 +349,15 @@ class UnleashedInventorySync {
 
       const salesOrders = result.data.salesOrders || [];
 
+      // Since SalesOrder model doesn't exist yet, log the data for now
+      logInfo(`Retrieved ${salesOrders.length} sales orders from Unleashed`, {
+        summary: result.data.summary
+      });
+
+      // TODO: Add SalesOrder model to Prisma schema and implement syncing
+      // For now, skip database sync to prevent errors
+
+      /*
       // Store sales orders in database with increased timeout
       await prisma.$transaction(async (tx) => {
         for (const so of salesOrders) {
@@ -382,10 +397,7 @@ class UnleashedInventorySync {
         timeout: 30000, // 30 seconds timeout
         maxWait: 5000 // 5 seconds max wait
       });
-
-      logInfo(`Synced ${salesOrders.length} sales orders`, {
-        summary: result.data.summary
-      });
+      */
     } catch (error) {
       logError('Failed to sync sales orders', error);
       this.syncStats.errors.push(`SO sync: ${error.message}`);
@@ -404,6 +416,14 @@ class UnleashedInventorySync {
       });
 
       if (!result.success) {
+        // Handle 403 Forbidden - likely due to API permission restrictions
+        if (result.error && result.error.includes('403')) {
+          logWarn('Stock movements API returned 403 Forbidden - skipping sync', {
+            error: result.error,
+            note: 'This endpoint may require additional permissions in Unleashed'
+          });
+          return; // Skip stock movements sync
+        }
         throw new Error(result.error);
       }
 
@@ -466,43 +486,34 @@ class UnleashedInventorySync {
     try {
       logInfo('Calculating inventory metrics');
 
-      // Calculate reorder points based on movement history
+      // Calculate basic inventory metrics
       const inventoryItems = await prisma.inventory.findMany();
 
+      // Update status based on quantity levels
       for (const item of inventoryItems) {
-        // Get last 30 days of movements for this product
-        const movements = await prisma.stockMovement.findMany({
-          where: {
-            productCode: item.sku,
-            completedDate: {
-              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-            }
-          }
-        });
+        let status = 'in-stock';
+        const quantity = parseFloat(item.quantity);
+        const reorderPoint = item.reorderPoint || 10; // Default reorder point
 
-        // Calculate average daily usage
-        const outboundMovements = movements.filter(m => m.quantity < 0);
-        const totalUsage = outboundMovements.reduce((sum, m) => sum + Math.abs(m.quantity), 0);
-        const avgDailyUsage = totalUsage / 30;
+        if (quantity <= 0) {
+          status = 'out-of-stock';
+        } else if (quantity <= reorderPoint) {
+          status = 'low-stock';
+        }
 
-        // Set reorder point (7 days of stock)
-        const reorderPoint = Math.ceil(avgDailyUsage * 7);
-
-        // Set reorder quantity (30 days of stock)
-        const reorderQuantity = Math.ceil(avgDailyUsage * 30);
-
-        // Update inventory item
+        // Update inventory status
         await prisma.inventory.update({
           where: { sku: item.sku },
           data: {
-            reorderPoint,
-            reorderQuantity,
-            avgDailyUsage
+            status,
+            // Set default reorder values if not set
+            reorderPoint: item.reorderPoint || reorderPoint,
+            reorderQuantity: item.reorderQuantity || (reorderPoint * 3)
           }
         });
       }
 
-      // Store overall metrics
+      // Calculate summary metrics
       const metrics = await prisma.inventory.aggregate({
         _sum: {
           quantity: true,
@@ -511,29 +522,25 @@ class UnleashedInventorySync {
         _count: true
       });
 
-      await prisma.inventoryMetric.create({
-        data: {
-          totalProducts: metrics._count,
-          totalQuantity: metrics._sum.quantity || 0,
-          totalValue: metrics._sum.totalValue || 0,
-          lowStockItems: await prisma.inventory.count({
-            where: {
-              AND: [
-                { quantity: { gt: 0 } },
-                { reorderPoint: { not: null } }
-              ]
-            }
-          }),
-          outOfStockItems: await prisma.inventory.count({
-            where: {
-              quantity: 0
-            }
-          }),
-          timestamp: new Date()
+      const lowStockCount = await prisma.inventory.count({
+        where: {
+          status: 'low-stock'
         }
       });
 
-      logInfo('Inventory metrics calculated', metrics);
+      const outOfStockCount = await prisma.inventory.count({
+        where: {
+          status: 'out-of-stock'
+        }
+      });
+
+      logInfo('Inventory metrics calculated', {
+        totalProducts: metrics._count,
+        totalQuantity: metrics._sum.quantity || 0,
+        totalValue: metrics._sum.totalValue || 0,
+        lowStockItems: lowStockCount,
+        outOfStockItems: outOfStockCount
+      });
     } catch (error) {
       logError('Failed to calculate inventory metrics', error);
       this.syncStats.errors.push(`Metrics calc: ${error.message}`);

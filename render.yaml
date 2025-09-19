@@ -126,8 +126,10 @@ services:
       - key: MICROSOFT_DATA_EMAIL
         value: data@app.sentiaspirits.com
 
-      # MCP Server Integration
+      # MCP Server Integration (Using internal address for better performance)
       - key: MCP_SERVER_URL
+        value: http://mcp-server-tkyu:10000
+      - key: MCP_SERVER_PUBLIC_URL
         value: https://mcp-server-tkyu.onrender.com
       - key: MCP_JWT_SECRET
         generateValue: true
@@ -302,8 +304,10 @@ services:
       - key: MICROSOFT_DATA_EMAIL
         value: data@app.sentiaspirits.com
 
-      # MCP Server Integration
+      # MCP Server Integration (Using internal address for better performance)
       - key: MCP_SERVER_URL
+        value: http://mcp-server-tkyu:10000
+      - key: MCP_SERVER_PUBLIC_URL
         value: https://mcp-server-tkyu.onrender.com
       - key: MCP_JWT_SECRET
         generateValue: true
@@ -474,8 +478,10 @@ services:
       - key: MICROSOFT_DATA_EMAIL
         value: data@app.sentiaspirits.com
 
-      # MCP Server Integration
+      # MCP Server Integration (Using internal address for better performance)
       - key: MCP_SERVER_URL
+        value: http://mcp-server-tkyu:10000
+      - key: MCP_SERVER_PUBLIC_URL
         value: https://mcp-server-tkyu.onrender.com
       - key: MCP_JWT_SECRET
         generateValue: true

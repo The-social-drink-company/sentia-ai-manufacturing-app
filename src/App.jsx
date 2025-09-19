@@ -1,7 +1,8 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
 // Bulletproof Clerk Authentication - solves server-side auth issues
-import { BulletproofClerkProvider, useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
+// Import auth components but don't use hooks at module level
+// import { useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -228,7 +229,6 @@ function App() {
 
   return (
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-        <BulletproofClerkProvider publishableKey={clerkPublishableKey}>
           <QueryClientProvider client={queryClient}>
             {/* SessionManager temporarily disabled - uses Clerk hooks */}
             <Router>
@@ -1007,7 +1007,6 @@ function App() {
           {/* SessionManager closing tag removed */}
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
-        </BulletproofClerkProvider>
       </ErrorBoundary>
   )
 }

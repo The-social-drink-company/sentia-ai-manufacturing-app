@@ -263,9 +263,29 @@ const fallbackHTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// Serve static files if dist exists
+// Serve static files from dist folder
 if (distExists) {
   console.log('Serving static files from dist folder');
+
+  // Serve JS files from dist/js
+  app.use('/js', express.static(join(distPath, 'js'), {
+    maxAge: '1d',
+    setHeaders: (res, path) => {
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    }
+  }));
+
+  // Serve CSS files from dist/assets
+  app.use('/assets', express.static(join(distPath, 'assets'), {
+    maxAge: '1d',
+    setHeaders: (res, path) => {
+      if (path.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+      }
+    }
+  }));
+
+  // Serve other static files
   app.use(express.static(distPath, {
     index: false,
     maxAge: '1h',
@@ -275,9 +295,40 @@ if (distExists) {
       }
     }
   }));
+} else {
+  console.log('Warning: dist folder not found - serving fallback');
 }
 
-// Mock API endpoints for testing
+// API Routes - Basic functionality
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    service: 'sentia-manufacturing',
+    environment: process.env.NODE_ENV || 'production',
+    version: '1.0.5'
+  });
+});
+
+app.get('/api/test-simple', (req, res) => {
+  res.json({
+    message: 'API is working',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/api/services/status', (req, res) => {
+  res.json({
+    status: 'operational',
+    services: {
+      database: process.env.DATABASE_URL ? 'configured' : 'not configured',
+      clerk: process.env.CLERK_SECRET_KEY ? 'configured' : 'not configured',
+      mcp: process.env.MCP_SERVER_URL ? 'configured' : 'not configured'
+    }
+  });
+});
+
+// Mock API endpoints for dashboard
 app.get('/api/dashboard/stats', (req, res) => {
   res.json({
     kpis: {

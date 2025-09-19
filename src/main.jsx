@@ -95,17 +95,34 @@ const LoadingFallback = () => (
 
 // Render app with Bulletproof Authentication
 // This will NEVER fail or show blank screens
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+console.log('Initializing with Clerk key:', PUBLISHABLE_KEY ? 'Present' : 'Not configured - will use fallback')
+
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
-root.render(
-  <React.StrictMode>
-    <BulletproofClerkProvider>
+// Wrap app in error boundary to catch any rendering issues
+try {
+  root.render(
+    <React.StrictMode>
+      <BulletproofClerkProvider publishableKey={PUBLISHABLE_KEY}>
+        <Suspense fallback={<LoadingFallback />}>
+          <App />
+        </Suspense>
+      </BulletproofClerkProvider>
+    </React.StrictMode>
+  )
+} catch (error) {
+  console.error('Failed to render app with BulletproofClerkProvider:', error)
+  // Fallback to basic render without auth
+  root.render(
+    <React.StrictMode>
       <Suspense fallback={<LoadingFallback />}>
         <App />
       </Suspense>
-    </BulletproofClerkProvider>
-  </React.StrictMode>
-)
+    </React.StrictMode>
+  )
+}
 
 console.log('Application mounted with bulletproof authentication')
 

@@ -212,26 +212,26 @@ class UnleashedInventorySync {
             },
             update: {
               productName: item.productName,
-              quantity: item.quantityOnHand,
-              quantityAllocated: item.quantityAllocated,
-              quantityAvailable: item.quantityAvailable,
+              quantity: String(item.quantityOnHand || 0),
+              quantityAllocated: String(item.quantityAllocated || 0),
+              quantityAvailable: String(item.quantityAvailable || 0),
               warehouse: item.warehouse,
               location: item.binLocation || item.warehouseName,
-              unitCost: item.averageCost,
-              totalValue: item.totalValue,
+              unitCost: String(item.averageCost || 0),
+              totalValue: String(item.totalValue || 0),
               lastModified: this.safeParseDate(item.lastModified),
-              updatedAt: new Date()
+              // updatedAt is handled automatically by Prisma @updatedAt
             },
             create: {
               sku: item.sku,
               productName: item.productName,
-              quantity: item.quantityOnHand,
-              quantityAllocated: item.quantityAllocated,
-              quantityAvailable: item.quantityAvailable,
+              quantity: String(item.quantityOnHand || 0),
+              quantityAllocated: String(item.quantityAllocated || 0),
+              quantityAvailable: String(item.quantityAvailable || 0),
               warehouse: item.warehouse,
               location: item.binLocation || item.warehouseName,
-              unitCost: item.averageCost,
-              totalValue: item.totalValue,
+              unitCost: String(item.averageCost || 0),
+              totalValue: String(item.totalValue || 0),
               reorderPoint: 0, // Will be calculated based on movement history
               reorderQuantity: 0,
               lastModified: this.safeParseDate(item.lastModified)
@@ -294,15 +294,16 @@ class UnleashedInventorySync {
               deliveryDate: this.safeParseDate(po.requiredDate, null),
               status: (po.status || 'pending').toLowerCase(),
               items: po.lines || [],
-              subtotal: po.subTotal || 0,
-              tax: po.tax || 0,
-              shipping: po.freight || 0,
-              totalAmount: po.total || 0,
+              subtotal: String(po.subTotal || 0),
+              tax: String(po.tax || 0),
+              shipping: String(po.freight || 0),
+              totalAmount: String(po.total || 0),
               currency: po.currency || 'USD',
               paymentTerms: po.paymentTerms || null,
               notes: po.comments || null,
               approvedBy: po.approvedBy || null,
               approvedDate: po.approvedDate ? this.safeParseDate(po.approvedDate, null) : null
+              // createdBy should not be updated - it's set on creation only
               // updatedAt is handled automatically by Prisma @updatedAt
             },
             create: {
@@ -313,10 +314,10 @@ class UnleashedInventorySync {
               deliveryDate: this.safeParseDate(po.requiredDate, null),
               status: (po.status || 'pending').toLowerCase(),
               items: po.lines || [],
-              subtotal: po.subTotal || 0,
-              tax: po.tax || 0,
-              shipping: po.freight || 0,
-              totalAmount: po.total || 0,
+              subtotal: String(po.subTotal || 0),
+              tax: String(po.tax || 0),
+              shipping: String(po.freight || 0),
+              totalAmount: String(po.total || 0),
               currency: po.currency || 'USD',
               paymentTerms: po.paymentTerms || null,
               notes: po.comments || null,
@@ -385,7 +386,7 @@ class UnleashedInventorySync {
               total: so.total,
               currency: so.currency,
               data: so, // Store complete order data as JSON
-              updatedAt: new Date()
+              // updatedAt is handled automatically by Prisma @updatedAt
             },
             create: {
               orderNumber: so.orderNumber,
@@ -415,8 +416,14 @@ class UnleashedInventorySync {
 
   /**
    * Sync stock movements from Unleashed
+   * NOTE: Currently disabled as the Prisma schema uses InventoryMovement
+   * with a different structure than what Unleashed provides
    */
   async syncStockMovements() {
+    logInfo('Stock movements sync is currently disabled - model structure mismatch');
+    return; // Temporarily disabled until model is updated
+
+    /* Original implementation commented out for reference:
     // Check if StockMovements endpoint is disabled via environment variable
     const disabledEndpoints = (process.env.UNLEASHED_DISABLE_ENDPOINTS || '').split(',').map(e => e.trim());
     if (disabledEndpoints.includes('StockMovements')) {
@@ -466,7 +473,7 @@ class UnleashedInventorySync {
               orderNumber: movement.orderNumber,
               reason: movement.reason,
               customerSupplier: movement.customerSupplier,
-              updatedAt: new Date()
+              // updatedAt is handled automatically by Prisma @updatedAt
             },
             create: {
               movementId,
@@ -497,13 +504,20 @@ class UnleashedInventorySync {
       logError('Failed to sync stock movements', error);
       this.syncStats.errors.push(`Movement sync: ${error.message}`);
     }
+    */
   }
 
   /**
    * Calculate stock movements from purchase and sales orders
    * This is an alternative when StockMovements endpoint is not available
+   * NOTE: Currently disabled as the Prisma schema uses InventoryMovement
+   * with a different structure than what's being attempted here
    */
   async calculateStockMovementsFromOrders() {
+    logInfo('Stock movements calculation is currently disabled - model structure mismatch');
+    return; // Temporarily disabled until model is updated
+
+    /* Original implementation commented out for reference:
     try {
       logInfo('Calculating stock movements from purchase and sales orders');
 
@@ -538,7 +552,7 @@ class UnleashedInventorySync {
                 orderNumber: po.orderNumber,
                 reason: 'Purchase Order Receipt',
                 customerSupplier: po.supplierName,
-                updatedAt: new Date()
+                // updatedAt is handled automatically by Prisma @updatedAt
               },
               create: {
                 movementId,
@@ -573,6 +587,7 @@ class UnleashedInventorySync {
       logError('Failed to calculate stock movements from orders', error);
       this.syncStats.errors.push(`Movement calculation: ${error.message}`);
     }
+    */
   }
 
   /**

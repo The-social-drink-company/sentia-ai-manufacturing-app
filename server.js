@@ -43,6 +43,10 @@ if (process.env.RENDER) {
   process.env.DATABASE_POOL_TIMEOUT = '60000';
   // Disable MCP server registration in Render environments to prevent connection errors
   process.env.DISABLE_MCP_SERVER_REGISTRATION = 'true';
+  // CRITICAL: Disable all autonomous testing in production
+  process.env.DISABLE_AUTONOMOUS_TESTING = 'true';
+  process.env.ENABLE_AUTONOMOUS_TESTING = 'false';
+  process.env.AUTO_FIX_ENABLED = 'false';
 }
 
 // Error handling - log but don't exit to keep server running

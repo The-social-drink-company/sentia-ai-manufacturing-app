@@ -499,16 +499,31 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS Middleware
+// CORS Middleware - Updated to include all Render environments
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:9000',
-    'http://localhost:5000',
-    'http://localhost:5177',
-    'https://sentia-manufacturing-production.onrender.com',
-    'https://sentia-manufacturing-development.onrender.com'
-  ],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:9000',
+      'http://localhost:5000',
+      'http://localhost:5177',
+      'https://sentia-manufacturing-production.onrender.com',
+      'https://sentia-manufacturing-development.onrender.com',
+      'https://sentia-manufacturing-testing.onrender.com'
+    ];
+
+    // Allow any Render deployment
+    if (origin.includes('.onrender.com') || origin.includes('localhost')) {
+      callback(null, true);
+    } else if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());

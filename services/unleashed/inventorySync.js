@@ -7,7 +7,7 @@ import cron from 'node-cron';
 import prisma from '../../lib/prisma.js';
 import unleashedIntegration from '../../mcp-server/api-integrations/unleashed-integration.js';
 import { logInfo, logError, logWarn } from '../observability/structuredLogger.js';
-import WebSocketService from '../websocketService.js';
+import websocketService from '../websocketService.js';
 
 class UnleashedInventorySync {
   constructor() {
@@ -176,7 +176,10 @@ class UnleashedInventorySync {
     try {
       logInfo('Syncing stock on hand from Unleashed');
 
-      const result = await unleashedIntegration.getInventoryData({ pageSize: 500 });
+      const result = await unleashedIntegration.getInventoryData({
+        pageSize: 100, // Reduced page size to avoid timeouts
+        maxPages: 20   // Allow more pages if needed
+      });
 
       if (!result.success) {
         throw new Error(result.error);
@@ -184,7 +187,7 @@ class UnleashedInventorySync {
 
       const inventory = result.data.inventory || [];
 
-      // Use transaction for bulk upsert
+      // Use transaction for bulk upsert with increased timeout
       await prisma.$transaction(async (tx) => {
         for (const item of inventory) {
           await tx.inventory.upsert({
@@ -219,6 +222,9 @@ class UnleashedInventorySync {
             }
           });
         }
+      }, {
+        timeout: 30000, // 30 seconds timeout
+        maxWait: 5000 // 5 seconds max wait
       });
 
       this.syncStats.itemsSynced += inventory.length;
@@ -254,7 +260,7 @@ class UnleashedInventorySync {
 
       const purchaseOrders = result.data.purchaseOrders || [];
 
-      // Store purchase orders in database
+      // Store purchase orders in database with increased timeout
       await prisma.$transaction(async (tx) => {
         for (const po of purchaseOrders) {
           await tx.purchaseOrder.upsert({
@@ -289,6 +295,9 @@ class UnleashedInventorySync {
             }
           });
         }
+      }, {
+        timeout: 30000, // 30 seconds timeout
+        maxWait: 5000 // 5 seconds max wait
       });
 
       logInfo(`Synced ${purchaseOrders.length} purchase orders`, {
@@ -318,7 +327,7 @@ class UnleashedInventorySync {
 
       const salesOrders = result.data.salesOrders || [];
 
-      // Store sales orders in database
+      // Store sales orders in database with increased timeout
       await prisma.$transaction(async (tx) => {
         for (const so of salesOrders) {
           await tx.salesOrder.upsert({
@@ -353,6 +362,9 @@ class UnleashedInventorySync {
             }
           });
         }
+      }, {
+        timeout: 30000, // 30 seconds timeout
+        maxWait: 5000 // 5 seconds max wait
       });
 
       logInfo(`Synced ${salesOrders.length} sales orders`, {
@@ -372,7 +384,7 @@ class UnleashedInventorySync {
       logInfo('Syncing stock movements from Unleashed');
 
       const result = await unleashedIntegration.getStockMovements({
-        pageSize: 500
+        pageSize: 100  // Reduced page size to avoid timeouts
       });
 
       if (!result.success) {
@@ -381,7 +393,7 @@ class UnleashedInventorySync {
 
       const movements = result.data.stockMovements || [];
 
-      // Store stock movements in database
+      // Store stock movements in database with increased timeout
       await prisma.$transaction(async (tx) => {
         for (const movement of movements) {
           const movementId = `${movement.productCode}_${movement.completedDate}_${movement.quantity}`;
@@ -417,6 +429,9 @@ class UnleashedInventorySync {
             }
           });
         }
+      }, {
+        timeout: 30000, // 30 seconds timeout
+        maxWait: 5000 // 5 seconds max wait
       });
 
       logInfo(`Synced ${movements.length} stock movements`, {
@@ -514,11 +529,13 @@ class UnleashedInventorySync {
    */
   broadcastSyncStatus(status, data) {
     try {
-      const wsService = WebSocketService.getInstance();
-      wsService.broadcast('unleashed-sync-status', {
-        status,
-        ...data
-      });
+      // Use the imported singleton instance
+      if (websocketService && websocketService.inventoryIO) {
+        websocketService.inventoryIO.emit('unleashed-sync-status', {
+          status,
+          ...data
+        });
+      }
     } catch (error) {
       logError('Failed to broadcast sync status', error);
     }
@@ -529,11 +546,13 @@ class UnleashedInventorySync {
    */
   broadcastInventoryUpdate(data) {
     try {
-      const wsService = WebSocketService.getInstance();
-      wsService.broadcast('inventory-update', {
-        source: 'unleashed',
-        ...data
-      });
+      // Use the imported singleton instance
+      if (websocketService && websocketService.inventoryIO) {
+        websocketService.inventoryIO.emit('inventory-update', {
+          source: 'unleashed',
+          ...data
+        });
+      }
     } catch (error) {
       logError('Failed to broadcast inventory update', error);
     }

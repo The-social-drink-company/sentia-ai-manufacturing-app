@@ -277,8 +277,8 @@ router.post('/sync', async (req, res) => {
       logInfo('Manual sync completed', result);
 
       // Broadcast completion
-      const wsService = WebSocketService.getInstance();
-      wsService.broadcast('unleashed-sync-complete', result);
+      // WebSocketService is already a singleton instance
+      WebSocketService.broadcast('unleashed-sync-complete', result);
     });
 
     res.json({

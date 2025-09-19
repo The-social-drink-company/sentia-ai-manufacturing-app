@@ -13,7 +13,7 @@ services:
     branch: development
 
     buildCommand: npm run render:build
-    startCommand: node production-server.js
+    startCommand: node render-server.js
     healthCheckPath: /health
 
     envVars:
@@ -189,7 +189,7 @@ services:
     branch: test
 
     buildCommand: npm run render:build
-    startCommand: node production-server.js
+    startCommand: node render-server.js
     healthCheckPath: /health
 
     envVars:
@@ -367,7 +367,7 @@ services:
     branch: production
 
     buildCommand: npm run render:build
-    startCommand: node production-server.js
+    startCommand: node render-server.js
     healthCheckPath: /health
 
     envVars:

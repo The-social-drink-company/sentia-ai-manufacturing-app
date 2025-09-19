@@ -5716,8 +5716,21 @@ if (fs.existsSync(join(__dirname, 'dist'))) {
 }
 console.log('='.repeat(60));
 
+// [RENDER FIX] Protect API routes from being served as static files
+// This middleware runs BEFORE express.static to ensure API routes are never handled by static middleware
+app.use((req, res, next) => {
+  // Skip static file middleware for API routes and health checks
+  if (req.path.startsWith('/api/') || req.path === '/health' || req.path.startsWith('/auth/')) {
+    // Skip directly to the next middleware after static files
+    return next('route');
+  }
+  next();
+});
+
 // Serve static files from dist folder with proper MIME types and cache control
+// IMPORTANT: Add index:false to prevent serving index.html for API routes
 app.use(express.static(join(__dirname, 'dist'), {
+  index: false, // Don't serve index.html for directory requests - let catch-all handle it
   maxAge: '1h', // Cache static assets for 1 hour
   etag: true,
   lastModified: true,

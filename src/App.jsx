@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
 // Bulletproof Clerk Authentication - solves server-side auth issues
 // Import auth components but don't use hooks at module level
-// import { useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
+import { useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'

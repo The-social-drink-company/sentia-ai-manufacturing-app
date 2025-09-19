@@ -14,6 +14,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from '@clerk/clerk-react';
+import { clerkConfig } from '../config/clerk';
 
 // Auth Context for bulletproof state management
 const BulletproofAuthContext = createContext(null);
@@ -240,7 +241,15 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
   // If we have a publishable key and not in fallback mode, wrap with ClerkProvider
   if (publishableKey && !useFallback) {
     return (
-      <ClerkProvider publishableKey={publishableKey}>
+      <ClerkProvider
+        publishableKey={publishableKey}
+        navigate={(to) => window.location.href = to}
+        appearance={clerkConfig.appearance}
+        signInUrl={clerkConfig.signInUrl}
+        signUpUrl={clerkConfig.signUpUrl}
+        afterSignInUrl={clerkConfig.afterSignInUrl}
+        afterSignUpUrl={clerkConfig.afterSignUpUrl}
+      >
         <BulletproofAuthContext.Provider value={contextValue}>
           {children}
         </BulletproofAuthContext.Provider>

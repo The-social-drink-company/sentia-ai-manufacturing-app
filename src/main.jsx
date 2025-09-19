@@ -2,6 +2,7 @@ import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { BulletproofClerkProvider } from './auth/BulletproofClerkProvider.jsx'
+import { clerkConfig } from './config/clerk.js'
 import './index.css'
 
 // Performance monitoring with web-vitals
@@ -95,9 +96,13 @@ const LoadingFallback = () => (
 
 // Render app with Bulletproof Authentication
 // This will NEVER fail or show blank screens
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const PUBLISHABLE_KEY = clerkConfig.publishableKey
 
 console.log('Initializing with Clerk key:', PUBLISHABLE_KEY ? 'Present' : 'Not configured - will use fallback')
+console.log('Clerk configuration loaded:', {
+  signInUrl: clerkConfig.signInUrl,
+  afterSignInUrl: clerkConfig.afterSignInUrl
+})
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 

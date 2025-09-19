@@ -13,6 +13,7 @@ import './styles/landing.css'
 import './styles/theme-system.css'
 // import { EnterpriseIntegrationHub } from './core/EnterpriseIntegrationHub' // Temporarily disabled - missing dependencies
 import { logInfo, logWarn } from './services/observability/structuredLogger.js'
+import { clerkConfig } from './config/clerk'  // Import Clerk configuration
 
 // Import Chart.js setup early to ensure registration
 import './lib/chartSetup'

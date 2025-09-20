@@ -122,7 +122,7 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import compression from 'compression';
-import { ClerkExpressWithAuth, ClerkExpressRequireAuth } from '@clerk/express';
+import { clerkMiddleware, requireAuth } from '@clerk/express';
 import multer from 'multer';
 import ExcelJS from 'exceljs';
 import csv from 'csv-parser';
@@ -556,17 +556,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Add Clerk authentication middleware for all requests
-app.use(ClerkExpressWithAuth({
-  // Development mode fallback
-  onError: (error) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Clerk auth error (development mode):', error.message);
-    } else {
-      console.error('Clerk auth error:', error.message);
-    }
-  }
-}));
+// Clerk authentication middleware will be applied below
 
 // Apply enterprise rate limiting to API routes (with dev bypass for specific endpoints)
 const apiLimiterMiddleware = apiLimiter();
@@ -581,11 +571,11 @@ app.use('/api/', (req, res, next) => {
 app.use('/api/auth/', authLimiter());
 logger.info('Rate limiting middleware applied');
 
-// Import and apply Clerk Express middleware
-import { clerkMiddleware, extractUserInfo } from './api/middleware/clerkAuth.js';
+// Import and apply custom Clerk middleware configuration
+import clerkAuth, { extractUserInfo } from './api/middleware/clerkAuth.js';
 
 // Apply Clerk middleware globally to enable authentication
-app.use(clerkMiddleware);
+app.use(clerkAuth);
 logger.info('Clerk Express middleware applied');
 
 // Apply user info extraction for authenticated requests
@@ -862,7 +852,7 @@ const authenticateUser = (req, res, next) => {
   }
 
   // In production, use Clerk's built-in authentication
-  // The ClerkExpressWithAuth middleware already populated req.auth
+  // The clerkMiddleware already populated req.auth
   if (!req.auth || !req.auth.userId) {
     return res.status(401).json({
       error: 'Unauthorized',

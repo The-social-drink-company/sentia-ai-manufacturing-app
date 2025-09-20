@@ -1,5 +1,5 @@
 # Enterprise Codebase Cleanup Script
-# Removes all Railway and Neon artifacts
+# Removes all legacy Railway and database artifacts
 # Creates backup before deletion
 
 Write-Host "==================================" -ForegroundColor Cyan
@@ -63,7 +63,7 @@ $railwayPatterns = @(
     "mcp-server/RAILWAY_*.md"
 )
 
-# Neon files to remove (6 files)
+# Legacy database files to remove (6 files)
 $neonFiles = @(
     "services/database/neonConnection.js",
     "services/database/neonConfig.js",

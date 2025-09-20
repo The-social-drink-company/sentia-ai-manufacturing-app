@@ -20,15 +20,15 @@ RENDER_SERVICE_ID_TEST: "srv-xxxxxxxxxxxxxxxxxxxxx"
 RENDER_SERVICE_ID_PROD: "srv-xxxxxxxxxxxxxxxxxxxxx"
 # Service: sentia-manufacturing-production
 
-# Database Service IDs
-RENDER_DB_ID_DEV: "dpg-xxxxxxxxxxxxxxxxxxxxx"
-# Database: sentia-db-development
+# Database Service IDs (Render PostgreSQL)
+RENDER_DB_ID_DEV: "dpg-d344rkfdiees73a20c50"
+# Database: sentia-manufacturing-dev
 
-RENDER_DB_ID_TEST: "dpg-xxxxxxxxxxxxxxxxxxxxx"
-# Database: sentia-db-testing
+RENDER_DB_ID_TEST: "dpg-d344rkfdiees73a20c40"
+# Database: sentia-manufacturing-test
 
-RENDER_DB_ID_PROD: "dpg-xxxxxxxxxxxxxxxxxxxxx"
-# Database: sentia-db-production
+RENDER_DB_ID_PROD: "dpg-d344rkfdiees73a20c30"
+# Database: sentia-manufacturing-prod
 
 # Render Account Details
 RENDER_OWNER_ID: "usr-xxxxxxxxxxxxxxxxxxxxx"

@@ -299,6 +299,12 @@ class QueryOptimizer {
       const cached = await redisCache.get(cacheKey);
 
       if (!cached) {
+        // Check if model exists in prismaEnhanced before accessing
+        if (!prismaEnhanced[model]) {
+          console.warn(`Model ${model} not found in prismaEnhanced, skipping prefetch`);
+          return { model, count: 0, skipped: true };
+        }
+
         const data = await prismaEnhanced[model].findMany(query);
         await redisCache.set(cacheKey, data, 300); // 5 minute TTL
         return { model, count: data.length };

@@ -25,7 +25,7 @@ The 24/7 Self-Healing Agent is an enterprise-grade monitoring and recovery syste
 - **Structured Logging**: Enterprise-grade logging with multiple log levels
 
 ### 🛡️ **Circuit Breaker Protection**
-- **External API Protection**: Xero, Shopify, Amazon SP-API, Unleashed ERP, Neon Database
+- **External API Protection**: Xero, Shopify, Amazon SP-API, Unleashed ERP, Render PostgreSQL Database
 - **Failure Isolation**: Prevents external service failures from affecting core operations
 - **Automatic Recovery**: Smart retry logic with exponential backoff
 
@@ -96,7 +96,7 @@ The agent monitors and protects against failures in:
 - **Shopify API**: E-commerce data synchronization
 - **Amazon SP-API**: Marketplace sales data
 - **Unleashed ERP**: Inventory management
-- **Neon Database**: PostgreSQL database connections
+- **Render Database**: PostgreSQL database connections
 
 ### Circuit Breaker States
 - **CLOSED**: Normal operation, requests flow through

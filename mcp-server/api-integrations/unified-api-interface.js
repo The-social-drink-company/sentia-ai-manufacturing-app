@@ -50,9 +50,9 @@ class UnifiedAPIInterface extends EventEmitter {
       capabilities: ['inventory-management', 'production-tracking', 'quality-control', 'resource-planning', 'batch-tracking']
     });
 
-    this.registerService('neon-postgresql', {
+    this.registerService('render-postgresql', {
       type: 'database',
-      name: 'Neon PostgreSQL Database',
+      name: 'Render PostgreSQL Database',
       capabilities: ['data-storage', 'analytics', 'reporting', 'transactional']
     });
     
@@ -133,7 +133,7 @@ class UnifiedAPIInterface extends EventEmitter {
   async testConnection(serviceId) {
     // Simulate connection testing - in production this would make real API calls
     switch (serviceId) {
-      case 'neon-postgresql':
+      case 'render-postgresql':
         return true; // Database is always available in development
       case 'demand-forecasting':
         return true; // Internal service

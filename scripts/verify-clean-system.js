@@ -115,8 +115,8 @@ class SystemVerifier {
         keys: ['AMAZON_SELLER_ID', 'AMAZON_MARKETPLACE_ID', 'AMAZON_ACCESS_KEY'],
         status: 'unknown'
       },
-      { 
-        name: 'Database (Neon PostgreSQL)', 
+      {
+        name: 'Database (Render PostgreSQL)',
         keys: ['DATABASE_URL'],
         status: 'unknown'
       },
@@ -206,7 +206,7 @@ class SystemVerifier {
     console.log('  ✅ Unleashed ERP: Real inventory/product data');  
     console.log('  ✅ Xero: Real financial/accounting data');
     console.log('  ✅ Clerk: Real user authentication');
-    console.log('  ✅ Neon PostgreSQL: Real business database');
+    console.log('  ✅ Render PostgreSQL: Real business database');
     console.log('');
     console.log('CLEANUP SUMMARY:');
     console.log('  ❌ Removed all test@*.com accounts');

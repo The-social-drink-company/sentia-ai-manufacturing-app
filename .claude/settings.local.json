@@ -261,7 +261,9 @@
       "Bash(PORT=5000 timeout 5 node test-minimal.js)",
       "Bash(render --help)",
       "Read(//c/Users/User/OneDrive - Q&A ERP Solutions (Pty) Ltd (1)/185 - Working Capital Production SaaS App/Final implementation reports - fixes still needed/**)",
-      "Bash(./render-cli.exe --version)"
+      "Bash(./render-cli.exe --version)",
+      "Bash(chmod:*)",
+      "Bash(./verify-production-fix.sh:*)"
     ],
     "deny": [],
     "ask": []

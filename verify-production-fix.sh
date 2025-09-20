@@ -1,84 +1,74 @@
 #!/bin/bash
 
-# Production Deployment Verification Script
-# Run this after adding environment variables to Render
-
 echo "=========================================="
-echo "PRODUCTION DEPLOYMENT VERIFICATION"
+echo "PRODUCTION FIX VERIFICATION"
 echo "=========================================="
 echo ""
-
-# Color codes for output
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-PROD_URL="https://sentia-manufacturing-production.onrender.com"
-
-echo "Checking production status..."
+echo "Timestamp: $(date)"
 echo ""
 
-# Function to check endpoint
-check_endpoint() {
-    local endpoint=$1
-    local description=$2
+# Check Git status
+echo "1. GIT STATUS"
+echo "-------------------------------------------"
+git fetch origin production 2>/dev/null
+local_commit=$(git rev-parse production)
+remote_commit=$(git rev-parse origin/production)
 
-    echo -n "Testing $description: "
-
-    response=$(curl -s -o /dev/null -w "%{http_code}" "$PROD_URL$endpoint" 2>/dev/null)
-
-    if [ "$response" = "200" ]; then
-        echo -e "${GREEN}✓ SUCCESS${NC} (HTTP $response)"
-        return 0
-    elif [ "$response" = "502" ]; then
-        echo -e "${RED}✗ FAILED${NC} (HTTP 502 - Still deploying or missing env vars)"
-        return 1
-    else
-        echo -e "${YELLOW}⚠ WARNING${NC} (HTTP $response)"
-        return 1
-    fi
-}
-
-# Check various endpoints
-check_endpoint "/health" "Health Check"
-HEALTH_STATUS=$?
-
-check_endpoint "/" "Main Application"
-MAIN_STATUS=$?
-
-check_endpoint "/api/status" "API Status"
-API_STATUS=$?
-
-echo ""
-echo "=========================================="
-
-# Check if we can get JSON from health endpoint
-echo "Detailed Health Check:"
-health_response=$(curl -s "$PROD_URL/health" 2>/dev/null)
-
-# Check if response is JSON
-if echo "$health_response" | grep -q '"status"'; then
-    echo -e "${GREEN}✓ Health endpoint returning valid JSON:${NC}"
-    echo "$health_response" | python -m json.tool 2>/dev/null || echo "$health_response"
-    echo ""
-    echo -e "${GREEN}✅ PRODUCTION IS OPERATIONAL!${NC}"
+if [ "$local_commit" = "$remote_commit" ]; then
+    echo "✓ Production branch synced with origin"
 else
-    echo -e "${RED}✗ Health endpoint not returning JSON${NC}"
-    echo "Response preview: $(echo "$health_response" | head -c 100)"
-    echo ""
-    echo -e "${RED}❌ PRODUCTION STILL DOWN${NC}"
-    echo ""
-    echo "Possible causes:"
-    echo "1. Environment variables not yet added"
-    echo "2. Deployment still in progress (wait 2-5 minutes)"
-    echo "3. Build failed - check Render dashboard logs"
+    echo "✗ Production branch differs from origin"
 fi
 
 echo ""
-echo "=========================================="
-echo "Next steps if still failing:"
-echo "1. Verify all Clerk env vars are added in Render"
-echo "2. Check deployment logs in Render dashboard"
-echo "3. Trigger manual deploy if needed"
-echo "=========================================="
+echo "2. SERVICE STATUS"
+echo "-------------------------------------------"
+
+# Check production
+prod_status=$(curl -s -o /dev/null -w "%{http_code}" https://sentia-manufacturing-production.onrender.com/health)
+echo -n "Production: "
+if [ "$prod_status" == "200" ]; then
+    echo "✓ OK (200)"
+elif [ "$prod_status" == "502" ]; then
+    echo "✗ Bad Gateway (502) - NEEDS ENV VARS"
+else
+    echo "Status: $prod_status"
+fi
+
+# Check development
+dev_status=$(curl -s -o /dev/null -w "%{http_code}" https://sentia-manufacturing-development.onrender.com/health)
+echo -n "Development: "
+if [ "$dev_status" == "200" ]; then
+    echo "✓ OK (200)"
+else
+    echo "Status: $dev_status"
+fi
+
+# Check MCP
+mcp_status=$(curl -s -o /dev/null -w "%{http_code}" https://mcp-server-tkyu.onrender.com/health)
+echo -n "MCP Server: "
+if [ "$mcp_status" == "200" ]; then
+    echo "✓ OK (200)"
+else
+    echo "Status: $mcp_status"
+fi
+
+echo ""
+echo "3. DIAGNOSIS"
+echo "-------------------------------------------"
+
+if [ "$prod_status" == "502" ]; then
+    echo "ISSUE: Production returning 502"
+    echo ""
+    echo "REQUIRED ACTIONS:"
+    echo "1. Open https://dashboard.render.com"
+    echo "2. Go to sentia-manufacturing-production service"
+    echo "3. Add these environment variables:"
+    echo "   VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"
+    echo "   CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"
+    echo "   VITE_API_BASE_URL=https://sentia-manufacturing-production.onrender.com/api"
+    echo "4. Click Save Changes"
+    echo "5. Wait 2-5 minutes for deployment"
+else
+    echo "SUCCESS: Production is operational!"
+fi

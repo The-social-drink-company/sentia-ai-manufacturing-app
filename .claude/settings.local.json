@@ -263,7 +263,9 @@
       "Read(//c/Users/User/OneDrive - Q&A ERP Solutions (Pty) Ltd (1)/185 - Working Capital Production SaaS App/Final implementation reports - fixes still needed/**)",
       "Bash(./render-cli.exe --version)",
       "Bash(chmod:*)",
-      "Bash(./verify-production-fix.sh:*)"
+      "Bash(./verify-production-fix.sh:*)",
+      "Bash(while true)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

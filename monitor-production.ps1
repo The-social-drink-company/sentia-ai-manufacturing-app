@@ -68,20 +68,20 @@ while ($attempt -lt $MaxAttempts) {
     # Format status message
     if ($healthStatus.Success -and $healthStatus.Code -eq 200) {
         if ($healthStatus.Type -like "*json*") {
-            $statusMsg = "✓ HEALTHY (JSON Response)"
+            $statusMsg = "OK - HEALTHY (JSON Response)"
             $statusColor = "Green"
         } else {
-            $statusMsg = "⚠ Responding (HTML instead of JSON)"
+            $statusMsg = "WARNING - Responding (HTML instead of JSON)"
             $statusColor = "Yellow"
         }
     } elseif ($healthStatus.Code -eq 502) {
-        $statusMsg = "✗ 502 Bad Gateway - Awaiting env vars"
+        $statusMsg = "ERROR - 502 Bad Gateway - Awaiting env vars"
         $statusColor = "Red"
     } elseif ($healthStatus.Code -eq 503) {
-        $statusMsg = "⚠ 503 Service starting up..."
+        $statusMsg = "WARNING - 503 Service starting up..."
         $statusColor = "Yellow"
     } else {
-        $statusMsg = "✗ Error: HTTP $($healthStatus.Code)"
+        $statusMsg = "ERROR - HTTP $($healthStatus.Code)"
         $statusColor = "Red"
     }
 
@@ -94,24 +94,24 @@ while ($attempt -lt $MaxAttempts) {
         # If healthy, perform additional checks
         if ($healthStatus.Success -and $healthStatus.Code -eq 200 -and $healthStatus.Type -like "*json*") {
             Write-Host ""
-            Write-Host "🎉 PRODUCTION IS OPERATIONAL! 🎉" -ForegroundColor Green
+            Write-Host "SUCCESS - PRODUCTION IS OPERATIONAL!" -ForegroundColor Green
             Write-Host ""
             Write-Host "Additional checks:" -ForegroundColor Cyan
 
             # Check API status
             $apiStatus = Get-ServiceStatus "https://sentia-manufacturing-production.onrender.com/api/status"
             if ($apiStatus.Success) {
-                Write-Host "  ✓ API Status: OK" -ForegroundColor Green
+                Write-Host "  [OK] API Status: Working" -ForegroundColor Green
             } else {
-                Write-Host "  ✗ API Status: Error" -ForegroundColor Red
+                Write-Host "  [ERROR] API Status: Failed" -ForegroundColor Red
             }
 
             # Check main page
             $mainStatus = Get-ServiceStatus "https://sentia-manufacturing-production.onrender.com"
             if ($mainStatus.Success) {
-                Write-Host "  ✓ Main Page: OK" -ForegroundColor Green
+                Write-Host "  [OK] Main Page: Working" -ForegroundColor Green
             } else {
-                Write-Host "  ✗ Main Page: Error" -ForegroundColor Red
+                Write-Host "  [ERROR] Main Page: Failed" -ForegroundColor Red
             }
 
             Write-Host ""

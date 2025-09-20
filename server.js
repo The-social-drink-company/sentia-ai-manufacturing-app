@@ -556,6 +556,21 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// CRITICAL: Health check endpoint MUST be defined BEFORE Clerk middleware
+// This ensures Render's health checks can pass without authentication
+app.get('/api/health', (req, res) => {
+  // Simple health check that always returns 200 for Render
+  res.status(200).json({
+    status: 'healthy',
+    server: 'server.js (PRODUCTION)',
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    environment: process.env.NODE_ENV || 'development',
+    render: true,
+    message: 'Health check passed - application is running'
+  });
+});
+
 // Add Clerk authentication middleware for all requests
 app.use(clerkMiddleware({
   // Development mode fallback
@@ -1052,63 +1067,7 @@ app.get('/api/debug/env', (req, res) => {
 //   res.json(health);
 // });
 
-// Basic health check for Render deployment - ALWAYS returns 200
-app.get('/api/health', async (req, res) => {
-  // CRITICAL: Always return 200 to prevent Render 502 errors
-  try {
-    let health = {
-      status: 'healthy',
-      server: 'server.js (PRODUCTION)',
-      timestamp: new Date().toISOString(),
-      port: PORT,
-      environment: process.env.NODE_ENV || 'development'
-    };
-
-    // Try to get comprehensive health with timeout
-    try {
-      const comprehensiveHealth = await Promise.race([
-        healthMonitorService.getComprehensiveHealth(),
-        new Promise((resolve) => setTimeout(() => resolve(null), 1000))
-      ]);
-
-      if (comprehensiveHealth) {
-        health = { ...health, ...comprehensiveHealth };
-      }
-    } catch (e) {
-      // Continue with basic health
-    }
-
-    // Try database check with timeout
-    try {
-      await Promise.race([
-        prisma.$queryRaw`SELECT 1`,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 500))
-      ]);
-      health.database = {
-        status: 'connected',
-        provider: 'PostgreSQL (Render)'
-      };
-    } catch (dbError) {
-      health.database = {
-        status: 'disconnected',
-        note: 'Database unavailable but service running'
-      };
-    }
-
-    // Always return 200 with health data
-    res.status(200).json(health);
-  } catch (error) {
-    console.error('Health check error (returning 200):', error);
-
-    // Even on error, return 200 with degraded status
-    res.status(200).json({
-      status: 'degraded',
-      server: 'server.js (PRODUCTION)',
-      note: 'Service running in degraded mode',
-      timestamp: new Date().toISOString()
-    });
-  }
-});
+// Health check endpoint moved to top of file (before Clerk middleware)
 
 // [RENDER FIX] Main health check endpoint - MUST come before static file serving
 // This endpoint is critical for Render health monitoring

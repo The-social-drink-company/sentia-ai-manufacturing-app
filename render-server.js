@@ -32,8 +32,8 @@ console.log('='.repeat(70));
 
 // CRITICAL: Set Clerk key for client
 if (!process.env.VITE_CLERK_PUBLISHABLE_KEY) {
-  process.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
-  console.log('WARNING: Using default Clerk publishable key');
+  process.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+  console.log('WARNING: Using default Clerk publishable key (production)');
 }
 
 // Create Express app
@@ -133,7 +133,7 @@ const fallbackHTML = `<!DOCTYPE html>
   <title>Sentia Manufacturing Dashboard</title>
   <script>
     // Set Clerk publishable key for client
-    window.VITE_CLERK_PUBLISHABLE_KEY = '${process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk'}';
+    window.VITE_CLERK_PUBLISHABLE_KEY = '${process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ'}';
     window.VITE_MCP_SERVER_URL = '${process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'}';
   </script>
   <style>

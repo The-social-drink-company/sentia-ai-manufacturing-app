@@ -556,10 +556,23 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CRITICAL: Health check endpoint MUST be defined BEFORE Clerk middleware
+// CRITICAL: Health check endpoints MUST be defined BEFORE ANY middleware
 // This ensures Render's health checks can pass without authentication
 app.get('/api/health', (req, res) => {
   // Simple health check that always returns 200 for Render
+  res.status(200).json({
+    status: 'healthy',
+    server: 'server.js (PRODUCTION)',
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    environment: process.env.NODE_ENV || 'development',
+    render: true,
+    message: 'Health check passed - application is running'
+  });
+});
+
+// Backup health endpoint
+app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
     server: 'server.js (PRODUCTION)',

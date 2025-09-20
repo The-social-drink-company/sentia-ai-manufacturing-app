@@ -26,8 +26,8 @@ import {
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 // Lazy-loaded components
-const Dashboard = lazy(() => import('./components/Dashboard'));
-const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
+const Dashboard = lazy(() => import("./components/dashboard/ManufacturingDashboard.jsx"));
+const WorkingCapital = lazy(() => import('./components/WorkingCapital.jsx'));
 
 // Simple loading component
 const SimpleLoader = () => (

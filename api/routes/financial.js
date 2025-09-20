@@ -1,7 +1,7 @@
 import express from 'express';
 import NodeCache from 'node-cache';
 import prisma from '../../lib/prisma.js';
-import { authenticate, requireRole } from '../middleware/auth.js';
+import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
@@ -61,7 +61,7 @@ const financialSchemas = {
  * Get financial dashboard overview
  */
 router.get('/dashboard',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = 'month' } = req.query;
@@ -169,7 +169,7 @@ router.get('/dashboard',
  * Get cash flow statement
  */
 router.get('/cashflow',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const query = financialSchemas.cashFlow.query.parse(req.query);
@@ -247,7 +247,7 @@ router.get('/cashflow',
  * Get working capital metrics with proper error handling
  */
 router.get('/working-capital',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     console.log('[Working Capital API] Request received');
@@ -460,7 +460,7 @@ router.get('/working-capital',
  * Calculate working capital metrics
  */
 router.post('/working-capital/calculate',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager']),
   rateLimiters.expensive,
   asyncHandler(async (req, res) => {
@@ -562,7 +562,7 @@ router.post('/working-capital/calculate',
  * Get invoices with filters
  */
 router.get('/invoices',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { status, startDate, endDate, customerId, limit = 50, offset = 0 } = req.query;
@@ -630,7 +630,7 @@ router.get('/invoices',
  * Create new invoice
  */
 router.post('/invoices',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -695,7 +695,7 @@ router.post('/invoices',
  * Get expenses with filters
  */
 router.get('/expenses',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { category, vendor, startDate, endDate, limit = 50, offset = 0 } = req.query;
@@ -759,7 +759,7 @@ router.get('/expenses',
  * Create new expense
  */
 router.post('/expenses',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'operator']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -799,7 +799,7 @@ router.post('/expenses',
  * Get profitability analysis
  */
 router.get('/profitability',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = '12m', groupBy = 'month' } = req.query;
@@ -873,7 +873,7 @@ router.get('/profitability',
  * Get comprehensive financial overview
  */
 router.get('/overview',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const cacheKey = `financial-overview-${req.userId}`;

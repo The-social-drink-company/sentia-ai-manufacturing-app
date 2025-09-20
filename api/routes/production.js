@@ -1,7 +1,7 @@
 import express from 'express';
 import NodeCache from 'node-cache';
 import prisma from '../../lib/prisma.js';
-import { authenticate, requireRole } from '../middleware/auth.js';
+import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import {
@@ -21,7 +21,7 @@ const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
  * Get production metrics with filters
  */
 router.get('/metrics',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     // Validate query parameters
@@ -120,7 +120,7 @@ router.get('/metrics',
  * Create new production metric entry
  */
 router.post('/metrics',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'operator']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -152,7 +152,7 @@ router.post('/metrics',
  * Get production schedule
  */
 router.get('/schedule',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     // Validate query parameters
@@ -205,7 +205,7 @@ router.get('/schedule',
  * Create new production schedule entry
  */
 router.post('/schedule',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -263,7 +263,7 @@ router.post('/schedule',
  * Update production schedule entry
  */
 router.put('/schedule/:id',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -296,7 +296,7 @@ router.put('/schedule/:id',
  * Get all production lines
  */
 router.get('/lines',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const lines = await prisma.productionLine.findMany({
@@ -322,7 +322,7 @@ router.get('/lines',
  * Create new production line
  */
 router.post('/lines',
-  authenticate,
+  requireAuth,
   requireRole(['admin']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -358,7 +358,7 @@ router.post('/lines',
  * Get efficiency analytics
  */
 router.get('/efficiency',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = '7d' } = req.query;
@@ -404,7 +404,7 @@ router.get('/efficiency',
  * Create batch production entry
  */
 router.post('/batch',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'operator']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -446,7 +446,7 @@ router.post('/batch',
  * Get downtime analysis
  */
 router.get('/downtime',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { lineId, startDate, endDate } = req.query;

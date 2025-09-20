@@ -23,7 +23,7 @@ const authenticate = (req, res, next) => {
     return next();
   }
 
-  // In production or when Clerk keys are available, use Clerk's requirement middleware
+  // In production or when Clerk keys are available, use Clerk's requireAuth middleware
   return requireAuth()(req, res, (err) => {
     if (err) {
       console.error('Clerk authentication error:', err);

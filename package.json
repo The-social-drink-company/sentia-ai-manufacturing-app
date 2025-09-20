@@ -9,6 +9,7 @@
     "dev:server": "nodemon server.js",
     "prebuild": "npm ls vite || npm install vite",
     "build": "npm install vite --no-save && npx vite build && npx prisma generate && (npx prisma db push --accept-data-loss --skip-generate || echo 'DB sync done')",
+    "build:optimized": "node scripts/optimize-build.js",
     "build:fallback": "vite build && prisma generate && prisma db push --accept-data-loss --skip-generate || true",
     "build:vite": "./node_modules/.bin/vite build || vite build",
     "build:wrapper": "node scripts/render-build-wrapper.js",

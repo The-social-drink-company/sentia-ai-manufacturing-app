@@ -122,7 +122,7 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import compression from 'compression';
-import { ClerkExpressWithAuth, ClerkExpressRequireAuth } from '@clerk/express';
+import { clerkMiddleware, requireAuth } from '@clerk/express';
 import multer from 'multer';
 import ExcelJS from 'exceljs';
 import csv from 'csv-parser';
@@ -167,6 +167,7 @@ import qualityRoutes from './api/routes/quality.js';
 import userRoutes from './api/routes/user.js';
 import supplyChainRoutes from './api/routes/supply-chain.js';
 import maintenanceRoutes from './api/routes/maintenance.js';
+import performanceRoutes from './api/routes/performance.js';
 // Enterprise Components - Temporarily disabled for deployment fix
 // import EnterpriseSecurityFramework from './services/security/enterpriseSecurityFramework.js';
 // import EnterpriseIntegrationHub from './services/integrations/enterpriseIntegrationHub.js';
@@ -556,7 +557,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Add Clerk authentication middleware for all requests
-app.use(ClerkExpressWithAuth({
+app.use(clerkMiddleware({
   // Development mode fallback
   onError: (error) => {
     if (process.env.NODE_ENV === 'development') {
@@ -580,11 +581,11 @@ app.use('/api/', (req, res, next) => {
 app.use('/api/auth/', authLimiter());
 logger.info('Rate limiting middleware applied');
 
-// Import and apply Clerk Express middleware
-import { clerkMiddleware, extractUserInfo } from './api/middleware/clerkAuth.js';
+// Import and apply custom Clerk middleware configuration
+import clerkAuth, { extractUserInfo } from './api/middleware/clerkAuth.js';
 
 // Apply Clerk middleware globally to enable authentication
-app.use(clerkMiddleware);
+app.use(clerkAuth);
 logger.info('Clerk Express middleware applied');
 
 // Apply user info extraction for authenticated requests
@@ -861,7 +862,7 @@ const authenticateUser = (req, res, next) => {
   }
 
   // In production, use Clerk's built-in authentication
-  // The ClerkExpressWithAuth middleware already populated req.auth
+  // The clerkMiddleware already populated req.auth
   if (!req.auth || !req.auth.userId) {
     return res.status(401).json({
       error: 'Unauthorized',
@@ -1196,6 +1197,7 @@ app.use('/api/quality', qualityRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/supply-chain', supplyChainRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
+app.use('/api/performance', performanceRoutes);
 
 // Shopify Integration Routes for real sales data
 import shopifyRouter, { startShopifySync } from './api/routes/shopify.js';

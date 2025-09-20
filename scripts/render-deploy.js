@@ -83,7 +83,7 @@ async function triggerDeploy(serviceId) {
 async function main() {
   console.log('Step 1: Pushing to GitHub...');
   try {
-    const branch = environment === 'production' ? 'main' : environment;
+    const branch = environment === 'production' ? 'production' : environment;
     execSync(`git push origin ${branch}`, { stdio: 'inherit' });
     console.log('Code pushed successfully');
   } catch (error) {

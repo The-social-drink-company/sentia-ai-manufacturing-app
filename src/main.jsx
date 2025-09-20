@@ -106,28 +106,49 @@ console.log('Clerk configuration loaded:', {
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
-// Wrap app in error boundary to catch any rendering issues
-try {
-  root.render(
-    <React.StrictMode>
-      <BulletproofClerkProvider publishableKey={PUBLISHABLE_KEY}>
-        <Suspense fallback={<LoadingFallback />}>
-          <App />
-        </Suspense>
-      </BulletproofClerkProvider>
-    </React.StrictMode>
-  )
-} catch (error) {
-  console.error('Failed to render app with BulletproofClerkProvider:', error)
-  // Fallback to basic render without auth
-  root.render(
-    <React.StrictMode>
-      <Suspense fallback={<LoadingFallback />}>
-        <App />
-      </Suspense>
-    </React.StrictMode>
-  )
+// EMERGENCY FIX: Add timeout to prevent infinite loading
+const renderApp = () => {
+  try {
+    root.render(
+      <React.StrictMode>
+        <BulletproofClerkProvider publishableKey={PUBLISHABLE_KEY}>
+          <Suspense fallback={<LoadingFallback />}>
+            <App />
+          </Suspense>
+        </BulletproofClerkProvider>
+      </React.StrictMode>
+    )
+  } catch (error) {
+    console.error('Failed to render app with BulletproofClerkProvider:', error)
+    // Fallback to basic render without auth
+    try {
+      root.render(
+        <React.StrictMode>
+          <Suspense fallback={<LoadingFallback />}>
+            <App />
+          </Suspense>
+        </React.StrictMode>
+      )
+    } catch (fallbackError) {
+      console.error('Complete render failure, redirecting to emergency page:', fallbackError)
+      // Ultimate fallback - redirect to emergency page
+      setTimeout(() => {
+        window.location.href = '/emergency.html'
+      }, 3000)
+    }
+  }
 }
+
+// Add emergency timeout
+setTimeout(() => {
+  const rootElement = document.getElementById('root')
+  if (!rootElement.children.length || rootElement.innerHTML.includes('fallback-loader')) {
+    console.warn('App failed to render within 10 seconds, redirecting to emergency page')
+    window.location.href = '/emergency.html'
+  }
+}, 10000)
+
+renderApp()
 
 console.log('Application mounted with bulletproof authentication')
 

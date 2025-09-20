@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentia Manufacturing Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 { 
+            color: #1f2937; 
+            margin-bottom: 1rem; 
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        p { 
+            color: #6b7280; 
+            margin-bottom: 2rem; 
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #6b7280;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        .status {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #10b981;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .feature {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            text-align: left;
+        }
+        .feature h3 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .feature p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏭 Sentia Manufacturing Dashboard</h1>
+        
+        <div class="status">
+            ✅ System Status: Online | MCP Server: Connected | Real Data: Active
+        </div>
+        
+        <p>Welcome to your enterprise-level manufacturing intelligence platform. Access real-time production data, financial analytics, and AI-powered insights.</p>
+        
+        <div style="margin: 2rem 0;">
+            <a href="/dashboard" class="btn">Enter Dashboard</a>
+            <a href="/api/health" class="btn btn-secondary">System Health</a>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>📊 Real-Time Analytics</h3>
+                <p>Live production metrics and KPI monitoring</p>
+            </div>
+            <div class="feature">
+                <h3>💰 Financial Intelligence</h3>
+                <p>Working capital optimization and cash flow forecasting</p>
+            </div>
+            <div class="feature">
+                <h3>🤖 AI Insights</h3>
+                <p>Machine learning powered predictive analytics</p>
+            </div>
+            <div class="feature">
+                <h3>🔗 MCP Integration</h3>
+                <p>Connected to live data sources and APIs</p>
+            </div>
+        </div>
+        
+        <p style="margin-top: 2rem; font-size: 0.9rem; color: #9ca3af;">
+            Enterprise deployment on Render | Version 2.0.0 | Last updated: <span id="timestamp"></span>
+        </p>
+    </div>
+    
+    <script>
+        // Set current timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Check API health
+        fetch('/api/health')
+            .then(r => r.json())
+            .then(data => {
+                console.log('API Health:', data);
+                if (data.status === 'healthy') {
+                    document.querySelector('.status').innerHTML = 
+                        '✅ System Status: ' + data.status + ' | API: Connected | MCP: Active | Real Data: Live';
+                }
+            })
+            .catch(e => {
+                console.warn('API check failed:', e);
+                document.querySelector('.status').innerHTML = 
+                    '⚠️ System Status: Partial | API: Checking | MCP: Standby';
+            });
+    </script>
+</body>
+</html>

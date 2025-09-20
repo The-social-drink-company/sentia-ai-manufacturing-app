@@ -119,7 +119,7 @@
     "@azure/msal-react": "^3.0.19",
     "@babel/runtime": "^7.28.4",
     "@clerk/backend": "^2.14.0",
-    "@clerk/clerk-react": "^5.46.1",
+    "@clerk/clerk-react": "^5.47.0",
     "@clerk/express": "^1.7.31",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",

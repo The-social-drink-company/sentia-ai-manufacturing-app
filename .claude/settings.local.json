@@ -268,7 +268,9 @@
       "Bash(done)",
       "Bash(start https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/env)",
       "Bash(notepad:*)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(start https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/deploys)",
+      "Bash(PORT=10000 timeout 5 node render-ultra-minimal.js)"
     ],
     "deny": [],
     "ask": []

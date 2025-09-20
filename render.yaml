@@ -12,8 +12,8 @@ services:
     plan: free # Free for development
     branch: development
 
-    buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: node render-entry.js
+    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    startCommand: node server.js
     healthCheckPath: /health
 
     envVars:
@@ -202,8 +202,8 @@ services:
     plan: starter # $7/month for reliable testing
     branch: test
 
-    buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: node render-entry.js
+    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    startCommand: node server.js
     healthCheckPath: /health
 
     envVars:
@@ -394,8 +394,8 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: node render-entry.js
+    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    startCommand: node server.js
     healthCheckPath: /health
 
     envVars:

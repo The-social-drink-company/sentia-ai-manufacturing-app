@@ -6,16 +6,32 @@ import { logError, logInfo } from '../../services/observability/structuredLogger
  * Replaces custom JWT verification with official Clerk middleware
  */
 
-// Initialize Clerk middleware with configuration
+// Initialize Clerk middleware with comprehensive configuration
 const clerkAuth = clerkMiddleware({
-  // Configure publishable key
-  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY || process.env.CLERK_PUBLISHABLE_KEY,
+  // Configure publishable key with fallbacks
+  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY || 
+                  process.env.CLERK_PUBLISHABLE_KEY || 
+                  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+                  'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
   
   // Configure secret key
   secretKey: process.env.CLERK_SECRET_KEY,
   
   // Enable debug mode in development
-  debug: process.env.NODE_ENV === 'development'
+  debug: process.env.NODE_ENV === 'development',
+  
+  // Advanced Clerk configuration
+  afterSignInUrl: process.env.VITE_CLERK_AFTER_SIGN_IN_URL || '/dashboard',
+  afterSignUpUrl: process.env.VITE_CLERK_AFTER_SIGN_UP_URL || '/dashboard',
+  
+  // Enterprise features
+  enableOrganizations: process.env.CLERK_ENABLE_ORGANIZATIONS === 'true',
+  enableMultiDomain: process.env.CLERK_ENABLE_MULTI_DOMAIN === 'true',
+  
+  // Security settings
+  enableWebhooks: process.env.CLERK_ENABLE_WEBHOOKS === 'true',
+  enableAnalytics: process.env.CLERK_ENABLE_ANALYTICS === 'true',
+  enableAuditLogs: process.env.CLERK_ENABLE_AUDIT_LOGS === 'true'
 });
 
 /**

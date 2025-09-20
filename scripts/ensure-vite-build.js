@@ -25,11 +25,32 @@ async function ensureVite() {
   } catch (error) {
     console.log('Vite not found, installing...');
     try {
-      await execAsync('npm install vite --save-dev', { cwd: projectRoot });
-      console.log('Vite installed successfully');
+      // Try multiple install methods
+      const installCommands = [
+        'npm install vite@latest --no-save',
+        'npm install vite --save-dev --legacy-peer-deps',
+        'npm install vite --force'
+      ];
+
+      let installed = false;
+      for (const cmd of installCommands) {
+        try {
+          console.log(`Attempting: ${cmd}`);
+          await execAsync(cmd, { cwd: projectRoot });
+          console.log('Vite installed successfully');
+          installed = true;
+          break;
+        } catch (e) {
+          console.log(`Failed: ${e.message}`);
+        }
+      }
+
+      if (!installed) {
+        throw new Error('All install attempts failed');
+      }
     } catch (installError) {
       console.error('Failed to install vite:', installError.message);
-      process.exit(1);
+      // Don't exit - try to continue anyway
     }
   }
 }

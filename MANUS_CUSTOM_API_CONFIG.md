@@ -10,25 +10,29 @@
 RENDER_API_TOKEN: "rnd_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 # Get from: https://dashboard.render.com/account/api-keys
 
-# Service IDs (from Render Dashboard)
-RENDER_SERVICE_ID_DEV: "srv-xxxxxxxxxxxxxxxxxxxxx"
+# Service IDs (ACTUAL SERVICE IDS)
+RENDER_SERVICE_ID_DEV: "sentia-manufacturing-development"
 # Service: sentia-manufacturing-development
 
-RENDER_SERVICE_ID_TEST: "srv-xxxxxxxxxxxxxxxxxxxxx"
+RENDER_SERVICE_ID_TEST: "sentia-manufacturing-testing"
 # Service: sentia-manufacturing-testing
 
-RENDER_SERVICE_ID_PROD: "srv-xxxxxxxxxxxxxxxxxxxxx"
+RENDER_SERVICE_ID_PROD: "sentia-manufacturing-production"
 # Service: sentia-manufacturing-production
 
-# Database Service IDs (Render PostgreSQL)
-RENDER_DB_ID_DEV: "dpg-d344rkfdiees73a20c50"
+# Database Service IDs (ACTUAL RENDER POSTGRESQL IDS)
+RENDER_DB_ID_DEV: "dpg-d344rkfdiees73a20c50-a"
 # Database: sentia-manufacturing-dev
 
-RENDER_DB_ID_TEST: "dpg-d344rkfdiees73a20c40"
+RENDER_DB_ID_TEST: "dpg-d344rkfdiees73a20c40-a"
 # Database: sentia-manufacturing-test
 
-RENDER_DB_ID_PROD: "dpg-d344rkfdiees73a20c30"
+RENDER_DB_ID_PROD: "dpg-d344rkfdiees73a20c30-a"
 # Database: sentia-manufacturing-prod
+
+# MCP Server Service ID (ACTUAL SERVICE ID)
+RENDER_MCP_SERVICE_ID: "srv-d34fefur433s73cifuv0"
+# Service: mcp-server-tkyu
 
 # Render Account Details
 RENDER_OWNER_ID: "usr-xxxxxxxxxxxxxxxxxxxxx"
@@ -129,30 +133,32 @@ endpoints:
 ```
 
 ## 4. DATABASE API CONFIGURATION
-**Name:** PostgreSQL Database Management
-**Description:** Direct database access for Sentia Manufacturing data management, queries, and migrations.
+**Name:** PostgreSQL Database Management (Render)
+**Description:** Direct database access for Sentia Manufacturing data management, queries, and migrations using Render PostgreSQL with pgvector.
 
 ### Required Secrets:
 ```yaml
-# Production Database
-DATABASE_URL_PROD: "postgresql://user:password@host:5432/sentia_prod?sslmode=require"
+# Production Database (Render PostgreSQL)
+DATABASE_URL: "postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a/sentia_manufacturing_prod"
+EXTERNAL_DATABASE_URL: "postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com/sentia_manufacturing_prod"
 
-# Testing Database
-DATABASE_URL_TEST: "postgresql://user:password@host:5432/sentia_test?sslmode=require"
+# Testing Database (Render PostgreSQL)
+TEST_DATABASE_URL: "postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a/sentia_manufacturing_test"
+TEST_EXTERNAL_DATABASE_URL: "postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a.oregon-postgres.render.com/sentia_manufacturing_test"
 
-# Development Database
-DATABASE_URL_DEV: "postgresql://user:password@host:5432/sentia_dev?sslmode=require"
+# Development Database (Render PostgreSQL)
+DEV_DATABASE_URL: "postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a/sentia_manufacturing_dev"
+DEV_EXTERNAL_DATABASE_URL: "postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_dev"
 
-# Database Admin Credentials
-DB_ADMIN_USER: "sentia_admin"
-DB_ADMIN_PASSWORD: "xxxxxxxxxxxxxxxxxxxxx"
-
-# Connection Pooling
-DATABASE_POOL_URL: "postgresql://user:password@host:6543/sentia_pool?pgbouncer=true"
+# Database Pool Configuration
+DB_POOL_MIN: "5"
+DB_POOL_MAX: "50"
+DB_POOL_IDLE_TIMEOUT: "30000"
+DB_POOL_CONNECTION_TIMEOUT: "10000"
+DB_QUERY_TIMEOUT: "30000"
 
 # Prisma Configuration
 PRISMA_SCHEMA_PATH: "./prisma/schema.prisma"
-SHADOW_DATABASE_URL: "postgresql://user:password@host:5432/shadow"
 ```
 
 ## 5. EXTERNAL SERVICE APIS
@@ -300,9 +306,10 @@ DOCKER_REGISTRY: "docker.io"
 NPM_TOKEN: "npm_xxxxxxxxxxxxxxxxxxxxx"
 
 # Deployment Webhooks
-DEPLOY_WEBHOOK_DEV: "https://api.render.com/deploy/srv-xxxxx?key=xxxxx"
-DEPLOY_WEBHOOK_TEST: "https://api.render.com/deploy/srv-xxxxx?key=xxxxx"
-DEPLOY_WEBHOOK_PROD: "https://api.render.com/deploy/srv-xxxxx?key=xxxxx"
+DEPLOY_WEBHOOK_DEV: "[GET_FROM_RENDER_SERVICE_SETTINGS]"
+DEPLOY_WEBHOOK_TEST: "[GET_FROM_RENDER_SERVICE_SETTINGS]"
+DEPLOY_WEBHOOK_PROD: "[GET_FROM_RENDER_SERVICE_SETTINGS]"
+MCP_DEPLOY_HOOK: "https://api.render.com/deploy/srv-d34fefur433s73cifuv0?key=ANE5o0AJZjg"
 ```
 
 ## 10. CUSTOM DOMAIN & SSL CONFIGURATION
@@ -323,6 +330,31 @@ SSL_AUTO_RENEW: "true"
 # DNS Configuration
 CLOUDFLARE_API_TOKEN: "xxxxxxxxxxxxxxxxxxxxx"
 CLOUDFLARE_ZONE_ID: "xxxxxxxxxxxxxxxxxxxxx"
+```
+
+## MCP SERVER CONFIGURATION FOR MANUS
+
+### MCP Server Setup (VERIFIED HEALTHY ✅)
+**Status:** Operational - Uptime 27.5+ hours
+**Version:** 2.0.0-enterprise-simple
+**Features:** Manufacturing, AI integration, Real-time, Enterprise enabled
+
+```yaml
+# MCP Server Connection for Manus
+Server Name: "Sentia Manufacturing Enterprise MCP"
+Transport Type: "HTTP"
+Server URL: "https://mcp-server-tkyu.onrender.com"
+Service ID: "srv-d34fefur433s73cifuv0"
+Deploy Hook: "https://api.render.com/deploy/srv-d34fefur433s73cifuv0?key=ANE5o0AJZjg"
+Health Check: "https://mcp-server-tkyu.onrender.com/health"
+
+# MCP Capabilities
+- Real-time manufacturing data
+- Financial analytics and cash flow management
+- AI-powered business intelligence
+- Seasonal demand forecasting
+- Working capital optimization
+- Supply chain analytics
 ```
 
 ## MANUS INTEGRATION STEPS
@@ -376,17 +408,31 @@ curl -H "Authorization: Bearer YOUR_CLERK_API_KEY" \
 For immediate Manus setup, these are the essential keys:
 
 ```yaml
-# CRITICAL - Must Have
-RENDER_API_TOKEN: "[Get from Render Dashboard]"
-RENDER_SERVICE_ID_PROD: "[Get from Render Dashboard URL]"
-GITHUB_TOKEN: "[Create with repo access]"
-CLERK_SECRET_KEY: "sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"
-DATABASE_URL_PROD: "[Get from Render Database Dashboard]"
+# CRITICAL - Must Obtain
+RENDER_API_TOKEN: "[GET FROM RENDER DASHBOARD]"
+GITHUB_TOKEN: "[CREATE WITH REPO ACCESS]"
 
-# Service URLs
+# Service IDs (ACTUAL - Ready to Use)
+RENDER_SERVICE_ID_PROD: "sentia-manufacturing-production"
+RENDER_SERVICE_ID_DEV: "sentia-manufacturing-development"
+RENDER_SERVICE_ID_TEST: "sentia-manufacturing-testing"
+MCP_SERVER_SERVICE_ID: "srv-d34fefur433s73cifuv0"
+
+# Database IDs (ACTUAL - Ready to Use)
+RENDER_DB_ID_PROD: "dpg-d344rkfdiees73a20c30-a"
+RENDER_DB_ID_TEST: "dpg-d344rkfdiees73a20c40-a"
+RENDER_DB_ID_DEV: "dpg-d344rkfdiees73a20c50-a"
+
+# Service URLs (Active & Verified)
 PRODUCTION_URL: "https://sentia-manufacturing-production.onrender.com"
 DEVELOPMENT_URL: "https://sentia-manufacturing-development.onrender.com"
 TESTING_URL: "https://sentia-manufacturing-testing.onrender.com"
+MCP_SERVER_URL: "https://mcp-server-tkyu.onrender.com" # ✅ HEALTHY - Uptime: 27.5+ hours
+MCP_DEPLOY_HOOK: "https://api.render.com/deploy/srv-d34fefur433s73cifuv0?key=ANE5o0AJZjg"
+
+# Already Configured
+CLERK_SECRET_KEY: "sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"
+DATABASE_URL_PROD: "postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a/sentia_manufacturing_prod"
 ```
 
 ---

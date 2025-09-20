@@ -10,7 +10,7 @@
 RENDER_API_TOKEN: "[GET_FROM_RENDER_DASHBOARD]"
 # Get from: https://dashboard.render.com/account/api-keys
 
-# Service IDs (from Render Dashboard - ACTUAL SERVICE IDS)
+# Service IDs (ACTUAL SERVICE IDS)
 RENDER_SERVICE_ID_DEV: "sentia-manufacturing-development"
 # Service: sentia-manufacturing-development
 
@@ -20,15 +20,15 @@ RENDER_SERVICE_ID_TEST: "sentia-manufacturing-testing"
 RENDER_SERVICE_ID_PROD: "sentia-manufacturing-production"
 # Service: sentia-manufacturing-production
 
-# Database Service IDs (ACTUAL DATABASE IDS)
+# Database Service IDs (ACTUAL RENDER POSTGRESQL IDS)
 RENDER_DB_ID_DEV: "dpg-d344rkfdiees73a20c50-a"
-# Database: sentia-db-development
+# Database: sentia-manufacturing-dev
 
 RENDER_DB_ID_TEST: "dpg-d344rkfdiees73a20c40-a"
-# Database: sentia-db-testing
+# Database: sentia-manufacturing-test
 
 RENDER_DB_ID_PROD: "dpg-d344rkfdiees73a20c30-a"
-# Database: sentia-db-production
+# Database: sentia-manufacturing-prod
 
 # MCP Server Service ID (ACTUAL SERVICE ID)
 RENDER_MCP_SERVICE_ID: "srv-d34fefur433s73cifuv0"
@@ -517,6 +517,31 @@ Health Check: "https://mcp-server-tkyu.onrender.com/health"
 - Supply chain analytics
 ```
 
+## MCP SERVER CONFIGURATION FOR MANUS
+
+### MCP Server Setup (VERIFIED HEALTHY ✅)
+**Status:** Operational - Uptime 27.5+ hours
+**Version:** 2.0.0-enterprise-simple
+**Features:** Manufacturing, AI integration, Real-time, Enterprise enabled
+
+```yaml
+# MCP Server Connection for Manus
+Server Name: "Sentia Manufacturing Enterprise MCP"
+Transport Type: "HTTP"
+Server URL: "https://mcp-server-tkyu.onrender.com"
+Service ID: "srv-d34fefur433s73cifuv0"
+Deploy Hook: "https://api.render.com/deploy/srv-d34fefur433s73cifuv0?key=ANE5o0AJZjg"
+Health Check: "https://mcp-server-tkyu.onrender.com/health"
+
+# MCP Capabilities
+- Real-time manufacturing data
+- Financial analytics and cash flow management
+- AI-powered business intelligence
+- Seasonal demand forecasting
+- Working capital optimization
+- Supply chain analytics
+```
+
 ## MANUS INTEGRATION STEPS
 
 ### Step 1: Create API Configuration in Manus
@@ -593,15 +618,6 @@ curl -H "Authorization: Bearer YOUR_CLERK_API_KEY" \
 For immediate Manus setup, these are the essential keys already configured:
 
 ```yaml
-# CRITICAL - Already Configured
-CLERK_SECRET_KEY: "sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"
-CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"
-DATABASE_URL: "postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-XERO_CLIENT_ID: "9C0CAB921C134476A249E48BBECB8C4B"
-XERO_CLIENT_SECRET: "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5"
-OPENAI_API_KEY: "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"
-ANTHROPIC_API_KEY: "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"
-
 # CRITICAL - Must Obtain
 RENDER_API_TOKEN: "[GET FROM RENDER DASHBOARD]"
 GITHUB_TOKEN: "[CREATE WITH REPO ACCESS]"
@@ -623,6 +639,15 @@ DEVELOPMENT_URL: "https://sentia-manufacturing-development.onrender.com"
 TESTING_URL: "https://sentia-manufacturing-testing.onrender.com"
 MCP_SERVER_URL: "https://mcp-server-tkyu.onrender.com" # ✅ HEALTHY - Uptime: 27.5+ hours
 MCP_DEPLOY_HOOK: "https://api.render.com/deploy/srv-d34fefur433s73cifuv0?key=ANE5o0AJZjg"
+
+# Already Configured
+CLERK_SECRET_KEY: "sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"
+CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"
+DATABASE_URL_PROD: "postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a/sentia_manufacturing_prod"
+XERO_CLIENT_ID: "9C0CAB921C134476A249E48BBECB8C4B"
+XERO_CLIENT_SECRET: "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5"
+OPENAI_API_KEY: "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"
+ANTHROPIC_API_KEY: "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"
 ```
 
 ---

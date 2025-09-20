@@ -265,7 +265,8 @@
       "Bash(chmod:*)",
       "Bash(./verify-production-fix.sh:*)",
       "Bash(while true)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(start https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/env)"
     ],
     "deny": [],
     "ask": []

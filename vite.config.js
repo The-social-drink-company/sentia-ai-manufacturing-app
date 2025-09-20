@@ -50,34 +50,109 @@ export default defineConfig({
     assetsDir: 'js',
     emptyOutDir: true,
     sourcemap: false, // Disable sourcemaps to prevent module issues
-    minify: 'esbuild', // Use esbuild for faster, more reliable minification
+    minify: 'terser', // Use terser for better minification
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        passes: 2
+      },
+      mangle: {
+        safari10: true
+      },
+      format: {
+        comments: false
+      }
+    },
     target: 'es2020',
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 500, // Lower warning limit
     cssCodeSplit: true,
     assetsInlineLimit: 4096,
     // CRITICAL FIX: Ensure proper module format
     commonjsOptions: {
       transformMixedEsModules: true,
       include: [/node_modules/]
-    }
-,
+    },
     rollupOptions: {
       output: {
-        // SIMPLIFIED: Basic chunk splitting to prevent module loading issues
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'router': ['react-router-dom'],
-          'clerk': ['@clerk/clerk-react'],
-          'vendor': ['@tanstack/react-query', 'framer-motion', 'recharts']
+        // Enhanced manual chunking to reduce bundle sizes
+        manualChunks: (id) => {
+          // Core React
+          if (id.includes('react') && !id.includes('react-router') && !id.includes('@')) {
+            return 'react-core'
+          }
+          // Router
+          if (id.includes('react-router')) {
+            return 'router'
+          }
+          // Authentication
+          if (id.includes('@clerk')) {
+            return 'auth'
+          }
+          // UI Components and Icons
+          if (id.includes('@heroicons') || id.includes('@headlessui')) {
+            return 'ui-components'
+          }
+          // Charts
+          if (id.includes('recharts') || id.includes('d3')) {
+            return 'charts'
+          }
+          // Three.js (large 3D library)
+          if (id.includes('three') || id.includes('@react-three')) {
+            return 'three-3d'
+          }
+          // State management
+          if (id.includes('zustand') || id.includes('@tanstack/react-query')) {
+            return 'state'
+          }
+          // Animation
+          if (id.includes('framer-motion')) {
+            return 'animation'
+          }
+          // Data processing
+          if (id.includes('axios') || id.includes('date-fns')) {
+            return 'data-utils'
+          }
+          // Forms
+          if (id.includes('react-hook-form') || id.includes('zod')) {
+            return 'forms'
+          }
+          // Small utilities
+          if (id.includes('node_modules')) {
+            const module = id.split('node_modules/')[1]
+            if (module) {
+              const packageName = module.split('/')[0]
+              // Group small packages
+              const smallPackages = ['classnames', 'clsx', 'uuid', 'nanoid']
+              if (smallPackages.some(pkg => packageName.includes(pkg))) {
+                return 'vendor-utils'
+              }
+            }
+            // Default vendor chunk
+            return 'vendor'
+          }
         },
-        // Simplified asset naming
-        chunkFileNames: 'js/[name]-[hash].js',
-        assetFileNames: 'js/[name]-[hash][extname]',
-        entryFileNames: 'js/[name]-[hash].js'
+        // Optimized asset naming
+        chunkFileNames: 'js/[name]-[hash:8].js',
+        assetFileNames: (assetInfo) => {
+          const ext = assetInfo.name.split('.').pop()
+          if (/css/i.test(ext)) {
+            return 'css/[name]-[hash:8][extname]'
+          }
+          if (/png|jpe?g|svg|gif/i.test(ext)) {
+            return 'img/[name]-[hash:8][extname]'
+          }
+          return 'assets/[name]-[hash:8][extname]'
+        },
+        entryFileNames: 'js/[name]-[hash:8].js',
+        // Merge small chunks
+        experimentalMinChunkSize: 10000
       },
-      // Simplified tree-shaking
+      // Enhanced tree-shaking
       treeshake: {
-        preset: 'smallest'
+        preset: 'recommended',
+        moduleSideEffects: 'no-external'
       }
     }
   },

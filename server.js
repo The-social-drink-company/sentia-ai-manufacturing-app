@@ -581,11 +581,11 @@ app.use('/api/', (req, res, next) => {
 app.use('/api/auth/', authLimiter());
 logger.info('Rate limiting middleware applied');
 
-// Import and apply Clerk Express middleware
-import { clerkMiddleware, extractUserInfo } from './api/middleware/clerkAuth.js';
+// Import and apply custom Clerk middleware configuration
+import clerkAuth, { extractUserInfo } from './api/middleware/clerkAuth.js';
 
 // Apply Clerk middleware globally to enable authentication
-app.use(clerkMiddleware);
+app.use(clerkAuth);
 logger.info('Clerk Express middleware applied');
 
 // Apply user info extraction for authenticated requests

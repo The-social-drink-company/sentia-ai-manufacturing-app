@@ -162,7 +162,9 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      '@clerk/clerk-react'
+      '@clerk/clerk-react',
+      'zustand',
+      '@tanstack/react-query'
     ],
     force: true,
     esbuildOptions: {
@@ -172,7 +174,10 @@ export default defineConfig({
   },
   define: {
     'global': 'globalThis',
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+    'React': 'React',
+    'React.createElement': 'React.createElement',
+    'React.createContext': 'React.createContext'
   },
   esbuild: {
     target: 'es2020'

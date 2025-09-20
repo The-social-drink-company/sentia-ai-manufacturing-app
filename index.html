@@ -184,13 +184,23 @@
           document.body.appendChild(updateBanner);
 
           // Add event listeners instead of inline onclick
-          document.getElementById('sw-update-now').addEventListener('click', () => {
-            window.location.reload();
-          });
+          const updateNowBtn = document.getElementById('sw-update-now');
+          const updateLaterBtn = document.getElementById('sw-update-later');
+          
+          if (updateNowBtn) {
+            updateNowBtn.addEventListener('click', () => {
+              window.location.reload();
+            });
+          }
 
-          document.getElementById('sw-update-later').addEventListener('click', () => {
-            document.getElementById('sw-update-banner').parentElement.remove();
-          });
+          if (updateLaterBtn) {
+            updateLaterBtn.addEventListener('click', () => {
+              const banner = document.getElementById('sw-update-banner');
+              if (banner && banner.parentElement) {
+                banner.parentElement.remove();
+              }
+            });
+          }
         });
       }
     </script>

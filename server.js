@@ -1350,7 +1350,7 @@ app.get('/api/health/detailed', async (req, res) => {
         nextauth: !!process.env.NEXTAUTH_SECRET,
         shopify: !!(process.env.SHOPIFY_UK_SHOP_URL && process.env.SHOPIFY_UK_ACCESS_TOKEN),
         xero: xeroHealth.status === 'connected',
-        neon_database: aiHealth.status === 'connected'
+        render_database: aiHealth.status === 'connected'
       },
       system: {
         uptime: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`,
@@ -2000,7 +2000,7 @@ app.get('/api/database/status', async (req, res) => {
       configured,
       connected: configured,
       type: 'postgresql',
-      provider: 'neon',
+      provider: 'render',
       status: configured ? 'connected' : 'not_configured'
     });
   } catch (error) {

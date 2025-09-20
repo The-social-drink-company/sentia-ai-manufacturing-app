@@ -132,7 +132,7 @@ npm run dev:server    # Backend only (Express server)
 
 ### Database Architecture
 
-The application uses **Prisma ORM** with **Neon PostgreSQL** in a three-environment setup:
+The application uses **Prisma ORM** with **Render PostgreSQL** in a three-environment setup:
 
 ```
 ┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
@@ -143,7 +143,7 @@ The application uses **Prisma ORM** with **Neon PostgreSQL** in a three-environm
          │                           │                           │
          ▼                           ▼                           ▼
 ┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
-│   Neon Dev DB       │    │   Neon Test DB      │    │   Neon Prod DB      │
+│  Render Dev DB      │    │  Render Test DB     │    │  Render Prod DB     │
 │                     │    │                     │    │                     │
 │ ep-***-pooler.      │    │ ep-***-pooler.      │    │ ep-***-pooler.      │
 │ eu-west-2.aws       │    │ eu-west-2.aws       │    │ eu-west-2.aws       │
@@ -244,8 +244,8 @@ PORT=5000
 VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
 
-# Database (Neon PostgreSQL)
-DATABASE_URL=postgresql://username:password@ep-xxx.us-east-1.aws.neon.tech/sentia_dev
+# Database (Render PostgreSQL)
+DATABASE_URL=postgresql://sentia_dev:password@dpg-xxx.oregon-postgres.render.com/sentia_manufacturing_dev
 
 # Unleashed API
 UNLEASHED_API_ID=your_unleashed_api_id
@@ -270,7 +270,7 @@ The application is deployed on Railway with automatic branch deployments:
 ```
 - Web Service: Node.js/Express API + React frontend
 - Worker Service: BullMQ job processor
-- Database: Neon PostgreSQL with connection pooling
+- Database: Render PostgreSQL with connection pooling
 - Cache: Redis for sessions and caching
 ```
 
@@ -480,7 +480,7 @@ npm run quality
 
 ## Database Management
 
-The application uses Neon PostgreSQL with environment-specific databases:
+The application uses Render PostgreSQL with environment-specific databases:
 
 ```bash
 # Check database connection
@@ -517,7 +517,7 @@ curl http://localhost:5000/api/unleashed/test
 ### Deployment Validation
 After pushing to development branch, verify:
 1. Automatic deployment to Railway dev environment
-2. Database connectivity to Neon dev database
+2. Database connectivity to Render dev database
 3. Unleashed API integration working
 4. Frontend builds and serves correctly
 
@@ -579,7 +579,7 @@ npm install
 
 ### Deployment
 - Railway for hosting and CI/CD
-- Neon for serverless PostgreSQL
+- Render for PostgreSQL databases
 - Branch-based deployment strategy
 - Environment-specific configurations
 

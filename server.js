@@ -122,7 +122,7 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import compression from 'compression';
-import { ClerkExpressWithAuth, ClerkExpressRequireAuth } from '@clerk/express';
+import { clerkMiddleware, requireAuth } from '@clerk/express';
 import multer from 'multer';
 import ExcelJS from 'exceljs';
 import csv from 'csv-parser';
@@ -556,7 +556,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Add Clerk authentication middleware for all requests
-app.use(ClerkExpressWithAuth({
+app.use(clerkMiddleware({
   // Development mode fallback
   onError: (error) => {
     if (process.env.NODE_ENV === 'development') {
@@ -861,7 +861,7 @@ const authenticateUser = (req, res, next) => {
   }
 
   // In production, use Clerk's built-in authentication
-  // The ClerkExpressWithAuth middleware already populated req.auth
+  // The clerkMiddleware already populated req.auth
   if (!req.auth || !req.auth.userId) {
     return res.status(401).json({
       error: 'Unauthorized',

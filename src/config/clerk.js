@@ -9,7 +9,7 @@ const getClerkConfig = () => {
   return {
     publishableKey: env.VITE_CLERK_PUBLISHABLE_KEY ||
                     window.VITE_CLERK_PUBLISHABLE_KEY ||
-                    'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk',
+                    'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
 
     // URLs for Clerk navigation
     signInUrl: env.VITE_CLERK_SIGN_IN_URL || '/sign-in',

@@ -69,8 +69,8 @@ VITE_PORT=3000
 VITE_API_BASE_URL=http://localhost:5001/api
 CORS_ORIGINS=http://localhost:3000,http://localhost:5001
 
-# Development Database (use production for consistency)
-DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+# Development Database (Render PostgreSQL)
+DATABASE_URL=postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a/sentia_manufacturing_dev
 
 # Clerk Development Keys
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk

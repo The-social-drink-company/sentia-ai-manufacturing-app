@@ -5,6 +5,12 @@ import { BulletproofClerkProvider } from './auth/BulletproofClerkProvider.jsx'
 import { clerkConfig } from './config/clerk.js'
 import './index.css'
 
+// Ensure React is globally available for bundled modules
+if (typeof window !== 'undefined') {
+  window.React = React;
+  window.ReactDOM = ReactDOM;
+}
+
 // Performance monitoring with web-vitals
 import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
 

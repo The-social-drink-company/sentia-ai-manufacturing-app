@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-import { visualizer } from 'rollup-plugin-visualizer'
+// Temporarily disable visualizer to fix build
+// import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig({
   plugins: [
@@ -11,13 +12,13 @@ export default defineConfig({
       // Optimize JSX runtime
       jsxRuntime: 'automatic'
     }),
-    // Bundle analyzer for optimization insights
-    process.env.ANALYZE && visualizer({
-      filename: 'dist/stats.html',
-      open: true,
-      gzipSize: true,
-      brotliSize: true
-    })
+    // Bundle analyzer disabled to fix build
+    // process.env.ANALYZE && visualizer({
+    //   filename: 'dist/stats.html',
+    //   open: true,
+    //   gzipSize: true,
+    //   brotliSize: true
+    // })
   ].filter(Boolean),
   // Critical: Set base path for Railway deployment
   base: '/', // Use absolute paths for proper routing
@@ -161,7 +162,9 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      '@clerk/clerk-react'
+      '@clerk/clerk-react',
+      'zustand',
+      '@tanstack/react-query'
     ],
     force: true,
     esbuildOptions: {
@@ -171,7 +174,10 @@ export default defineConfig({
   },
   define: {
     'global': 'globalThis',
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+    'React': 'React',
+    'React.createElement': 'React.createElement',
+    'React.createContext': 'React.createContext'
   },
   esbuild: {
     target: 'es2020'

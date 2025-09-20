@@ -63,7 +63,7 @@ router.get('/status', async (req, res) => {
       websocket: wsStatus,
       autoSync: syncStatus,
       environment: process.env.NODE_ENV,
-      neonBranch: process.env.NEON_BRANCH
+      renderDatabase: process.env.RENDER_DB_ID_PROD || 'dpg-d344rkfdiees73a20c30-a'
     });
   } catch (error) {
     res.status(500).json({

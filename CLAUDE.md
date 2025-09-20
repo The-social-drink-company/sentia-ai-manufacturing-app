@@ -248,7 +248,7 @@ Required environment variables:
 - **Real-time**: SSE with 15+ event types and automatic query invalidation
 - **Grid System**: react-grid-layout with responsive breakpoints (lg/md/sm/xs/xxs)
 - **Authentication**: Seamless Clerk integration with role-based UI components
-- **Database**: Prisma ORM with PostgreSQL (Neon)
+- **Database**: Prisma ORM with PostgreSQL (Render)
 
 ## Project Structure
 
@@ -737,7 +737,11 @@ const ExpensiveWidget = memo(({ data }) => {
 #### API Integration Status  
 - ✅ **Local Development**: All APIs functional with live data
 - ✅ **Authentication**: Real users via Clerk (no mock users)
-- ✅ **Database**: Neon PostgreSQL connections working locally
+<<<<<<< HEAD
+- ✅ **Database**: Render PostgreSQL connections working
+=======
+- ✅ **Database**: Render PostgreSQL connections working locally
+>>>>>>> development
 - ❌ **Railway Production**: API endpoints returning HTML instead of JSON
 - ❌ **Service Status**: External services showing "disconnected" in production
 
@@ -813,7 +817,7 @@ export default defineConfig({
 ✅ **AI Integration Components Successfully Implemented**:
 - **Multi-LLM Orchestration**: Claude 3.5 Sonnet, GPT-4 Turbo, Gemini Pro with intelligent provider selection
 - **Enterprise MCP Server**: 10 AI-powered tools with Model Context Protocol v2024-11-05 compliance
-- **Unified API Interface**: 7 external services (Xero, Amazon SP-API, Shopify, Neon, OpenAI, Claude, Forecasting)
+- **Unified API Interface**: 7 external services (Xero, Amazon SP-API, Shopify, Render Database, OpenAI, Claude, Forecasting)
 - **Vector Database**: 4-category semantic memory system for manufacturing intelligence
 - **Real-time Decision Engine**: Automated manufacturing rules with AI-powered analysis
 - **WebSocket Broadcasting**: Live AI responses pushed to all clients

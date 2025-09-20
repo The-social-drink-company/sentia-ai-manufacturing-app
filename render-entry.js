@@ -13,6 +13,6 @@ console.log('Service:', process.env.RENDER_SERVICE_NAME || 'unknown');
 console.log('Port:', process.env.PORT || 5000);
 console.log('='.repeat(70));
 
-// Use minimal-server.js for fast, reliable startup on Render
-console.log('Starting minimal-server.js for optimized production deployment...');
-import('./minimal-server.js');
+// EMERGENCY: Using ultra-minimal server to fix 502 errors
+console.log('Starting EMERGENCY SERVER to resolve 502 Bad Gateway...');
+import('./render-emergency-server.js');

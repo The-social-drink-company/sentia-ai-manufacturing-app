@@ -13,6 +13,14 @@ console.log('Service:', process.env.RENDER_SERVICE_NAME || 'unknown');
 console.log('Port:', process.env.PORT || 5000);
 console.log('='.repeat(70));
 
-// ULTRA-MINIMAL: Absolute minimum server to fix 502 errors
-console.log('Starting ULTRA-MINIMAL SERVER - No dependencies, instant startup...');
-import('./render-ultra-minimal.js');
+// Check environment and choose appropriate server
+const isProduction = process.env.NODE_ENV === 'production';
+const serviceName = process.env.RENDER_SERVICE_NAME || '';
+
+if (isProduction || serviceName.includes('production')) {
+  console.log('Starting PRODUCTION EMERGENCY SERVER - Ensuring operational status...');
+  import('./production-emergency-server.js');
+} else {
+  console.log('Starting ULTRA-MINIMAL SERVER - No dependencies, instant startup...');
+  import('./render-ultra-minimal.js');
+}

@@ -64,9 +64,67 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Production Deployment**: Complete integration deployed to Render with health monitoring
 
 ### **SECURITY VULNERABILITIES IDENTIFIED** ⚠️
-**GitHub Security Alert**: 7 vulnerabilities detected (4 high, 1 moderate, 2 low)
+**GitHub Security Alert**: 4 vulnerabilities detected (1 critical, 1 high, 2 moderate)
 - **Action Required**: Address security issues before production deployment
 - **Location**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/security/dependabot
+
+## CLERK AUTHENTICATION SYSTEM (PRODUCTION)
+
+### 🔐 **Production Clerk Configuration**
+**Domain**: clerk.financeflo.ai
+**Environment**: Production
+**SDK Version**: @clerk/clerk-react@5.47.0
+
+### Critical Production Keys
+```env
+# Frontend (React/Vite)
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+
+# Backend (Node.js/Express)
+CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+
+# Configuration
+CLERK_ENVIRONMENT=production
+VITE_CLERK_DOMAIN=clerk.financeflo.ai
+CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+```
+
+### Authentication Implementation
+```javascript
+// Frontend (src/main.jsx)
+import { ClerkProvider } from '@clerk/clerk-react'
+
+<ClerkProvider
+  publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
+  navigate={(to) => navigate(to)}
+>
+  <App />
+</ClerkProvider>
+
+// Backend (server.js)
+import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
+
+app.use(ClerkExpressWithAuth({
+  secretKey: process.env.CLERK_SECRET_KEY,
+  authorizedParties: [
+    'https://sentia-manufacturing-production.onrender.com',
+    'https://sentia-manufacturing-development.onrender.com'
+  ]
+}))
+```
+
+### Role-Based Access Control (RBAC)
+- **Admin**: Full system access, user management, configuration
+- **Manager**: Financial planning, production scheduling, reports
+- **Operator**: Production operations, quality control, inventory
+- **Viewer**: Read-only dashboard access (default role)
+
+### Security Best Practices
+1. **Authorized Parties**: Configured to prevent subdomain cookie leaking
+2. **CSP Headers**: Properly configured for Clerk domains
+3. **Session Validation**: Token verification on each protected route
+4. **Webhook Security**: HMAC signature validation for all webhooks
 
 ## RENDER-ONLY DEPLOYMENT (NO LOCAL DEVELOPMENT)
 

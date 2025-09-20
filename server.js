@@ -167,6 +167,7 @@ import qualityRoutes from './api/routes/quality.js';
 import userRoutes from './api/routes/user.js';
 import supplyChainRoutes from './api/routes/supply-chain.js';
 import maintenanceRoutes from './api/routes/maintenance.js';
+import performanceRoutes from './api/routes/performance.js';
 // Enterprise Components - Temporarily disabled for deployment fix
 // import EnterpriseSecurityFramework from './services/security/enterpriseSecurityFramework.js';
 // import EnterpriseIntegrationHub from './services/integrations/enterpriseIntegrationHub.js';
@@ -1196,6 +1197,7 @@ app.use('/api/quality', qualityRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/supply-chain', supplyChainRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
+app.use('/api/performance', performanceRoutes);
 
 // Shopify Integration Routes for real sales data
 import shopifyRouter, { startShopifySync } from './api/routes/shopify.js';

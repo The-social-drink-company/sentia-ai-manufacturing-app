@@ -66,8 +66,20 @@ Name: VITE_CLERK_DOMAIN
 Value: clerk.financeflo.ai
 ```
 
+#### 10. Force Clerk Authentication
+```
+Name: VITE_FORCE_CLERK_AUTH
+Value: true
+```
+
+#### 11. Disable Authentication Fallback
+```
+Name: VITE_DISABLE_AUTH_FALLBACK
+Value: true
+```
+
 ### Save and Deploy
-- After adding all 9 variables, click **"Save Changes"**
+- After adding all 11 variables, click **"Save Changes"**
 - Service will automatically redeploy (takes 5-10 minutes)
 - Monitor the deployment in the "Events" tab
 
@@ -82,7 +94,7 @@ Value: clerk.financeflo.ai
 4. Click on the **"Environment"** tab
 
 ### Add Same Variables
-Add the exact same 9 environment variables as above:
+Add the exact same 11 environment variables as above:
 
 1. `VITE_CLERK_PUBLISHABLE_KEY` = `pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ`
 2. `CLERK_SECRET_KEY` = `sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq`
@@ -93,6 +105,8 @@ Add the exact same 9 environment variables as above:
 7. `VITE_CLERK_AFTER_SIGN_UP_URL` = `/dashboard`
 8. `CLERK_ENVIRONMENT` = `production`
 9. `VITE_CLERK_DOMAIN` = `clerk.financeflo.ai`
+10. `VITE_FORCE_CLERK_AUTH` = `true`
+11. `VITE_DISABLE_AUTH_FALLBACK` = `true`
 
 ### Additional Production Variables (if needed)
 ```
@@ -125,6 +139,8 @@ VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
 VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
 CLERK_ENVIRONMENT=production
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
+VITE_FORCE_CLERK_AUTH=true
+VITE_DISABLE_AUTH_FALLBACK=true
 ```
 
 ---
@@ -138,7 +154,7 @@ VITE_CLERK_DOMAIN=clerk.financeflo.ai
 
 ### 2. Verify Environment Variables
 - In the **"Environment"** tab
-- All 9 Clerk variables should be visible
+- All 11 Clerk variables should be visible
 - Values should match exactly (no extra spaces)
 
 ### 3. Test the Service

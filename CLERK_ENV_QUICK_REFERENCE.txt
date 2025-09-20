@@ -30,6 +30,12 @@ production
 9. VITE_CLERK_DOMAIN
 clerk.financeflo.ai
 
+10. VITE_FORCE_CLERK_AUTH
+true
+
+11. VITE_DISABLE_AUTH_FALLBACK
+true
+
 ==============================================================
 
 FOR .ENV FILE (LOCAL TESTING):
@@ -43,6 +49,8 @@ VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
 VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
 CLERK_ENVIRONMENT=production
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
+VITE_FORCE_CLERK_AUTH=true
+VITE_DISABLE_AUTH_FALLBACK=true
 
 ==============================================================
 

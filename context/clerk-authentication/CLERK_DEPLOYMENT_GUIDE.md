@@ -70,17 +70,15 @@ root.render(
 
 ```javascript
 // server.js
-import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
+import { clerkMiddleware, requireAuth } from '@clerk/express'
 
-app.use(ClerkExpressWithAuth({
+app.use(clerkMiddleware({
   secretKey: process.env.CLERK_SECRET_KEY,
-  authorizedParties: [
-    'https://sentia-manufacturing-production.onrender.com'
-  ]
+  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY
 }))
 
 // Protected route example
-app.get('/api/protected', requireAuth, (req, res) => {
+app.get('/api/protected', requireAuth(), (req, res) => {
   const { userId } = req.auth
   // Access authenticated user
 })
@@ -134,12 +132,9 @@ export default defineConfig({
 Prevent subdomain cookie leaking:
 
 ```javascript
-ClerkExpressWithAuth({
+clerkMiddleware({
   secretKey: process.env.CLERK_SECRET_KEY,
-  authorizedParties: [
-    'https://sentia-manufacturing-production.onrender.com',
-    'https://sentia-manufacturing-development.onrender.com'
-  ]
+  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY
 })
 ```
 

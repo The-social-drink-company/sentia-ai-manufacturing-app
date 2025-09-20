@@ -103,14 +103,11 @@ import { ClerkProvider } from '@clerk/clerk-react'
 </ClerkProvider>
 
 // Backend (server.js)
-import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
+import { clerkMiddleware } from '@clerk/express'
 
-app.use(ClerkExpressWithAuth({
+app.use(clerkMiddleware({
   secretKey: process.env.CLERK_SECRET_KEY,
-  authorizedParties: [
-    'https://sentia-manufacturing-production.onrender.com',
-    'https://sentia-manufacturing-development.onrender.com'
-  ]
+  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY
 }))
 ```
 

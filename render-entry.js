@@ -13,6 +13,6 @@ console.log('Service:', process.env.RENDER_SERVICE_NAME || 'unknown');
 console.log('Port:', process.env.PORT || 5000);
 console.log('='.repeat(70));
 
-// Always use render-server.js for Render deployments
-console.log('Starting render-server.js for static file serving with Clerk support...');
-import('./render-server.js');
+// Use minimal-server.js for fast, reliable startup on Render
+console.log('Starting minimal-server.js for optimized production deployment...');
+import('./minimal-server.js');

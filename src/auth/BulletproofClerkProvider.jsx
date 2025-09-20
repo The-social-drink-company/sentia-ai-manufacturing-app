@@ -110,7 +110,7 @@ const AuthErrorRecovery = ({ error, onRetry, onFallback }) => (
 // Main Bulletproof Auth Provider
 export const BulletproofClerkProvider = ({ children, publishableKey }) => {
   // Use fallback key if none provided
-  const effectiveKey = publishableKey || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
+  const effectiveKey = publishableKey || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
   
   // Check if we have production keys and should force Clerk auth
   const hasProductionKeys = effectiveKey?.startsWith('pk_live_');

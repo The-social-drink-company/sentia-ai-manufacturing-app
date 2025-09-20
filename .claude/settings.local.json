@@ -256,7 +256,21 @@
       "Bash(start http://localhost:3002/what-if)",
       "Bash(echo:*)",
       "Bash(MCP_SERVER_PORT=6002 node mcp-server.js)",
-      "Bash(/home/ubuntu/push-to-production.sh)"
+      "Bash(/home/ubuntu/push-to-production.sh)",
+      "Bash(python:*)",
+      "Bash(PORT=5000 timeout 5 node test-minimal.js)",
+      "Bash(render --help)",
+      "Read(//c/Users/User/OneDrive - Q&A ERP Solutions (Pty) Ltd (1)/185 - Working Capital Production SaaS App/Final implementation reports - fixes still needed/**)",
+      "Bash(./render-cli.exe --version)",
+      "Bash(chmod:*)",
+      "Bash(./verify-production-fix.sh:*)",
+      "Bash(while true)",
+      "Bash(done)",
+      "Bash(start https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/env)",
+      "Bash(notepad:*)",
+      "Bash(git show:*)",
+      "Bash(start https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/deploys)",
+      "Bash(PORT=10000 timeout 5 node render-ultra-minimal.js)"
     ],
     "deny": [],
     "ask": []

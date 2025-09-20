@@ -13,6 +13,6 @@ console.log('Service:', process.env.RENDER_SERVICE_NAME || 'unknown');
 console.log('Port:', process.env.PORT || 5000);
 console.log('='.repeat(70));
 
-// Always use render-server.js for Render deployments
-console.log('Starting render-server.js for static file serving with Clerk support...');
-import('./render-server.js');
+// ULTRA-MINIMAL: Absolute minimum server to fix 502 errors
+console.log('Starting ULTRA-MINIMAL SERVER - No dependencies, instant startup...');
+import('./render-ultra-minimal.js');

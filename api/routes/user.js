@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { authenticate } from '../middleware/auth.js';
+import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler } from '../lib/asyncHandler.js';
 
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 // Get user dashboard layout
 router.get('/dashboard-layout',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { userId } = req.auth;
@@ -49,7 +49,7 @@ router.get('/dashboard-layout',
 
 // Save user dashboard layout
 router.post('/dashboard-layout',
-  authenticate,
+  requireAuth,
   rateLimiters.write,
   asyncHandler(async (req, res) => {
     const { userId } = req.auth;
@@ -88,7 +88,7 @@ router.post('/dashboard-layout',
 
 // Get user preferences
 router.get('/preferences',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { userId } = req.auth;
@@ -119,7 +119,7 @@ router.get('/preferences',
 
 // Update user preferences
 router.put('/preferences',
-  authenticate,
+  requireAuth,
   rateLimiters.write,
   asyncHandler(async (req, res) => {
     const { userId } = req.auth;

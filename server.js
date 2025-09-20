@@ -580,6 +580,17 @@ app.use('/api/', (req, res, next) => {
 app.use('/api/auth/', authLimiter());
 logger.info('Rate limiting middleware applied');
 
+// Import and apply Clerk Express middleware
+import { clerkMiddleware, extractUserInfo } from './api/middleware/clerkAuth.js';
+
+// Apply Clerk middleware globally to enable authentication
+app.use(clerkMiddleware);
+logger.info('Clerk Express middleware applied');
+
+// Apply user info extraction for authenticated requests
+app.use(extractUserInfo);
+logger.info('User info extraction middleware applied');
+
 // Apply cache middleware for GET requests
 app.use('/api/', cacheManager.middleware({
   ttl: 60, // 60 seconds default

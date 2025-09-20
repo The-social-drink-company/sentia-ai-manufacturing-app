@@ -1,6 +1,6 @@
 import express from 'express';
 import prisma from '../../lib/prisma.js';
-import { authenticate, requireRole } from '../middleware/auth.js';
+import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
@@ -76,7 +76,7 @@ const qualitySchemas = {
  * Get quality inspections with filters
  */
 router.get('/inspections',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const query = qualitySchemas.inspection.query.parse(req.query);
@@ -145,7 +145,7 @@ router.get('/inspections',
  * Create new quality inspection
  */
 router.post('/inspections',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'quality']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -213,7 +213,7 @@ router.post('/inspections',
  * Get quality defects
  */
 router.get('/defects',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { productId, category, status, startDate, endDate, limit = 50, offset = 0 } = req.query;
@@ -284,7 +284,7 @@ router.get('/defects',
  * Record new quality defect
  */
 router.post('/defects',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'quality', 'operator']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -318,7 +318,7 @@ router.post('/defects',
  * Update defect status
  */
 router.put('/defects/:id',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'quality']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -356,7 +356,7 @@ router.put('/defects/:id',
  * Get quality metrics and KPIs
  */
 router.get('/metrics',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const query = qualitySchemas.metrics.query.parse(req.query);
@@ -427,7 +427,7 @@ router.get('/metrics',
  * Calculate Statistical Process Control metrics
  */
 router.post('/spc/calculate',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'quality']),
   rateLimiters.expensive,
   asyncHandler(async (req, res) => {
@@ -535,7 +535,7 @@ router.post('/spc/calculate',
  * Get quality certifications and compliance
  */
 router.get('/certifications',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const certifications = await prisma.qualityCertification.findMany({

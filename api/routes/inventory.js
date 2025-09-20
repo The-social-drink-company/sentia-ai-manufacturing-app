@@ -1,7 +1,7 @@
 import express from 'express';
 import NodeCache from 'node-cache';
 import prisma from '../../lib/prisma.js';
-import { authenticate, requireRole } from '../middleware/auth.js';
+import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import {
@@ -21,7 +21,7 @@ const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
  * Get current inventory levels with filters
  */
 router.get('/levels',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     // Validate query parameters
@@ -116,7 +116,7 @@ router.get('/levels',
  * Create new inventory item
  */
 router.post('/levels',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -165,7 +165,7 @@ router.post('/levels',
  * Update inventory item details
  */
 router.put('/levels/:id',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -194,7 +194,7 @@ router.put('/levels/:id',
  * Adjust inventory quantity
  */
 router.post('/levels/:id/adjust',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'operator']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -270,7 +270,7 @@ router.post('/levels/:id/adjust',
  * Calculate optimal order quantities (EOQ)
  */
 router.post('/optimize',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager']),
   rateLimiters.expensive,
   asyncHandler(async (req, res) => {
@@ -341,7 +341,7 @@ router.post('/optimize',
  * Generate reorder recommendations
  */
 router.post('/optimize/reorder',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager']),
   rateLimiters.expensive,
   asyncHandler(async (req, res) => {
@@ -409,7 +409,7 @@ router.post('/optimize/reorder',
  * Get inventory movements history
  */
 router.get('/movements',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     // Validate query parameters
@@ -476,7 +476,7 @@ router.get('/movements',
  * Create inventory movement (transfer)
  */
 router.post('/movements',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'operator']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -556,7 +556,7 @@ router.post('/movements',
  * Record stock take results
  */
 router.post('/stocktake',
-  authenticate,
+  requireAuth,
   requireRole(['admin', 'manager', 'operator']),
   rateLimiters.write,
   asyncHandler(async (req, res) => {
@@ -639,7 +639,7 @@ router.post('/stocktake',
  * Get inventory analytics and insights
  */
 router.get('/analytics',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = '30d' } = req.query;

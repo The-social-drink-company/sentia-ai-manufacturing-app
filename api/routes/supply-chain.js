@@ -1,7 +1,7 @@
 import express from 'express';
 import NodeCache from 'node-cache';
 import prisma from '../../lib/prisma.js';
-import { authenticate, requireRole } from '../middleware/auth.js';
+import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 
@@ -15,7 +15,7 @@ const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
  * Get comprehensive supply chain overview
  */
 router.get('/overview',
-  authenticate,
+  requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
     const cacheKey = `supply-chain-overview-${req.userId}`;

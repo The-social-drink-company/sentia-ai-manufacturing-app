@@ -13,7 +13,7 @@ services:
     branch: development
 
     buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
-    startCommand: node server.js
+    startCommand: node production-server-simple.js
     healthCheckPath: /health
 
     envVars:
@@ -203,7 +203,7 @@ services:
     branch: test
 
     buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
-    startCommand: node server.js
+    startCommand: node production-server-simple.js
     healthCheckPath: /health
 
     envVars:
@@ -395,7 +395,7 @@ services:
     branch: production
 
     buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
-    startCommand: node server.js
+    startCommand: node production-server-simple.js
     healthCheckPath: /health
 
     envVars:
@@ -580,6 +580,7 @@ databases:
     region: oregon # Must match service region
     databaseName: sentia_manufacturing_dev
     user: sentia_dev_user
+    ipAllowList: [] # Keep open for development flexibility
 
   # Testing Database
   - name: sentia-db-testing
@@ -587,6 +588,7 @@ databases:
     region: oregon # Must match service region
     databaseName: sentia_manufacturing_test
     user: sentia_test_user
+    ipAllowList: ["92.42.255.182/32", "10.0.0.0/8", "172.16.0.0/12"] # Lock down to specific IPs
 
   # Production Database
   - name: sentia-db-production
@@ -594,6 +596,7 @@ databases:
     region: oregon # Must match service region
     databaseName: sentia_manufacturing_prod
     user: sentia_prod_user
+    ipAllowList: ["92.42.255.182/32", "10.0.0.0/8", "172.16.0.0/12"] # Lock down to specific IPs
     # Production benefits with starter plan:
     # - Daily automatic backups
     # - Point-in-time recovery
@@ -786,3 +789,4 @@ databases:
         value: info
       - key: LOG_FORMAT
         value: json
+

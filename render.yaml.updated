@@ -13,7 +13,7 @@ services:
     branch: development
 
     buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
-    startCommand: node server.js
+    startCommand: node production-server-simple.js
     healthCheckPath: /health
 
     envVars:
@@ -203,7 +203,7 @@ services:
     branch: test
 
     buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
-    startCommand: node server.js
+    startCommand: node production-server-simple.js
     healthCheckPath: /health
 
     envVars:
@@ -395,7 +395,7 @@ services:
     branch: production
 
     buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
-    startCommand: node server.js
+    startCommand: node production-server-simple.js
     healthCheckPath: /health
 
     envVars:

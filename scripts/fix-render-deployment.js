@@ -116,7 +116,7 @@ if (fs.existsSync('render.yaml')) {
   if (renderYaml.includes('fromDatabase:')) {
     console.log(`${colors.green}✓${colors.reset} Database configuration uses Render PostgreSQL`);
   } else if (renderYaml.includes('neon')) {
-    console.log(`${colors.yellow}⚠${colors.reset} Still references Neon database`);
+    console.log(`${colors.yellow}⚠${colors.reset} Still references old database configuration`);
     console.log(`  Run migration script to switch to Render PostgreSQL`);
   }
 }

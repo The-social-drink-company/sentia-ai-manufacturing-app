@@ -6,7 +6,7 @@
  * Enterprise-grade monitoring and self-healing capabilities for:
  * - All Railway deployments (development, test, production)
  * - MCP server and AI Central Nervous System
- * - Database connections (Neon PostgreSQL)
+ * - Database connections (Render PostgreSQL)
  * - External API integrations
  * - Frontend/backend health
  * - Security monitoring and vulnerability detection
@@ -98,7 +98,7 @@ class SelfHealingAgent {
       shopify: { name: 'Shopify API', status: 'unknown', failures: 0, lastCheck: null },
       amazon_sp: { name: 'Amazon SP-API', status: 'unknown', failures: 0, lastCheck: null },
       unleashed: { name: 'Unleashed ERP', status: 'unknown', failures: 0, lastCheck: null },
-      neon: { name: 'Neon Database', status: 'unknown', failures: 0, lastCheck: null }
+      render: { name: 'Render Database', status: 'unknown', failures: 0, lastCheck: null }
     };
 
     // Circuit breaker states

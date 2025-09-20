@@ -1,10 +1,10 @@
-// Database configuration optimized for Railway + Neon PostgreSQL
+// Database configuration optimized for Railway + Render PostgreSQL
 // Addresses connection timeouts and vector database performance
 
 import { logInfo, logWarn, logError } from '../services/observability/structuredLogger.js';
 
 export const databaseConfig = {
-  // Neon PostgreSQL connection configuration
+  // Render PostgreSQL connection configuration
   connection: {
     host: process.env.DATABASE_HOST || process.env.PGHOST,
     port: parseInt(process.env.DATABASE_PORT || process.env.PGPORT || '5432'),
@@ -12,9 +12,9 @@ export const databaseConfig = {
     user: process.env.DATABASE_USER || process.env.PGUSER,
     password: process.env.DATABASE_PASSWORD || process.env.PGPASSWORD,
     
-    // Critical: SSL configuration for Neon
+    // Critical: SSL configuration for Render
     ssl: process.env.NODE_ENV === 'production' ? {
-      rejectUnauthorized: false, // Required for Neon
+      rejectUnauthorized: false, // Required for Render
       ca: process.env.DATABASE_CA_CERT,
       key: process.env.DATABASE_CLIENT_KEY,
       cert: process.env.DATABASE_CLIENT_CERT,
@@ -26,7 +26,7 @@ export const databaseConfig = {
     max: parseInt(process.env.DATABASE_CONNECTION_LIMIT || '5'), // Max 5 connections on Railway
     min: 1, // Minimum 1 connection
     
-    // Neon-specific optimizations
+    // Render-specific optimizations
     application_name: `sentia-dashboard-${process.env.NODE_ENV || 'development'}`,
     query_timeout: 30000, // 30 seconds
     
@@ -106,7 +106,7 @@ export const databaseConfig = {
       acquireTimeoutMillis: 30000,
     },
     connection: {
-      // Production SSL is required for Neon
+      // Production SSL is required for Render
       ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 15000,
     }
@@ -117,7 +117,7 @@ export const databaseConfig = {
 export const buildConnectionString = (env = process.env.NODE_ENV) => {
   const config = databaseConfig.connection;
   
-  // Use DATABASE_URL if available (Railway/Neon standard)
+  // Use DATABASE_URL if available (Railway/Render standard)
   if (process.env.DATABASE_URL) {
     return process.env.DATABASE_URL;
   }
@@ -159,7 +159,7 @@ export const testConnection = async (pool) => {
       troubleshooting: [
         'Check DATABASE_URL or individual DB config variables',
         'Verify SSL configuration for production',
-        'Confirm network connectivity to Neon'
+        'Confirm network connectivity to Render'
       ]
     });
     return false;

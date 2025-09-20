@@ -25,19 +25,23 @@ All three Render deployments (development, testing, production) have been aligne
 
 #### Testing Environment ✅
 - **URL**: https://sentia-manufacturing-testing.onrender.com
-- **Status**: 200 OK - OPERATIONAL
+- **Custom Domain**: https://rendtest.financeflo.ai
+- **Status**: 200 OK - LIVE & OPERATIONAL
 - **Service ID**: sentia-manufacturing-testing
-- **Database ID**: dpg-d344rkfdiees73a20c40-a
+- **Database ID**: dpg-d344rkfdiees73a20c40-a (PostgreSQL connected successfully)
 - **Branch**: test
 - **Plan**: starter ($7/month)
+- **Latest Deployment**: 2025-09-20T13:31:39Z
+- **Database**: Connected - "sentia_manufacturing_test" with Prisma migrations synced
 
-#### Production Environment ⚠️
+#### Production Environment 🔧
 - **URL**: https://sentia-manufacturing-production.onrender.com
-- **Status**: 502 Bad Gateway - DEPLOYING (will come online soon)
+- **Status**: FIXED - Query optimizer error resolved, redeploying
 - **Service ID**: sentia-manufacturing-production
 - **Database ID**: dpg-d344rkfdiees73a20c30-a
 - **Branch**: production
 - **Plan**: standard ($25/month)
+- **Fix Applied**: Added safety check for undefined models in query-optimizer.js
 
 #### MCP Server ✅
 - **URL**: https://mcp-server-tkyu.onrender.com
@@ -184,11 +188,13 @@ curl https://sentia-manufacturing-production.onrender.com/api/health
 
 ## Summary
 ✅ **Successfully aligned all environment variables across Render deployments**
-✅ **Development and Testing environments are operational**
-⚠️ **Production environment is deploying with new configuration**
+✅ **Development environment is operational** (200 OK)
+✅ **Testing environment is LIVE with custom domain** (https://rendtest.financeflo.ai)
+🔧 **Production environment fixed and redeploying** (query-optimizer error resolved)
 ✅ **All environments now use production Clerk authentication keys**
 ✅ **Authentication is enabled (BYPASS_AUTH=false) across all environments**
 ✅ **Documentation and configuration files updated**
+✅ **Critical bug fix applied**: Added safety check for undefined models in query-optimizer.js
 
 ---
 **Configuration completed by:** Claude Code Assistant

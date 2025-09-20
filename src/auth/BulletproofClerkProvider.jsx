@@ -111,6 +111,11 @@ const AuthErrorRecovery = ({ error, onRetry, onFallback }) => (
 export const BulletproofClerkProvider = ({ children, publishableKey }) => {
   // Use fallback key if none provided
   const effectiveKey = publishableKey || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
+  
+  // Check if we have production keys and should force Clerk auth
+  const hasProductionKeys = effectiveKey?.startsWith('pk_live_');
+  const forceClerkAuth = import.meta.env.VITE_FORCE_CLERK_AUTH === 'true' || hasProductionKeys;
+  const disableFallback = import.meta.env.VITE_DISABLE_AUTH_FALLBACK === 'true' || hasProductionKeys;
 
   const [authState, setAuthState] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -230,14 +235,18 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
     setIsLoading(true);
   }, []);
 
-  // Switch to fallback mode
+  // Switch to fallback mode (only if not disabled)
   const switchToFallback = useCallback(() => {
+    if (disableFallback) {
+      console.log('Fallback mode disabled - forcing Clerk authentication');
+      return;
+    }
     setUseFallback(true);
     setError(null);
     setAuthState(FALLBACK_AUTH_STATE);
     persistAuthState(FALLBACK_AUTH_STATE);
     setIsLoading(false);
-  }, [persistAuthState]);
+  }, [persistAuthState, disableFallback]);
 
   // Context value
   const contextValue = useMemo(() => ({
@@ -266,7 +275,8 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
   }
 
   // If we have a publishable key and not in fallback mode, wrap with ClerkProvider
-  if (publishableKey && !useFallback) {
+  // Force Clerk provider when we have production keys
+  if (publishableKey && (!useFallback || forceClerkAuth)) {
     return (
       <ClerkProvider
         publishableKey={publishableKey}

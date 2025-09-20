@@ -1,4 +1,4 @@
-import { ClerkExpressRequireAuth } from '@clerk/express';
+import { requireAuth } from '@clerk/express';
 
 /**
  * Authentication middleware for API routes
@@ -24,19 +24,12 @@ const authenticate = (req, res, next) => {
   }
 
   // In production or when Clerk keys are available, use Clerk's requirement middleware
-  return ClerkExpressRequireAuth({
-    onError: (error) => {
-      console.error('Clerk authentication error:', error);
+  return requireAuth()(req, res, (err) => {
+    if (err) {
+      console.error('Clerk authentication error:', err);
       return res.status(401).json({
         success: false,
         error: 'Authentication required'
-      });
-    }
-  })(req, res, (err) => {
-    if (err) {
-      return res.status(401).json({
-        success: false,
-        error: 'Authentication failed'
       });
     }
 

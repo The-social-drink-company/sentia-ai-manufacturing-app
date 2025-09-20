@@ -8,7 +8,7 @@
   // Initialize environment variables for Clerk
   // These will be injected by the server or use defaults
   const clerkEnv = {
-    VITE_CLERK_PUBLISHABLE_KEY: window.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk',
+    VITE_CLERK_PUBLISHABLE_KEY: window.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
     VITE_MCP_SERVER_URL: window.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com',
     VITE_API_BASE_URL: window.VITE_API_BASE_URL || '/api',
     // Clerk routing configuration

@@ -122,6 +122,7 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import compression from 'compression';
+import { ClerkExpressWithAuth, ClerkExpressRequireAuth } from '@clerk/express';
 import multer from 'multer';
 import ExcelJS from 'exceljs';
 import csv from 'csv-parser';
@@ -554,6 +555,18 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Add Clerk authentication middleware for all requests
+app.use(ClerkExpressWithAuth({
+  // Development mode fallback
+  onError: (error) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Clerk auth error (development mode):', error.message);
+    } else {
+      console.error('Clerk auth error:', error.message);
+    }
+  }
+}));
+
 // Apply enterprise rate limiting to API routes (with dev bypass for specific endpoints)
 const apiLimiterMiddleware = apiLimiter();
 app.use('/api/', (req, res, next) => {
@@ -826,57 +839,46 @@ app.post('/api/auth/microsoft/callback', async (req, res) => {
   }
 });
 
-// Updated authentication middleware that checks for actual authentication
-const authenticateUser = async (req, res, next) => {
-  try {
-    // DEVELOPMENT MODE: Bypass authentication for testing
-    if (process.env.NODE_ENV === 'development' || process.env.BYPASS_AUTH === 'true') {
-      req.user = {
-        id: 'dev-user-001',
-        email: 'dev@sentia.com',
+// Clerk-based authentication middleware with development mode fallback
+const authenticateUser = (req, res, next) => {
+  // DEVELOPMENT MODE: Bypass authentication for testing
+  if (process.env.NODE_ENV === 'development' || process.env.BYPASS_AUTH === 'true') {
+    req.auth = {
+      userId: 'dev-user-001',
+      sessionId: 'dev-session',
+      sessionClaims: {
         role: 'admin',
         permissions: ['all']
-      };
-      return next();
-    }
-
-    const authHeader = req.headers.authorization;
-
-    // Check for Authorization header
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ 
-        error: 'Unauthorized', 
-        message: 'Authorization header required' 
-      });
-    }
-    
-    const token = authHeader.split(' ')[1];
-    
-    // Validate token (basic validation for demo)
-    if (!token || token.length < 10) {
-      return res.status(401).json({ 
-        error: 'Unauthorized', 
-        message: 'Invalid authorization token' 
-      });
-    }
-    
-    // Set authenticated user context
-    req.userId = 'admin@sentia.com';
-    req.user = { 
-      id: 'admin@sentia.com', 
-      email: 'admin@sentia.com', 
-      name: 'Admin User',
-      role: 'admin' 
+      }
     };
-    
-    next();
-  } catch (error) {
-    logError('Authentication error', error);
-    return res.status(401).json({ 
-      error: 'Unauthorized', 
-      message: 'Authentication failed' 
+    req.user = {
+      id: 'dev-user-001',
+      email: 'dev@sentia.com',
+      role: 'admin',
+      permissions: ['all']
+    };
+    return next();
+  }
+
+  // In production, use Clerk's built-in authentication
+  // The ClerkExpressWithAuth middleware already populated req.auth
+  if (!req.auth || !req.auth.userId) {
+    return res.status(401).json({
+      error: 'Unauthorized',
+      message: 'Authentication required'
     });
   }
+
+  // Set user context from Clerk auth data
+  req.userId = req.auth.userId;
+  req.user = {
+    id: req.auth.userId,
+    sessionId: req.auth.sessionId,
+    role: req.auth.sessionClaims?.metadata?.role || 'viewer',
+    permissions: req.auth.sessionClaims?.metadata?.permissions || []
+  };
+
+  next();
 };
 
 // Simple test endpoint to verify routing works

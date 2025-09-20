@@ -1,0 +1,77 @@
+CLERK PRODUCTION ENVIRONMENT VARIABLES - QUICK COPY REFERENCE
+==============================================================
+
+FOR RENDER DASHBOARD - COPY EACH LINE SEPARATELY:
+
+1. VITE_CLERK_PUBLISHABLE_KEY
+pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+
+2. CLERK_SECRET_KEY
+sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+
+3. NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+
+4. VITE_CLERK_SIGN_IN_URL
+/sign-in
+
+5. VITE_CLERK_SIGN_UP_URL
+/sign-up
+
+6. VITE_CLERK_AFTER_SIGN_IN_URL
+/dashboard
+
+7. VITE_CLERK_AFTER_SIGN_UP_URL
+/dashboard
+
+8. CLERK_ENVIRONMENT
+production
+
+9. VITE_CLERK_DOMAIN
+clerk.financeflo.ai
+
+==============================================================
+
+FOR .ENV FILE (LOCAL TESTING):
+
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_SIGN_IN_URL=/sign-in
+VITE_CLERK_SIGN_UP_URL=/sign-up
+VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
+VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
+CLERK_ENVIRONMENT=production
+VITE_CLERK_DOMAIN=clerk.financeflo.ai
+
+==============================================================
+
+VERIFICATION COMMANDS:
+
+# Check if service is live
+curl -I https://sentia-manufacturing-development.onrender.com/health
+
+# Verify Clerk key is loaded
+curl -s https://sentia-manufacturing-development.onrender.com | grep "pk_live_"
+
+# Run local verification
+node scripts/verify-env-vars.js
+
+==============================================================
+
+SERVICE URLs:
+
+Development: https://sentia-manufacturing-development.onrender.com
+Production: https://sentia-manufacturing-production.onrender.com
+MCP Server: https://mcp-server-tkyu.onrender.com
+
+==============================================================
+
+NOTES:
+- Add these to BOTH development and production services
+- Service will auto-redeploy after adding variables
+- Takes 5-10 minutes to deploy
+- Check "Events" tab for deployment status
+- No quotes needed around values in Render
+- Values are case-sensitive
+- Remove any trailing spaces

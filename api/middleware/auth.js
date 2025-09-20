@@ -1,46 +1,52 @@
-import { verifyToken } from '@clerk/backend';
+import { ClerkExpressRequireAuth } from '@clerk/express';
 
 /**
  * Authentication middleware for API routes
- * Verifies JWT tokens from Clerk authentication
+ * Uses Clerk's official Express middleware for authentication
  */
-const authenticate = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+const authenticate = (req, res, next) => {
+  // DEVELOPMENT MODE: Bypass authentication for testing
+  if ((process.env.NODE_ENV === 'development' && !process.env.CLERK_SECRET_KEY) || process.env.BYPASS_AUTH === 'true') {
+    req.auth = {
+      userId: 'dev-user-001',
+      sessionId: 'dev-session',
+      sessionClaims: {
+        metadata: {
+          role: 'admin',
+          permissions: ['all']
+        }
+      }
+    };
+    req.userId = 'dev-user-001';
+    req.userRole = 'admin';
+    req.permissions = ['all'];
+    return next();
+  }
 
-    if (!token) {
+  // In production or when Clerk keys are available, use Clerk's requirement middleware
+  return ClerkExpressRequireAuth({
+    onError: (error) => {
+      console.error('Clerk authentication error:', error);
       return res.status(401).json({
         success: false,
         error: 'Authentication required'
       });
     }
-
-    // Verify the token with Clerk
-    try {
-      const session = await verifyToken(token, {
-        secretKey: process.env.CLERK_SECRET_KEY
-      });
-
-      // Add user info to request
-      req.userId = session.sub;
-      req.userRole = session.metadata?.role || 'viewer';
-      req.permissions = session.metadata?.permissions || [];
-
-      next();
-    } catch (error) {
-      console.error('Token verification failed:', error);
+  })(req, res, (err) => {
+    if (err) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid or expired token'
+        error: 'Authentication failed'
       });
     }
-  } catch (error) {
-    console.error('Auth middleware error:', error);
-    return res.status(500).json({
-      success: false,
-      error: 'Authentication error'
-    });
-  }
+
+    // Set user context from Clerk auth data
+    req.userId = req.auth.userId;
+    req.userRole = req.auth.sessionClaims?.metadata?.role || 'viewer';
+    req.permissions = req.auth.sessionClaims?.metadata?.permissions || [];
+
+    next();
+  });
 };
 
 /**

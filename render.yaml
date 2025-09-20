@@ -40,13 +40,27 @@ services:
           name: sentia-db-development
           property: connectionString
 
-      # Authentication (Clerk)
+      # Authentication (Clerk Production)
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
-        value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_WEBHOOK_SECRET
         value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      - key: CLERK_ENVIRONMENT
+        value: production
+      - key: VITE_CLERK_DOMAIN
+        value: clerk.financeflo.ai
+      - key: VITE_CLERK_SIGN_IN_URL
+        value: /sign-in
+      - key: VITE_CLERK_SIGN_UP_URL
+        value: /sign-up
+      - key: VITE_CLERK_AFTER_SIGN_IN_URL
+        value: /dashboard
+      - key: VITE_CLERK_AFTER_SIGN_UP_URL
+        value: /dashboard
 
       # Session & JWT
       - key: SESSION_SECRET
@@ -218,13 +232,27 @@ services:
           name: sentia-db-testing
           property: connectionString
 
-      # Authentication (Clerk)
+      # Authentication (Clerk Production)
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
-        value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_WEBHOOK_SECRET
         value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      - key: CLERK_ENVIRONMENT
+        value: production
+      - key: VITE_CLERK_DOMAIN
+        value: clerk.financeflo.ai
+      - key: VITE_CLERK_SIGN_IN_URL
+        value: /sign-in
+      - key: VITE_CLERK_SIGN_UP_URL
+        value: /sign-up
+      - key: VITE_CLERK_AFTER_SIGN_IN_URL
+        value: /dashboard
+      - key: VITE_CLERK_AFTER_SIGN_UP_URL
+        value: /dashboard
 
       # Session & JWT
       - key: SESSION_SECRET
@@ -392,13 +420,27 @@ services:
           name: sentia-db-production
           property: connectionString
 
-      # Authentication (Clerk)
+      # Authentication (Clerk Production)
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
-        value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_WEBHOOK_SECRET
         value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      - key: CLERK_ENVIRONMENT
+        value: production
+      - key: VITE_CLERK_DOMAIN
+        value: clerk.financeflo.ai
+      - key: VITE_CLERK_SIGN_IN_URL
+        value: /sign-in
+      - key: VITE_CLERK_SIGN_UP_URL
+        value: /sign-up
+      - key: VITE_CLERK_AFTER_SIGN_IN_URL
+        value: /dashboard
+      - key: VITE_CLERK_AFTER_SIGN_UP_URL
+        value: /dashboard
 
       # Session & JWT
       - key: SESSION_SECRET
@@ -659,7 +701,7 @@ databases:
 
       # Clerk Authentication (shared with main app)
       - key: CLERK_SECRET_KEY
-        value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
 
       # Local LLM Support (Optional)
       - key: LOCAL_LLM_ENDPOINT

@@ -79,9 +79,13 @@ export default defineConfig({
       output: {
         // Enhanced manual chunking to reduce bundle sizes
         manualChunks: (id) => {
-          // Core React
+          // CRITICAL: Bundle React and state management together to prevent loading order issues
           if (id.includes('react') && !id.includes('react-router') && !id.includes('@')) {
             return 'react-core'
+          }
+          // State management MUST be bundled with React to avoid createContext errors
+          if (id.includes('zustand') || id.includes('@tanstack/react-query')) {
+            return 'react-core'  // Bundle with React core to ensure proper loading order
           }
           // Router
           if (id.includes('react-router')) {
@@ -102,10 +106,6 @@ export default defineConfig({
           // Three.js (large 3D library)
           if (id.includes('three') || id.includes('@react-three')) {
             return 'three-3d'
-          }
-          // State management
-          if (id.includes('zustand') || id.includes('@tanstack/react-query')) {
-            return 'state'
           }
           // Animation
           if (id.includes('framer-motion')) {
@@ -174,10 +174,7 @@ export default defineConfig({
   },
   define: {
     'global': 'globalThis',
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
-    'React': 'React',
-    'React.createElement': 'React.createElement',
-    'React.createContext': 'React.createContext'
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
   },
   esbuild: {
     target: 'es2020'

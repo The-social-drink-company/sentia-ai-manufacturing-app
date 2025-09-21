@@ -29,13 +29,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const execPromise = util.promisify(exec);
 
-// Autonomous Configuration
+// Autonomous Configuration - ALL SYSTEMS DISABLED
 const CONFIG = {
-  // Operation Mode
-  MODE: 'DISABLED',
+  // Operation Mode - PERMANENTLY DISABLED
+  MODE: 'PERMANENTLY_DISABLED',
   AUTO_FIX_ENABLED: false,
   AUTO_DEPLOY_ENABLED: false,
   AUTO_RESTART_ENABLED: false,
+  AUTONOMOUS_TESTING: false, // DISABLED
+  BACKGROUND_HEALING: false, // DISABLED
 
   // Monitoring Intervals (ms)
   HEALTH_CHECK_INTERVAL: 2 * 60 * 1000,     // 2 minutes

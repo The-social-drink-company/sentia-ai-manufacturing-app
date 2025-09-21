@@ -4734,29 +4734,31 @@ function generateForecastPredictions() {
 // Autonomous Testing System API Endpoints
 let autonomousScheduler = null; // Global scheduler instance
 
+// AUTONOMOUS TESTING DISABLED - All autonomous agents turned off
 // Initialize autonomous scheduler if enabled
-if (process.env.ENABLE_AUTONOMOUS_TESTING === 'true') {
+if (process.env.ENABLE_AUTONOMOUS_TESTING === 'true' && false) { // FORCE DISABLED
   (async () => {
     try {
       const { default: AutonomousScheduler } = await import('./services/scheduler/autonomous-scheduler.js');
       autonomousScheduler = new AutonomousScheduler({
-        enableScheduling: true,
+        enableScheduling: false, // DISABLED
         testInterval: '*/10 * * * *', // Every 10 minutes
         agent: {
-          autoFixEnabled: true,
-          deploymentEnabled: process.env.NODE_ENV === 'production',
-          rollbackEnabled: true
+          autoFixEnabled: false, // DISABLED
+          deploymentEnabled: false, // DISABLED
+          rollbackEnabled: false // DISABLED
         }
       });
-      
-      // Start the scheduler
-      await autonomousScheduler.start();
-      console.log('🤖 Autonomous testing system started');
+
+      // Start the scheduler - DISABLED
+      // await autonomousScheduler.start();
+      console.log('Autonomous testing system DISABLED');
     } catch (error) {
-      console.error('❌ Failed to initialize autonomous testing:', error.message);
+      console.error('Autonomous testing disabled:', error.message);
     }
   })();
 }
+console.log('Autonomous testing is DISABLED');
 
 // Autonomous system status
 app.get('/api/autonomous/scheduler/status', authenticateUser, (req, res) => {

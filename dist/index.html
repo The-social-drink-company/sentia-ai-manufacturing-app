@@ -95,23 +95,97 @@
       </style>
     </div>
 
-    <!-- Diagnostic script for debugging -->
+    <!-- Enhanced diagnostic script for debugging -->
     <script>
-      // Remove fallback loader when app loads
-      window.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-          var loader = document.getElementById('fallback-loader');
-          if (loader && document.querySelector('#root > *:not(#fallback-loader)')) {
-            loader.style.display = 'none';
-          }
-        }, 100);
+      // Global error tracking
+      window.reactMountErrors = [];
+      window.reactMounted = false;
+      
+      // Enhanced error catching
+      window.addEventListener('error', function(e) {
+        console.error('[Global Error]', e.message, e.filename, e.lineno);
+        window.reactMountErrors.push({
+          message: e.message,
+          filename: e.filename,
+          lineno: e.lineno,
+          timestamp: new Date().toISOString()
+        });
       });
 
-      // Add diagnostic information
-      console.log('[App Init] Starting Sentia Manufacturing Dashboard');
-      console.log('[App Init] Environment:', window.location.hostname);
-      console.log('[App Init] Protocol:', window.location.protocol);
-      console.log('[App Init] Clerk Key:', window.import?.meta?.env?.VITE_CLERK_PUBLISHABLE_KEY ? 'Present' : 'Missing');
+      // Monitor React mounting
+      function checkReactMount() {
+        const root = document.getElementById('root');
+        const loader = document.getElementById('fallback-loader');
+        
+        // Check if React has mounted (look for React-generated content)
+        const hasReactContent = root && root.children.length > 1 || 
+                               (root && root.children[0] && root.children[0].id !== 'fallback-loader');
+        
+        if (hasReactContent && !window.reactMounted) {
+          window.reactMounted = true;
+          console.log('[React] Successfully mounted');
+          if (loader) {
+            loader.style.display = 'none';
+          }
+        } else if (!hasReactContent && loader) {
+          // Show loader if React hasn't mounted yet
+          loader.style.display = 'flex';
+        }
+        
+        return hasReactContent;
+      }
+
+      // Check React mount status periodically
+      let mountCheckInterval;
+      window.addEventListener('DOMContentLoaded', function() {
+        console.log('[App Init] Starting Sentia Manufacturing Dashboard');
+        console.log('[App Init] Environment:', window.location.hostname);
+        console.log('[App Init] Protocol:', window.location.protocol);
+        console.log('[App Init] Clerk Key:', window.VITE_CLERK_PUBLISHABLE_KEY ? 'Present' : 'Missing');
+        
+        // Initial check
+        setTimeout(checkReactMount, 100);
+        
+        // Periodic checks for React mounting
+        mountCheckInterval = setInterval(function() {
+          if (checkReactMount()) {
+            clearInterval(mountCheckInterval);
+          }
+        }, 500);
+        
+        // Stop checking after 30 seconds and show error
+        setTimeout(function() {
+          if (!window.reactMounted) {
+            clearInterval(mountCheckInterval);
+            console.error('[React] Failed to mount after 30 seconds');
+            const loader = document.getElementById('fallback-loader');
+            if (loader) {
+              loader.innerHTML = `
+                <div style="text-align: center;">
+                  <div style="color: #ef4444; font-size: 18px; margin-bottom: 16px;">
+                    ⚠️ Application Loading Error
+                  </div>
+                  <div style="color: #6b7280; font-size: 14px; margin-bottom: 16px;">
+                    The dashboard failed to initialize. Please refresh the page.
+                  </div>
+                  <button onclick="window.location.reload()" style="
+                    background: #3b82f6;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                  ">Refresh Page</button>
+                  <div style="color: #9ca3af; font-size: 12px; margin-top: 16px;">
+                    Errors: ${window.reactMountErrors.length}
+                  </div>
+                </div>
+              `;
+            }
+          }
+        }, 30000);
+      });
     </script>
 
     <script>

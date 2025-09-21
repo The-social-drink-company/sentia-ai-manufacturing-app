@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
 // Bulletproof Clerk Authentication - solves server-side auth issues
 // Import auth components but don't use hooks at module level
-import { useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
+import BulletproofAuthProvider, { useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -21,8 +21,8 @@ import './lib/chartSetup'
 // Layout Components
 import DashboardLayout from './components/layout/DashboardLayout'
 import WorldClassLayout from './components/layout/WorldClassLayout'
-import { LoadingSpinner } from './components/LoadingStates'
-import ErrorBoundaryFallback from './components/ErrorBoundary'
+import LoadingSpinner from './components/LoadingSpinner'
+import ErrorBoundaryFallback from './components/ErrorBoundaryFallback'
 // Import enhanced lazy loading utilities
 import { createRouteComponent, createPriorityComponent, createLowPriorityComponent } from './utils/lazyLoading'
 // Import authentication components
@@ -32,7 +32,7 @@ import SignupPage from './pages/SignupPage'
 import UniversalLogin from './pages/UniversalLogin'
 import ClerkSignIn from './pages/ClerkSignIn'
 import ClerkSignUp from './pages/ClerkSignUp'
-// import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
+// // import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
 import UserOnboarding from './components/auth/UserOnboarding'
 import AuthVerification from './components/AuthVerification'
 

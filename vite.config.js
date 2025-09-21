@@ -43,8 +43,7 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug']
+        drop_debugger: true
       },
       mangle: {
         safari10: true
@@ -59,46 +58,48 @@ export default defineConfig({
     assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
-        // Simplified chunking strategy to avoid initialization errors
-        manualChunks: {
-          // Core React bundle - keep together to avoid loading order issues
-          'react-core': [
-            'react',
-            'react-dom',
-            'react/jsx-runtime'
-          ],
+        // Use function-based chunking to avoid module resolution issues
+        manualChunks: (id) => {
+          // Core React
+          if (id.includes('react') && !id.includes('react-router')) {
+            return 'react-core'
+          }
           // Router
-          'router': [
-            'react-router-dom'
-          ],
+          if (id.includes('react-router')) {
+            return 'router'
+          }
           // Authentication
-          'auth': [
-            '@clerk/clerk-react'
-          ],
-          // Charts - separate to isolate potential issues
-          'charts': [
-            'recharts'
-          ],
+          if (id.includes('@clerk')) {
+            return 'auth'
+          }
+          // Charts - isolate to prevent initialization errors
+          if (id.includes('recharts') || id.includes('d3')) {
+            return 'charts'
+          }
           // UI Components
-          'ui-components': [
-            '@heroicons/react',
-            '@headlessui/react'
-          ],
+          if (id.includes('@heroicons') || id.includes('@headlessui')) {
+            return 'ui-components'
+          }
           // Animation
-          'animation': [
-            'framer-motion'
-          ],
+          if (id.includes('framer-motion')) {
+            return 'animation'
+          }
           // Forms
-          'forms': [
-            'react-hook-form',
-            'zod'
-          ],
-          // Utilities
-          'vendor-utils': [
-            'classnames',
-            'clsx',
-            'uuid'
-          ]
+          if (id.includes('react-hook-form') || id.includes('zod')) {
+            return 'forms'
+          }
+          // Small utilities
+          if (id.includes('node_modules')) {
+            const module = id.split('node_modules/')[1]
+            if (module) {
+              const packageName = module.split('/')[0]
+              const smallPackages = ['classnames', 'clsx', 'uuid', 'nanoid']
+              if (smallPackages.some(pkg => packageName.includes(pkg))) {
+                return 'vendor-utils'
+              }
+            }
+            return 'vendor'
+          }
         },
         chunkFileNames: 'js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {
@@ -112,9 +113,6 @@ export default defineConfig({
           return 'assets/[name]-[hash:8][extname]'
         },
         entryFileNames: 'js/[name]-[hash:8].js'
-      },
-      treeshake: {
-        preset: 'recommended'
       }
     }
   },
@@ -125,17 +123,13 @@ export default defineConfig({
       'react-router-dom',
       '@clerk/clerk-react'
     ],
-    force: true,
-    esbuildOptions: {
-      target: 'es2020'
-    }
+    force: true
   },
   define: {
     'global': 'globalThis',
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
   },
   esbuild: {
-    target: 'es2020',
-    format: 'esm'
+    target: 'es2020'
   }
 })

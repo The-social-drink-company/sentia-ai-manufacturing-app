@@ -277,7 +277,10 @@
       "Bash(PORT=5003 node scripts/validate-clerk-fix.js)",
       "WebFetch(domain:sentia-manufacturing-development.onrender.com)",
       "Bash(start https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/blob/development/server-fixed.js)",
-      "Bash(start:*)"
+      "Bash(start:*)",
+      "Bash(schtasks:*)",
+      "WebFetch(domain:sentia-manufacturing-production.onrender.com)",
+      "Read(//c/Users/User/OneDrive - Q&A ERP Solutions (Pty) Ltd (1)/185 - Working Capital Production SaaS App/**)"
     ],
     "deny": [],
     "ask": []

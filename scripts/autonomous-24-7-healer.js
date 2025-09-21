@@ -32,10 +32,10 @@ const execPromise = util.promisify(exec);
 // Autonomous Configuration
 const CONFIG = {
   // Operation Mode
-  MODE: '24/7_AUTONOMOUS',
-  AUTO_FIX_ENABLED: true,
-  AUTO_DEPLOY_ENABLED: true,
-  AUTO_RESTART_ENABLED: true,
+  MODE: 'DISABLED',
+  AUTO_FIX_ENABLED: false,
+  AUTO_DEPLOY_ENABLED: false,
+  AUTO_RESTART_ENABLED: false,
 
   // Monitoring Intervals (ms)
   HEALTH_CHECK_INTERVAL: 2 * 60 * 1000,     // 2 minutes
@@ -89,7 +89,7 @@ const CONFIG = {
 // Autonomous Healing Engine
 class AutonomousHealer {
   constructor() {
-    this.isRunning = true;
+    this.isRunning = false; // DISABLED - Autonomous agent turned off
     this.activeRecoveries = new Map();
     this.errorPatterns = this.loadErrorPatterns();
     this.successfulFixes = this.loadSuccessfulFixes();

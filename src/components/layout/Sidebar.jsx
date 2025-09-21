@@ -38,16 +38,16 @@ const SidebarItem = ({
   onClick = null,
   isSubItem = false
 }) => {
-  const baseClasses = "flex items-center px-3 py-2.5 rounded-lg transition-all duration-200"
-
-  const activeClasses = "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-medium shadow-sm"
-
-  const inactiveClasses = "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
+  const baseClasses = "nav-item"
+  
+  const activeClasses = "nav-item-active"
+  
+  const inactiveClasses = "nav-item-inactive"
   
   const content = (
     <>
-      <Icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} ${isActive ? 'text-blue-600 dark:text-blue-400' : ''}`} />
-      {!isCollapsed && <span className="text-sm">{label}</span>}
+      <Icon style={{width: '16px', height: '16px', marginRight: isCollapsed ? '0' : '12px'}} />
+      {!isCollapsed && <span>{label}</span>}
     </>
   )
   
@@ -82,31 +82,34 @@ const SidebarSection = ({ title, children, isCollapsed, defaultExpanded = true }
   
   if (isCollapsed) {
     return (
-      <div className="space-y-1">
-        <div className="h-px bg-gray-200 dark:bg-gray-700 my-3" />
+      <div className="nav-section-collapsed">
+        <div className="section-divider" />
         {children}
       </div>
     )
   }
   
   return (
-    <div className="mb-4">
+    <div className="nav-section">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-400 transition-colors"
+        className="nav-section-header"
       >
         <span>{title}</span>
         {isExpanded ? (
-          <ChevronUpIcon className="w-3 h-3" />
+          <ChevronUpIcon style={{width: '12px', height: '12px'}} />
         ) : (
-          <ChevronDownIcon className="w-3 h-3" />
+          <ChevronDownIcon style={{width: '12px', height: '12px'}} />
         )}
       </button>
       
-      <div
-        className={`mt-2 space-y-1 ${isExpanded ? 'block' : 'hidden'}`}
+      <div 
+        className="section-content"
+        style={{
+          display: isExpanded ? 'block' : 'none'
+        }}
       >
-        <div>
+        <div className="section-items">
           {children}
         </div>
       </div>
@@ -321,42 +324,42 @@ const Sidebar = () => {
         />
       )}
       
-      <div
-        className={`fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300 z-50 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}
+      <div 
+        className={`sidebar-container ${sidebarCollapsed ? 'collapsed' : ''}`}
       >
       {/* Sidebar Header */}
-      <div className="flex items-center justify-between p-4 h-16 border-b border-gray-200 dark:border-gray-700">
+      <div className="sidebar-header">
         {!sidebarCollapsed && (
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+          <div className="sidebar-brand">
+            <div className="sidebar-logo">
               <span>S</span>
             </div>
-            <div>
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <div className="sidebar-text">
+              <h2 className="sidebar-title">
                 Sentia
               </h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Manufacturing
+              <p className="sidebar-subtitle">
+                Manufacturing Dashboard
               </p>
             </div>
           </div>
         )}
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="sidebar-collapse-btn"
           title={sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
         >
           {sidebarCollapsed ? (
-            <ChevronRightIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            <ChevronRightIcon style={{width: '16px', height: '16px'}} />
           ) : (
-            <ChevronLeftIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            <ChevronLeftIcon style={{width: '16px', height: '16px'}} />
           )}
         </button>
       </div>
       
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
-        <div className="space-y-4 px-3">
+      <nav className="sidebar-nav">
+        <div className="nav-sections">
           {navigationItems.map((section) => {
             // For demo/guest access, show all items regardless of permissions
             const visibleItems = section.items.filter(item => 

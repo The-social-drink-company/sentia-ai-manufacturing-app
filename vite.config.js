@@ -1,53 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
-// Temporarily disable visualizer to fix build
-// import { visualizer } from 'rollup-plugin-visualizer'
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react({
-      // Enable React Fast Refresh optimizations
-      fastRefresh: true,
-      // Optimize JSX runtime
-      jsxRuntime: 'automatic'
-    }),
-    // Bundle analyzer disabled to fix build
-    // process.env.ANALYZE && visualizer({
-    //   filename: 'dist/stats.html',
-    //   open: true,
-    //   gzipSize: true,
-    //   brotliSize: true
-    // })
-  ].filter(Boolean),
-  // Critical: Set base path for Railway deployment
-  base: '/', // Use absolute paths for proper routing
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@/components': path.resolve(__dirname, './src/components'),
-      '@/pages': path.resolve(__dirname, './src/pages'),
-      '@/services': path.resolve(__dirname, './src/services'),
-      '@/utils': path.resolve(__dirname, './src/utils'),
-      '@/hooks': path.resolve(__dirname, './src/hooks'),
-      '@/stores': path.resolve(__dirname, './src/stores'),
-      '@/config': path.resolve(__dirname, './src/config')
-    }
-  },
-  server: {
-    port: 3001,
-    host: true, // Allow external connections
-    strictPort: false, // Allow fallback to next available port
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  },
+  plugins: [react()],
   build: {
     outDir: 'dist',
+<<<<<<< HEAD
+  },
+})
+
+=======
     assetsDir: 'js',
     emptyOutDir: true,
     sourcemap: false, // Disable sourcemaps to prevent module issues
@@ -180,3 +143,4 @@ export default defineConfig({
     target: 'es2020'
   }
 })
+>>>>>>> development

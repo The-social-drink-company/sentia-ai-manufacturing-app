@@ -1,15 +1,30 @@
 {
-  "name": "sentia-manufacturing-dashboard",
-  "version": "1.0.5",
-  "description": "Sentia Manufacturing Dashboard - Enterprise Edition",
-  "type": "module",
+  "name": "sentia-manufacturing-dashboard-enterprise",
+  "version": "2.0.0",
+  "description": "Sentia Manufacturing Dashboard - Enterprise Edition - Bulletproof, Zero Dependencies",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "echo 'Build completed - Static server ready'"
+    "build": "echo 'Enterprise build complete - Zero dependencies required'",
+    "test": "node server.js --test",
+    "health": "curl -f http://localhost:5000/health || exit 1"
+  },
+  "keywords": [
+    "manufacturing",
+    "dashboard", 
+    "enterprise",
+    "bulletproof",
+    "zero-dependencies"
+  ],
+  "author": "Sentia Manufacturing",
+  "license": "PROPRIETARY",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git"
   },
   "dependencies": {},
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "devDependencies": {}
 }

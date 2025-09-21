@@ -22,7 +22,7 @@ console.log('Test Data Factory: COMPLETELY DISABLED');
 console.log('='.repeat(70));
 
 // Just start a minimal server
-const express = require('express');
+import express from 'express';
 const app = express();
 const PORT = process.env.PORT || 10000;
 

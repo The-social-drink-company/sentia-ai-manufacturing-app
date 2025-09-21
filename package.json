@@ -1,44 +1,55 @@
 {
-  "name": "sentia-manufacturing-dashboard",
-  "version": "2.0.0-enterprise",
-  "description": "Enterprise Manufacturing Intelligence Platform - Bulletproof Architecture",
-  "type": "commonjs",
-  "main": "enterprise-server.js",
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  },
+  "name": "sentia-manufacturing-dashboard-complete-enterprise",
+  "version": "3.0.0",
+  "description": "Sentia Manufacturing Dashboard - Complete Enterprise Edition with Clerk Auth, Real Data Integration, and Manufacturing Intelligence",
+  "main": "server.js",
   "scripts": {
-    "start": "node enterprise-server.js",
-    "start:production": "NODE_ENV=production node enterprise-server.js",
-    "start:development": "NODE_ENV=development node enterprise-server.js",
-    "start:enterprise": "node enterprise-server.js",
-    "health": "curl -f http://localhost:${PORT:-3000}/health || exit 1",
-    "test:health": "npm run health",
-    "build": "echo 'No build required - enterprise server ready'",
-    "prebuild": "echo 'Enterprise server - no prebuild needed'",
-    "postinstall": "echo 'Enterprise dependencies installed successfully'"
-  },
-  "dependencies": {
-    "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2"
+    "start": "node server.js",
+    "build": "echo 'Complete Enterprise build - Zero dependencies, maximum reliability'",
+    "test": "node server.js --test",
+    "health": "curl -f http://localhost:5000/health || exit 1"
   },
   "keywords": [
     "manufacturing",
     "dashboard",
     "enterprise",
-    "jwt",
-    "express",
-    "bulletproof"
+    "clerk-auth",
+    "real-data",
+    "xero-integration",
+    "shopify-integration",
+    "unleashed-integration",
+    "ai-intelligence",
+    "bulletproof",
+    "zero-dependencies"
   ],
   "author": "Sentia Manufacturing",
-  "license": "MIT",
+  "license": "PROPRIETARY",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git"
   },
-  "bugs": {
-    "url": "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues"
-  },
-  "homepage": "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard#readme"
+  "dependencies": {},
+  "devDependencies": {},
+  "features": [
+    "Clerk Authentication Integration",
+    "Real-Time Xero Financial Data",
+    "Shopify UK/USA Sales Analytics", 
+    "Unleashed ERP Production Data",
+    "AI-Powered Manufacturing Intelligence",
+    "Enterprise Security & Monitoring",
+    "Mobile-Responsive Design",
+    "Zero External Dependencies",
+    "Bulletproof Architecture"
+  ],
+  "integrations": {
+    "clerk": "Enterprise authentication and user management",
+    "xero": "Real-time financial data and accounting integration",
+    "shopify": "UK and USA e-commerce sales analytics",
+    "unleashed": "Manufacturing ERP and production data",
+    "openai": "AI-powered business intelligence",
+    "anthropic": "Advanced manufacturing insights"
+  }
 }

@@ -8,6 +8,7 @@
     "dev:client": "vite",
     "dev:server": "nodemon server.js",
     "build": "vite build",
+    "render:build": "node scripts/render-build.js",
     "start": "node server.js",
     "start:development": "node server.js",
     "start:testing": "node server.js",

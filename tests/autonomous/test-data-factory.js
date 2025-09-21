@@ -14,6 +14,13 @@ faker.seed(12345); // Reproducible test data
 
 class TestDataFactory {
   constructor() {
+    // CRITICAL: Disable TestDataFactory to prevent memory overflow on Render
+    if (process.env.DISABLE_TEST_DATA_GENERATION === 'true' ||
+        process.env.NODE_ENV === 'production' ||
+        process.env.NODE_ENV === 'test') {
+      console.log('TestDataFactory DISABLED - Memory optimization active');
+      throw new Error('TestDataFactory disabled to prevent memory overflow');
+    }
     this.scenarios = {
       manufacturing: ['normal_operation', 'high_load', 'maintenance_mode', 'quality_issues', 'emergency_stop'],
       financial: ['steady_growth', 'seasonal_decline', 'rapid_expansion', 'cash_flow_issues', 'market_volatility'],

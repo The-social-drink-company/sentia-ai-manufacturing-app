@@ -24,11 +24,11 @@ import {
 } from '@heroicons/react/24/outline'
 import { ShareButton } from '../ui/ShareButton'
 import { Menu, Transition } from '@headlessui/react'
-// Use Bulletproof auth hooks that handle dynamic Clerk loading
-import { useAuth, useUser } from '../../auth/BulletproofClerkProvider'
+// ENTERPRISE: Full Clerk integration restored
+import { useUser, UserButton, SignOutButton } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
-import { ThemeToggle } from '../../theming'
+import ThemeSelector from '../ui/ThemeSelector'
 import { useSSE } from '../../hooks/useSSE'
 import { useFeatureFlags } from '../../hooks/useFeatureFlags.jsx'
 import { cn } from '../../lib/utils'
@@ -458,22 +458,18 @@ const CurrencyControl = () => {
 
 const Header = () => {
   const navigate = useNavigate()
-  // Enhanced Clerk user integration
+  // Clerk user integration
   const { user, isLoaded, isSignedIn } = useUser()
-  const { signOut } = useAuth()
-  const {
-    theme,
-    toggleTheme,
-    sidebarCollapsed,
-    toggleSidebar,
-    isEditing,
+  const { 
+    theme, 
+    toggleTheme, 
+    sidebarCollapsed, 
+    toggleSidebar, 
+    isEditing, 
     setEditing,
     generateShareableLayout
   } = useLayoutStore()
   const { role, hasPermission, getUserDisplayName } = useAuthRole()
-
-  // Get user's first name for personalized greeting
-  const userFirstName = user?.firstName || user?.username || 'User'
   const { isConnected } = useSSE({ enabled: true })
   const { hasGlobalTabs, hasCFOFeatures } = useFeatureFlags()
   
@@ -640,8 +636,8 @@ const Header = () => {
                 size="md"
               />
               
-              {/* Theme Toggle */}
-              <ThemeToggle variant="secondary" size="md" />
+              {/* Theme Selector */}
+              <ThemeSelector variant="compact" size="medium" />
               
               {hasPermission('workingcapital.analyze') && (
                 <QuickActionButton
@@ -729,26 +725,15 @@ const Header = () => {
               
               {/* User Profile - Clerk Pro Integration */}
               <div className="flex items-center space-x-3">
-                {/* User Info Display with Welcome Message */}
-                {isSignedIn && user ? (
-                  <div className="hidden sm:flex flex-col text-right">
-                    <span className="text-sm text-secondary font-medium">
-                      Welcome, {userFirstName}
-                    </span>
-                    <span className="text-xs text-tertiary">
-                      {role} • {user?.emailAddresses?.[0]?.emailAddress?.split('@')[0]}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="hidden sm:flex flex-col text-right">
-                    <span className="text-sm text-secondary font-medium">
-                      {getUserDisplayName()}
-                    </span>
-                    <span className="text-xs text-tertiary">
-                      {role}
-                    </span>
-                  </div>
-                )}
+                {/* User Info Display */}
+                <div className="hidden sm:flex flex-col text-right">
+                  <span className="text-sm text-secondary font-medium">
+                    {getUserDisplayName()}
+                  </span>
+                  <span className="text-xs text-tertiary">
+                    {role}
+                  </span>
+                </div>
                 
                 {/* Clerk UserButton with Pro Features */}
                 <UserButton

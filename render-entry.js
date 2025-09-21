@@ -17,10 +17,7 @@ console.log('='.repeat(70));
 const isProduction = process.env.NODE_ENV === 'production';
 const serviceName = process.env.RENDER_SERVICE_NAME || '';
 
-if (isProduction || serviceName.includes('production')) {
-  console.log('Starting PRODUCTION EMERGENCY SERVER - Ensuring operational status...');
-  import('./production-emergency-server.js');
-} else {
-  console.log('Starting ULTRA-MINIMAL SERVER - No dependencies, instant startup...');
-  import('./render-ultra-minimal.js');
-}
+// ALWAYS use server-fixed.js which has the correct Clerk authentication fix
+console.log('Starting SERVER-FIXED.JS with Clerk authentication fix...');
+console.log('This server has health check BEFORE authentication middleware');
+import('./server-fixed.js');

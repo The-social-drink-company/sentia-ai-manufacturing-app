@@ -1,18 +1,24 @@
 {
-  "name": "sentia-manufacturing-dashboard-enterprise",
-  "version": "2.0.0",
-  "description": "Sentia Manufacturing Dashboard - Enterprise Edition - Bulletproof, Zero Dependencies",
+  "name": "sentia-manufacturing-dashboard-complete-enterprise",
+  "version": "3.0.0",
+  "description": "Sentia Manufacturing Dashboard - Complete Enterprise Edition with Clerk Auth, Real Data Integration, and Manufacturing Intelligence",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "echo 'Enterprise build complete - Zero dependencies required'",
+    "build": "echo 'Complete Enterprise build - Zero dependencies, maximum reliability'",
     "test": "node server.js --test",
     "health": "curl -f http://localhost:5000/health || exit 1"
   },
   "keywords": [
     "manufacturing",
-    "dashboard", 
+    "dashboard",
     "enterprise",
+    "clerk-auth",
+    "real-data",
+    "xero-integration",
+    "shopify-integration",
+    "unleashed-integration",
+    "ai-intelligence",
     "bulletproof",
     "zero-dependencies"
   ],
@@ -26,5 +32,24 @@
     "url": "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git"
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "features": [
+    "Clerk Authentication Integration",
+    "Real-Time Xero Financial Data",
+    "Shopify UK/USA Sales Analytics", 
+    "Unleashed ERP Production Data",
+    "AI-Powered Manufacturing Intelligence",
+    "Enterprise Security & Monitoring",
+    "Mobile-Responsive Design",
+    "Zero External Dependencies",
+    "Bulletproof Architecture"
+  ],
+  "integrations": {
+    "clerk": "Enterprise authentication and user management",
+    "xero": "Real-time financial data and accounting integration",
+    "shopify": "UK and USA e-commerce sales analytics",
+    "unleashed": "Manufacturing ERP and production data",
+    "openai": "AI-powered business intelligence",
+    "anthropic": "Advanced manufacturing insights"
+  }
 }

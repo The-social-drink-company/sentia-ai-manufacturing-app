@@ -52,7 +52,7 @@
     "render:health": "node scripts/verify-render-deployment.js",
     "performance": "node scripts/performance-optimizer.js",
     "test:suite": "node tests/automated-test-suite.js",
-    "test:all": "npm run test:suite",
+    "test:full": "npm run test:suite",
     "monitor:production": "node monitoring/production-monitor.js",
     "deploy:production": "node scripts/render-deploy.js production",
     "deploy:testing": "node scripts/render-deploy.js testing",

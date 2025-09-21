@@ -48,7 +48,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'js',
+    assetsDir: 'assets',
     emptyOutDir: true,
     sourcemap: false, // Disable sourcemaps to prevent module issues
     minify: 'terser', // Use terser for better minification

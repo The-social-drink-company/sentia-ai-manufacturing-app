@@ -280,7 +280,9 @@
       "Bash(start:*)",
       "Bash(schtasks:*)",
       "WebFetch(domain:sentia-manufacturing-production.onrender.com)",
-      "Read(//c/Users/User/OneDrive - Q&A ERP Solutions (Pty) Ltd (1)/185 - Working Capital Production SaaS App/**)"
+      "Read(//c/Users/User/OneDrive - Q&A ERP Solutions (Pty) Ltd (1)/185 - Working Capital Production SaaS App/**)",
+      "WebFetch(domain:sentia-manufacturing-testing.onrender.com)",
+      "WebFetch(domain:mcp-server-tkyu.onrender.com)"
     ],
     "deny": [],
     "ask": []

@@ -229,6 +229,7 @@ function App() {
   const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
   return (
+    <BulletproofAuthProvider>
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
           <QueryClientProvider client={queryClient}>
             {/* SessionManager temporarily disabled - uses Clerk hooks */}
@@ -1009,6 +1010,7 @@ function App() {
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>
+    </BulletproofAuthProvider>
   )
 }
 

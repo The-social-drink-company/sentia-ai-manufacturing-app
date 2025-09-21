@@ -5,6 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:development": "node server.js",
+    "start:testing": "node server.js",
+    "start:production": "node server.js",
     "build": "echo 'Complete Enterprise build - Zero dependencies, maximum reliability'",
     "test": "node server.js --test",
     "health": "curl -f http://localhost:5000/health || exit 1"

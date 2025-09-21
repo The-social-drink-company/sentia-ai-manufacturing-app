@@ -1,4 +1,10 @@
 @echo off
+echo AUTONOMOUS HEALER DISABLED - This script has been deactivated
+echo Exiting...
+exit /b 0
+goto :eof
+
+REM === ORIGINAL SCRIPT BELOW (DISABLED) ===
 cls
 color 0A
 echo.

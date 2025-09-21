@@ -103,9 +103,9 @@ export default defineConfig({
           if (id.includes('recharts') || id.includes('d3')) {
             return 'charts'
           }
-          // Three.js (large 3D library)
+          // Three.js MUST be bundled with React to avoid useLayoutEffect errors
           if (id.includes('three') || id.includes('@react-three')) {
-            return 'three-3d'
+            return 'react-core'  // Bundle with React to prevent hook errors
           }
           // Animation
           if (id.includes('framer-motion')) {

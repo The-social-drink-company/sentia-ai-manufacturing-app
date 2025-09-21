@@ -1,6 +1,8 @@
 <!-- Sync Impact Report
-Version change: 1.0.0 → 2.0.0
+Version change: 2.0.0 → 2.1.0
 Modified principles:
+- Added: VIII. Deployment Verification Rule
+Previous additions (v2.0.0):
 - Added: I. Render-Only Deployment
 - Added: II. MCP Server Integration
 - Added: III. Enterprise Architecture
@@ -9,7 +11,7 @@ Modified principles:
 - Added: VI. Context-Driven Development
 - Added: VII. Git Workflow Standards
 Added sections:
-- Deployment Standards
+- Deployment Standards (enhanced with verification requirements)
 - Integration Requirements
 Templates requiring updates: ✅ updated
 - /templates/plan-template.md: ✅ updated
@@ -56,6 +58,26 @@ Follow enterprise workflow: development → test → production branches. Develo
 
 **Rationale**: Proper version control ensures traceability, enables rollback, and maintains clear deployment progression.
 
+### VIII. Deployment Verification Rule (NON-NEGOTIABLE)
+Any change or update is ONLY considered verified when it displays 100% correctly in Render deployment. Verification FAILS if:
+- Render deployment fails or shows errors
+- Screen is blank or shows loading indefinitely
+- UI is broken, misaligned, or incorrect
+- Components fail to render or show error boundaries
+- API endpoints return errors or incorrect data
+- Authentication flow is broken or redirects incorrectly
+- Any functionality that worked before the change no longer works
+
+Verification PASSES only when:
+- Render deployment succeeds with green status
+- All pages load and display correctly
+- UI matches intended design without visual defects
+- All functionality operates as specified
+- No console errors in browser developer tools
+- API health checks return successful responses
+
+**Rationale**: Render deployment is the single source of truth. Local testing means nothing if Render deployment fails. This prevents broken code from reaching users and ensures production reliability.
+
 ## Deployment Standards
 
 ### Render Platform Requirements
@@ -73,6 +95,8 @@ Follow enterprise workflow: development → test → production branches. Develo
 - NO localhost URLs in production code
 - NO .env files for configuration
 - NO manual deployment processes
+- NO merging code that fails Render deployment verification
+- NO assuming local success equals Render success
 
 ## Integration Requirements
 
@@ -116,5 +140,8 @@ All external services MUST integrate through Unified API Interface:
 - MCP Server health checks mandatory before deployment
 - Database migrations require backup verification
 - Use CLAUDE.md as primary runtime development guidance
+- MUST verify Render deployment success before marking any task complete
+- MUST check deployed UI displays correctly (not blank/broken)
+- MUST confirm all functionality works in Render environment
 
-**Version**: 2.0.0 | **Ratified**: 2025-09-01 | **Last Amended**: 2025-09-21
+**Version**: 2.1.0 | **Ratified**: 2025-09-01 | **Last Amended**: 2025-09-21

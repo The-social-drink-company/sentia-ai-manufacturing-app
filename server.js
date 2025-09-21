@@ -5054,7 +5054,13 @@ try {
 // Priority order is critical - specific routes first, then general routes
 
 // Serve JavaScript files with explicit MIME type
-app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
+// Fix for Render deployment - check both possible locations
+let jsDistPath = path.join(__dirname, 'dist', 'js');
+if (__dirname.endsWith('/src') && !fs.existsSync(jsDistPath)) {
+  jsDistPath = path.join(__dirname, '..', 'dist', 'js');
+}
+
+app.use('/js', express.static(jsDistPath, {
   maxAge: '1d',
   etag: false,
   immutable: true,
@@ -5066,7 +5072,13 @@ app.use('/js', express.static(path.join(__dirname, 'dist', 'js'), {
 }));
 
 // Serve CSS and other assets with explicit MIME types
-app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
+// Fix for Render deployment - check both possible locations
+let assetsDistPath = path.join(__dirname, 'dist', 'assets');
+if (__dirname.endsWith('/src') && !fs.existsSync(assetsDistPath)) {
+  assetsDistPath = path.join(__dirname, '..', 'dist', 'assets');
+}
+
+app.use('/assets', express.static(assetsDistPath, {
   maxAge: '1d',
   etag: false,
   immutable: true,
@@ -5088,7 +5100,14 @@ app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
 }));
 
 // Serve root dist files (index.html, manifest.json, etc.)
-app.use(express.static(path.join(__dirname, 'dist'), {
+// Fix for Render deployment - check both possible locations
+let staticDistPath = path.join(__dirname, 'dist');
+if (__dirname.endsWith('/src') && !fs.existsSync(staticDistPath)) {
+  staticDistPath = path.join(__dirname, '..', 'dist');
+  console.log('[STATIC] Adjusted dist path for Render deployment:', staticDistPath);
+}
+
+app.use(express.static(staticDistPath, {
   maxAge: '1h',
   etag: false,
   index: ['index.html'], // Allow automatic index.html serving for root path - must be array or false
@@ -5584,7 +5603,15 @@ app.get('/', (req, res) => {
   console.log('[ROOT PRIORITY] Port:', PORT);
 
   // ALWAYS serve the React app, no exceptions
-  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  // Fix for Render deployment - check both possible locations
+  let indexPath = path.join(__dirname, 'dist', 'index.html');
+  
+  // If running from src directory (Render deployment), go up one level
+  if (__dirname.endsWith('/src') && !fs.existsSync(indexPath)) {
+    indexPath = path.join(__dirname, '..', 'dist', 'index.html');
+    console.log('[ROOT PRIORITY] Adjusted path for Render deployment:', indexPath);
+  }
+  
   console.log('[ROOT PRIORITY] Serving from:', indexPath);
   console.log('[ROOT PRIORITY] File exists:', fs.existsSync(indexPath));
 
@@ -5700,7 +5727,14 @@ app.get('*', (req, res) => {
   res.setHeader('Content-Security-Policy', csp);
   
   // Serve the React app for all other routes (SPA routing)
-  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  // Fix for Render deployment - check both possible locations
+  let indexPath = path.join(__dirname, 'dist', 'index.html');
+  
+  // If running from src directory (Render deployment), go up one level
+  if (__dirname.endsWith('/src') && !fs.existsSync(indexPath)) {
+    indexPath = path.join(__dirname, '..', 'dist', 'index.html');
+    console.log('[CATCH-ALL] Adjusted path for Render deployment:', indexPath);
+  }
 
   // Debug logging for Render deployment
   console.log('[CATCH-ALL] Request path:', req.path);

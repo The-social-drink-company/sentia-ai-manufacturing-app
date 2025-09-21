@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2563eb, #7c3aed, #2563eb);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        .button {
+            display: inline-block;
+            background: white;
+            color: #2563eb;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SENTIA</h1>
+        <h2>Manufacturing Intelligence Platform</h2>
+        <p>🔧 Debug Mode - Testing React App Issues</p>
+        <div id="debug-info" style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: left;">
+            <h3>Debug Information:</h3>
+            <div id="debug-content">Loading...</div>
+        </div>
+        <a href="/" class="button">Back to React App</a>
+        <p><small>Test Page - Server Status: ✅ Online</small></p>
+    </div>
+    
+    <script>
+        // Debug script to test what's working
+        document.addEventListener('DOMContentLoaded', function() {
+            const debugContent = document.getElementById('debug-content');
+            
+            let debugInfo = `
+                <p><strong>✅ JavaScript Working:</strong> Yes</p>
+                <p><strong>Current URL:</strong> ${window.location.href}</p>
+                <p><strong>React Root Element:</strong> ${document.getElementById('root') ? '✅ Found' : '❌ Missing'}</p>
+                <p><strong>Total Scripts:</strong> ${document.scripts.length}</p>
+                <p><strong>Window Location:</strong> ${window.location.pathname}</p>
+            `;
+            
+            // Test API connection
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => {
+                    debugInfo += `<p><strong>✅ API Health:</strong> ${data.status} (${data.environment})</p>`;
+                    debugContent.innerHTML = debugInfo;
+                })
+                .catch(error => {
+                    debugInfo += `<p><strong>❌ API Error:</strong> ${error.message}</p>`;
+                    debugContent.innerHTML = debugInfo;
+                });
+        });
+    </script>
+</body>
+</html>

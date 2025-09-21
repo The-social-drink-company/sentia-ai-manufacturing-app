@@ -1,364 +1,281 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useMCPIntegration } from '../../hooks/useMCPIntegration';
+import { logInfo, logError } from '../../services/observability/structuredLogger.js';
 import {
-  PresentationChartLineIcon,
-  BoltIcon,
-  SparklesIcon,
-  CpuChipIcon,
   ChartBarIcon,
-  AdjustmentsHorizontalIcon,
-  ClockIcon,
+  CpuChipIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
-  InformationCircleIcon,
-  BeakerIcon,
-  GlobeAltIcon,
-  CalendarDaysIcon,
-  CurrencyPoundIcon
+  ArrowPathIcon,
+  PlayIcon,
+  PauseIcon,
+  AdjustmentsHorizontalIcon,
+  LightBulbIcon,
+  ArrowDownTrayIcon,
+  ShareIcon,
 } from '@heroicons/react/24/outline';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, ComposedChart, Area, AreaChart, ScatterChart, Scatter, ReferenceLine } from 'recharts';
-import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 
 const EnhancedAIForecasting = () => {
+  const [selectedModel, setSelectedModel] = useState('demand_forecast');
   const [forecastData, setForecastData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedModel, setSelectedModel] = useState('ensemble');
-  const [forecastHorizon, setForecastHorizon] = useState(30);
-  const [confidenceLevel, setConfidenceLevel] = useState(95);
-  const [selectedMetrics, setSelectedMetrics] = useState(['demand', 'revenue', 'inventory']);
-  const [modelComparison, setModelComparison] = useState(true);
-  const [scenarioMode, setScenarioMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [parameters, setParameters] = useState({
+    horizon: 30,
+    confidence: 0.95,
+    seasonality: true,
+    includeUncertainty: true,
+  });
+  const [streamingData, setStreamingData] = useState(null);
 
-  useEffect(() => {
-    const fetchForecastData = async () => {
-      try {
-        const response = await fetch(`/api/forecasting/enhanced?model=${selectedModel}&horizon=${forecastHorizon}&confidence=${confidenceLevel}`);
-        if (response.ok) {
-          const data = await response.json();
-          setForecastData(data);
-        } else {
-          setForecastData(mockEnhancedForecastData);
-        }
-      } catch (error) {
-        console.error('Error fetching forecast data:', error);
-        setForecastData(mockEnhancedForecastData);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const {
+    isConnected,
+    connectionStatus,
+    runDemandForecast,
+    optimizeProduction,
+    predictQuality,
+    optimizeInventory,
+    subscribeToRealTimeData,
+    getConnectionStatusInfo,
+  } = useMCPIntegration();
 
-    fetchForecastData();
-    const interval = setInterval(fetchForecastData, 60000);
-    return () => clearInterval(interval);
-  }, [selectedModel, forecastHorizon, confidenceLevel]);
+  const connectionInfo = getConnectionStatusInfo();
 
-  const mockEnhancedForecastData = {
-    models: {
-      ensemble: {
-        name: 'AI Ensemble Model',
-        accuracy: 94.2,
-        confidence: 0.96,
-        mape: 5.8,
-        description: 'Combines multiple AI models including neural networks, LSTM, and statistical models',
-        lastTrained: '2025-09-08T06:00:00Z',
-        features: ['seasonal_patterns', 'market_trends', 'external_factors', 'promotional_impact'],
-        performance: {
-          shortTerm: 96.1,
-          mediumTerm: 93.8,
-          longTerm: 89.5
-        }
-      },
-      neuralNetwork: {
-        name: 'Deep Neural Network',
-        accuracy: 91.5,
-        confidence: 0.94,
-        mape: 8.5,
-        description: 'Advanced deep learning model with attention mechanisms',
-        lastTrained: '2025-09-08T02:00:00Z',
-        features: ['time_series', 'cross_product_influence', 'market_sentiment'],
-        performance: {
-          shortTerm: 94.2,
-          mediumTerm: 91.1,
-          longTerm: 87.8
-        }
-      },
-      lstm: {
-        name: 'LSTM Time Series',
-        accuracy: 89.7,
-        confidence: 0.91,
-        mape: 10.3,
-        description: 'Long Short-Term Memory network optimized for sequential data',
-        lastTrained: '2025-09-07T18:00:00Z',
-        features: ['historical_demand', 'seasonality', 'trend_analysis'],
-        performance: {
-          shortTerm: 92.1,
-          mediumTerm: 88.9,
-          longTerm: 84.2
-        }
-      },
-      statistical: {
-        name: 'Statistical Models',
-        accuracy: 85.3,
-        confidence: 0.87,
-        mape: 14.7,
-        description: 'ARIMA, Exponential Smoothing, and Regression models',
-        lastTrained: '2025-09-08T00:00:00Z',
-        features: ['moving_averages', 'seasonal_decomposition', 'linear_trends'],
-        performance: {
-          shortTerm: 87.5,
-          mediumTerm: 84.1,
-          longTerm: 82.3
-        }
-      }
+  // Available AI models
+  const aiModels = [
+    {
+      id: 'demand_forecast',
+      name: 'Demand Forecasting',
+      description: 'AI-powered demand prediction with seasonality analysis',
+      icon: ArrowTrendingUpIcon,
+      color: 'blue',
+      executeFunction: runDemandForecast,
     },
+    {
+      id: 'production_optimization',
+      name: 'Production Optimization',
+      description: 'Optimize manufacturing schedules and resource allocation',
+      icon: ChartBarIcon,
+      color: 'green',
+      executeFunction: optimizeProduction,
+    },
+    {
+      id: 'quality_prediction',
+      name: 'Quality Prediction',
+      description: 'Predict quality issues before they occur',
+      icon: ExclamationTriangleIcon,
+      color: 'orange',
+      executeFunction: predictQuality,
+    },
+    {
+      id: 'inventory_optimization',
+      name: 'Inventory Optimization',
+      description: 'Optimize stock levels and reduce carrying costs',
+      icon: CpuChipIcon,
+      color: 'purple',
+      executeFunction: optimizeInventory,
+    },
+  ];
+
+  // Run AI model
+  const runModel = async () => {
+    setIsLoading(true);
+    try {
+      const selectedModelConfig = aiModels.find(m => m.id === selectedModel);
+      if (!selectedModelConfig) {
+        throw new Error('Selected model not found');
+      }
+
+      logInfo('Running AI model', { model: selectedModel, parameters });
+      
+      const result = await selectedModelConfig.executeFunction(parameters);
+      setForecastData(result);
+      
+      logInfo('AI model completed successfully', { model: selectedModel });
+    } catch (error) {
+      logError('AI model execution failed', error);
+      // Set fallback data
+      setForecastData({
     forecast: {
-      demand: [
-        { date: '2025-09-09', actual: null, predicted: 2420, upperBound: 2580, lowerBound: 2260, confidence: 0.95 },
-        { date: '2025-09-10', actual: null, predicted: 2450, upperBound: 2620, lowerBound: 2280, confidence: 0.95 },
-        { date: '2025-09-11', actual: null, predicted: 2380, upperBound: 2560, lowerBound: 2200, confidence: 0.94 },
-        { date: '2025-09-12', actual: null, predicted: 2520, upperBound: 2710, lowerBound: 2330, confidence: 0.94 },
-        { date: '2025-09-13', actual: null, predicted: 2480, upperBound: 2680, lowerBound: 2280, confidence: 0.93 },
-        { date: '2025-09-14', actual: null, predicted: 2350, upperBound: 2560, lowerBound: 2140, confidence: 0.93 },
-        { date: '2025-09-15', actual: null, predicted: 2290, upperBound: 2510, lowerBound: 2070, confidence: 0.92 }
-      ],
-      revenue: [
-        { date: '2025-09-09', actual: null, predicted: 96800, upperBound: 103200, lowerBound: 90400, confidence: 0.95 },
-        { date: '2025-09-10', actual: null, predicted: 98000, upperBound: 104800, lowerBound: 91200, confidence: 0.95 },
-        { date: '2025-09-11', actual: null, predicted: 95200, upperBound: 102400, lowerBound: 88000, confidence: 0.94 },
-        { date: '2025-09-12', actual: null, predicted: 100800, upperBound: 108400, lowerBound: 93200, confidence: 0.94 },
-        { date: '2025-09-13', actual: null, predicted: 99200, upperBound: 107200, lowerBound: 91200, confidence: 0.93 },
-        { date: '2025-09-14', actual: null, predicted: 94000, upperBound: 102400, lowerBound: 85600, confidence: 0.93 },
-        { date: '2025-09-15', actual: null, predicted: 91600, upperBound: 100400, lowerBound: 82800, confidence: 0.92 }
-      ],
-      inventory: [
-        { date: '2025-09-09', actual: null, predicted: 15200, upperBound: 16800, lowerBound: 13600, confidence: 0.95 },
-        { date: '2025-09-10', actual: null, predicted: 14800, upperBound: 16400, lowerBound: 13200, confidence: 0.95 },
-        { date: '2025-09-11', actual: null, predicted: 15600, upperBound: 17200, lowerBound: 14000, confidence: 0.94 },
-        { date: '2025-09-12', actual: null, predicted: 14200, upperBound: 15800, lowerBound: 12600, confidence: 0.94 },
-        { date: '2025-09-13', actual: null, predicted: 14900, upperBound: 16500, lowerBound: 13300, confidence: 0.93 },
-        { date: '2025-09-14', actual: null, predicted: 15800, upperBound: 17400, lowerBound: 14200, confidence: 0.93 },
-        { date: '2025-09-15', actual: null, predicted: 16200, upperBound: 17800, lowerBound: 14600, confidence: 0.92 }
-      ]
-    },
-    historical: [
-      { date: '2025-09-01', demand: 2380, revenue: 95200, inventory: 15400 },
-      { date: '2025-09-02', demand: 2420, revenue: 96800, inventory: 15100 },
-      { date: '2025-09-03', demand: 2350, revenue: 94000, inventory: 15800 },
-      { date: '2025-09-04', demand: 2480, revenue: 99200, inventory: 14900 },
-      { date: '2025-09-05', demand: 2520, revenue: 100800, inventory: 14600 },
-      { date: '2025-09-06', demand: 2390, revenue: 95600, inventory: 15300 },
-      { date: '2025-09-07', demand: 2450, revenue: 98000, inventory: 14800 },
-      { date: '2025-09-08', demand: 2410, revenue: 96400, inventory: 15200 }
-    ],
-    modelComparison: [
-      { date: '2025-09-09', ensemble: 2420, neural: 2450, lstm: 2380, statistical: 2400 },
-      { date: '2025-09-10', ensemble: 2450, neural: 2480, lstm: 2410, statistical: 2430 },
-      { date: '2025-09-11', ensemble: 2380, neural: 2420, lstm: 2350, statistical: 2370 },
-      { date: '2025-09-12', ensemble: 2520, neural: 2560, lstm: 2490, statistical: 2510 },
-      { date: '2025-09-13', ensemble: 2480, neural: 2510, lstm: 2450, statistical: 2470 },
-      { date: '2025-09-14', ensemble: 2350, neural: 2390, lstm: 2320, statistical: 2340 },
-      { date: '2025-09-15', ensemble: 2290, neural: 2330, lstm: 2260, statistical: 2280 }
-    ],
+          predictions: Array.from({ length: parameters.horizon }, (_, i) => ({
+            date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            value: 1000 + Math.random() * 500,
+            confidence: 0.85 + Math.random() * 0.1,
+          })),
+          accuracy: 0.87,
+          trend: 'increasing',
+        },
     insights: [
       {
         type: 'trend',
-        severity: 'info',
-        title: 'Seasonal Pattern Detected',
-        description: 'Strong weekly seasonality with peak demand on Fridays and weekends',
-        impact: 'medium',
-        confidence: 0.94,
-        recommendedActions: ['Adjust production schedule', 'Optimize inventory levels']
-      },
-      {
-        type: 'anomaly',
-        severity: 'warning',
-        title: 'Demand Surge Expected',
-        description: 'AI model predicts 15% increase in demand next week based on market indicators',
-        impact: 'high',
-        confidence: 0.87,
-        recommendedActions: ['Increase production capacity', 'Review supplier commitments']
-      },
-      {
-        type: 'optimization',
-        severity: 'success',
-        title: 'Inventory Optimization Opportunity',
-        description: 'Model suggests reducing safety stock by 8% without impacting service levels',
-        impact: 'medium',
-        confidence: 0.92,
-        recommendedActions: ['Adjust reorder points', 'Optimize warehouse space']
-      },
-      {
-        type: 'risk',
-        severity: 'error',
-        title: 'Supply Chain Risk Alert',
-        description: 'External factors indicate potential supply disruption in 2 weeks',
-        impact: 'high',
-        confidence: 0.79,
-        recommendedActions: ['Diversify suppliers', 'Build buffer inventory']
-      }
-    ],
-    metrics: {
-      accuracy: {
-        current: 94.2,
-        target: 95.0,
-        trend: 'up'
-      },
-      mape: {
-        current: 5.8,
-        target: 5.0,
-        trend: 'down'
-      },
-      bias: {
-        current: -0.2,
-        target: 0.0,
-        trend: 'stable'
-      },
-      coverage: {
-        current: 96.1,
-        target: 95.0,
-        trend: 'up'
-      }
-    },
-    externalFactors: [
-      { name: 'Weather Impact', influence: 0.15, trend: 'positive', description: 'Favorable weather conditions increasing demand' },
-      { name: 'Market Sentiment', influence: 0.08, trend: 'neutral', description: 'Stable consumer confidence levels' },
-      { name: 'Competitor Activity', influence: -0.05, trend: 'negative', description: 'New competitor product launch' },
-      { name: 'Economic Indicators', influence: 0.12, trend: 'positive', description: 'Strong economic growth in key markets' },
-      { name: 'Promotional Events', influence: 0.22, trend: 'positive', description: 'Planned marketing campaigns driving demand' }
-    ]
-  };
-
-  const getInsightIcon = (type) => {
-    switch (type) {
-      case 'trend':
-        return <ArrowTrendingUpIcon className="h-5 w-5" />;
-      case 'anomaly':
-        return <ExclamationTriangleIcon className="h-5 w-5" />;
-      case 'optimization':
-        return <BoltIcon className="h-5 w-5" />;
-      case 'risk':
-        return <ExclamationTriangleIcon className="h-5 w-5" />;
-      default:
-        return <InformationCircleIcon className="h-5 w-5" />;
+            message: 'AI model completed with fallback data',
+            impact: 'neutral',
+          },
+        ],
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const getInsightColor = (severity) => {
-    switch (severity) {
-      case 'success':
-        return 'text-green-600 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
-      case 'warning':
-        return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
-      case 'error':
-        return 'text-red-600 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
-      default:
-        return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
+  // Start real-time streaming
+  const startStreaming = () => {
+    if (!isConnected) return;
+
+    setIsStreaming(true);
+    const eventSource = subscribeToRealTimeData((data) => {
+      if (data.type === 'forecast_update' || data.type === 'model_result') {
+        setStreamingData(data);
+        logInfo('Received real-time forecast update', data);
+      }
+    });
+
+    return eventSource;
+  };
+
+  // Stop real-time streaming
+  const stopStreaming = () => {
+    setIsStreaming(false);
+    setStreamingData(null);
+  };
+
+  // Export results
+  const exportResults = () => {
+    if (!forecastData) return;
+
+    const exportData = {
+      model: selectedModel,
+      parameters,
+      timestamp: new Date().toISOString(),
+      results: forecastData,
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `forecast-${selectedModel}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Share results
+  const shareResults = async () => {
+    if (!forecastData) return;
+
+    const shareData = {
+      title: `AI Forecast Results - ${selectedModel}`,
+      text: `AI-powered forecasting results for ${selectedModel}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        logError('Share failed', error);
+      }
+    } else {
+      // Fallback to clipboard
+      navigator.clipboard.writeText(shareData.url);
     }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
-
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-300 rounded w-1/3 mb-6"></div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-300 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const data = forecastData || mockEnhancedForecastData;
-  const selectedModelData = data.models[selectedModel];
+  const selectedModelConfig = aiModels.find(m => m.id === selectedModel);
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
+        <div className="mb-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Enhanced AI Forecasting
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                AI-Powered Forecasting
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Advanced machine learning models for demand prediction and business intelligence
+              <p className="mt-2 text-gray-600 dark:text-gray-400">
+                Advanced machine learning models for manufacturing intelligence
           </p>
         </div>
         
+            {/* Connection Status */}
         <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setScenarioMode(!scenarioMode)}
-            className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
-              scenarioMode 
-                ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-          >
-            <BeakerIcon className="h-4 w-4" />
-            <span>Scenario Mode</span>
-          </button>
-          <button
-            onClick={() => setModelComparison(!modelComparison)}
-            className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
-              modelComparison 
-                ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-          >
-            <ChartBarIcon className="h-4 w-4" />
-            <span>Model Comparison</span>
-          </button>
+              <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
+                connectionInfo.color === 'green' ? 'bg-green-100 text-green-800' :
+                connectionInfo.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                <span className="text-lg">{connectionInfo.icon}</span>
+                <span className="text-sm font-medium">{connectionInfo.message}</span>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Model Selection */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {aiModels.map((model) => {
+            const Icon = model.icon;
+            const isSelected = selectedModel === model.id;
+            
+            return (
+              <motion.button
+                key={model.id}
+                onClick={() => setSelectedModel(model.id)}
+                className={`text-left p-6 rounded-lg border transition-all ${
+                  isSelected
+                    ? `border-${model.color}-500 bg-${model.color}-50 shadow-md`
+                    : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`p-2 rounded-lg ${
+                    isSelected ? `bg-${model.color}-100 text-${model.color}-600` : 'bg-gray-100 text-gray-500'
+                  }`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className={`w-2 h-2 rounded-full ${
+                    isConnected ? 'bg-green-500' : 'bg-red-500'
+                  }`} />
       </div>
 
-      {/* Model Selection and Controls */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Forecasting Model
-            </label>
-            <select
-              value={selectedModel}
-              onChange={(e) => setSelectedModel(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="ensemble">AI Ensemble Model</option>
-              <option value="neuralNetwork">Deep Neural Network</option>
-              <option value="lstm">LSTM Time Series</option>
-              <option value="statistical">Statistical Models</option>
-            </select>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{model.name}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{model.description}</p>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Parameters Panel */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Model Parameters
+            </h2>
+            <AdjustmentsHorizontalIcon className="w-5 h-5 text-gray-500" />
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Forecast Horizon (days)
             </label>
-            <select
-              value={forecastHorizon}
-              onChange={(e) => setForecastHorizon(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value={7}>7 Days</option>
-              <option value={14}>14 Days</option>
-              <option value={30}>30 Days</option>
-              <option value={90}>90 Days</option>
-            </select>
+              <input
+                type="number"
+                value={parameters.horizon}
+                onChange={(e) => setParameters(prev => ({ ...prev, horizon: parseInt(e.target.value) }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                min="7"
+                max="365"
+              />
           </div>
 
           <div>
@@ -366,296 +283,260 @@ const EnhancedAIForecasting = () => {
               Confidence Level
             </label>
             <select
-              value={confidenceLevel}
-              onChange={(e) => setConfidenceLevel(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value={90}>90%</option>
-              <option value={95}>95%</option>
-              <option value={99}>99%</option>
+                value={parameters.confidence}
+                onChange={(e) => setParameters(prev => ({ ...prev, confidence: parseFloat(e.target.value) }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value={0.90}>90%</option>
+                <option value={0.95}>95%</option>
+                <option value={0.99}>99%</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Metrics to Display
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="seasonality"
+                checked={parameters.seasonality}
+                onChange={(e) => setParameters(prev => ({ ...prev, seasonality: e.target.checked }))}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="seasonality" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                Include Seasonality
             </label>
-            <div className="flex flex-wrap gap-2">
-              {['demand', 'revenue', 'inventory'].map(metric => (
-                <button
-                  key={metric}
-                  onClick={() => {
-                    if (selectedMetrics.includes(metric)) {
-                      setSelectedMetrics(selectedMetrics.filter(m => m !== metric));
-                    } else {
-                      setSelectedMetrics([...selectedMetrics, metric]);
-                    }
-                  }}
-                  className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                    selectedMetrics.includes(metric)
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                  }`}
+      </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="uncertainty"
+                checked={parameters.includeUncertainty}
+                onChange={(e) => setParameters(prev => ({ ...prev, includeUncertainty: e.target.checked }))}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="uncertainty" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                Include Uncertainty
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-4">
+            <motion.button
+              onClick={runModel}
+              disabled={isLoading || !isConnected}
+              className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isLoading ? (
+                <ArrowPathIcon className="w-5 h-5 mr-2 animate-spin" />
+              ) : (
+                <PlayIcon className="w-5 h-5 mr-2" />
+              )}
+              {isLoading ? 'Running Model...' : 'Run Forecast'}
+            </motion.button>
+
+            {isConnected && (
+              <motion.button
+                onClick={isStreaming ? stopStreaming : startStreaming}
+                className={`flex items-center px-6 py-3 rounded-lg ${
+                  isStreaming
+                    ? 'bg-red-600 text-white hover:bg-red-700'
+                    : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {isStreaming ? (
+                  <PauseIcon className="w-5 h-5 mr-2" />
+                ) : (
+                  <PlayIcon className="w-5 h-5 mr-2" />
+                )}
+                {isStreaming ? 'Stop Streaming' : 'Start Streaming'}
+              </motion.button>
+            )}
+          </div>
+
+          <div className="flex items-center space-x-4">
+            {forecastData && (
+              <>
+                <motion.button
+                  onClick={exportResults}
+                  className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  {metric.charAt(0).toUpperCase() + metric.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Model Performance Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Model Accuracy</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {selectedModelData.accuracy}%
-              </p>
-              <p className="text-sm text-green-600">Above target (95%)</p>
-            </div>
-            <SparklesIcon className="h-8 w-8 text-blue-600" />
+                  <ArrowDownTrayIcon className="w-4 h-4 mr-2" />
+                  Export
+                </motion.button>
+                
+                <motion.button
+                  onClick={shareResults}
+                  className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ShareIcon className="w-4 h-4 mr-2" />
+                  Share
+                </motion.button>
+              </>
+            )}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Confidence Score</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {(selectedModelData.confidence * 100).toFixed(1)}%
-              </p>
-              <p className="text-sm text-blue-600">High confidence</p>
-            </div>
-            <CpuChipIcon className="h-8 w-8 text-green-600" />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">MAPE Error</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {selectedModelData.mape}%
-              </p>
-              <p className="text-sm text-yellow-600">Target: &lt;5%</p>
-            </div>
-            <ChartBarIcon className="h-8 w-8 text-yellow-600" />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Last Updated</p>
-              <p className="text-lg font-bold text-gray-900 dark:text-white">
-                {new Date(selectedModelData.lastTrained).toLocaleDateString()}
-              </p>
-              <p className="text-sm text-gray-500">Auto-retrained daily</p>
-            </div>
-            <ClockIcon className="h-8 w-8 text-purple-600" />
-          </div>
-        </div>
-      </div>
-
-      {/* Main Forecast Chart */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            Demand Forecast with Confidence Intervals
-          </h3>
-          <div className="flex items-center space-x-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-              <span className="text-gray-600 dark:text-gray-400">Predicted</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-blue-200 rounded-full"></div>
-              <span className="text-gray-600 dark:text-gray-400">Confidence Band</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
-              <span className="text-gray-600 dark:text-gray-400">Historical</span>
-            </div>
-          </div>
-        </div>
-        <div className="h-80">
-          <ChartErrorBoundary>
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={[...data.historical, ...data.forecast.demand]} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="date" 
-                  tickFormatter={formatDate}
+        {/* Results Display */}
+        <AnimatePresence mode="wait">
+          {forecastData && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            >
+              {/* Main Results */}
+              <div className="lg:col-span-2">
+                <ForecastResults 
+                  data={forecastData} 
+                  model={selectedModelConfig}
+                  streamingData={streamingData}
                 />
-                <YAxis />
-                <Tooltip 
-                  formatter={(value, name) => {
-                    if (name === 'predicted' || name === 'demand') return [value?.toLocaleString(), 'Units'];
-                    return [value?.toLocaleString(), name];
-                  }}
-                  labelFormatter={(label) => formatDate(label)}
-                />
-                <Area
-                  dataKey="upperBound"
-                  stroke="none"
-                  fill="#3B82F6"
-                  fillOpacity={0.1}
-                  connectNulls={false}
-                />
-                <Area
-                  dataKey="lowerBound"
-                  stroke="none"
-                  fill="#ffffff"
-                  fillOpacity={1}
-                  connectNulls={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="demand"
-                  stroke="#6B7280"
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  connectNulls={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="predicted"
-                  stroke="#3B82F6"
-                  strokeWidth={3}
-                  strokeDasharray="5 5"
-                  dot={{ r: 4 }}
-                  connectNulls={false}
-                />
-                <ReferenceLine x="2025-09-08" stroke="#EF4444" strokeDasharray="2 2" />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </ChartErrorBoundary>
-        </div>
-      </div>
-
-      {/* Model Comparison Chart */}
-      {modelComparison && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-            Model Performance Comparison
-          </h3>
-          <div className="h-64">
-            <ChartErrorBoundary>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data.modelComparison}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tickFormatter={formatDate} />
-                  <YAxis />
-                  <Tooltip 
-                    formatter={(value) => [value?.toLocaleString(), 'Units']}
-                    labelFormatter={(label) => formatDate(label)}
-                  />
-                  <Line type="monotone" dataKey="ensemble" stroke="#3B82F6" strokeWidth={2} name="Ensemble" />
-                  <Line type="monotone" dataKey="neural" stroke="#10B981" strokeWidth={2} name="Neural Network" />
-                  <Line type="monotone" dataKey="lstm" stroke="#F59E0B" strokeWidth={2} name="LSTM" />
-                  <Line type="monotone" dataKey="statistical" stroke="#EF4444" strokeWidth={2} name="Statistical" />
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartErrorBoundary>
-          </div>
-        </div>
-      )}
-
-      {/* External Factors */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            External Factors Impact
-          </h3>
-          <GlobeAltIcon className="h-5 w-5 text-gray-400" />
-        </div>
-        <div className="space-y-4">
-          {data.externalFactors.map((factor, index) => (
-            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-full ${
-                  factor.trend === 'positive' ? 'bg-green-100 dark:bg-green-900/20' :
-                  factor.trend === 'negative' ? 'bg-red-100 dark:bg-red-900/20' :
-                  'bg-gray-100 dark:bg-gray-600'
-                }`}>
-                  {factor.trend === 'positive' ? (
-                    <ArrowTrendingUpIcon className="h-4 w-4 text-green-600" />
-                  ) : factor.trend === 'negative' ? (
-                    <ArrowTrendingDownIcon className="h-4 w-4 text-red-600" />
-                  ) : (
-                    <ArrowTrendingUpIcon className="h-4 w-4 text-gray-600" />
-                  )}
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-white text-sm">
-                    {factor.name}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {factor.description}
-                  </div>
-                </div>
               </div>
-              <div className="text-right">
-                <div className={`font-medium text-sm ${
-                  factor.influence > 0 ? 'text-green-600' : factor.influence < 0 ? 'text-red-600' : 'text-gray-600'
-                }`}>
-                  {factor.influence > 0 ? '+' : ''}{(factor.influence * 100).toFixed(1)}%
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Influence
-                </div>
-              </div>
+
+              {/* Insights Panel */}
+            <div>
+                <ForecastInsights 
+                  data={forecastData} 
+                  streamingData={streamingData}
+                />
             </div>
-          ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Real-time Streaming Indicator */}
+        {isStreaming && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="fixed bottom-6 right-6 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2"
+          >
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+            <span className="text-sm font-medium">Live Data Streaming</span>
+          </motion.div>
+        )}
+      </div>
+            </div>
+  );
+};
+
+// Forecast Results Component
+const ForecastResults = ({ data, model, streamingData }) => {
+  if (!data) return null;
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          {model?.name} Results
+        </h2>
+        {streamingData && (
+          <div className="flex items-center space-x-2 text-green-600">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-sm font-medium">Live Update</span>
+          </div>
+        )}
+        </div>
+
+      {/* Forecast Visualization */}
+      <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-lg mb-6">
+        <div className="text-center text-gray-500 dark:text-gray-400">
+          <ChartBarIcon className="w-12 h-12 mx-auto mb-2" />
+          <p>AI Forecast Visualization</p>
+          <p className="text-sm">Real-time predictions and trends</p>
         </div>
       </div>
 
-      {/* AI Insights */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            AI-Generated Insights
-          </h3>
-          <SparklesIcon className="h-5 w-5 text-gray-400" />
+      {/* Key Metrics */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            {data.forecast?.accuracy ? `${(data.forecast.accuracy * 100).toFixed(1)}%` : '87.3%'}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Model Accuracy</div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {data.insights.map((insight, index) => (
-            <div key={index} className={`p-4 rounded-lg border ${getInsightColor(insight.severity)}`}>
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  {getInsightIcon(insight.type)}
+        <div className="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+            {data.forecast?.predictions?.length || 30}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Predictions</div>
+        </div>
+        <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+            {data.forecast?.trend === 'increasing' ? '+' : data.forecast?.trend === 'decreasing' ? '-' : '='}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">
-                      {insight.title}
+          <div className="text-sm text-gray-600 dark:text-gray-400">Trend</div>
+        </div>
+      </div>
+        </div>
+  );
+};
+
+// Forecast Insights Component
+const ForecastInsights = ({ data, streamingData }) => {
+  const insights = data?.insights || [];
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          AI Insights
+        </h2>
+        <LightBulbIcon className="w-5 h-5 text-yellow-500" />
+                </div>
+
+      <div className="space-y-4">
+        {insights.map((insight, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className={`p-4 rounded-lg border-l-4 ${
+              insight.type === 'trend' ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/30' :
+              insight.type === 'warning' ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/30' :
+              insight.type === 'opportunity' ? 'border-green-400 bg-green-50 dark:bg-green-900/30' :
+              'border-gray-400 bg-gray-50 dark:bg-gray-900/30'
+            }`}
+          >
+            <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+              {insight.message}
                     </h4>
-                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-white bg-opacity-50">
-                      {(insight.confidence * 100).toFixed(0)}% confident
-                    </span>
-                  </div>
-                  <p className="text-sm mb-3">
-                    {insight.description}
-                  </p>
-                  <div className="space-y-1">
-                    <div className="text-xs font-medium">Recommended Actions:</div>
-                    <ul className="text-xs space-y-1">
-                      {insight.recommendedActions.map((action, actionIndex) => (
-                        <li key={actionIndex} className="flex items-center space-x-1">
-                          <div className="w-1 h-1 bg-current rounded-full"></div>
-                          <span>{action}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
+            {insight.impact && (
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Impact: {insight.impact}
+              </p>
+            )}
+          </motion.div>
+        ))}
+
+        {streamingData?.insight && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-4 rounded-lg border-l-4 border-green-400 bg-green-50 dark:bg-green-900/30"
+          >
+            <div className="flex items-center space-x-2 mb-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <h4 className="font-medium text-gray-900 dark:text-white">Live Insight</h4>
             </div>
-          ))}
-        </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {streamingData.insight}
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   );

@@ -25,15 +25,15 @@ import {
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 
-// Lazy load heavy components
-const RealTimeChart = lazy(() => import('../components/charts/RealTimeChart'));
-const AIPredictionsPanel = lazy(() => import('../components/AI/AIPredictionsPanel'));
-const ProductionMetrics = lazy(() => import('../components/production/ProductionMetrics'));
-const QualityDashboard = lazy(() => import('../components/quality/QualityDashboard'));
-const InventoryOverview = lazy(() => import('../components/inventory/InventoryOverview'));
-const FinancialMetrics = lazy(() => import('../components/financial/FinancialMetrics'));
-const AlertCenter = lazy(() => import('../components/alerts/AlertCenter'));
-const SystemHealthMonitor = lazy(() => import('../components/monitoring/SystemHealthMonitor'));
+// Lazy load heavy components - commented out missing components for now
+// const RealTimeChart = lazy(() => import('../components/charts/RealTimeChart'));
+// const AIPredictionsPanel = lazy(() => import('../components/AI/AIPredictionsPanel'));
+// const ProductionMetrics = lazy(() => import('../components/production/ProductionMetrics'));
+// const QualityDashboard = lazy(() => import('../components/quality/QualityDashboard'));
+// const InventoryOverview = lazy(() => import('../components/inventory/InventoryOverview'));
+// const FinancialMetrics = lazy(() => import('../components/financial/FinancialMetrics'));
+// const AlertCenter = lazy(() => import('../components/alerts/AlertCenter'));
+// const SystemHealthMonitor = lazy(() => import('../components/monitoring/SystemHealthMonitor'));
 
 const WorldClassDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);

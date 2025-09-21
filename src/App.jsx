@@ -67,8 +67,10 @@ const InventoryManagement = createRouteComponent('inventory-management', () => i
 const AdvancedInventoryManagement = createRouteComponent('advanced-inventory', () => import('./components/inventory/AdvancedInventoryManagement'))
 const ProductionTracking = createRouteComponent('production-tracking', () => import('./components/production/ProductionTracking'))
 const ProductionOptimization = createRouteComponent('production-optimization', () => import('./components/production/ProductionOptimization'))
+const ProductionMonitoring = createRouteComponent('production-monitoring', () => import('./components/production/ProductionMonitoring'))
 const QualityControl = createRouteComponent('quality-control', () => import('./components/quality/QualityControl'))
 const QualityManagementSystem = createRouteComponent('quality-management', () => import('./components/quality/QualityManagementSystem'))
+const QualityControlDashboard = createRouteComponent('quality-control-dashboard', () => import('./components/quality/QualityControlDashboard'))
 
 // Forecasting (High Priority - AI features)
 const DemandForecasting = createPriorityComponent(() => import('./components/forecasting/DemandForecasting'), 'DemandForecasting')
@@ -505,6 +507,33 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <QualityManagementSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                {/* Advanced Manufacturing Modules */}
+                <Route 
+                  path="/production/monitoring" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <ProductionMonitoring />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/quality/control" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <QualityControlDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>

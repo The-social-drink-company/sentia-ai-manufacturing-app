@@ -26,7 +26,7 @@ class AutonomousScheduler extends EventEmitter {
     this.config = {
       // Core scheduling
       testInterval: '*/10 * * * *', // Every 10 minutes (cron format)
-      enableScheduling: true,
+      enableScheduling: process.env.DISABLE_AUTONOMOUS_TESTING !== 'true',
       maxConcurrentRuns: 1,
       
       // Component configuration

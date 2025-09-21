@@ -16,6 +16,7 @@ import CashFlowProjections from './CashFlowProjections'
 import ScenarioAnalysis from './ScenarioAnalysis'
 import PolicyManagement from './PolicyManagement'
 import SystemDiagnostics from './SystemDiagnostics'
+import WorkingCapitalExpert from './WorkingCapitalExpert'
 
 const WorkingCapital = () => {
   const [activeTab, setActiveTab] = useState('overview')
@@ -53,6 +54,7 @@ const WorkingCapital = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: ChartBarIcon },
+    { id: 'expert', label: 'Expert Calculator', icon: BanknotesIcon },
     { id: 'projections', label: 'Cash Flow', icon: ArrowTrendingUpIcon },
     { id: 'scenarios', label: 'What-If Analysis', icon: DocumentTextIcon },
     { id: 'policies', label: 'Policies', icon: CogIcon },
@@ -209,6 +211,7 @@ const WorkingCapital = () => {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === 'overview' && <KPIDashboard data={workingCapitalData} />}
+        {activeTab === 'expert' && <WorkingCapitalExpert />}
         {activeTab === 'projections' && <CashFlowProjections />}
         {activeTab === 'scenarios' && <ScenarioAnalysis />}
         {activeTab === 'policies' && <PolicyManagement />}

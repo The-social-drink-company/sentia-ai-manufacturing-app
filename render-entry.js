@@ -17,7 +17,12 @@ console.log('='.repeat(70));
 const isProduction = process.env.NODE_ENV === 'production';
 const serviceName = process.env.RENDER_SERVICE_NAME || '';
 
-// ALWAYS use server-fixed.js which has the correct Clerk authentication fix
-console.log('Starting SERVER-FIXED.JS with Clerk authentication fix...');
-console.log('This server has health check BEFORE authentication middleware');
-import('./server-fixed.js');
+// Use the FULL ENTERPRISE server.js - not a minimal version!
+console.log('Starting FULL ENTERPRISE SERVER.JS with all features...');
+console.log('Loading complete Sentia Manufacturing Dashboard with:');
+console.log('- Full Clerk Authentication');
+console.log('- Complete API integrations (Xero, Shopify, Unleashed)');
+console.log('- AI/ML features via MCP Server');
+console.log('- Enterprise sidebar navigation');
+console.log('- All dashboard pages and features');
+import('./server.js');

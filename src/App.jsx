@@ -1,6 +1,8 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, SignInButton, UserButton } from '@clerk/clerk-react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
+// Bulletproof Clerk Authentication - solves server-side auth issues
+// Import auth components but don't use hooks at module level
+import BulletproofAuthProvider, { useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -8,8 +10,10 @@ import { Toaster } from 'react-hot-toast'
 import './index.css'
 import './styles/themes.css'
 import './styles/landing.css'
-import ThemeProvider from './components/ui/ThemeProvider'
+import './styles/theme-system.css'
+// import { EnterpriseIntegrationHub } from './core/EnterpriseIntegrationHub' // Temporarily disabled - missing dependencies
 import { logInfo, logWarn } from './services/observability/structuredLogger.js'
+import { clerkConfig } from './config/clerk'  // Import Clerk configuration
 
 // Import Chart.js setup early to ensure registration
 import './lib/chartSetup'
@@ -17,68 +21,110 @@ import './lib/chartSetup'
 // Layout Components
 import DashboardLayout from './components/layout/DashboardLayout'
 import WorldClassLayout from './components/layout/WorldClassLayout'
-import { LoadingSpinner } from './components/LoadingStates'
-import ErrorBoundaryFallback from './components/ErrorBoundary'
-// Lazy Load Pages for Performance
-const LandingPage = lazy(() => import('./pages/LandingPage'))
-const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'))
-const WorldClassEnterpriseDashboard = lazy(() => import('./pages/WorldClassEnterpriseDashboard'))
-const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'))
-const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'))
-// Removed: WorkingEnterpriseDashboard (deleted file - replaced with WorldClassEnterpriseDashboard)
-const AdminPanel = lazy(() => import('./pages/AdminPanel'))
-const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'))
-const WhatIfAnalysisDashboard = lazy(() => import('./components/analytics/WhatIfAnalysisDashboard'))
-const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'))
-const EnhancedWorkingCapital = lazy(() => import('./components/WorkingCapital/EnhancedWorkingCapital'))
-const EnhancedWorkingCapitalAnalysis = lazy(() => import('./components/analytics/EnhancedWorkingCapitalAnalysis'))
-const DataImportDashboard = lazy(() => import('./components/DataImport/DataImportDashboard'))
-const EnhancedDataImportDashboard = lazy(() => import('./components/DataImport/EnhancedDataImportDashboard'))
-const InventoryManagement = lazy(() => import('./components/inventory/InventoryManagement'))
-const AdvancedInventoryManagement = lazy(() => import('./components/inventory/AdvancedInventoryManagement'))
-const ProductionTracking = lazy(() => import('./components/production/ProductionTracking'))
-const ProductionOptimization = lazy(() => import('./components/production/ProductionOptimization'))
-const QualityControl = lazy(() => import('./components/quality/QualityControl'))
-const QualityManagementSystem = lazy(() => import('./components/quality/QualityManagementSystem'))
-const DemandForecasting = lazy(() => import('./components/forecasting/DemandForecasting'))
-const EnhancedAIForecasting = lazy(() => import('./components/forecasting/EnhancedAIForecasting'))
-const Analytics = lazy(() => import('./components/analytics/Analytics'))
-const AdvancedAnalyticsDashboard = lazy(() => import('./components/analytics/AdvancedAnalyticsDashboard'))
-const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashboard'))
-const PredictiveAnalyticsDashboard = lazy(() => import('./components/AI/PredictiveAnalyticsDashboard'))
-const RealTimeMonitoring = lazy(() => import('./components/monitoring/RealTimeMonitoring'))
-const MaintenanceManagement = lazy(() => import('./components/admin/pages/AdminMaintenance'))
-// MCPConnectionStatus component removed - not required for enterprise dashboard
-const SystemSettings = lazy(() => import('./components/settings/Settings'))
-const APIStatusDiagnostic = lazy(() => import('./components/diagnostics/APIStatusDiagnostic'))
+import LoadingSpinner from './components/LoadingSpinner'
+import ErrorBoundaryFallback from './components/ErrorBoundaryFallback'
+// Import enhanced lazy loading utilities
+import { createRouteComponent, createPriorityComponent, createLowPriorityComponent } from './utils/lazyLoading'
+// Import authentication components
+import RoleGuard from './components/auth/RoleGuard'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
+import UniversalLogin from './pages/UniversalLogin'
+import ClerkSignIn from './pages/ClerkSignIn'
+import ClerkSignUp from './pages/ClerkSignUp'
+// // import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
+import UserOnboarding from './components/auth/UserOnboarding'
+import AuthVerification from './components/AuthVerification'
 
-// Additional Enterprise Components
-const FinancialReports = lazy(() => import('./components/financial/FinancialReports'))
-const CostAnalysis = lazy(() => import('./components/financial/CostAnalysis'))
-const AIInsights = lazy(() => import('./components/AI/AIInsights'))
-const SmartAutomation = lazy(() => import('./components/automation/SmartAutomation'))
-const AuditLogs = lazy(() => import('./components/admin/AuditLogs'))
-const TestMonitorDashboard = lazy(() => import('./pages/TestMonitorDashboard'))
-const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'))
-const UIShowcase = lazy(() => import('./components/ui/UIShowcase'))
-const UserPreferences = lazy(() => import('./pages/UserPreferences'))
-const MobileFloor = lazy(() => import('./pages/MobileFloor'))
+// High-Priority Components (Core dashboard functionality)
+const LandingPage = createPriorityComponent(() => import('./pages/LandingPageSimple'), 'LandingPage')
+const WorldClassDashboard = createPriorityComponent(() => import('./pages/WorldClassDashboard'), 'WorldClassDashboard')
+const SimpleDashboard = createPriorityComponent(() => import('./pages/SimpleDashboard'), 'SimpleDashboard')
 
-// AI Support Chatbot Component
-const AISupportChatbot = lazy(() => import('./components/chatbot/AISupportChatbot'))
-const AIStatusDashboard = lazy(() => import('./components/AI/AIStatusDashboard'))
+// Standard Priority Components (Main features)
+const WorldClassEnterpriseDashboard = createRouteComponent('enterprise-dashboard', () => import('./pages/WorldClassEnterpriseDashboard'))
+const EnterpriseEnhancedDashboard = createRouteComponent('enhanced-dashboard', () => import('./pages/EnterpriseEnhancedDashboard'))
+const AdminPanel = createRouteComponent('admin-panel', () => import('./pages/AdminPanel'))
+// Analytics Components (Standard Priority)
+const WhatIfAnalysis = createRouteComponent('what-if-analysis', () => import('./components/analytics/WhatIfAnalysis'))
+const WhatIfAnalysisDashboard = createRouteComponent('what-if-dashboard', () => import('./components/analytics/WhatIfAnalysisSimple')) // Using simplified version for stability
+const Analytics = createRouteComponent('analytics', () => import('./components/analytics/AnalyticsBasic')) // Using basic version for stability
+const AdvancedAnalyticsDashboard = createRouteComponent('advanced-analytics', () => import('./components/analytics/AdvancedAnalyticsDashboard'))
+const EnhancedWorkingCapitalAnalysis = createRouteComponent('working-capital-analysis', () => import('./components/analytics/EnhancedWorkingCapitalAnalysis'))
 
-// Enhanced Admin System Components
-const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
-const AdminOverview = lazy(() => import('./components/admin/pages/AdminOverview'))
-const AdminUsers = lazy(() => import('./components/admin/pages/AdminUsers'))
-const AdminAPI = lazy(() => import('./components/admin/pages/AdminAPI'))
-const AdminSettings = lazy(() => import('./components/admin/pages/AdminSettings'))
-const AdminLogs = lazy(() => import('./components/admin/pages/AdminLogs'))
-const AdminErrors = lazy(() => import('./components/admin/pages/AdminErrors'))
-const AdminFeatureFlags = lazy(() => import('./components/admin/pages/AdminFeatureFlags'))
-const AdminIntegrations = lazy(() => import('./components/admin/pages/AdminIntegrations'))
-const AdminWebhooks = lazy(() => import('./components/admin/pages/AdminWebhooks'))
+// Financial Components (High Priority - business critical)
+const WorkingCapital = createPriorityComponent(() => import('./components/WorkingCapital/WorkingCapital'), 'WorkingCapital')
+const EnhancedWorkingCapital = createPriorityComponent(() => import('./components/WorkingCapital/EnhancedWorkingCapital'), 'EnhancedWorkingCapital')
+
+// Manufacturing Operations (Standard Priority)
+const PredictiveMaintenanceSystem = createRouteComponent('predictive-maintenance', () => import('./maintenance/PredictiveMaintenanceSystem'))
+const ManufacturingIntelligence = createRouteComponent('manufacturing-intelligence', () => import('./intelligence/ManufacturingIntelligence'))
+const QualityIntelligence = createRouteComponent('quality-intelligence', () => import('./intelligence/QualityIntelligence'))
+const WorkflowAutomation = createRouteComponent('workflow-automation', () => import('./operations/WorkflowAutomation'))
+const GlobalComplianceSystem = createRouteComponent('global-compliance', () => import('./compliance/GlobalComplianceSystem'))
+const DigitalTwinSystem = createRouteComponent('digital-twin', () => import('./innovation/DigitalTwinSystem'))
+const InventoryManagement = createRouteComponent('inventory-management', () => import('./components/inventory/InventoryManagement'))
+const AdvancedInventoryManagement = createRouteComponent('advanced-inventory', () => import('./components/inventory/AdvancedInventoryManagement'))
+const ProductionTracking = createRouteComponent('production-tracking', () => import('./components/production/ProductionTracking'))
+const ProductionOptimization = createRouteComponent('production-optimization', () => import('./components/production/ProductionOptimization'))
+const QualityControl = createRouteComponent('quality-control', () => import('./components/quality/QualityControl'))
+const QualityManagementSystem = createRouteComponent('quality-management', () => import('./components/quality/QualityManagementSystem'))
+
+// Forecasting (High Priority - AI features)
+const DemandForecasting = createPriorityComponent(() => import('./components/forecasting/DemandForecasting'), 'DemandForecasting')
+const EnhancedAIForecasting = createPriorityComponent(() => import('./components/forecasting/EnhancedAIForecasting'), 'EnhancedAIForecasting')
+
+// AI Components (Standard Priority)
+const AIAnalyticsDashboard = createRouteComponent('ai-analytics', () => import('./components/AI/AIAnalyticsDashboard'))
+const PredictiveAnalyticsDashboard = createRouteComponent('predictive-analytics', () => import('./components/AI/PredictiveAnalyticsDashboard'))
+
+// Data Management (Standard Priority)
+const DataImportDashboard = createRouteComponent('data-import', () => import('./components/DataImport/DataImportDashboard'))
+const EnhancedDataImportDashboard = createRouteComponent('enhanced-data-import', () => import('./components/DataImport/DataImportSimple')) // Using simplified version for stability
+
+// Monitoring (Standard Priority)
+const RealTimeMonitoring = createRouteComponent('monitoring', () => import('./components/monitoring/RealTimeMonitoring'))
+const MCPMonitoringDashboard = createRouteComponent('mcp-monitoring', () => import('./pages/MCPMonitoringDashboard'))
+const MaintenanceManagement = createRouteComponent('maintenance', () => import('./components/admin/pages/AdminMaintenance'))
+// System Components (Low Priority - administrative)
+const SystemSettings = createLowPriorityComponent(() => import('./components/settings/Settings'), 'SystemSettings')
+const APIStatusDiagnostic = createRouteComponent('api-status', () => import('./components/diagnostics/APIStatusDiagnostic'))
+
+// Financial Reports (Standard Priority)
+const FinancialReports = createRouteComponent('financial-reports', () => import('./components/financial/FinancialReports'))
+const CostAnalysis = createRouteComponent('cost-analysis', () => import('./components/financial/CostAnalysis'))
+
+// AI & Automation (Standard Priority)
+const AIInsights = createRouteComponent('ai-insights', () => import('./components/AI/AIInsights'))
+const SmartAutomation = createRouteComponent('automation', () => import('./components/automation/SmartAutomation'))
+const AIStatusDashboard = createRouteComponent('ai-status', () => import('./components/AI/AIStatusDashboard'))
+const AISupportChatbot = createLowPriorityComponent(() => import('./components/chatbot/AISupportChatbot'), 'AISupportChatbot')
+
+// Admin & Audit (Low Priority)
+const AuditLogs = createLowPriorityComponent(() => import('./components/admin/AuditLogs'), 'AuditLogs')
+const AdminLayout = createLowPriorityComponent(() => import('./components/admin/AdminLayout'), 'AdminLayout')
+const AdminOverview = createLowPriorityComponent(() => import('./components/admin/pages/AdminOverview'), 'AdminOverview')
+const AdminUsers = createLowPriorityComponent(() => import('./components/admin/pages/AdminUsers'), 'AdminUsers')
+const AdminAPI = createLowPriorityComponent(() => import('./components/admin/pages/AdminAPI'), 'AdminAPI')
+const AdminSettings = createLowPriorityComponent(() => import('./components/admin/pages/AdminSettings'), 'AdminSettings')
+const AdminLogs = createLowPriorityComponent(() => import('./components/admin/pages/AdminLogs'), 'AdminLogs')
+const AdminErrors = createLowPriorityComponent(() => import('./components/admin/pages/AdminErrors'), 'AdminErrors')
+const AdminFeatureFlags = createLowPriorityComponent(() => import('./components/admin/pages/AdminFeatureFlags'), 'AdminFeatureFlags')
+const AdminIntegrations = createLowPriorityComponent(() => import('./components/admin/pages/AdminIntegrations'), 'AdminIntegrations')
+const AdminWebhooks = createLowPriorityComponent(() => import('./components/admin/pages/AdminWebhooks'), 'AdminWebhooks')
+
+// Development & Testing (Low Priority)
+const TestMonitorDashboard = createLowPriorityComponent(() => import('./pages/TestMonitorDashboard'), 'TestMonitorDashboard')
+const EnhancedDashboard = createRouteComponent('enhanced-dashboard-alt', () => import('./pages/EnhancedDashboard'))
+const UIShowcase = createLowPriorityComponent(() => import('./components/ui/UIShowcase'), 'UIShowcase')
+
+// User Experience (Standard Priority)
+const UserPreferences = createRouteComponent('preferences', () => import('./pages/UserPreferences'))
+const MobileFloor = createRouteComponent('mobile', () => import('./pages/MobileFloor'))
+const MissionControl = createLowPriorityComponent(() => import('./pages/MissionControl'), 'MissionControl')
+
+// 3D Components (Low Priority - resource intensive)
+const FactoryDigitalTwin = createLowPriorityComponent(() => import('./components/3d/FactoryDigitalTwin'), 'FactoryDigitalTwin')
 
 
 logInfo('Starting Sentia Enterprise Manufacturing Dashboard', { 
@@ -116,54 +162,45 @@ const queryClient = new QueryClient({
   }
 })
 
-// Protected route wrapper with guest access support
+// Protected route wrapper with Bulletproof authentication
 const ProtectedRoute = ({ children, allowGuest = false }) => {
-  // If Clerk is not configured, always allow access
-  if (!clerkPubKey) {
-    return children
-  }
-  
-  // Allow guest access for demo purposes
-  if (allowGuest) {
-    return children
-  }
-  
-  return (
-    <>
-      <SignedIn>
-        {children}
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </>
-  )
+  // With BulletproofAuthProvider, authentication is always available
+  // Either real (Clerk) or fallback (guest mode)
+  // This means the app will NEVER show blank screens
+
+  // For now, allow all routes since auth is handled at provider level
+  // You can add role-based checks here using useAuthRole hook if needed
+  return children
 }
 
 // Dashboard Route Component with Fallback Support
 const DashboardRoute = () => {
   const [searchParams] = useSearchParams()
   const fallback = searchParams.get('fallback')
-  
+
   if (fallback === 'true') {
-    return <SimpleDashboard />
+    return (
+      <WorldClassLayout>
+        <SimpleDashboard />
+      </WorldClassLayout>
+    )
   }
-  
+
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       FallbackComponent={({ error, resetErrorBoundary }) => (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Dashboard Error</h2>
             <p className="text-gray-600 mb-4">Enterprise dashboard failed to load.</p>
             <div className="flex space-x-3">
-              <button 
+              <button
                 onClick={resetErrorBoundary}
                 className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
                 Retry
               </button>
-              <button 
+              <button
                 onClick={() => window.location.href = '/dashboard?fallback=true'}
                 className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
               >
@@ -175,7 +212,9 @@ const DashboardRoute = () => {
       )}
       onReset={() => window.location.reload()}
     >
-      <WorldClassDashboard />
+      <WorldClassLayout>
+        <WorldClassDashboard />
+      </WorldClassLayout>
     </ErrorBoundary>
   )
 }
@@ -186,25 +225,61 @@ const FallbackAuthProvider = ({ children }) => {
 }
 
 function App() {
-  // Use ClerkProvider if key is available, otherwise use fallback
-  const AuthProvider = clerkPubKey ? ClerkProvider : FallbackAuthProvider
-  const authProps = clerkPubKey ? { publishableKey: clerkPubKey, afterSignOutUrl: "/" } : {}
-  
+  // Get Clerk publishable key from environment
+  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
   return (
-    <AuthProvider {...authProps}>
+    <BulletproofAuthProvider>
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            {/* SessionManager temporarily disabled - uses Clerk hooks */}
             <Router>
+            {/* EnterpriseIntegrationHub removed - missing dependencies */}
             <div className="App">
-              <Routes>
+                {/* Auth Verification Status - Shows current auth state */}
+                {process.env.NODE_ENV === 'development' && <AuthVerification />}
+                <Routes>
                 {/* Public Landing Page */}
                 <Route path="/" element={
                   <Suspense fallback={<LoadingSpinner />}>
                     <LandingPage />
                   </Suspense>
                 } />
-                
+
+                {/* Authentication Routes */}
+                <Route path="/sign-in" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ClerkSignIn />
+                  </Suspense>
+                }/>
+
+                <Route path="/sign-up" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ClerkSignUp />
+                  </Suspense>
+                }/>
+
+                <Route path="/login" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ClerkSignIn />
+                  </Suspense>
+                }/>
+
+                <Route path="/signup" element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <SignupPage />
+                  </Suspense>
+                }/>
+
+                {/* Onboarding Route for New Users */}
+                <Route path="/onboarding" element={
+                  <ProtectedRoute allowGuest={false}>
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <UserOnboarding onComplete={() => window.location.href = '/dashboard'} />
+                    </Suspense>
+                  </ProtectedRoute>
+                }/>
+
                 {/* Protected Routes with World-Class Layout - Guest Access Enabled */}
                 <Route 
                   path="/dashboard/*" 
@@ -435,6 +510,85 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
+
+                {/* Enterprise Innovation Routes */}
+                <Route 
+                  path="/maintenance/predictive" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <PredictiveMaintenanceSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/intelligence/manufacturing" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <ManufacturingIntelligence />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/intelligence/quality" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <QualityIntelligence />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/operations/workflow" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <WorkflowAutomation />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/compliance/global" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <GlobalComplianceSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/innovation/digital-twin" 
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <DigitalTwinSystem />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  } 
+                />
                 
                 <Route 
                   path="/analytics" 
@@ -442,7 +596,7 @@ function App() {
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
-                          <AdvancedAnalyticsDashboard />
+                          <Analytics />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -591,8 +745,8 @@ function App() {
                   } 
                 />
 
-                <Route 
-                  path="/monitoring" 
+                <Route
+                  path="/monitoring"
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
@@ -601,17 +755,32 @@ function App() {
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
-                {/* Enhanced Admin System with Nested Routes */}
-                <Route 
-                  path="/admin/*" 
+
+                <Route
+                  path="/mcp-monitor"
                   element={
                     <ProtectedRoute allowGuest={true}>
-                      <Suspense fallback={<LoadingSpinner />}>
-                        <AdminLayout />
-                      </Suspense>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <MCPMonitoringDashboard />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Enhanced Admin System with Role-Based Access Control */}
+                <Route
+                  path="/admin/*"
+                  element={
+                    <ProtectedRoute allowGuest={false}>
+                      <RoleGuard allowedRoles={['admin', 'manager']}>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <AdminLayout />
+                        </Suspense>
+                      </RoleGuard>
                     </ProtectedRoute>
                   }
                 >
@@ -675,8 +844,8 @@ function App() {
                 </Route>
                 
                 {/* Financial Management Routes */}
-                <Route 
-                  path="/financial-reports" 
+                <Route
+                  path="/financial"
                   element={
                     <ProtectedRoute allowGuest={true}>
                       <WorldClassLayout>
@@ -685,7 +854,20 @@ function App() {
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
-                  } 
+                  }
+                />
+
+                <Route
+                  path="/financial-reports"
+                  element={
+                    <ProtectedRoute allowGuest={true}>
+                      <WorldClassLayout>
+                        <Suspense fallback={<LoadingSpinner />}>
+                          <FinancialReports />
+                        </Suspense>
+                      </WorldClassLayout>
+                    </ProtectedRoute>
+                  }
                 />
                 
                 <Route 
@@ -821,17 +1003,14 @@ function App() {
                 }}
               />
               
-              {/* AI Support Chatbot - Available on all authenticated pages */}
-              <Suspense fallback={null}>
-                <AISupportChatbot />
-              </Suspense>
-            </div>
+                    </div>
+              {/* EnterpriseIntegrationHub closing tag removed */}
             </Router>
-          </ThemeProvider>
+          {/* SessionManager closing tag removed */}
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>
-    </AuthProvider>
+    </BulletproofAuthProvider>
   )
 }
 

@@ -459,7 +459,7 @@ const Sidebar = () => {
       )}
       
       {/* Collapsed state indicator */}
-      {sidebarCollapsed && (
+      {collapsed && (
         <div className="sidebar-footer-collapsed">
           <div className="collapsed-hint">
             <span>Ctrl+B</span>

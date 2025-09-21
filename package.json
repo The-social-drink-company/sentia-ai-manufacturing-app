@@ -4,9 +4,10 @@
   "description": "Sentia Manufacturing Dashboard - Complete Enterprise Edition with Clerk Auth, Real Data Integration, and Manufacturing Intelligence",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server-fixed.js",
+    "start:original": "node server.js",
     "build": "echo 'Complete Enterprise build - Zero dependencies, maximum reliability'",
-    "test": "node server.js --test",
+    "test": "node server-fixed.js --test",
     "health": "curl -f http://localhost:5000/health || exit 1"
   },
   "keywords": [

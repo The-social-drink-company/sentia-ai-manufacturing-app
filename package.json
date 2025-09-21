@@ -9,6 +9,9 @@
     "dev:server": "nodemon server.js",
     "build": "vite build",
     "start": "node server.js",
+    "start:development": "node server.js",
+    "start:testing": "node server.js",
+    "start:production": "node server.js",
     "start:render": "node render-entry.js",
     "start:development": "node render-entry.js",
     "start:testing": "node render-entry.js",
@@ -308,6 +311,7 @@
     "typescript": "^5.3.0",
     "vite": "^7.1.5",
     "vitest": "^3.2.4"
+>>>>>>> origin/development
   },
   "engines": {
     "node": ">=20.19.0"

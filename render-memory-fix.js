@@ -52,8 +52,15 @@ setInterval(() => {
   }
 }, 30000); // Check every 30 seconds
 
+// CRITICAL: Kill any autonomous testing processes
+process.env.DISABLE_AUTONOMOUS_TESTING = 'true';
+process.env.DISABLE_TEST_DATA_GENERATION = 'true';
+process.env.SKIP_AUTONOMOUS_TESTS = 'true';
+process.env.NO_AUTONOMOUS = 'true';
+
 // Load the fixed server
 console.log('Starting memory-optimized server...');
+console.log('AUTONOMOUS TESTING DISABLED: ', process.env.DISABLE_AUTONOMOUS_TESTING);
 import('./server-fixed.js').catch(err => {
   console.error('Failed to start server:', err);
   process.exit(1);

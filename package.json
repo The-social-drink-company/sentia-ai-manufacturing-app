@@ -11,6 +11,7 @@
     "start": "node server.js",
     "start:render": "node render-entry.js",
     "start:development": "node render-entry.js",
+    "start:testing": "node render-entry.js",
     "start:production": "node render-entry.js",
     "preview": "vite preview",
     "test": "vitest",

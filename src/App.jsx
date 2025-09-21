@@ -124,8 +124,7 @@ const MobileFloor = createRouteComponent('mobile', () => import('./pages/MobileF
 const MissionControl = createLowPriorityComponent(() => import('./pages/MissionControl'), 'MissionControl')
 
 // 3D Components (Low Priority - resource intensive)
-// Temporarily disabled due to Three.js compatibility issue
-// const FactoryDigitalTwin = createLowPriorityComponent(() => import('./components/3d/FactoryDigitalTwin'), 'FactoryDigitalTwin')
+const FactoryDigitalTwin = createLowPriorityComponent(() => import('./components/3d/FactoryDigitalTwin'), 'FactoryDigitalTwin')
 
 
 logInfo('Starting Sentia Enterprise Manufacturing Dashboard', { 

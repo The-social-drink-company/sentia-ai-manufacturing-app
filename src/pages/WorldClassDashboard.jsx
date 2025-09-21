@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../auth/BulletproofClerkProvider';
+import { logInfo, logWarn } from '../services/observability/structuredLogger.js';
 import EnterpriseWidget from '../components/enterprise/EnterpriseWidget';
 import {
   ChartBarIcon,
@@ -9,12 +11,39 @@ import {
   BanknotesIcon,
   BeakerIcon,
   PresentationChartLineIcon,
-  CircleStackIcon
+  CircleStackIcon,
+  SparklesIcon,
+  CpuChipIcon,
+  SignalIcon,
+  ExclamationTriangleIcon,
+  CheckCircleIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  ArrowRightIcon,
+  EyeIcon,
+  BoltIcon,
+  ShieldCheckIcon
 } from '@heroicons/react/24/outline';
+
+// Lazy load heavy components - commented out missing components for now
+// const RealTimeChart = lazy(() => import('../components/charts/RealTimeChart'));
+// const AIPredictionsPanel = lazy(() => import('../components/AI/AIPredictionsPanel'));
+// const ProductionMetrics = lazy(() => import('../components/production/ProductionMetrics'));
+// const QualityDashboard = lazy(() => import('../components/quality/QualityDashboard'));
+// const InventoryOverview = lazy(() => import('../components/inventory/InventoryOverview'));
+// const FinancialMetrics = lazy(() => import('../components/financial/FinancialMetrics'));
+// const AlertCenter = lazy(() => import('../components/alerts/AlertCenter'));
+// const SystemHealthMonitor = lazy(() => import('../components/monitoring/SystemHealthMonitor'));
 
 const WorldClassDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [realTimeData, setRealTimeData] = useState({});
+  const [alerts, setAlerts] = useState([]);
+  const [aiInsights, setAiInsights] = useState([]);
+  
+  const { user, isSignedIn } = useAuth();
 
   // Fetch dashboard data from backend
   useEffect(() => {

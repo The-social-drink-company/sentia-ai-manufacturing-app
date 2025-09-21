@@ -19,9 +19,18 @@
       }
 
       // Set critical environment defaults immediately
-      window.import.meta.env.VITE_CLERK_PUBLISHABLE_KEY = window.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
-      window.import.meta.env.VITE_API_BASE_URL = window.VITE_API_BASE_URL || '/api';
-      window.import.meta.env.MODE = window.NODE_ENV || 'production';
+      window.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+      window.VITE_MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
+      window.VITE_API_BASE_URL = '/api';
+      window.NODE_ENV = 'production';
+      
+      window.import.meta.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+      window.import.meta.env.VITE_MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
+      window.import.meta.env.VITE_API_BASE_URL = '/api';
+      window.import.meta.env.MODE = 'production';
+      
+      // Set database URL for production
+      window.DATABASE_URL = 'postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
     </script>
 
     <!-- Clerk Environment Initialization with fallback -->

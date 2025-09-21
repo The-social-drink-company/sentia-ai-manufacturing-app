@@ -270,7 +270,21 @@
       "Bash(notepad:*)",
       "Bash(git show:*)",
       "Bash(start https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/deploys)",
-      "Bash(PORT=10000 timeout 5 node render-ultra-minimal.js)"
+      "Bash(PORT=10000 timeout 5 node render-ultra-minimal.js)",
+      "Bash(PORT=5002 timeout 5 node server-fixed.js)",
+      "Bash(findstr:*)",
+      "Bash(PORT=5003 node server-fixed.js)",
+      "Bash(PORT=5003 node scripts/validate-clerk-fix.js)",
+      "WebFetch(domain:sentia-manufacturing-development.onrender.com)",
+      "Bash(start https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/blob/development/server-fixed.js)",
+      "Bash(start:*)",
+      "Bash(schtasks:*)",
+      "WebFetch(domain:sentia-manufacturing-production.onrender.com)",
+      "Read(//c/Users/User/OneDrive - Q&A ERP Solutions (Pty) Ltd (1)/185 - Working Capital Production SaaS App/**)",
+      "WebFetch(domain:sentia-manufacturing-testing.onrender.com)",
+      "WebFetch(domain:mcp-server-tkyu.onrender.com)",
+      "Bash(for route in \"/\" \"/dashboard\" \"/working-capital\" \"/what-if\")",
+      "Bash(do echo -n \"$route: \")"
     ],
     "deny": [],
     "ask": []

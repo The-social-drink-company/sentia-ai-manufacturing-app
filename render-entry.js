@@ -13,6 +13,16 @@ console.log('Service:', process.env.RENDER_SERVICE_NAME || 'unknown');
 console.log('Port:', process.env.PORT || 5000);
 console.log('='.repeat(70));
 
-// ULTRA-MINIMAL: Absolute minimum server to fix 502 errors
-console.log('Starting ULTRA-MINIMAL SERVER - No dependencies, instant startup...');
-import('./render-ultra-minimal.js');
+// Check environment and choose appropriate server
+const isProduction = process.env.NODE_ENV === 'production';
+const serviceName = process.env.RENDER_SERVICE_NAME || '';
+
+// Use the FULL ENTERPRISE server.js - not a minimal version!
+console.log('Starting FULL ENTERPRISE SERVER.JS with all features...');
+console.log('Loading complete Sentia Manufacturing Dashboard with:');
+console.log('- Full Clerk Authentication');
+console.log('- Complete API integrations (Xero, Shopify, Unleashed)');
+console.log('- AI/ML features via MCP Server');
+console.log('- Enterprise sidebar navigation');
+console.log('- All dashboard pages and features');
+import('./server.js');

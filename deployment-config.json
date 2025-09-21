@@ -1,0 +1,87 @@
+{
+  "version": "1.0.7",
+  "environments": {
+    "development": {
+      "url": "https://sentia-manufacturing-development.onrender.com",
+      "service": "sentia-manufacturing-development",
+      "type": "render",
+      "env_vars": {
+        "NODE_ENV": "development",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "CLERK_SECRET_KEY": "sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+        "VITE_MCP_SERVER_URL": "https://mcp-server-tkyu.onrender.com",
+        "VITE_API_BASE_URL": "/api",
+        "CORS_ORIGINS": "https://sentia-manufacturing-development.onrender.com,https://sentia-manufacturing-testing.onrender.com,https://sentia-manufacturing.railway.app",
+        "UNLEASHED_API_ID": "d5313df6-db35-430c-a69e-ae27dffe0c5a",
+        "MICROSOFT_EMAIL_CLIENT_ID": "peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM",
+        "MICROSOFT_EMAIL_CLIENT_SECRET": "c16d6fba-0e6b-45ea-a016-eb697ff7a7ae",
+        "MICROSOFT_EMAIL_TENANT_ID": "common",
+        "MICROSOFT_EMAIL_SCOPE": "https://graph.microsoft.com/.default",
+        "ADMIN_EMAIL": "admin@app.sentiaspirits.com",
+        "DATA_EMAIL": "data@app.sentiaspirits.com",
+        "LOG_LEVEL": "info",
+        "PORT": "3000"
+      }
+    },
+    "testing": {
+      "url": "https://sentia-manufacturing-testing.onrender.com",
+      "service": "sentia-manufacturing-testing",
+      "type": "render",
+      "env_vars": {
+        "NODE_ENV": "production",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "CLERK_SECRET_KEY": "sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+        "VITE_MCP_SERVER_URL": "https://mcp-server-tkyu.onrender.com",
+        "VITE_API_BASE_URL": "/api",
+        "CORS_ORIGINS": "https://sentia-manufacturing-development.onrender.com,https://sentia-manufacturing-testing.onrender.com,https://sentia-manufacturing.railway.app",
+        "UNLEASHED_API_ID": "d5313df6-db35-430c-a69e-ae27dffe0c5a",
+        "MICROSOFT_EMAIL_CLIENT_ID": "peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM",
+        "MICROSOFT_EMAIL_CLIENT_SECRET": "c16d6fba-0e6b-45ea-a016-eb697ff7a7ae",
+        "MICROSOFT_EMAIL_TENANT_ID": "common",
+        "MICROSOFT_EMAIL_SCOPE": "https://graph.microsoft.com/.default",
+        "ADMIN_EMAIL": "admin@app.sentiaspirits.com",
+        "DATA_EMAIL": "data@app.sentiaspirits.com",
+        "LOG_LEVEL": "info",
+        "PORT": "3000"
+      }
+    },
+    "production": {
+      "url": "https://sentia-manufacturing.railway.app",
+      "service": "sentia-manufacturing-dashboard",
+      "type": "railway",
+      "env_vars": {
+        "NODE_ENV": "production",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "CLERK_SECRET_KEY": "sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+        "VITE_MCP_SERVER_URL": "https://mcp-server-tkyu.onrender.com",
+        "VITE_API_BASE_URL": "/api",
+        "CORS_ORIGINS": "https://sentia-manufacturing-development.onrender.com,https://sentia-manufacturing-testing.onrender.com,https://sentia-manufacturing.railway.app",
+        "UNLEASHED_API_ID": "d5313df6-db35-430c-a69e-ae27dffe0c5a",
+        "MICROSOFT_EMAIL_CLIENT_ID": "peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM",
+        "MICROSOFT_EMAIL_CLIENT_SECRET": "c16d6fba-0e6b-45ea-a016-eb697ff7a7ae",
+        "MICROSOFT_EMAIL_TENANT_ID": "common",
+        "MICROSOFT_EMAIL_SCOPE": "https://graph.microsoft.com/.default",
+        "ADMIN_EMAIL": "admin@app.sentiaspirits.com",
+        "DATA_EMAIL": "data@app.sentiaspirits.com",
+        "LOG_LEVEL": "info",
+        "PORT": "3000"
+      }
+    }
+  },
+  "clerk_config": {
+    "publishable_key": "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+    "secret_key": "sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+    "sign_in_url": "/sign-in",
+    "sign_up_url": "/sign-up",
+    "after_sign_in_url": "/dashboard",
+    "after_sign_up_url": "/dashboard"
+  },
+  "deployment_status": {
+    "last_updated": "2025-09-20T19:35:00Z",
+    "version": "1.0.7",
+    "status": "ready_for_deployment"
+  }
+}

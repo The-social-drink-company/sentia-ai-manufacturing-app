@@ -345,4 +345,27 @@ export const useWebSocketStatus = () => {
   };
 };
 
+// Main real-time data hook that combines all data sources
+export const useRealTimeData = () => {
+  const production = useProductionMetrics();
+  const schedule = useProductionSchedule();
+  const inventory = useInventoryLevels();
+  const quality = useQualityMetrics();
+  const maintenance = useMaintenanceSchedule();
+  const notifications = useRealTimeNotifications();
+  const status = useWebSocketStatus();
+
+  return {
+    production,
+    schedule,
+    inventory,
+    quality,
+    maintenance,
+    notifications,
+    status,
+    isConnected: status.isConnected,
+    isReconnecting: status.isReconnecting
+  };
+};
+
 export { ConnectionState };

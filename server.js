@@ -5058,7 +5058,7 @@ app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets'), {
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1h',
   etag: false,
-  index: ['index.html'], // Properly specify index file as array
+  index: true, // Allow automatic index.html serving for root path
   setHeaders: (res, filePath) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     console.log(`[STATIC] Serving Root: ${filePath}`);

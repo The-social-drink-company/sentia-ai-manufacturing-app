@@ -1,0 +1,792 @@
+# Complete Render Multi-Environment Configuration
+# All three environments with full API integrations and Render PostgreSQL
+
+services:
+  # ===================================
+  # DEVELOPMENT ENVIRONMENT
+  # ===================================
+  - type: web
+    name: sentia-manufacturing-development
+    runtime: node
+    region: oregon
+    plan: free # Free for development
+    branch: development
+
+    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    startCommand: node production-server-simple.js
+    healthCheckPath: /health
+
+    envVars:
+      # Core Configuration
+      - key: NODE_ENV
+        value: development
+      # PORT is automatically set by Render - DO NOT override
+      # - key: PORT
+      #   value: 3000
+      - key: CORS_ORIGINS
+        value: https://sentia-manufacturing-development.onrender.com
+      - key: SKIP_ENTERPRISE_INIT
+        value: "true"
+      - key: INIT_TIMEOUT_MS
+        value: "8000"
+
+      # Database - Render PostgreSQL Development
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
+      - key: DEV_DATABASE_URL
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
+
+      # Authentication (Clerk Production)
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+      - key: CLERK_SECRET_KEY
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+      - key: CLERK_WEBHOOK_SECRET
+        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      - key: CLERK_ENVIRONMENT
+        value: production
+      - key: VITE_CLERK_DOMAIN
+        value: clerk.financeflo.ai
+      - key: VITE_CLERK_SIGN_IN_URL
+        value: /sign-in
+      - key: VITE_CLERK_SIGN_UP_URL
+        value: /sign-up
+      - key: VITE_CLERK_AFTER_SIGN_IN_URL
+        value: /dashboard
+      - key: VITE_CLERK_AFTER_SIGN_UP_URL
+        value: /dashboard
+
+      # Session & JWT
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Xero Integration
+      - key: XERO_CLIENT_ID
+        value: 9C0CAB921C134476A249E48BBECB8C4B
+      - key: XERO_CLIENT_SECRET
+        value: f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
+      - key: XERO_REDIRECT_URI
+        value: https://sentia-manufacturing-development.onrender.com/api/xero/callback
+      - key: XERO_TENANT_ID
+        sync: false
+
+      # Shopify UK Store
+      - key: SHOPIFY_UK_API_KEY
+        value: 7a30cd84e7a106b852c8e0fb789de10e
+      - key: SHOPIFY_UK_SECRET
+        value: 8b2d61745c506970c70d8c892f5f977e
+      - key: SHOPIFY_UK_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_UK_SHOP_URL
+        value: sentiaspirits.myshopify.com
+
+      # Shopify USA Store
+      - key: SHOPIFY_USA_API_KEY
+        value: 83b8903fd8b509ef8bf93d1dbcd6079c
+      - key: SHOPIFY_USA_SECRET
+        value: d01260e58adb00198cddddd1bd9a9490
+      - key: SHOPIFY_USA_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_USA_SHOP_URL
+        value: us-sentiaspirits.myshopify.com
+      - key: SHOPIFY_WEBHOOK_SECRET
+        sync: false
+
+      # Amazon SP-API
+      - key: AMAZON_SP_API_CLIENT_ID
+        sync: false
+      - key: AMAZON_SP_API_CLIENT_SECRET
+        sync: false
+      - key: AMAZON_SP_API_REFRESH_TOKEN
+        sync: false
+      - key: AMAZON_UK_MARKETPLACE_ID
+        value: A1F83G8C2ARO7P
+      - key: AMAZON_USA_MARKETPLACE_ID
+        value: ATVPDKIKX0DER
+      - key: AMAZON_SELLER_ID
+        sync: false
+
+      # Unleashed ERP
+      - key: UNLEASHED_API_ID
+        value: d5313df6-db35-430c-a69e-ae27dffe0c5a
+      - key: UNLEASHED_API_KEY
+        value: 2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+      - key: UNLEASHED_API_URL
+        value: https://api.unleashedsoftware.com
+
+      # AI Services
+      - key: OPENAI_API_KEY
+        value: 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
+      - key: ANTHROPIC_API_KEY
+        value: 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
+
+      # Microsoft Graph API
+      - key: MICROSOFT_CLIENT_ID
+        value: c16d6fba-0e6b-45ea-a016-eb697ff7a7ae
+      - key: MICROSOFT_CLIENT_SECRET
+        value: peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM
+      - key: MICROSOFT_TENANT_ID
+        value: common
+      - key: MICROSOFT_ADMIN_EMAIL
+        value: admin@app.sentiaspirits.com
+      - key: MICROSOFT_DATA_EMAIL
+        value: data@app.sentiaspirits.com
+
+      # MCP Server Integration (Using internal address for better performance)
+      - key: MCP_SERVER_URL
+        value: http://mcp-server-tkyu:10000
+      - key: MCP_SERVER_PUBLIC_URL
+        value: https://mcp-server-tkyu.onrender.com
+      - key: MCP_JWT_SECRET
+        generateValue: true
+      - key: MCP_ENABLE_WEBSOCKET
+        value: true
+      - key: MCP_SERVER_PORT
+        value: 3001
+      - key: MCP_SERVER_HEALTH_CHECK_INTERVAL
+        value: 30000
+
+      # Auto-Sync Configuration
+      - key: AUTO_SYNC_ENABLED
+        value: true
+      - key: XERO_SYNC_INTERVAL
+        value: "*/30 * * * *"
+      - key: SHOPIFY_SYNC_INTERVAL
+        value: "*/15 * * * *"
+      - key: AMAZON_SYNC_INTERVAL
+        value: "*/60 * * * *"
+      - key: DATABASE_SYNC_INTERVAL
+        value: "0 */6 * * *"
+
+      # Redis Cache (Optional)
+      - key: REDIS_URL
+        sync: false
+
+      # Monitoring
+      - key: SENTRY_DSN
+        sync: false
+      - key: LOG_LEVEL
+        value: info
+
+      # Feature Flags
+      - key: ENABLE_AUTONOMOUS_TESTING
+        value: true
+      - key: AUTO_FIX_ENABLED
+        value: true
+      - key: AUTO_DEPLOY_ENABLED
+        value: false
+
+      # Application Settings
+      - key: VITE_API_BASE_URL
+        value: https://sentia-manufacturing-development.onrender.com/api
+      - key: VITE_APP_TITLE
+        value: Sentia Manufacturing Dashboard
+      - key: VITE_APP_VERSION
+        value: 1.0.0
+
+  # ===================================
+  # TESTING/UAT ENVIRONMENT
+  # ===================================
+  - type: web
+    name: sentia-manufacturing-testing
+    runtime: node
+    region: oregon
+    plan: starter # $7/month for reliable testing
+    branch: test
+
+    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    startCommand: node production-server-simple.js
+    healthCheckPath: /health
+
+    envVars:
+      # Core Configuration
+      - key: NODE_ENV
+        value: test
+      # PORT is automatically set by Render - DO NOT override
+      # - key: PORT
+      #   value: 3000
+      - key: CORS_ORIGINS
+        value: https://sentia-manufacturing-testing.onrender.com
+
+      # Startup Configuration (prevent 502 errors)
+      - key: SKIP_ENTERPRISE_INIT
+        value: "true"
+      - key: INIT_TIMEOUT_MS
+        value: "8000"
+
+      # Database - Render PostgreSQL Testing
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-testing
+          property: connectionString
+      - key: TEST_DATABASE_URL
+        fromDatabase:
+          name: sentia-db-testing
+          property: connectionString
+
+      # Authentication (Clerk Production)
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+      - key: CLERK_SECRET_KEY
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+      - key: CLERK_WEBHOOK_SECRET
+        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      - key: CLERK_ENVIRONMENT
+        value: production
+      - key: VITE_CLERK_DOMAIN
+        value: clerk.financeflo.ai
+      - key: VITE_CLERK_SIGN_IN_URL
+        value: /sign-in
+      - key: VITE_CLERK_SIGN_UP_URL
+        value: /sign-up
+      - key: VITE_CLERK_AFTER_SIGN_IN_URL
+        value: /dashboard
+      - key: VITE_CLERK_AFTER_SIGN_UP_URL
+        value: /dashboard
+
+      # Session & JWT
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Xero Integration
+      - key: XERO_CLIENT_ID
+        value: 9C0CAB921C134476A249E48BBECB8C4B
+      - key: XERO_CLIENT_SECRET
+        value: f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
+      - key: XERO_REDIRECT_URI
+        value: https://sentia-manufacturing-testing.onrender.com/api/xero/callback
+      - key: XERO_TENANT_ID
+        sync: false
+
+      # Shopify UK Store
+      - key: SHOPIFY_UK_API_KEY
+        value: 7a30cd84e7a106b852c8e0fb789de10e
+      - key: SHOPIFY_UK_SECRET
+        value: 8b2d61745c506970c70d8c892f5f977e
+      - key: SHOPIFY_UK_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_UK_SHOP_URL
+        value: sentiaspirits.myshopify.com
+
+      # Shopify USA Store
+      - key: SHOPIFY_USA_API_KEY
+        value: 83b8903fd8b509ef8bf93d1dbcd6079c
+      - key: SHOPIFY_USA_SECRET
+        value: d01260e58adb00198cddddd1bd9a9490
+      - key: SHOPIFY_USA_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_USA_SHOP_URL
+        value: us-sentiaspirits.myshopify.com
+      - key: SHOPIFY_WEBHOOK_SECRET
+        sync: false
+
+      # Amazon SP-API
+      - key: AMAZON_SP_API_CLIENT_ID
+        sync: false
+      - key: AMAZON_SP_API_CLIENT_SECRET
+        sync: false
+      - key: AMAZON_SP_API_REFRESH_TOKEN
+        sync: false
+      - key: AMAZON_UK_MARKETPLACE_ID
+        value: A1F83G8C2ARO7P
+      - key: AMAZON_USA_MARKETPLACE_ID
+        value: ATVPDKIKX0DER
+      - key: AMAZON_SELLER_ID
+        sync: false
+
+      # Unleashed ERP
+      - key: UNLEASHED_API_ID
+        value: d5313df6-db35-430c-a69e-ae27dffe0c5a
+      - key: UNLEASHED_API_KEY
+        value: 2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+      - key: UNLEASHED_API_URL
+        value: https://api.unleashedsoftware.com
+
+      # AI Services
+      - key: OPENAI_API_KEY
+        value: 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
+      - key: ANTHROPIC_API_KEY
+        value: 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
+
+      # Microsoft Graph API
+      - key: MICROSOFT_CLIENT_ID
+        value: c16d6fba-0e6b-45ea-a016-eb697ff7a7ae
+      - key: MICROSOFT_CLIENT_SECRET
+        value: peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM
+      - key: MICROSOFT_TENANT_ID
+        value: common
+      - key: MICROSOFT_ADMIN_EMAIL
+        value: admin@app.sentiaspirits.com
+      - key: MICROSOFT_DATA_EMAIL
+        value: data@app.sentiaspirits.com
+
+      # MCP Server Integration (Using internal address for better performance)
+      - key: MCP_SERVER_URL
+        value: http://mcp-server-tkyu:10000
+      - key: MCP_SERVER_PUBLIC_URL
+        value: https://mcp-server-tkyu.onrender.com
+      - key: MCP_JWT_SECRET
+        generateValue: true
+      - key: MCP_ENABLE_WEBSOCKET
+        value: true
+      - key: MCP_SERVER_PORT
+        value: 3001
+      - key: MCP_SERVER_HEALTH_CHECK_INTERVAL
+        value: 30000
+
+      # Auto-Sync Configuration
+      - key: AUTO_SYNC_ENABLED
+        value: true
+      - key: XERO_SYNC_INTERVAL
+        value: "*/30 * * * *"
+      - key: SHOPIFY_SYNC_INTERVAL
+        value: "*/15 * * * *"
+      - key: AMAZON_SYNC_INTERVAL
+        value: "*/60 * * * *"
+      - key: DATABASE_SYNC_INTERVAL
+        value: "0 */6 * * *"
+
+      # Redis Cache (Optional)
+      - key: REDIS_URL
+        sync: false
+
+      # Monitoring
+      - key: SENTRY_DSN
+        sync: false
+      - key: LOG_LEVEL
+        value: info
+
+      # Feature Flags
+      - key: ENABLE_AUTONOMOUS_TESTING
+        value: true
+      - key: AUTO_FIX_ENABLED
+        value: false
+      - key: AUTO_DEPLOY_ENABLED
+        value: false
+
+      # Application Settings
+      - key: VITE_API_BASE_URL
+        value: https://sentia-manufacturing-testing.onrender.com/api
+      - key: VITE_APP_TITLE
+        value: Sentia Manufacturing Dashboard (UAT)
+      - key: VITE_APP_VERSION
+        value: 1.0.0
+
+  # ===================================
+  # PRODUCTION ENVIRONMENT
+  # ===================================
+  - type: web
+    name: sentia-manufacturing-production
+    runtime: node
+    region: oregon
+    plan: standard # $25/month for production reliability
+    branch: production
+
+    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    startCommand: node production-server-simple.js
+    healthCheckPath: /health
+
+    envVars:
+      # Core Configuration
+      - key: NODE_ENV
+        value: production
+      # PORT is automatically set by Render - DO NOT override
+      # - key: PORT
+      #   value: 3000
+      - key: CORS_ORIGINS
+        value: https://sentia-manufacturing-production.onrender.com
+
+      # Startup Configuration (prevent 502 errors)
+      - key: SKIP_ENTERPRISE_INIT
+        value: "true"
+      - key: INIT_TIMEOUT_MS
+        value: "8000"
+
+      # Database - Render PostgreSQL Production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-production
+          property: connectionString
+
+      # Authentication (Clerk Production)
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+      - key: CLERK_SECRET_KEY
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+      - key: CLERK_WEBHOOK_SECRET
+        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      - key: CLERK_ENVIRONMENT
+        value: production
+      - key: VITE_CLERK_DOMAIN
+        value: clerk.financeflo.ai
+      - key: VITE_CLERK_SIGN_IN_URL
+        value: /sign-in
+      - key: VITE_CLERK_SIGN_UP_URL
+        value: /sign-up
+      - key: VITE_CLERK_AFTER_SIGN_IN_URL
+        value: /dashboard
+      - key: VITE_CLERK_AFTER_SIGN_UP_URL
+        value: /dashboard
+
+      # Session & JWT
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Xero Integration
+      - key: XERO_CLIENT_ID
+        value: 9C0CAB921C134476A249E48BBECB8C4B
+      - key: XERO_CLIENT_SECRET
+        value: f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
+      - key: XERO_REDIRECT_URI
+        value: https://sentia-manufacturing-production.onrender.com/api/xero/callback
+      - key: XERO_TENANT_ID
+        sync: false
+
+      # Shopify UK Store
+      - key: SHOPIFY_UK_API_KEY
+        value: 7a30cd84e7a106b852c8e0fb789de10e
+      - key: SHOPIFY_UK_SECRET
+        value: 8b2d61745c506970c70d8c892f5f977e
+      - key: SHOPIFY_UK_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_UK_SHOP_URL
+        value: sentiaspirits.myshopify.com
+
+      # Shopify USA Store
+      - key: SHOPIFY_USA_API_KEY
+        value: 83b8903fd8b509ef8bf93d1dbcd6079c
+      - key: SHOPIFY_USA_SECRET
+        value: d01260e58adb00198cddddd1bd9a9490
+      - key: SHOPIFY_USA_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_USA_SHOP_URL
+        value: us-sentiaspirits.myshopify.com
+      - key: SHOPIFY_WEBHOOK_SECRET
+        sync: false
+
+      # Amazon SP-API
+      - key: AMAZON_SP_API_CLIENT_ID
+        sync: false
+      - key: AMAZON_SP_API_CLIENT_SECRET
+        sync: false
+      - key: AMAZON_SP_API_REFRESH_TOKEN
+        sync: false
+      - key: AMAZON_UK_MARKETPLACE_ID
+        value: A1F83G8C2ARO7P
+      - key: AMAZON_USA_MARKETPLACE_ID
+        value: ATVPDKIKX0DER
+      - key: AMAZON_SELLER_ID
+        sync: false
+
+      # Unleashed ERP
+      - key: UNLEASHED_API_ID
+        value: d5313df6-db35-430c-a69e-ae27dffe0c5a
+      - key: UNLEASHED_API_KEY
+        value: 2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+      - key: UNLEASHED_API_URL
+        value: https://api.unleashedsoftware.com
+
+      # AI Services
+      - key: OPENAI_API_KEY
+        value: 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
+      - key: ANTHROPIC_API_KEY
+        value: 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
+
+      # Microsoft Graph API
+      - key: MICROSOFT_CLIENT_ID
+        value: c16d6fba-0e6b-45ea-a016-eb697ff7a7ae
+      - key: MICROSOFT_CLIENT_SECRET
+        value: peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM
+      - key: MICROSOFT_TENANT_ID
+        value: common
+      - key: MICROSOFT_ADMIN_EMAIL
+        value: admin@app.sentiaspirits.com
+      - key: MICROSOFT_DATA_EMAIL
+        value: data@app.sentiaspirits.com
+
+      # MCP Server Integration (Using internal address for better performance)
+      - key: MCP_SERVER_URL
+        value: http://mcp-server-tkyu:10000
+      - key: MCP_SERVER_PUBLIC_URL
+        value: https://mcp-server-tkyu.onrender.com
+      - key: MCP_JWT_SECRET
+        generateValue: true
+      - key: MCP_ENABLE_WEBSOCKET
+        value: true
+      - key: MCP_SERVER_PORT
+        value: 3001
+      - key: MCP_SERVER_HEALTH_CHECK_INTERVAL
+        value: 30000
+
+      # Auto-Sync Configuration
+      - key: AUTO_SYNC_ENABLED
+        value: true
+      - key: XERO_SYNC_INTERVAL
+        value: "*/30 * * * *"
+      - key: SHOPIFY_SYNC_INTERVAL
+        value: "*/15 * * * *"
+      - key: AMAZON_SYNC_INTERVAL
+        value: "*/60 * * * *"
+      - key: DATABASE_SYNC_INTERVAL
+        value: "0 */6 * * *"
+
+      # Redis Cache (Optional)
+      - key: REDIS_URL
+        sync: false
+
+      # Monitoring
+      - key: SENTRY_DSN
+        sync: false
+      - key: LOG_LEVEL
+        value: error
+
+      # Feature Flags
+      - key: ENABLE_AUTONOMOUS_TESTING
+        value: false
+      - key: AUTO_FIX_ENABLED
+        value: false
+      - key: AUTO_DEPLOY_ENABLED
+        value: false
+
+      # Application Settings
+      - key: VITE_API_BASE_URL
+        value: https://sentia-manufacturing-production.onrender.com/api
+      - key: VITE_APP_TITLE
+        value: Sentia Manufacturing Dashboard
+      - key: VITE_APP_VERSION
+        value: 1.0.0
+
+# PostgreSQL Databases - One for each environment
+databases:
+  # Development Database
+  - name: sentia-db-development
+    plan: free # Free plan for development
+    region: oregon # Must match service region
+    databaseName: sentia_manufacturing_dev
+    user: sentia_dev_user
+    ipAllowList: [] # Keep open for development flexibility
+
+  # Testing Database
+  - name: sentia-db-testing
+    plan: free # Free plan for testing (upgrade to starter if needed)
+    region: oregon # Must match service region
+    databaseName: sentia_manufacturing_test
+    user: sentia_test_user
+    ipAllowList: ["92.42.255.182/32", "10.0.0.0/8", "172.16.0.0/12"] # Lock down to specific IPs
+
+  # Production Database
+  - name: sentia-db-production
+    plan: starter # $7/month - includes backups
+    region: oregon # Must match service region
+    databaseName: sentia_manufacturing_prod
+    user: sentia_prod_user
+    ipAllowList: ["92.42.255.182/32", "10.0.0.0/8", "172.16.0.0/12"] # Lock down to specific IPs
+    # Production benefits with starter plan:
+    # - Daily automatic backups
+    # - Point-in-time recovery
+    # - SSL/TLS encryption
+    # - Connection pooling
+    # - 1GB storage (upgradeable at $0.30/GB)
+
+  # ===================================
+  # MCP SERVER - AI CENTRAL NERVOUS SYSTEM
+  # ===================================
+  - type: web
+    name: mcp-server
+    runtime: node
+    region: oregon
+    plan: free # Free for development, upgrade for production
+    branch: development
+    rootDir: mcp-server
+
+    buildCommand: npm install
+    startCommand: node production-server.js
+    healthCheckPath: /health
+
+    envVars:
+      # Core Configuration
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: LOG_LEVEL
+        value: info
+
+      # Security
+      - key: JWT_SECRET
+        generateValue: true
+
+      # CORS Configuration
+      - key: CORS_ORIGINS
+        value: https://sentia-manufacturing-development.onrender.com,https://sentia-manufacturing-testing.onrender.com,https://sentia-manufacturing-production.onrender.com
+
+      # Database (shared with main app)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
+
+      # AI/LLM Provider Keys (REQUIRED)
+      - key: ANTHROPIC_API_KEY
+        value: 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
+      - key: OPENAI_API_KEY
+        value: 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
+      - key: GOOGLE_AI_API_KEY
+        sync: false # Optional
+
+      # Xero Integration
+      - key: XERO_CLIENT_ID
+        value: 9C0CAB921C134476A249E48BBECB8C4B
+      - key: XERO_CLIENT_SECRET
+        value: f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
+      - key: XERO_REDIRECT_URI
+        value: https://mcp-server-tkyu.onrender.com/xero/callback
+      - key: XERO_TENANT_ID
+        sync: false
+
+      # Unleashed ERP
+      - key: UNLEASHED_API_ID
+        value: d5313df6-db35-430c-a69e-ae27dffe0c5a
+      - key: UNLEASHED_API_KEY
+        value: 2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+      - key: UNLEASHED_API_URL
+        value: https://api.unleashedsoftware.com
+
+      # Shopify UK Store
+      - key: SHOPIFY_UK_API_KEY
+        value: 7a30cd84e7a106b852c8e0fb789de10e
+      - key: SHOPIFY_UK_SECRET
+        value: 8b2d61745c506970c70d8c892f5f977e
+      - key: SHOPIFY_UK_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_UK_SHOP_URL
+        value: sentiaspirits.myshopify.com
+
+      # Shopify USA Store
+      - key: SHOPIFY_USA_API_KEY
+        value: 83b8903fd8b509ef8bf93d1dbcd6079c
+      - key: SHOPIFY_USA_SECRET
+        value: d01260e58adb00198cddddd1bd9a9490
+      - key: SHOPIFY_USA_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_USA_SHOP_URL
+        value: us-sentiaspirits.myshopify.com
+
+      # Amazon SP-API (Optional)
+      - key: AMAZON_SP_API_CLIENT_ID
+        sync: false
+      - key: AMAZON_SP_API_CLIENT_SECRET
+        sync: false
+      - key: AMAZON_SP_API_REFRESH_TOKEN
+        sync: false
+      - key: AMAZON_UK_MARKETPLACE_ID
+        value: A1F83G8C2ARO7P
+      - key: AMAZON_USA_MARKETPLACE_ID
+        value: ATVPDKIKX0DER
+      - key: AMAZON_SELLER_ID
+        sync: false
+
+      # Clerk Authentication (shared with main app)
+      - key: CLERK_SECRET_KEY
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+
+      # Local LLM Support (Optional)
+      - key: LOCAL_LLM_ENDPOINT
+        sync: false
+      - key: LOCAL_LLM_MODEL
+        value: llama2
+
+      # Microsoft Graph API
+      - key: MICROSOFT_CLIENT_ID
+        value: c16d6fba-0e6b-45ea-a016-eb697ff7a7ae
+      - key: MICROSOFT_CLIENT_SECRET
+        value: peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM
+      - key: MICROSOFT_TENANT_ID
+        value: common
+
+  # ===================================
+  # AUTONOMOUS RENDER MONITOR WITH AI
+  # ===================================
+  - type: web
+    name: autonomous-render-monitor
+    runtime: node
+    region: oregon
+    plan: starter # $7/month for 24/7 operation
+    branch: production
+    rootDir: render-monitor
+
+    buildCommand: npm install
+    startCommand: node production-server.js
+    healthCheckPath: /health
+
+    envVars:
+      # Core Configuration
+      - key: NODE_ENV
+        value: production
+
+      # Anthropic AI Configuration
+      - key: ANTHROPIC_API_KEY
+        value: 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
+
+      # GitHub Configuration for Auto-Fix
+      - key: GITHUB_TOKEN
+        sync: false # Add via Render dashboard
+      - key: GITHUB_REPO
+        value: The-social-drink-company/sentia-manufacturing-dashboard
+      - key: GITHUB_BRANCH
+        value: production
+
+      # Render API Configuration (for triggering redeployments)
+      - key: RENDER_API_KEY
+        sync: false # Add via Render dashboard
+
+      # Monitoring Configuration
+      - key: CHECK_INTERVAL
+        value: "60000" # 1 minute
+      - key: AI_ANALYSIS_INTERVAL
+        value: "300000" # 5 minutes
+      - key: AUTO_FIX_INTERVAL
+        value: "600000" # 10 minutes
+
+      # Deployment URLs to Monitor
+      - key: MONITOR_DEVELOPMENT_URL
+        value: https://sentia-manufacturing-development.onrender.com
+      - key: MONITOR_TESTING_URL
+        value: https://sentia-manufacturing-testing.onrender.com
+      - key: MONITOR_PRODUCTION_URL
+        value: https://sentia-manufacturing-production.onrender.com
+      - key: MONITOR_MCP_URL
+        value: https://mcp-server-tkyu.onrender.com
+
+      # Feature Flags
+      - key: ENABLE_AUTO_FIX
+        value: "true"
+      - key: ENABLE_AI_ANALYSIS
+        value: "true"
+      - key: ENABLE_PATTERN_DETECTION
+        value: "true"
+      - key: ENABLE_STRATEGIC_RECOMMENDATIONS
+        value: "true"
+
+      # Logging
+      - key: LOG_LEVEL
+        value: info
+      - key: LOG_FORMAT
+        value: json
+

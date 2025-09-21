@@ -151,7 +151,7 @@ const AIAnalyticsDashboard = () => {
         refetch();
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
+       
       devLog.error('Analysis failed:', error);
     } finally {
       setIsRunningAnalysis(false);

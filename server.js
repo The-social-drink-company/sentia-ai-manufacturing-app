@@ -5071,6 +5071,24 @@ app.use('/js', express.static(jsDistPath, {
   }
 }));
 
+// Serve CSS files with explicit MIME type
+// Fix for Render deployment - check both possible locations
+let cssDistPath = path.join(__dirname, 'dist', 'css');
+if (__dirname.endsWith('/src') && !fs.existsSync(cssDistPath)) {
+  cssDistPath = path.join(__dirname, '..', 'dist', 'css');
+}
+
+app.use('/css', express.static(cssDistPath, {
+  maxAge: '1d',
+  etag: false,
+  immutable: true,
+  setHeaders: (res, filePath) => {
+    res.setHeader('Content-Type', 'text/css; charset=utf-8');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    console.log(`[STATIC] Serving CSS: ${filePath} with MIME: text/css`);
+  }
+}));
+
 // Serve CSS and other assets with explicit MIME types
 // Fix for Render deployment - check both possible locations
 let assetsDistPath = path.join(__dirname, 'dist', 'assets');

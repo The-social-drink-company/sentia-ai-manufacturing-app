@@ -93,17 +93,7 @@ app.post('/admin/gc', (req, res) => {
 const distPath = path.join(__dirname, 'dist');
 console.log(`[SERVER] Serving static files from: ${distPath}`);
 
-app.use(express.static(distPath, {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-      console.log(`[STATIC] Serving JS file: ${path}`);
-    } else if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-      console.log(`[STATIC] Serving CSS file: ${path}`);
-    }
-  }
-}));
+app.use(express.static(distPath));
 
 // API routes
 app.get('/api/status', (req, res) => {

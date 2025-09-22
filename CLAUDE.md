@@ -864,3 +864,4 @@ This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase
     100% working enterprise level software application deployed     
 
     on Render
+- remember no shortcuts and no emergency pages - I want the full 100% working enterprise level software application deployed on Render

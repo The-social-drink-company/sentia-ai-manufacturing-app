@@ -1,0 +1,74 @@
+services:
+  - type: web
+    name: sentia-manufacturing-enterprise-dashboard
+    env: node
+    region: oregon
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s dist -l 10000
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 18.19.0
+      - key: NPM_VERSION
+        value: 10.2.3
+      - key: VITE_APP_NAME
+        value: Sentia Manufacturing Dashboard
+      - key: VITE_APP_VERSION
+        value: 2.1.0-enterprise
+      - key: VITE_APP_ENVIRONMENT
+        value: production
+      - key: VITE_ENABLE_STAGED_LOADING
+        value: true
+      - key: VITE_ENABLE_AI_INSIGHTS
+        value: true
+      - key: VITE_ENABLE_CSV_UPLOAD
+        value: true
+      - key: VITE_ENABLE_ADVANCED_ANALYTICS
+        value: true
+    # Environment variables that need to be set in Render dashboard:
+    # VITE_CLERK_PUBLISHABLE_KEY - Your Clerk publishable key
+    # VITE_API_BASE_URL - Your API base URL (if applicable)
+    
+    # Auto-deploy settings
+    autoDeploy: true
+    branch: main
+    
+    # Build settings
+    buildFilter:
+      paths:
+        - src/**
+        - public/**
+        - package.json
+        - package-lock.json
+        - vite.config.js
+        - index.html
+      ignoredPaths:
+        - docs-speckit/**
+        - README.md
+        - .gitignore
+    
+    # Health check settings
+    healthCheckPath: /
+    healthCheckGracePeriod: 30s
+    
+    # Scaling settings
+    numInstances: 1
+    
+    # Custom headers for security
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: geolocation=(), microphone=(), camera=()
+    
+    # Static file serving optimization
+    staticPublishPath: ./dist

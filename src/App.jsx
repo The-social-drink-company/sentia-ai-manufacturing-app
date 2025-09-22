@@ -217,19 +217,15 @@ const DashboardRoute = () => {
 }
 
 function App() {
-  const [showLoader, setShowLoader] = React.useState(true);
-  const [loaderComplete, setLoaderComplete] = React.useState(false);
+  const [showLoader, setShowLoader] = React.useState(false); // Temporarily disable loader
+  const [loaderComplete, setLoaderComplete] = React.useState(true);
 
   // Get Clerk publishable key from environment
   const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
   React.useEffect(() => {
-    // Check if we should show the loader
-    const hasSeenLoader = sessionStorage.getItem('enterprise_loader_shown');
-    if (hasSeenLoader) {
-      setShowLoader(false);
-      setLoaderComplete(true);
-    }
+    // Skip loader for now to ensure app loads
+    console.log('App mounting, loader disabled for testing');
   }, []);
 
   const handleLoaderComplete = () => {

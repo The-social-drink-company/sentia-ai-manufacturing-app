@@ -859,3 +859,8 @@ This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase
 - Auto-deployment configured for all three branches via render.yaml
 - Environment variables automatically injected from Render dashboard
 - Health checks configured at `/health` endpoint
+- remember no shorcuts and no emergency pages - I want the full    
+
+    100% working enterprise level software application deployed     
+
+    on Render

@@ -1,38 +1,72 @@
 services:
-  # Main Application (Frontend + Backend)
+  # Production Environment
   - type: web
     name: sentia-manufacturing-production
     env: node
-    buildCommand: npm run render:build
-    startCommand: npm run start:production
     plan: starter
     region: oregon
     branch: main
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm run start:production"
+    healthCheckPath: /health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
+
+  # Testing Environment
+  - type: web
+    name: sentia-manufacturing-testing
+    env: node
+    plan: starter
+    region: oregon
+    branch: testing
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm run start:testing"
     healthCheckPath: /health
     autoDeploy: true
-    
+    envVars:
+      - key: NODE_ENV
+        value: production # Render uses production build even for testing
+      - key: PORT
+        value: 10000
+
+  # Development Environment
+  - type: web
+    name: sentia-manufacturing-development
+    env: node
+    plan: starter
+    region: oregon
+    branch: development
+    buildCommand: "npm run render:build"
+    startCommand: "npm run start:development"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production # Render uses production build for all web services
+      - key: PORT
+        value: 10000
+
   # MCP Server (AI/ML Backend)
   - type: web
     name: sentia-mcp-server
     env: node
     rootDir: mcp-server
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: "npm install"
+    startCommand: "npm start"
     plan: starter
     region: oregon
     branch: main
+    healthCheckPath: /health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-    healthCheckPath: /health
-    autoDeploy: true
 
   # PostgreSQL Database
   - type: pserv

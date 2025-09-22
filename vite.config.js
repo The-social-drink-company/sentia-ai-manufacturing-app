@@ -1,27 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-// Temporarily disable visualizer to fix build
-// import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig({
   plugins: [
     react({
-      // Enable React Fast Refresh optimizations
       fastRefresh: true,
-      // Optimize JSX runtime
       jsxRuntime: 'automatic'
-    }),
-    // Bundle analyzer disabled to fix build
-    // process.env.ANALYZE && visualizer({
-    //   filename: 'dist/stats.html',
-    //   open: true,
-    //   gzipSize: true,
-    //   brotliSize: true
-    // })
-  ].filter(Boolean),
-  // Critical: Set base path for Railway deployment
-  base: '/', // Use absolute paths for proper routing
+    })
+  ],
+  base: '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -36,8 +24,8 @@ export default defineConfig({
   },
   server: {
     port: 3001,
-    host: true, // Allow external connections
-    strictPort: false, // Allow fallback to next available port
+    host: true,
+    strictPort: false,
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
@@ -50,14 +38,12 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     emptyOutDir: true,
-    sourcemap: false, // Disable sourcemaps to prevent module issues
-    minify: 'terser', // Use terser for better minification
+    sourcemap: false,
+    minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-        passes: 2
+        drop_debugger: true
       },
       mangle: {
         safari10: true
@@ -67,25 +53,16 @@ export default defineConfig({
       }
     },
     target: 'es2020',
-    chunkSizeWarningLimit: 500, // Lower warning limit
+    chunkSizeWarningLimit: 1000,
     cssCodeSplit: true,
     assetsInlineLimit: 4096,
-    // CRITICAL FIX: Ensure proper module format
-    commonjsOptions: {
-      transformMixedEsModules: true,
-      include: [/node_modules/]
-    },
     rollupOptions: {
       output: {
-        // Enhanced manual chunking to reduce bundle sizes
+        // Use function-based chunking to avoid module resolution issues
         manualChunks: (id) => {
-          // CRITICAL: Bundle React and state management together to prevent loading order issues
-          if (id.includes('react') && !id.includes('react-router') && !id.includes('@')) {
+          // Core React
+          if (id.includes('react') && !id.includes('react-router')) {
             return 'react-core'
-          }
-          // State management MUST be bundled with React to avoid createContext errors
-          if (id.includes('zustand') || id.includes('@tanstack/react-query')) {
-            return 'react-core'  // Bundle with React core to ensure proper loading order
           }
           // Router
           if (id.includes('react-router')) {
@@ -95,25 +72,17 @@ export default defineConfig({
           if (id.includes('@clerk')) {
             return 'auth'
           }
-          // UI Components and Icons
-          if (id.includes('@heroicons') || id.includes('@headlessui')) {
-            return 'ui-components'
-          }
-          // Charts
+          // Charts - isolate to prevent initialization errors
           if (id.includes('recharts') || id.includes('d3')) {
             return 'charts'
           }
-          // Three.js MUST be bundled with React to avoid useLayoutEffect errors
-          if (id.includes('three') || id.includes('@react-three')) {
-            return 'react-core'  // Bundle with React to prevent hook errors
+          // UI Components
+          if (id.includes('@heroicons') || id.includes('@headlessui')) {
+            return 'ui-components'
           }
           // Animation
           if (id.includes('framer-motion')) {
             return 'animation'
-          }
-          // Data processing
-          if (id.includes('axios') || id.includes('date-fns')) {
-            return 'data-utils'
           }
           // Forms
           if (id.includes('react-hook-form') || id.includes('zod')) {
@@ -124,17 +93,14 @@ export default defineConfig({
             const module = id.split('node_modules/')[1]
             if (module) {
               const packageName = module.split('/')[0]
-              // Group small packages
               const smallPackages = ['classnames', 'clsx', 'uuid', 'nanoid']
               if (smallPackages.some(pkg => packageName.includes(pkg))) {
                 return 'vendor-utils'
               }
             }
-            // Default vendor chunk
             return 'vendor'
           }
         },
-        // Optimized asset naming
         chunkFileNames: 'js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {
           const ext = assetInfo.name.split('.').pop()
@@ -146,14 +112,7 @@ export default defineConfig({
           }
           return 'assets/[name]-[hash:8][extname]'
         },
-        entryFileNames: 'js/[name]-[hash:8].js',
-        // Merge small chunks
-        experimentalMinChunkSize: 10000
-      },
-      // Enhanced tree-shaking
-      treeshake: {
-        preset: 'recommended',
-        moduleSideEffects: 'no-external'
+        entryFileNames: 'js/[name]-[hash:8].js'
       }
     }
   },
@@ -162,15 +121,9 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      '@clerk/clerk-react',
-      'zustand',
-      '@tanstack/react-query'
+      '@clerk/clerk-react'
     ],
-    force: true,
-    esbuildOptions: {
-      format: 'esm',
-      target: 'es2020'
-    }
+    force: true
   },
   define: {
     'global': 'globalThis',

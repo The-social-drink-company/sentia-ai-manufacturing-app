@@ -302,7 +302,10 @@
       "Bash(git ls-tree:*)",
       "Bash(grep:*)",
       "Bash(gh auth:*)",
-      "Bash(git rev-list:*)"
+      "Bash(git rev-list:*)",
+      "Bash(gh api:*)",
+      "Read(//c/tmp/**)",
+      "Bash(set PORT=4150)"
     ],
     "deny": [],
     "ask": []

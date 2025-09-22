@@ -287,7 +287,8 @@
       "Bash(do echo -n \"$route: \")",
       "Bash(do echo:*)",
       "Bash(git log:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(git gc:*)"
     ],
     "deny": [],
     "ask": []

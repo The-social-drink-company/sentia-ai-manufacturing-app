@@ -1,38 +1,4 @@
 services:
-  # Production Environment
-  - type: web
-    name: sentia-manufacturing-production
-    env: node
-    plan: starter
-    region: oregon
-    branch: main
-    buildCommand: "npm install && npm run build"
-    startCommand: "node --expose-gc server.js"
-    healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 10000
-
-  # Testing Environment
-  - type: web
-    name: sentia-manufacturing-testing
-    env: node
-    plan: starter
-    region: oregon
-    branch: testing
-    buildCommand: "npm install && npm run build"
-    startCommand: "node --expose-gc server.js"
-    healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: production # Render uses production build even for testing
-      - key: PORT
-        value: 10000
-
   # Development Environment
   - type: web
     name: sentia-manufacturing-development
@@ -41,27 +7,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "npm install && npm run build"
-    startCommand: "node --expose-gc server.js"
-    healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: production # Render uses production build for all web services
-      - key: PORT
-        value: 10000
-      - key: NODE_OPTIONS
-        value: --max-old-space-size=128
-
-  # MCP Server (AI/ML Backend)
-  - type: web
-    name: sentia-mcp-server
-    env: node
-    rootDir: mcp-server
-    buildCommand: "npm install"
-    startCommand: "npm start"
-    plan: starter
-    region: oregon
-    branch: main
+    startCommand: "node server-minimal.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -69,11 +15,3 @@ services:
         value: production
       - key: PORT
         value: 10000
-
-  # PostgreSQL Database
-  - type: pserv
-    name: sentia-manufacturing-db
-    plan: starter
-    region: oregon
-    branch: main
-    autoDeploy: true

@@ -286,7 +286,8 @@
       "Bash(for route in \"/\" \"/dashboard\" \"/working-capital\" \"/what-if\")",
       "Bash(do echo -n \"$route: \")",
       "Bash(do echo:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []

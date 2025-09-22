@@ -90,27 +90,78 @@ async function testMCPConnection() {
 // Initialize Express app
 const app = express();
 
-// Security middleware
+// SECURITY FIX: Enhanced CSP configuration to resolve violations
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://clerk.financeflo.ai", "https://robust-snake-50.clerk.accounts.dev"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      styleSrc: [
+        "'self'", 
+        "'unsafe-inline'", // Required for Tailwind CSS and styled-components
+        "https://fonts.googleapis.com",
+        "https://cdn.jsdelivr.net" // For any CDN stylesheets
+      ],
+      scriptSrc: [
+        "'self'",
+        // Temporarily allow unsafe-eval for React development builds
+        // TODO: Remove in production and use proper bundling
+        "'unsafe-eval'",
+        "https://clerk.financeflo.ai",
+        "https://robust-snake-50.clerk.accounts.dev",
+        "https://js.clerk.dev", // Clerk's main script domain
+        "https://clerk.com",
+        "https://api.clerk.dev"
+      ],
+      fontSrc: [
+        "'self'", 
+        "https://fonts.gstatic.com",
+        "https://fonts.googleapis.com",
+        "data:" // For base64 encoded fonts
+      ],
+      imgSrc: [
+        "'self'", 
+        "data:", 
+        "https:", 
+        "blob:",
+        "https://images.clerk.dev", // Clerk profile images
+        "https://img.clerk.com"
+      ],
       connectSrc: [
         "'self'",
         "https://clerk.financeflo.ai",
         "https://robust-snake-50.clerk.accounts.dev",
+        "https://api.clerk.dev",
+        "https://api.clerk.com",
+        "wss://clerk.financeflo.ai", // WebSocket connections
+        "wss://robust-snake-50.clerk.accounts.dev",
         mcpConfig.url,
         mcpConfig.websocketUrl,
-        apiBaseUrl
+        apiBaseUrl,
+        // Allow connections to the same origin for API calls
+        "'self'"
       ],
-      frameSrc: ["'self'", "https://clerk.financeflo.ai", "https://robust-snake-50.clerk.accounts.dev"],
+      frameSrc: [
+        "'self'", 
+        "https://clerk.financeflo.ai", 
+        "https://robust-snake-50.clerk.accounts.dev",
+        "https://js.clerk.dev"
+      ],
+      objectSrc: ["'none'"], // Disable object/embed for security
+      baseUri: ["'self'"], // Restrict base URI
+      formAction: ["'self'"], // Restrict form actions
+      upgradeInsecureRequests: [], // Upgrade HTTP to HTTPS
     }
   },
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  // Additional security headers
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  },
+  noSniff: true,
+  xssFilter: true,
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" }
 }));
 
 // TASK-003: CORS configuration fix for all deployment environments

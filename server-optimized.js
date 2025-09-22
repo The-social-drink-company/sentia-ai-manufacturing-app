@@ -1,7 +1,11 @@
-const express = require('express');
-const path = require('path');
-const compression = require('compression');
-const helmet = require('helmet');
+import express from 'express';
+import path from 'path';
+import compression from 'compression';
+import helmet from 'helmet';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -37,8 +41,8 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1d',
   etag: true,
   lastModified: true,
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js') || path.endsWith('.css')) {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
   }
@@ -125,4 +129,4 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`[MEMORY] Initial heap usage: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`);
 });
 
-module.exports = app;
+export default app;

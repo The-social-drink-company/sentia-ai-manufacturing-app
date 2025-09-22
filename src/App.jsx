@@ -3,6 +3,8 @@ import { Button } from './components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import Sidebar from './components/Sidebar';
 import ExecutiveDashboardAdvanced from './components/ExecutiveDashboardAdvanced';
+import WorkingCapitalCalculatorEnhanced from './components/WorkingCapitalCalculatorEnhanced';
+import ClerkAuthGuard from './components/auth/ClerkAuthGuard';
 import ChatBot from './components/ChatBot';
 
 function App() {
@@ -109,7 +111,7 @@ function App() {
 
   const Calculator = () => (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <Button 
           onClick={() => setCurrentView('landing')}
           className="mb-6 bg-green-600 hover:bg-green-700"
@@ -117,37 +119,22 @@ function App() {
           ← Back to Landing
         </Button>
         
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Working Capital Calculator</h1>
-          <p className="text-gray-600">Advanced cash flow analysis and optimization recommendations</p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Cash Flow Analysis</CardTitle>
-            <p className="text-gray-600">Calculate your working capital requirements and optimization opportunities</p>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 mb-4">
-              Working Capital Calculator functionality will be implemented here with:
-            </p>
-            <ul className="space-y-2 text-gray-700">
-              <li>• Annual Revenue input and analysis</li>
-              <li>• Debtor and Creditor days optimization</li>
-              <li>• Cash flow projections for 30, 60, 90, 120, 180 days</li>
-              <li>• Growth scenario modeling</li>
-              <li>• AI-powered industry benchmarking</li>
-              <li>• Board-ready talking points generation</li>
-            </ul>
-          </CardContent>
-        </Card>
+        <WorkingCapitalCalculatorEnhanced />
       </div>
     </div>
   );
 
-  if (currentView === 'dashboard') return <DashboardLayout />;
-  if (currentView === 'calculator') return <Calculator />;
-  return <LandingPage />;
+  const AppContent = () => {
+    if (currentView === 'dashboard') return <DashboardLayout />;
+    if (currentView === 'calculator') return <Calculator />;
+    return <LandingPage />;
+  };
+
+  return (
+    <ClerkAuthGuard>
+      <AppContent />
+    </ClerkAuthGuard>
+  );
 }
 
 export default App;

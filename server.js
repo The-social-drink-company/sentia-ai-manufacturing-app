@@ -14,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 console.log('==================================================');
-console.log('SENTIA MANUFACTURING DASHBOARD - SIMPLIFIED');
+console.log('SENTIA MANUFACTURING DASHBOARD - SIMPLIFIED V2');
 console.log('==================================================');
 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 console.log(`Port: ${PORT}`);
@@ -35,6 +35,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logger
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.path}`);
+  next();
+});
+
 // Health check endpoints (BEFORE static files)
 app.get('/health', (req, res) => {
   const usage = process.memoryUsage();
@@ -53,7 +59,7 @@ app.get('/health', (req, res) => {
       rssMB: (usage.rss / 1024 / 1024).toFixed(2)
     },
     uptime: process.uptime(),
-    server: 'simplified'
+    server: 'simplified-v2'
   });
 });
 
@@ -92,27 +98,16 @@ app.post('/admin/gc', (req, res) => {
 // Static file serving (BEFORE catch-all route)
 const distPath = path.join(__dirname, 'dist');
 console.log(`[SERVER] Serving static files from: ${distPath}`);
-
-app.use(express.static(distPath, {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-      console.log(`[STATIC] Serving JS file: ${path}`);
-    } else if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-      console.log(`[STATIC] Serving CSS file: ${path}`);
-    }
-  }
-}));
+app.use(express.static(distPath));
 
 // API routes
 app.get('/api/status', (req, res) => {
   res.json({
     service: 'Sentia Manufacturing Dashboard',
-    version: '1.0.0-simplified',
+    version: '1.0.0-simplified-v2',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
-    server: 'simplified'
+    server: 'simplified-v2'
   });
 });
 

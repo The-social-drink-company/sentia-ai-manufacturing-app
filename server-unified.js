@@ -16,6 +16,7 @@ import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { getDatabaseConfig, getMCPConfig, getAPIBaseURL } from './config/database-config.js';
+import { healthCheckService } from './services/health-check-service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -143,31 +144,45 @@ app.use(compression());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Health check endpoint
+// Health check endpoint with comprehensive monitoring
 app.get('/health', async (req, res) => {
-  const dbConnected = await testDatabaseConnection();
-  const mcpConnected = await testMCPConnection();
+  try {
+    const health = await healthCheckService.getOverallHealth();
 
-  const health = {
-    status: dbConnected ? 'healthy' : 'degraded',
-    timestamp: new Date().toISOString(),
-    environment: BRANCH,
-    database: {
-      connected: dbConnected,
-      name: dbConfig.database,
-      host: dbConfig.host
-    },
-    mcp_server: {
-      connected: mcpConnected,
-      url: mcpConfig.url
-    },
-    api: {
-      base_url: apiBaseUrl,
-      version: '1.0.0'
+    // Determine HTTP status code
+    let statusCode = 200;
+    if (health.status === 'unhealthy') {
+      statusCode = 503;
+    } else if (health.status === 'degraded') {
+      statusCode = 200; // Still return 200 for degraded to avoid unnecessary alerts
     }
-  };
 
-  res.status(dbConnected ? 200 : 503).json(health);
+    res.status(statusCode).json(health);
+  } catch (error) {
+    console.error('Health check endpoint error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Health check failed',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Simplified health check for load balancers
+app.get('/health/live', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Readiness check
+app.get('/health/ready', async (req, res) => {
+  try {
+    // Quick database check
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).json({ ready: true, timestamp: new Date().toISOString() });
+  } catch (error) {
+    res.status(503).json({ ready: false, error: error.message, timestamp: new Date().toISOString() });
+  }
 });
 
 // API endpoint to get current configuration
@@ -299,17 +314,27 @@ async function startServer() {
 }
 
 // Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  await prisma.$disconnect();
-  process.exit(0);
-});
+const gracefulShutdown = async (signal) => {
+  console.log(`${signal} received, shutting down gracefully...`);
 
-process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully...');
-  await prisma.$disconnect();
-  process.exit(0);
-});
+  try {
+    // Clean up health check service
+    await healthCheckService.cleanup();
+    console.log('Health check service cleaned up');
+
+    // Disconnect database
+    await prisma.$disconnect();
+    console.log('Database disconnected');
+
+    process.exit(0);
+  } catch (error) {
+    console.error('Error during shutdown:', error);
+    process.exit(1);
+  }
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Start the server
 startServer();

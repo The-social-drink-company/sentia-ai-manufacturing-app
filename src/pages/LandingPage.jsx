@@ -145,18 +145,30 @@ const LandingPage = () => {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className="flex items-center space-x-4"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              {/* For bypass mode, always show Dashboard button */}
-              <Link to="/dashboard">
-                <button className="px-6 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium">
-                  Enter Dashboard
-                </button>
-              </Link>
+              <button
+                onClick={() => navigate('/working-capital')}
+                className="px-4 py-2 text-white hover:text-gray-300 transition-colors font-medium"
+              >
+                Working Capital
+              </button>
+              <button
+                onClick={() => navigate('/what-if')}
+                className="px-4 py-2 text-white hover:text-gray-300 transition-colors font-medium"
+              >
+                What-If Analysis
+              </button>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="px-6 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              >
+                Enter Dashboard
+              </button>
             </motion.div>
           </div>
         </div>

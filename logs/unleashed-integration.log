@@ -1,0 +1,36 @@
+{"level":"info","message":"Unleashed connection test successful","timestamp":"2025-09-21T08:38:04.683Z"}
+{"level":"info","message":"✅ Unleashed Integration initialized for MCP Server","timestamp":"2025-09-21T08:38:04.683Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 1","pageSize":100,"timestamp":"2025-09-21T08:38:04.726Z"}
+{"level":"info","message":"Fetched page 1 of 2, 100 items","timestamp":"2025-09-21T08:38:05.947Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 2","pageSize":100,"timestamp":"2025-09-21T08:38:05.947Z"}
+{"itemCount":200,"level":"info","message":"Retrieved all inventory data from Unleashed","timestamp":"2025-09-21T08:38:06.938Z","totalPages":2,"totals":{"totalAllocated":1047708033.4090003,"totalAvailable":-1040029294.1098001,"totalProducts":200,"totalQuantity":7678739.2992,"totalValue":201948.92199999822}}
+{"level":"info","message":"Unleashed connection test successful","timestamp":"2025-09-21T08:38:24.410Z"}
+{"level":"info","message":"✅ Unleashed Integration initialized for MCP Server","timestamp":"2025-09-21T08:38:24.411Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 1","pageSize":100,"timestamp":"2025-09-21T08:38:24.439Z"}
+{"level":"info","message":"Fetched page 1 of 2, 100 items","timestamp":"2025-09-21T08:38:25.605Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 2","pageSize":100,"timestamp":"2025-09-21T08:38:25.606Z"}
+{"itemCount":200,"level":"info","message":"Retrieved all inventory data from Unleashed","timestamp":"2025-09-21T08:38:26.485Z","totalPages":2,"totals":{"totalAllocated":1047708033.4090003,"totalAvailable":-1040029294.1098001,"totalProducts":200,"totalQuantity":7678739.2992,"totalValue":201948.92199999822}}
+{"level":"info","message":"Unleashed connection test successful","timestamp":"2025-09-21T09:05:57.759Z"}
+{"level":"info","message":"✅ Unleashed Integration initialized for MCP Server","timestamp":"2025-09-21T09:05:57.761Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 1","pageSize":100,"timestamp":"2025-09-21T09:05:57.811Z"}
+{"level":"info","message":"Fetched page 1 of 2, 100 items","timestamp":"2025-09-21T09:05:58.968Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 2","pageSize":100,"timestamp":"2025-09-21T09:05:58.969Z"}
+{"itemCount":200,"level":"info","message":"Retrieved all inventory data from Unleashed","timestamp":"2025-09-21T09:05:59.902Z","totalPages":2,"totals":{"totalAllocated":1047708033.4090003,"totalAvailable":-1040029294.1098001,"totalProducts":200,"totalQuantity":7678739.2992,"totalValue":201948.92199999822}}
+{"level":"info","message":"Unleashed connection test successful","timestamp":"2025-09-21T09:10:18.638Z"}
+{"level":"info","message":"✅ Unleashed Integration initialized for MCP Server","timestamp":"2025-09-21T09:10:18.638Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 1","pageSize":100,"timestamp":"2025-09-21T09:10:18.684Z"}
+{"level":"info","message":"Fetched page 1 of 2, 100 items","timestamp":"2025-09-21T09:10:19.979Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 2","pageSize":100,"timestamp":"2025-09-21T09:10:19.979Z"}
+{"itemCount":200,"level":"info","message":"Retrieved all inventory data from Unleashed","timestamp":"2025-09-21T09:10:20.963Z","totalPages":2,"totals":{"totalAllocated":1047708033.4090003,"totalAvailable":-1040029294.1098001,"totalProducts":200,"totalQuantity":7678739.2992,"totalValue":201948.92199999822}}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 1","pageSize":100,"timestamp":"2025-09-21T09:15:00.027Z"}
+{"level":"info","message":"Fetched page 1 of 2, 100 items","timestamp":"2025-09-21T09:15:02.104Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 2","pageSize":100,"timestamp":"2025-09-21T09:15:02.104Z"}
+{"itemCount":200,"level":"info","message":"Retrieved all inventory data from Unleashed","timestamp":"2025-09-21T09:15:05.767Z","totalPages":2,"totals":{"totalAllocated":1047708033.4090003,"totalAvailable":-1040029294.1098001,"totalProducts":200,"totalQuantity":7678739.2992,"totalValue":201948.92199999822}}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 1","pageSize":100,"timestamp":"2025-09-21T09:30:00.015Z"}
+{"level":"info","message":"Fetched page 1 of 2, 100 items","timestamp":"2025-09-21T09:30:06.386Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 2","pageSize":100,"timestamp":"2025-09-21T09:30:06.386Z"}
+{"itemCount":200,"level":"info","message":"Retrieved all inventory data from Unleashed","timestamp":"2025-09-21T09:30:08.416Z","totalPages":2,"totals":{"totalAllocated":1047708033.4090003,"totalAvailable":-1040029294.1098001,"totalProducts":200,"totalQuantity":7678739.2992,"totalValue":201948.92199999822}}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 1","pageSize":100,"timestamp":"2025-09-21T09:45:00.021Z"}
+{"level":"info","message":"Fetched page 1 of 2, 100 items","timestamp":"2025-09-21T09:45:04.339Z"}
+{"endpoint":"/StockOnHand","level":"info","message":"Fetching inventory page 2","pageSize":100,"timestamp":"2025-09-21T09:45:04.339Z"}
+{"itemCount":200,"level":"info","message":"Retrieved all inventory data from Unleashed","timestamp":"2025-09-21T09:45:06.009Z","totalPages":2,"totals":{"totalAllocated":1047708033.4090003,"totalAvailable":-1040029294.1098001,"totalProducts":200,"totalQuantity":7678739.2992,"totalValue":201948.92199999822}}

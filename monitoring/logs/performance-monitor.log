@@ -1,0 +1,1219 @@
+{
+  "timestamp": "2025-09-21T08:38:06.536Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 32,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 96
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T08:38:04.578Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 96,
+      "minResponseTime": 95,
+      "maxResponseTime": 98,
+      "p95ResponseTime": 98,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T08:38:05.560Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 95,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:04.674Z"
+        },
+        {
+          "responseTime": 96,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:04.870Z"
+        },
+        {
+          "responseTime": 95,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:05.064Z"
+        },
+        {
+          "responseTime": 96,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:05.260Z"
+        },
+        {
+          "responseTime": 98,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:05.459Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T08:38:06.535Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T08:38:06.627Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 34,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 102
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T08:38:04.617Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 102,
+      "minResponseTime": 98,
+      "maxResponseTime": 111,
+      "p95ResponseTime": 111,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T08:38:05.628Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 111,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:04.729Z"
+        },
+        {
+          "responseTime": 101,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:04.930Z"
+        },
+        {
+          "responseTime": 100,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:05.130Z"
+        },
+        {
+          "responseTime": 98,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:05.330Z"
+        },
+        {
+          "responseTime": 99,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:05.529Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T08:38:06.627Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T08:38:26.261Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 30,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 90
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T08:38:24.358Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 90,
+      "minResponseTime": 89,
+      "maxResponseTime": 93,
+      "p95ResponseTime": 93,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T08:38:25.310Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:24.448Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:24.637Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:24.825Z"
+        },
+        {
+          "responseTime": 90,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:25.015Z"
+        },
+        {
+          "responseTime": 93,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:25.209Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T08:38:26.261Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T08:38:26.365Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 31,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 93
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T08:38:24.441Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 93,
+      "minResponseTime": 89,
+      "maxResponseTime": 104,
+      "p95ResponseTime": 104,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T08:38:25.406Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 104,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:24.545Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:24.734Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:24.923Z"
+        },
+        {
+          "responseTime": 90,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:25.114Z"
+        },
+        {
+          "responseTime": 92,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T08:38:25.305Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T08:38:26.365Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:05:59.756Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 34,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 101
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:05:57.757Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 101,
+      "minResponseTime": 95,
+      "maxResponseTime": 108,
+      "p95ResponseTime": 108,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:05:58.768Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 95,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:57.852Z"
+        },
+        {
+          "responseTime": 107,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:58.058Z"
+        },
+        {
+          "responseTime": 108,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:58.267Z"
+        },
+        {
+          "responseTime": 99,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:58.468Z"
+        },
+        {
+          "responseTime": 95,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:58.663Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:05:59.756Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:05:59.956Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 46,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 139
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:05:57.720Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 139,
+      "minResponseTime": 105,
+      "maxResponseTime": 266,
+      "p95ResponseTime": 266,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:05:58.919Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 110,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:57.831Z"
+        },
+        {
+          "responseTime": 266,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:58.197Z"
+        },
+        {
+          "responseTime": 109,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:58.405Z"
+        },
+        {
+          "responseTime": 105,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:58.613Z"
+        },
+        {
+          "responseTime": 105,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:05:58.819Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:05:59.956Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:10:20.470Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 31,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 94
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:10:18.514Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 94,
+      "minResponseTime": 89,
+      "maxResponseTime": 104,
+      "p95ResponseTime": 104,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:10:19.486Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:18.603Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:18.791Z"
+        },
+        {
+          "responseTime": 104,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:18.996Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:19.186Z"
+        },
+        {
+          "responseTime": 100,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:19.385Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:10:20.470Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:10:20.474Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 32,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 96
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:10:18.506Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 96,
+      "minResponseTime": 89,
+      "maxResponseTime": 100,
+      "p95ResponseTime": 100,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:10:19.490Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 100,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:18.607Z"
+        },
+        {
+          "responseTime": 97,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:18.805Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:18.995Z"
+        },
+        {
+          "responseTime": 99,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:19.195Z"
+        },
+        {
+          "responseTime": 93,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:10:19.389Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:10:20.474Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:25:23.607Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 34,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 102
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:25:21.601Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 102,
+      "minResponseTime": 98,
+      "maxResponseTime": 105,
+      "p95ResponseTime": 105,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:25:22.615Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 103,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:21.704Z"
+        },
+        {
+          "responseTime": 105,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:21.910Z"
+        },
+        {
+          "responseTime": 104,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:22.114Z"
+        },
+        {
+          "responseTime": 102,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:22.317Z"
+        },
+        {
+          "responseTime": 98,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:22.514Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:25:23.607Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:25:23.815Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 45,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 136
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:25:21.605Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 136,
+      "minResponseTime": 98,
+      "maxResponseTime": 267,
+      "p95ResponseTime": 267,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:25:22.783Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 98,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:21.702Z"
+        },
+        {
+          "responseTime": 267,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:22.069Z"
+        },
+        {
+          "responseTime": 104,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:22.273Z"
+        },
+        {
+          "responseTime": 104,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:22.477Z"
+        },
+        {
+          "responseTime": 105,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:25:22.683Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:25:23.815Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:41:43.957Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 34,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 103
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:41:41.945Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 103,
+      "minResponseTime": 99,
+      "maxResponseTime": 110,
+      "p95ResponseTime": 110,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:41:42.962Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 100,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.045Z"
+        },
+        {
+          "responseTime": 99,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.244Z"
+        },
+        {
+          "responseTime": 106,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.452Z"
+        },
+        {
+          "responseTime": 100,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.652Z"
+        },
+        {
+          "responseTime": 110,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.863Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:41:43.957Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:41:44.055Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 40,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 121
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:41:41.956Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 121,
+      "minResponseTime": 97,
+      "maxResponseTime": 206,
+      "p95ResponseTime": 206,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:41:43.061Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 103,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.059Z"
+        },
+        {
+          "responseTime": 206,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.366Z"
+        },
+        {
+          "responseTime": 100,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.567Z"
+        },
+        {
+          "responseTime": 97,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.765Z"
+        },
+        {
+          "responseTime": 97,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:41:42.962Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:41:44.055Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:56:43.791Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 31,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 93
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:56:41.871Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 93,
+      "minResponseTime": 89,
+      "maxResponseTime": 98,
+      "p95ResponseTime": 98,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:56:42.839Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 91,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:41.961Z"
+        },
+        {
+          "responseTime": 98,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:42.160Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:42.350Z"
+        },
+        {
+          "responseTime": 90,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:42.541Z"
+        },
+        {
+          "responseTime": 97,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:42.738Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:56:43.791Z"
+    }
+  ]
+}\n\n{
+  "timestamp": "2025-09-21T09:56:43.792Z",
+  "overallRating": "POOR",
+  "avgResponseTime": 31,
+  "avgSuccessRate": 33,
+  "totalEndpoints": 3,
+  "slowestEndpoint": {
+    "name": "Dashboard Load Time",
+    "responseTime": 93
+  },
+  "fastestEndpoint": {
+    "name": "Working Capital API",
+    "responseTime": 0
+  },
+  "results": [
+    {
+      "name": "API Performance",
+      "url": "https://web-production-1f10.up.railway.app/api/health",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:56:41.871Z"
+    },
+    {
+      "name": "Dashboard Load Time",
+      "url": "https://web-production-1f10.up.railway.app",
+      "type": "frontend",
+      "totalRequests": 5,
+      "successRate": 100,
+      "avgResponseTime": 93,
+      "minResponseTime": 89,
+      "maxResponseTime": 98,
+      "p95ResponseTime": 98,
+      "status": "EXCELLENT",
+      "timestamp": "2025-09-21T09:56:42.840Z",
+      "rawMeasurements": [
+        {
+          "responseTime": 90,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:41.962Z"
+        },
+        {
+          "responseTime": 97,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:42.159Z"
+        },
+        {
+          "responseTime": 89,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:42.350Z"
+        },
+        {
+          "responseTime": 91,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:42.540Z"
+        },
+        {
+          "responseTime": 98,
+          "status": 200,
+          "success": true,
+          "timestamp": "2025-09-21T09:56:42.739Z"
+        }
+      ]
+    },
+    {
+      "name": "Working Capital API",
+      "url": "https://web-production-1f10.up.railway.app/api/working-capital",
+      "type": "api",
+      "totalRequests": 5,
+      "successRate": 0,
+      "avgResponseTime": 0,
+      "minResponseTime": 0,
+      "maxResponseTime": 0,
+      "p95ResponseTime": 0,
+      "status": "FAILED",
+      "timestamp": "2025-09-21T09:56:43.792Z"
+    }
+  ]
+}\n\n

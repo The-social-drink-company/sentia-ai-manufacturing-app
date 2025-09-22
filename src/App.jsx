@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { AnimatePresence } from 'framer-motion';
 import LandingPage from './components/LandingPage';
-import LoadingManager from './components/LoadingManager';
+import EnhancedLoadingManager from './components/EnhancedLoadingManager';
 import AuthGuard from './components/auth/AuthGuard';
+import EnhancedEnterpriseDashboard from './components/EnhancedEnterpriseDashboard';
 import './App.css';
-
-// Import enterprise components (to be created)
-// import EnterpriseDashboard from './components/EnterpriseDashboard';
-// import WorkingCapitalCalculator from './components/WorkingCapitalCalculator';
 
 function App() {
   const { isSignedIn } = useUser();
@@ -120,14 +117,14 @@ function App() {
         )}
 
         {appState === 'loading' && (
-          <LoadingManager
+          <EnhancedLoadingManager
             key="loading"
             onComplete={handleLoadingComplete}
           />
         )}
 
         {appState === 'dashboard' && (
-          <TemporaryDashboard key="dashboard" />
+          <EnhancedEnterpriseDashboard key="dashboard" />
         )}
       </AnimatePresence>
     </div>

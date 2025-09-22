@@ -9,6 +9,7 @@ import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { getDatabaseConfig, getMCPConfig, getAPIBaseURL } from './config/database-config.js';
 import { healthCheckService } from './services/health-check-service.js';
+import { validateBackendEnvironment } from './src/utils/env-validator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +18,9 @@ const __dirname = path.dirname(__filename);
 if (!process.env.RENDER) {
   dotenv.config();
 }
+
+// TASK-002: Validate environment variables on startup
+validateBackendEnvironment();
 
 // Determine current branch/environment
 const BRANCH = process.env.RENDER_GIT_BRANCH || process.env.BRANCH || process.env.NODE_ENV || 'development';
@@ -109,27 +113,58 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 
-// CORS configuration
+// TASK-003: CORS configuration fix for all deployment environments
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'https://sentia-manufacturing-development.onrender.com',
-      'https://sentia-manufacturing-testing.onrender.com',
+      // Production domains
+      'https://deployrend.financeflo.ai',
+      'https://sentiaprod.financeflo.ai',
+      'https://sentia.onrender.com',
       'https://sentia-manufacturing-production.onrender.com',
+      
+      // Testing domains
+      'https://sentia-testing.onrender.com',
+      'https://sentia-manufacturing-testing.onrender.com',
+      
+      // Development domains
+      'https://sentia-manufacturing-development.onrender.com',
+      'https://deployrend.financeflo.ai',
+      
+      // Local development
       'http://localhost:3000',
       'http://localhost:3001',
-      'http://localhost:5000'
+      'http://localhost:5000',
+      'http://localhost:5173',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:5173',
+      
+      // Clerk domains for authentication
+      'https://clerk.financeflo.ai',
+      'https://robust-snake-50.clerk.accounts.dev'
     ];
 
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.warn(`CORS blocked request from origin: ${origin}`);
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Cache-Control',
+    'X-File-Name'
+  ],
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
+  maxAge: 86400 // 24 hours
 };
 
 app.use(cors(corsOptions));

@@ -1,0 +1,280 @@
+# Code Quality Component Lock File
+# TASK-004: Specification Lock to Prevent AI Drift
+# This file defines immutable requirements for code quality standards
+
+component: Code Quality Standards
+version: 1.0.0
+locked: true
+created: 2025-09-22T16:45:00Z
+last_updated: 2025-09-22T16:45:00Z
+
+# CRITICAL INVARIANTS - NEVER CHANGE THESE
+invariants:
+  - logging: "NO console.log statements in production code"
+  - error_handling: "ALL async operations MUST have proper error handling"
+  - imports: "NO duplicate or conflicting import statements"
+  - syntax: "Consistent ES modules syntax throughout"
+  - performance: "NO blocking operations in request handlers"
+  - security: "NO sensitive data in logs or client-side code"
+
+# FORBIDDEN PATTERNS
+forbidden_patterns:
+  console_statements:
+    - "console.log()"
+    - "console.error()"
+    - "console.warn()"
+    - "console.info()"
+    - "console.debug()"
+    exceptions:
+      - "Development environment only"
+      - "Test files"
+      - "Build scripts"
+  
+  import_issues:
+    - "Duplicate import statements"
+    - "Mixed import/require syntax"
+    - "Unused imports"
+    - "Circular dependencies"
+  
+  error_handling:
+    - "Unhandled promise rejections"
+    - "Missing try-catch blocks"
+    - "Silent error swallowing"
+    - "Generic error messages"
+  
+  performance:
+    - "Synchronous file operations in handlers"
+    - "Blocking database queries"
+    - "Memory leaks"
+    - "Infinite loops"
+    - "Excessive DOM manipulation"
+  
+  security:
+    - "Hardcoded credentials"
+    - "Sensitive data in logs"
+    - "SQL injection vulnerabilities"
+    - "XSS vulnerabilities"
+    - "Insecure direct object references"
+
+# REQUIRED PATTERNS
+required_patterns:
+  logging:
+    - "Use structured logging with Winston"
+    - "Include context and metadata"
+    - "Appropriate log levels"
+    - "No sensitive data in logs"
+  
+  error_handling:
+    - "Try-catch blocks for all async operations"
+    - "Meaningful error messages"
+    - "Error logging with context"
+    - "Graceful degradation"
+  
+  imports:
+    - "ES modules syntax (import/export)"
+    - "Alphabetical ordering"
+    - "No unused imports"
+    - "Clear dependency structure"
+  
+  functions:
+    - "Single responsibility principle"
+    - "Clear function names"
+    - "Proper parameter validation"
+    - "Return type consistency"
+  
+  components:
+    - "React functional components"
+    - "Proper prop validation"
+    - "Memoization where appropriate"
+    - "Clean component lifecycle"
+
+# CODE STYLE STANDARDS
+style:
+  formatting:
+    - "2 spaces for indentation"
+    - "Semicolons required"
+    - "Single quotes for strings"
+    - "Trailing commas in objects/arrays"
+  
+  naming:
+    - "camelCase for variables and functions"
+    - "PascalCase for components and classes"
+    - "UPPER_CASE for constants"
+    - "kebab-case for file names"
+  
+  comments:
+    - "JSDoc for all public functions"
+    - "Inline comments for complex logic"
+    - "TODO comments with issue numbers"
+    - "No commented-out code"
+
+# PERFORMANCE STANDARDS
+performance:
+  bundle_size:
+    - "Main bundle < 2MB"
+    - "Vendor bundle < 1MB"
+    - "Individual chunks < 500KB"
+  
+  response_times:
+    - "API endpoints < 500ms"
+    - "Page load < 2s"
+    - "Time to interactive < 3s"
+  
+  memory:
+    - "No memory leaks"
+    - "Efficient data structures"
+    - "Proper cleanup in useEffect"
+    - "Optimized re-renders"
+
+# SECURITY STANDARDS
+security:
+  input_validation:
+    - "Validate all user inputs"
+    - "Sanitize data before database operations"
+    - "Use parameterized queries"
+    - "Escape output data"
+  
+  authentication:
+    - "Use Clerk for all authentication"
+    - "Validate tokens on server side"
+    - "Implement proper session management"
+    - "Use HTTPS for all communications"
+  
+  data_protection:
+    - "No sensitive data in client-side code"
+    - "Encrypt sensitive data at rest"
+    - "Use environment variables for secrets"
+    - "Implement proper access controls"
+
+# TESTING STANDARDS
+testing:
+  coverage:
+    - "Minimum 80% code coverage"
+    - "100% coverage for critical paths"
+    - "Unit tests for all utilities"
+    - "Integration tests for API endpoints"
+  
+  test_quality:
+    - "Clear test descriptions"
+    - "Arrange-Act-Assert pattern"
+    - "Mock external dependencies"
+    - "Test error conditions"
+  
+  test_types:
+    - "Unit tests with Vitest"
+    - "Integration tests with Supertest"
+    - "E2E tests with Playwright"
+    - "Performance tests for critical paths"
+
+# DOCUMENTATION STANDARDS
+documentation:
+  code:
+    - "JSDoc for all public APIs"
+    - "README for each major component"
+    - "Architecture decision records"
+    - "API documentation"
+  
+  comments:
+    - "Explain WHY, not WHAT"
+    - "Update comments when code changes"
+    - "Remove outdated comments"
+    - "Use clear, concise language"
+
+# AI INSTRUCTIONS
+ai_instructions: |
+  CRITICAL: These code quality standards are LOCKED and must be followed strictly.
+  
+  BEFORE writing ANY code:
+  1. Read this lock file completely
+  2. Verify your code follows all required patterns
+  3. Check for forbidden patterns
+  4. Ensure proper error handling
+  5. Use structured logging instead of console.log
+  
+  NEVER:
+  - Add console.log statements to production code
+  - Write code without proper error handling
+  - Use mixed import/require syntax
+  - Ignore performance implications
+  - Expose sensitive data
+  - Write code without tests
+  
+  ALWAYS:
+  - Use structured logging with Winston
+  - Handle all async operations properly
+  - Follow ES modules syntax
+  - Write meaningful error messages
+  - Include proper documentation
+  - Test your code thoroughly
+  - Consider performance implications
+  - Follow security best practices
+  
+  QUALITY CHECKLIST:
+  - [ ] No console.log statements
+  - [ ] Proper error handling
+  - [ ] Consistent import syntax
+  - [ ] Meaningful variable names
+  - [ ] Proper documentation
+  - [ ] Security considerations
+  - [ ] Performance optimizations
+  - [ ] Test coverage
+
+# VALIDATION RULES
+validation:
+  pre_commit:
+    - "ESLint must pass with zero errors"
+    - "Prettier formatting must be applied"
+    - "No console.log statements in staged files"
+    - "All tests must pass"
+  
+  pre_deploy:
+    - "Full test suite must pass"
+    - "Code coverage must meet minimum requirements"
+    - "Security scan must pass"
+    - "Performance benchmarks must pass"
+  
+  code_review:
+    - "All code must be reviewed"
+    - "Security implications must be considered"
+    - "Performance impact must be evaluated"
+    - "Documentation must be updated"
+
+# ENFORCEMENT
+enforcement:
+  automated:
+    - "ESLint rules in CI/CD"
+    - "Prettier formatting checks"
+    - "Test coverage reporting"
+    - "Security vulnerability scanning"
+  
+  manual:
+    - "Code review process"
+    - "Architecture review for major changes"
+    - "Security review for sensitive changes"
+    - "Performance review for critical paths"
+  
+  consequences:
+    - "Failed builds for quality violations"
+    - "Blocked deployments for security issues"
+    - "Required fixes for performance regressions"
+    - "Documentation updates for API changes"
+
+# CONTINUOUS IMPROVEMENT
+improvement:
+  metrics:
+    - "Code quality scores"
+    - "Test coverage trends"
+    - "Performance benchmarks"
+    - "Security vulnerability counts"
+  
+  reviews:
+    - "Monthly code quality reviews"
+    - "Quarterly standard updates"
+    - "Annual security audits"
+    - "Performance optimization cycles"
+  
+  training:
+    - "Best practices documentation"
+    - "Code review guidelines"
+    - "Security awareness training"
+    - "Performance optimization techniques"

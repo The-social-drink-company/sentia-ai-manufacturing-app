@@ -284,7 +284,11 @@
       "WebFetch(domain:sentia-manufacturing-testing.onrender.com)",
       "WebFetch(domain:mcp-server-tkyu.onrender.com)",
       "Bash(for route in \"/\" \"/dashboard\" \"/working-capital\" \"/what-if\")",
-      "Bash(do echo -n \"$route: \")"
+      "Bash(do echo -n \"$route: \")",
+      "Bash(do echo:*)",
+      "Bash(git log:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git gc:*)"
     ],
     "deny": [],
     "ask": []

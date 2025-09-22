@@ -2,7 +2,6 @@ import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { BulletproofClerkProvider } from './auth/BulletproofClerkProvider.jsx'
-import { clerkConfig } from './config/clerk.js'
 import './index.css'
 
 // Ensure React is globally available for bundled modules
@@ -11,34 +10,19 @@ if (typeof window !== 'undefined') {
   window.ReactDOM = ReactDOM;
 }
 
-// Performance monitoring with web-vitals
-import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
-
-// Import development logger
-import { devLog } from './lib/devLog.js'
-
-// Log web vitals for performance monitoring
-function sendToAnalytics(metric) {
-  devLog.info(`Web Vitals ${metric.name}:`, metric.value)
+// Development logger
+const devLog = {
+  info: (...args) => console.log('[INFO]', ...args),
+  warn: (...args) => console.warn('[WARN]', ...args),
+  error: (...args) => console.error('[ERROR]', ...args)
 }
 
-// Measure Core Web Vitals with correct exports (FID replaced with INP in web-vitals v5)
-try {
-  onCLS(sendToAnalytics)
-  onINP(sendToAnalytics)  // Interaction to Next Paint (replaces FID)
-  onFCP(sendToAnalytics)
-  onLCP(sendToAnalytics)
-  onTTFB(sendToAnalytics)
-} catch (error) {
-  devLog.warn('Web vitals measurement not available:', error.message)
-}
+// Get Clerk key from environment
+const CLERK_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_cm9idXN0LXNuYWtlLTUwLmNsZXJrLmFjY291bnRzLmRldiQ'
 
-// Bulletproof Authentication System
-// This system will automatically detect and use Clerk if available
-// Otherwise it will use a reliable fallback mode
-// GUARANTEED: No blank screens, no authentication failures
-devLog.info('Initializing Bulletproof Authentication System')
-devLog.info('Auth Provider: Automatic detection (Clerk with fallback)')
+// Full Enterprise Authentication System
+devLog.info('Initializing Sentia Manufacturing Dashboard Enterprise Edition')
+devLog.info('Clerk Authentication:', CLERK_KEY ? 'Enabled' : 'Fallback Mode')
 
 devLog.info('Starting Sentia Manufacturing Dashboard...');
 devLog.info('Environment:', import.meta.env.MODE);
@@ -100,57 +84,60 @@ const LoadingFallback = () => (
   </div>
 )
 
-// Render app with Bulletproof Authentication
-// This will NEVER fail or show blank screens
-const PUBLISHABLE_KEY = clerkConfig.publishableKey
-
-console.log('Initializing with Clerk key:', PUBLISHABLE_KEY ? 'Present' : 'Not configured - will use fallback')
-console.log('Clerk configuration loaded:', {
-  signInUrl: clerkConfig.signInUrl,
-  afterSignInUrl: clerkConfig.afterSignInUrl
-})
+// Enterprise Application with Full Features
+console.log('Initializing Enterprise Application with Clerk Authentication...')
+console.log('Environment:', import.meta.env.MODE)
+console.log('API URL:', import.meta.env.VITE_API_BASE_URL)
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
-// EMERGENCY FIX: Add timeout to prevent infinite loading
+// FULL ENTERPRISE: Complete application with all features
 const renderApp = () => {
   try {
+    console.log('Rendering full enterprise application...')
     root.render(
       <React.StrictMode>
-        <BulletproofClerkProvider publishableKey={PUBLISHABLE_KEY}>
+        <BulletproofClerkProvider publishableKey={CLERK_KEY}>
           <Suspense fallback={<LoadingFallback />}>
             <App />
           </Suspense>
         </BulletproofClerkProvider>
       </React.StrictMode>
     )
+    console.log('Enterprise application mounted successfully')
   } catch (error) {
-    console.error('Failed to render app with BulletproofClerkProvider:', error)
-    // Fallback to basic render without auth
+    console.error('Error during initial render:', error)
+    // Try without StrictMode
     try {
       root.render(
-        <React.StrictMode>
+        <BulletproofClerkProvider publishableKey={CLERK_KEY}>
           <Suspense fallback={<LoadingFallback />}>
             <App />
           </Suspense>
-        </React.StrictMode>
+        </BulletproofClerkProvider>
       )
+      console.log('App mounted without StrictMode')
     } catch (fallbackError) {
-      console.error('Complete render failure, redirecting to emergency page:', fallbackError)
-      // Ultimate fallback - redirect to emergency page
-      setTimeout(() => {
-        window.location.href = '/emergency.html'
-      }, 3000)
+      console.error('Complete failure:', fallbackError)
+      // Last resort - basic app
+      root.render(<App />)
     }
   }
 }
 
-// Add emergency timeout
+// Monitor loading but keep trying
 setTimeout(() => {
   const rootElement = document.getElementById('root')
   if (!rootElement.children.length || rootElement.innerHTML.includes('fallback-loader')) {
-    console.warn('App failed to render within 10 seconds, redirecting to emergency page')
-    window.location.href = '/emergency.html'
+    console.warn('App still loading after 10 seconds, attempting direct mount...')
+    // Try direct App mount
+    try {
+      const App = require('./App.jsx').default
+      root.render(<App />)
+      console.log('Direct mount successful')
+    } catch (e) {
+      console.error('Direct mount failed:', e)
+    }
   }
 }, 10000)
 

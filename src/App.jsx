@@ -1,45 +1,42 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams, Link } from 'react-router-dom'
-// Bulletproof Clerk Authentication - solves server-side auth issues
-// Import auth components but don't use hooks at module level
-import BulletproofAuthProvider, { useAuth, AuthStatus } from './auth/BulletproofClerkProvider'
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
+import BulletproofAuthProvider from './auth/BulletproofClerkProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Toaster } from 'react-hot-toast'
+
+// Styles
 import './index.css'
 import './styles/themes.css'
 import './styles/landing.css'
 import './styles/theme-system.css'
-// import { EnterpriseIntegrationHub } from './core/EnterpriseIntegrationHub' // Temporarily disabled - missing dependencies
-import { logInfo, logWarn } from './services/observability/structuredLogger.js'
-import { clerkConfig } from './config/clerk'  // Import Clerk configuration
-
-// Import Chart.js setup early to ensure registration
 import './lib/chartSetup'
 
+// Services
+import { logInfo, logWarn } from './services/observability/structuredLogger.js'
+
 // Layout Components
-import DashboardLayout from './components/layout/DashboardLayout'
 import WorldClassLayout from './components/layout/WorldClassLayout'
 import LoadingSpinner from './components/LoadingSpinner'
 import ErrorBoundaryFallback from './components/ErrorBoundaryFallback'
-// Import enhanced lazy loading utilities
+
+// Utils
 import { createRouteComponent, createPriorityComponent, createLowPriorityComponent } from './utils/lazyLoading'
-// Import authentication components
+
+// Auth Components
 import RoleGuard from './components/auth/RoleGuard'
-import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
-import UniversalLogin from './pages/UniversalLogin'
 import ClerkSignIn from './pages/ClerkSignIn'
 import ClerkSignUp from './pages/ClerkSignUp'
-// // import SessionManager from './components/auth/SessionManager'  // Temporarily disabled - uses Clerk hooks
 import UserOnboarding from './components/auth/UserOnboarding'
 import AuthVerification from './components/AuthVerification'
 
 // High-Priority Components (Core dashboard functionality)
-const LandingPage = createPriorityComponent(() => import('./pages/LandingPageSimple'), 'LandingPage')
+const LandingPage = createPriorityComponent(() => import('./pages/LandingPageComplete'), 'LandingPage')
 const WorldClassDashboard = createPriorityComponent(() => import('./pages/WorldClassDashboard'), 'WorldClassDashboard')
 const SimpleDashboard = createPriorityComponent(() => import('./pages/SimpleDashboard'), 'SimpleDashboard')
+const Enterprise10StageLoader = lazy(() => import('./components/Enterprise10StageLoader'))
 
 // Standard Priority Components (Main features)
 const WorldClassEnterpriseDashboard = createRouteComponent('enterprise-dashboard', () => import('./pages/WorldClassEnterpriseDashboard'))
@@ -67,10 +64,8 @@ const InventoryManagement = createRouteComponent('inventory-management', () => i
 const AdvancedInventoryManagement = createRouteComponent('advanced-inventory', () => import('./components/inventory/AdvancedInventoryManagement'))
 const ProductionTracking = createRouteComponent('production-tracking', () => import('./components/production/ProductionTracking'))
 const ProductionOptimization = createRouteComponent('production-optimization', () => import('./components/production/ProductionOptimization'))
-const ProductionMonitoring = createRouteComponent('production-monitoring', () => import('./components/production/ProductionMonitoring'))
 const QualityControl = createRouteComponent('quality-control', () => import('./components/quality/QualityControl'))
 const QualityManagementSystem = createRouteComponent('quality-management', () => import('./components/quality/QualityManagementSystem'))
-const QualityControlDashboard = createRouteComponent('quality-control-dashboard', () => import('./components/quality/QualityControlDashboard'))
 
 // Forecasting (High Priority - AI features)
 const DemandForecasting = createPriorityComponent(() => import('./components/forecasting/DemandForecasting'), 'DemandForecasting')
@@ -129,11 +124,11 @@ const MissionControl = createLowPriorityComponent(() => import('./pages/MissionC
 const FactoryDigitalTwin = createLowPriorityComponent(() => import('./components/3d/FactoryDigitalTwin'), 'FactoryDigitalTwin')
 
 
-logInfo('Starting Sentia Enterprise Manufacturing Dashboard', { 
-  deploymentTime: new Date().toISOString(), 
-  continuousDeployment: true, 
-  cycle: 4, 
-  status: 'active', 
+logInfo('Starting Sentia Enterprise Manufacturing Dashboard', {
+  deploymentTime: new Date().toISOString(),
+  continuousDeployment: true,
+  cycle: 4,
+  status: 'active',
   railwaySync: 'confirmed',
   clerkProviderCheck: 'SINGLE_PROVIDER_ONLY',
   buildDate: '2025-09-08'
@@ -221,25 +216,46 @@ const DashboardRoute = () => {
   )
 }
 
-// Fallback auth provider for when Clerk is not configured
-const FallbackAuthProvider = ({ children }) => {
-  return <div data-auth-provider="fallback">{children}</div>
-}
-
 function App() {
+  const [showLoader, setShowLoader] = React.useState(false); // Temporarily disable loader
+  const [loaderComplete, setLoaderComplete] = React.useState(true);
+
   // Get Clerk publishable key from environment
   const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+  React.useEffect(() => {
+    // Skip loader for now to ensure app loads
+    console.log('App mounting, loader disabled for testing');
+  }, []);
+
+  const handleLoaderComplete = () => {
+    sessionStorage.setItem('enterprise_loader_shown', 'true');
+    setLoaderComplete(true);
+    setTimeout(() => {
+      setShowLoader(false);
+    }, 500);
+  };
+
+  // Show 10-stage loader on initial load
+  if (showLoader) {
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <Enterprise10StageLoader
+          onComplete={handleLoaderComplete}
+          withClerk={!!clerkPublishableKey}
+        />
+      </Suspense>
+    );
+  }
 
   return (
     <BulletproofAuthProvider>
       <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
           <QueryClientProvider client={queryClient}>
-            {/* SessionManager temporarily disabled - uses Clerk hooks */}
-            <Router>
-            {/* EnterpriseIntegrationHub removed - missing dependencies */}
+          <Router>
             <div className="App">
-                {/* Auth Verification Status - Shows current auth state */}
-                {process.env.NODE_ENV === 'development' && <AuthVerification />}
+              {/* Auth Verification Status - Shows current auth state */}
+              {process.env.NODE_ENV === 'development' && <AuthVerification />}
                 <Routes>
                 {/* Public Landing Page */}
                 <Route path="/" element={
@@ -507,33 +523,6 @@ function App() {
                       <WorldClassLayout>
                         <Suspense fallback={<LoadingSpinner />}>
                           <QualityManagementSystem />
-                        </Suspense>
-                      </WorldClassLayout>
-                    </ProtectedRoute>
-                  } 
-                />
-
-                {/* Advanced Manufacturing Modules */}
-                <Route 
-                  path="/production/monitoring" 
-                  element={
-                    <ProtectedRoute allowGuest={true}>
-                      <WorldClassLayout>
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <ProductionMonitoring />
-                        </Suspense>
-                      </WorldClassLayout>
-                    </ProtectedRoute>
-                  } 
-                />
-
-                <Route 
-                  path="/quality/control" 
-                  element={
-                    <ProtectedRoute allowGuest={true}>
-                      <WorldClassLayout>
-                        <Suspense fallback={<LoadingSpinner />}>
-                          <QualityControlDashboard />
                         </Suspense>
                       </WorldClassLayout>
                     </ProtectedRoute>
@@ -1021,7 +1010,7 @@ function App() {
               </Routes>
               
               {/* Global Toast Notifications */}
-              <Toaster 
+              <Toaster
                 position="top-right"
                 toastOptions={{
                   duration: 4000,
@@ -1031,11 +1020,8 @@ function App() {
                   },
                 }}
               />
-              
-                    </div>
-              {/* EnterpriseIntegrationHub closing tag removed */}
-            </Router>
-          {/* SessionManager closing tag removed */}
+            </div>
+          </Router>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ErrorBoundary>

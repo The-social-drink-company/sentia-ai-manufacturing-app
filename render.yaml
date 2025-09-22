@@ -41,7 +41,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "npm run render:build"
-    startCommand: "npm run start:development"
+    startCommand: "node --expose-gc server-memory-optimized.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -49,6 +49,8 @@ services:
         value: production # Render uses production build for all web services
       - key: PORT
         value: 10000
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=128
 
   # MCP Server (AI/ML Backend)
   - type: web

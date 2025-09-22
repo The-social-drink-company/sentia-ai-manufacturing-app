@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
-import { Button } from './components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
-import Sidebar from './components/Sidebar';
-import ExecutiveDashboardAdvanced from './components/ExecutiveDashboardAdvanced';
-import WorkingCapitalCalculatorEnhanced from './components/WorkingCapitalCalculatorEnhanced';
-import ClerkAuthGuard from './components/auth/ClerkAuthGuard';
-import ChatBot from './components/ChatBot';
+import './App.css';
 
 function App() {
   const [currentView, setCurrentView] = useState('landing');
-  const [activeSection, setActiveSection] = useState('executive-dashboard');
 
   const LandingPage = () => (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
@@ -30,110 +23,190 @@ function App() {
         </div>
 
         <div className="flex justify-center space-x-6 mb-12">
-          <Button 
+          <button 
             onClick={() => setCurrentView('dashboard')}
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-200 hover:scale-105"
           >
             Enter Dashboard →
-          </Button>
-          <Button 
+          </button>
+          <button 
             onClick={() => setCurrentView('calculator')}
             className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-200 hover:scale-105"
           >
             Working Capital Calculator 📊
-          </Button>
+          </button>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-            <CardHeader>
-              <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">💰</span>
-              </div>
-              <CardTitle className="text-xl font-bold">Cash Requirements</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-300">
-                How much cash in the bank do I need to cover expenses for 30, 60, 90, 120, 180 days?
-              </p>
-            </CardContent>
-          </Card>
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg p-6">
+            <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
+              <span className="text-xl">💰</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Cash Flow Analysis</h3>
+            <p className="text-gray-300">
+              Real-time cash flow monitoring with predictive analytics and optimization recommendations.
+            </p>
+          </div>
 
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-            <CardHeader>
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">📈</span>
-              </div>
-              <CardTitle className="text-xl font-bold">Cash Injection Needs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-300">
-                Do I need investment, overdraft, or equity injection to fund current operations?
-              </p>
-            </CardContent>
-          </Card>
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg p-6">
+            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+              <span className="text-xl">📈</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Working Capital Intelligence</h3>
+            <p className="text-gray-300">
+              Advanced algorithms to optimize inventory, receivables, and payables for maximum efficiency.
+            </p>
+          </div>
 
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-            <CardHeader>
-              <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🚀</span>
-              </div>
-              <CardTitle className="text-xl font-bold">Growth Funding</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-300">
-                If I want to grow at xxx%, how much cash injection do I need to fund my growth?
-              </p>
-            </CardContent>
-          </Card>
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg p-6">
+            <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
+              <span className="text-xl">🎯</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Enterprise Integration</h3>
+            <p className="text-gray-300">
+              Seamless integration with ERP systems, banks, and financial platforms for comprehensive insights.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-sm text-gray-400">
+            Environment: {import.meta.env.MODE} | 
+            API: {import.meta.env.VITE_API_BASE_URL || 'Not set'} | 
+            Clerk: {import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ? 'Set' : 'Not set'}
+          </p>
         </div>
       </div>
     </div>
   );
 
-  const DashboardLayout = () => (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
-      <div className="flex-1 overflow-auto">
-        <div className="p-4">
-          <Button 
-            onClick={() => setCurrentView('landing')}
-            className="mb-4 bg-green-600 hover:bg-green-700"
-          >
-            ← Back to Landing
-          </Button>
+  const Dashboard = () => (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-900">Sentia Manufacturing Dashboard</h1>
+            <button 
+              onClick={() => setCurrentView('landing')}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg"
+            >
+              ← Back to Landing
+            </button>
+          </div>
         </div>
-        <ExecutiveDashboardAdvanced />
       </div>
-      <ChatBot />
+      
+      <div className="container mx-auto px-6 py-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Current Ratio</h3>
+            <p className="text-3xl font-bold text-green-600">2.1</p>
+            <p className="text-sm text-gray-500">Healthy liquidity position</p>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Quick Ratio</h3>
+            <p className="text-3xl font-bold text-blue-600">1.8</p>
+            <p className="text-sm text-gray-500">Strong short-term liquidity</p>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Cash Unlock Potential</h3>
+            <p className="text-3xl font-bold text-purple-600">$83K</p>
+            <p className="text-sm text-gray-500">Available optimization</p>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Annual Improvement</h3>
+            <p className="text-3xl font-bold text-orange-600">$334K</p>
+            <p className="text-sm text-gray-500">Projected savings</p>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Working Capital Overview</h2>
+          <p className="text-gray-600">
+            Your manufacturing operations show strong liquidity metrics with significant optimization opportunities.
+            The current ratio of 2.1 indicates healthy short-term financial health, while the quick ratio of 1.8
+            demonstrates strong ability to meet immediate obligations.
+          </p>
+        </div>
+      </div>
     </div>
   );
 
   const Calculator = () => (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <Button 
-          onClick={() => setCurrentView('landing')}
-          className="mb-6 bg-green-600 hover:bg-green-700"
-        >
-          ← Back to Landing
-        </Button>
-        
-        <WorkingCapitalCalculatorEnhanced />
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-900">Working Capital Calculator</h1>
+            <button 
+              onClick={() => setCurrentView('landing')}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg"
+            >
+              ← Back to Landing
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="container mx-auto px-6 py-8">
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Calculate Your Working Capital</h2>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Current Assets ($)</label>
+              <input 
+                type="number" 
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter current assets"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Current Liabilities ($)</label>
+              <input 
+                type="number" 
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter current liabilities"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Inventory ($)</label>
+              <input 
+                type="number" 
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter inventory value"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Accounts Receivable ($)</label>
+              <input 
+                type="number" 
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter receivables"
+              />
+            </div>
+          </div>
+          
+          <button className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+            Calculate Working Capital
+          </button>
+        </div>
       </div>
     </div>
   );
 
-  const AppContent = () => {
-    if (currentView === 'dashboard') return <DashboardLayout />;
-    if (currentView === 'calculator') return <Calculator />;
-    return <LandingPage />;
-  };
-
   return (
-    <ClerkAuthGuard>
-      <AppContent />
-    </ClerkAuthGuard>
+    <div className="App">
+      {currentView === 'landing' && <LandingPage />}
+      {currentView === 'dashboard' && <Dashboard />}
+      {currentView === 'calculator' && <Calculator />}
+    </div>
   );
 }
 

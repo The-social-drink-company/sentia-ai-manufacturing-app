@@ -4,7 +4,18 @@ import './App.css';
 function App() {
   const [currentView, setCurrentView] = useState('landing');
 
-  const LandingPage = () => (
+  const import React from 'react';
+
+function App() {
+  return (
+    <div>
+      <h1>Hello, World!</h1>
+      <p>If you can see this, React is working.</p>
+    </div>
+  );
+}
+
+export default App; = () => (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
       <div className="container mx-auto px-6 py-12">
         <div className="text-center mb-12">

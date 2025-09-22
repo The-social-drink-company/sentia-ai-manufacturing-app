@@ -1,56 +1,113 @@
-import React from 'react'
+import * as React from "react"
 
-const Table = ({ className = '', ...props }) => (
-  <div className="relative w-full overflow-auto">
-    <table
-      className={`w-full caption-bottom text-sm ${className}`}
-      {...props}
-    />
-  </div>
-)
+import { cn } from "@/lib/utils"
 
-const TableHeader = ({ className = '', ...props }) => (
-  <thead className={`[&_tr]:border-b ${className}`} {...props} />
-)
+function Table({
+  className,
+  ...props
+}) {
+  return (
+    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+      <table
+        data-slot="table"
+        className={cn("w-full caption-bottom text-sm", className)}
+        {...props} />
+    </div>
+  );
+}
 
-const TableBody = ({ className = '', ...props }) => (
-  <tbody className={`[&_tr:last-child]:border-0 ${className}`} {...props} />
-)
+function TableHeader({
+  className,
+  ...props
+}) {
+  return (
+    <thead
+      data-slot="table-header"
+      className={cn("[&_tr]:border-b", className)}
+      {...props} />
+  );
+}
 
-const TableFooter = ({ className = '', ...props }) => (
-  <tfoot
-    className={`border-t bg-gray-50/50 font-medium [&>tr]:last:border-b-0 ${className}`}
-    {...props}
-  />
-)
+function TableBody({
+  className,
+  ...props
+}) {
+  return (
+    <tbody
+      data-slot="table-body"
+      className={cn("[&_tr:last-child]:border-0", className)}
+      {...props} />
+  );
+}
 
-const TableRow = ({ className = '', ...props }) => (
-  <tr
-    className={`border-b transition-colors hover:bg-gray-50/50 data-[state=selected]:bg-gray-50 ${className}`}
-    {...props}
-  />
-)
+function TableFooter({
+  className,
+  ...props
+}) {
+  return (
+    <tfoot
+      data-slot="table-footer"
+      className={cn("bg-muted/50 border-t font-medium [&>tr]:last:border-b-0", className)}
+      {...props} />
+  );
+}
 
-const TableHead = ({ className = '', ...props }) => (
-  <th
-    className={`h-12 px-4 text-left align-middle font-medium text-gray-500 [&:has([role=checkbox])]:pr-0 ${className}`}
-    {...props}
-  />
-)
+function TableRow({
+  className,
+  ...props
+}) {
+  return (
+    <tr
+      data-slot="table-row"
+      className={cn(
+        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        className
+      )}
+      {...props} />
+  );
+}
 
-const TableCell = ({ className = '', ...props }) => (
-  <td
-    className={`p-4 align-middle [&:has([role=checkbox])]:pr-0 ${className}`}
-    {...props}
-  />
-)
+function TableHead({
+  className,
+  ...props
+}) {
+  return (
+    <th
+      data-slot="table-head"
+      className={cn(
+        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        className
+      )}
+      {...props} />
+  );
+}
 
-const TableCaption = ({ className = '', ...props }) => (
-  <caption
-    className={`mt-4 text-sm text-gray-500 ${className}`}
-    {...props}
-  />
-)
+function TableCell({
+  className,
+  ...props
+}) {
+  return (
+    <td
+      data-slot="table-cell"
+      className={cn(
+        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        className
+      )}
+      {...props} />
+  );
+}
+
+function TableCaption({
+  className,
+  ...props
+}) {
+  return (
+    <caption
+      data-slot="table-caption"
+      className={cn("text-muted-foreground mt-4 text-sm", className)}
+      {...props} />
+  );
+}
 
 export {
   Table,

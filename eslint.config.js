@@ -1,140 +1,34 @@
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+
 export default [
+  { ignores: ['dist'] },
   {
-    ignores: [
-      "dist/**",
-      "build/**",
-      "coverage/**",
-      "*.min.js",
-      "*.min.css",
-      "node_modules/**"
-    ]
-  },
-  {
-    rules: {
-      'no-console': 'warn',
-      'no-unused-vars': ['error', { 'argsIgnorePattern': '^_|next' }],
-      'no-undef': 'error'
-    },
+    files: ['**/*.{js,jsx}'],
     languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      globals: {
-        console: 'readonly',
-        process: 'readonly',
-        Buffer: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        URL: 'readonly',
-        URLSearchParams: 'readonly',
-        fetch: 'readonly',
-        require: 'readonly',
-        global: 'readonly',
-        module: 'readonly',
-        exports: 'readonly',
-        Intl: 'readonly',
-        setImmediate: 'readonly',
-        clearImmediate: 'readonly',
-        setTimeout: 'readonly',
-        clearTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly'
-      }
-    }
-  },
-  // Browser environment for frontend files
-  {
-    files: ['src/**/*.js', 'src/**/*.jsx'],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
+      ecmaVersion: 2020,
+      globals: globals.browser,
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true
-        }
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
       },
-      globals: {
-        window: 'readonly',
-        document: 'readonly',
-        navigator: 'readonly',
-        localStorage: 'readonly',
-        sessionStorage: 'readonly',
-        fetch: 'readonly',
-        console: 'readonly',
-        URL: 'readonly',
-        URLSearchParams: 'readonly',
-        Event: 'readonly',
-        Element: 'readonly',
-        MutationObserver: 'readonly',
-        PerformanceObserver: 'readonly',
-        IntersectionObserver: 'readonly',
-        ResizeObserver: 'readonly',
-        React: 'readonly',
-        setTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearTimeout: 'readonly',
-        clearInterval: 'readonly',
-        performance: 'readonly',
-        CSS: 'readonly'
-      }
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
     },
     rules: {
-      'no-console': 'warn'
-    }
+      ...js.configs.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+    },
   },
-  // Node.js environment for server files
-  {
-    files: ['server.js', 'database/**/*.js', 'scripts/**/*.js', 'services/**/*.js', 'agents/**/*.js', 'mcp-server/**/*.js'],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      globals: {
-        console: 'readonly',
-        process: 'readonly',
-        Buffer: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        global: 'readonly',
-        require: 'readonly',
-        module: 'readonly',
-        exports: 'readonly',
-        setTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearTimeout: 'readonly',
-        clearInterval: 'readonly'
-      }
-    },
-    rules: {
-      'no-console': 'off' // Allow console logs in server files
-    }
-  },
-  // Test environment
-  {
-    files: ['tests/**/*.js', '**/*.test.js', '**/*.spec.js'],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      globals: {
-        console: 'readonly',
-        process: 'readonly',
-        global: 'readonly',
-        vi: 'readonly',
-        describe: 'readonly',
-        it: 'readonly',
-        test: 'readonly',
-        expect: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-        beforeAll: 'readonly',
-        afterAll: 'readonly',
-        setTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearTimeout: 'readonly',
-        clearInterval: 'readonly'
-      }
-    },
-    rules: {
-      'no-console': 'off',
-      'no-unused-vars': 'warn'
-    }
-  }
 ]
+

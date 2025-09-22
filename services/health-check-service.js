@@ -105,27 +105,28 @@ export class HealthCheckService {
         return health.setUnhealthy('Database client initialization failed');
       }
 
-      // Test basic connectivity
+      // Test basic connectivity - cast BigInt values to text to avoid JavaScript BigInt issues
       const result = await prisma.$queryRaw`
         SELECT
           current_database() as database,
           version() as version,
           pg_is_in_recovery() as is_replica,
-          pg_database_size(current_database()) as size_bytes,
-          (SELECT count(*) FROM pg_stat_activity WHERE datname = current_database()) as connections
+          pg_database_size(current_database())::text as size_bytes,
+          (SELECT count(*)::text FROM pg_stat_activity WHERE datname = current_database()) as connections
       `;
 
       const dbInfo = result[0];
       health.responseTime = Date.now() - startTime;
 
-      // Check connection count
+      // Check connection count - parse string to number
+      const connections = parseInt(dbInfo.connections, 10) || 0;
       const maxConnections = 100; // Typical max for basic tier
-      const connectionUsage = (dbInfo.connections / maxConnections) * 100;
+      const connectionUsage = (connections / maxConnections) * 100;
 
       if (connectionUsage > 90) {
         return health.setDegraded('High connection usage', {
           database: dbInfo.database,
-          connections: dbInfo.connections,
+          connections: connections,
           connectionUsage: `${connectionUsage.toFixed(1)}%`,
           isReplica: dbInfo.is_replica
         });
@@ -140,8 +141,8 @@ export class HealthCheckService {
       return health.setHealthy({
         database: dbInfo.database,
         version: dbInfo.version.split(' ')[0],
-        sizeGB: (dbInfo.size_bytes / 1024 / 1024 / 1024).toFixed(2),
-        connections: dbInfo.connections,
+        sizeGB: (parseInt(dbInfo.size_bytes, 10) / 1024 / 1024 / 1024).toFixed(2),
+        connections: connections,
         connectionUsage: `${connectionUsage.toFixed(1)}%`,
         isReplica: dbInfo.is_replica,
         extensions: extensions.map(e => e.extname),

@@ -288,7 +288,9 @@
       "Bash(do echo:*)",
       "Bash(git log:*)",
       "WebFetch(domain:github.com)",
-      "Bash(git gc:*)"
+      "Bash(git gc:*)",
+      "Bash(for pkg in express cors helmet dotenv axios)",
+      "Bash(do grep -q \"\"\"$pkg\"\"\" package.json)"
     ],
     "deny": [],
     "ask": []

@@ -1,26 +1,42 @@
 <div align="center">
     <img src="./media/logo_small.webp"/>
-    <h1>🌱 Spec Kit</h1>
-    <h3><em>Build high-quality software faster.</em></h3>
+    <h1>🌱 Spec Kit - Sentia Manufacturing Dashboard</h1>
+    <h3><em>Fortune 500 Enterprise Manufacturing Intelligence Platform</em></h3>
 </div>
 
 <p align="center">
-    <strong>An effort to allow organizations to focus on product scenarios rather than writing undifferentiated code with the help of Spec-Driven Development.</strong>
+    <strong>Complete specification-driven development framework for building a world-class manufacturing dashboard that meets Fortune 500 standards.</strong>
 </p>
 
-[![Release](https://github.com/github/spec-kit/actions/workflows/release.yml/badge.svg)](https://github.com/github/spec-kit/actions/workflows/release.yml)
+[![Deployment](https://img.shields.io/badge/Deployment-Render-green)](https://sentia-manufacturing-production.onrender.com)
+[![Database](https://img.shields.io/badge/Database-PostgreSQL%2017-blue)](https://render.com)
+[![AI](https://img.shields.io/badge/AI-MCP%20Server-purple)](https://mcp-server-tkyu.onrender.com)
+[![Standard](https://img.shields.io/badge/Standard-Fortune%20500-gold)](./FORTUNE_500_ENTERPRISE_SPECIFICATION.md)
 
 ---
 
+## 🚀 Quick Links for IDEs
+
+- **[Fortune 500 Specification](./FORTUNE_500_ENTERPRISE_SPECIFICATION.md)** - Complete enterprise requirements
+- **[Implementation Plan](./IMPLEMENTATION_PLAN.md)** - 6-week execution roadmap
+- **[Tasks Tracker](./TASKS.md)** - Real-time sprint progress
+- **[API Documentation](../docs/api/README.md)** - 138 endpoint specifications
+- **[Architecture Diagrams](../docs/architecture/README.md)** - System design
+
 ## Table of Contents
 
+- [🎯 Project Status](#-project-status)
+- [🏢 Fortune 500 Features](#-fortune-500-features)
 - [🤔 What is Spec-Driven Development?](#-what-is-spec-driven-development)
 - [⚡ Get started](#-get-started)
-- [📽️ Video Overview](#️-video-overview)
-- [🔧 Specify CLI Reference](#-specify-cli-reference)
+- [📊 Specifications](#-specifications)
+- [🔧 Implementation](#-implementation)
+- [📈 Progress Tracking](#-progress-tracking)
+- [👥 Team Collaboration](#-team-collaboration)
+- [🚀 Deployment](#-deployment)
 - [📚 Core philosophy](#-core-philosophy)
 - [🌟 Development phases](#-development-phases)
-- [🎯 Experimental goals](#-experimental-goals)
+- [🎯 Success Metrics](#-success-metrics)
 - [🔧 Prerequisites](#-prerequisites)
 - [📖 Learn more](#-learn-more)
 - [📋 Detailed process](#-detailed-process)
@@ -29,6 +45,28 @@
 - [💬 Support](#-support)
 - [🙏 Acknowledgements](#-acknowledgements)
 - [📄 License](#-license)
+
+## 🎯 Project Status
+
+**Current Sprint**: Week 1, Day 0
+**Overall Progress**: 35% Complete
+**Deployment Status**: ⚠️ Production Issues - React mounting fix in progress
+
+### Immediate Priorities
+1. Fix React mounting issue (CRITICAL)
+2. Complete 108 missing API endpoints
+3. Achieve <200ms response time
+4. Deploy monitoring stack
+
+## 🏢 Fortune 500 Features
+
+### Enterprise Capabilities
+- **AI Intelligence**: Multi-LLM orchestration (Claude 3.5, GPT-4, Gemini)
+- **Global Scale**: 10,000+ concurrent users, <100ms response time
+- **365-Day Forecasting**: 92% accuracy target with confidence intervals
+- **9+ Integrations**: Shopify, Amazon, Xero, Unleashed, Slack, Teams
+- **Zero-Trust Security**: Bank-grade encryption, WAF, audit logging
+- **99.999% Uptime**: Self-healing, auto-scaling, multi-region
 
 ## 🤔 What is Spec-Driven Development?
 

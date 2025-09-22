@@ -177,7 +177,17 @@ if (BRANCH === 'development') {
   });
 }
 
-// Serve static files with caching
+// API routes (minimal for memory optimization)
+app.get('/api/status', (req, res) => {
+  res.json({
+    service: 'Sentia Manufacturing Dashboard',
+    version: '1.0.0',
+    environment: BRANCH,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// CRITICAL FIX: Serve static files BEFORE catch-all route
 const staticOptions = {
   maxAge: BRANCH === 'production' ? '1y' : '1h',
   etag: true,
@@ -192,17 +202,7 @@ const staticOptions = {
 
 app.use(express.static(path.join(__dirname, 'dist'), staticOptions));
 
-// API routes (minimal for memory optimization)
-app.get('/api/status', (req, res) => {
-  res.json({
-    service: 'Sentia Manufacturing Dashboard',
-    version: '1.0.0',
-    environment: BRANCH,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Catch-all handler for React Router
+// Catch-all handler for React Router (MUST BE LAST)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });

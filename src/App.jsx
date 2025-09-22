@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WorkingCapitalCalculator from './components/WorkingCapitalCalculator';
+import AIInsights from './components/AIInsights';
 import './App.css';
 
 function App() {
@@ -28,6 +29,8 @@ function App() {
     switch (currentView) {
       case 'working-capital':
         return <WorkingCapitalCalculator />;
+      case 'ai-insights':
+        return <AIInsights />;
       case 'dashboard':
       default:
         return (
@@ -73,7 +76,12 @@ function App() {
                 <div className="feature-card">
                   <h4>🤖 AI Insights</h4>
                   <p>AI-powered manufacturing intelligence</p>
-                  <button disabled>Coming Soon</button>
+                  <button 
+                    className="feature-button active"
+                    onClick={() => setCurrentView('ai-insights')}
+                  >
+                    View Insights
+                  </button>
                 </div>
                 
                 <div className="feature-card">
@@ -96,6 +104,7 @@ function App() {
                 <p>✅ Static Assets: Serving Correctly</p>
                 <p>✅ Health Checks: Operational</p>
                 <p>✅ Working Capital Calculator: Ready</p>
+                <p>✅ AI Insights: Ready</p>
               </div>
             </header>
           </div>

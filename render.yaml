@@ -41,7 +41,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "npm run render:build"
-    startCommand: "node --expose-gc server-memory-optimized.js"
+    startCommand: "node --expose-gc server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:

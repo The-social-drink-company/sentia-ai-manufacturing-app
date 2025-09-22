@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import './Dashboard.css'
 
 // Loading Component with 10 stages
@@ -54,7 +53,7 @@ const LoadingScreen = ({ onComplete }) => {
 }
 
 // Dashboard Component
-const Dashboard = () => {
+const Dashboard = ({ onBack }) => {
   const [liveData, setLiveData] = useState({
     production: 0,
     efficiency: 0,
@@ -84,9 +83,12 @@ const Dashboard = () => {
     <div className="dashboard">
       <header className="dashboard-header">
         <h1>Sentia Manufacturing Dashboard</h1>
-        <div className="status-indicator">
-          <span className="status-dot active"></span>
-          <span>System Online</span>
+        <div className="header-controls">
+          <div className="status-indicator">
+            <span className="status-dot active"></span>
+            <span>System Online</span>
+          </div>
+          <button className="btn btn-secondary" onClick={onBack}>Back to Home</button>
         </div>
       </header>
 
@@ -138,22 +140,126 @@ const Dashboard = () => {
   )
 }
 
+// Reports Component
+const Reports = ({ onBack }) => {
+  return (
+    <div className="reports">
+      <header className="page-header">
+        <h1>Production Reports</h1>
+        <button className="btn btn-secondary" onClick={onBack}>Back to Home</button>
+      </header>
+      <div className="reports-content">
+        <div className="report-grid">
+          <div className="report-card">
+            <h3>Daily Production Report</h3>
+            <p>Today's production metrics and performance analysis</p>
+            <button className="btn btn-primary">View Report</button>
+          </div>
+          <div className="report-card">
+            <h3>Quality Analysis</h3>
+            <p>Quality control metrics and defect tracking</p>
+            <button className="btn btn-primary">View Report</button>
+          </div>
+          <div className="report-card">
+            <h3>Efficiency Trends</h3>
+            <p>Historical efficiency data and trend analysis</p>
+            <button className="btn btn-primary">View Report</button>
+          </div>
+          <div className="report-card">
+            <h3>Maintenance Schedule</h3>
+            <p>Equipment maintenance logs and schedules</p>
+            <button className="btn btn-primary">View Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Settings Component
+const Settings = ({ onBack }) => {
+  const [settings, setSettings] = useState({
+    autoRefresh: true,
+    alertsEnabled: true,
+    theme: 'light',
+    refreshInterval: 5
+  })
+
+  const handleSettingChange = (key, value) => {
+    setSettings(prev => ({ ...prev, [key]: value }))
+  }
+
+  return (
+    <div className="settings">
+      <header className="page-header">
+        <h1>System Settings</h1>
+        <button className="btn btn-secondary" onClick={onBack}>Back to Home</button>
+      </header>
+      <div className="settings-content">
+        <div className="settings-grid">
+          <div className="setting-group">
+            <h3>Display Settings</h3>
+            <div className="setting-item">
+              <label>
+                <input 
+                  type="checkbox" 
+                  checked={settings.autoRefresh}
+                  onChange={(e) => handleSettingChange('autoRefresh', e.target.checked)}
+                />
+                Auto-refresh data
+              </label>
+            </div>
+            <div className="setting-item">
+              <label>
+                Refresh interval (seconds):
+                <input 
+                  type="number" 
+                  value={settings.refreshInterval}
+                  onChange={(e) => handleSettingChange('refreshInterval', parseInt(e.target.value))}
+                  min="1"
+                  max="60"
+                />
+              </label>
+            </div>
+          </div>
+          
+          <div className="setting-group">
+            <h3>Notifications</h3>
+            <div className="setting-item">
+              <label>
+                <input 
+                  type="checkbox" 
+                  checked={settings.alertsEnabled}
+                  onChange={(e) => handleSettingChange('alertsEnabled', e.target.checked)}
+                />
+                Enable alerts
+              </label>
+            </div>
+          </div>
+          
+          <div className="setting-group">
+            <h3>Appearance</h3>
+            <div className="setting-item">
+              <label>
+                Theme:
+                <select 
+                  value={settings.theme}
+                  onChange={(e) => handleSettingChange('theme', e.target.value)}
+                >
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Landing Page Component
-const LandingPage = () => {
-  const navigate = useNavigate()
-
-  const handleDashboardAccess = () => {
-    navigate('/dashboard')
-  }
-
-  const handleReportsAccess = () => {
-    navigate('/reports')
-  }
-
-  const handleSettingsAccess = () => {
-    navigate('/settings')
-  }
-
+const LandingPage = ({ onNavigate }) => {
   return (
     <div className="landing-page">
       <header className="landing-header">
@@ -163,54 +269,48 @@ const LandingPage = () => {
 
       <div className="landing-content">
         <div className="feature-grid">
-          <div className="feature-card" onClick={handleDashboardAccess}>
+          <div className="feature-card" onClick={() => onNavigate('dashboard')}>
+            <div className="feature-icon">📊</div>
             <h3>Live Dashboard</h3>
-            <p>Real-time monitoring of production metrics</p>
+            <p>Real-time monitoring of production metrics and system status</p>
             <button className="btn btn-primary">Access Dashboard</button>
           </div>
 
-          <div className="feature-card" onClick={handleReportsAccess}>
+          <div className="feature-card" onClick={() => onNavigate('reports')}>
+            <div className="feature-icon">📈</div>
             <h3>Analytics & Reports</h3>
-            <p>Comprehensive production analytics</p>
+            <p>Comprehensive production analytics and performance reports</p>
             <button className="btn btn-secondary">View Reports</button>
           </div>
 
-          <div className="feature-card" onClick={handleSettingsAccess}>
+          <div className="feature-card" onClick={() => onNavigate('settings')}>
+            <div className="feature-icon">⚙️</div>
             <h3>System Settings</h3>
-            <p>Configure production parameters</p>
+            <p>Configure production parameters and system preferences</p>
             <button className="btn btn-info">Open Settings</button>
           </div>
+
+          <div className="feature-card" onClick={() => onNavigate('quality')}>
+            <div className="feature-icon">✅</div>
+            <h3>Quality Control</h3>
+            <p>Monitor quality metrics and defect tracking systems</p>
+            <button className="btn btn-success">Quality Control</button>
+          </div>
+
+          <div className="feature-card" onClick={() => onNavigate('maintenance')}>
+            <div className="feature-icon">🔧</div>
+            <h3>Maintenance</h3>
+            <p>Equipment maintenance schedules and service logs</p>
+            <button className="btn btn-warning">Maintenance</button>
+          </div>
+
+          <div className="feature-card" onClick={() => onNavigate('alerts')}>
+            <div className="feature-icon">🚨</div>
+            <h3>Alerts & Notifications</h3>
+            <p>System alerts and notification management center</p>
+            <button className="btn btn-danger">View Alerts</button>
+          </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-// Reports Component
-const Reports = () => {
-  return (
-    <div className="reports">
-      <header className="page-header">
-        <h1>Production Reports</h1>
-        <Link to="/" className="btn btn-secondary">Back to Home</Link>
-      </header>
-      <div className="reports-content">
-        <p>Production analytics and reporting features coming soon...</p>
-      </div>
-    </div>
-  )
-}
-
-// Settings Component
-const Settings = () => {
-  return (
-    <div className="settings">
-      <header className="page-header">
-        <h1>System Settings</h1>
-        <Link to="/" className="btn btn-secondary">Back to Home</Link>
-      </header>
-      <div className="settings-content">
-        <p>System configuration options coming soon...</p>
       </div>
     </div>
   )
@@ -219,26 +319,56 @@ const Settings = () => {
 // Main App Component
 function App() {
   const [isLoading, setIsLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState('home')
 
   const handleLoadingComplete = () => {
     setIsLoading(false)
+  }
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page)
+  }
+
+  const handleBackToHome = () => {
+    setCurrentPage('home')
   }
 
   if (isLoading) {
     return <LoadingScreen onComplete={handleLoadingComplete} />
   }
 
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'dashboard':
+        return <Dashboard onBack={handleBackToHome} />
+      case 'reports':
+        return <Reports onBack={handleBackToHome} />
+      case 'settings':
+        return <Settings onBack={handleBackToHome} />
+      case 'quality':
+      case 'maintenance':
+      case 'alerts':
+        return (
+          <div className="coming-soon">
+            <header className="page-header">
+              <h1>{currentPage.charAt(0).toUpperCase() + currentPage.slice(1)}</h1>
+              <button className="btn btn-secondary" onClick={handleBackToHome}>Back to Home</button>
+            </header>
+            <div className="coming-soon-content">
+              <h2>Coming Soon</h2>
+              <p>This feature is currently under development and will be available in the next release.</p>
+            </div>
+          </div>
+        )
+      default:
+        return <LandingPage onNavigate={handleNavigate} />
+    }
+  }
+
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </div>
-    </Router>
+    <div className="App">
+      {renderCurrentPage()}
+    </div>
   )
 }
 

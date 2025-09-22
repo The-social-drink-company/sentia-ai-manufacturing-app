@@ -285,7 +285,8 @@
       "WebFetch(domain:mcp-server-tkyu.onrender.com)",
       "Bash(for route in \"/\" \"/dashboard\" \"/working-capital\" \"/what-if\")",
       "Bash(do echo -n \"$route: \")",
-      "Bash(do echo:*)"
+      "Bash(do echo:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

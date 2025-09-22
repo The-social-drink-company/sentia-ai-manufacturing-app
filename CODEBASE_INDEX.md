@@ -1,8 +1,18 @@
 # Sentia Manufacturing Dashboard - Comprehensive Codebase Index
 
-**Version:** 1.0.5
-**Last Updated:** September 18, 2025
-**Node Version:** >=20.19.0
+## Overview
+This is a comprehensive index of the Sentia Manufacturing Dashboard codebase, documenting all directories, key files, component hierarchy, API endpoints, services, and dependencies.
+
+**Project Type**: Full-Stack Node.js Application with AI Integration
+**Frontend**: React 18 + Vite 4 + Tailwind CSS
+**Backend**: Node.js + Express + Prisma ORM
+**AI Integration**: Enterprise MCP Server with Multi-LLM Orchestration
+**Database**: Render PostgreSQL with pgvector extension
+**Authentication**: Clerk Production Environment
+**Deployment**: Render Platform (development, testing, production)
+**Version**: 1.0.5
+**Last Updated**: September 22, 2025
+**Node Version**: >=20.19.0
 
 ## 📋 Table of Contents
 

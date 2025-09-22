@@ -109,11 +109,11 @@ const AuthErrorRecovery = ({ error, onRetry, onFallback }) => (
 
 // Main Bulletproof Auth Provider
 export const BulletproofClerkProvider = ({ children, publishableKey }) => {
-  // Use fallback key if none provided
-  const effectiveKey = publishableKey || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
-  
+  // Use test key for development, live key for production
+  const effectiveKey = publishableKey || import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_cm9idXN0LXNuYWtlLTUwLmNsZXJrLmFjY291bnRzLmRldiQ';
+
   // Check if we have production keys and should force Clerk auth
-  const hasProductionKeys = effectiveKey?.startsWith('pk_live_');
+  const hasProductionKeys = effectiveKey?.startsWith('pk_live_') || effectiveKey?.startsWith('pk_test_');
   const forceClerkAuth = import.meta.env.VITE_FORCE_CLERK_AUTH === 'true' || hasProductionKeys;
   const disableFallback = import.meta.env.VITE_DISABLE_AUTH_FALLBACK === 'true' || hasProductionKeys;
 
@@ -157,12 +157,22 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       console.log('[BulletproofAuth] Starting initialization...');
-      console.log('[BulletproofAuth] Publishable Key:', publishableKey ? 'Present' : 'Missing');
+      console.log('[BulletproofAuth] Publishable Key:', effectiveKey ? 'Present' : 'Missing');
+      console.log('[BulletproofAuth] Key Value:', effectiveKey?.substring(0, 20) + '...');
       console.log('[BulletproofAuth] Environment:', window.location.hostname);
+      console.log('[BulletproofAuth] Force Clerk:', forceClerkAuth);
+      console.log('[BulletproofAuth] Disable Fallback:', disableFallback);
 
-      // PRODUCTION FIX: Always use fallback mode for reliable operation
-      // This ensures the app never gets stuck in loading state
-      console.log('[BulletproofAuth] Using fallback mode for reliable operation');
+      // PRODUCTION FIX: Check for Clerk key and initialize properly
+      if (effectiveKey && (effectiveKey.startsWith('pk_test_') || effectiveKey.startsWith('pk_live_'))) {
+        console.log('[BulletproofAuth] Valid Clerk key detected, initializing Clerk authentication');
+        console.log('[BulletproofAuth] Key type:', effectiveKey.startsWith('pk_live_') ? 'PRODUCTION' : 'TEST');
+        setIsLoading(false);
+        return;
+      }
+
+      // Only use fallback if no valid key
+      console.log('[BulletproofAuth] No valid Clerk key, using fallback mode');
       setAuthState(FALLBACK_AUTH_STATE);
       persistAuthState(FALLBACK_AUTH_STATE);
       setUseFallback(true);
@@ -224,7 +234,7 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
     };
 
     initializeAuth();
-  }, [publishableKey, useFallback, loadPersistedState, persistAuthState]);
+  }, [effectiveKey, publishableKey, useFallback, loadPersistedState, persistAuthState, forceClerkAuth, disableFallback]);
 
   // Retry authentication
   const retryAuth = useCallback(() => {
@@ -274,12 +284,12 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
     );
   }
 
-  // If we have a publishable key and not in fallback mode, wrap with ClerkProvider
-  // Force Clerk provider when we have production keys
-  if (publishableKey && (!useFallback || forceClerkAuth)) {
+  // If we have a valid Clerk key and not in fallback mode, wrap with ClerkProvider
+  // Force Clerk provider when we have production/test keys
+  if (effectiveKey && (!useFallback || forceClerkAuth)) {
     return (
       <ClerkProvider
-        publishableKey={publishableKey}
+        publishableKey={effectiveKey}
         navigate={(to) => window.location.href = to}
         appearance={clerkConfig.appearance}
         signInUrl={clerkConfig.signInUrl}

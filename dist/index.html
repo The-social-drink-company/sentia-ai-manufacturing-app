@@ -28,9 +28,6 @@
       window.import.meta.env.VITE_MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
       window.import.meta.env.VITE_API_BASE_URL = '/api';
       window.import.meta.env.MODE = 'production';
-      
-      // Set database URL for production
-      window.DATABASE_URL = 'postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
     </script>
 
     <!-- Clerk Environment Initialization with fallback -->
@@ -45,18 +42,16 @@
         document.head.appendChild(script);
       })();
     </script>
-    <script type="module" crossorigin src="/js/index-D4EDaX83.js"></script>
-    <link rel="modulepreload" crossorigin href="/js/vendor-utils-BvmCeSbq.js">
-    <link rel="modulepreload" crossorigin href="/js/charts-DxLx1lqX.js">
-    <link rel="modulepreload" crossorigin href="/js/react-core-DkFbty9o.js">
-    <link rel="modulepreload" crossorigin href="/js/vendor-CHbOot_X.js">
-    <link rel="modulepreload" crossorigin href="/js/router-C0m1gglZ.js">
-    <link rel="modulepreload" crossorigin href="/js/auth-M1VfQxmO.js">
-    <link rel="modulepreload" crossorigin href="/js/forms-CtqjxpzJ.js">
-    <link rel="modulepreload" crossorigin href="/js/ui-components-J4-_vVnI.js">
-    <link rel="modulepreload" crossorigin href="/js/animation-CTJwy-Vh.js">
+    <script type="module" crossorigin src="/js/index-DuY1VrEM.js"></script>
+    <link rel="modulepreload" crossorigin href="/js/auth-BIfipbc6.js">
+    <link rel="modulepreload" crossorigin href="/js/vendor-utils-W0IPh-on.js">
+    <link rel="modulepreload" crossorigin href="/js/charts-C-BUlHpY.js">
+    <link rel="modulepreload" crossorigin href="/js/vendor-TZ9aDXZU.js">
+    <link rel="modulepreload" crossorigin href="/js/react-core-DlJGLw67.js">
+    <link rel="modulepreload" crossorigin href="/js/router-BgNYfmsc.js">
+    <link rel="modulepreload" crossorigin href="/js/animation-Cxa7csYq.js">
     <link rel="stylesheet" crossorigin href="/css/react-core-C9-ySRfk.css">
-    <link rel="stylesheet" crossorigin href="/css/index-4ewCfte5.css">
+    <link rel="stylesheet" crossorigin href="/css/index-BYUwXWTz.css">
   </head>
   <body>
     <div id="root">
@@ -95,97 +90,23 @@
       </style>
     </div>
 
-    <!-- Enhanced diagnostic script for debugging -->
+    <!-- Diagnostic script for debugging -->
     <script>
-      // Global error tracking
-      window.reactMountErrors = [];
-      window.reactMounted = false;
-      
-      // Enhanced error catching
-      window.addEventListener('error', function(e) {
-        console.error('[Global Error]', e.message, e.filename, e.lineno);
-        window.reactMountErrors.push({
-          message: e.message,
-          filename: e.filename,
-          lineno: e.lineno,
-          timestamp: new Date().toISOString()
-        });
-      });
-
-      // Monitor React mounting
-      function checkReactMount() {
-        const root = document.getElementById('root');
-        const loader = document.getElementById('fallback-loader');
-        
-        // Check if React has mounted (look for React-generated content)
-        const hasReactContent = root && root.children.length > 1 || 
-                               (root && root.children[0] && root.children[0].id !== 'fallback-loader');
-        
-        if (hasReactContent && !window.reactMounted) {
-          window.reactMounted = true;
-          console.log('[React] Successfully mounted');
-          if (loader) {
+      // Remove fallback loader when app loads
+      window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var loader = document.getElementById('fallback-loader');
+          if (loader && document.querySelector('#root > *:not(#fallback-loader)')) {
             loader.style.display = 'none';
           }
-        } else if (!hasReactContent && loader) {
-          // Show loader if React hasn't mounted yet
-          loader.style.display = 'flex';
-        }
-        
-        return hasReactContent;
-      }
-
-      // Check React mount status periodically
-      let mountCheckInterval;
-      window.addEventListener('DOMContentLoaded', function() {
-        console.log('[App Init] Starting Sentia Manufacturing Dashboard');
-        console.log('[App Init] Environment:', window.location.hostname);
-        console.log('[App Init] Protocol:', window.location.protocol);
-        console.log('[App Init] Clerk Key:', window.VITE_CLERK_PUBLISHABLE_KEY ? 'Present' : 'Missing');
-        
-        // Initial check
-        setTimeout(checkReactMount, 100);
-        
-        // Periodic checks for React mounting
-        mountCheckInterval = setInterval(function() {
-          if (checkReactMount()) {
-            clearInterval(mountCheckInterval);
-          }
-        }, 500);
-        
-        // Stop checking after 30 seconds and show error
-        setTimeout(function() {
-          if (!window.reactMounted) {
-            clearInterval(mountCheckInterval);
-            console.error('[React] Failed to mount after 30 seconds');
-            const loader = document.getElementById('fallback-loader');
-            if (loader) {
-              loader.innerHTML = `
-                <div style="text-align: center;">
-                  <div style="color: #ef4444; font-size: 18px; margin-bottom: 16px;">
-                    ⚠️ Application Loading Error
-                  </div>
-                  <div style="color: #6b7280; font-size: 14px; margin-bottom: 16px;">
-                    The dashboard failed to initialize. Please refresh the page.
-                  </div>
-                  <button onclick="window.location.reload()" style="
-                    background: #3b82f6;
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 14px;
-                  ">Refresh Page</button>
-                  <div style="color: #9ca3af; font-size: 12px; margin-top: 16px;">
-                    Errors: ${window.reactMountErrors.length}
-                  </div>
-                </div>
-              `;
-            }
-          }
-        }, 30000);
+        }, 100);
       });
+
+      // Add diagnostic information
+      console.log('[App Init] Starting Sentia Manufacturing Dashboard');
+      console.log('[App Init] Environment:', window.location.hostname);
+      console.log('[App Init] Protocol:', window.location.protocol);
+      console.log('[App Init] Clerk Key:', window.import?.meta?.env?.VITE_CLERK_PUBLISHABLE_KEY ? 'Present' : 'Missing');
     </script>
 
     <script>

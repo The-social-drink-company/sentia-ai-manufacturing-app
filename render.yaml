@@ -3,7 +3,7 @@ services:
   - type: web
     name: sentia-manufacturing-production
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: npm run render:build
     startCommand: npm run start:production
     plan: starter
     region: oregon
@@ -41,3 +41,4 @@ services:
     region: oregon
     branch: main
     autoDeploy: true
+

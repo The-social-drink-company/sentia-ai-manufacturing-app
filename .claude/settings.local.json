@@ -290,7 +290,17 @@
       "WebFetch(domain:github.com)",
       "Bash(git gc:*)",
       "Bash(for pkg in express cors helmet dotenv axios)",
-      "Bash(do grep -q \"\"\"$pkg\"\"\" package.json)"
+      "Bash(do grep -q \"\"\"$pkg\"\"\" package.json)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh repo view:*)",
+      "Bash(awk:*)",
+      "Bash(do printf \"%-12s: \" \"$branch\")",
+      "Bash(for branch in \"origin/development\" \"origin/test\" \"origin/production\")",
+      "Bash(do printf \"%-22s: \" \"$branch\")",
+      "Bash(git merge-base:*)",
+      "Bash(for branch in development test production)",
+      "Bash(git ls-tree:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

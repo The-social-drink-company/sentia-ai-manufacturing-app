@@ -7,7 +7,7 @@ services:
     region: oregon
     branch: main
     buildCommand: "npm install && npm run build"
-    startCommand: "npm run start:production"
+    startCommand: "node --expose-gc server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -24,7 +24,7 @@ services:
     region: oregon
     branch: testing
     buildCommand: "npm install && npm run build"
-    startCommand: "npm run start:testing"
+    startCommand: "node --expose-gc server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -40,7 +40,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "npm run render:build"
+    buildCommand: "npm install && npm run build"
     startCommand: "node --expose-gc server.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -77,4 +77,3 @@ services:
     region: oregon
     branch: main
     autoDeploy: true
-

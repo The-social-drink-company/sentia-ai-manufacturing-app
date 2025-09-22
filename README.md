@@ -85,10 +85,10 @@ The application implements a sophisticated three-tier loading architecture:
 
 ```bash
 # Clone the repository
-git clone https://github.com/The-social-drink-company/sentia-enterprise-world-class.git
+git clone https://github.com/[username]/sentia-manufacturing-enterprise-dashboard.git
 
 # Navigate to project directory
-cd sentia-enterprise-world-class
+cd sentia-manufacturing-enterprise-dashboard
 
 # Install dependencies
 pnpm install

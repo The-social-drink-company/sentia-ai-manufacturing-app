@@ -300,7 +300,9 @@
       "Bash(git merge-base:*)",
       "Bash(for branch in development test production)",
       "Bash(git ls-tree:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(gh auth:*)",
+      "Bash(git rev-list:*)"
     ],
     "deny": [],
     "ask": []

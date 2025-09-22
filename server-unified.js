@@ -1,11 +1,3 @@
-#!/usr/bin/env node
-
-/**
- * UNIFIED SERVER FOR MULTI-BRANCH DEPLOYMENT
- * Automatically connects to the correct database based on branch
- * Integrates with MCP server hosted on Render
- */
-
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -100,17 +92,18 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://clerk.financeflo.ai"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://clerk.financeflo.ai", "https://robust-snake-50.clerk.accounts.dev"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       connectSrc: [
         "'self'",
         "https://clerk.financeflo.ai",
+        "https://robust-snake-50.clerk.accounts.dev",
         mcpConfig.url,
         mcpConfig.websocketUrl,
         apiBaseUrl
       ],
-      frameSrc: ["'self'", "https://clerk.financeflo.ai"],
+      frameSrc: ["'self'", "https://clerk.financeflo.ai", "https://robust-snake-50.clerk.accounts.dev"],
     }
   },
   crossOriginEmbedderPolicy: false
@@ -338,3 +331,4 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Start the server
 startServer();
+

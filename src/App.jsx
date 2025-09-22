@@ -37,9 +37,10 @@ import UserOnboarding from './components/auth/UserOnboarding'
 import AuthVerification from './components/AuthVerification'
 
 // High-Priority Components (Core dashboard functionality)
-const LandingPage = createPriorityComponent(() => import('./pages/LandingPageSimple'), 'LandingPage')
+const LandingPage = createPriorityComponent(() => import('./pages/LandingPageComplete'), 'LandingPage')
 const WorldClassDashboard = createPriorityComponent(() => import('./pages/WorldClassDashboard'), 'WorldClassDashboard')
 const SimpleDashboard = createPriorityComponent(() => import('./pages/SimpleDashboard'), 'SimpleDashboard')
+const Enterprise10StageLoader = lazy(() => import('./components/Enterprise10StageLoader'))
 
 // Standard Priority Components (Main features)
 const WorldClassEnterpriseDashboard = createRouteComponent('enterprise-dashboard', () => import('./pages/WorldClassEnterpriseDashboard'))
@@ -225,8 +226,40 @@ const FallbackAuthProvider = ({ children }) => {
 }
 
 function App() {
+  const [showLoader, setShowLoader] = React.useState(true);
+  const [loaderComplete, setLoaderComplete] = React.useState(false);
+
   // Get Clerk publishable key from environment
   const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+  React.useEffect(() => {
+    // Check if we should show the loader
+    const hasSeenLoader = sessionStorage.getItem('enterprise_loader_shown');
+    if (hasSeenLoader) {
+      setShowLoader(false);
+      setLoaderComplete(true);
+    }
+  }, []);
+
+  const handleLoaderComplete = () => {
+    sessionStorage.setItem('enterprise_loader_shown', 'true');
+    setLoaderComplete(true);
+    setTimeout(() => {
+      setShowLoader(false);
+    }, 500);
+  };
+
+  // Show 10-stage loader on initial load
+  if (showLoader) {
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <Enterprise10StageLoader
+          onComplete={handleLoaderComplete}
+          withClerk={!!clerkPublishableKey}
+        />
+      </Suspense>
+    );
+  }
 
   return (
     <BulletproofAuthProvider>

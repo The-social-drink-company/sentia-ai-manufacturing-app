@@ -13,7 +13,7 @@ import { useAuth } from '@clerk/clerk-react';
 // Core components
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Stage 1: Core pages

@@ -14,7 +14,7 @@ import {
   TrashIcon,
   UserPlusIcon,
   ServerIcon,
-  DatabaseIcon,
+  CircleStackIcon,
   KeyIcon,
   BellIcon
 } from '@heroicons/react/24/outline';
@@ -384,7 +384,7 @@ const AdminPanelEnhanced = () => {
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <div className="flex items-center">
-                    <DatabaseIcon className="h-8 w-8 text-purple-600" />
+                    <CircleStackIcon className="h-8 w-8 text-purple-600" />
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">API Requests (24h)</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -694,7 +694,7 @@ const AdminPanelEnhanced = () => {
                   </div>
                   <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <DatabaseIcon className="h-5 w-5 text-green-600" />
+                      <CircleStackIcon className="h-5 w-5 text-green-600" />
                       <span className="text-sm font-medium text-gray-900 dark:text-white">Backup Encryption</span>
                     </div>
                     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor('active')}`}>

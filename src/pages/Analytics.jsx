@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -72,7 +72,7 @@ const Analytics = () => {
       case 'improving':
         return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
       case 'declining':
-        return <TrendingDownIcon className="h-5 w-5 text-red-500" />;
+        return <ArrowTrendingDownIcon className="h-5 w-5 text-red-500" />;
       default:
         return <div className="h-5 w-5 bg-gray-300 rounded-full"></div>;
     }

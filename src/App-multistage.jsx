@@ -1,7 +1,7 @@
 import React, { useState, lazy, Suspense } from 'react';
 import LandingPage from './LandingPage';
 import MultiStageLoader from './components/MultiStageLoader';
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
 // Lazy load the COMPREHENSIVE enterprise app only when needed
 // This is the FULL version with ALL features, not the emergency cut-down version

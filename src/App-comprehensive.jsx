@@ -16,7 +16,7 @@ import { useAuth, useUser } from '@clerk/clerk-react';
 // Core Layout Components
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
 
 // Authentication Components

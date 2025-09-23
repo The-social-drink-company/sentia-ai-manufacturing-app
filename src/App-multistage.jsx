@@ -7,28 +7,8 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
 // This is the FULL version with ALL features, not the emergency cut-down version
 const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 
-// Import Clerk provider directly to avoid module resolution issues
-import { ClerkProvider, useAuth } from '@clerk/clerk-react';
-
-// ClerkWrapperInner must be inside ClerkProvider to use useAuth
-const ClerkWrapperInner = () => {
-  const { isLoaded, isSignedIn } = useAuth();
-  
-  // Wait for Clerk to be fully loaded
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-center">
-          <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-400">Initializing authentication...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  // Now it's safe to render ComprehensiveApp with all its Clerk-dependent components
-  return <ComprehensiveApp />;
-};
+// Import bulletproof auth provider for reliable authentication
+import { BulletproofAuthProvider } from './auth/BulletproofAuthProvider';
 
 const AppMultiStage = () => {
   const [appState, setAppState] = useState('landing'); // landing, loading, authenticated
@@ -59,32 +39,18 @@ const AppMultiStage = () => {
     return <MultiStageLoader onComplete={handleLoadingComplete} />;
   }
 
-  // Authenticated app with Clerk
+  // Authenticated app with bulletproof auth
   if (appState === 'authenticated' && clerkLoaded) {
-    const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-    if (!publishableKey) {
-      return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-red-500 mb-4">Configuration Error</h1>
-            <p className="text-gray-400">Missing Clerk Publishable Key</p>
-            <p className="text-gray-500 text-sm mt-2">Please configure VITE_CLERK_PUBLISHABLE_KEY</p>
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <ClerkProvider publishableKey={publishableKey}>
+      <BulletproofAuthProvider>
         <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center bg-gray-900">
             <LoadingSpinner size="lg" />
           </div>
         }>
-          <ClerkWrapperInner />
+          <ComprehensiveApp />
         </Suspense>
-      </ClerkProvider>
+      </BulletproofAuthProvider>
     );
   }
 

@@ -310,7 +310,9 @@
       "Bash(do if [ -f \"$file\" ])",
       "Bash(then echo \"EXISTS: $file\")",
       "Bash(else echo \"MISSING: $file\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(NODE_OPTIONS='--max-old-space-size=4096' npm run build)",
+      "Bash(set NODE_OPTIONS=--max-old-space-size=4096)"
     ],
     "deny": [],
     "ask": []

@@ -14,14 +14,16 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     emptyOutDir: true,
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
+    // Memory optimizations for large builds
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // Split vendor chunks more aggressively to reduce memory usage
+            // More aggressive splitting to reduce memory usage
             if (id.includes('@clerk')) return 'clerk';
             if (id.includes('react-dom')) return 'react-dom';
+            if (id.includes('react-router')) return 'react-router';
             if (id.includes('react')) return 'react';
             if (id.includes('@tanstack')) return 'tanstack';
             if (id.includes('@heroicons')) return 'heroicons';
@@ -33,29 +35,36 @@ export default defineConfig({
             if (id.includes('date-fns')) return 'date-fns';
             if (id.includes('axios')) return 'axios';
             if (id.includes('zustand')) return 'zustand';
+            if (id.includes('socket.io')) return 'socketio';
             return 'vendor';
           }
-          // Split app code into logical chunks
-          if (id.includes('src/components/ai')) return 'ai-components';
+          // More aggressive app code splitting
+          if (id.includes('src/components/AI')) return 'ai-components';
+          if (id.includes('src/components/Executive')) return 'executive';
           if (id.includes('src/components/WorkingCapital')) return 'working-capital';
           if (id.includes('src/components/analytics')) return 'analytics';
           if (id.includes('src/components/admin')) return 'admin';
+          if (id.includes('src/components/quality')) return 'quality';
+          if (id.includes('src/components/inventory')) return 'inventory';
           if (id.includes('src/pages')) return 'pages';
         }
       },
-      // Increase max parallel file operations
-      maxParallelFileOps: 10
+      // Reduce parallel operations to save memory
+      maxParallelFileOps: 3,
+      // Optimize tree-shaking for memory
+      treeshake: {
+        preset: 'smallest',
+        moduleSideEffects: false
+      }
     },
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      },
-      // Reduce memory usage during minification
-      maxWorkers: 2
-    },
-    sourcemap: false
+    // Use esbuild for faster builds with less memory
+    minify: 'esbuild',
+    // Disable source maps to save memory
+    sourcemap: false,
+    // Don't report compressed size to save memory
+    reportCompressedSize: false,
+    // CSS code splitting
+    cssCodeSplit: true
   },
   resolve: {
     alias: {

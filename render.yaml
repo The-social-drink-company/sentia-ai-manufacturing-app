@@ -12,7 +12,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build && npx prisma generate"
+    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --include=dev && npm run build && npx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -44,7 +44,7 @@ services:
     plan: starter
     region: oregon
     branch: test
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build && npx prisma generate"
+    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --include=dev && npm run build && npx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true

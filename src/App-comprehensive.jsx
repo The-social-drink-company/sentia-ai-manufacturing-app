@@ -11,7 +11,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useAuth, useUser } from '@clerk/clerk-react';
+// Using bulletproof auth system instead of direct Clerk imports
+import { useAuthRole } from './hooks/useAuthRole.jsx';
 
 // Core Layout Components
 import Header from './components/layout/Header';
@@ -109,9 +110,11 @@ const PageLoader = () => (
 
 // Main authenticated application
 const AuthenticatedApp = () => {
-  const { isSignedIn, isLoaded } = useAuth();
-  const { user } = useUser();
+  const { isAuthenticated, isLoading, user, isSignedIn } = useAuthRole();
   const location = useLocation();
+  
+  // Compatibility with Clerk's isLoaded - bulletproof auth is always loaded
+  const isLoaded = !isLoading;
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -134,7 +137,7 @@ const AuthenticatedApp = () => {
   }
 
   // Redirect to sign-in if not authenticated
-  if (!isSignedIn) {
+  if (!isAuthenticated && !isSignedIn) {
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 

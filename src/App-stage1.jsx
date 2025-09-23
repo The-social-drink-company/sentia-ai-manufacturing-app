@@ -13,7 +13,7 @@ import { useAuth } from '@clerk/clerk-react';
 // Core Layout Components - Direct imports for stage 1
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 

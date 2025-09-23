@@ -313,7 +313,8 @@
       "Bash(fi)",
       "Bash(NODE_OPTIONS='--max-old-space-size=4096' npm run build)",
       "Bash(set NODE_OPTIONS=--max-old-space-size=4096)",
-      "Bash(set DEPLOYMENT_STAGE=1)"
+      "Bash(set DEPLOYMENT_STAGE=1)",
+      "Bash(set NODE_OPTIONS=--max-old-space-size=3072)"
     ],
     "deny": [],
     "ask": []

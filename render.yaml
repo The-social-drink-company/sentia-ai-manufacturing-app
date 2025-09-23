@@ -1,3 +1,9 @@
+# Render configuration with PR Previews enabled
+# PR Previews: Always create PR previews. Skip a PR by adding the label render-preview-skip or [skip preview] in its title.
+
+previewsEnabled: true
+previewsExpireAfterDays: 3
+
 services:
   # Development Environment
   - type: web
@@ -6,12 +12,15 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "npm install && npm run build"
+    buildCommand: "npm ci && npm run build"
     startCommand: "node server-minimal.js"
     healthCheckPath: /health
     autoDeploy: true
+    pullRequestPreviewsEnabled: true
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
+      - key: IS_PULL_REQUEST
+        generateValue: true

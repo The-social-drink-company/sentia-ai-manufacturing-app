@@ -1,0 +1,55 @@
+# Pull Request Preview Configuration for Render
+# This file configures automatic PR preview deployments
+# PR Previews will be created for all pull requests unless:
+# - The PR title contains [skip preview]
+# - The PR has the label "render-preview-skip"
+
+previewsEnabled: true
+previewsExpireAfterDays: 3
+
+# Environment variables specific to PR previews
+envVars:
+  - key: IS_PREVIEW
+    value: "true"
+  - key: NODE_ENV
+    value: "preview"
+  - key: PREVIEW_URL
+    generateValue: true
+
+# PR Preview specific settings
+settings:
+  # Automatically deploy when PR is updated
+  autoDeploy: true
+
+  # Create preview for draft PRs
+  includeDraftPRs: false
+
+  # Keep preview running even after PR is closed for review
+  persistAfterClose: false
+
+  # Resource allocation for previews (smaller than production)
+  plan: starter
+
+  # Health check configuration
+  healthCheckPath: /health
+  healthCheckTimeoutSeconds: 30
+
+  # Build performance settings
+  buildTimeoutMinutes: 20
+
+# Notification settings for PR previews
+notifications:
+  # Post deployment URL as PR comment
+  prComments: true
+
+  # Update PR status checks
+  prStatusChecks: true
+
+  # Labels to auto-add when preview is ready
+  readyLabel: "preview-ready"
+
+  # Labels to auto-add if preview fails
+  failedLabel: "preview-failed"
+
+# Custom domains for PR previews (optional)
+# customDomain: preview-{pr-number}.sentia.example.com

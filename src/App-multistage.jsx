@@ -7,10 +7,8 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
 // This is the FULL version with ALL features, not the emergency cut-down version
 const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 
-// Lazy load Clerk provider
-const ClerkProvider = lazy(() =>
-  import('@clerk/clerk-react').then(module => ({ default: module.ClerkProvider }))
-);
+// Import Clerk provider directly to avoid module resolution issues
+import { ClerkProvider } from '@clerk/clerk-react';
 
 const AppMultiStage = () => {
   const [appState, setAppState] = useState('landing'); // landing, loading, authenticated
@@ -58,15 +56,15 @@ const AppMultiStage = () => {
     }
 
     return (
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
-          <LoadingSpinner size="lg" />
-        </div>
-      }>
-        <ClerkProvider publishableKey={publishableKey}>
+      <ClerkProvider publishableKey={publishableKey}>
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center bg-gray-900">
+            <LoadingSpinner size="lg" />
+          </div>
+        }>
           <ComprehensiveApp />
-        </ClerkProvider>
-      </Suspense>
+        </Suspense>
+      </ClerkProvider>
     );
   }
 

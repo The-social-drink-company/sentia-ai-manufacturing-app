@@ -370,6 +370,7 @@ const AuthenticatedApp = () => {
 };
 
 // Main App component with all providers
+// NOTE: This component expects to be wrapped by ClerkProvider from App-multistage.jsx
 const AppComprehensive = () => {
   return (
     <ErrorBoundary

@@ -12,7 +12,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --include=dev && npm run build && npx prisma generate"
+    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --include=dev && DEPLOYMENT_STAGE=1 node build-staged.js && npx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -36,6 +36,10 @@ services:
         value: http://localhost:3001
       - key: IS_PULL_REQUEST
         generateValue: true
+      - key: STAGED_DEPLOYMENT
+        value: true
+      - key: DEPLOYMENT_STAGE
+        value: 1
 
   # Testing Environment with Database
   - type: web

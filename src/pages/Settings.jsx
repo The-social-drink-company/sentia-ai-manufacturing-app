@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { CogIcon, BellIcon, PaintBrushIcon, ShieldCheckIcon, DatabaseIcon, CloudIcon } from '@heroicons/react/24/outline';
+import { CogIcon, BellIcon, PaintBrushIcon, ShieldCheckIcon, CircleStackIcon, CloudIcon } from '@heroicons/react/24/outline';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -14,7 +14,7 @@ const Settings = () => {
     { id: 'notifications', name: 'Notifications', icon: BellIcon },
     { id: 'appearance', name: 'Appearance', icon: PaintBrushIcon },
     { id: 'security', name: 'Security', icon: ShieldCheckIcon },
-    { id: 'data', name: 'Data & Privacy', icon: DatabaseIcon },
+    { id: 'data', name: 'Data & Privacy', icon: CircleStackIcon },
     { id: 'integrations', name: 'Integrations', icon: CloudIcon },
   ];
 

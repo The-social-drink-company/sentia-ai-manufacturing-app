@@ -10,8 +10,8 @@ const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 // Import Clerk provider directly to avoid module resolution issues
 import { ClerkProvider, useAuth } from '@clerk/clerk-react';
 
-// ClerkWrapper ensures Clerk is fully loaded before rendering ComprehensiveApp
-const ClerkWrapper = () => {
+// ClerkWrapperInner must be inside ClerkProvider to use useAuth
+const ClerkWrapperInner = () => {
   const { isLoaded } = useAuth();
   
   // Wait for Clerk to be fully loaded
@@ -79,7 +79,7 @@ const AppMultiStage = () => {
             <LoadingSpinner size="lg" />
           </div>
         }>
-          <ClerkWrapper />
+          <ClerkWrapperInner />
         </Suspense>
       </ClerkProvider>
     );

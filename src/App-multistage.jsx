@@ -11,10 +11,13 @@ const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 import { BulletproofAuthProvider } from './auth/BulletproofAuthProvider';
 
 const AppMultiStage = () => {
-  const [appState, setAppState] = useState('landing'); // landing, loading, authenticated
-  const [clerkLoaded, setClerkLoaded] = useState(false);
+  const [appState, setAppState] = useState('loading'); // Skip landing page, go straight to loading
+  const [clerkLoaded, setClerkLoaded] = useState(true); // Start with Clerk loaded
+
+  console.log('[AppMultiStage] Current state:', { appState, clerkLoaded });
 
   const handleGetStarted = () => {
+    console.log('[AppMultiStage] Get started clicked');
     // Start loading Clerk and show multi-stage loader
     setAppState('loading');
 
@@ -26,21 +29,35 @@ const AppMultiStage = () => {
   };
 
   const handleLoadingComplete = () => {
+    console.log('[AppMultiStage] Loading complete, moving to authenticated');
     setAppState('authenticated');
   };
 
+  // Auto-complete loading after a short delay
+  React.useEffect(() => {
+    if (appState === 'loading') {
+      const timer = setTimeout(() => {
+        handleLoadingComplete();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [appState]);
+
   // Landing page - no Clerk loaded yet
   if (appState === 'landing') {
+    console.log('[AppMultiStage] Rendering landing page');
     return <LandingPage onGetStarted={handleGetStarted} />;
   }
 
   // Multi-stage loading
   if (appState === 'loading') {
+    console.log('[AppMultiStage] Rendering loading stage');
     return <MultiStageLoader onComplete={handleLoadingComplete} />;
   }
 
   // Authenticated app with bulletproof auth
   if (appState === 'authenticated' && clerkLoaded) {
+    console.log('[AppMultiStage] Rendering authenticated app');
     return (
       <BulletproofAuthProvider>
         <Suspense fallback={

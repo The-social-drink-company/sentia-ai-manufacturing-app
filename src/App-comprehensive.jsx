@@ -114,6 +114,10 @@ const AuthenticatedApp = () => {
   const { isAuthenticated, isLoading, user, isSignedIn } = useAuthRole();
   const location = useLocation();
   
+  // DEBUG: Add extensive logging
+  console.log('[AuthenticatedApp] Current location:', location.pathname);
+  console.log('[AuthenticatedApp] Auth state:', { isAuthenticated, isLoading, isSignedIn });
+  
   // Compatibility with Clerk's isLoaded - bulletproof auth is always loaded
   const isLoaded = !isLoading;
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -134,14 +138,17 @@ const AuthenticatedApp = () => {
 
   // Show loading while auth is checking
   if (!isLoaded) {
+    console.log('[AuthenticatedApp] Auth still loading, showing PageLoader');
     return <PageLoader />;
   }
 
   // Check if it's a fullscreen page first
   const isFullscreenPage = ['/sign-in', '/sign-up', '/landing'].includes(location.pathname);
+  console.log('[AuthenticatedApp] Is fullscreen page?', isFullscreenPage, 'for path:', location.pathname);
 
   // Handle fullscreen pages (like sign-in) regardless of auth status
   if (isFullscreenPage) {
+    console.log('[AuthenticatedApp] Rendering fullscreen page routes');
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -155,6 +162,7 @@ const AuthenticatedApp = () => {
 
   // Redirect to sign-in if not authenticated and not on a fullscreen page
   if (!isAuthenticated && !isSignedIn) {
+    console.log('[AuthenticatedApp] User not authenticated, redirecting to /sign-in');
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 

@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { createContext, useContext, useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
 import { MsalProvider, useMsal, useAccount, useIsAuthenticated } from '@azure/msal-react';
 

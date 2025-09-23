@@ -18,7 +18,8 @@ import {
   KeyIcon,
   BellIcon
 } from '@heroicons/react/24/outline';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';\nimport PersonnelManagement from '../components/admin/PersonnelManagement';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import PersonnelManagement from '../components/admin/PersonnelManagement';
 
 const AdminPanelEnhanced = () => {
   const { getToken, isLoaded: authLoaded } = useAuth();

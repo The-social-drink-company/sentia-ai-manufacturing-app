@@ -22,9 +22,8 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             // More aggressive splitting to reduce memory usage
             if (id.includes('@clerk')) return 'clerk';
-            if (id.includes('react-dom')) return 'react-dom';
+            if (id.includes('react-dom') || id.includes('react')) return 'react';
             if (id.includes('react-router')) return 'react-router';
-            if (id.includes('react')) return 'react';
             if (id.includes('@tanstack')) return 'tanstack';
             if (id.includes('@heroicons')) return 'heroicons';
             if (id.includes('lucide-react')) return 'lucide';

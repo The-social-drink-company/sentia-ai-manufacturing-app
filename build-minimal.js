@@ -11,21 +11,33 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log('=== MINIMAL BUILD SCRIPT ===');
-console.log('Building absolute minimal version for low memory environment');
+const DEPLOYMENT_STAGE = process.env.DEPLOYMENT_STAGE || '1';
 
-// Update main.jsx to use minimal App
+console.log('=== MINIMAL BUILD SCRIPT ===');
+console.log(`Building Stage ${DEPLOYMENT_STAGE} for optimized memory usage`);
+
+// Determine which App file to use based on stage
+const stageApps = {
+  '1': './App-stage1.jsx',
+  '2': './App-stage2.jsx',
+  '3': './App-stage3.jsx',
+  '4': './App-comprehensive.jsx'
+};
+
+const appFile = stageApps[DEPLOYMENT_STAGE] || stageApps['1'];
+
+// Update main.jsx to use the appropriate stage App
 const mainJsxPath = path.join(__dirname, 'src', 'main.jsx');
 let mainContent = fs.readFileSync(mainJsxPath, 'utf8');
 
-// Replace any App import with stage 1
+// Replace any App import with the selected stage
 mainContent = mainContent.replace(
   /import App from ['"]\.\/App.*?['"]/,
-  `import App from './App-stage1.jsx'`
+  `import App from '${appFile}'`
 );
 
 fs.writeFileSync(mainJsxPath, mainContent);
-console.log('Updated main.jsx to use minimal App-stage1.jsx');
+console.log(`Updated main.jsx to use ${appFile}`);
 
 // Run build with optimized settings
 try {

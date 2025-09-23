@@ -12,7 +12,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=1024' npm ci --omit=dev && NODE_OPTIONS='--max-old-space-size=3072' npm install -D vite @vitejs/plugin-react && NODE_OPTIONS='--max-old-space-size=4096' node build-minimal.js && npx prisma generate"
+    buildCommand: "NODE_OPTIONS='--max-old-space-size=1024' npm ci --omit=dev && NODE_OPTIONS='--max-old-space-size=3072' npm install -D vite @vitejs/plugin-react && DEPLOYMENT_STAGE=2 NODE_OPTIONS='--max-old-space-size=4096' node build-minimal.js && npx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -39,7 +39,7 @@ services:
       - key: STAGED_DEPLOYMENT
         value: true
       - key: DEPLOYMENT_STAGE
-        value: 1
+        value: 2
 
   # Testing Environment with Database
   - type: web

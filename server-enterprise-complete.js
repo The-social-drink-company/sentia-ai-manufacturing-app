@@ -52,7 +52,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     service: 'sentia-manufacturing-dashboard',
-    version: '1.0.5',
+    version: '1.0.6',
     environment: NODE_ENV,
     branch: BRANCH,
     timestamp: new Date().toISOString()
@@ -63,7 +63,7 @@ app.get('/health', (req, res) => {
 app.get('/api/status', (req, res) => {
   res.json({
     service: 'Sentia Manufacturing API',
-    version: '1.0.5',
+    version: '1.0.6',
     environment: NODE_ENV,
     branch: BRANCH,
     timestamp: new Date().toISOString(),

@@ -1,8 +1,6 @@
-#!/usr/bin/env node
-
 /**
- * Staged Build Script for Render
- * Builds application in memory-efficient stages
+ * Staged Build Script for Memory-Efficient Deployment
+ * Builds the application in stages to avoid memory exhaustion
  */
 
 import { execSync } from 'child_process';
@@ -13,70 +11,76 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const STAGE = process.env.DEPLOYMENT_STAGE || '1';
+const DEPLOYMENT_STAGE = process.env.DEPLOYMENT_STAGE || '1';
+const MAX_MEMORY = process.env.NODE_OPTIONS?.includes('max-old-space-size')
+  ? process.env.NODE_OPTIONS.match(/max-old-space-size=(\d+)/)[1]
+  : '4096';
 
 console.log('=== STAGED BUILD SCRIPT ===');
-console.log('Stage:', STAGE);
-console.log('Memory Limit: 4096MB');
+console.log('Stage:', DEPLOYMENT_STAGE);
+console.log('Memory Limit:', MAX_MEMORY + 'MB');
 
-// Update main.jsx based on stage
-function updateMainForStage(stage) {
-  const mainPath = path.join(__dirname, 'src', 'main.jsx');
-  let appImport = './App-comprehensive.jsx';
-
-  switch(stage) {
-    case '1':
-      appImport = './App-stage1.jsx';
-      console.log('Building Stage 1: Core Infrastructure');
-      break;
-    case '2':
-      appImport = './App-stage2.jsx';
-      console.log('Building Stage 2: Essential Features');
-      break;
-    case '3':
-      appImport = './App-stage3.jsx';
-      console.log('Building Stage 3: Analytics & AI');
-      break;
-    default:
-      appImport = './App-comprehensive.jsx';
-      console.log('Building Full Enterprise Application');
+// Define stages with their corresponding App files
+const stages = {
+  '1': {
+    name: 'Core Infrastructure',
+    appFile: './App-stage1.jsx',
+    description: 'Building basic application shell with auth and routing'
+  },
+  '2': {
+    name: 'Dashboard & Analytics',
+    appFile: './App-stage2.jsx',
+    description: 'Adding dashboard and analytics components'
+  },
+  '3': {
+    name: 'Manufacturing Features',
+    appFile: './App-stage3.jsx',
+    description: 'Adding production, quality, and inventory features'
+  },
+  '4': {
+    name: 'Full Enterprise',
+    appFile: './App-comprehensive.jsx',
+    description: 'Complete enterprise application with all features'
   }
+};
 
-  const mainContent = fs.readFileSync(mainPath, 'utf8');
-  const updated = mainContent.replace(
-    /import App from ['"]\.\/App[^'"]*['"]/,
-    `import App from '${appImport}'`
-  );
+const currentStage = stages[DEPLOYMENT_STAGE] || stages['1'];
 
-  fs.writeFileSync(mainPath, updated);
-  console.log('Updated main.jsx to use:', appImport);
-}
+console.log(`Building Stage ${DEPLOYMENT_STAGE}: ${currentStage.name}`);
+console.log(currentStage.description);
 
+// Update main.jsx to import the correct App file
+const mainJsxPath = path.join(__dirname, 'src', 'main.jsx');
+let mainContent = fs.readFileSync(mainJsxPath, 'utf8');
+
+// Replace any App import with the staged version
+mainContent = mainContent.replace(
+  /import App from ['"]\.\/App.*?['"]/,
+  `import App from '${currentStage.appFile}'`
+);
+
+fs.writeFileSync(mainJsxPath, mainContent);
+console.log(`Updated main.jsx to use: ${currentStage.appFile}`);
+
+// Run the actual build
 try {
-  // Update main.jsx for the appropriate stage
-  updateMainForStage(STAGE);
-
-  // Run the build with high memory limit
   console.log('Starting Vite build...');
   execSync('npm run build', {
     stdio: 'inherit',
     env: {
       ...process.env,
-      NODE_OPTIONS: '--max-old-space-size=4096'
+      NODE_OPTIONS: `--max-old-space-size=${MAX_MEMORY}`
     }
   });
-
-  console.log('Build completed successfully!');
-
-  // Create stage marker
-  const stageInfo = {
-    stage: STAGE,
-    builtAt: new Date().toISOString(),
-    success: true
-  };
-  fs.writeFileSync('dist/stage.json', JSON.stringify(stageInfo, null, 2));
-
+  console.log(`Stage ${DEPLOYMENT_STAGE} build completed successfully!`);
 } catch (error) {
-  console.error('Build failed:', error.message);
+  console.error(`Build failed:`, error.message);
   process.exit(1);
+}
+
+// If this is not the final stage, create a marker file
+if (DEPLOYMENT_STAGE !== '4') {
+  const stageMarkerPath = path.join(__dirname, 'dist', '.build-stage');
+  fs.writeFileSync(stageMarkerPath, DEPLOYMENT_STAGE);
+  console.log(`Marked build as stage ${DEPLOYMENT_STAGE}`);
 }

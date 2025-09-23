@@ -12,4 +12,7 @@ const devLog = {
   groupCollapsed: (label) => {},
   groupEnd: () => {}
 };
+
+// Export both as default and named export for compatibility
 export default devLog;
+export { devLog };

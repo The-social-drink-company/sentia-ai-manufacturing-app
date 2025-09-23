@@ -45,7 +45,7 @@ const SupplyChain = lazy(() => import('./pages/SupplyChain'));
 
 // Analytics & AI
 const Analytics = lazy(() => import('./pages/Analytics'));
-const AIAnalytics = lazy(() => import('./components/ai/AIAnalytics'));
+const AIAnalytics = lazy(() => import('./components/AI/AIAnalytics'));
 const RealTimeAnalytics = lazy(() => import('./pages/RealTimeAnalytics'));
 const MultiMarketAnalytics = lazy(() => import('./components/analytics/MultiMarketAnalytics'));
 const AdvancedAnalyticsDashboard = lazy(() => import('./components/analytics/AdvancedAnalyticsDashboard'));

@@ -12,7 +12,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --include=dev && DEPLOYMENT_STAGE=1 node build-staged.js && npx prisma generate"
+    buildCommand: "npm ci --include=dev && DEPLOYMENT_STAGE=1 NODE_OPTIONS='--max-old-space-size=4096' node build-staged.js && npx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true

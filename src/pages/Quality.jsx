@@ -476,7 +476,7 @@ const Quality = () => {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {data.overview.defectRate.toFixed(2)}%
               </p>
-              <p className="text-sm text-yellow-600">Target: <2.0%</p>
+              <p className="text-sm text-yellow-600">Target: &lt;2.0%</p>
             </div>
             <ExclamationTriangleIcon className="h-8 w-8 text-yellow-600" />
           </div>

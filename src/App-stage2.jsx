@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useAuth } from '@clerk/clerk-react';
+import { ClerkProvider, useAuth } from '@clerk/clerk-react';
 
 // Core Layout Components
 import Header from './components/layout/Header';
@@ -164,30 +164,46 @@ const AuthenticatedApp = () => {
 
 // Main App component - Stage 2
 const AppStage2 = () => {
-  return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onError={(error) => {
-        console.error('Application error:', error);
-      }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <AuthenticatedApp />
-        </Router>
+  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-          }}
-        />
-      </QueryClientProvider>
-    </ErrorBoundary>
+  if (!clerkPublishableKey) {
+    console.error('Missing Clerk publishable key');
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Configuration Error</h1>
+          <p className="text-gray-600">Missing Clerk publishable key. Please check your environment configuration.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <ClerkProvider publishableKey={clerkPublishableKey}>
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}
+        onError={(error) => {
+          console.error('Application error:', error);
+        }}
+      >
+        <QueryClientProvider client={queryClient}>
+          <Router>
+            <AuthenticatedApp />
+          </Router>
+
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+              },
+            }}
+          />
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </ClerkProvider>
   );
 };
 

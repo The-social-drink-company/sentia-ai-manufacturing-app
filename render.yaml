@@ -13,7 +13,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "npm ci --include=dev && npm run build"
-    startCommand: "node server-minimal.js"
+    startCommand: "node --expose-gc --max-old-space-size=128 server-ultra-light.js"
     healthCheckPath: /health
     autoDeploy: true
     pullRequestPreviewsEnabled: true
@@ -24,3 +24,5 @@ services:
         value: 10000
       - key: IS_PULL_REQUEST
         generateValue: true
+      - key: NODE_OPTIONS
+        value: "--expose-gc --max-old-space-size=128"

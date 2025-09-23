@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from 'react-error-boundary';
 // Using bulletproof auth system instead of direct Clerk imports
 import { useAuthRole } from './hooks/useAuthRole.jsx';
+import { ThemeProvider } from './components/ui/ThemeProvider';
 
 // Core Layout Components
 import Header from './components/layout/Header';
@@ -396,10 +397,11 @@ const AppComprehensive = () => {
         }
       }}
     >
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <AuthenticatedApp />
-        </Router>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <Router>
+            <AuthenticatedApp />
+          </Router>
 
         {/* Global Toaster for notifications */}
         <Toaster
@@ -427,9 +429,10 @@ const AppComprehensive = () => {
           }}
         />
 
-        {/* React Query DevTools - only in development */}
-        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-      </QueryClientProvider>
+          {/* React Query DevTools - only in development */}
+          {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+        </QueryClientProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 };

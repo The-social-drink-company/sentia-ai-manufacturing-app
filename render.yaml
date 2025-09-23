@@ -13,7 +13,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build && npx prisma generate"
-    startCommand: "ls -la server*.js && node server-integrated-mcp.js"
+    startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
     pullRequestPreviewsEnabled: true
@@ -45,7 +45,7 @@ services:
     region: oregon
     branch: test
     buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build && npx prisma generate"
-    startCommand: "ls -la server*.js && node server-integrated-mcp.js"
+    startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -74,7 +74,7 @@ services:
     region: oregon
     branch: production
     buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --omit=dev && npm run build && npx prisma generate"
-    startCommand: "ls -la server*.js && node server-integrated-mcp.js"
+    startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:

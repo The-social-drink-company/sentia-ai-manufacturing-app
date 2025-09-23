@@ -12,13 +12,16 @@ import { ClerkProvider, useAuth } from '@clerk/clerk-react';
 
 // ClerkWrapperInner must be inside ClerkProvider to use useAuth
 const ClerkWrapperInner = () => {
-  const { isLoaded } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
   
   // Wait for Clerk to be fully loaded
   if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <LoadingSpinner size="lg" />
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-400">Initializing authentication...</p>
+        </div>
       </div>
     );
   }

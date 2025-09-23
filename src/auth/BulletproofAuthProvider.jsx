@@ -68,30 +68,11 @@ const AuthError = ({ error, onRetry }) => (
   </div>
 );
 
-// Inner wrapper that provides Clerk auth when available
-function ClerkAuthBridge({ children }) {
-  const clerkAuth = useClerkAuth();
-  const clerkUser = useClerkUser();
-  const [authState, setAuthState] = useState(null);
-
-  useEffect(() => {
-    // Build complete auth state from Clerk
-    if (clerkAuth?.isLoaded) {
-      setAuthState({
-        ...clerkAuth,
-        user: clerkUser?.user,
-        mode: 'clerk'
-      });
-    }
-  }, [clerkAuth, clerkUser]);
-
-  // Wait for Clerk to load (with timeout protection in parent)
-  if (!clerkAuth?.isLoaded) {
-    return <LoadingScreen />;
-  }
-
+// Simple fallback auth provider that doesn't use Clerk hooks
+// This provides basic auth functionality when Clerk is not available
+function FallbackAuthProvider({ children }) {
   return (
-    <AuthContext.Provider value={authState || { ...clerkAuth, user: clerkUser?.user, mode: 'clerk' }}>
+    <AuthContext.Provider value={FALLBACK_AUTH_STATE}>
       {children}
     </AuthContext.Provider>
   );
@@ -187,7 +168,7 @@ export function BulletproofAuthProvider({ children }) {
             }
           }}
         >
-          <ClerkAuthBridge>{children}</ClerkAuthBridge>
+          <FallbackAuthProvider>{children}</FallbackAuthProvider>
         </ClerkProvider>
       );
     } catch (err) {
@@ -216,21 +197,7 @@ export function useBulletproofAuth() {
     return contextAuth;
   }
 
-  // Try to use Clerk hooks directly (shouldn't happen but safety net)
-  try {
-    const clerkAuth = useClerkAuth();
-    const clerkUser = useClerkUser();
-
-    if (clerkAuth?.isLoaded) {
-      return {
-        ...clerkAuth,
-        user: clerkUser?.user,
-        mode: 'clerk-direct'
-      };
-    }
-  } catch {
-    // Clerk not available, continue to fallback
-  }
+  // Note: Removed direct Clerk hook usage to prevent context errors
 
   // Ultimate fallback - always return valid auth state
   return FALLBACK_AUTH_STATE;

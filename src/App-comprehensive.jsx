@@ -22,6 +22,7 @@ import ErrorFallback from './components/ui/ErrorFallback';
 
 // Authentication Components
 import ProtectedRoute from './components/auth/ProtectedRoute';
+const ClerkSignIn = lazy(() => import('./pages/ClerkSignIn'));
 
 // Lazy-loaded Page Components - COMPREHENSIVE SET
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -136,24 +137,25 @@ const AuthenticatedApp = () => {
     return <PageLoader />;
   }
 
-  // Redirect to sign-in if not authenticated
-  if (!isAuthenticated && !isSignedIn) {
-    return <Navigate to="/sign-in" state={{ from: location }} replace />;
-  }
-
-  // Check if it's a fullscreen page
+  // Check if it's a fullscreen page first
   const isFullscreenPage = ['/sign-in', '/sign-up', '/landing'].includes(location.pathname);
 
+  // Handle fullscreen pages (like sign-in) regardless of auth status
   if (isFullscreenPage) {
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/sign-in" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/sign-in" element={<ClerkSignIn />} />
           <Route path="/sign-up" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Suspense>
     );
+  }
+
+  // Redirect to sign-in if not authenticated and not on a fullscreen page
+  if (!isAuthenticated && !isSignedIn) {
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
   return (

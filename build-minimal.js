@@ -1,8 +1,6 @@
-#!/usr/bin/env node
-
 /**
- * Minimal Build Script - Stage 1 Only
- * Builds only the essential core components
+ * Minimal Build Script for Ultra-Low Memory Environments
+ * Builds only the absolute essential components
  */
 
 import { execSync } from 'child_process';
@@ -14,99 +12,46 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 console.log('=== MINIMAL BUILD SCRIPT ===');
-console.log('Building Stage 1: Core Infrastructure Only');
+console.log('Building absolute minimal version for low memory environment');
 
-// First, update main.jsx to use the minimal stage 1 app
-const mainPath = path.join(__dirname, 'src', 'main.jsx');
-const mainContent = `import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App-stage1.jsx'
+// Update main.jsx to use minimal App
+const mainJsxPath = path.join(__dirname, 'src', 'main.jsx');
+let mainContent = fs.readFileSync(mainJsxPath, 'utf8');
 
-const rootElement = document.getElementById('root');
-if (rootElement) {
-  const root = createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <App />
-    </StrictMode>
-  );
-}`;
+// Replace any App import with stage 1
+mainContent = mainContent.replace(
+  /import App from ['"]\.\/App.*?['"]/,
+  `import App from './App-stage1.jsx'`
+);
 
-fs.writeFileSync(mainPath, mainContent);
-console.log('Updated main.jsx for Stage 1');
+fs.writeFileSync(mainJsxPath, mainContent);
+console.log('Updated main.jsx to use minimal App-stage1.jsx');
 
-// Create a minimal vite config for stage 1
-const viteConfigContent = `import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-    minify: 'esbuild',
-    reportCompressedSize: false,
-    chunkSizeWarningLimit: 2000,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@tanstack/react-query', '@clerk/clerk-react'],
-        }
-      },
-      maxParallelFileOps: 2,
-      treeshake: {
-        preset: 'smallest'
-      }
-    }
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    }
-  }
-})`;
-
-// Backup existing vite config
-if (fs.existsSync('vite.config.js')) {
-  fs.renameSync('vite.config.js', 'vite.config.backup.js');
-}
-
-// Write minimal config
-fs.writeFileSync('vite.config.js', viteConfigContent);
-console.log('Created minimal vite config');
-
+// Run build with optimized settings
 try {
-  // Run build with controlled memory
-  console.log('Starting minimal build...');
-  execSync('npx vite build', {
+  console.log('Starting minimal Vite build...');
+
+  // Set environment for minimal build
+  process.env.VITE_MINIMAL_BUILD = 'true';
+
+  execSync('npm run build', {
     stdio: 'inherit',
     env: {
       ...process.env,
-      NODE_OPTIONS: '--max-old-space-size=3072'
+      NODE_OPTIONS: `--max-old-space-size=${process.env.NODE_OPTIONS?.includes('max-old-space-size')
+        ? process.env.NODE_OPTIONS.match(/max-old-space-size=(\d+)/)[1]
+        : '4096'}`
     }
   });
 
-  console.log('Build completed successfully!');
+  console.log('Minimal build completed successfully!');
 
-  // Restore original vite config
-  if (fs.existsSync('vite.config.backup.js')) {
-    fs.unlinkSync('vite.config.js');
-    fs.renameSync('vite.config.backup.js', 'vite.config.js');
-  }
+  // Create build marker
+  const markerPath = path.join(__dirname, 'dist', '.build-minimal');
+  fs.writeFileSync(markerPath, new Date().toISOString());
+  console.log('Build marked as minimal');
 
 } catch (error) {
   console.error('Build failed:', error.message);
-
-  // Restore on failure
-  if (fs.existsSync('vite.config.backup.js')) {
-    if (fs.existsSync('vite.config.js')) {
-      fs.unlinkSync('vite.config.js');
-    }
-    fs.renameSync('vite.config.backup.js', 'vite.config.js');
-  }
-
   process.exit(1);
 }

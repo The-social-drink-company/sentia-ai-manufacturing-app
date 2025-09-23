@@ -26,7 +26,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const EnterpriseDashboard = lazy(() => import('./pages/Dashboard/EnterpriseDashboard'));
 const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'));
-const ExecutiveDashboard = lazy(() => import('./components/executive/ExecutiveDashboard'));
+const ExecutiveDashboard = lazy(() => import('./components/Executive/ExecutiveDashboard'));
 
 // Financial Management
 const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'));

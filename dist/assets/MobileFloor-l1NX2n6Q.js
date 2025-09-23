@@ -1,0 +1,1 @@
+import{j as e}from"./vendor-DLO2qtE_.js";import o from"./MobileFloorDashboard-BThW-ZIz.js";const i=()=>e.jsxDEV(o,{},void 0,!1,{fileName:"C:/Users/DanielKenny/OneDrive - GABA LABS Research Ltd/Documents/AI logistics system/main-repo/sentia-manufacturing-dashboard/src/pages/MobileFloor.jsx",lineNumber:5,columnNumber:10},void 0);export{i as default};

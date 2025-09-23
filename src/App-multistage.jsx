@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense, useEffect } from 'react';
 import LandingPage from './LandingPage';
 import MultiStageLoader from './components/MultiStageLoader';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
@@ -12,13 +12,49 @@ import { ClerkProvider, useAuth } from '@clerk/clerk-react';
 
 // ClerkWrapper ensures Clerk is fully loaded before rendering ComprehensiveApp
 const ClerkWrapper = () => {
-  const { isLoaded } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
+  const [chunkLoadingError, setChunkLoadingError] = useState(false);
+  
+  // Handle chunk loading errors gracefully
+  useEffect(() => {
+    const handleChunkError = (event) => {
+      // Check if it's a chunk loading error
+      if (event.message && event.message.includes('Loading chunk')) {
+        console.warn('Chunk loading error detected, attempting recovery...', event);
+        setChunkLoadingError(true);
+        
+        // Attempt to reload the page after a brief delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+    };
+    
+    window.addEventListener('error', handleChunkError);
+    return () => window.removeEventListener('error', handleChunkError);
+  }, []);
+  
+  // Show chunk loading error message
+  if (chunkLoadingError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-400">Updating application chunks...</p>
+          <p className="text-gray-500 text-sm mt-2">Page will reload automatically</p>
+        </div>
+      </div>
+    );
+  }
   
   // Wait for Clerk to be fully loaded
   if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <LoadingSpinner size="lg" />
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-400">Initializing authentication...</p>
+        </div>
       </div>
     );
   }

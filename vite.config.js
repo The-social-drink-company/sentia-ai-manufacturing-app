@@ -18,34 +18,15 @@ export default defineConfig({
     // Memory optimizations for large builds
     rollupOptions: {
       output: {
+        // Minimal, safe chunking to avoid module loading issues
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // More aggressive splitting to reduce memory usage
+            // Only split the largest, most stable libraries
             if (id.includes('@clerk')) return 'clerk';
-            if (id.includes('react-dom') || id.includes('react')) return 'react';
-            if (id.includes('react-router')) return 'react-router';
-            if (id.includes('@tanstack')) return 'tanstack';
-            if (id.includes('@heroicons')) return 'heroicons';
-            if (id.includes('lucide-react')) return 'lucide';
-            if (id.includes('@radix-ui')) return 'radix';
             if (id.includes('recharts')) return 'recharts';
-            if (id.includes('d3')) return 'd3';
-            if (id.includes('framer-motion')) return 'framer';
-            if (id.includes('date-fns')) return 'date-fns';
-            if (id.includes('axios')) return 'axios';
-            if (id.includes('zustand')) return 'zustand';
-            if (id.includes('socket.io')) return 'socketio';
-            return 'vendor';
+            return 'vendor'; // Everything else in one vendor chunk
           }
-          // More aggressive app code splitting
-          if (id.includes('src/components/AI')) return 'ai-components';
-          if (id.includes('src/components/Executive')) return 'executive';
-          if (id.includes('src/components/WorkingCapital')) return 'working-capital';
-          if (id.includes('src/components/analytics')) return 'analytics';
-          if (id.includes('src/components/admin')) return 'admin';
-          if (id.includes('src/components/quality')) return 'quality';
-          if (id.includes('src/components/inventory')) return 'inventory';
-          if (id.includes('src/pages')) return 'pages';
+          // Let Vite handle app code chunking automatically
         }
       },
       // Reduce parallel operations to save memory

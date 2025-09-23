@@ -326,7 +326,7 @@ const Sidebar = () => {
       >
       {/* Sidebar Header */}
       <div className="flex items-center justify-between p-4 h-16 border-b border-gray-200 dark:border-gray-700">
-        {!collapsed && (
+        {!sidebarCollapsed && (
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
               <span>S</span>
@@ -342,11 +342,11 @@ const Sidebar = () => {
           </div>
         )}
         <button
-          onClick={onToggle}
+          onClick={toggleSidebar}
           className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          title={collapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
+          title={sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
         >
-          {collapsed ? (
+          {sidebarCollapsed ? (
             <ChevronRightIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           ) : (
             <ChevronLeftIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
@@ -459,7 +459,7 @@ const Sidebar = () => {
       )}
       
       {/* Collapsed state indicator */}
-      {collapsed && (
+      {sidebarCollapsed && (
         <div className="sidebar-footer-collapsed">
           <div className="collapsed-hint">
             <span>Ctrl+B</span>

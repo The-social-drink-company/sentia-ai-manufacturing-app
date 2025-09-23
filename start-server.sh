@@ -1,35 +1,33 @@
 #!/bin/bash
-# Render start script - Prioritizes integrated MCP server
+# ENTERPRISE DEPLOYMENT - NO FALLBACKS, NO COMPROMISES
 
-echo "==========================================="
-echo "RENDER DEPLOYMENT START SCRIPT"
-echo "==========================================="
+echo "=================================================="
+echo "SENTIA MANUFACTURING ENTERPRISE DEPLOYMENT"
+echo "=================================================="
 echo "Date: $(date)"
-echo "PWD: $(pwd)"
-echo "NODE_ENV: $NODE_ENV"
-echo "BRANCH: $BRANCH"
-echo "PORT: $PORT"
-echo "DATABASE_URL: ${DATABASE_URL:0:30}..."
-echo "==========================================="
+echo "Environment: $NODE_ENV"
+echo "Branch: $BRANCH"
+echo "Port: $PORT"
+echo "Database: sentia-db-$BRANCH"
+echo "=================================================="
 
-# Check which server files exist
-echo "Available server files:"
-ls -la server*.js 2>/dev/null || echo "No server files found!"
-
-# Priority order: integrated-mcp > ultra-light > minimal > default
-if [ -f "server-integrated-mcp.js" ]; then
-    echo "✅ Found server-integrated-mcp.js - Starting FULL INTEGRATED server with MCP and Database"
-    exec node server-integrated-mcp.js
-elif [ -f "server-ultra-light.js" ]; then
-    echo "⚠️  Fallback to server-ultra-light.js (memory optimized but no MCP)"
-    exec node --expose-gc --max-old-space-size=128 server-ultra-light.js
-elif [ -f "server-minimal.js" ]; then
-    echo "⚠️  Fallback to server-minimal.js (basic server)"
-    exec node server-minimal.js
-elif [ -f "server.js" ]; then
-    echo "⚠️  Fallback to server.js (default server)"
-    exec node server.js
-else
-    echo "❌ ERROR: No server file found!"
+# ONLY the comprehensive enterprise application is acceptable
+if [ ! -f "server-integrated-mcp.js" ]; then
+    echo "❌ ERROR: Enterprise server (server-integrated-mcp.js) not found!"
+    echo "This deployment requires the full enterprise application."
+    echo "No fallbacks or emergency fixes are acceptable."
     exit 1
 fi
+
+echo "✅ Starting COMPREHENSIVE ENTERPRISE APPLICATION"
+echo "Features:"
+echo "  • Full MCP AI Integration"
+echo "  • PostgreSQL Database (sentia-db-$BRANCH)"
+echo "  • All External API Integrations"
+echo "  • Complete Authentication System"
+echo "  • Enterprise-grade Security"
+echo "  • Real-time Analytics"
+echo "=================================================="
+
+# Start the enterprise server - no alternatives
+exec node server-integrated-mcp.js

@@ -3,8 +3,9 @@ import LandingPage from './LandingPage';
 import MultiStageLoader from './components/MultiStageLoader';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
-// Lazy load the enterprise app only when needed
-const EnterpriseApp = lazy(() => import('./App-enterprise'));
+// Lazy load the COMPREHENSIVE enterprise app only when needed
+// This is the FULL version with ALL features, not the emergency cut-down version
+const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 
 // Lazy load Clerk provider
 const ClerkProvider = lazy(() =>
@@ -63,7 +64,7 @@ const AppMultiStage = () => {
         </div>
       }>
         <ClerkProvider publishableKey={publishableKey}>
-          <EnterpriseApp />
+          <ComprehensiveApp />
         </ClerkProvider>
       </Suspense>
     );

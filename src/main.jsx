@@ -1,8 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { ClerkProvider } from '@clerk/clerk-react'
 import './index.css'
-import App from './App-enterprise.jsx'
+import App from './App-multistage.jsx'
 
 // Simplified initialization without environment validation for now
 // This will allow the app to load and we can add validation back incrementally
@@ -16,21 +15,12 @@ if (!rootElement) {
   document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Error: Root element not found</div>';
 } else {
   console.log('✅ Root element found, mounting React app...');
-  
+
   try {
-    const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-    if (!publishableKey) {
-      console.error('Missing Clerk Publishable Key');
-      throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY');
-    }
-
     const root = createRoot(rootElement);
     root.render(
       <StrictMode>
-        <ClerkProvider publishableKey={publishableKey}>
-          <App />
-        </ClerkProvider>
+        <App />
       </StrictMode>
     );
     console.log('✅ React app mounted successfully');

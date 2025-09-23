@@ -305,7 +305,12 @@
       "Bash(git rev-list:*)",
       "Bash(gh api:*)",
       "Read(//c/tmp/**)",
-      "Bash(set PORT=4150)"
+      "Bash(set PORT=4150)",
+      "Bash(for:*)",
+      "Bash(do if [ -f \"$file\" ])",
+      "Bash(then echo \"EXISTS: $file\")",
+      "Bash(else echo \"MISSING: $file\")",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": []

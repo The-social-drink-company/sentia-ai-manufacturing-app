@@ -18,13 +18,13 @@ export default defineConfig({
     // Memory optimizations for large builds
     rollupOptions: {
       output: {
-        // Minimal, safe chunking to avoid module loading issues
+        // Ultra-minimal chunking to avoid variable initialization issues
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // Only split the largest, most stable libraries
+            // Only split Clerk (very stable, large, authentication-focused)
             if (id.includes('@clerk')) return 'clerk';
-            if (id.includes('recharts')) return 'recharts';
-            return 'vendor'; // Everything else in one vendor chunk
+            // Keep recharts with vendor to avoid initialization order issues
+            return 'vendor'; // Everything else including recharts in vendor chunk
           }
           // Let Vite handle app code chunking automatically
         }

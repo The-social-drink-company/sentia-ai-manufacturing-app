@@ -109,21 +109,8 @@ const PageLoader = () => (
 
 // Main authenticated application
 const AuthenticatedApp = () => {
-  let isSignedIn, isLoaded, user;
-  
-  try {
-    // Safely use Clerk hooks with error handling
-    const authState = useAuth();
-    const userState = useUser();
-    isSignedIn = authState.isSignedIn;
-    isLoaded = authState.isLoaded;
-    user = userState.user;
-  } catch (error) {
-    console.warn('Clerk not available, redirecting to loading...', error);
-    // Return loading state if Clerk is not properly initialized
-    return <PageLoader />;
-  }
-  
+  const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);

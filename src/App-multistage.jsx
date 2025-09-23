@@ -8,7 +8,24 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
 const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 
 // Import Clerk provider directly to avoid module resolution issues
-import { ClerkProvider } from '@clerk/clerk-react';
+import { ClerkProvider, useAuth } from '@clerk/clerk-react';
+
+// ClerkWrapper ensures Clerk is fully loaded before rendering ComprehensiveApp
+const ClerkWrapper = () => {
+  const { isLoaded } = useAuth();
+  
+  // Wait for Clerk to be fully loaded
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+  
+  // Now it's safe to render ComprehensiveApp with all its Clerk-dependent components
+  return <ComprehensiveApp />;
+};
 
 const AppMultiStage = () => {
   const [appState, setAppState] = useState('landing'); // landing, loading, authenticated
@@ -62,7 +79,7 @@ const AppMultiStage = () => {
             <LoadingSpinner size="lg" />
           </div>
         }>
-          <ComprehensiveApp />
+          <ClerkWrapper />
         </Suspense>
       </ClerkProvider>
     );

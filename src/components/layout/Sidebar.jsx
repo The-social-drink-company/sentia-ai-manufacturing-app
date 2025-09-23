@@ -119,6 +119,7 @@ const Sidebar = () => {
   const { role, hasPermission, hasFeature } = useAuthRole()
   const { sidebarCollapsed, toggleSidebar } = useLayoutStore()
   const [isMobile, setIsMobile] = useState(false)
+  // Force rebuild - fixed undefined collapsed variable issue
   
   // Alert counts (would come from actual data)
   const [alertCounts] = useState({

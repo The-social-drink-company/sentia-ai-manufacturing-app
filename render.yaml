@@ -13,7 +13,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build"
-    startCommand: "node --expose-gc --max-old-space-size=128 server-ultra-light.js"
+    startCommand: "bash start-server.sh"
     healthCheckPath: /health
     autoDeploy: true
     pullRequestPreviewsEnabled: true

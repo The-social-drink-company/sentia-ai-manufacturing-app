@@ -202,11 +202,8 @@ router.get('/schedule',
         ]
       };
 
-      res.json({
-        success: true,
-        data: mockData,
-        fallback: true
-      });
+      // This code should never be reached due to early return above
+      // Removing mock data response
     }
   })
 );

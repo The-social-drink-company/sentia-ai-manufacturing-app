@@ -348,48 +348,24 @@ const DashboardRouter = () => {
 
   const loadDashboardData = async () => {
     try {
-      // This would load real data from your APIs
-      const 0,
-          forecast: [] => ({
-            period: `Month ${i + 1}`,
-            cash: 2500000 - (i * 416667),
-            inflow: 800000,
-            outflow: 1216667
-          }))
-        },
-        optimization: {
-          summary: {
-            cashUnlockPotential: 850000,
-            implementationTimeframe: 90
-          },
-          currentMetrics: {
-            workingCapital: 3200000,
-            dso: 45,
-            dpo: 30,
-            inventoryTurns: 8,
-            cashConversionCycle: 60
-          }
-        },
-        fundingRequirements: {
-          summary: {
-            totalFundingRequired: 1500000
-          }
-        },
-        benchmarks: {
-          workingCapital: {
-            dso: { average: 35, percentile: 75 },
-            dpo: { average: 40, percentile: 60 },
-            inventoryTurns: { average: 12, percentile: 65 }
-          },
-          competitivePosition: {
-            efficiency: 'above_average'
-          }
+      // Load real data from APIs
+      const token = await getToken();
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/dashboard/executive`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json'
         }
-      };
-      
-      setDashboardData(mockData);
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to load dashboard data from API');
+      }
+
+      const data = await response.json();
+      setDashboardData(data);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
+      setDashboardData(null);
     } finally {
       setLoading(false);
     }

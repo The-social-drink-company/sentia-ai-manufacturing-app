@@ -60,7 +60,7 @@ const AppMultiStage = () => {
     console.log('[AppMultiStage] Rendering authenticated app');
     return (
       <BulletproofAuthProvider>
-        <Suspense 0>
+        <Suspense fallback={<LoadingSpinner size="lg" />}>
           <ComprehensiveApp />
         </Suspense>
       </BulletproofAuthProvider>

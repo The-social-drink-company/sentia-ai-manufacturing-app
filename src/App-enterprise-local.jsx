@@ -86,160 +86,160 @@ function App() {
             <Routes>
               {/* Home/Landing Page */}
               <Route path="/" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <LandingPage />
                 </Suspense>
               } />
 
               {/* Dashboard Routes */}
               <Route path="/dashboard" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <EnhancedDashboard />
                 </Suspense>
               } />
 
               <Route path="/dashboard/enterprise" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <EnterpriseDashboard />
                 </Suspense>
               } />
 
               {/* Financial Management Routes */}
               <Route path="/working-capital" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <WorkingCapital />
                 </Suspense>
               } />
 
               <Route path="/working-capital/dashboard" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <WorkingCapitalDashboard />
                 </Suspense>
               } />
 
               <Route path="/what-if" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <WhatIfAnalysis />
                 </Suspense>
               } />
 
               <Route path="/analytics" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <MultiMarketAnalytics />
                 </Suspense>
               } />
 
               <Route path="/cfo-board-pack" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <CFOBoardPack />
                 </Suspense>
               } />
 
               {/* Planning & Operations Routes */}
               <Route path="/forecasting" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <AIForecastingInterface />
                 </Suspense>
               } />
 
               <Route path="/inventory" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <InventoryPage />
                 </Suspense>
               } />
 
               <Route path="/inventory-optimizer" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <InventoryOptimizer />
                 </Suspense>
               } />
 
               <Route path="/production" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <EnhancedDashboard />
                 </Suspense>
               } />
 
               <Route path="/quality" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <EnhancedDashboard />
                 </Suspense>
               } />
 
               {/* Data Management Routes */}
               <Route path="/data-import" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <DataImportWizard />
                 </Suspense>
               } />
 
               <Route path="/data-import/wizard" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <DataImport />
                 </Suspense>
               } />
 
               <Route path="/templates" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <Templates />
                 </Suspense>
               } />
 
               {/* Administration Routes */}
               <Route path="/admin" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <AdminPanel />
                 </Suspense>
               } />
 
               <Route path="/admin/enhanced" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <AdminPanelEnhanced />
                 </Suspense>
               } />
 
               <Route path="/admin/portal" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <AdminPortal />
                 </Suspense>
               } />
 
               <Route path="/settings" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <SettingsPage />
                 </Suspense>
               } />
 
               <Route path="/system-health" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <SystemHealth />
                 </Suspense>
               } />
 
               {/* AI Analytics Routes */}
               <Route path="/ai-analytics" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <MultiMarketAnalytics />
                 </Suspense>
               } />
 
               {/* Automation Routes */}
               <Route path="/automation" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <EnhancedDashboard />
                 </Suspense>
               } />
 
               {/* Mobile Routes */}
               <Route path="/mobile" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <EnhancedDashboard />
                 </Suspense>
               } />
 
               {/* API Status Route */}
               <Route path="/api-status" element={
-                <Suspense 0>
+                <Suspense fallback={<Loading />}>
                   <SystemHealth />
                 </Suspense>
               } />
@@ -250,7 +250,7 @@ function App() {
           </div>
 
           {/* Enterprise AI Chatbot - Always visible across all pages */}
-          <Suspense 0>
+          <Suspense fallback={null}>
             <EnterpriseAIChatbot />
           </Suspense>
         </AuthProvider>

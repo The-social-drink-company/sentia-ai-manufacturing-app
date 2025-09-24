@@ -35,10 +35,6 @@ const WorkingCapitalWidget = () => {
       });
 
       if (!response.ok) {
-        // Fallback to mock data if API fails
-        if (response.status === 404 || response.status === 500) {
-          return getMockData();
-        }
         throw new Error(`Failed to fetch working capital data: ${response.statusText}`);
       }
 
@@ -49,80 +45,12 @@ const WorkingCapitalWidget = () => {
     retryDelay: 1000
   });
 
-  // Mock data fallback
-  const getMockData = () => ({
-    summary: {
-      0,
-      currentAssets: 2345600,
-      currentLiabilities: 1556400,
-      cashConversionCycle: 45,
-      operatingCashFlow: 423500,
-      freeCashFlow: 312400,
-      liquidityRatio: 1.51,
-      quickRatio: 1.18
-    },
-    components: {
-      cash: 456000,
-      accountsReceivable: 892300,
-      inventory: 997300,
-      accountsPayable: 645200,
-      shortTermDebt: 320000,
-      otherCurrentLiabilities: 591200
-    },
-    trends: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      workingCapital: [720000, 745000, 760000, 775000, 780000, 789200],
-      currentRatio: [1.42, 1.44, 1.47, 1.49, 1.50, 1.51],
-      cashFlow: 0
-    },
-    receivables: {
-      total: 892300,
-      current: 650000,
-      overdue30: 150000,
-      overdue60: 75000,
-      overdue90: 17300,
-      dso: 42 // Days Sales Outstanding
-    },
-    payables: {
-      total: 645200,
-      current: 520000,
-      due30: 95000,
-      due60: 30200,
-      dpo: 38 // Days Payables Outstanding
-    },
-    inventory: {
-      rawMaterials: 350000,
-      wip: 247300,
-      finishedGoods: 400000,
-      turnoverRatio: 8.5,
-      dio: 43 // Days Inventory Outstanding
-    },
-    cashManagement: {
-      operatingActivities: 423500,
-      investingActivities: -111100,
-      financingActivities: -85000,
-      netChange: 227400,
-      beginningCash: 228600,
-      endingCash: 456000
-    },
-    forecast: {
-      nextMonth: {
-        workingCapital: 805000,
-        change: 15800,
-        percentChange: 2.0
-      },
-      nextQuarter: {
-        workingCapital: 845000,
-        change: 55800,
-        percentChange: 7.1
-      }
-    }
-  });
 
-  if (isLoading && !data) return <WidgetSkeleton title="Working Capital Management" height="400px" />;
-  if (error && !data) return <WidgetError error={error} onRetry={refetch} title="Working Capital Management" />;
+  if (isLoading) return <WidgetSkeleton title="Working Capital Management" height="400px" />;
+  if (error) return <WidgetError error={error} onRetry={refetch} title="Working Capital Management" />;
+  if (!data) return <WidgetError error={{ message: 'No data available. Please connect to real data source.' }} onRetry={refetch} title="Working Capital Management" />;
 
-  const capital = data || getMockData();
+  const capital = data;
 
   // Working Capital Components Chart
   const componentsData = {

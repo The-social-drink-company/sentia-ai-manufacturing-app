@@ -46,16 +46,16 @@ const initializeApp = async () => {
     
     // Try to load the full app
     try {
-      console.log('[main.jsx] Attempting to load App-multistage...');
-      const { default: App } = await import('./App-multistage.jsx');
-      
-      console.log('[main.jsx] App-multistage loaded successfully, rendering...');
+      console.log('[main.jsx] Loading App.jsx without authentication...');
+      const { default: App } = await import('./App.jsx');
+
+      console.log('[main.jsx] App loaded successfully, rendering...');
       root.render(
         <StrictMode>
           <App />
         </StrictMode>
       );
-      console.log('[main.jsx] React app mounted successfully');
+      console.log('[main.jsx] React app mounted successfully - No authentication required');
     } catch (appError) {
       console.error('[main.jsx] Failed to load App-multistage:', appError);
       console.log('[main.jsx] Falling back to simple app...');

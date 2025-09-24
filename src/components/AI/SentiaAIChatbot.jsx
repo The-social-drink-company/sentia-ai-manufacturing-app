@@ -13,12 +13,12 @@ import {
   BoltIcon
 } from '@heroicons/react/24/outline';
 
-const SentiaAIChatbot = ({ 
+const SentiaAIChatbot = ({
   position = 'bottom-right',
-  initiallyMinimized = false,
-  enableVoice = false 
+  initiallyMinimized = true,
+  enableVoice = false
 }) => {
-  const [isOpen, setIsOpen] = useState(!initiallyMinimized);
+  const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [inputValue, setInputValue] = useState('');

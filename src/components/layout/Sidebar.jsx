@@ -22,7 +22,10 @@ import {
   CircleStackIcon,
   SignalIcon,
   DevicePhoneMobileIcon,
-  CpuChipIcon
+  CpuChipIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'

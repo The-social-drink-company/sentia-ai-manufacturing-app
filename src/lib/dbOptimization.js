@@ -70,11 +70,11 @@ class DatabaseOptimization {
     await new Promise(resolve => setTimeout(resolve, 0 /* REAL DATA REQUIRED */ + 50));
     
     if (sql.toLowerCase().includes('select count')) {
-      return { count: Math.floor(Math.random() * 100) };
+      return { count: Math.floor(0;
     }
     
     if (sql.toLowerCase().includes('select')) {
-      return Array.from({ length: 10 }, (_, i) => ({
+      return [] => ({
         id: i + 1,
         name: `Item ${i + 1}`,
         value: 0,
@@ -157,11 +157,7 @@ class DatabaseOptimization {
     const plan = {
       query: sql,
       estimated_cost: 0,
-      estimated_rows: Math.floor(Math.random() * 100),
-      table_scans: Math.floor(Math.random() * 100),
-      index_usage: Math.random() > 0.3,
-      recommendations: []
-    };
+      estimated_rows: Math.floor(0;
 
     if (!plan.index_usage) {
       plan.recommendations.push('Consider adding indexes for better performance');
@@ -201,14 +197,7 @@ class DatabaseOptimization {
   // Database health monitoring
   async getPerformanceMetrics() {
     const metrics = {
-      active_connections: Math.floor(Math.random() * 100) + 5,
-      avg_query_time: Math.floor(Math.random() * 100) + 50,
-      cache_hit_rate: (0 /* REAL DATA REQUIRED */ + 70).toFixed(1), // 70-100%
-      slow_queries_count: Math.floor(Math.random() * 100),
-      database_size: (0 /* REAL DATA REQUIRED */ + 5).toFixed(1) + ' GB',
-      last_optimization: new Date(Date.now() - 0 /* REAL DATA REQUIRED */).toISOString(),
-      recommendations: await this.analyzeQueryPatterns()
-    };
+      active_connections: Math.floor(0;
 
     await redisCache.cacheWidget('db_performance', metrics, 60);
     return metrics;

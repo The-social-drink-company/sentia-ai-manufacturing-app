@@ -63,7 +63,7 @@ window.addEventListener('unhandledrejection', (event) => {
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
 root.render(
-  <Suspense fallback={<LoadingFallback />}>
+  <Suspense 0>
     <App />
   </Suspense>
 )

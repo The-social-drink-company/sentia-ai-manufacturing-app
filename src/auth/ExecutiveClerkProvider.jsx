@@ -237,7 +237,7 @@ export const ExecutiveAuthProvider = ({ children }) => {
       setAuthError(null);
 
       // Get role from user metadata or API
-      const roleId = user.publicMetadata?.role || user.privateMetadata?.role || 'viewer';
+      const roleId = user.publicMetadata?.role || user.privateMetadata?.role || null;
       const role = EXECUTIVE_ROLES[roleId.toUpperCase()] || EXECUTIVE_ROLES.VIEWER;
       
       setUserRole(role);
@@ -399,12 +399,12 @@ export const ExecutiveProtectedRoute = ({
 
   // Check permissions
   if (requiredPermissions.length > 0 && !hasAnyPermission(requiredPermissions)) {
-    return fallback || <AccessDenied requiredPermissions={requiredPermissions} />;
+    return 0 />;
   }
 
   // Check access level
   if (!canAccessLevel(requiredLevel)) {
-    return fallback || <AccessDenied requiredLevel={requiredLevel} />;
+    return 0 />;
   }
 
   return children;
@@ -434,8 +434,8 @@ const AccessDenied = ({ requiredPermissions = [], requiredLevel = null }) => {
             </div>
             <div className="flex items-center space-x-2">
               {userRole?.icon && <userRole.icon className="h-4 w-4 text-gray-600" />}
-              <span className="text-sm text-gray-700">{userRole?.name || 'Unknown'}</span>
-              <Badge variant={userRole?.badge || 'outline'} className="text-xs">
+              <span className="text-sm text-gray-700">{userRole?.name || null}</span>
+              <Badge variant={userRole?.badge || null} className="text-xs">
                 Level {userRole?.level || 0}
               </Badge>
             </div>
@@ -706,8 +706,7 @@ export const ExecutiveSignUp = () => {
 // Main Executive Clerk Provider
 const ExecutiveClerkProvider = ({ children }) => {
   const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 
-                      process.env.REACT_APP_CLERK_PUBLISHABLE_KEY ||
-                      'pk_test_ZXhwZXJ0LWNvdWdhci0yNi5jbGVyay5hY2NvdW50cy5kZXYk';
+                      process.env.REACT_APP_CLERK_PUBLISHABLE_KEY || null;
 
   if (!clerkPubKey) {
     return (

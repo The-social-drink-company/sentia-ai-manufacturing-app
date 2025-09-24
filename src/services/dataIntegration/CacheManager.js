@@ -3,8 +3,8 @@
 
 export class CacheManager {
   constructor(options = {}) {
-    this.maxSize = options.maxSize || 100;
-    this.defaultTTL = options.defaultTTL || 300000; // 5 minutes
+    this.maxSize = options.maxSize 0;
+    this.defaultTTL = options.defaultTTL 0; // 5 minutes
     this.cache = new Map();
     this.accessOrder = new Map(); // For LRU tracking
     this.stats = {

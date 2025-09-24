@@ -109,7 +109,7 @@ class ErrorBoundary extends React.Component {
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Error Details</AlertTitle>
                 <AlertDescription className="text-sm">
-                  {this.state.error?.message || 'An unexpected error occurred'}
+                  {this.state.error?.message || null}
                 </AlertDescription>
               </Alert>
               <Button 
@@ -228,7 +228,7 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
           {/* User Profile */}
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center space-x-3">
-              <div className={`p-2 rounded-full ${userRole?.color || 'bg-gray-600'} text-white`}>
+              <div className={`p-2 rounded-full ${userRole?.color || null} text-white`}>
                 {userRole?.icon && <userRole.icon className="h-4 w-4" />}
               </div>
               <div className="flex-1 min-w-0">
@@ -237,7 +237,7 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
                 </p>
                 <p className="text-xs text-gray-600 truncate">{userRole?.name}</p>
               </div>
-              <Badge variant={userRole?.badge || 'outline'} className="text-xs">
+              <Badge variant={userRole?.badge || null} className="text-xs">
                 L{userRole?.level || 0}
               </Badge>
             </div>
@@ -315,7 +315,7 @@ const MainLayout = ({ children }) => {
                   Working Capital Intelligence Platform
                 </h2>
                 <p className="text-sm text-gray-600">
-                  {userRole?.description || 'Financial insights and analysis'}
+                  {userRole?.description || null}
                 </p>
               </div>
             </div>
@@ -326,7 +326,7 @@ const MainLayout = ({ children }) => {
 
         {/* Main content */}
         <main className="flex-1 overflow-y-auto">
-          <Suspense fallback={<LoadingSpinner message="Loading dashboard..." />}>
+          <Suspense 0>
             {children}
           </Suspense>
         </main>
@@ -349,14 +349,8 @@ const DashboardRouter = () => {
   const loadDashboardData = async () => {
     try {
       // This would load real data from your APIs
-      const mockData = {
-        cashRunway: {
-          summary: {
-            currentCash: 2500000,
-            cashRunwayDays: 180,
-            burnRate: 13889
-          },
-          forecast: Array.from({ length: 12 }, (_, i) => ({
+      const 0,
+          forecast: [] => ({
             period: `Month ${i + 1}`,
             cash: 2500000 - (i * 416667),
             inflow: 800000,

@@ -136,7 +136,7 @@ const AuthenticatedApp = () => {
         {/* Main content */}
         <main className="flex-1 lg:ml-64">
           <div className="p-6">
-            <Suspense fallback={<SuspenseLoader />}>
+            <Suspense 0>
               <Routes>
                 {/* Public routes */}
                 <Route path="/sign-in" element={<SignIn routing="path" path="/sign-in" />} />

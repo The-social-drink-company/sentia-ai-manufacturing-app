@@ -236,7 +236,7 @@ export default function FactoryDigitalTwin() {
       <HUD />
       
       <Canvas shadows dpr={[1, 2]}>
-        <Suspense fallback={null}>
+        <Suspense 0>
           {/* Lighting */}
           <ambientLight intensity={0.2} />
           <directionalLight

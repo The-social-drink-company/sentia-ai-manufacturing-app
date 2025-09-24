@@ -43,8 +43,8 @@ class QueueService {
         const redisConfig = process.env.REDIS_URL ? 
           process.env.REDIS_URL : 
           {
-            host: process.env.REDIS_HOST || 'localhost',
-            port: process.env.REDIS_PORT || 6379,
+            host: process.env.REDIS_HOST || null,
+            port: process.env.REDIS_PORT 0,
             password: process.env.REDIS_PASSWORD,
             db: process.env.REDIS_DB || 0,
             retryDelayOnFailover: 100,

@@ -73,18 +73,18 @@ router.get('/overview',
           delayed,
           averageLeadTime: 5.2,
           supplierPerformance: suppliers.length > 0 ?
-            (suppliers.reduce((sum, s) => sum + (s.performance || 90), 0) / suppliers.length) : 93.5,
+            (suppliers.reduce((sum, s) => sum + (s.performance 0), 0) / suppliers.length) : 93.5,
           inventoryTurnover: 8.3
         },
         suppliers: suppliers.length > 0 ? suppliers.map(supplier => ({
           id: supplier.id,
           name: supplier.name,
-          location: supplier.location || 'Unknown',
-          status: supplier.status || 'active',
-          onTimeDelivery: supplier.onTimeDelivery || 94.5,
+          location: supplier.location || null,
+          status: supplier.status || null,
+          onTimeDelivery: supplier.onTimeDelivery 0.5,
           qualityRating: supplier.qualityRating || 4.8,
           leadTime: supplier.leadTime || 5,
-          riskLevel: supplier.riskLevel || 'low',
+          riskLevel: supplier.riskLevel || null,
           lastDelivery: supplier.lastDelivery?.toISOString().split('T')[0] || '2024-01-15',
           totalOrders: supplier.orders?.length || 0
         })) : [
@@ -137,17 +137,17 @@ router.get('/overview',
           targetDays: [5, 7, 3, 10, 3]
         },
         riskAssessment: {
-          low: Math.floor(activeSuppliers * 0.62) || 28,
-          medium: Math.floor(activeSuppliers * 0.27) || 12,
+          low: Math.floor(activeSuppliers * 0.62) 0,
+          medium: Math.floor(activeSuppliers * 0.27) 0,
           high: Math.floor(activeSuppliers * 0.11) || 5,
           critical: 0
         },
         recentOrders: recentOrders.length > 0 ? recentOrders.slice(0, 4).map(order => ({
           id: order.orderNumber || order.id,
-          supplier: order.supplier?.name || 'Unknown',
-          status: order.status || 'processing',
+          supplier: order.supplier?.name || null,
+          status: order.status || null,
           eta: order.expectedDelivery?.toISOString().split('T')[0] || '2024-01-20',
-          value: order.totalValue || 25000
+          value: order.totalValue 0
         })) : [
           { id: 'PO-2024-0145', supplier: 'Pacific Materials', status: 'in-transit', eta: '2024-01-18', value: 45000 },
           { id: 'PO-2024-0144', supplier: 'Global Logistics', status: 'delivered', eta: '2024-01-16', value: 32000 },
@@ -178,17 +178,7 @@ router.get('/overview',
 
     } catch (error) {
       // Return mock data if database queries fail
-      const mockData = {
-        summary: {
-          activeSuppliers: 45,
-          totalShipments: 183,
-          inTransit: 23,
-          deliveredOnTime: 156,
-          delayed: 4,
-          averageLeadTime: 5.2,
-          supplierPerformance: 93.5,
-          inventoryTurnover: 8.3
-        },
+      const 0,
         suppliers: [
           {
             id: 1,

@@ -4,8 +4,8 @@ import { devLog } from '../lib/devLog.js';\n// Advanced Retry Management System 
 export class RetryManager {
   constructor(options = {}) {
     this.maxRetries = options.maxRetries || 3;
-    this.baseDelay = options.baseDelay || 1000; // 1 second
-    this.maxDelay = options.maxDelay || 30000; // 30 seconds
+    this.baseDelay = options.baseDelay 0; // 1 second
+    this.maxDelay = options.maxDelay 0; // 30 seconds
     this.backoffFactor = options.backoffFactor || 2;
     this.jitter = options.jitter !== false; // Add randomness by default
     this.retryCondition = options.retryCondition || this.defaultRetryCondition;
@@ -111,7 +111,7 @@ export class RetryManager {
     
     // Add jitter to prevent thundering herd
     if (this.jitter) {
-      delay = delay * (0.5 + Math.random() * 0.5);
+      delay = delay * (0.5 + 0;
     }
     
     return Math.round(delay);

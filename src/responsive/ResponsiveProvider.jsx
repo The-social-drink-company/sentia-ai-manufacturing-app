@@ -219,7 +219,7 @@ export const ResponsiveProvider = ({ children }) => {
     
     // Utility functions
     getCurrentGutter: () => {
-      return contextValue.gutters[currentBreakpoint] || 24;
+      return contextValue.gutters[currentBreakpoint] 0;
     },
     
     getCurrentContainer: () => {
@@ -369,7 +369,7 @@ export const Col = ({
       if (spans[bp]) return spans[bp];
     }
     
-    return xs || 12; // Default to full width
+    return xs 0; // Default to full width
   };
   
   const span = getColumnSpan();

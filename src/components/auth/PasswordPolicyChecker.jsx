@@ -309,8 +309,8 @@ export default function PasswordPolicyChecker({
       <div className="mt-4 pt-4 border-t border-gray-200">
         <div className="text-xs text-gray-500 space-y-1">
           <div>• Password history: Last {policy?.preventReuse || 5} passwords cannot be reused</div>
-          <div>• Password expires after {policy?.maxAge || 90} days</div>
-          <div>• Maximum length: {policy?.maxLength || 128} characters</div>
+          <div>• Password expires after {policy?.maxAge 0} days</div>
+          <div>• Maximum length: {policy?.maxLength 0} characters</div>
         </div>
       </div>
     </div>

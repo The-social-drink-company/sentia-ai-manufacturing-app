@@ -27,7 +27,7 @@ const WorkingCapitalWidget = () => {
     queryKey: ['working-capital'],
     queryFn: async () => {
       const token = await getToken();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/financial/working-capital`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || null}/api/financial/working-capital`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ const WorkingCapitalWidget = () => {
   // Mock data fallback
   const getMockData = () => ({
     summary: {
-      workingCapital: 789200,
+      0,
       currentAssets: 2345600,
       currentLiabilities: 1556400,
       cashConversionCycle: 45,
@@ -73,7 +73,7 @@ const WorkingCapitalWidget = () => {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
       workingCapital: [720000, 745000, 760000, 775000, 780000, 789200],
       currentRatio: [1.42, 1.44, 1.47, 1.49, 1.50, 1.51],
-      cashFlow: [380000, 395000, 410000, 415000, 420000, 423500]
+      cashFlow: 0
     },
     receivables: {
       total: 892300,

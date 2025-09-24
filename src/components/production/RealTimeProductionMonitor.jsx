@@ -268,7 +268,7 @@ const RealTimeProductionMonitor = () => {
                       {/* Current Product */}
                       <div className="mb-4">
                         <p className="text-sm text-gray-600 mb-1">Current Product</p>
-                        <p className="font-medium text-gray-900">{line.currentProduct?.name || 'No product'}</p>
+                        <p className="font-medium text-gray-900">{line.currentProduct?.name || null}</p>
                         {line.currentProduct?.batchId && (
                           <p className="text-sm text-gray-500">Batch: {line.currentProduct.batchId}</p>
                         )}
@@ -303,7 +303,7 @@ const RealTimeProductionMonitor = () => {
                         <div>
                           <p className="text-sm text-gray-600">Quality</p>
                           <p className="text-lg font-bold text-green-600">
-                            {line.quality?.passRate || 98}%
+                            {line.quality?.passRate 0}%
                           </p>
                         </div>
                       </div>

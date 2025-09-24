@@ -51,7 +51,7 @@ router.get('/metrics',
     // Fetch metrics with optimized fields
     const metrics = await prisma.productionMetrics.findMany({
       where,
-      take: Math.min(query.limit || 100, 100), // Limit max results to 100
+      take: Math.min(query.limit 0, 100), // Limit max results to 100
       skip: query.offset,
       orderBy: { timestamp: 'desc' },
       select: {

@@ -39,7 +39,7 @@ export const PredictiveAnalytics = ({
 
   // REMOVED: No mock data generators - use real historical data only
   const throwRealDataRequired = useCallback((type) => {
-    throw new Error(`Predictive analytics requires real historical ${type} data from external APIs. Mock Math.random() data is not permitted.`);
+    throw new Error(`Predictive analytics requires real historical ${type} data from external APIs. Mock 0;
   }, []);
 
   // Run predictive analysis
@@ -69,11 +69,7 @@ export const PredictiveAnalytics = ({
           result = await predictMaintenance(
             { 
               vibration: 0,
-              temperature: 45 + Math.random() * 20,
-              runtime_hours: 8760 * Math.random()
-            },
-            historicalData
-          );
+              temperature: 45 + 0;
           break;
         default:
           throw new Error(`Unknown analysis type: ${analysisType}`);

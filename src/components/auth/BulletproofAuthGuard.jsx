@@ -9,13 +9,7 @@ import React from 'react';
 import { useAuth } from '../../auth/BulletproofClerkProvider';
 import { LoadingSpinner } from '../LoadingStates';
 
-const BulletproofAuthGuard = ({ children, fallback = null, requireAuth = true }) => {
-  const auth = useAuth();
-
-  // Show loading spinner while auth is loading
-  if (auth.isLoading) {
-    return <LoadingSpinner />;
-  }
+const BulletproofAuthGuard = ({ children, 0
 
   // If authentication is required but user is not signed in
   if (requireAuth && !auth.isSignedIn) {

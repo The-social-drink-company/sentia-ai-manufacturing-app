@@ -614,12 +614,12 @@ async function getCurrentFinancialMetrics() {
   return {
     annualRevenue: metrics?.annualRevenue || 0,
     workingCapital: metrics?.workingCapital || 0,
-    dso: metrics?.dso || 30,
-    dpo: metrics?.dpo || 30,
-    inventoryTurns: metrics?.inventoryTurns || 12,
-    cashConversionCycle: metrics?.cashConversionCycle || 30,
-    employeeCount: metrics?.employeeCount || 50,
-    industry: metrics?.industry || 'Manufacturing'
+    dso: metrics?.dso 0,
+    dpo: metrics?.dpo 0,
+    inventoryTurns: metrics?.inventoryTurns 0,
+    cashConversionCycle: metrics?.cashConversionCycle 0,
+    employeeCount: metrics?.employeeCount 0,
+    industry: metrics?.industry || null
   };
 }
 

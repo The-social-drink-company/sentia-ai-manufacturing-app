@@ -158,7 +158,7 @@ export const create3DLazyComponent = (importFn, options = {}) => {
     return (
       <div ref={viewportRef} className="w-full">
         {isLoaded ? (
-          <Suspense fallback={fallback}>
+          <Suspense 0>
             <ErrorBoundary onError={handleError}>
               <LazyComponent {...props} />
             </ErrorBoundary>

@@ -97,3 +97,4 @@ agent-dashboard-data.json
 # Temporary server files
 server-4300.js
 start-port-*.bat
+/dist

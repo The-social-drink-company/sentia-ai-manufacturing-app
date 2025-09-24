@@ -1,5 +1,4 @@
 import React from 'react'
-import { useAuth } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { AlertCircle, Shield, Clock, Loader2 } from 'lucide-react'
 
@@ -12,7 +11,6 @@ export default function ProtectedRoute({
   requiredFeature = null,
   fallback = null
 }) {
-  const { isLoaded, isSignedIn } = useAuth()
   const { 
     isLoading, 
     isAuthenticated, 
@@ -21,8 +19,12 @@ export default function ProtectedRoute({
     isRoleAtLeast,
     hasFeature,
     role,
-    getUserDisplayName
+    getUserDisplayName,
+    isSignedIn
   } = useAuthRole()
+  
+  // Compatibility with Clerk's isLoaded - bulletproof auth is always loaded
+  const isLoaded = !isLoading
 
   // Loading states
   if (!isLoaded || isLoading) {

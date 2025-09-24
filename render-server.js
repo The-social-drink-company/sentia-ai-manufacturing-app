@@ -49,6 +49,7 @@ app.use((req, res, next) => {
   // Set CSP headers for Clerk to work properly
   const clerkDomains = [
     'https://*.clerk.accounts.dev',
+    'https://robust-snake-50.clerk.accounts.dev',
     'https://clerk.accounts.dev',
     'https://api.clerk.dev',
     'https://*.clerk.com',

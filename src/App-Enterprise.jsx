@@ -25,15 +25,15 @@ import {
 } from './auth/EnterpriseClerkProvider';
 
 // Core components
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Lazy-loaded components for performance
-const Dashboard = lazy(() => import('./components/Dashboard'));
-const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'));
 const DataImport = lazy(() => import('./components/DataImport'));
 const Analytics = lazy(() => import('./components/Analytics'));
 const Reports = lazy(() => import('./components/Reports'));

@@ -1,0 +1,154 @@
+# Render Complete Configuration - All Services
+# Sentia Manufacturing Dashboard with MCP Server Integration
+
+previewsEnabled: true
+previewsExpireAfterDays: 3
+
+databases:
+  # Development Database
+  - name: sentia-db-development
+    databaseName: sentia_development
+    user: sentia_dev
+    region: oregon
+    plan: starter
+    postgresMajorVersion: 17
+
+  # Testing Database
+  - name: sentia-db-testing
+    databaseName: sentia_testing
+    user: sentia_test
+    region: oregon
+    plan: starter
+    postgresMajorVersion: 17
+
+  # Production Database
+  - name: sentia-db-production
+    databaseName: sentia_production
+    user: sentia_prod
+    region: oregon
+    plan: starter
+    postgresMajorVersion: 17
+
+services:
+  # Development Environment
+  - type: web
+    name: sentia-manufacturing-development
+    runtime: node
+    plan: starter
+    region: oregon
+    branch: development
+    buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build && cd mcp-server && npm ci"
+    startCommand: "npm run start:with-mcp"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: PORT
+        value: 10000
+      - key: MCP_SERVER_PORT
+        value: 9000
+      - key: MCP_ENABLED
+        value: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
+      - key: VITE_API_BASE_URL
+        value: https://sentia-manufacturing-development.onrender.com/api
+      - key: VITE_MCP_URL
+        value: https://sentia-manufacturing-development.onrender.com/mcp
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # Testing Environment
+  - type: web
+    name: sentia-manufacturing-testing
+    runtime: node
+    plan: starter
+    region: oregon
+    branch: test
+    buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build && cd mcp-server && npm ci"
+    startCommand: "npm run start:with-mcp"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: test
+      - key: PORT
+        value: 10000
+      - key: MCP_SERVER_PORT
+        value: 9000
+      - key: MCP_ENABLED
+        value: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-testing
+          property: connectionString
+      - key: VITE_API_BASE_URL
+        value: https://sentia-manufacturing-testing.onrender.com/api
+      - key: VITE_MCP_URL
+        value: https://sentia-manufacturing-testing.onrender.com/mcp
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # Production Environment
+  - type: web
+    name: sentia-manufacturing-production
+    runtime: node
+    plan: starter
+    region: oregon
+    branch: production
+    buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --production=false && npm run build && cd mcp-server && npm ci"
+    startCommand: "npm run start:with-mcp"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MCP_SERVER_PORT
+        value: 9000
+      - key: MCP_ENABLED
+        value: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-production
+          property: connectionString
+      - key: VITE_API_BASE_URL
+        value: https://sentia-manufacturing-production.onrender.com/api
+      - key: VITE_MCP_URL
+        value: https://sentia-manufacturing-production.onrender.com/mcp
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+
+  # pgAdmin Service
+  - type: docker
+    name: pgAdmin-dpg-d344rkdiees73a20c50-a
+    runtime: docker
+    plan: starter
+    region: oregon
+    dockerfilePath: ./pgadmin.Dockerfile
+    dockerContext: .
+    envVars:
+      - key: PGADMIN_DEFAULT_EMAIL
+        value: admin@sentia.com
+      - key: PGADMIN_DEFAULT_PASSWORD
+        sync: false
+      - key: PGADMIN_LISTEN_PORT
+        value: 5050

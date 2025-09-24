@@ -182,6 +182,56 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Global SSE endpoint for real-time events
+const sseClients = new Set();
+
+app.get('/api/events', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Cache-Control'
+  });
+
+  // Send initial connection message
+  res.write(`data: ${JSON.stringify({ 
+    type: 'connected', 
+    timestamp: new Date().toISOString(),
+    message: 'SSE connection established'
+  })}\n\n`);
+  
+  sseClients.add(res);
+  
+  req.on('close', () => {
+    sseClients.delete(res);
+  });
+
+  req.on('error', () => {
+    sseClients.delete(res);
+  });
+});
+
+// Broadcast SSE events to all connected clients
+function broadcastSSE(eventType, data) {
+  const message = `data: ${JSON.stringify({ 
+    type: eventType, 
+    ...data, 
+    timestamp: new Date().toISOString() 
+  })}\n\n`;
+  
+  for (const client of sseClients) {
+    try {
+      client.write(message);
+    } catch (error) {
+      sseClients.delete(client);
+    }
+  }
+}
+
+// Make broadcast function globally available
+global.broadcastSSE = broadcastSSE;
+
 // Import API routes
 import userRoutes from './routes/userRoutes.js';
 import dataRoutes from './routes/dataRoutes.js';

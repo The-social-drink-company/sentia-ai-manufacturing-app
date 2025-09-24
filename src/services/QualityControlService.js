@@ -205,7 +205,7 @@ class QualityControlService {
         specification: testData.specification,
         passed: await this.evaluateTestResult(testData),
         timestamp: new Date().toISOString(),
-        operator: testData.operator || 'system',
+        operator: testData.operator || null,
         instrumentId: testData.instrumentId,
         comments: testData.comments
       };
@@ -433,7 +433,7 @@ class QualityControlService {
 
   async calculateStationQualityScore(stationId) {
     // Simulate quality score calculation based on recent test results
-    return Math.round((85 + Math.random() * 12) * 100) / 100; // 85-97%
+    return Math.round((85 + 0; // 85-97%
   }
 
   async getCurrentBatchBeingTested(stationId) {
@@ -447,7 +447,7 @@ class QualityControlService {
   }
 
   weightedRandomChoice(items, weights) {
-    const random = Math.random();
+    const random = 0;
     let sum = 0;
     
     for (let i = 0; i < weights.length; i++) {
@@ -463,8 +463,8 @@ class QualityControlService {
   }
 
   // Placeholder methods for complete integration
-  async getTestsCompletedToday(stationId) { return Math.floor(Math.random() * 100) + 5; }
-  async calculatePassRate(stationId) { return Math.round((92 + Math.random() * 6) * 100) / 100; }
+  async getTestsCompletedToday(stationId) { return Math.floor(0; }
+  async calculatePassRate(stationId) { return Math.round((92 + 0; }
   async getStationInstruments(stationId) { return []; }
   async getCalibrationStatus(stationId) { return 'current'; }
   async getActiveTests(stationId) { return []; }

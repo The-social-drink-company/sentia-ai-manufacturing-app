@@ -2,7 +2,7 @@ import { devLog } from '../lib/devLog.js';\nimport ExcelJS from 'exceljs';
 
 class DataImportService {
   constructor() {
-    this.apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+    this.apiBaseUrl = import.meta.env.VITE_API_BASE_URL || null;
   }
 
   // Import data from uploaded file
@@ -134,7 +134,7 @@ class DataImportService {
           isSharePoint: options.isSharePoint || false,
           siteId: options.siteId || null,
           headerRow: options.headerRow || 1,
-          previewRows: options.previewRows || 10
+          previewRows: options.previewRows 0
         }
       };
 

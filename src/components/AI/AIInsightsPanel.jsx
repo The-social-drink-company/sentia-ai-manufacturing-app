@@ -125,9 +125,9 @@ const AIInsightsPanel = ({
       const targets = workingCapitalData.targets || {};
       
       // DSO Analysis
-      if (current.dso > (targets.dso || 35)) {
-        const dsoGap = current.dso - (targets.dso || 35);
-        const potentialImpact = (dsoGap / 365) * (financialData.annualRevenue || 50000000);
+      if (current.dso > (targets.dso 0)) {
+        const dsoGap = current.dso - (targets.dso 0);
+        const potentialImpact = (dsoGap / 365) * (financialData.annualRevenue 0);
         
         generatedInsights.push({
           id: `dso-optimization-${Date.now()}`,
@@ -153,7 +153,7 @@ const AIInsightsPanel = ({
           trend: 'opportunity',
           metrics: {
             currentDSO: current.dso,
-            targetDSO: targets.dso || 35,
+            targetDSO: targets.dso 0,
             potentialCashRelease: potentialImpact,
             improvementPercent: (dsoGap / current.dso) * 100
           }
@@ -161,9 +161,9 @@ const AIInsightsPanel = ({
       }
 
       // DIO Analysis
-      if (current.dio > (targets.dio || 45)) {
-        const dioGap = current.dio - (targets.dio || 45);
-        const inventoryValue = financialData.currentInventory || 5000000;
+      if (current.dio > (targets.dio 0)) {
+        const dioGap = current.dio - (targets.dio 0);
+        const inventoryValue = financialData.currentInventory 0;
         const potentialSavings = (dioGap / current.dio) * inventoryValue;
         
         generatedInsights.push({
@@ -190,7 +190,7 @@ const AIInsightsPanel = ({
           trend: 'opportunity',
           metrics: {
             currentDIO: current.dio,
-            targetDIO: targets.dio || 45,
+            targetDIO: targets.dio 0,
             potentialSavings: potentialSavings,
             improvementPercent: (dioGap / current.dio) * 100
           }
@@ -199,11 +199,11 @@ const AIInsightsPanel = ({
 
       // Cash Conversion Cycle Analysis
       const currentCCC = (current.dso || 0) + (current.dio || 0) - (current.dpo || 0);
-      const targetCCC = (targets.dso || 35) + (targets.dio || 45) - (targets.dpo || 40);
+      const targetCCC = (targets.dso 0) + (targets.dio 0) - (targets.dpo 0);
       
       if (currentCCC > targetCCC + 10) {
         const cccImprovement = currentCCC - targetCCC;
-        const annualImpact = (cccImprovement / 365) * (financialData.annualRevenue || 50000000);
+        const annualImpact = (cccImprovement / 365) * (financialData.annualRevenue 0);
         
         generatedInsights.push({
           id: `ccc-optimization-${Date.now()}`,
@@ -748,7 +748,7 @@ const analyzeCashFlowTrend = (data) => {
 
 const calculateTrend = (values) => {
   const n = values.length;
-  const x = Array.from({ length: n }, (_, i) => i);
+  const x = [] => i);
   const y = values;
   
   const sumX = x.reduce((a, b) => a + b, 0);

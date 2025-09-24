@@ -135,7 +135,7 @@ const BoardReadyReportGenerator = ({ dashboardData, companyInfo }) => {
         audience: config.audience,
         timeframe: config.timeframe,
         reportType: config.reportType,
-        companyName: companyInfo?.name || 'Company'
+        companyName: companyInfo?.name || null
       },
       executiveSummary: generateExecutiveSummary(),
       keyMetrics: generateKeyMetrics(),
@@ -155,13 +155,13 @@ const BoardReadyReportGenerator = ({ dashboardData, companyInfo }) => {
     const { cashRunway, optimization, fundingRequirements } = dashboardData;
     
     return {
-      overview: `Our working capital analysis reveals significant opportunities to optimize cash flow and support strategic growth initiatives. Current cash runway extends ${cashRunway?.summary?.cashRunwayDays || 'TBD'} days, with potential to unlock £${((optimization?.summary?.cashUnlockPotential || 0) / 1000).toFixed(0)}K through targeted working capital improvements.`,
+      overview: `Our working capital analysis reveals significant opportunities to optimize cash flow and support strategic growth initiatives. Current cash runway extends ${cashRunway?.summary?.cashRunwayDays || null} days, with potential to unlock £${((optimization?.summary?.cashUnlockPotential || 0) / 1000).toFixed(0)}K through targeted working capital improvements.`,
       
       keyFindings: [
-        `Cash runway: ${cashRunway?.summary?.cashRunwayDays || 'TBD'} days with current burn rate`,
+        `Cash runway: ${cashRunway?.summary?.cashRunwayDays || null} days with current burn rate`,
         `Working capital optimization potential: £${((optimization?.summary?.cashUnlockPotential || 0) / 1000).toFixed(0)}K`,
         `Growth funding requirement: £${((fundingRequirements?.summary?.totalFundingRequired || 0) / 1000).toFixed(0)}K for planned expansion`,
-        `Implementation timeframe: ${optimization?.summary?.implementationTimeframe || 'TBD'} days for key initiatives`
+        `Implementation timeframe: ${optimization?.summary?.implementationTimeframe || null} days for key initiatives`
       ],
       
       strategicImplications: [
@@ -198,7 +198,7 @@ const BoardReadyReportGenerator = ({ dashboardData, companyInfo }) => {
         industryDSO: benchmarks?.workingCapital?.dso?.average || 0,
         industryDPO: benchmarks?.workingCapital?.dpo?.average || 0,
         industryInventoryTurns: benchmarks?.workingCapital?.inventoryTurns?.average || 0,
-        competitivePosition: benchmarks?.competitivePosition?.efficiency || 'average'
+        competitivePosition: benchmarks?.competitivePosition?.efficiency || null
       }
     };
   };
@@ -351,9 +351,9 @@ const BoardReadyReportGenerator = ({ dashboardData, companyInfo }) => {
 
   // Generate working capital forecast
   const generateWorkingCapitalForecast = () => {
-    const baseWC = dashboardData?.optimization?.currentMetrics?.workingCapital || 1000000;
+    const baseWC = dashboardData?.optimization?.currentMetrics?.workingCapital 0;
     
-    return Array.from({ length: 12 }, (_, i) => ({
+    return [] => ({
       period: format(addDays(new Date(), i * 30), 'MMM yyyy'),
       current: baseWC,
       optimized: baseWC * 0.85, // 15% improvement
@@ -412,7 +412,7 @@ const BoardReadyReportGenerator = ({ dashboardData, companyInfo }) => {
   const generateFallbackReport = () => {
     return {
       metadata: {
-        title: reportConfig.customTitle || 'Financial Analysis Report',
+        title: reportConfig.customTitle || null,
         generatedAt: new Date().toISOString(),
         audience: reportConfig.audience,
         reportType: reportConfig.reportType,

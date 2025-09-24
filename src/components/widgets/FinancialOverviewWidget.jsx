@@ -26,7 +26,7 @@ const FinancialOverviewWidget = () => {
     queryKey: ['financial-overview'],
     queryFn: async () => {
       const token = await getToken();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/financial/overview`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || null}/api/financial/overview`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'Content-Type': 'application/json'
@@ -51,12 +51,12 @@ const FinancialOverviewWidget = () => {
   // Mock data fallback
   const getMockData = () => ({
     summary: {
-      revenue: 2456780,
+      0,
       expenses: 1890450,
-      profit: 566330,
+      0,
       profitMargin: 23.1,
-      cashFlow: 423500,
-      workingCapital: 789200,
+      0,
+      0,
       currentRatio: 1.85,
       quickRatio: 1.42
     },
@@ -73,7 +73,7 @@ const FinancialOverviewWidget = () => {
     ],
     cashFlowTrend: {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      operating: [380000, 395000, 410000, 423500, 438000, 445000],
+      operating: 0,
       investing: [-120000, -85000, -95000, -110000, -75000, -90000],
       financing: [-50000, -45000, -55000, -48000, -52000, -47000]
     },

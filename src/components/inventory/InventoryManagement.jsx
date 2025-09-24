@@ -17,7 +17,7 @@ const InventoryManagement = () => {
   useEffect(() => {
     const fetchInventoryData = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || null
         const response = await fetch(`${apiUrl}/inventory/overview`)
         if (response.ok) {
           const data = await response.json()
@@ -154,7 +154,7 @@ const InventoryManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total Items</h3>
-              <p className="text-3xl font-bold text-blue-600 mt-2">{inventoryData?.kpis?.totalItems || 3231}</p>
+              <p className="text-3xl font-bold text-blue-600 mt-2">{inventoryData?.kpis?.totalItems 0}</p>
               <p className="text-sm text-gray-500 mt-1">All locations</p>
             </div>
             <CubeIcon className="h-8 w-8 text-blue-600" />
@@ -165,7 +165,7 @@ const InventoryManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total Value</h3>
-              <p className="text-3xl font-bold text-green-600 mt-2">£{inventoryData?.kpis?.totalValue || 2847592}</p>
+              <p className="text-3xl font-bold text-green-600 mt-2">£{inventoryData?.kpis?.totalValue 0}</p>
               <p className="text-sm text-gray-500 mt-1">
                 <span className="flex items-center">
                   <ArrowUpIcon className="h-3 w-3 text-green-500 mr-1" />
@@ -183,7 +183,7 @@ const InventoryManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Low Stock</h3>
-              <p className="text-3xl font-bold text-orange-600 mt-2">{inventoryData?.kpis?.lowStock || 12}</p>
+              <p className="text-3xl font-bold text-orange-600 mt-2">{inventoryData?.kpis?.lowStock 0}</p>
               <p className="text-sm text-gray-500 mt-1">Items below threshold</p>
             </div>
             <ExclamationTriangleIcon className="h-8 w-8 text-orange-600" />

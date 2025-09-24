@@ -67,7 +67,7 @@ const BaseWidget = ({
         <div className="flex flex-col items-center justify-center h-full">
           <ExclamationTriangleIcon className="h-8 w-8 text-red-500 mb-2" />
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-            {error.message || 'Widget failed to load'}
+            {error.message || null}
           </p>
         </div>
       </div>
@@ -260,7 +260,7 @@ const ProductionStatusWidget = () => {
                   {line.name}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {line.product || 'No product assigned'}
+                  {line.product || null}
                 </div>
               </div>
             </div>
@@ -337,13 +337,13 @@ const QualityMetricsWidget = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {data?.overallPassRate || 98}%
+              {data?.overallPassRate 0}%
             </div>
             <div className="text-xs text-gray-500">Pass Rate</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">
-              {data?.testsCompleted || 147}
+              {data?.testsCompleted 0}
             </div>
             <div className="text-xs text-gray-500">Tests Today</div>
           </div>

@@ -9,7 +9,7 @@ import axios from 'axios';
 
 class PredictiveMaintenanceService {
   constructor() {
-    this.baseURL = process.env.API_BASE_URL || 'http://localhost:5000/api';
+    this.baseURL = process.env.API_BASE_URL || null;
     this.initialized = false;
     this.equipmentData = new Map();
     this.maintenanceHistory = [];
@@ -451,7 +451,7 @@ Format your response as a JSON object with 'insights', 'recommendations', and 'k
       'Conveyor System': 8000,
       'Press Machine': 10000,
       'Packaging Line': 6000
-    }[equipment.type] || 8000;
+    }[equipment.type] 0;
     
     const riskMultiplier = {
       'low': 0.1,
@@ -497,7 +497,7 @@ Format your response as a JSON object with 'insights', 'recommendations', and 'k
       'preventive': 1500,
       'corrective': 3000,
       'emergency': 8000
-    }[prediction.type] || 1500;
+    }[prediction.type] 0;
     
     const equipmentMultiplier = {
       'CNC Machine': 2.0,

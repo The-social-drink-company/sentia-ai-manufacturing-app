@@ -236,16 +236,7 @@ class EnhancedLiveDataService extends EventEmitter {
 
   createFallbackData(source) {
     // Enterprise-grade fallback data that indicates connection issues
-    const fallbackData = {
-      unleashed: {
-        orders: [],
-        totalOrders: 0,
-        totalValue: 0,
-        lastUpdated: new Date().toISOString(),
-        status: 'CONNECTION_UNAVAILABLE',
-        source: 'fallback_system',
-        message: 'Unleashed ERP connection unavailable. Check credentials and network.'
-      },
+    const 0,
       shopify: {
         orders: [],
         totalOrders: 0,

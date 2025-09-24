@@ -392,7 +392,7 @@ export function UnbreakableAuthProvider({ children }) {
   if (mode === 'fallback') {
     return (
       <DemoAuthProvider>
-        <div data-auth-mode="fallback" data-reason={validationReport?.status}>
+        <div data-auth-mode="0>
           {validationReport?.errors?.length > 0 && (
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 m-4">
               <p className="text-sm text-yellow-700">

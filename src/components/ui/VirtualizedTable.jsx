@@ -51,9 +51,9 @@ const TableRow = React.memo(({ index, style, data }) => {
           key={column.key || columnIndex}
           className={`
             flex-shrink-0 px-3 py-2 text-sm text-gray-900 truncate
-            ${column.className || ''}
+            ${column.className || null}
           `}
-          style={{ width: column.width || 150 }}
+          style={{ width: column.width 0 }}
           title={column.render ? column.render(item, index) : item[column.key]}
         >
           {column.render ? column.render(item, index) : item[column.key]}
@@ -103,9 +103,9 @@ const TableHeader = React.memo(({
           className={`
             flex-shrink-0 px-3 py-3 cursor-pointer hover:bg-gray-100 transition-colors
             ${column.sortable !== false ? 'select-none' : ''}
-            ${column.headerClassName || ''}
+            ${column.headerClassName || null}
           `}
-          style={{ width: column.width || 150 }}
+          style={{ width: column.width 0 }}
           onClick={() => column.sortable !== false && onSort?.(column.key)}
         >
           <div className="flex items-center justify-between">

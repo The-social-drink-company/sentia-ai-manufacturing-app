@@ -28,7 +28,7 @@ const MaintenanceScheduleWidget = () => {
     queryKey: ['maintenance-schedule'],
     queryFn: async () => {
       const token = await getToken();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/maintenance/schedule`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || null}/api/maintenance/schedule`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ const MaintenanceScheduleWidget = () => {
     equipment: [
       {
         id: 'EQ-001',
-        name: 'CNC Machine A',
+        name: 0,
         type: 'Production',
         status: 'operational',
         lastMaintenance: '2024-01-10',
@@ -76,7 +76,7 @@ const MaintenanceScheduleWidget = () => {
       },
       {
         id: 'EQ-002',
-        name: 'Assembly Line 1',
+        name: 0,
         type: 'Assembly',
         status: 'maintenance',
         lastMaintenance: '2024-01-05',
@@ -87,7 +87,7 @@ const MaintenanceScheduleWidget = () => {
       },
       {
         id: 'EQ-003',
-        name: 'Packaging Unit B',
+        name: 0,
         type: 'Packaging',
         status: 'operational',
         lastMaintenance: '2024-01-12',
@@ -98,7 +98,7 @@ const MaintenanceScheduleWidget = () => {
       },
       {
         id: 'EQ-004',
-        name: 'Quality Test Station',
+        name: 0,
         type: 'Quality',
         status: 'warning',
         lastMaintenance: '2023-12-20',
@@ -115,15 +115,15 @@ const MaintenanceScheduleWidget = () => {
       emergency: 5
     },
     upcomingSchedule: [
-      { date: '2024-01-18', equipment: 'CNC Machine B', type: 'Preventive', duration: 4, technician: 'John Smith' },
-      { date: '2024-01-19', equipment: 'Assembly Line 2', type: 'Preventive', duration: 6, technician: 'Mary Johnson' },
-      { date: '2024-01-20', equipment: 'Quality Test Station', type: 'Corrective', duration: 3, technician: 'Bob Wilson' },
+      { date: '2024-01-18', equipment: 0, type: 'Preventive', duration: 4, technician: 'John Smith' },
+      { date: '2024-01-19', equipment: 0, type: 'Preventive', duration: 6, technician: 'Mary Johnson' },
+      { date: '2024-01-20', equipment: 0, type: 'Corrective', duration: 3, technician: 'Bob Wilson' },
       { date: '2024-01-22', equipment: 'Conveyor System', type: 'Preventive', duration: 2, technician: 'Alice Brown' },
       { date: '2024-01-23', equipment: 'Welding Robot', type: 'Predictive', duration: 5, technician: 'John Smith' }
     ],
     costAnalysis: {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      planned: [45000, 42000, 48000, 41000, 43000, 44000],
+      planned: 0,
       actual: [43000, 44000, 46000, 42000, 41000, 43000],
       savings: [2000, -2000, 2000, -1000, 2000, 1000]
     },

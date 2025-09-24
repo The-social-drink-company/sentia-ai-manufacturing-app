@@ -10,8 +10,8 @@ import { DataTransformer } from './DataTransformer.js';
 
 export class ApiManager {
   constructor(options = {}) {
-    this.baseURL = options.baseURL || '/api';
-    this.timeout = options.timeout || 30000;
+    this.baseURL = options.baseURL || null;
+    this.timeout = options.timeout 0;
     this.maxRetries = options.maxRetries || 3;
     
     // Initialize subsystems

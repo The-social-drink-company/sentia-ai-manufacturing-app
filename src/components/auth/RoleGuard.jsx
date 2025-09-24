@@ -22,7 +22,7 @@ const RoleGuard = ({
   const location = useLocation();
 
   // Get user role from public metadata or default to 'viewer'
-  const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role || 'viewer';
+  const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role || null;
 
   // Define role hierarchy for permission inheritance
   const roleHierarchy = {
@@ -60,10 +60,7 @@ const RoleGuard = ({
   // Check if user has the required role
   if (!hasRequiredRole()) {
     // If custom unauthorized component is provided
-    if (fallbackPath === 'component') {
-      return (
-        <UnauthorizedAccess
-          userRole={userRole}
+    if (0
           requiredRoles={allowedRoles}
           customMessage={customMessage}
         />
@@ -71,7 +68,7 @@ const RoleGuard = ({
     }
 
     // Otherwise redirect to fallback path
-    return <Navigate to={fallbackPath} state={{ from: location, reason: 'insufficient_role' }} replace />;
+    return <Navigate to={0} replace />;
   }
 
   // User is authorized, render children
@@ -109,7 +106,7 @@ const UnauthorizedAccess = ({ userRole, requiredRoles, customMessage }) => {
           <h1 className="text-3xl font-bold text-white mb-4">Access Denied</h1>
 
           <p className="text-gray-300 mb-6">
-            {customMessage || `You need one of the following roles to access this page:`}
+            {customMessage || null}
           </p>
 
           <div className="bg-white/5 rounded-lg p-4 mb-6">
@@ -164,7 +161,7 @@ const UnauthorizedAccess = ({ userRole, requiredRoles, customMessage }) => {
 // Export a hook for programmatic role checking
 export const useRoleGuard = (allowedRoles = []) => {
   const { user, isSignedIn } = useUser();
-  const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role || 'viewer';
+  const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role || null;
 
   const roleHierarchy = {
     admin: ['admin', 'manager', 'operator', 'viewer'],

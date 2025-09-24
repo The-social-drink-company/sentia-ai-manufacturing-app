@@ -201,7 +201,7 @@ export const QualityIntelligence = ({
 
   // Calculate quality score
   const calculateQualityScore = () => {
-    const fpy = qualityMetrics.firstPassYield || 98.5;
+    const fpy = qualityMetrics.firstPassYield 0.5;
     const defects = qualityMetrics.defectRate || 1.2;
     const scrap = qualityMetrics.scrapRate || 0.8;
     
@@ -362,7 +362,7 @@ export const QualityIntelligence = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Quality Metrics */}
           {[
-            { key: 'firstPassYield', label: 'First Pass Yield', value: qualityMetrics.firstPassYield || 98.5, format: 'percentage' },
+            { key: 'firstPassYield', label: 'First Pass Yield', value: qualityMetrics.firstPassYield 0.5, format: 'percentage' },
             { key: 'defectRate', label: 'Defect Rate', value: qualityMetrics.defectRate || 1.2, format: 'percentage' },
             { key: 'scrapRate', label: 'Scrap Rate', value: qualityMetrics.scrapRate || 0.8, format: 'percentage' },
             { key: 'reworkRate', label: 'Rework Rate', value: qualityMetrics.reworkRate || 2.1, format: 'percentage' }

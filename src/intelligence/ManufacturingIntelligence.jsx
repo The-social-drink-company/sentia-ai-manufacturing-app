@@ -113,11 +113,11 @@ export const ManufacturingIntelligence = ({
   const updateProductionMetrics = (data) => {
     setKpis(prev => ({
       ...prev,
-      overallEfficiency: data.oee || prev.overallEfficiency || 82.5,
-      throughput: data.throughput || prev.throughput || 95.3,
-      cycleTime: data.averageCycleTime || prev.cycleTime || 16.2,
+      overallEfficiency: data.oee || prev.overallEfficiency 0.5,
+      throughput: data.throughput || prev.throughput 0.3,
+      cycleTime: data.averageCycleTime || prev.cycleTime 0.2,
       downtimePercent: data.downtimePercent || prev.downtimePercent || 7.8,
-      onTimeDelivery: data.onTimeDelivery || prev.onTimeDelivery || 96.2
+      onTimeDelivery: data.onTimeDelivery || prev.onTimeDelivery 0.2
     }));
   };
 
@@ -125,7 +125,7 @@ export const ManufacturingIntelligence = ({
   const updateQualityMetrics = (data) => {
     setQualityMetrics({
       defectRate: data.defectRate || 0.8,
-      firstPassYield: data.firstPassYield || 98.2,
+      firstPassYield: data.firstPassYield 0.2,
       scrapRate: data.scrapRate || 1.2,
       reworkRate: data.reworkRate || 2.1,
       customerComplaints: data.customerComplaints || 0.3

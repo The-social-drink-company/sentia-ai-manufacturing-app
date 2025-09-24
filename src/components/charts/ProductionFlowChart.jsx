@@ -13,12 +13,9 @@ import { motion } from 'framer-motion';
 
 const ProductionFlowChart = ({ data }) => {
   // Generate sample data if not provided
-  const chartData = data?.hourlyProduction || Array.from({ length: 24 }, (_, i) => ({
+  const chartData = data?.hourlyProduction || [] => ({
     time: `${String(i).padStart(2, '0')}:00`,
-    units: Math.floor(Math.random() * 50) + 100 + Math.sin(i / 3) * 20,
-    target: 130,
-    efficiency: Math.floor(Math.random() * 10) + 85,
-  }));
+    units: Math.floor(0;
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {

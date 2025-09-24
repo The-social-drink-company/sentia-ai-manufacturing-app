@@ -51,6 +51,11 @@ const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'
 const AIInsights = lazy(() => import('./components/AIInsights'));
 const SentiaAIChatbot = lazy(() => import('./components/AI/SentiaAIChatbot'));
 
+// Cash Flow & Working Capital Pages - NEW
+const CashRunway = lazy(() => import('./pages/CashRunway'));
+const FundingCalculator = lazy(() => import('./pages/FundingCalculator'));
+const WorkingCapitalOptimizer = lazy(() => import('./pages/WorkingCapitalOptimizer'));
+
 // Mobile Pages - verified to exist
 const Mobile = lazy(() => import('./pages/Mobile'));
 const MobileFloor = lazy(() => import('./pages/MobileFloor'));
@@ -111,6 +116,11 @@ function App() {
               <Route path="/working-capital" element={<WorkingCapital />} />
               <Route path="/what-if" element={<WhatIfAnalysis />} />
               <Route path="/ai-insights" element={<AIInsights />} />
+
+              {/* Cash Flow & Working Capital Management - NEW */}
+              <Route path="/cash-runway" element={<CashRunway />} />
+              <Route path="/funding-calculator" element={<FundingCalculator />} />
+              <Route path="/working-capital-optimizer" element={<WorkingCapitalOptimizer />} />
 
               {/* Manufacturing */}
               <Route path="/production" element={<Production />} />

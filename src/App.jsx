@@ -1,141 +1,149 @@
-import React, { useState, useEffect } from 'react';
-import WorkingCapitalCalculator from './components/WorkingCapitalCalculator';
-import AIInsights from './components/AIInsights';
-import SentiaAIChatbot from './components/AI/SentiaAIChatbot';
+/**
+ * WORLD-CLASS ENTERPRISE MANUFACTURING DASHBOARD
+ * NO AUTHENTICATION - ALL PAGES ACCESSIBLE
+ * Full comprehensive enterprise application
+ */
+
+import React, { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './App.css';
 
+// Create query client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 10,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+// Dashboard Pages - verified to exist
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'));
+const EnterpriseEnhancedDashboard = lazy(() => import('./pages/EnterpriseEnhancedDashboard'));
+const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'));
+const SimpleDashboard = lazy(() => import('./pages/SimpleDashboard'));
+
+// Manufacturing Pages - verified to exist
+const Production = lazy(() => import('./pages/Production'));
+const Quality = lazy(() => import('./pages/Quality'));
+const Inventory = lazy(() => import('./pages/Inventory/index'));
+const SupplyChain = lazy(() => import('./pages/SupplyChain'));
+const Forecasting = lazy(() => import('./pages/Forecasting'));
+
+// Analytics Pages - verified to exist
+const Analytics = lazy(() => import('./pages/Analytics'));
+const RealTimeAnalytics = lazy(() => import('./pages/RealTimeAnalytics'));
+
+// Admin Pages - verified to exist
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const AdminPanelEnhanced = lazy(() => import('./pages/AdminPanelEnhanced'));
+const Settings = lazy(() => import('./pages/Settings/index'));
+
+// Components - verified to exist
+const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
+const AIInsights = lazy(() => import('./components/AIInsights'));
+const SentiaAIChatbot = lazy(() => import('./components/AI/SentiaAIChatbot'));
+
+// Mobile Pages - verified to exist
+const Mobile = lazy(() => import('./pages/Mobile'));
+const MobileFloor = lazy(() => import('./pages/MobileFloor'));
+
+// Landing Page - verified to exist
+const Landing = lazy(() => import('./pages/Landing/index'));
+
+// Mock auth hooks for compatibility
+export const useAuth = () => ({
+  isLoaded: true,
+  isSignedIn: true,
+  getToken: async () => 'mock-token',
+  userId: 'admin',
+  signOut: () => {},
+});
+
+export const useUser = () => ({
+  user: {
+    id: 'admin',
+    firstName: 'Admin',
+    lastName: 'User',
+    fullName: 'Admin User',
+    emailAddresses: [{ emailAddress: 'admin@sentia.com' }],
+    publicMetadata: { role: 'admin' },
+  },
+  isLoaded: true,
+  isSignedIn: true,
+});
+
+// Loading component
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+      <p className="mt-4 text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
+
 function App() {
-  const [status, setStatus] = useState('Loading...');
-  const [serverInfo, setServerInfo] = useState(null);
-  const [error, setError] = useState(null);
-  const [currentView, setCurrentView] = useState('dashboard');
-
-  useEffect(() => {
-    // Test server connection
-    fetch('/api/status')
-      .then(response => response.json())
-      .then(data => {
-        setServerInfo(data);
-        setStatus('Connected');
-        console.log('✅ Server connection successful:', data);
-      })
-      .catch(err => {
-        setError(err.message);
-        setStatus('Connection Failed');
-        console.error('❌ Server connection failed:', err);
-      });
-  }, []);
-
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'working-capital':
-        return <WorkingCapitalCalculator />;
-      case 'ai-insights':
-        return <AIInsights />;
-      case 'dashboard':
-      default:
-        return (
-          <div className="App">
-            <header className="App-header">
-              <h1>🏭 Sentia Manufacturing Dashboard</h1>
-              <h2>Enterprise Working Capital Intelligence</h2>
-              
-              <div className="status-card">
-                <h3>System Status</h3>
-                <div className={`status-indicator ${status === 'Connected' ? 'success' : status === 'Connection Failed' ? 'error' : 'loading'}`}>
-                  {status}
-                </div>
-                
-                {serverInfo && (
-                  <div className="server-info">
-                    <p><strong>Service:</strong> {serverInfo.service}</p>
-                    <p><strong>Version:</strong> {serverInfo.version}</p>
-                    <p><strong>Environment:</strong> {serverInfo.environment}</p>
-                    <p><strong>Timestamp:</strong> {new Date(serverInfo.timestamp).toLocaleString()}</p>
-                  </div>
-                )}
-                
-                {error && (
-                  <div className="error-info">
-                    <p><strong>Error:</strong> {error}</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="features-grid">
-                <div className="feature-card">
-                  <h4>📊 Working Capital Calculator</h4>
-                  <p>Analyze cash flow and optimize working capital</p>
-                  <button 
-                    className="feature-button active"
-                    onClick={() => setCurrentView('working-capital')}
-                  >
-                    Launch Calculator
-                  </button>
-                </div>
-                
-                <div className="feature-card">
-                  <h4>🤖 AI Insights</h4>
-                  <p>AI-powered manufacturing intelligence</p>
-                  <button 
-                    className="feature-button active"
-                    onClick={() => setCurrentView('ai-insights')}
-                  >
-                    View Insights
-                  </button>
-                </div>
-                
-                <div className="feature-card">
-                  <h4>📈 Real-time Analytics</h4>
-                  <p>Live production and financial metrics</p>
-                  <button disabled>Coming Soon</button>
-                </div>
-                
-                <div className="feature-card">
-                  <h4>🔗 Enterprise Integration</h4>
-                  <p>Connect with Xero, Shopify, and more</p>
-                  <button disabled>Coming Soon</button>
-                </div>
-              </div>
-
-              <div className="deployment-info">
-                <h3>🚀 Deployment Status</h3>
-                <p>✅ React Application: Loaded Successfully</p>
-                <p>✅ Server Connection: {status}</p>
-                <p>✅ Static Assets: Serving Correctly</p>
-                <p>✅ Health Checks: Operational</p>
-                <p>✅ Working Capital Calculator: Ready</p>
-                <p>✅ AI Insights: Ready</p>
-              </div>
-            </header>
-          </div>
-        );
-    }
-  };
-
-  if (currentView !== 'dashboard') {
-    return (
-      <div className="app-container">
-        <nav className="app-nav">
-          <button 
-            className="nav-button"
-            onClick={() => setCurrentView('dashboard')}
-          >
-            ← Back to Dashboard
-          </button>
-          <h3>Sentia Manufacturing Dashboard</h3>
-        </nav>
-        {renderCurrentView()}
-      </div>
-    );
-  }
-
   return (
-    <>
-      {renderCurrentView()}
-      {/* Sentia AI Chatbot - Always visible */}
-      <SentiaAIChatbot />
-    </>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="App min-h-screen bg-gray-50">
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              {/* Landing */}
+              <Route path="/" element={<Landing />} />
+
+              {/* Dashboards */}
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/enhanced" element={<EnhancedDashboard />} />
+              <Route path="/dashboard/enterprise" element={<EnterpriseEnhancedDashboard />} />
+              <Route path="/dashboard/world-class" element={<WorldClassDashboard />} />
+              <Route path="/dashboard/simple" element={<SimpleDashboard />} />
+
+              {/* Financial */}
+              <Route path="/working-capital" element={<WorkingCapital />} />
+              <Route path="/ai-insights" element={<AIInsights />} />
+
+              {/* Manufacturing */}
+              <Route path="/production" element={<Production />} />
+              <Route path="/quality" element={<Quality />} />
+              <Route path="/inventory" element={<Inventory />} />
+              <Route path="/supply-chain" element={<SupplyChain />} />
+              <Route path="/forecasting" element={<Forecasting />} />
+
+              {/* Analytics */}
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/analytics/real-time" element={<RealTimeAnalytics />} />
+
+              {/* Admin */}
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/enhanced" element={<AdminPanelEnhanced />} />
+              <Route path="/settings" element={<Settings />} />
+
+              {/* Mobile */}
+              <Route path="/mobile" element={<Mobile />} />
+              <Route path="/mobile-floor" element={<MobileFloor />} />
+
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </Suspense>
+
+          {/* Sentia AI Chatbot - Always visible on all pages */}
+          <Suspense fallback={null}>
+            <SentiaAIChatbot />
+          </Suspense>
+
+          {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+        </div>
+      </Router>
+    </QueryClientProvider>
   );
 }
 

@@ -45,8 +45,11 @@ const KPICard = ({ title, value, trend, sparklineData, color = 'blue', icon }) =
     if (sparklineData && sparklineData.length > 0) return sparklineData;
 
     // Generate dummy data for demonstration
-    return [] => ({
-      value: 0;
+    const points = 20;
+    const data = Array.from({ length: points }, (_, i) => ({
+      value: Math.round(60 + 20 * Math.sin((i / points) * Math.PI * 2))
+    }));
+    return data;
   };
 
   const sparkline = generateSparkline();

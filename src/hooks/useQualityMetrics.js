@@ -9,5 +9,6 @@ export const useQualityMetrics = () => {
       { metric: 'Inspection Pass', value: 97.8, benchmark: 96 },
       { metric: 'Supplier Quality', value: 95.4, benchmark: 93 },
     ],
-    history: [] => 0;
+    history: Array.from({ length: 20 }, (_, i) => ({ value: Math.round(90 + 5 * Math.sin((i / 20) * Math.PI * 2)) })),
+  };
 };

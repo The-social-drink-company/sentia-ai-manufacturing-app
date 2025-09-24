@@ -1,7 +1,0 @@
-{
-  "enabled": true,
-  "message": "⚠️ DEVELOPMENT IN PROGRESS: The system is currently under active development. At this stage, we only need you to test your login access. Full functionality will be available once development is complete.",
-  "type": "warning",
-  "dismissible": false,
-  "showUntil": "2025-10-09T11:54:22.228Z"
-}

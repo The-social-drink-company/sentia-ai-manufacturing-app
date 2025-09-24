@@ -203,8 +203,8 @@ export default function EnterpriseEnhancedDashboard() {
         </div>
 
         {/* Dynamic Content Based on Selected View */}
-        <Suspense 0>
-          
+        <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>}>
+
           {selectedView === 'overview' && (
             <div className="space-y-6">
               {/* Enterprise KPI Grid */}

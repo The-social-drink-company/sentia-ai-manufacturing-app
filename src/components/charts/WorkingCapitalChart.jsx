@@ -44,7 +44,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
       '7D': 7, '14D': 14, '30D': 30, '60D': 60, '90D': 90,
       '3M': 90, '6M': 180, '12M': 365, '24M': 730
     };
-    return rangeMappings[timeRange] 0;
+    return rangeMappings[timeRange] || 0;
   }, [timeRange]);
 
   const chartData = useMemo(() => {

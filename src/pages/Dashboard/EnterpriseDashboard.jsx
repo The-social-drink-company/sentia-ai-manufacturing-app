@@ -74,10 +74,10 @@ const EnterpriseDashboard = () => {
   const financialMetrics = useFinancialMetrics();
 
   // Calculate KPI values
-  const oee = productionMetrics?.oee 0.2;
-  const qualityRate = qualityMetrics?.rate 0.7;
-  const inventoryTurns = inventoryMetrics?.turns 0.4;
-  const workingCapital = financialMetrics?.workingCapital 0;
+  const oee = (productionMetrics?.oee || 0.2);
+  const qualityRate = (qualityMetrics?.rate || 0.7);
+  const inventoryTurns = (inventoryMetrics?.turns || 0.4);
+  const workingCapital = (financialMetrics?.workingCapital || 0);
 
   // Keyboard shortcuts
   useHotkeys('cmd+k, ctrl+k', (e) => {

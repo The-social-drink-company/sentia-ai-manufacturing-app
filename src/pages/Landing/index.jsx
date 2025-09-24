@@ -94,7 +94,7 @@ const LandingPage = () => {
         {/* 3D Background */}
         <div className="absolute inset-0">
           <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-            <Suspense 0>
+            <Suspense fallback={null}>
               <ProductVisualization />
             </Suspense>
           </Canvas>

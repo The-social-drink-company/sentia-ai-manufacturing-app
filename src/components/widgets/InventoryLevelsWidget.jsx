@@ -34,9 +34,7 @@ const InventoryLevelsWidget = () => {
 
       if (!response.ok) {
         // Fallback to mock data if API fails
-        if (response.status === 404 || response.status === 500) {
-          return getMockData();
-        }
+        
         throw new Error(`Failed to fetch inventory levels: ${response.statusText}`);
       }
 
@@ -47,47 +45,11 @@ const InventoryLevelsWidget = () => {
     retryDelay: 1000
   });
 
-  // Mock data fallback
-  const getMockData = () => ({
-    summary: {
-      totalSKUs: 245,
-      totalValue: 1547280,
-      averageTurnover: 8.3,
-      stockoutRisk: 12,
-      overstockItems: 18,
-      reorderRequired: 23
-    },
-    categories: [
-      { name: 'Raw Materials', value: 450000, items: 89, status: 'optimal' },
-      { name: 'Work in Progress', value: 320000, items: 45, status: 'high' },
-      { name: 'Finished Goods', value: 777280, items: 111, status: 'optimal' }
-    ],
-    criticalItems: [
-      { sku: 'RM-001', name: 'Steel Sheet 2mm', current: 150, min: 200, status: 'critical', daysSupply: 2 },
-      { sku: 'RM-045', name: 'Aluminum Bars', current: 320, min: 500, status: 'low', daysSupply: 5 },
-      { sku: 'FG-112', name: 'Product A', current: 45, min: 100, status: 'critical', daysSupply: 1 },
-      { sku: 'WP-023', name: 'Sub-Assembly B', current: 180, min: 250, status: 'low', daysSupply: 4 }
-    ],
-    topMovers: [
-      { sku: 'FG-001', name: 'Product X', movement: 1200, trend: 'up', changePercent: 15 },
-      { sku: 'FG-002', name: 'Product Y', movement: 980, trend: 'up', changePercent: 8 },
-      { sku: 'FG-003', name: 'Product Z', movement: 750, trend: 'down', changePercent: -5 }
-    ],
-    warehouseCapacity: {
-      used: 72,
-      available: 28,
-      locations: [
-        { name: 'Main Warehouse', used: 85, capacity: 100 },
-        { name: 'Overflow Storage', used: 45, capacity: 100 },
-        { name: 'Cold Storage', used: 90, capacity: 100 }
-      ]
-    }
-  });
+    if (isLoading) return <WidgetSkeleton title="Inventory Levels" height="400px" />;
+  if (error) return <WidgetError error={error} onRetry={refetch} title={title} />;
+  if (!data) return <WidgetError error={{ message: 'No data available. Please connect to real data source.' }} onRetry={refetch} title={title} />;
 
-  if (isLoading && !data) return <WidgetSkeleton title="Inventory Levels" height="400px" />;
-  if (error && !data) return <WidgetError error={error} onRetry={refetch} title="Inventory Levels" />;
-
-  const inventory = data || getMockData();
+  const widgetData = data;
 
   // Chart configuration for categories
   const chartData = {

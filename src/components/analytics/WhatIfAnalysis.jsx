@@ -54,9 +54,9 @@ const WhatIfAnalysis = () => {
 
   // Market-specific parameters
   const [marketData] = useState({
-    uk: { 0, growth: 8, margin: 22, risk: 'Low' },
-    us: { 0, growth: 12, margin: 25, risk: 'Medium' },
-    eu: { 0, growth: 5, margin: 18, risk: 'Low' }
+    uk: { revenue: 0, growth: 8, margin: 22, risk: 'Low' },
+    us: { revenue: 0, growth: 12, margin: 25, risk: 'Medium' },
+    eu: { revenue: 0, growth: 5, margin: 18, risk: 'Low' }
   });
 
   // Calendar-aware calculations based on current scenario
@@ -740,7 +740,7 @@ const generateCalendarAwareRecommendations = (scenarios, calculations) => {
   const recommendations = [];
   
   // Working capital optimization based on Cash Conversion Cycle
-  if (cccResults && cccResults.cashConversionCycle > (cccResults.benchmarks?.targetCCC 0) + 10) {
+  if (cccResults && cccResults.cashConversionCycle > ((cccResults.benchmarks?.targetCCC || 0)) + 10) {
     recommendations.push({
       type: 'cash-conversion',
       priority: 'high',

@@ -11,7 +11,7 @@ class StructuredLogger {
     this.environment = options.environment || process.env.NODE_ENV || null;
     this.enableConsole = options.enableConsole !== false;
     this.enableStorage = options.enableStorage !== false;
-    this.maxStoredLogs = options.maxStoredLogs 0;
+    this.maxStoredLogs = options.maxStoredLogs || 0;
     
     // Log levels with numeric values for filtering
     this.levels = {

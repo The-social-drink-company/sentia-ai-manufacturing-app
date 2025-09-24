@@ -48,7 +48,7 @@ const InventoryDashboard = () => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Items</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {isLoading ? '...' : data?.totalItems 0}
+                {isLoading ? '...' : data?.totalItems || 0}
               </p>
             </div>
             <CubeIcon className="h-8 w-8 text-blue-500" />
@@ -60,7 +60,7 @@ const InventoryDashboard = () => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Low Stock</p>
               <p className="text-2xl font-bold text-yellow-600">
-                {isLoading ? '...' : data?.lowStock 0}
+                {isLoading ? '...' : data?.lowStock || 0}
               </p>
             </div>
             <ChartBarIcon className="h-8 w-8 text-yellow-500" />
@@ -72,7 +72,7 @@ const InventoryDashboard = () => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Out of Stock</p>
               <p className="text-2xl font-bold text-red-600">
-                {isLoading ? '...' : data?.outOfStock || 5}
+                {isLoading ? '...' : data?.outOfStock || 0}
               </p>
             </div>
             <DocumentTextIcon className="h-8 w-8 text-red-500" />
@@ -84,7 +84,7 @@ const InventoryDashboard = () => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Value</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                ${isLoading ? '...' : (data?.totalValue 0).toLocaleString()}
+                ${isLoading ? '...' : (data?.totalValue || 0).toLocaleString()}
               </p>
             </div>
             <TruckIcon className="h-8 w-8 text-green-500" />

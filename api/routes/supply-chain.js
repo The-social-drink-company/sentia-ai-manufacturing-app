@@ -76,55 +76,18 @@ router.get('/overview',
             (suppliers.reduce((sum, s) => sum + (s.performance 0), 0) / suppliers.length) : 93.5,
           inventoryTurnover: 8.3
         },
-        suppliers: suppliers.length > 0 ? suppliers.map(supplier => ({
+        suppliers: suppliers.map(supplier => ({
           id: supplier.id,
           name: supplier.name,
           location: supplier.location || null,
           status: supplier.status || null,
-          onTimeDelivery: supplier.onTimeDelivery 0.5,
-          qualityRating: supplier.qualityRating || 4.8,
-          leadTime: supplier.leadTime || 5,
+          onTimeDelivery: supplier.onTimeDelivery || 0,
+          qualityRating: supplier.qualityRating || 0,
+          leadTime: supplier.leadTime || 0,
           riskLevel: supplier.riskLevel || null,
-          lastDelivery: supplier.lastDelivery?.toISOString().split('T')[0] || '2024-01-15',
+          lastDelivery: supplier.lastDelivery?.toISOString().split('T')[0] || null,
           totalOrders: supplier.orders?.length || 0
-        })) : [
-          {
-            id: 1,
-            name: 'Pacific Materials Co.',
-            location: 'Vancouver, BC',
-            status: 'active',
-            onTimeDelivery: 94.5,
-            qualityRating: 4.8,
-            leadTime: 5,
-            riskLevel: 'low',
-            lastDelivery: '2024-01-15',
-            totalOrders: 125
-          },
-          {
-            id: 2,
-            name: 'Industrial Components Ltd.',
-            location: 'Toronto, ON',
-            status: 'delayed',
-            onTimeDelivery: 87.2,
-            qualityRating: 4.3,
-            leadTime: 8,
-            riskLevel: 'medium',
-            lastDelivery: '2024-01-14',
-            totalOrders: 98
-          },
-          {
-            id: 3,
-            name: 'Global Logistics Inc.',
-            location: 'Montreal, QC',
-            status: 'active',
-            onTimeDelivery: 96.1,
-            qualityRating: 4.9,
-            leadTime: 3,
-            riskLevel: 'low',
-            lastDelivery: '2024-01-16',
-            totalOrders: 156
-          }
-        ],
+        })),
         shipmentTrend: {
           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           shipped: [28, 32, 25, 35, 30, 18, 15],
@@ -177,8 +140,14 @@ router.get('/overview',
       });
 
     } catch (error) {
-      // Return mock data if database queries fail
-      const 0,
+      console.error('[Supply Chain API] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch supply chain data. Please ensure database connection is active.',
+        message: error.message
+      });
+      return;
+      const mockData = {
         suppliers: [
           {
             id: 1,
@@ -266,11 +235,8 @@ router.get('/overview',
         }
       };
 
-      res.json({
-        success: true,
-        data: mockData,
-        fallback: true
-      });
+      // This code should never be reached due to early return above
+      // Removing mock data response
     }
   })
 );

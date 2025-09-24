@@ -37,9 +37,7 @@ const SupplyChainWidget = () => {
 
       if (!response.ok) {
         // Fallback to mock data if API fails
-        if (response.status === 404 || response.status === 500) {
-          return getMockData();
-        }
+        
         throw new Error(`Failed to fetch supply chain data: ${response.statusText}`);
       }
 
@@ -50,109 +48,11 @@ const SupplyChainWidget = () => {
     retryDelay: 1000
   });
 
-  // Mock data fallback
-  const getMockData = () => ({
-    summary: {
-      activeSuppliers: 45,
-      totalShipments: 183,
-      inTransit: 23,
-      deliveredOnTime: 156,
-      delayed: 4,
-      averageLeadTime: 5.2,
-      supplierPerformance: 93.5,
-      inventoryTurnover: 8.3
-    },
-    suppliers: [
-      {
-        id: 1,
-        name: 'Pacific Materials Co.',
-        location: 'Vancouver, BC',
-        status: 'active',
-        onTimeDelivery: 94.5,
-        qualityRating: 4.8,
-        leadTime: 5,
-        riskLevel: 'low',
-        lastDelivery: '2024-01-15',
-        totalOrders: 125
-      },
-      {
-        id: 2,
-        name: 'Industrial Components Ltd.',
-        location: 'Toronto, ON',
-        status: 'delayed',
-        onTimeDelivery: 87.2,
-        qualityRating: 4.3,
-        leadTime: 8,
-        riskLevel: 'medium',
-        lastDelivery: '2024-01-14',
-        totalOrders: 98
-      },
-      {
-        id: 3,
-        name: 'Global Logistics Inc.',
-        location: 'Montreal, QC',
-        status: 'active',
-        onTimeDelivery: 96.1,
-        qualityRating: 4.9,
-        leadTime: 3,
-        riskLevel: 'low',
-        lastDelivery: '2024-01-16',
-        totalOrders: 156
-      },
-      {
-        id: 4,
-        name: 'Eastern Supplies Corp.',
-        location: 'Halifax, NS',
-        status: 'at-risk',
-        onTimeDelivery: 78.5,
-        qualityRating: 3.9,
-        leadTime: 12,
-        riskLevel: 'high',
-        lastDelivery: '2024-01-10',
-        totalOrders: 67
-      }
-    ],
-    shipmentTrend: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      shipped: [28, 32, 25, 35, 30, 18, 15],
-      delivered: [22, 28, 30, 28, 33, 20, 12],
-      delayed: [1, 0, 2, 1, 0, 1, 0]
-    },
-    leadTimeAnalysis: {
-      labels: ['Raw Materials', 'Components', 'Packaging', 'Equipment', 'Consumables'],
-      averageDays: [4.5, 6.2, 3.1, 8.5, 2.8],
-      targetDays: [5, 7, 3, 10, 3]
-    },
-    riskAssessment: {
-      low: 28,
-      medium: 12,
-      high: 5,
-      critical: 0
-    },
-    recentOrders: [
-      { id: 'PO-2024-0145', supplier: 'Pacific Materials', status: 'in-transit', eta: '2024-01-18', value: 45000 },
-      { id: 'PO-2024-0144', supplier: 'Global Logistics', status: 'delivered', eta: '2024-01-16', value: 32000 },
-      { id: 'PO-2024-0143', supplier: 'Industrial Components', status: 'delayed', eta: '2024-01-19', value: 28500 },
-      { id: 'PO-2024-0142', supplier: 'Eastern Supplies', status: 'processing', eta: '2024-01-22', value: 18000 }
-    ],
-    transportModes: {
-      road: 45,
-      rail: 25,
-      sea: 20,
-      air: 10
-    },
-    geographicDistribution: {
-      domestic: 65,
-      northAmerica: 20,
-      asia: 10,
-      europe: 5
-    }
-  });
+    if (isLoading) return <WidgetSkeleton title="Supply Chain Management" height="400px" />;
+  if (error) return <WidgetError error={error} onRetry={refetch} title={title} />;
+  if (!data) return <WidgetError error={{ message: 'No data available. Please connect to real data source.' }} onRetry={refetch} title={title} />;
 
-  if (isLoading && !data) return <WidgetSkeleton title="Supply Chain Management" height="400px" />;
-  if (error && !data) return <WidgetError error={error} onRetry={refetch} title="Supply Chain Management" />;
-
-  const supplyChain = data || getMockData();
+  const widgetData = data;
 
   // Shipment trend chart configuration
   const shipmentTrendData = {

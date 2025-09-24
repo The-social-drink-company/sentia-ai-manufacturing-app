@@ -37,9 +37,7 @@ const MaintenanceScheduleWidget = () => {
 
       if (!response.ok) {
         // Fallback to mock data if API fails
-        if (response.status === 404 || response.status === 500) {
-          return getMockData();
-        }
+        
         throw new Error(`Failed to fetch maintenance schedule: ${response.statusText}`);
       }
 
@@ -50,101 +48,11 @@ const MaintenanceScheduleWidget = () => {
     retryDelay: 1000
   });
 
-  // Mock data fallback
-  const getMockData = () => ({
-    summary: {
-      totalEquipment: 125,
-      scheduledMaintenance: 18,
-      completedThisMonth: 24,
-      overdue: 3,
-      upcomingWeek: 7,
-      availability: 94.2,
-      mtbf: 720, // Mean Time Between Failures (hours)
-      mttr: 2.5  // Mean Time To Repair (hours)
-    },
-    equipment: [
-      {
-        id: 'EQ-001',
-        name: 0,
-        type: 'Production',
-        status: 'operational',
-        lastMaintenance: '2024-01-10',
-        nextMaintenance: '2024-02-10',
-        hoursRun: 1250,
-        healthScore: 92,
-        criticality: 'high'
-      },
-      {
-        id: 'EQ-002',
-        name: 0,
-        type: 'Assembly',
-        status: 'maintenance',
-        lastMaintenance: '2024-01-05',
-        nextMaintenance: '2024-01-17',
-        hoursRun: 2100,
-        healthScore: 78,
-        criticality: 'critical'
-      },
-      {
-        id: 'EQ-003',
-        name: 0,
-        type: 'Packaging',
-        status: 'operational',
-        lastMaintenance: '2024-01-12',
-        nextMaintenance: '2024-02-12',
-        hoursRun: 890,
-        healthScore: 95,
-        criticality: 'medium'
-      },
-      {
-        id: 'EQ-004',
-        name: 0,
-        type: 'Quality',
-        status: 'warning',
-        lastMaintenance: '2023-12-20',
-        nextMaintenance: '2024-01-20',
-        hoursRun: 3200,
-        healthScore: 65,
-        criticality: 'high'
-      }
-    ],
-    maintenanceTypes: {
-      preventive: 65,
-      corrective: 20,
-      predictive: 10,
-      emergency: 5
-    },
-    upcomingSchedule: [
-      { date: '2024-01-18', equipment: 0, type: 'Preventive', duration: 4, technician: 'John Smith' },
-      { date: '2024-01-19', equipment: 0, type: 'Preventive', duration: 6, technician: 'Mary Johnson' },
-      { date: '2024-01-20', equipment: 0, type: 'Corrective', duration: 3, technician: 'Bob Wilson' },
-      { date: '2024-01-22', equipment: 'Conveyor System', type: 'Preventive', duration: 2, technician: 'Alice Brown' },
-      { date: '2024-01-23', equipment: 'Welding Robot', type: 'Predictive', duration: 5, technician: 'John Smith' }
-    ],
-    costAnalysis: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      planned: 0,
-      actual: [43000, 44000, 46000, 42000, 41000, 43000],
-      savings: [2000, -2000, 2000, -1000, 2000, 1000]
-    },
-    performanceMetrics: {
-      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-      availability: [93.5, 94.2, 93.8, 94.5],
-      reliability: [96.2, 95.8, 96.5, 97.0],
-      oee: [85.3, 86.1, 85.8, 86.5]
-    },
-    spareParts: [
-      { part: 'Bearing Type A', stock: 45, minimum: 20, usage: 'High', leadTime: 7 },
-      { part: 'Motor Belt XL', stock: 12, minimum: 15, usage: 'Medium', leadTime: 14 },
-      { part: 'Filter Element', stock: 8, minimum: 10, usage: 'Low', leadTime: 5 },
-      { part: 'Control Board', stock: 3, minimum: 2, usage: 'Low', leadTime: 30 }
-    ]
-  });
+    if (isLoading) return <WidgetSkeleton title="Maintenance Schedule" height="400px" />;
+  if (error) return <WidgetError error={error} onRetry={refetch} title={title} />;
+  if (!data) return <WidgetError error={{ message: 'No data available. Please connect to real data source.' }} onRetry={refetch} title={title} />;
 
-  if (isLoading && !data) return <WidgetSkeleton title="Maintenance Schedule" height="400px" />;
-  if (error && !data) return <WidgetError error={error} onRetry={refetch} title="Maintenance Schedule" />;
-
-  const maintenance = data || getMockData();
+  const widgetData = data;
 
   // Maintenance types chart
   const maintenanceTypesData = {

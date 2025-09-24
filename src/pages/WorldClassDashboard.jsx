@@ -202,8 +202,8 @@ const WorldClassDashboard = () => {
         <EnterpriseWidget
           title="Inventory Management"
           subtitle="Stock levels & optimization"
-          value={`$${((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue 0) / 1000000).toFixed(1)}M`}
-          previousValue={`$${(((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue 0) - 150000) / 1000000).toFixed(1)}M`}
+          value={`$${((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue || 0) / 1000000).toFixed(1)}M`}
+          previousValue={`$${(((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue || 0) - 150000) / 1000000).toFixed(1)}M`}
           trend={dashboardData?.inventory?.trend}
           trendPercentage={dashboardData?.inventory?.trendPercentage}
           icon={CubeIcon}
@@ -231,8 +231,8 @@ const WorldClassDashboard = () => {
         <EnterpriseWidget
           title="Financial Performance"
           subtitle="Revenue & profitability"
-          value={`$${((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue || dashboardData?.financial?.revenue 0) / 1000000).toFixed(1)}M`}
-          previousValue={`$${(((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue || dashboardData?.financial?.revenue 0) - 320000) / 1000000).toFixed(1)}M`}
+          value={`$${((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue || dashboardData?.financial?.revenue || 0) / 1000000).toFixed(1)}M`}
+          previousValue={`$${(((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue || dashboardData?.financial?.revenue || 0) - 320000) / 1000000).toFixed(1)}M`}
           trend={dashboardData?.financial?.trend}
           trendPercentage={dashboardData?.financial?.trendPercentage}
           icon={BanknotesIcon}
@@ -250,7 +250,7 @@ const WorldClassDashboard = () => {
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Total Profit</span>
               <span className="font-semibold text-gray-900">
-                $${(((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue 0) * 0.185 / 1000000).toFixed(1))}M
+                $${(((dashboardData?.data?.kpis?.find(k => k.id === 'revenue')?.numericValue || 0) * 0.185 / 1000000).toFixed(1))}M
               </span>
             </div>
           </div>

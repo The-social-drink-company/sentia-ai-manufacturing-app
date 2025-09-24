@@ -33,9 +33,7 @@ const QualityControlWidget = () => {
 
       if (!response.ok) {
         // Fallback to mock data if API fails
-        if (response.status === 404 || response.status === 500) {
-          return getMockData();
-        }
+        
         throw new Error(`Failed to fetch quality metrics: ${response.statusText}`);
       }
 
@@ -46,51 +44,11 @@ const QualityControlWidget = () => {
     retryDelay: 1000
   });
 
-  // Mock data fallback
-  const getMockData = () => ({
-    summary: {
-      passRate: 98.7,
-      defectRate: 1.3,
-      totalInspections: 1247,
-      totalDefects: 16,
-      reworkRate: 0.8,
-      scrapRate: 0.5
-    },
-    distribution: {
-      passed: 1231,
-      failed: 16,
-      rework: 10,
-      scrap: 6
-    },
-    defectTypes: [
-      { type: 'Dimensional', count: 6, percentage: 37.5 },
-      { type: 'Surface Finish', count: 4, percentage: 25 },
-      { type: 'Assembly', count: 3, percentage: 18.75 },
-      { type: 'Material', count: 2, percentage: 12.5 },
-      { type: 'Other', count: 1, percentage: 6.25 }
-    ],
-    trend: {
-      labels: ['6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm'],
-      passRates: [99.2, 98.8, 99.0, 98.5, 98.7, 98.9, 98.7],
-      inspections: [150, 180, 195, 210, 178, 185, 149]
-    },
-    recentIssues: [
-      { id: 1, time: '2:45 PM', product: 'Product A', issue: 'Dimensional variance', severity: 'medium' },
-      { id: 2, time: '11:30 AM', product: 'Product C', issue: 'Surface scratch', severity: 'low' },
-      { id: 3, time: '9:15 AM', product: 'Product B', issue: 'Assembly misalignment', severity: 'high' }
-    ],
-    qualityMetrics: {
-      cpk: 1.67,
-      dpmo: 233,
-      sigmaLevel: 4.8,
-      firstPassYield: 97.2
-    }
-  });
+    if (isLoading) return <WidgetSkeleton title="Quality Control" height="400px" />;
+  if (error) return <WidgetError error={error} onRetry={refetch} title={title} />;
+  if (!data) return <WidgetError error={{ message: 'No data available. Please connect to real data source.' }} onRetry={refetch} title={title} />;
 
-  if (isLoading && !data) return <WidgetSkeleton title="Quality Control" height="400px" />;
-  if (error && !data) return <WidgetError error={error} onRetry={refetch} title="Quality Control" />;
-
-  const quality = data || getMockData();
+  const widgetData = data;
 
   // Doughnut chart configuration
   const doughnutData = {

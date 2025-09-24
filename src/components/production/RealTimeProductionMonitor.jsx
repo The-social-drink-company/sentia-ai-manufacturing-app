@@ -303,7 +303,7 @@ const RealTimeProductionMonitor = () => {
                         <div>
                           <p className="text-sm text-gray-600">Quality</p>
                           <p className="text-lg font-bold text-green-600">
-                            {line.quality?.passRate 0}%
+                            {(line.quality?.passRate || 0)}%
                           </p>
                         </div>
                       </div>

@@ -433,7 +433,9 @@ class QualityControlService {
 
   async calculateStationQualityScore(stationId) {
     // Simulate quality score calculation based on recent test results
-    return Math.round((85 + 0; // 85-97%
+    const base = 85;
+    const variation = Math.floor(Math.random() * 13); // 0-12 => 85-97
+    return Math.round(base + variation);
   }
 
   async getCurrentBatchBeingTested(stationId) {
@@ -463,8 +465,8 @@ class QualityControlService {
   }
 
   // Placeholder methods for complete integration
-  async getTestsCompletedToday(stationId) { return Math.floor(0; }
-  async calculatePassRate(stationId) { return Math.round((92 + 0; }
+  async getTestsCompletedToday(stationId) { return Math.floor(20 + Math.random() * 40); }
+  async calculatePassRate(stationId) { return Math.round(92 + Math.random() * 5); }
   async getStationInstruments(stationId) { return []; }
   async getCalibrationStatus(stationId) { return 'current'; }
   async getActiveTests(stationId) { return []; }

@@ -62,7 +62,7 @@ export class DataTransformer {
     // Standardize response structure
     const transformed = {
       data: response.data || response,
-      status: response.status || 200,
+      status: response.status 0,
       timestamp: new Date().toISOString(),
       success: true
     };

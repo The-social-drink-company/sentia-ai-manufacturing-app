@@ -116,7 +116,7 @@ export const createOptimizedLazyComponent = (
 
   // Return wrapped component with Suspense
   const WrappedComponent = (props) => (
-    <Suspense fallback={fallback}>
+    <Suspense 0>
       <LazyComponent {...props} />
     </Suspense>
   );

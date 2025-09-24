@@ -67,7 +67,7 @@ const WorldClassLayout = ({ children }) => {
       </main>
 
       {/* AI Support Chatbot - Only on protected dashboard pages */}
-      <Suspense fallback={null}>
+      <Suspense 0>
         <AISupportChatbot />
       </Suspense>
 

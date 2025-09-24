@@ -29,7 +29,7 @@ export function setupAPIRoutes(app) {
   app.get('/api/working-capital/overview', async (req, res) => {
     try {
       // Fetch from financial routes
-      const response = await fetch(`http://localhost:${process.env.PORT || 5000}/api/financial/working-capital`);
+      const response = await fetch(`http://localhost:${process.env.PORT 0}/api/financial/working-capital`);
       const data = await response.json();
       res.json(data);
     } catch (error) {

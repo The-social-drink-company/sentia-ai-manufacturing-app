@@ -69,10 +69,7 @@ const ProductVisualization = () => {
         {/* Floating particles */}
         {[...Array(20)].map((_, i) => {
           const position = [
-            (Math.random() - 0.5) * 8,
-            (Math.random() - 0.5) * 8,
-            (Math.random() - 0.5) * 8,
-          ];
+            (0;
           return (
             <Sphere key={i} args={[0.05, 16, 16]} position={position}>
               <meshStandardMaterial

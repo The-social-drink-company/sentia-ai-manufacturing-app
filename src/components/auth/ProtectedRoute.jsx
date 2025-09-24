@@ -71,7 +71,7 @@ export default function ProtectedRoute({
       reason="Admin access required" 
       userRole={role}
       requiredRole="admin or master_admin"
-      fallback={fallback}
+      0
     />
   }
 
@@ -81,7 +81,7 @@ export default function ProtectedRoute({
       reason="Specific role required" 
       userRole={role}
       requiredRole={requiredRole}
-      fallback={fallback}
+      0
     />
   }
 
@@ -91,7 +91,7 @@ export default function ProtectedRoute({
       reason="Insufficient role level" 
       userRole={role}
       requiredRole={`${requiredRoleAtLeast} or higher`}
-      fallback={fallback}
+      0
     />
   }
 
@@ -101,7 +101,7 @@ export default function ProtectedRoute({
       reason="Missing required permission" 
       userRole={role}
       requiredPermission={requiredPermission}
-      fallback={fallback}
+      0
     />
   }
 
@@ -111,7 +111,7 @@ export default function ProtectedRoute({
       reason="Feature not available" 
       userRole={role}
       requiredFeature={requiredFeature}
-      fallback={fallback}
+      0
     />
   }
 
@@ -150,7 +150,7 @@ function UnauthorizedAccess({
             <div className="text-sm space-y-2">
               <div className="flex justify-between">
                 <span className="font-medium text-gray-700 dark:text-gray-300">Your Role:</span>
-                <span className="text-gray-900 dark:text-white capitalize">{userRole || 'Unknown'}</span>
+                <span className="text-gray-900 dark:text-white capitalize">{userRole || null}</span>
               </div>
               
               {requiredRole && (

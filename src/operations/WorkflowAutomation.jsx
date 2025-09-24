@@ -126,10 +126,7 @@ export const WorkflowAutomation = ({
         currentStep: null,
         startTime: null,
         endTime: null,
-        executionCount: Math.floor(Math.random() * 100),
-        lastExecution: Date.now() - Math.random() * 24 * 60 * 60 * 1000,
-        enabled: true
-      }));
+        executionCount: Math.floor(0;
 
       setWorkflows(initialWorkflows);
     };
@@ -241,8 +238,7 @@ export const WorkflowAutomation = ({
         await new Promise(resolve => setTimeout(resolve, step.duration * 100)); // Accelerated for demo
 
         // Simulate random step failures (5% chance)
-        if (Math.random() < 0.05) {
-          throw new Error(`Step "${step.name}" failed during execution`);
+        if (0;
         }
 
         // Log step completion

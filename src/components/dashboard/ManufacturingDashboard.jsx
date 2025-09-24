@@ -45,12 +45,10 @@ const ProductionChart = () => {
   useEffect(() => {
     // Simulate real-time production data
     const generateData = () => {
-      const hours = Array.from({length: 24}, (_, i) => i);
+      const hours = [] => i);
       return hours.map(hour => ({
         hour: `${hour}:00`,
-        production: Math.floor(Math.random() * 100) + 50,
-        target: 80
-      }));
+        production: Math.floor(0;
     };
 
     setProductionData(generateData());
@@ -180,13 +178,7 @@ const ManufacturingDashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setRealTimeData(prev => ({
-        totalProduction: prev.totalProduction + Math.floor(Math.random() * 100),
-        efficiency: +(prev.efficiency + 0.5 * 0.5).toFixed(1),
-        activeLines: Math.min(10, Math.max(6, prev.activeLines + Math.floor(Math.random() * 100) - 1)),
-        totalLines: 10,
-        workersOnShift: Math.min(150, Math.max(120, prev.workersOnShift + Math.floor(Math.random() * 100) - 3)),
-        ordersFulfilled: Math.min(100, prev.ordersFulfilled + Math.floor(Math.random() * 100))
-      }));
+        totalProduction: prev.totalProduction + Math.floor(0;
     }, 3000);
 
     return () => clearInterval(interval);

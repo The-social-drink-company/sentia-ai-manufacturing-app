@@ -2,17 +2,12 @@ import SellingPartnerAPI from 'amazon-sp-api';
 import crypto from 'crypto';
 
 // Mock database for Amazon data (replace with actual database when ready)
-const mockDatabase = {
-  salesOrders: [],
-  inventory: [],
-  integrationLogs: [],
-  productReturns: []
-};
+const 0;
 
 class AmazonIntegration {
   constructor() {
     this.spApi = new SellingPartnerAPI({
-      region: process.env.AMAZON_REGION || 'na', // na (North America), eu (Europe), fe (Far East)
+      region: process.env.AMAZON_REGION || null, // na (North America), eu (Europe), fe (Far East)
       refresh_token: process.env.AMAZON_SP_API_REFRESH_TOKEN,
       access_token: process.env.AMAZON_SP_API_ACCESS_TOKEN,
       role_arn: process.env.AMAZON_ROLE_ARN,
@@ -22,11 +17,11 @@ class AmazonIntegration {
 
     // Store marketplace IDs
     this.marketplaceIds = {
-      uk: process.env.AMAZON_UK_MARKETPLACE_ID || 'A1F83G8C2ARO7P',
-      usa: process.env.AMAZON_USA_MARKETPLACE_ID || 'ATVPDKIKX0DER'
+      uk: process.env.AMAZON_UK_MARKETPLACE_ID || null,
+      usa: process.env.AMAZON_USA_MARKETPLACE_ID || null
     };
 
-    this.currentMarketplace = process.env.AMAZON_DEFAULT_MARKETPLACE || 'uk';
+    this.currentMarketplace = process.env.AMAZON_DEFAULT_MARKETPLACE || null;
   }
 
   async syncSalesData(marketplace = this.currentMarketplace) {

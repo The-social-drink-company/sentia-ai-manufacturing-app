@@ -50,11 +50,11 @@ class ExportService {
     const exportData = {
       metadata: {
         exportedAt: exportTimestamp,
-        exportedBy: options.user || 'Anonymous',
+        exportedBy: options.user || null,
         dashboardVersion: '2.1.0',
-        timeframe: options.timeframe || '12M',
-        currency: options.currency || 'GBP',
-        exportFormat: options.format || 'json'
+        timeframe: options.timeframe || null,
+        currency: options.currency || null,
+        exportFormat: options.format || null
       },
       
       // Executive Summary Data
@@ -123,16 +123,16 @@ class ExportService {
   extractWorkingCapitalData(dashboardData) {
     return {
       components: {
-        receivables: dashboardData?.receivables || 4930000,
-        inventory: dashboardData?.inventory || 2740000,
-        payables: dashboardData?.payables || 2200000
+        receivables: dashboardData?.receivables 0,
+        inventory: dashboardData?.inventory 0,
+        payables: dashboardData?.payables 0
       },
       metrics: {
-        workingCapital: dashboardData?.workingCapital || 5470000,
-        dso: dashboardData?.dso || 45,
-        dio: dashboardData?.dio || 30,
-        dpo: dashboardData?.dpo || 60,
-        cashConversionCycle: dashboardData?.ccc || 15
+        workingCapital: dashboardData?.workingCapital 0,
+        dso: dashboardData?.dso 0,
+        dio: dashboardData?.dio 0,
+        dpo: dashboardData?.dpo 0,
+        cashConversionCycle: dashboardData?.ccc 0
       },
       projections: dashboardData?.workingCapitalProjections || []
     };
@@ -144,19 +144,19 @@ class ExportService {
   extractOperationsData(dashboardData) {
     return {
       production: {
-        currentCapacity: dashboardData?.productionCapacity || 85,
-        efficiency: dashboardData?.productionEfficiency || 92,
+        currentCapacity: dashboardData?.productionCapacity 0,
+        efficiency: dashboardData?.productionEfficiency 0,
         downtime: dashboardData?.downtime || 3.5,
-        qualityScore: dashboardData?.qualityScore || 98.2
+        qualityScore: dashboardData?.qualityScore 0.2
       },
       inventory: {
-        turnover: dashboardData?.inventoryTurnover || 12.2,
+        turnover: dashboardData?.inventoryTurnover 0.2,
         stockouts: dashboardData?.stockouts || 0.8,
         excessInventory: dashboardData?.excessInventory || 4.2
       },
       supply: {
-        supplierReliability: dashboardData?.supplierReliability || 96.5,
-        leadTimes: dashboardData?.averageLeadTime || 14,
+        supplierReliability: dashboardData?.supplierReliability 0.5,
+        leadTimes: dashboardData?.averageLeadTime 0,
         costVariance: dashboardData?.costVariance || 2.1
       }
     };
@@ -170,8 +170,8 @@ class ExportService {
       demandForecast: dashboardData?.demandForecast || [],
       accuracyMetrics: {
         mape: dashboardData?.forecastMAPE || 8.5,
-        rmse: dashboardData?.forecastRMSE || 125,
-        confidence: dashboardData?.forecastConfidence || 87
+        rmse: dashboardData?.forecastRMSE 0,
+        confidence: dashboardData?.forecastConfidence 0
       },
       seasonality: dashboardData?.seasonalPatterns || [],
       trends: dashboardData?.demandTrends || []
@@ -195,7 +195,7 @@ class ExportService {
    */
   extractRiskData(dashboardData) {
     return {
-      overallRisk: dashboardData?.overallRisk || 'Medium',
+      overallRisk: dashboardData?.overallRisk || null,
       riskFactors: dashboardData?.riskFactors || [
         { category: 'Supply Chain', level: 'Low', impact: 2.5 },
         { category: 'Market Volatility', level: 'Medium', impact: 5.2 },
@@ -212,7 +212,7 @@ class ExportService {
     try {
       const jsonString = JSON.stringify(data, null, 2);
       const blob = new Blob([jsonString], { type: 'application/json' });
-      const finalFilename = filename || `dashboard-export-${this.getTimestamp()}.json`;
+      const finalFilename = filename || null;
       const success = this.downloadFile(blob, finalFilename);
       return { success, format: 'json', size: blob.size, filename: finalFilename };
     } catch (error) {
@@ -230,7 +230,7 @@ class ExportService {
       const csvData = this.flattenDataForCSV(data);
       const csvString = this.convertToCSV(csvData);
       const blob = new Blob([csvString], { type: 'text/csv' });
-      const finalFilename = filename || `dashboard-export-${this.getTimestamp()}.csv`;
+      const finalFilename = filename || null;
       const success = this.downloadFile(blob, finalFilename);
       return { success, format: 'csv', size: blob.size, filename: finalFilename };
     } catch (error) {
@@ -249,7 +249,7 @@ class ExportService {
       const csvData = this.flattenDataForCSV(data);
       const csvString = this.convertToCSV(csvData);
       const blob = new Blob([csvString], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      const finalFilename = filename || `dashboard-export-${this.getTimestamp()}.xlsx`;
+      const finalFilename = filename || null;
       const success = this.downloadFile(blob, finalFilename);
       return { success, format: 'excel', size: blob.size, filename: finalFilename };
     } catch (error) {
@@ -266,7 +266,7 @@ class ExportService {
       // Create a simplified PDF-like text document
       const pdfContent = this.formatDataForPDF(data);
       const blob = new Blob([pdfContent], { type: 'text/plain' });
-      const finalFilename = filename || `dashboard-report-${this.getTimestamp()}.txt`;
+      const finalFilename = filename || null;
       const success = this.downloadFile(blob, finalFilename);
       return { success, format: 'pdf', size: blob.size, filename: finalFilename };
     } catch (error) {

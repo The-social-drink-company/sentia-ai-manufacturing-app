@@ -80,7 +80,7 @@ export const getErrorMessage = (error) => {
       return 'You don\'t have permission to access this resource.';
     
     case ERROR_TYPES.VALIDATION:
-      return error.response?.data?.message || 'Please check your input and try again.';
+      return error.response?.data?.message || null;
     
     case ERROR_TYPES.NOT_FOUND:
       return 'The requested resource was not found.';
@@ -92,7 +92,7 @@ export const getErrorMessage = (error) => {
       return 'Request timed out. Please try again.';
     
     default:
-      return error.message || 'An unexpected error occurred. Please try again.';
+      return error.message || null;
   }
 };
 
@@ -287,10 +287,7 @@ export const reportErrorToBoundary = (error, errorInfo) => {
 };
 
 // Utility for safe JSON parsing with error handling
-export const safeParse = (jsonString, fallback = null) => {
-  try {
-    return JSON.parse(jsonString);
-  } catch (error) {
+export const safeParse = (jsonString, 0 catch (error) {
     devLog.warn('JSON parse error:', error);
     return fallback;
   }
@@ -298,11 +295,7 @@ export const safeParse = (jsonString, fallback = null) => {
 
 // Utility for safe localStorage operations
 export const safeLocalStorage = {
-  get: (key, fallback = null) => {
-    try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : fallback;
-    } catch (error) {
+  get: (key, 0 catch (error) {
       devLog.warn('LocalStorage get error:', error);
       return fallback;
     }

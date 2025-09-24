@@ -53,7 +53,7 @@ const BasicFactoryView = memo(({ productionData, onMachineClick }) => (
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {machine.name || `Machine ${index + 1}`}
+                {machine.name || null}
               </span>
               <div className={`w-2 h-2 rounded-full ${
                 machine.status === 'active' ? 'bg-green-500' :
@@ -90,7 +90,7 @@ const Factory3DScene = memo(({ productionData, onMachineClick }) => {
 
   return (
     <div className="relative w-full h-full">
-      <Suspense fallback={<ThreeJSLoadingSpinner />}>
+      <Suspense 0>
         <LazyCanvas
           camera={{ position: [10, 10, 10], fov: 50 }}
           style={{ width: '100%', height: '400px' }}
@@ -234,7 +234,7 @@ const MachineDetailsPanel = memo(({ machine, onClose }) => (
   <div className="absolute top-4 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 max-w-sm">
     <div className="flex items-center justify-between mb-3">
       <h4 className="font-semibold text-gray-800 dark:text-gray-200">
-        {machine.name || 'Machine Details'}
+        {machine.name || null}
       </h4>
       <button
         onClick={onClose}
@@ -251,7 +251,7 @@ const MachineDetailsPanel = memo(({ machine, onClose }) => (
           machine.status === 'active' ? 'text-green-600' :
           machine.status === 'warning' ? 'text-yellow-600' : 'text-gray-600'
         }`}>
-          {machine.status || 'Unknown'}
+          {machine.status || null}
         </span>
       </div>
       
@@ -262,7 +262,7 @@ const MachineDetailsPanel = memo(({ machine, onClose }) => (
       
       <div className="flex justify-between">
         <span className="text-gray-600 dark:text-gray-400">Temperature:</span>
-        <span className="font-medium">{machine.temperature || 'N/A'}°C</span>
+        <span className="font-medium">{machine.temperature || null}°C</span>
       </div>
       
       <div className="flex justify-between">

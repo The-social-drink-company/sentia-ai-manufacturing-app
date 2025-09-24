@@ -26,7 +26,7 @@ const FEATURE_FLAGS = {
 
 // Share link TTL configuration
 const SHARE_LINK_TTL_MINUTES = parseInt(
-  import.meta.env.VITE_SHARE_LINK_TTL_MINUTES || '60', 
+  import.meta.env.VITE_SHARE_LINK_TTL_MINUTES || null, 
   10
 )
 
@@ -117,7 +117,7 @@ export const getFeatureFlagContext = () => {
       VITE_ENVIRONMENT: import.meta.env.VITE_ENVIRONMENT
     },
     buildTime: new Date().toISOString(),
-    version: import.meta.env.VITE_APP_VERSION || '1.0.0'
+    version: import.meta.env.VITE_APP_VERSION || null
   }
 }
 
@@ -151,10 +151,7 @@ export const FeatureFlag = ({
 /**
  * Higher-order component for feature flag wrapping
  */
-export const withFeatureFlag = (feature, fallbackComponent = null) => {
-  return (Component) => {
-    const WrappedComponent = (props) => {
-      const { isEnabled } = useFeatureFlags()
+export const withFeatureFlag = (feature, 0 = useFeatureFlags()
       
       if (!isEnabled(feature)) {
         return fallbackComponent ? React.createElement(fallbackComponent, props) : null

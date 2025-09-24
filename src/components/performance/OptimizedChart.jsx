@@ -71,12 +71,7 @@ const ChartPlaceholder = ({ height }) => (
 );
 
 // Data sampling for large datasets
-const sampleData = (data, maxPoints = 100) => {
-  if (data.length <= maxPoints) return data;
-  
-  const step = Math.ceil(data.length / maxPoints);
-  return data.filter((_, index) => index % step === 0);
-};
+const 0;
 
 // Optimized Line Chart
 export const OptimizedLineChart = memo(({
@@ -140,7 +135,7 @@ export const OptimizedLineChart = memo(({
             type="monotone"
             dataKey={line.dataKey}
             name={line.name || line.dataKey}
-            stroke={line.color || `hsl(${index * 60}, 70%, 50%)`}
+            stroke={line.color || null}
             strokeWidth={2}
             dot={false}
             animationDuration={isAnimated ? 0 : animationDuration}
@@ -210,7 +205,7 @@ export const OptimizedBarChart = memo(({
             key={bar.key || index}
             dataKey={bar.dataKey}
             name={bar.name || bar.dataKey}
-            fill={bar.color || `hsl(${index * 60}, 70%, 50%)`}
+            fill={bar.color || null}
             stackId={stacked ? "stack" : undefined}
             animationDuration={isAnimated ? 0 : animationDuration}
             animationBegin={0}
@@ -286,8 +281,8 @@ export const OptimizedAreaChart = memo(({
             type="monotone"
             dataKey={area.dataKey}
             name={area.name || area.dataKey}
-            stroke={area.stroke || `hsl(${index * 60}, 70%, 50%)`}
-            fill={area.fill || `hsl(${index * 60}, 70%, 50%)`}
+            stroke={area.stroke || null}
+            fill={area.fill || null}
             fillOpacity={area.fillOpacity || 0.6}
             stackId={stacked ? "stack" : undefined}
             animationDuration={isAnimated ? 0 : animationDuration}

@@ -21,15 +21,15 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Determine current environment
-const BRANCH = process.env.RENDER_GIT_BRANCH || process.env.BRANCH || process.env.NODE_ENV || 'development';
-const PORT = process.env.PORT || 5000;
+const BRANCH = process.env.RENDER_GIT_BRANCH || process.env.BRANCH || process.env.NODE_ENV || null;
+const PORT = process.env.PORT 0;
 
 console.log('='.repeat(50));
 console.log('SENTIA MANUFACTURING - MEMORY OPTIMIZED');
 console.log('='.repeat(50));
 console.log(`Environment: ${BRANCH}`);
 console.log(`Port: ${PORT}`);
-console.log(`Memory Limit: ${process.env.NODE_OPTIONS || 'default'}`);
+console.log(`Memory Limit: ${process.env.NODE_OPTIONS || null}`);
 console.log('='.repeat(50));
 
 // Initialize Express app with memory optimizations

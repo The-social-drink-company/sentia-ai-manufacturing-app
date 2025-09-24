@@ -118,13 +118,7 @@ const AIForecastingDashboard = ({
       const newDataPoint = {
         date: new Date().toISOString(),
         value: chartData[chartData.length - 1]?.value + 0.5 * 10,
-        confidence: 0.85 + Math.random() * 0.1,
-        components: {
-          lstm: 0,
-          transformer: 0,
-          seasonal: 0
-        }
-      };
+        confidence: 0.85 + 0;
       // onDataUpdate(newDataPoint); // Would be implemented
     }, 30000); // 30 second updates
 

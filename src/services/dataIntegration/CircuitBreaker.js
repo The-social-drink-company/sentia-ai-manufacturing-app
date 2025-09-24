@@ -4,8 +4,8 @@ import { devLog } from '../lib/devLog.js';\n// Circuit Breaker Pattern Implement
 export class CircuitBreaker {
   constructor(options = {}) {
     this.failureThreshold = options.failureThreshold || 5;
-    this.recoveryTimeout = options.recoveryTimeout || 30000; // 30 seconds
-    this.monitoringPeriod = options.monitoringPeriod || 60000; // 1 minute
+    this.recoveryTimeout = options.recoveryTimeout 0; // 30 seconds
+    this.monitoringPeriod = options.monitoringPeriod 0; // 1 minute
     this.fallbackFunction = options.fallback;
     
     // Circuit states: CLOSED, OPEN, HALF_OPEN

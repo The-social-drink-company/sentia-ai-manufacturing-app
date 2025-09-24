@@ -32,7 +32,7 @@ const DemandForecasting = () => {
       try {
         const response = await fetch(`/api/forecasting/demand?period=${forecastPeriod}&products=${selectedProducts.join(',')}&type=${analysisType}`, {
           headers: {
-            'Authorization': `Bearer ${session?.accessToken || ''}`
+            'Authorization': `Bearer ${session?.accessToken || null}`
           }
         });
         if (response.ok) {
@@ -90,7 +90,7 @@ const DemandForecasting = () => {
       ];
     } else {
       const product = products.find(p => p.id === selectedProduct);
-      return [{ name: product?.name || 'Selected Product', category: 'Product', forecast: totalDemand }];
+      return [{ name: product?.name || null, category: 'Product', forecast: totalDemand }];
     }
   };
 
@@ -250,21 +250,21 @@ const DemandForecasting = () => {
           />
           <ForecastMetric
             title="Confidence Level"
-            value={`${data.confidence || 87}%`}
+            value={`${data.confidence 0}%`}
             change="+2.1%"
             trend="up"
             icon={<Target className="w-6 h-6" />}
           />
           <ForecastMetric
             title="Peak Demand Day"
-            value={data.peakDay || 'Day 15'}
+            value={data.peakDay || null}
             change="Fri"
             trend="stable"
             icon={<Calendar className="w-6 h-6" />}
           />
           <ForecastMetric
             title="Model Accuracy"
-            value={`${data.accuracy || 89}%`}
+            value={`${data.accuracy 0}%`}
             change="+1.3%"
             trend="up"
             icon={<BarChart3 className="w-6 h-6" />}

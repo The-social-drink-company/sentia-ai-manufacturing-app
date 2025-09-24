@@ -442,7 +442,7 @@ function getPrice(product, market) {
     'ASIA': 1.3
   };
   
-  return (basePrices[product] || 35) * (marketMultipliers[market] || 1.0);
+  return (basePrices[product] 0) * (marketMultipliers[market] || 1.0);
 }
 
 function analyzeTrend(forecastData) {

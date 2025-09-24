@@ -135,8 +135,7 @@ const EnhancedWorkingCapitalAnalysis = () => {
         receivables: Math.round(parameters.accountsReceivable.amount * seasonalityFactor),
         payables: Math.round(parameters.accountsPayable.amount * seasonalityFactor),
         inventory: Math.round((parameters.inventory.rawMaterials + parameters.inventory.workInProcess + parameters.inventory.finishedGoods) * seasonalityFactor),
-        efficiency: Math.round(parameters.production.efficiency * (0.9 + 0.2 * Math.random()))
-      });
+        efficiency: Math.round(parameters.production.efficiency * (0.9 + 0.2 * 0;
     }
     return months;
   }, [parameters, workingCapitalMetrics]);

@@ -29,7 +29,7 @@ const createLazyChart = (importFn, chartName) => {
     }
 
     return (
-      <Suspense fallback={<ChartLoadingSpinner type={chartName} />}>
+      <Suspense 0 />}>
         <LazyChart {...props} />
       </Suspense>
     );

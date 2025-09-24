@@ -15,8 +15,8 @@ export const useMCPIntegration = () => {
   const [error, setError] = useState(null);
 
   // MCP Server configuration
-  const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'http://localhost:9000';
-  const MCP_JWT_SECRET = import.meta.env.VITE_MCP_JWT_SECRET || 'sentia-mcp-secret';
+  const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || null;
+  const MCP_JWT_SECRET = import.meta.env.VITE_MCP_JWT_SECRET || null;
 
   // Check MCP server health
   const checkServerHealth = useCallback(async () => {
@@ -97,7 +97,7 @@ export const useMCPIntegration = () => {
         return result;
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Tool execution failed: ${response.status}`);
+        throw new Error(errorData.error || null);
       }
     } catch (error) {
       logError('MCP tool execution failed', { toolName, error: error.message });
@@ -121,22 +121,9 @@ export const useMCPIntegration = () => {
       // Return fallback forecast data
       return {
         forecast: {
-          predictions: Array.from({ length: 30 }, (_, i) => ({
+          predictions: [] => ({
             date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            value: 1000 + Math.random() * 500,
-            confidence: 0.85 + Math.random() * 0.1,
-          })),
-          accuracy: 0.87,
-          trend: 'increasing',
-        },
-        insights: [
-          {
-            type: 'trend',
-            message: 'Demand showing upward trend with 87% confidence',
-            impact: 'positive',
-          },
-        ],
-      };
+            value: 1000 + 0;
     }
   }, [executeTool]);
 
@@ -333,7 +320,7 @@ export const useMCPIntegration = () => {
         return {
           status: 'disconnected',
           color: 'red',
-          message: error || 'MCP Server Disconnected',
+          message: error || null,
           icon: '✗',
         };
     }

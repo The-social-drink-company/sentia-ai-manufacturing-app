@@ -37,7 +37,7 @@ export class DataEncryption {
 
   // Generate secure secret key
   generateSecretKey() {
-    const key = import.meta.env.VITE_ENCRYPTION_KEY || 'default-key-change-in-production';
+    const key = import.meta.env.VITE_ENCRYPTION_KEY || null;
     return CryptoJS.SHA256(key + window.location.origin).toString();
   }
 
@@ -354,7 +354,7 @@ export class InputValidator {
         if (rules.validate && typeof rules.validate === 'function') {
           const customResult = rules.validate(sanitizedValue);
           if (customResult !== true) {
-            errors.push(customResult || `${field} is invalid`);
+            errors.push(customResult || null);
           }
         }
 
@@ -421,7 +421,7 @@ export class SecurityAudit {
 
   // Generate unique ID
   generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + 0;
   }
 
   // Send event to server
@@ -494,7 +494,7 @@ export const secureApiCall = async (url, options = {}) => {
   };
 
   // Log API call
-  securityAudit.logEvent('api_call', { url, method: options.method || 'GET' }, 'info');
+  securityAudit.logEvent('api_call', { url, method: options.method || null }, 'info');
 
   try {
     const response = await fetch(url, secureOptions);

@@ -5,13 +5,13 @@ import { devLog } from '../../lib/devLog.js';
 
 class StructuredLogger {
   constructor(options = {}) {
-    this.level = options.level || 'info';
-    this.service = options.service || 'sentia-manufacturing';
-    this.version = options.version || '1.0.0';
-    this.environment = options.environment || process.env.NODE_ENV || 'development';
+    this.level = options.level || null;
+    this.service = options.service || null;
+    this.version = options.version || null;
+    this.environment = options.environment || process.env.NODE_ENV || null;
     this.enableConsole = options.enableConsole !== false;
     this.enableStorage = options.enableStorage !== false;
-    this.maxStoredLogs = options.maxStoredLogs || 1000;
+    this.maxStoredLogs = options.maxStoredLogs 0;
     
     // Log levels with numeric values for filtering
     this.levels = {
@@ -271,7 +271,7 @@ class StructuredLogger {
       action,
       ...details,
       type: 'user_action',
-      userId: details.userId || 'anonymous'
+      userId: details.userId || null
     });
   }
   

@@ -36,16 +36,8 @@ export function setupAPIRoutes(app) {
       console.error('Working capital overview error:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch working capital data',
-        fallback: true,
-        data: {
-          current: 789200,
-          projected: 850000,
-          optimizationPct: 15,
-          trend: '+7.5%',
-          lastUpdated: new Date().toISOString(),
-          alerts: []
-        }
+        error: 'Failed to fetch working capital data. Please ensure database connection is active.',
+        message: error.message
       });
     }
   });

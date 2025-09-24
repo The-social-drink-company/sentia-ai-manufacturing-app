@@ -202,8 +202,8 @@ const WorldClassDashboard = () => {
         <EnterpriseWidget
           title="Inventory Management"
           subtitle="Stock levels & optimization"
-          value={`$${((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue 0) / 1000000).toFixed(1)}M`}
-          previousValue={`$${(((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue 0) - 150000) / 1000000).toFixed(1)}M`}
+          value={`$${((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue || 0) / 1000000).toFixed(1)}M`}
+          previousValue={`$${(((dashboardData?.data?.kpis?.find(k => k.id === 'inventory')?.numericValue || dashboardData?.inventory?.totalValue || 0) - 150000) / 1000000).toFixed(1)}M`}
           trend={dashboardData?.inventory?.trend}
           trendPercentage={dashboardData?.inventory?.trendPercentage}
           icon={CubeIcon}

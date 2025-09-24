@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import WorkingCapitalCalculator from './components/WorkingCapitalCalculator';
 import AIInsights from './components/AIInsights';
-import EnterpriseAIChatbot from './components/AI/EnterpriseAIChatbot';
+import SentiaAIChatbot from './components/AI/SentiaAIChatbot';
 import './App.css';
 
 function App() {
@@ -133,8 +133,8 @@ function App() {
   return (
     <>
       {renderCurrentView()}
-      {/* Enterprise AI Chatbot - Always visible */}
-      <EnterpriseAIChatbot />
+      {/* Sentia AI Chatbot - Always visible */}
+      <SentiaAIChatbot />
     </>
   );
 }

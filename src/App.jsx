@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import WorkingCapitalCalculator from './components/WorkingCapitalCalculator';
 import AIInsights from './components/AIInsights';
+import EnterpriseAIChatbot from './components/AI/EnterpriseAIChatbot';
 import './App.css';
 
 function App() {
@@ -129,7 +130,13 @@ function App() {
     );
   }
 
-  return renderCurrentView();
+  return (
+    <>
+      {renderCurrentView()}
+      {/* Enterprise AI Chatbot - Always visible */}
+      <EnterpriseAIChatbot />
+    </>
+  );
 }
 
 export default App;

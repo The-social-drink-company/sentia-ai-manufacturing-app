@@ -401,42 +401,10 @@ router.get('/working-capital',
 
     } catch (error) {
       console.error('[Working Capital API] Error:', error);
-
-      // Return fallback data on error
-      const 0,
-        details: {
-          assets: {
-            inventory: 892300,
-            receivables: 1125400,
-            cash: 327900,
-            other: 0
-          },
-          liabilities: {
-            payables: 987200,
-            shortTermDebt: 345000,
-            accruedExpenses: 224200,
-            other: 0
-          }
-        },
-        trends: {
-          workingCapital: [650000, 700000, 750000, 789200, 800000, 850000],
-          cashFlow: [380000, 400000, 410000, 423500, 430000, 445000]
-        },
-        recommendations: [
-          {
-            title: 'Optimize Inventory',
-            description: 'Reduce inventory holding by 10% to free up cash',
-            impact: 89230
-          },
-          {
-            title: 'Accelerate Collections',
-            description: 'Reduce days receivables by 5 days',
-            impact: 168810
-          }
-        ]
-      };
-
-      res.json(fallbackData);
+      res.status(500).json({
+        error: 'Failed to fetch working capital data. Please ensure database connection is active.',
+        message: error.message
+      });
     }
   })
 );

@@ -30,6 +30,7 @@ import AICentralNervousSystem from './ai-orchestration/ai-central-nervous-system
 import UnifiedAPIInterface from './api-integrations/unified-api-interface.js';
 import xeroIntegration from './api-integrations/xero-integration.js';
 import unleashedIntegration from './api-integrations/unleashed-integration.js';
+import RenderMCPIntegration from './api-integrations/render-mcp-integration.js';
 import { SENTIA_KNOWLEDGE_BASE, SentiaKnowledgeRetrieval } from './knowledge-base/sentia-manufacturing-knowledge.js';
 import InteractionLearningSystem from './knowledge-base/interaction-learning-system.js';
 
@@ -81,6 +82,9 @@ class SentiaEnterpriseMCPServer {
     // Initialize Unified API Interface
     this.unifiedAPIInterface = new UnifiedAPIInterface();
     
+    // Initialize Render MCP Integration
+    this.renderMCPIntegration = new RenderMCPIntegration();
+    
     // Initialize Interaction Learning System
     this.learningSystem = new InteractionLearningSystem();
     this.learningSystem.startPeriodicSaving(5); // Save learning data every 5 minutes
@@ -90,6 +94,7 @@ class SentiaEnterpriseMCPServer {
     this.setupWebSocketHandlers();
     this.initializeAICentralNervousSystem();
     this.initializeUnifiedAPIInterface();
+    this.initializeRenderMCPIntegration();
   }
 
   setupMiddleware() {
@@ -196,6 +201,41 @@ class SentiaEnterpriseMCPServer {
       logger.info('✅ Unified API Interface integrated successfully');
     } catch (error) {
       logger.error('❌ Failed to initialize Unified API Interface:', error);
+    }
+  }
+
+  async initializeRenderMCPIntegration() {
+    try {
+      logger.info('🎯 Initializing Render MCP Integration...');
+      
+      // Initialize Render integration if API key is available
+      if (process.env.RENDER_API_KEY) {
+        await this.renderMCPIntegration.initialize();
+        
+        // Connect Render integration events to our WebSocket broadcast
+        this.renderMCPIntegration.on('service-deployed', (data) => {
+          this.broadcastToAllClients({
+            jsonrpc: '2.0',
+            method: 'notifications/render-service-deployed',
+            params: data
+          });
+        });
+        
+        this.renderMCPIntegration.on('health-check-complete', (data) => {
+          this.broadcastToAllClients({
+            jsonrpc: '2.0',
+            method: 'notifications/render-health-status',
+            params: data
+          });
+        });
+        
+        logger.info('✅ Render MCP Integration initialized successfully');
+      } else {
+        logger.warn('⚠️ Render API key not found - Render integration disabled');
+        logger.info('💡 Set RENDER_API_KEY environment variable to enable Render integration');
+      }
+    } catch (error) {
+      logger.error('❌ Failed to initialize Render MCP Integration:', error);
     }
   }
 
@@ -420,6 +460,152 @@ class SentiaEnterpriseMCPServer {
         required: ['action']
       },
       handler: this.handleUnleashedPurchaseOrders.bind(this)
+    });
+
+    // RENDER MCP INTEGRATION TOOLS
+    this.registerTool({
+      name: 'render_list_services',
+      description: 'List all Render services in your account',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          includeDetails: { type: 'boolean', description: 'Include detailed service information', default: false }
+        }
+      },
+      handler: this.handleRenderListServices.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_get_service_details',
+      description: 'Get detailed information about a specific Render service',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          serviceId: { type: 'string', description: 'Render service ID' }
+        },
+        required: ['serviceId']
+      },
+      handler: this.handleRenderGetServiceDetails.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_list_databases',
+      description: 'List all Render PostgreSQL databases',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          includeConnectionInfo: { type: 'boolean', description: 'Include connection details', default: false }
+        }
+      },
+      handler: this.handleRenderListDatabases.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_get_database_details',
+      description: 'Get detailed information about a specific Render database',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          databaseId: { type: 'string', description: 'Render database ID' }
+        },
+        required: ['databaseId']
+      },
+      handler: this.handleRenderGetDatabaseDetails.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_deploy_service',
+      description: 'Trigger deployment for a Render service',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          serviceId: { type: 'string', description: 'Render service ID' },
+          clearCache: { type: 'boolean', description: 'Clear build cache', default: false }
+        },
+        required: ['serviceId']
+      },
+      handler: this.handleRenderDeployService.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_update_env_vars',
+      description: 'Update environment variables for a Render service',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          serviceId: { type: 'string', description: 'Render service ID' },
+          envVars: { 
+            type: 'object', 
+            description: 'Environment variables as key-value pairs',
+            additionalProperties: { type: 'string' }
+          }
+        },
+        required: ['serviceId', 'envVars']
+      },
+      handler: this.handleRenderUpdateEnvVars.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_get_service_logs',
+      description: 'Fetch logs from a Render service',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          serviceId: { type: 'string', description: 'Render service ID' },
+          startTime: { type: 'string', description: 'Start time (ISO string)' },
+          endTime: { type: 'string', description: 'End time (ISO string)' },
+          level: { type: 'string', enum: ['debug', 'info', 'warn', 'error'], description: 'Log level filter' },
+          limit: { type: 'number', description: 'Maximum number of log entries', default: 100 }
+        },
+        required: ['serviceId']
+      },
+      handler: this.handleRenderGetServiceLogs.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_get_service_metrics',
+      description: 'Get performance metrics for a Render service',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          serviceId: { type: 'string', description: 'Render service ID' },
+          startTime: { type: 'string', description: 'Start time (ISO string)' },
+          endTime: { type: 'string', description: 'End time (ISO string)' },
+          step: { type: 'number', description: 'Time step in seconds', default: 300 }
+        },
+        required: ['serviceId']
+      },
+      handler: this.handleRenderGetServiceMetrics.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_health_check',
+      description: 'Perform comprehensive health check on all Render resources',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          includeDetails: { type: 'boolean', description: 'Include detailed health information', default: true }
+        }
+      },
+      handler: this.handleRenderHealthCheck.bind(this)
+    });
+
+    this.registerTool({
+      name: 'render_ai_insights',
+      description: 'Generate AI-powered insights for Render infrastructure',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          resourceType: { 
+            type: 'string', 
+            enum: ['services', 'databases', 'service', 'health'], 
+            description: 'Type of resource to analyze' 
+          },
+          resourceId: { type: 'string', description: 'Specific resource ID (for service analysis)' }
+        },
+        required: ['resourceType']
+      },
+      handler: this.handleRenderAIInsights.bind(this)
     });
 
     logger.info(`Registered ${this.availableTools.length} enterprise MCP tools`);
@@ -1258,6 +1444,239 @@ class SentiaEnterpriseMCPServer {
     return recommendations;
   }
 
+  // RENDER MCP HANDLERS
+  async handleRenderListServices({ includeDetails = false }) {
+    logger.info('Listing Render services', { includeDetails });
+    
+    try {
+      const result = await this.renderMCPIntegration.listRenderServices();
+      return {
+        success: result.success,
+        services: result.services,
+        totalCount: result.totalCount,
+        includeDetails,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to list Render services:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async handleRenderGetServiceDetails({ serviceId }) {
+    logger.info('Getting Render service details', { serviceId });
+    
+    try {
+      const result = await this.renderMCPIntegration.getRenderServiceDetails(serviceId);
+      return {
+        success: result.success,
+        serviceId,
+        service: result.service,
+        deployments: result.deployments,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to get Render service details:', error);
+      return {
+        success: false,
+        error: error.message,
+        serviceId
+      };
+    }
+  }
+
+  async handleRenderListDatabases({ includeConnectionInfo = false }) {
+    logger.info('Listing Render databases', { includeConnectionInfo });
+    
+    try {
+      const result = await this.renderMCPIntegration.listRenderDatabases();
+      return {
+        success: result.success,
+        databases: result.databases,
+        totalCount: result.totalCount,
+        includeConnectionInfo,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to list Render databases:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async handleRenderGetDatabaseDetails({ databaseId }) {
+    logger.info('Getting Render database details', { databaseId });
+    
+    try {
+      const result = await this.renderMCPIntegration.getRenderDatabaseDetails(databaseId);
+      return {
+        success: result.success,
+        databaseId,
+        database: result.database,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to get Render database details:', error);
+      return {
+        success: false,
+        error: error.message,
+        databaseId
+      };
+    }
+  }
+
+  async handleRenderDeployService({ serviceId, clearCache = false }) {
+    logger.info('Deploying Render service', { serviceId, clearCache });
+    
+    try {
+      const result = await this.renderMCPIntegration.deployService(serviceId, { clearCache });
+      return {
+        success: result.success,
+        serviceId,
+        deploymentId: result.deploymentId,
+        status: result.status,
+        clearCache,
+        message: result.message,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to deploy Render service:', error);
+      return {
+        success: false,
+        error: error.message,
+        serviceId
+      };
+    }
+  }
+
+  async handleRenderUpdateEnvVars({ serviceId, envVars }) {
+    logger.info('Updating Render service environment variables', { serviceId, variableCount: Object.keys(envVars).length });
+    
+    try {
+      const result = await this.renderMCPIntegration.updateServiceEnvironmentVariables(serviceId, envVars);
+      return {
+        success: result.success,
+        serviceId,
+        updatedVariables: result.updatedVariables,
+        message: result.message,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to update Render service environment variables:', error);
+      return {
+        success: false,
+        error: error.message,
+        serviceId
+      };
+    }
+  }
+
+  async handleRenderGetServiceLogs({ serviceId, startTime, endTime, level, limit = 100 }) {
+    logger.info('Fetching Render service logs', { serviceId, startTime, endTime, level, limit });
+    
+    try {
+      const options = { startTime, endTime, level, limit };
+      const result = await this.renderMCPIntegration.getServiceLogs(serviceId, options);
+      return {
+        success: result.success,
+        serviceId,
+        logs: result.logs,
+        options: result.options,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to fetch Render service logs:', error);
+      return {
+        success: false,
+        error: error.message,
+        serviceId
+      };
+    }
+  }
+
+  async handleRenderGetServiceMetrics({ serviceId, startTime, endTime, step = 300 }) {
+    logger.info('Fetching Render service metrics', { serviceId, startTime, endTime, step });
+    
+    try {
+      const options = { startTime, endTime, step };
+      const result = await this.renderMCPIntegration.getServiceMetrics(serviceId, options);
+      return {
+        success: result.success,
+        serviceId,
+        metrics: result.metrics,
+        options: result.options,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to fetch Render service metrics:', error);
+      return {
+        success: false,
+        error: error.message,
+        serviceId
+      };
+    }
+  }
+
+  async handleRenderHealthCheck({ includeDetails = true }) {
+    logger.info('Performing Render health check', { includeDetails });
+    
+    try {
+      const result = await this.renderMCPIntegration.performHealthCheck();
+      return {
+        success: result.success,
+        health: result.health,
+        includeDetails,
+        timestamp: result.timestamp,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to perform Render health check:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  async handleRenderAIInsights({ resourceType, resourceId }) {
+    logger.info('Generating Render AI insights', { resourceType, resourceId });
+    
+    try {
+      const result = await this.renderMCPIntegration.generateAIInsights(resourceType, resourceId);
+      return {
+        success: result.success,
+        resourceType,
+        resourceId,
+        insights: result.insights,
+        dataAnalyzed: result.dataAnalyzed,
+        generatedAt: result.generatedAt,
+        aiModel: result.aiModel,
+        error: result.error
+      };
+    } catch (error) {
+      logger.error('Failed to generate Render AI insights:', error);
+      return {
+        success: false,
+        error: error.message,
+        resourceType,
+        resourceId
+      };
+    }
+  }
+
   generateClientId() {
     return 'client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
@@ -1877,13 +2296,20 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-// Start the enterprise server
-const server = new SentiaEnterpriseMCPServer();
-global.mcpServer = server;
+// Start the enterprise server only when run directly (not when imported)
+// Check if this file was run directly
+const isMainModule = process.env.NODE_ENV !== 'test' && 
+  (process.argv[1]?.includes('enterprise-server-simple.js') || 
+   process.argv[1]?.endsWith('enterprise-server-simple.js'));
 
-server.start().catch((error) => {
-  logger.error('Failed to start Enterprise MCP Server', error);
-  process.exit(1);
-});
+if (isMainModule) {
+  const server = new SentiaEnterpriseMCPServer();
+  global.mcpServer = server;
+
+  server.start().catch((error) => {
+    logger.error('Failed to start Enterprise MCP Server', error);
+    process.exit(1);
+  });
+}
 
 export default SentiaEnterpriseMCPServer;

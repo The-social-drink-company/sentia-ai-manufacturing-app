@@ -5,6 +5,9 @@ import compression from 'compression';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { WebSocketServer } from 'ws';
+import { createServer } from 'http';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,12 +26,14 @@ if (process.env.NODE_ENV === 'production') {
 // Determine current environment
 const BRANCH = process.env.RENDER_GIT_BRANCH || process.env.BRANCH || process.env.NODE_ENV || null;
 const PORT = process.env.PORT || 5000;
+const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
 
 console.log('='.repeat(50));
 console.log('SENTIA MANUFACTURING - MEMORY OPTIMIZED');
 console.log('='.repeat(50));
 console.log(`Environment: ${BRANCH}`);
 console.log(`Port: ${PORT}`);
+console.log(`MCP Server: ${MCP_SERVER_URL}`);
 console.log(`Memory Limit: ${process.env.NODE_OPTIONS || null}`);
 console.log('='.repeat(50));
 
@@ -111,13 +116,27 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Health check endpoints (before authentication)
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
   const memUsage = process.memoryUsage();
   const heapUsedMB = (memUsage.heapUsed / 1024 / 1024).toFixed(2);
   const heapTotalMB = (memUsage.heapTotal / 1024 / 1024).toFixed(2);
   const heapUsagePercent = ((memUsage.heapUsed / memUsage.heapTotal) * 100).toFixed(1);
   const rssMB = (memUsage.rss / 1024 / 1024).toFixed(2);
-  
+
+  // Check MCP server health
+  let mcpStatus = 'disconnected';
+  let mcpDetails = null;
+  try {
+    const response = await fetch(`${MCP_SERVER_URL}/health`);
+    if (response.ok) {
+      mcpStatus = 'connected';
+      mcpDetails = await response.json();
+    }
+  } catch (error) {
+    mcpStatus = 'error';
+    console.error('MCP health check failed:', error.message);
+  }
+
   // Determine status based on memory usage
   let status = 'healthy';
   if (heapUsagePercent > 85) {
@@ -125,7 +144,7 @@ app.get('/health', (req, res) => {
   } else if (heapUsagePercent > 95) {
     status = 'unhealthy';
   }
-  
+
   res.json({
     status,
     timestamp: new Date().toISOString(),
@@ -136,7 +155,12 @@ app.get('/health', (req, res) => {
       heapUsagePercent: `${heapUsagePercent}%`,
       rssMB
     },
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    mcpServer: {
+      url: MCP_SERVER_URL,
+      status: mcpStatus,
+      details: mcpDetails
+    }
   });
 });
 
@@ -165,12 +189,39 @@ if (BRANCH === 'development') {
   });
 }
 
+// MCP Server Proxy Configuration
+const mcpProxy = createProxyMiddleware({
+  target: MCP_SERVER_URL,
+  changeOrigin: true,
+  ws: true, // Enable WebSocket proxy
+  logLevel: 'info',
+  onProxyReq: (proxyReq, req, res) => {
+    // Add authentication headers if needed
+    if (process.env.MCP_JWT_SECRET) {
+      proxyReq.setHeader('Authorization', `Bearer ${process.env.MCP_JWT_SECRET}`);
+    }
+  },
+  onError: (err, req, res) => {
+    console.error('MCP Proxy Error:', err);
+    res.status(502).json({
+      error: 'MCP Server connection failed',
+      details: BRANCH === 'development' ? err.message : undefined
+    });
+  }
+});
+
+// MCP API Routes
+app.use('/api/mcp', mcpProxy);
+app.use('/mcp', mcpProxy);
+
 // API routes (minimal for memory optimization)
 app.get('/api/status', (req, res) => {
   res.json({
     service: 'Sentia Manufacturing Dashboard',
     version: '1.0.0',
     environment: BRANCH,
+    mcpServer: MCP_SERVER_URL,
+    mcpConnected: true,
     timestamp: new Date().toISOString()
   });
 });
@@ -231,12 +282,61 @@ if (BRANCH === 'development') {
   }, 30000); // Check every 30 seconds
 }
 
-// Start server
-app.listen(PORT, () => {
+// Create HTTP server for WebSocket support
+const server = createServer(app);
+
+// WebSocket server for real-time MCP features
+const wss = new WebSocketServer({
+  server,
+  path: '/ws/mcp'
+});
+
+wss.on('connection', (ws) => {
+  console.log('New WebSocket connection for MCP features');
+
+  ws.on('message', async (message) => {
+    try {
+      const data = JSON.parse(message);
+
+      // Forward to MCP server
+      const response = await fetch(`${MCP_SERVER_URL}/api/${data.endpoint}`, {
+        method: data.method || 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(process.env.MCP_JWT_SECRET && {
+            'Authorization': `Bearer ${process.env.MCP_JWT_SECRET}`
+          })
+        },
+        body: JSON.stringify(data.payload)
+      });
+
+      const result = await response.json();
+      ws.send(JSON.stringify({
+        type: 'response',
+        data: result,
+        requestId: data.requestId
+      }));
+    } catch (error) {
+      ws.send(JSON.stringify({
+        type: 'error',
+        error: error.message
+      }));
+    }
+  });
+
+  ws.on('close', () => {
+    console.log('WebSocket connection closed');
+  });
+});
+
+// Start server with WebSocket support
+server.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`🌐 Environment: ${BRANCH}`);
+  console.log(`🤖 MCP Server: ${MCP_SERVER_URL}`);
+  console.log(`🔌 WebSocket: ws://localhost:${PORT}/ws/mcp`);
   console.log(`💾 Memory monitoring: ${BRANCH === 'development' ? 'enabled' : 'disabled'}`);
-  
+
   // Initial memory report
   const memUsage = process.memoryUsage();
   console.log(`📊 Initial memory: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)}MB`);

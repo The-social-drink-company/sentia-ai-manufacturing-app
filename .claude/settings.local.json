@@ -315,7 +315,8 @@
       "Bash(set NODE_OPTIONS=--max-old-space-size=4096)",
       "Bash(set DEPLOYMENT_STAGE=1)",
       "Bash(set NODE_OPTIONS=--max-old-space-size=3072)",
-      "Bash(set PORT=6001)"
+      "Bash(set PORT=6001)",
+      "Bash(PORT=6001 node server-integrated-mcp.js)"
     ],
     "deny": [],
     "ask": []

@@ -27,26 +27,26 @@ import {
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
 
-const SidebarItem = ({ 
-  to, 
-  icon: Icon, 
-  label, 
-  isActive, 
-  isCollapsed, 
-  badge = null, 
+const SidebarItem = ({
+  to,
+  icon: Icon,
+  label,
+  isActive,
+  isCollapsed,
+  badge = null,
   shortcut = null,
   onClick = null,
   isSubItem = false
 }) => {
   const baseClasses = "flex items-center px-3 py-2.5 rounded-lg transition-all duration-200"
 
-  const activeClasses = "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-medium shadow-sm"
+  const activeClasses = "bg-blue-600 text-white font-medium shadow-lg"
 
-  const inactiveClasses = "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
+  const inactiveClasses = "text-slate-400 hover:bg-slate-800 hover:text-white"
   
   const content = (
     <>
-      <Icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} ${isActive ? 'text-blue-600 dark:text-blue-400' : ''}`} />
+      <Icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'}`} />
       {!isCollapsed && <span className="text-sm">{label}</span>}
     </>
   )
@@ -79,21 +79,21 @@ const SidebarItem = ({
 
 const SidebarSection = ({ title, children, isCollapsed, defaultExpanded = true }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
-  
+
   if (isCollapsed) {
     return (
       <div className="space-y-1">
-        <div className="h-px bg-gray-200 dark:bg-gray-700 my-3" />
+        <div className="h-px bg-slate-700 my-3" />
         {children}
       </div>
     )
   }
-  
+
   return (
     <div className="mb-4">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-400 transition-colors"
+        className="flex items-center justify-between w-full px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider hover:text-slate-300 transition-colors"
       >
         <span>{title}</span>
         {isExpanded ? (
@@ -147,20 +147,20 @@ const Sidebar = () => {
   // Navigation items with better icons and organization
   const navigationItems = [
     {
-      section: 'Overview',
+      section: 'OVERVIEW',
       defaultExpanded: true,
       items: [
         {
           to: '/dashboard',
           icon: HomeIcon,
-          label: 'Dashboard',
+          label: 'Executive Dashboard',
           shortcut: 'G O',
           permission: 'dashboard.view'
         }
       ]
     },
     {
-      section: 'Planning & Analytics',
+      section: 'PLANNING & ANALYTICS',
       defaultExpanded: true,
       items: [
         {
@@ -181,7 +181,7 @@ const Sidebar = () => {
         {
           to: '/production',
           icon: TruckIcon,
-          label: 'Production Optimization',
+          label: 'Production Tracking',
           shortcut: 'G P',
           permission: 'production.view',
           badge: alertCounts.capacityIssues > 0 ? alertCounts.capacityIssues : null
@@ -201,21 +201,14 @@ const Sidebar = () => {
           permission: 'analytics.view'
         },
         {
-          to: '/ai-status',
-          icon: CpuChipIcon,
-          label: 'AI System Status',
-          shortcut: 'G AI',
-          permission: 'system.view'
-        },
-        {
-          to: '/monitoring',
+          to: '/analytics/real-time',
           icon: SignalIcon,
           label: 'Real-Time Monitoring',
           shortcut: 'G M',
           permission: 'monitoring.view'
         },
         {
-          to: '/mobile',
+          to: '/mobile-floor',
           icon: DevicePhoneMobileIcon,
           label: 'Mobile Floor View',
           shortcut: 'G MF',
@@ -224,7 +217,7 @@ const Sidebar = () => {
       ]
     },
     {
-      section: 'Financial Management',
+      section: 'FINANCIAL MANAGEMENT',
       defaultExpanded: true,
       items: [
         {
@@ -247,6 +240,49 @@ const Sidebar = () => {
           label: 'Financial Reports',
           shortcut: 'G R',
           permission: 'reports.generate'
+        }
+      ]
+    },
+    {
+      section: 'OPERATIONS',
+      defaultExpanded: true,
+      items: [
+        {
+          to: '/data-import',
+          icon: DocumentArrowUpIcon,
+          label: 'Data Import',
+          shortcut: 'G D',
+          permission: 'import.view'
+        },
+        {
+          to: '/admin',
+          icon: UsersIcon,
+          label: 'Admin Panel',
+          permission: 'users.manage'
+        }
+      ]
+    },
+    {
+      section: 'DATA MANAGEMENT',
+      defaultExpanded: false,
+      items: [
+        {
+          to: '/working-capital',
+          icon: BanknotesIcon,
+          label: 'Working Capital',
+          permission: 'workingcapital.view'
+        },
+        {
+          to: '/what-if',
+          icon: SlidersIcon,
+          label: 'What-If Analysis',
+          permission: 'analytics.view'
+        },
+        {
+          to: '/analytics',
+          icon: ChartBarIcon,
+          label: 'Financial Reports',
+          permission: 'reports.generate'
         },
         {
           to: '/automation',
@@ -257,21 +293,20 @@ const Sidebar = () => {
       ]
     },
     {
-      section: 'Data Management',
+      section: 'ADMINISTRATION',
       defaultExpanded: false,
       items: [
         {
-          to: '/data-import',
-          icon: DocumentArrowUpIcon,
-          label: 'Data Import',
-          shortcut: 'G D',
-          permission: 'import.view'
+          to: '/admin',
+          icon: UsersIcon,
+          label: 'User Management',
+          permission: 'users.manage'
         },
         {
-          to: '/templates',
-          icon: CircleStackIcon,
-          label: 'Import Templates',
-          permission: 'import.view'
+          to: '/settings',
+          icon: Cog6ToothIcon,
+          label: 'System Settings',
+          permission: 'system.configure'
         },
         {
           to: '/api-status',
@@ -323,21 +358,21 @@ const Sidebar = () => {
       )}
       
       <div
-        className={`fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300 z-50 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}
+        className={`fixed left-0 top-0 h-full bg-slate-900 border-r border-slate-700 shadow-xl transition-all duration-300 z-50 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}
       >
       {/* Sidebar Header */}
-      <div className="flex items-center justify-between p-4 h-16 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between p-4 h-16 border-b border-slate-700">
         {!sidebarCollapsed && (
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg">
               <span>S</span>
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-base font-bold text-white">
                 Sentia
               </h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Manufacturing
+              <p className="text-xs text-slate-400">
+                Manufacturing Dashboard
               </p>
             </div>
           </div>

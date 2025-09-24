@@ -225,6 +225,27 @@ function Toast({ notification, onClose }) {
   )
 }
 
+// Helper functions for notifications
+export const notifySuccess = (message, title = 'Success') => {
+  // This is a placeholder - in a real app, this would trigger the notification system
+  console.log('Success:', title, message);
+};
+
+export const notifyInfo = (message, title = 'Info') => {
+  // This is a placeholder - in a real app, this would trigger the notification system
+  console.log('Info:', title, message);
+};
+
+export const notifyWarning = (message, title = 'Warning') => {
+  // This is a placeholder - in a real app, this would trigger the notification system
+  console.log('Warning:', title, message);
+};
+
+export const notifyError = (message, title = 'Error') => {
+  // This is a placeholder - in a real app, this would trigger the notification system
+  console.log('Error:', title, message);
+};
+
 // Main notification system component
 export function NotificationSystem() {
   const [notifications, setNotifications] = useState([])

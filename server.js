@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Determine current environment
 const BRANCH = process.env.RENDER_GIT_BRANCH || process.env.BRANCH || process.env.NODE_ENV || null;
-const PORT = process.env.PORT 0;
+const PORT = process.env.PORT || 5000;
 
 console.log('='.repeat(50));
 console.log('SENTIA MANUFACTURING - MEMORY OPTIMIZED');

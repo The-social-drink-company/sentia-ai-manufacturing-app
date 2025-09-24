@@ -56,6 +56,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@clerk/clerk-react": path.resolve(__dirname, "./src/lib/clerk-mock.js"),
     },
   },
 })

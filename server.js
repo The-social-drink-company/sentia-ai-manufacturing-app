@@ -59,11 +59,7 @@ app.use(helmet({
       ],
       scriptSrc: [
         "'self'",
-        "'unsafe-eval'", // Temporary for React dev builds
-        "https://clerk.financeflo.ai",
-        "https://robust-snake-50.clerk.accounts.dev",
-        "https://js.clerk.dev",
-        "https://api.clerk.dev"
+        "'unsafe-eval'" // Temporary for React dev builds
       ],
       fontSrc: [
         "'self'", 
@@ -77,16 +73,10 @@ app.use(helmet({
         "blob:"
       ],
       connectSrc: [
-        "'self'",
-        "https://clerk.financeflo.ai",
-        "https://robust-snake-50.clerk.accounts.dev",
-        "https://api.clerk.dev",
-        "wss://clerk.financeflo.ai"
+        "'self'"
       ],
       frameSrc: [
-        "'self'", 
-        "https://clerk.financeflo.ai", 
-        "https://js.clerk.dev"
+        "'self'"
       ],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
@@ -106,10 +96,8 @@ app.use(helmet({
 const corsOptions = {
   origin: [
     'https://deployrend.financeflo.ai',
-    'https://testingrend.financeflo.ai', 
-    'https://prodrend.financeflo.ai',
-    'https://clerk.financeflo.ai',
-    'https://robust-snake-50.clerk.accounts.dev'
+    'https://testingrend.financeflo.ai',
+    'https://prodrend.financeflo.ai'
   ],
   credentials: true,
   optionsSuccessStatus: 200,

@@ -13,6 +13,8 @@
     "build": "echo 'No build step required for Node.js server'"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.63.1",
+    "@modelcontextprotocol/sdk": "^1.18.1",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",

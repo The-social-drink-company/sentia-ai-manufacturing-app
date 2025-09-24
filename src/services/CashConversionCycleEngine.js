@@ -10,9 +10,9 @@ export class CashConversionCycleEngine {
     this.dateEngine = new DateContextEngine();
     this.config = {
       // Industry benchmarks for manufacturing
-      targetDSO: options.targetDSO 0,  // Days Sales Outstanding
-      targetDPO: options.targetDPO 0,  // Days Payable Outstanding  
-      targetDIO: options.targetDIO 0,  // Days Inventory Outstanding
+      targetDSO: options.targetDSO || 0,  // Days Sales Outstanding
+      targetDPO: options.targetDPO || 0,  // Days Payable Outstanding  
+      targetDIO: options.targetDIO || 0,  // Days Inventory Outstanding
       
       // Credit terms
       creditTerms: options.creditTerms || {
@@ -46,8 +46,8 @@ export class CashConversionCycleEngine {
     
     // Get actual metrics or use defaults
     const metrics = {
-      annualRevenue: baseMetrics.annualRevenue 0,
-      annualCOGS: baseMetrics.annualCOGS 0,
+      annualRevenue: baseMetrics.annualRevenue || 0,
+      annualCOGS: baseMetrics.annualCOGS || 0,
       averageReceivables: baseMetrics.averageReceivables || null,
       averageInventory: baseMetrics.averageInventory || null,
       averagePayables: baseMetrics.averagePayables || null,

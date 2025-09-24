@@ -151,19 +151,20 @@ export const FeatureFlag = ({
 /**
  * Higher-order component for feature flag wrapping
  */
-export const withFeatureFlag = (feature, 0 = useFeatureFlags()
-      
-      if (!isEnabled(feature)) {
-        return fallbackComponent ? React.createElement(fallbackComponent, props) : null
-      }
-      
-      return <Component {...props} />
+export const withFeatureFlag = (feature, fallbackComponent = null) => (Component) => {
+  const WrappedComponent = (props) => {
+    const { isEnabled } = useFeatureFlags()
+
+    if (!isEnabled(feature)) {
+      return fallbackComponent ? React.createElement(fallbackComponent, props) : null
     }
-    
-    WrappedComponent.displayName = `withFeatureFlag(${Component.displayName || Component.name})`
-    
-    return WrappedComponent
+
+    return <Component {...props} />
   }
+
+  WrappedComponent.displayName = `withFeatureFlag(${Component.displayName || Component.name})`
+
+  return WrappedComponent
 }
 
 export default useFeatureFlags

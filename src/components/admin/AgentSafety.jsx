@@ -282,7 +282,7 @@ function PolicyTab({ policy, loading, onEdit, onSave }) {
             </label>
             <input
               type="number"
-              value={localPolicy?.maxSteps 0}
+              value={localPolicy?.maxSteps || 0}
               onChange={(e) => setLocalPolicy({
                 ...localPolicy,
                 maxSteps: parseInt(e.target.value)
@@ -297,7 +297,7 @@ function PolicyTab({ policy, loading, onEdit, onSave }) {
             </label>
             <input
               type="number"
-              value={localPolicy?.wallClockMs 0}
+              value={localPolicy?.wallClockMs || 0}
               onChange={(e) => setLocalPolicy({
                 ...localPolicy,
                 wallClockMs: parseInt(e.target.value)

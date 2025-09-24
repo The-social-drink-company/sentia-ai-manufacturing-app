@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
+// Clerk authentication bypassed - using mock user
 import {
   ArrowTrendingUpIcon,
   CogIcon,
@@ -27,7 +27,8 @@ import { useSSE } from '../hooks/useSSE';
 
 export default function EnhancedDashboard() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  // Mock user for bypassing Clerk
+  const user = { firstName: 'Admin', lastName: 'User', fullName: 'Admin User' };
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedView, setSelectedView] = useState('grid');

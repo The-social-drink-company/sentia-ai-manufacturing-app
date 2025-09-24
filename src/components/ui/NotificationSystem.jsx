@@ -46,6 +46,8 @@ function Toast({ notification, onClose }) {
     }
   }
 
+  
+
   const config = typeConfig[type] || typeConfig.info
   const Icon = config.icon
 
@@ -271,4 +273,25 @@ export function NotificationSystem() {
       ]
       
       // Randomly show notifications (reduced frequency for demo)
-      if (0
+      if (Math.random() < 0.05) {
+        const evt = eventTypes[Math.floor(Math.random() * eventTypes.length)]
+        addNotification({
+          ...evt,
+          duration: 4000
+        })
+      }
+    }, 15000)
+
+    return () => clearInterval(interval)
+  }, [addNotification])
+
+  return (
+    <div className="fixed top-4 right-4 z-50">
+      <AnimatePresence>
+        {notifications.map((n) => (
+          <Toast key={n.id} notification={n} onClose={removeNotification} />
+        ))}
+      </AnimatePresence>
+    </div>
+  )
+}

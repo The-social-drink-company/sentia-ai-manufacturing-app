@@ -47,6 +47,7 @@ const Settings = lazy(() => import('./pages/Settings/index'));
 
 // Components - verified to exist
 const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
+const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
 const AIInsights = lazy(() => import('./components/AIInsights'));
 const SentiaAIChatbot = lazy(() => import('./components/AI/SentiaAIChatbot'));
 
@@ -108,6 +109,7 @@ function App() {
 
               {/* Financial */}
               <Route path="/working-capital" element={<WorkingCapital />} />
+              <Route path="/what-if" element={<WhatIfAnalysis />} />
               <Route path="/ai-insights" element={<AIInsights />} />
 
               {/* Manufacturing */}

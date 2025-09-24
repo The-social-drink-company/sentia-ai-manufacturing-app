@@ -47,9 +47,7 @@ const Settings = lazy(() => import('./pages/Settings/index'));
 
 // Components - verified to exist
 const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
-const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
 const AIInsights = lazy(() => import('./components/AIInsights'));
-const SentiaAIChatbot = lazy(() => import('./components/AI/SentiaAIChatbot'));
 
 // Mobile Pages - verified to exist
 const Mobile = lazy(() => import('./pages/Mobile'));
@@ -109,7 +107,6 @@ function App() {
 
               {/* Financial */}
               <Route path="/working-capital" element={<WorkingCapital />} />
-              <Route path="/what-if" element={<WhatIfAnalysis />} />
               <Route path="/ai-insights" element={<AIInsights />} />
 
               {/* Manufacturing */}
@@ -135,11 +132,6 @@ function App() {
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
-          </Suspense>
-
-          {/* Sentia AI Chatbot - Always visible on all pages */}
-          <Suspense fallback={null}>
-            <SentiaAIChatbot />
           </Suspense>
 
           {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}

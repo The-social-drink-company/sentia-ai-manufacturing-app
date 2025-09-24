@@ -8,5 +8,6 @@ export const useInventoryMetrics = () => {
       { category: 'Spare Parts', current: 150, optimal: 180, min: 100 },
       { category: 'Packaging', current: 320, optimal: 350, min: 200 },
     ],
-    history: [] => 0;
+    history: Array.from({ length: 20 }, (_, i) => ({ value: Math.round(10 + 2 * Math.sin((i / 20) * Math.PI * 2)) })),
+  };
 };

@@ -34,10 +34,6 @@ const FinancialOverviewWidget = () => {
       });
 
       if (!response.ok) {
-        // Fallback to mock data if API fails
-        if (response.status === 404 || response.status === 500) {
-          return getMockData();
-        }
         throw new Error(`Failed to fetch financial overview: ${response.statusText}`);
       }
 
@@ -48,60 +44,12 @@ const FinancialOverviewWidget = () => {
     retryDelay: 1000
   });
 
-  // Mock data fallback
-  const getMockData = () => ({
-    summary: {
-      0,
-      expenses: 1890450,
-      0,
-      profitMargin: 23.1,
-      0,
-      0,
-      currentRatio: 1.85,
-      quickRatio: 1.42
-    },
-    revenueBreakdown: [
-      { source: 'Product Sales', amount: 1845000, percentage: 75.1 },
-      { source: 'Services', amount: 456780, percentage: 18.6 },
-      { source: 'Licensing', amount: 155000, percentage: 6.3 }
-    ],
-    expenseBreakdown: [
-      { category: 'Raw Materials', amount: 756000, percentage: 40 },
-      { category: 'Labor', amount: 567135, percentage: 30 },
-      { category: 'Operations', amount: 378090, percentage: 20 },
-      { category: 'Marketing', amount: 189225, percentage: 10 }
-    ],
-    cashFlowTrend: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      operating: 0,
-      investing: [-120000, -85000, -95000, -110000, -75000, -90000],
-      financing: [-50000, -45000, -55000, -48000, -52000, -47000]
-    },
-    profitTrend: {
-      labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024'],
-      revenue: [2100000, 2250000, 2380000, 2456780],
-      profit: [483000, 517500, 548000, 566330],
-      margin: [23.0, 23.0, 23.0, 23.1]
-    },
-    keyRatios: {
-      grossMargin: 42.5,
-      operatingMargin: 28.3,
-      netMargin: 23.1,
-      roe: 18.7,
-      roa: 12.4,
-      debtToEquity: 0.45
-    },
-    budgetComparison: {
-      revenue: { actual: 2456780, budget: 2400000, variance: 2.4 },
-      expenses: { actual: 1890450, budget: 1950000, variance: -3.1 },
-      profit: { actual: 566330, budget: 450000, variance: 25.8 }
-    }
-  });
 
-  if (isLoading && !data) return <WidgetSkeleton title="Financial Overview" height="400px" />;
-  if (error && !data) return <WidgetError error={error} onRetry={refetch} title="Financial Overview" />;
+  if (isLoading) return <WidgetSkeleton title="Financial Overview" height="400px" />;
+  if (error) return <WidgetError error={error} onRetry={refetch} title="Financial Overview" />;
+  if (!data) return <WidgetError error={{ message: 'No data available. Please connect to real data source.' }} onRetry={refetch} title="Financial Overview" />;
 
-  const financial = data || getMockData();
+  const financial = data;
 
   // Cash flow chart configuration
   const cashFlowData = {

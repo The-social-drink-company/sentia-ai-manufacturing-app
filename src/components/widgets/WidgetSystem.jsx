@@ -337,13 +337,13 @@ const QualityMetricsWidget = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {data?.overallPassRate 0}%
+              {(data?.overallPassRate || 0)}%
             </div>
             <div className="text-xs text-gray-500">Pass Rate</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">
-              {data?.testsCompleted 0}
+              {data?.testsCompleted || 0}
             </div>
             <div className="text-xs text-gray-500">Tests Today</div>
           </div>

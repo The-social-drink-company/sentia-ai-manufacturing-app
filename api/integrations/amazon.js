@@ -1,8 +1,9 @@
 import SellingPartnerAPI from 'amazon-sp-api';
 import crypto from 'crypto';
 
-// Mock database for Amazon data (replace with actual database when ready)
-const 0;
+// Import Prisma for database access
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 class AmazonIntegration {
   constructor() {
@@ -49,10 +50,10 @@ class AmazonIntegration {
           path: { orderId: order.AmazonOrderId }
         });
 
-        // Store in mock database (replace with actual database when ready)
-        const existingOrderIndex = mockDatabase.salesOrders.findIndex(
-          o => o.externalId === `amazon_${order.AmazonOrderId}`
-        );
+        // Check if order exists in database
+        const existingOrder = await prisma.salesOrder.findUnique({
+          where: { externalId: `amazon_${order.AmazonOrderId}` }
+        });
 
         const orderData = {
           externalId: `amazon_${order.AmazonOrderId}`,
@@ -82,11 +83,12 @@ class AmazonIntegration {
           updatedAt: new Date()
         };
 
-        if (existingOrderIndex >= 0) {
-          mockDatabase.salesOrders[existingOrderIndex] = orderData;
-        } else {
-          mockDatabase.salesOrders.push(orderData);
-        }
+        // Store order in database
+        await prisma.salesOrder.upsert({
+          where: { externalId: orderData.externalId },
+          update: orderData,
+          create: orderData
+        });
       }
 
       // Get FBA inventory
@@ -96,7 +98,8 @@ class AmazonIntegration {
       const metrics = await this.calculateAmazonMetrics(orders);
 
       // Store sync log
-      mockDatabase.integrationLogs.push({
+      await prisma.integrationLog.create({
+        data: {
         integration: 'amazon',
         marketplace: marketplace,
         action: 'sync_sales_data',
@@ -104,6 +107,7 @@ class AmazonIntegration {
         recordsProcessed: orders.length,
         metadata: metrics,
         timestamp: new Date()
+        }
       });
 
       return {
@@ -117,7 +121,8 @@ class AmazonIntegration {
       console.error('Amazon sync error:', error);
 
       // Log error to mock database
-      mockDatabase.integrationLogs.push({
+      await prisma.integrationLog.create({
+        data: {
         integration: 'amazon',
         marketplace: marketplace,
         action: 'sync_sales_data',
@@ -146,9 +151,12 @@ class AmazonIntegration {
       for (const item of inventory.inventorySummaries || []) {
         // Store inventory in mock database
         const inventoryKey = `${item.sellerSku}_${marketplace}`;
-        const existingIndex = mockDatabase.inventory.findIndex(
-          i => `${i.sku}_${i.marketplace}` === inventoryKey
-        );
+        const existingInventory = await prisma.inventory.findFirst({
+          where: {
+            sku: item.sellerSku,
+            marketplace: marketplace
+          }
+        });
 
         const inventoryData = {
           sku: item.sellerSku,
@@ -165,11 +173,13 @@ class AmazonIntegration {
           updatedAt: new Date()
         };
 
-        if (existingIndex >= 0) {
-          mockDatabase.inventory[existingIndex] = inventoryData;
-        } else {
-          mockDatabase.inventory.push(inventoryData);
-        }
+        await prisma.inventory.upsert({
+          where: {
+            id: existingInventory?.id || 0
+          },
+          update: inventoryData,
+          create: inventoryData
+        });
       }
 
       return inventory.inventorySummaries;
@@ -364,7 +374,8 @@ class AmazonIntegration {
       // Process returns
       for (const returnItem of returns) {
         // Store return in mock database
-        mockDatabase.productReturns.push({
+        await prisma.productReturn.create({
+          data: {
           externalId: `amazon_${returnItem.ReturnId}`,
           marketplace: marketplace,
           orderId: returnItem.AmazonOrderId,

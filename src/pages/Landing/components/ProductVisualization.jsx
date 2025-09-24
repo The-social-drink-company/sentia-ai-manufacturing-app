@@ -68,8 +68,13 @@ const ProductVisualization = () => {
 
         {/* Floating particles */}
         {[...Array(20)].map((_, i) => {
+          const angle = (i / 20) * Math.PI * 2;
+          const radius = 4 + (i % 3) * 0.5;
           const position = [
-            (0;
+            Math.cos(angle) * radius,
+            (Math.sin(angle * 2) * 2),
+            Math.sin(angle) * radius
+          ];
           return (
             <Sphere key={i} args={[0.05, 16, 16]} position={position}>
               <meshStandardMaterial

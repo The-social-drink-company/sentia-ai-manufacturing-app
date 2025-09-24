@@ -6,26 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sentia Manufacturing Dashboard</title>
 
-    <!-- Preload Clerk for faster authentication -->
-    <link rel="preconnect" href="https://clerk.accounts.dev" />
-    <link rel="preconnect" href="https://api.clerk.dev" />
-
-    <!-- Load Clerk environment configuration from server -->
-    <script src="/clerk-init.js"></script>
+    <!-- No authentication required -->
 
     <!-- Initialize environment variables for client -->
     <script>
       // Set global environment variables for client-side access
       window.__APP_ENV__ = {
-        VITE_CLERK_PUBLISHABLE_KEY:
-          window.VITE_CLERK_PUBLISHABLE_KEY ||
-          'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk',
-        VITE_API_BASE_URL:
-          window.VITE_API_BASE_URL ||
-          '/api',
-        VITE_MCP_SERVER_URL:
-          window.VITE_MCP_SERVER_URL ||
-          'https://mcp-server-tkyu.onrender.com'
+        VITE_API_BASE_URL: window.VITE_API_BASE_URL || '/api',
+        VITE_MCP_SERVER_URL: window.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'
       };
 
       // Make environment variables available globally
@@ -38,6 +26,8 @@
         window.import.meta.env[key] = window.__APP_ENV__[key];
         window[key] = window.__APP_ENV__[key];
       });
+
+      console.log('Application running without authentication');
     </script>
   </head>
   <body>

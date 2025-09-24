@@ -33,9 +33,7 @@ const ProductionMetricsWidget = () => {
 
       if (!response.ok) {
         // Fallback to mock data if API fails
-        if (response.status === 404 || response.status === 500) {
-          return getMockData();
-        }
+        
         throw new Error(`Failed to fetch production metrics: ${response.statusText}`);
       }
 
@@ -46,38 +44,11 @@ const ProductionMetricsWidget = () => {
     retryDelay: 1000
   });
 
-  // Mock data fallback
-  const getMockData = () => ({
-    current: {
-      unitsProduced: 1547,
-      targetUnits: 2000,
-      efficiency: 87.3,
-      quality: 98.5,
-      oee: 76.2, // Overall Equipment Effectiveness
-      downtime: 23,
-      cycleTime: 4.2
-    },
-    trend: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      production: [1420, 1380, 1520, 1490, 1547, 1510, 1480],
-      target: [2000, 2000, 2000, 2000, 2000, 1500, 1500]
-    },
-    shifts: [
-      { name: 'Morning', units: 520, efficiency: 89 },
-      { name: 'Afternoon', units: 480, efficiency: 85 },
-      { name: 'Night', units: 547, efficiency: 87 }
-    ],
-    products: [
-      { name: 'Product A', units: 650, percentage: 42 },
-      { name: 'Product B', units: 497, percentage: 32 },
-      { name: 'Product C', units: 400, percentage: 26 }
-    ]
-  });
+    if (isLoading) return <WidgetSkeleton title="Production Metrics" height="400px" />;
+  if (error) return <WidgetError error={error} onRetry={refetch} title={title} />;
+  if (!data) return <WidgetError error={{ message: 'No data available. Please connect to real data source.' }} onRetry={refetch} title={title} />;
 
-  if (isLoading && !data) return <WidgetSkeleton title="Production Metrics" height="400px" />;
-  if (error && !data) return <WidgetError error={error} onRetry={refetch} title="Production Metrics" />;
-
-  const metrics = data || getMockData();
+  const widgetData = data;
 
   // Chart configuration
   const chartData = {

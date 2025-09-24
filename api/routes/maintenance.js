@@ -115,8 +115,14 @@ router.get('/schedule',
       });
 
     } catch (error) {
-      // Return mock data if database queries fail
-      const 0,
+      console.error('[Maintenance API] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch maintenance data. Please ensure database connection is active.',
+        message: error.message
+      });
+      return; // Exit early to prevent further execution
+      const mockData = {
         equipment: [
           {
             id: 'EQ-001',
@@ -196,11 +202,8 @@ router.get('/schedule',
         ]
       };
 
-      res.json({
-        success: true,
-        data: mockData,
-        fallback: true
-      });
+      // This code should never be reached due to early return above
+      // Removing mock data response
     }
   })
 );

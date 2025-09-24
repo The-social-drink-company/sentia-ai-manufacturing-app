@@ -211,6 +211,7 @@
     "framer-motion": "^12.23.16",
     "helmet": "^8.1.0",
     "html2canvas": "^1.4.1",
+    "http-proxy-middleware": "^3.0.5",
     "input-otp": "^1.4.2",
     "ioredis": "^5.7.0",
     "joi": "^18.0.1",

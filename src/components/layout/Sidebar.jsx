@@ -228,6 +228,27 @@ const Sidebar = () => {
           permission: 'workingcapital.view'
         },
         {
+          to: '/cash-runway',
+          icon: ClockIcon,
+          label: 'Cash Runway',
+          shortcut: 'G CR',
+          permission: 'workingcapital.view'
+        },
+        {
+          to: '/funding-calculator',
+          icon: CurrencyDollarIcon,
+          label: 'Funding Calculator',
+          shortcut: 'G FC',
+          permission: 'workingcapital.view'
+        },
+        {
+          to: '/working-capital-optimizer',
+          icon: ArrowPathIcon,
+          label: 'WC Optimizer',
+          shortcut: 'G WO',
+          permission: 'workingcapital.view'
+        },
+        {
           to: '/what-if',
           icon: SlidersIcon,
           label: 'What-If Analysis',

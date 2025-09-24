@@ -6,7 +6,7 @@
 
 class EnhancedWorkingCapitalService {
   constructor() {
-    this.apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+    this.apiBaseUrl = import.meta.env.VITE_API_BASE_URL || null;
     this.refreshInterval = 300000; // 5 minutes
     this.cache = new Map();
     this.cacheTimestamps = new Map();
@@ -562,7 +562,7 @@ class EnhancedWorkingCapitalService {
       const response = await fetch(`${this.apiBaseUrl}/company/employees/count`);
       if (response.ok) {
         const data = await response.json();
-        return data.count || 150; // fallback
+        return data.count 0; // fallback
       }
     } catch (error) {
       // Employee count API unavailable

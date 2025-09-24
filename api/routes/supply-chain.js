@@ -73,58 +73,21 @@ router.get('/overview',
           delayed,
           averageLeadTime: 5.2,
           supplierPerformance: suppliers.length > 0 ?
-            (suppliers.reduce((sum, s) => sum + (s.performance || 90), 0) / suppliers.length) : 93.5,
+            (suppliers.reduce((sum, s) => sum + (s.performance 0), 0) / suppliers.length) : 93.5,
           inventoryTurnover: 8.3
         },
-        suppliers: suppliers.length > 0 ? suppliers.map(supplier => ({
+        suppliers: suppliers.map(supplier => ({
           id: supplier.id,
           name: supplier.name,
-          location: supplier.location || 'Unknown',
-          status: supplier.status || 'active',
-          onTimeDelivery: supplier.onTimeDelivery || 94.5,
-          qualityRating: supplier.qualityRating || 4.8,
-          leadTime: supplier.leadTime || 5,
-          riskLevel: supplier.riskLevel || 'low',
-          lastDelivery: supplier.lastDelivery?.toISOString().split('T')[0] || '2024-01-15',
+          location: supplier.location || null,
+          status: supplier.status || null,
+          onTimeDelivery: supplier.onTimeDelivery || 0,
+          qualityRating: supplier.qualityRating || 0,
+          leadTime: supplier.leadTime || 0,
+          riskLevel: supplier.riskLevel || null,
+          lastDelivery: supplier.lastDelivery?.toISOString().split('T')[0] || null,
           totalOrders: supplier.orders?.length || 0
-        })) : [
-          {
-            id: 1,
-            name: 'Pacific Materials Co.',
-            location: 'Vancouver, BC',
-            status: 'active',
-            onTimeDelivery: 94.5,
-            qualityRating: 4.8,
-            leadTime: 5,
-            riskLevel: 'low',
-            lastDelivery: '2024-01-15',
-            totalOrders: 125
-          },
-          {
-            id: 2,
-            name: 'Industrial Components Ltd.',
-            location: 'Toronto, ON',
-            status: 'delayed',
-            onTimeDelivery: 87.2,
-            qualityRating: 4.3,
-            leadTime: 8,
-            riskLevel: 'medium',
-            lastDelivery: '2024-01-14',
-            totalOrders: 98
-          },
-          {
-            id: 3,
-            name: 'Global Logistics Inc.',
-            location: 'Montreal, QC',
-            status: 'active',
-            onTimeDelivery: 96.1,
-            qualityRating: 4.9,
-            leadTime: 3,
-            riskLevel: 'low',
-            lastDelivery: '2024-01-16',
-            totalOrders: 156
-          }
-        ],
+        })),
         shipmentTrend: {
           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           shipped: [28, 32, 25, 35, 30, 18, 15],
@@ -137,17 +100,17 @@ router.get('/overview',
           targetDays: [5, 7, 3, 10, 3]
         },
         riskAssessment: {
-          low: Math.floor(activeSuppliers * 0.62) || 28,
-          medium: Math.floor(activeSuppliers * 0.27) || 12,
+          low: Math.floor(activeSuppliers * 0.62) 0,
+          medium: Math.floor(activeSuppliers * 0.27) 0,
           high: Math.floor(activeSuppliers * 0.11) || 5,
           critical: 0
         },
         recentOrders: recentOrders.length > 0 ? recentOrders.slice(0, 4).map(order => ({
           id: order.orderNumber || order.id,
-          supplier: order.supplier?.name || 'Unknown',
-          status: order.status || 'processing',
+          supplier: order.supplier?.name || null,
+          status: order.status || null,
           eta: order.expectedDelivery?.toISOString().split('T')[0] || '2024-01-20',
-          value: order.totalValue || 25000
+          value: order.totalValue 0
         })) : [
           { id: 'PO-2024-0145', supplier: 'Pacific Materials', status: 'in-transit', eta: '2024-01-18', value: 45000 },
           { id: 'PO-2024-0144', supplier: 'Global Logistics', status: 'delivered', eta: '2024-01-16', value: 32000 },
@@ -177,18 +140,14 @@ router.get('/overview',
       });
 
     } catch (error) {
-      // Return mock data if database queries fail
+      console.error('[Supply Chain API] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch supply chain data. Please ensure database connection is active.',
+        message: error.message
+      });
+      return;
       const mockData = {
-        summary: {
-          activeSuppliers: 45,
-          totalShipments: 183,
-          inTransit: 23,
-          deliveredOnTime: 156,
-          delayed: 4,
-          averageLeadTime: 5.2,
-          supplierPerformance: 93.5,
-          inventoryTurnover: 8.3
-        },
         suppliers: [
           {
             id: 1,
@@ -276,11 +235,8 @@ router.get('/overview',
         }
       };
 
-      res.json({
-        success: true,
-        data: mockData,
-        fallback: true
-      });
+      // This code should never be reached due to early return above
+      // Removing mock data response
     }
   })
 );

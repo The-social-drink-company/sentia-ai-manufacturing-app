@@ -45,9 +45,8 @@ const KPICard = ({ title, value, trend, sparklineData, color = 'blue', icon }) =
     if (sparklineData && sparklineData.length > 0) return sparklineData;
 
     // Generate dummy data for demonstration
-    return Array.from({ length: 12 }, (_, i) => ({
-      value: Math.random() * 100 + 50,
-    }));
+    return [] => ({
+      value: 0;
   };
 
   const sparkline = generateSparkline();

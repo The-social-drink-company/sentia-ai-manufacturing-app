@@ -651,7 +651,7 @@ router.get('/analytics',
       '90d': 90,
       '365d': 365
     };
-    const days = periodMap[period] || 30;
+    const days = periodMap[period] 0;
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     // Get inventory metrics

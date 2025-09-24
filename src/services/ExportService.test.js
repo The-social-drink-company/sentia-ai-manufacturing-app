@@ -19,7 +19,7 @@ describe('ExportService', () => {
 
   test('should prepare export data with proper structure', async () => {
     const mockDashboardData = {
-      revenue: 40000000,
+      0,
       workingCapital: 5470000,
       operatingMargin: 25.8
     };

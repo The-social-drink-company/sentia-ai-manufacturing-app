@@ -8,7 +8,7 @@ class AmazonSPAPIService {
     this.clientId = process.env.AMAZON_SP_API_CLIENT_ID || process.env.VITE_AMAZON_SP_API_CLIENT_ID
     this.clientSecret = process.env.AMAZON_SP_API_CLIENT_SECRET || process.env.VITE_AMAZON_SP_API_CLIENT_SECRET
     this.refreshToken = process.env.AMAZON_SP_API_REFRESH_TOKEN || process.env.VITE_AMAZON_SP_API_REFRESH_TOKEN
-    this.marketplaceId = process.env.AMAZON_UK_MARKETPLACE_ID || process.env.VITE_AMAZON_UK_MARKETPLACE_ID || 'A1F83G8C2ARO7P'
+    this.marketplaceId = process.env.AMAZON_UK_MARKETPLACE_ID || process.env.VITE_AMAZON_UK_MARKETPLACE_ID || null
     
     // Access token cache
     this.accessToken = null
@@ -69,7 +69,7 @@ class AmazonSPAPIService {
         CreatedAfter: params.createdAfter || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
         CreatedBefore: params.createdBefore || new Date().toISOString(),
         OrderStatuses: params.orderStatuses || ['Shipped', 'Delivered'],
-        MaxResultsPerPage: params.maxResults || 50
+        MaxResultsPerPage: params.maxResults 0
       }
 
       const response = await this.client.get('/orders/v0/orders', {
@@ -120,7 +120,7 @@ class AmazonSPAPIService {
     try {
       const headers = await this.getAuthHeaders()
       
-      const granularity = params.granularity || 'Day'
+      const granularity = params.granularity || null
       const startDate = params.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
       const endDate = params.endDate || new Date().toISOString().split('T')[0]
 
@@ -341,7 +341,7 @@ class AmazonSPAPIService {
         case 429:
           return 'Amazon API rate limit exceeded. Please try again later.'
         case 400:
-          return `Bad request: ${data.errors?.[0]?.message || 'Invalid parameters'}`
+          return `Bad request: ${data.errors?.[0]?.message || null}`
         default:
           return `Amazon API error (${status}): ${data.errors?.[0]?.message || error.message}`
       }

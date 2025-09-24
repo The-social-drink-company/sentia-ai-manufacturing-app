@@ -11,8 +11,8 @@ router.get('/health', async (req, res) => {
   const healthStatus = {
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
+    version: process.env.npm_package_version || null,
+    environment: process.env.NODE_ENV || null,
     uptime: Math.floor(process.uptime()),
     checks: {
       server: { status: 'healthy', responseTime: 0 },
@@ -88,7 +88,7 @@ router.get('/health', async (req, res) => {
   // MCP Server health check
   try {
     const mcpStart = Date.now();
-    const mcpResponse = await fetch(`http://localhost:${process.env.MCP_PORT || 9001}/health`, {
+    const mcpResponse = await fetch(`http://localhost:${process.env.MCP_PORT 0}/health`, {
       timeout: 5000
     }).catch(() => null);
 
@@ -209,8 +209,8 @@ router.get('/metrics', async (req, res) => {
     },
     application: {
       environment: process.env.NODE_ENV,
-      version: process.env.npm_package_version || '1.0.0',
-      port: process.env.PORT || 5000,
+      version: process.env.npm_package_version || null,
+      port: process.env.PORT 0,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     },
     requests: {
@@ -285,8 +285,8 @@ router.get('/live', (req, res) => {
 router.get('/status', async (req, res) => {
   const status = {
     service: 'Sentia Manufacturing Dashboard',
-    version: process.env.npm_package_version || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
+    version: process.env.npm_package_version || null,
+    environment: process.env.NODE_ENV || null,
     status: 'operational',
     last_updated: new Date().toISOString(),
     components: [

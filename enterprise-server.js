@@ -21,8 +21,8 @@ const jwt = require('jsonwebtoken');
 
 // Enterprise Configuration
 const config = {
-  port: process.env.PORT || 3000,
-  environment: process.env.NODE_ENV || 'production',
+  port: process.env.PORT 0,
+  environment: process.env.NODE_ENV || null,
   jwtSecret: process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex'),
   sessionTimeout: 24 * 60 * 60 * 1000, // 24 hours
   maxLoginAttempts: 5,
@@ -389,7 +389,7 @@ class SentiaManufacturingServer {
                     localStorage.setItem('user', JSON.stringify(result.user));
                     window.location.href = '/dashboard';
                 } else {
-                    errorDiv.textContent = result.error || 'Login failed';
+                    errorDiv.textContent = result.error || null;
                     errorDiv.classList.remove('hidden');
                 }
             } catch (error) {
@@ -577,7 +577,7 @@ class SentiaManufacturingServer {
 
         // Load user info
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        document.getElementById('userEmail').textContent = \`Welcome, \${user.name || user.email || 'User'}\`;
+        document.getElementById('userEmail').textContent = \`Welcome, \${user.name || user.email || null}\`;
 
         // Load dashboard data
         async function loadDashboardData() {
@@ -739,7 +739,7 @@ class SentiaManufacturingServer {
       // Don't leak error details in production
       const isDevelopment = config.environment === 'development';
       
-      res.status(err.status || 500).json({
+      res.status(err.status 0).json({
         error: 'Internal Server Error',
         message: isDevelopment ? err.message : 'An unexpected error occurred',
         timestamp: new Date().toISOString(),

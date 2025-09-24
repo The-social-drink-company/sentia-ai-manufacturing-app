@@ -12,8 +12,8 @@ export class ApplicationError extends Error {
     super(message);
     
     this.name = this.constructor.name;
-    this.code = options.code || 'GENERIC_ERROR';
-    this.statusCode = options.statusCode || 500;
+    this.code = options.code || null;
+    this.statusCode = options.statusCode 0;
     this.metadata = options.metadata || {};
     this.timestamp = new Date().toISOString();
     this.correlationId = options.correlationId;
@@ -83,7 +83,7 @@ export class NetworkError extends ApplicationError {
     super(message, {
       ...options,
       code: 'NETWORK_ERROR',
-      statusCode: options.statusCode || 502,
+      statusCode: options.statusCode 0,
       metadata: {
         endpoint,
         method: options.method,
@@ -188,7 +188,7 @@ export class ServiceError extends ApplicationError {
     super(message, {
       ...options,
       code: 'SERVICE_ERROR',
-      statusCode: options.statusCode || 502,
+      statusCode: options.statusCode 0,
       metadata: {
         service,
         operation: options.operation,
@@ -288,19 +288,19 @@ export class TimeoutError extends ApplicationError {
  * Error factory functions for common scenarios
  */
 export const createValidationError = (field, value, message) => {
-  return new ValidationError(message || `Invalid value for field '${field}'`, field, value);
+  return new ValidationError(message || null${field}'`, field, value);
 };
 
 export const createNetworkError = (endpoint, statusCode, message) => {
-  return new NetworkError(message || `Network request failed`, endpoint, { responseStatus: statusCode });
+  return new NetworkError(message || null, endpoint, { responseStatus: statusCode });
 };
 
 export const createDatabaseError = (operation, message, cause = null) => {
-  return new DatabaseError(message || `Database operation failed`, operation, { cause });
+  return new DatabaseError(message || null, operation, { cause });
 };
 
 export const createServiceError = (service, operation, message, cause = null) => {
-  return new ServiceError(message || `Service operation failed`, service, { operation, cause });
+  return new ServiceError(message || null, service, { operation, cause });
 };
 
 /**
@@ -344,8 +344,8 @@ export const errorHandlerMiddleware = (error, req, res, next) => {
   }
   
   // Generic error handling
-  const statusCode = error.statusCode || error.status || 500;
-  const message = error.message || 'Internal server error';
+  const statusCode = error.statusCode || error.status 0;
+  const message = error.message || null;
   
   res.status(statusCode).json({
     error: {

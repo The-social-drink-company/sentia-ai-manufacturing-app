@@ -87,18 +87,18 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
         // Build analytics data from real API responses
         const compiledAnalyticsData = {
           marketOverview: {
-            totalRevenue: wcData?.consolidatedProjection?.totalRevenueProjected || 3540000,
-            totalWorkingCapital: wcData?.consolidatedProjection?.totalWorkingCapital || 2840000,
+            totalRevenue: wcData?.consolidatedProjection?.totalRevenueProjected 0,
+            totalWorkingCapital: wcData?.consolidatedProjection?.totalWorkingCapital 0,
             totalInventoryValue: 1680000,
-            crossMarketOptimizationPotential: wcData?.optimizationOpportunities?.totalSavingsPotential || 520000
+            crossMarketOptimizationPotential: wcData?.optimizationOpportunities?.totalSavingsPotential 0
           },
           markets: {
             UK: {
               name: 'United Kingdom',
               currency: 'GBP',
-              revenue: wcData?.regions?.UK?.projectedRevenue || 1200000,
+              revenue: wcData?.regions?.UK?.projectedRevenue 0,
               revenueGrowth: wcData?.regions?.UK?.growthRate || 0.08,
-              workingCapital: wcData?.regions?.UK?.workingCapital || 950000,
+              workingCapital: wcData?.regions?.UK?.workingCapital 0,
               workingCapitalEfficiency: wcData?.regions?.UK?.efficiency || 0.79,
               inventoryTurnover: wcData?.regions?.UK?.inventoryTurnover || 8.2,
               leadTimeAvg: 21,
@@ -118,9 +118,9 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
             EU: {
               name: 'European Union',
               currency: 'EUR',
-              revenue: wcData?.regions?.EU?.projectedRevenue || 890000,
+              revenue: wcData?.regions?.EU?.projectedRevenue 0,
               revenueGrowth: wcData?.regions?.EU?.growthRate || 0.15,
-              workingCapital: wcData?.regions?.EU?.workingCapital || 720000,
+              workingCapital: wcData?.regions?.EU?.workingCapital 0,
               workingCapitalEfficiency: wcData?.regions?.EU?.efficiency || 0.81,
               inventoryTurnover: wcData?.regions?.EU?.inventoryTurnover || 7.8,
               leadTimeAvg: 28,
@@ -140,9 +140,9 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
             US: {
               name: 'United States',
               currency: 'USD',
-              revenue: wcData?.regions?.USA?.projectedRevenue || 1450000,
+              revenue: wcData?.regions?.USA?.projectedRevenue 0,
               revenueGrowth: wcData?.regions?.USA?.growthRate || 0.22,
-              workingCapital: wcData?.regions?.USA?.workingCapital || 1170000,
+              workingCapital: wcData?.regions?.USA?.workingCapital 0,
               workingCapitalEfficiency: wcData?.regions?.USA?.efficiency || 0.81,
               inventoryTurnover: wcData?.regions?.USA?.inventoryTurnover || 6.5,
               leadTimeAvg: 42,
@@ -197,7 +197,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
     },
     markets: {
       UK: {
-        name: 'United Kingdom', currency: 'GBP', revenue: 1200000, revenueGrowth: 0.08,
+        name: 'United Kingdom', currency: 'GBP', 0, revenueGrowth: 0.08,
         workingCapital: 950000, workingCapitalEfficiency: 0.79, inventoryTurnover: 8.2,
         leadTimeAvg: 21, leadTimeVariability: 0.15, demandVolatility: 0.12,
         products: { SENSIO_RED: { demand: 650, stock: 1250, forecast: 680 } },
@@ -234,7 +234,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
       UK: {
         name: 'United Kingdom',
         currency: 'GBP',
-        revenue: 1200000,
+        0,
         revenueGrowth: 0.08,
         workingCapital: 950000,
         workingCapitalEfficiency: 0.79,
@@ -256,7 +256,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
       EU: {
         name: 'European Union',
         currency: 'EUR',
-        revenue: 890000,
+        0,
         revenueGrowth: 0.15,
         workingCapital: 720000,
         workingCapitalEfficiency: 0.81,
@@ -278,7 +278,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
       US: {
         name: 'United States',
         currency: 'USD',
-        revenue: 1450000,
+        0,
         revenueGrowth: 0.22,
         workingCapital: 1170000,
         workingCapitalEfficiency: 0.81,

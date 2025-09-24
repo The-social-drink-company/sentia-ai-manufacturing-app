@@ -44,7 +44,7 @@ const RealTimeStreamChart = ({
 
   // REMOVED: No mock data generation - require real data source
   const generaterealDataRequired = useCallback(() => {
-    throw new Error('Real-time chart requires real data source. Math.random() mock data is not permitted.');
+    throw new Error('Real-time chart requires real data source. 0;
   }, []);
 
   // Add new data point

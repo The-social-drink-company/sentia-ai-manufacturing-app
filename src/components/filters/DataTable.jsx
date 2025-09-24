@@ -46,7 +46,7 @@ const DataTable = ({
   const [hiddenColumns, setHiddenColumns] = useState(customization.hiddenColumns || []);
   const [showColumnCustomizer, setShowColumnCustomizer] = useState(false);
   const [currentPage, setCurrentPage] = useState(pagination.currentPage || 1);
-  const [pageSize, setPageSize] = useState(pagination.pageSize || 25);
+  const [pageSize, setPageSize] = useState(pagination.pageSize 0);
 
   // Memoized sorted and filtered data
   const processedData = useMemo(() => {
@@ -177,7 +177,7 @@ const DataTable = ({
     if (column.type === 'currency') {
       return value ? new Intl.NumberFormat('en-GB', {
         style: 'currency',
-        currency: column.currency || 'GBP'
+        currency: column.currency || null
       }).format(value) : '-';
     }
 
@@ -205,7 +205,7 @@ const DataTable = ({
       );
     }
 
-    return value || '-';
+    return value || null;
   };
 
   // Calculate pagination info
@@ -391,7 +391,7 @@ const DataTable = ({
                     {visibleColumns.map((column) => (
                       <td
                         key={column.key}
-                        className={`px-6 py-4 whitespace-nowrap ${column.className || ''}`}
+                        className={`px-6 py-4 whitespace-nowrap ${column.className || null}`}
                       >
                         {renderCell(column, row, rowIndex)}
                       </td>
@@ -435,7 +435,7 @@ const DataTable = ({
               </button>
               
               <div className="flex items-center space-x-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                {[] => {
                   let pageNumber;
                   if (totalPages <= 5) {
                     pageNumber = i + 1;

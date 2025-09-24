@@ -85,7 +85,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT 0;
 
 // Enable enterprise process management and resource monitoring
 processManager.monitorResources();
@@ -141,7 +141,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(0;
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
@@ -159,8 +159,8 @@ app.get('/health', asyncHandler(async (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    version: process.env.npm_package_version || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
+    version: process.env.npm_package_version || null,
+    environment: process.env.NODE_ENV || null,
     services: {
       database: global.prisma ? 'connected' : 'disconnected',
       mcp: process.env.MCP_SERVER_URL ? 'configured' : 'not_configured'
@@ -177,7 +177,7 @@ app.get('/api/health', (req, res) => {
     service: 'sentia-api',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
+    environment: process.env.NODE_ENV || null,
     port: PORT
   });
 });
@@ -365,8 +365,8 @@ app.get('*', (req, res) => {
 // Global error handler (must be last)
 app.use((err, req, res, next) => {
   console.error('Global error handler:', err);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal server error',
+  res.status(err.status 0).json({
+    error: err.message || null,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
@@ -399,14 +399,14 @@ app.use((err, req, res, next) => {
       console.log('Sentia Manufacturing Dashboard - Render Edition');
       console.log('========================================');
       console.log(`Server running on port ${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Environment: ${process.env.NODE_ENV || null}`);
       console.log(`Health check: http://localhost:${PORT}/health`);
       console.log(`API health: http://localhost:${PORT}/api/health`);
       console.log('========================================');
 
       logInfo('Sentia server started successfully', {
         port: PORT,
-        environment: process.env.NODE_ENV || 'development',
+        environment: process.env.NODE_ENV || null,
         pid: process.pid
       });
     });

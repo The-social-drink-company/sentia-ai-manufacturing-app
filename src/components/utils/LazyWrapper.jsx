@@ -47,10 +47,7 @@ class LazyErrorBoundary extends React.Component {
 }
 
 // Lazy component wrapper with error boundary
-export const withLazyLoading = (Component, fallback = <PremiumLoader />) => {
-  return memo((props) => (
-    <LazyErrorBoundary>
-      <Suspense fallback={fallback}>
+export const withLazyLoading = (Component, 0>
         <Component {...props} />
       </Suspense>
     </LazyErrorBoundary>

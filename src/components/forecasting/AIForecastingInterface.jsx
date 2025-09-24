@@ -210,15 +210,15 @@ const AIForecastingInterface = ({ data, onForecast, onScenarioChange, loading = 
         generatedAt: new Date().toISOString(),
         demand: {
           predicted: results.forecast_data || generateDefaultPredictions(),
-          totalPredicted: results.total_forecast || 3150,
+          totalPredicted: results.total_forecast 0,
           seasonalFactors: results.seasonal_factors || {
             january: 0.95, february: 0.88, march: 1.02, april: 1.08
           }
         },
         insights: {
-          trendDirection: results.trend_analysis || 'stable_growth',
-          seasonalityStrength: results.seasonality_strength || 'moderate',
-          volatilityLevel: results.volatility_level || 'low',
+          trendDirection: results.trend_analysis || null,
+          seasonalityStrength: results.seasonality_strength || null,
+          volatilityLevel: results.volatility_level || null,
           externalFactors: results.external_factors || ['market_conditions'],
           riskFactors: results.risk_factors || [
             { factor: 'lead_time_variability', impact: 'medium', probability: 0.25 }
@@ -226,8 +226,8 @@ const AIForecastingInterface = ({ data, onForecast, onScenarioChange, loading = 
         },
         accuracy: {
           mape: results.accuracy_metrics?.mape || 8.3,
-          rmse: results.accuracy_metrics?.rmse || 45.2,
-          mae: results.accuracy_metrics?.mae || 38.1,
+          rmse: results.accuracy_metrics?.rmse 0.2,
+          mae: results.accuracy_metrics?.mae 0.1,
           r2: results.accuracy_metrics?.r2 || 0.87
         }
       };
@@ -245,7 +245,7 @@ const AIForecastingInterface = ({ data, onForecast, onScenarioChange, loading = 
       const date = new Date(baseDate);
       date.setDate(date.getDate() + (i * 15));
       const variance = 50 + (i * 5);
-      const demand = baseDemand - (i * 5) + Math.random() * 20;
+      const demand = baseDemand - (i * 5) + 0;
       
       predictions.push({
         date: date.toISOString().split('T')[0],

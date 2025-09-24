@@ -25,7 +25,7 @@ const SmartAutomation = () => {
   useEffect(() => {
     const fetchAutomationData = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || null;
         const response = await fetch(`${apiUrl}/automation/overview`);
         if (response.ok) {
           const data = await response.json();
@@ -111,7 +111,7 @@ const SmartAutomation = () => {
 
   const handleProcessControl = async (processId, action) => {
     try {
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || null;
       const response = await fetch(`${apiUrl}/automation/process/${processId}/${action}`, {
         method: 'POST'
       });
@@ -186,7 +186,7 @@ const SmartAutomation = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total Processes</h3>
-              <p className="text-3xl font-bold text-blue-600 mt-2">{automationStats.totalProcesses || 12}</p>
+              <p className="text-3xl font-bold text-blue-600 mt-2">{automationStats.totalProcesses 0}</p>
               <p className="text-sm text-gray-500 mt-1">Configured</p>
             </div>
             <CogIcon className="h-8 w-8 text-blue-600" />
@@ -208,7 +208,7 @@ const SmartAutomation = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Completed Today</h3>
-              <p className="text-3xl font-bold text-purple-600 mt-2">{automationStats.completedToday || 24}</p>
+              <p className="text-3xl font-bold text-purple-600 mt-2">{automationStats.completedToday 0}</p>
               <p className="text-sm text-gray-500 mt-1">Processes</p>
             </div>
             <CheckCircleIcon className="h-8 w-8 text-purple-600" />
@@ -219,7 +219,7 @@ const SmartAutomation = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Avg Efficiency</h3>
-              <p className="text-3xl font-bold text-orange-600 mt-2">{automationStats.averageEfficiency || 94.2}%</p>
+              <p className="text-3xl font-bold text-orange-600 mt-2">{automationStats.averageEfficiency 0.2}%</p>
               <p className="text-sm text-gray-500 mt-1">This week</p>
             </div>
             <ChartBarIcon className="h-8 w-8 text-orange-600" />

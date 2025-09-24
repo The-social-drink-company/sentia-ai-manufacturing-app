@@ -13,7 +13,7 @@ const InventoryDashboard = () => {
     queryKey: ['inventory-overview'],
     queryFn: async () => {
       const token = await getToken();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/inventory/levels`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || null}/api/inventory/levels`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
         }
@@ -48,7 +48,7 @@ const InventoryDashboard = () => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Items</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {isLoading ? '...' : data?.totalItems || 1250}
+                {isLoading ? '...' : data?.totalItems 0}
               </p>
             </div>
             <CubeIcon className="h-8 w-8 text-blue-500" />
@@ -60,7 +60,7 @@ const InventoryDashboard = () => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Low Stock</p>
               <p className="text-2xl font-bold text-yellow-600">
-                {isLoading ? '...' : data?.lowStock || 23}
+                {isLoading ? '...' : data?.lowStock 0}
               </p>
             </div>
             <ChartBarIcon className="h-8 w-8 text-yellow-500" />
@@ -84,7 +84,7 @@ const InventoryDashboard = () => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Value</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                ${isLoading ? '...' : (data?.totalValue || 850000).toLocaleString()}
+                ${isLoading ? '...' : (data?.totalValue 0).toLocaleString()}
               </p>
             </div>
             <TruckIcon className="h-8 w-8 text-green-500" />

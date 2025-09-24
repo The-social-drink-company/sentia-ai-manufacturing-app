@@ -13,12 +13,12 @@ import {
   BoltIcon
 } from '@heroicons/react/24/outline';
 
-const SentiaAIChatbot = ({ 
+const SentiaAIChatbot = ({
   position = 'bottom-right',
-  initiallyMinimized = false,
-  enableVoice = false 
+  initiallyMinimized = true,
+  enableVoice = false
 }) => {
-  const [isOpen, setIsOpen] = useState(!initiallyMinimized);
+  const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -39,6 +39,10 @@ const SentiaAIChatbot = ({
     : 'http://localhost:9001';
 
   useEffect(() => {
+    // Debug: Log when component mounts
+    console.log('🚀 Sentia AI Chatbot Mounted!');
+    console.log('📍 Look for the blue chat button in the bottom-right corner');
+
     // Initialize Sentia-specific suggested queries
     setSuggestedQueries([
       "How do I set up demand forecasting?",
@@ -398,13 +402,17 @@ Please ask me about any specific feature or process you'd like to learn about.`,
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed ${getPositionClasses()} z-50 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 group`}
-        title="Sentia AI Support Assistant"
+        className={`fixed ${getPositionClasses()} z-[9999] bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white p-5 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 group animate-bounce`}
+        style={{
+          boxShadow: '0 10px 40px rgba(59, 130, 246, 0.5)',
+          border: '2px solid rgba(255, 255, 255, 0.3)'
+        }}
+        title="Sentia AI Support Assistant - Click to chat!"
       >
-        <ChatBubbleLeftIcon className="h-6 w-6" />
-        <span className="absolute top-0 right-0 h-3 w-3 bg-green-400 rounded-full animate-pulse"></span>
-        <div className="absolute -top-12 right-0 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          24/7 AI Support
+        <ChatBubbleLeftIcon className="h-8 w-8" />
+        <span className="absolute top-0 right-0 h-4 w-4 bg-green-400 rounded-full animate-pulse ring-2 ring-white"></span>
+        <div className="absolute -top-14 right-0 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-semibold">
+          🤖 AI Assistant Ready!
         </div>
       </button>
     );

@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import { useAuth } from '@clerk/clerk-react';
 
 // Get API URL from environment or default
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_BASE_URL || null;
 
 // Connection state enum
 const ConnectionState = {
@@ -294,11 +294,7 @@ export const useRealTimeNotifications = () => {
 
   useEffect(() => {
     const allNotifications = [
-      ...inventoryAlerts.map(a => ({ ...a, source: 'inventory', id: `inv-${Date.now()}-${Math.random()}` })),
-      ...qualityAlerts.map(a => ({ ...a, source: 'quality', id: `qual-${Date.now()}-${Math.random()}` })),
-      ...maintenanceAlerts.map(a => ({ ...a, source: 'maintenance', id: `maint-${Date.now()}-${Math.random()}` }))
-    ].sort((a, b) => {
-      const priority = { critical: 0, warning: 1, info: 2 };
+      ...inventoryAlerts.map(a => ({ ...a, source: 'inventory', id: `inv-${Date.now()}-${0;
       return priority[a.type] - priority[b.type];
     });
 

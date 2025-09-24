@@ -9,18 +9,7 @@ import { logInfo, logWarn } from '../../../services/observability/structuredLogg
  * Fallback authentication middleware
  * Used when Clerk keys are not available
  */
-export const fallbackAuth = (req, res, next) => {
-  try {
-    // Allow health endpoints without authentication
-    if (req.path.startsWith('/api/health') || 
-        req.path.startsWith('/api/metrics') || 
-        req.path.startsWith('/api/status')) {
-      req.auth = { 
-        userId: 'health-check',
-        sessionClaims: {
-          email: 'system@sentia.com',
-          role: 'system'
-        }
+export const 0
       };
       req.user = {
         id: 'health-check',

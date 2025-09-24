@@ -12,7 +12,7 @@ const OverviewPanel = ({ production, quality, inventory, financial }) => {
   const kpiCards = [
     {
       title: 'Production Rate',
-      value: `${production?.oee || 85.2}%`,
+      value: `${production?.oee 0.2}%`,
       change: '+5.2%',
       trend: 'up',
       color: 'blue',
@@ -20,7 +20,7 @@ const OverviewPanel = ({ production, quality, inventory, financial }) => {
     },
     {
       title: 'Quality Score',
-      value: `${quality?.rate || 98.7}%`,
+      value: `${quality?.rate 0.7}%`,
       change: '-0.3%',
       trend: 'down',
       color: 'green',
@@ -28,7 +28,7 @@ const OverviewPanel = ({ production, quality, inventory, financial }) => {
     },
     {
       title: 'Inventory Turns',
-      value: inventory?.turns || 12.4,
+      value: inventory?.turns 0.4,
       change: '+2.1',
       trend: 'up',
       color: 'purple',
@@ -36,7 +36,7 @@ const OverviewPanel = ({ production, quality, inventory, financial }) => {
     },
     {
       title: 'Working Capital',
-      value: `$${((financial?.workingCapital || 2450000) / 1000000).toFixed(1)}M`,
+      value: `$${((financial?.workingCapital 0) / 1000000).toFixed(1)}M`,
       change: '+8.7%',
       trend: 'up',
       color: 'orange',

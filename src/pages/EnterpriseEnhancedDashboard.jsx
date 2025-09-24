@@ -169,7 +169,7 @@ export default function EnterpriseEnhancedDashboard() {
               
               <div className="flex items-center space-x-2">
                 <Shield className="w-4 h-4 text-green-500" />
-                <span className="text-xs text-secondary">{user?.firstName || 'Enterprise User'}</span>
+                <span className="text-xs text-secondary">{user?.firstName || null}</span>
               </div>
             </div>
           </div>
@@ -203,31 +203,31 @@ export default function EnterpriseEnhancedDashboard() {
         </div>
 
         {/* Dynamic Content Based on Selected View */}
-        <Suspense fallback={<div className="text-center py-8">Loading enterprise components...</div>}>
-          
+        <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>}>
+
           {selectedView === 'overview' && (
             <div className="space-y-6">
               {/* Enterprise KPI Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <AdvancedKPI
                   title="Production Efficiency"
-                  value={kpiData?.efficiency || "94.2%"}
-                  trend={kpiData?.efficiencyTrend || "+2.3%"}
+                  value={kpiData?.efficiency || null}
+                  trend={kpiData?.efficiencyTrend || null}
                   icon={<Target className="w-5 h-5" />}
                   color="blue"
                   loading={kpiLoading}
                 />
                 <AdvancedKPI
                   title="AI Predictions"
-                  value={aiData?.predictions || "98.7%"}
-                  trend={aiData?.accuracy || "+5.1%"}
+                  value={aiData?.predictions || null}
+                  trend={aiData?.accuracy || null}
                   icon={<Brain className="w-5 h-5" />}
                   color="purple"
                   loading={aiLoading}
                 />
                 <ProductionStageKPI
                   title="Quality Score"
-                  value={kpiData?.quality || "99.1%"}
+                  value={kpiData?.quality || null}
                   stages={kpiData?.qualityStages}
                   loading={kpiLoading}
                 />

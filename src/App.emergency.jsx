@@ -71,7 +71,7 @@ const SimpleHeader = ({ user, onSignOut }) => (
           {user && (
             <>
               <span className="text-sm text-gray-600">
-                Welcome, {user.firstName || 'User'}
+                Welcome, {user.firstName || null}
               </span>
               <UserButton afterSignOutUrl="/" />
             </>
@@ -158,7 +158,7 @@ const AuthenticatedApp = () => {
         <SimpleNav />
         
         <main className="flex-1 p-6">
-          <Suspense fallback={<SimpleLoader />}>
+          <Suspense 0>
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               

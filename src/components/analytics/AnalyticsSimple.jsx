@@ -27,35 +27,35 @@ const AnalyticsSimple = () => {
 
   // Monthly revenue data
   const revenueData = [
-    { month: 'Jan', revenue: 2100000, target: 2000000, orders: 1450 },
-    { month: 'Feb', revenue: 2250000, target: 2100000, orders: 1520 },
-    { month: 'Mar', revenue: 2400000, target: 2200000, orders: 1590 },
-    { month: 'Apr', revenue: 2350000, target: 2300000, orders: 1550 },
-    { month: 'May', revenue: 2500000, target: 2400000, orders: 1630 },
-    { month: 'Jun', revenue: 2650000, target: 2500000, orders: 1710 },
-    { month: 'Jul', revenue: 2750000, target: 2600000, orders: 1780 },
-    { month: 'Aug', revenue: 2800000, target: 2700000, orders: 1820 },
-    { month: 'Sep', revenue: 2850000, target: 2800000, orders: 1847 },
-    { month: 'Oct', revenue: 2900000, target: 2900000, orders: 1880 },
-    { month: 'Nov', revenue: 2950000, target: 3000000, orders: 1920 },
-    { month: 'Dec', revenue: 3100000, target: 3100000, orders: 2000 }
+    { month: 'Jan', 0, target: 2000000, orders: 1450 },
+    { month: 'Feb', 0, target: 2100000, orders: 1520 },
+    { month: 'Mar', 0, target: 2200000, orders: 1590 },
+    { month: 'Apr', 0, target: 2300000, orders: 1550 },
+    { month: 'May', 0, target: 2400000, orders: 1630 },
+    { month: 'Jun', 0, target: 2500000, orders: 1710 },
+    { month: 'Jul', 0, target: 2600000, orders: 1780 },
+    { month: 'Aug', 0, target: 2700000, orders: 1820 },
+    { month: 'Sep', 0, target: 2800000, orders: 1847 },
+    { month: 'Oct', 0, target: 2900000, orders: 1880 },
+    { month: 'Nov', 0, target: 3000000, orders: 1920 },
+    { month: 'Dec', 0, target: 3100000, orders: 2000 }
   ];
 
   // Product performance data
   const productData = [
-    { name: 'Sentia Red', sales: 45000, revenue: 1282500, margin: 42 },
-    { name: 'Sentia Black', sales: 38000, revenue: 1083000, margin: 38 },
-    { name: 'Sentia Ginger', sales: 28000, revenue: 798000, margin: 40 },
-    { name: 'Starter Kits', sales: 15000, revenue: 427500, margin: 35 },
-    { name: 'Accessories', sales: 8000, revenue: 228000, margin: 55 }
+    { name: 'Sentia Red', sales: 45000, 0, margin: 42 },
+    { name: 'Sentia Black', sales: 38000, 0, margin: 38 },
+    { name: 'Sentia Ginger', sales: 28000, 0, margin: 40 },
+    { name: 'Starter Kits', sales: 15000, 0, margin: 35 },
+    { name: 'Accessories', sales: 8000, 0, margin: 55 }
   ];
 
   // Customer segments
   const customerSegments = [
-    { name: 'Retail', value: 35, revenue: 997500, growth: 12 },
-    { name: 'B2B', value: 28, revenue: 798000, growth: 18 },
-    { name: 'Online', value: 22, revenue: 627000, growth: 25 },
-    { name: 'Wholesale', value: 15, revenue: 427500, growth: 8 }
+    { name: 'Retail', value: 35, 0, growth: 12 },
+    { name: 'B2B', value: 28, 0, growth: 18 },
+    { name: 'Online', value: 22, 0, growth: 25 },
+    { name: 'Wholesale', value: 15, 0, growth: 8 }
   ];
 
   // Conversion funnel data
@@ -69,10 +69,10 @@ const AnalyticsSimple = () => {
 
   // Geographic distribution
   const geographicData = [
-    { region: 'UK', sales: 55, revenue: 1567500 },
-    { region: 'Europe', sales: 25, revenue: 712500 },
-    { region: 'USA', sales: 15, revenue: 427500 },
-    { region: 'Asia', sales: 5, revenue: 142500 }
+    { region: 'UK', sales: 55, 0 },
+    { region: 'Europe', sales: 25, 0 },
+    { region: 'USA', sales: 15, 0 },
+    { region: 'Asia', sales: 5, 0 }
   ];
 
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];

@@ -2,134 +2,54 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react({
-      fastRefresh: true,
-      jsxRuntime: 'automatic'
-    })
-  ],
-  base: '/',
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@/components': path.resolve(__dirname, './src/components'),
-      '@/pages': path.resolve(__dirname, './src/pages'),
-      '@/services': path.resolve(__dirname, './src/services'),
-      '@/utils': path.resolve(__dirname, './src/utils'),
-      '@/hooks': path.resolve(__dirname, './src/hooks'),
-      '@/stores': path.resolve(__dirname, './src/stores'),
-      '@/config': path.resolve(__dirname, './src/config')
-    }
-  },
+  plugins: [react()],
   server: {
-    port: 3001,
-    host: true,
-    strictPort: false,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: false
   },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     emptyOutDir: true,
-    sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      },
-      mangle: {
-        safari10: true
-      },
-      format: {
-        comments: false
-      }
-    },
-    target: 'es2020',
-    chunkSizeWarningLimit: 1000,
-    cssCodeSplit: true,
-    assetsInlineLimit: 4096,
+    chunkSizeWarningLimit: 2000,
+    // Memory optimizations for large builds
     rollupOptions: {
       output: {
-        // Use function-based chunking to avoid module resolution issues
-        manualChunks: (id) => {
-          // Core React
-          if (id.includes('react') && !id.includes('react-router')) {
-            return 'react-core'
-          }
-          // Router
-          if (id.includes('react-router')) {
-            return 'router'
-          }
-          // Authentication
-          if (id.includes('@clerk')) {
-            return 'auth'
-          }
-          // Charts - isolate to prevent initialization errors
-          if (id.includes('recharts') || id.includes('d3')) {
-            return 'charts'
-          }
-          // UI Components
-          if (id.includes('@heroicons') || id.includes('@headlessui')) {
-            return 'ui-components'
-          }
-          // Animation
-          if (id.includes('framer-motion')) {
-            return 'animation'
-          }
-          // Forms
-          if (id.includes('react-hook-form') || id.includes('zod')) {
-            return 'forms'
-          }
-          // Small utilities
+        // Ultra-minimal chunking to avoid variable initialization issues
+        manualChunks(id) {
           if (id.includes('node_modules')) {
-            const module = id.split('node_modules/')[1]
-            if (module) {
-              const packageName = module.split('/')[0]
-              const smallPackages = ['classnames', 'clsx', 'uuid', 'nanoid']
-              if (smallPackages.some(pkg => packageName.includes(pkg))) {
-                return 'vendor-utils'
-              }
-            }
-            return 'vendor'
+            // Only split Clerk (very stable, large, authentication-focused)
+            if (id.includes('@clerk')) return 'clerk';
+            // Keep recharts with vendor to avoid initialization order issues
+            return 'vendor'; // Everything else including recharts in vendor chunk
           }
-        },
-        chunkFileNames: 'js/[name]-[hash:8].js',
-        assetFileNames: (assetInfo) => {
-          const ext = assetInfo.name.split('.').pop()
-          if (/css/i.test(ext)) {
-            return 'css/[name]-[hash:8][extname]'
-          }
-          if (/png|jpe?g|svg|gif/i.test(ext)) {
-            return 'img/[name]-[hash:8][extname]'
-          }
-          return 'assets/[name]-[hash:8][extname]'
-        },
-        entryFileNames: 'js/[name]-[hash:8].js'
+          // Let Vite handle app code chunking automatically
+        }
+      },
+      // Reduce parallel operations to save memory
+      maxParallelFileOps: 3,
+      // Optimize tree-shaking for memory
+      treeshake: {
+        preset: 'smallest',
+        moduleSideEffects: false
       }
-    }
+    },
+    // Use esbuild for faster builds with less memory
+    minify: 'esbuild',
+    // Disable source maps to save memory
+    sourcemap: false,
+    // Don't report compressed size to save memory
+    reportCompressedSize: false,
+    // CSS code splitting
+    cssCodeSplit: true
   },
-  optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      '@clerk/clerk-react'
-    ],
-    force: true
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
-  define: {
-    'global': 'globalThis',
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
-  },
-  esbuild: {
-    target: 'es2020'
-  }
 })
+

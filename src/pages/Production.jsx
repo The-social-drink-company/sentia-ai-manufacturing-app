@@ -407,7 +407,7 @@ const Production = () => {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {data.overview.oee}%
               </p>
-              <p className="text-sm text-yellow-600">World-class: >85%</p>
+              <p className="text-sm text-yellow-600">World-class: &gt;85%</p>
             </div>
             <CogIcon className="h-8 w-8 text-purple-600" />
           </div>
@@ -435,7 +435,7 @@ const Production = () => {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {data.overview.defectRate}%
               </p>
-              <p className="text-sm text-red-600">Target: <1.0%</p>
+              <p className="text-sm text-red-600">Target: &lt;1.0%</p>
             </div>
             <ExclamationTriangleIcon className="h-8 w-8 text-red-600" />
           </div>

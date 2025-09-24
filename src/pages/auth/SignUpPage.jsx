@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
+import { devLog } from '../lib/devLog.js';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignUpPage = () => {

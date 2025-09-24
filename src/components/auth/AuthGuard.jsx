@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Navigate } from 'react-router-dom';
-import LoadingSpinner from '../LoadingSpinner';
+import { LoadingSpinner } from '../ui/LoadingSpinner';
 
 const AuthGuard = ({ children, requiredRole = null }) => {
   const { data: session, status } = ();

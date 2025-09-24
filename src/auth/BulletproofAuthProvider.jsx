@@ -68,30 +68,30 @@ const AuthError = ({ error, onRetry }) => (
   </div>
 );
 
-// Inner wrapper that provides Clerk auth when available
-function ClerkAuthBridge({ children }) {
+// Clerk integration wrapper that provides proper authentication
+function ClerkAuthIntegration({ children }) {
   const clerkAuth = useClerkAuth();
   const clerkUser = useClerkUser();
-  const [authState, setAuthState] = useState(null);
 
-  useEffect(() => {
-    // Build complete auth state from Clerk
-    if (clerkAuth?.isLoaded) {
-      setAuthState({
-        ...clerkAuth,
-        user: clerkUser?.user,
-        mode: 'clerk'
-      });
-    }
-  }, [clerkAuth, clerkUser]);
-
-  // Wait for Clerk to load (with timeout protection in parent)
-  if (!clerkAuth?.isLoaded) {
-    return <LoadingScreen />;
-  }
+  // Combine Clerk auth with our bulletproof system
+  const combinedAuth = {
+    ...clerkAuth,
+    user: clerkUser?.user || null,
+    mode: 'clerk'
+  };
 
   return (
-    <AuthContext.Provider value={authState || { ...clerkAuth, user: clerkUser?.user, mode: 'clerk' }}>
+    <AuthContext.Provider value={combinedAuth}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// Simple fallback auth provider that doesn't use Clerk hooks
+// This provides basic auth functionality when Clerk is not available
+function FallbackAuthProvider({ children }) {
+  return (
+    <AuthContext.Provider value={FALLBACK_AUTH_STATE}>
       {children}
     </AuthContext.Provider>
   );
@@ -137,7 +137,7 @@ export function BulletproofAuthProvider({ children }) {
         domain: 'champion-bulldog-92.clerk.accounts.dev'
       });
       clearTimeout(timeout);
-      // Force Clerk mode
+      // Force Clerk mode - DO NOT use fallback with valid key
       setAuthMode('clerk');
     } else {
       clearTimeout(timeout);
@@ -178,8 +178,9 @@ export function BulletproofAuthProvider({ children }) {
       return (
         <ClerkProvider
           publishableKey={clerkKey}
-          afterSignInUrl="/dashboard"
-          afterSignUpUrl="/dashboard"
+          fallbackRedirectUrl="/dashboard"
+          signInFallbackRedirectUrl="/dashboard"
+          signUpFallbackRedirectUrl="/dashboard"
           appearance={{
             elements: {
               rootBox: "w-full",
@@ -187,7 +188,7 @@ export function BulletproofAuthProvider({ children }) {
             }
           }}
         >
-          <ClerkAuthBridge>{children}</ClerkAuthBridge>
+          <ClerkAuthIntegration>{children}</ClerkAuthIntegration>
         </ClerkProvider>
       );
     } catch (err) {
@@ -216,21 +217,7 @@ export function useBulletproofAuth() {
     return contextAuth;
   }
 
-  // Try to use Clerk hooks directly (shouldn't happen but safety net)
-  try {
-    const clerkAuth = useClerkAuth();
-    const clerkUser = useClerkUser();
-
-    if (clerkAuth?.isLoaded) {
-      return {
-        ...clerkAuth,
-        user: clerkUser?.user,
-        mode: 'clerk-direct'
-      };
-    }
-  } catch {
-    // Clerk not available, continue to fallback
-  }
+  // Note: Removed direct Clerk hook usage to prevent context errors
 
   // Ultimate fallback - always return valid auth state
   return FALLBACK_AUTH_STATE;

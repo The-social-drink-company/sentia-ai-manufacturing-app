@@ -107,7 +107,7 @@ export const useAuthRole = () => {
 
     return {
       isLoading: false,
-      isAuthenticated: isSignedIn || mode === 'fallback',
+      isAuthenticated: mode === 'clerk' ? isSignedIn : false,
       authMode: mode,
       user: user || {
         id: 'guest',

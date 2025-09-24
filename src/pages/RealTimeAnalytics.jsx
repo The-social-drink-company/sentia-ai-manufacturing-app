@@ -6,7 +6,7 @@ import {
   ShoppingCartIcon,
   UserGroupIcon,
   ArrowTrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,

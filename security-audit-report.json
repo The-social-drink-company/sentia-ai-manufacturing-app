@@ -1,0 +1,130 @@
+{
+  "summary": {
+    "timestamp": "2025-09-22T19:40:52.212Z",
+    "totalTests": 18,
+    "passed": 11,
+    "warnings": 6,
+    "failed": 1,
+    "score": 140,
+    "maxScore": 180,
+    "percentage": 78,
+    "grade": "B"
+  },
+  "details": {
+    "passed": [
+      {
+        "test": "Dependency Security",
+        "message": "No known vulnerabilities found",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.166Z"
+      },
+      {
+        "test": "Server Security",
+        "message": "Security Headers implemented in server.js",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.210Z"
+      },
+      {
+        "test": "Server Security",
+        "message": "CORS Configuration implemented in server.js",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.210Z"
+      },
+      {
+        "test": "Server Security",
+        "message": "HTTPS Configuration implemented in server.js",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.210Z"
+      },
+      {
+        "test": "Server Security",
+        "message": "CORS Configuration implemented in server-minimal.js",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.210Z"
+      },
+      {
+        "test": "Server Security",
+        "message": "Security Headers implemented in server-memory-optimized.js",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.210Z"
+      },
+      {
+        "test": "Server Security",
+        "message": "CORS Configuration implemented in server-memory-optimized.js",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.210Z"
+      },
+      {
+        "test": "Server Security",
+        "message": "HTTPS Configuration implemented in server-memory-optimized.js",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.210Z"
+      },
+      {
+        "test": "Environment Security",
+        "message": "Secrets properly configured in .env.production",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.211Z"
+      },
+      {
+        "test": "Build Security",
+        "message": "No source maps in production build",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.211Z"
+      },
+      {
+        "test": "Package Security",
+        "message": "Package marked as private",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.212Z"
+      }
+    ],
+    "warnings": [
+      {
+        "test": "Source Code Security",
+        "message": "Potential XSS vulnerability with dangerouslySetInnerHTML in NaturalLanguageInterface.tsx",
+        "details": "Found 2 occurrence(s)",
+        "timestamp": "2025-09-22T19:40:52.173Z"
+      },
+      {
+        "test": "Source Code Security",
+        "message": "Potential XSS vulnerability with dangerouslySetInnerHTML in chart.jsx",
+        "details": "Found 1 occurrence(s)",
+        "timestamp": "2025-09-22T19:40:52.193Z"
+      },
+      {
+        "test": "Source Code Security",
+        "message": "Direct innerHTML manipulation detected in main.jsx",
+        "details": "Found 2 occurrence(s)",
+        "timestamp": "2025-09-22T19:40:52.200Z"
+      },
+      {
+        "test": "Source Code Security",
+        "message": "Direct innerHTML manipulation detected in performance.js",
+        "details": "Found 1 occurrence(s)",
+        "timestamp": "2025-09-22T19:40:52.209Z"
+      },
+      {
+        "test": "Source Code Security",
+        "message": "Direct innerHTML manipulation detected in serviceWorker.js",
+        "details": "Found 1 occurrence(s)",
+        "timestamp": "2025-09-22T19:40:52.209Z"
+      },
+      {
+        "test": "Server Security",
+        "message": "Security Headers not found in server-minimal.js",
+        "details": "",
+        "timestamp": "2025-09-22T19:40:52.210Z"
+      }
+    ],
+    "failed": [
+      {
+        "test": "Source Code Security",
+        "message": "Use of eval() function detected in validationEngine.js",
+        "details": "Found 1 occurrence(s)",
+        "timestamp": "2025-09-22T19:40:52.208Z"
+      }
+    ],
+    "score": 140
+  }
+}

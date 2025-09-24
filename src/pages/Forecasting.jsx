@@ -3,7 +3,7 @@ import {
   PresentationChartLineIcon,
   ChartBarIcon,
   ArrowTrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingDownIcon,
   CalendarDaysIcon,
   CpuChipIcon,
   AdjustmentsHorizontalIcon,
@@ -172,7 +172,7 @@ const Forecasting = () => {
       case 'increasing':
         return <ArrowTrendingUpIcon className="h-4 w-4 text-green-600" />;
       case 'decreasing':
-        return <TrendingDownIcon className="h-4 w-4 text-red-600" />;
+        return <ArrowTrendingDownIcon className="h-4 w-4 text-red-600" />;
       default:
         return <ClockIcon className="h-4 w-4 text-gray-600" />;
     }

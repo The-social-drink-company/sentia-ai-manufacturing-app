@@ -112,6 +112,13 @@ self.addEventListener('fetch', event => {
     return;
   }
   
+  // Skip Clerk authentication domains - let them handle their own requests
+  if (request.url.includes('clerk.accounts.dev') || 
+      request.url.includes('clerk.com') || 
+      request.url.includes('clerk.dev')) {
+    return;
+  }
+  
   event.respondWith(handleRequest(request, url));
 });
 

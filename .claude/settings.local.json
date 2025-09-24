@@ -305,7 +305,16 @@
       "Bash(git rev-list:*)",
       "Bash(gh api:*)",
       "Read(//c/tmp/**)",
-      "Bash(set PORT=4150)"
+      "Bash(set PORT=4150)",
+      "Bash(for:*)",
+      "Bash(do if [ -f \"$file\" ])",
+      "Bash(then echo \"EXISTS: $file\")",
+      "Bash(else echo \"MISSING: $file\")",
+      "Bash(fi)",
+      "Bash(NODE_OPTIONS='--max-old-space-size=4096' npm run build)",
+      "Bash(set NODE_OPTIONS=--max-old-space-size=4096)",
+      "Bash(set DEPLOYMENT_STAGE=1)",
+      "Bash(set NODE_OPTIONS=--max-old-space-size=3072)"
     ],
     "deny": [],
     "ask": []

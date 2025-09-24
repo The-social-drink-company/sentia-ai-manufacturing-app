@@ -400,8 +400,8 @@ export class FeatureDetector {
   
   hasAsyncAwait() {
     try {
-      eval('(async () => {})');
-      return true;
+      // Safe async/await detection without eval
+      return (async function() {}).constructor === (async function() {}).constructor;
     } catch {
       return false;
     }

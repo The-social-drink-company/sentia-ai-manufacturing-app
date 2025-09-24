@@ -25,7 +25,7 @@ import {
 } from './auth/EnterpriseClerkProvider';
 
 // Core components
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';

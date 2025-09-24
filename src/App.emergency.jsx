@@ -23,7 +23,7 @@ import {
 } from './auth/EmergencyClerkProvider';
 
 // Core components
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
 // Lazy-loaded components
 const Dashboard = lazy(() => import('./components/Dashboard'));

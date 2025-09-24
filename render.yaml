@@ -12,8 +12,8 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "npm ci && NODE_OPTIONS='--max-old-space-size=4096' npm run build && npx prisma generate"
-    startCommand: "node server-enterprise-complete.js"
+    buildCommand: "npm run build:render"
+    startCommand: "npm run start"
     healthCheckPath: /health
     autoDeploy: true
     pullRequestPreviewsEnabled: true
@@ -48,8 +48,8 @@ services:
     plan: starter
     region: oregon
     branch: test
-    buildCommand: "npm ci && NODE_OPTIONS='--max-old-space-size=4096' npm run build && npx prisma generate"
-    startCommand: "node server-enterprise-complete.js"
+    buildCommand: "npm run build:render"
+    startCommand: "npm run start"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -77,8 +77,8 @@ services:
     plan: starter
     region: oregon
     branch: production
-    buildCommand: "npm ci && NODE_OPTIONS='--max-old-space-size=4096' npm run build && npx prisma generate"
-    startCommand: "node server-enterprise-complete.js"
+    buildCommand: "npm run build:render"
+    startCommand: "npm run start"
     healthCheckPath: /health
     autoDeploy: true
     envVars:

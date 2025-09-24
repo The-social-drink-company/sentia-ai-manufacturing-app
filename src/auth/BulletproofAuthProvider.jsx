@@ -68,6 +68,25 @@ const AuthError = ({ error, onRetry }) => (
   </div>
 );
 
+// Clerk integration wrapper that provides proper authentication
+function ClerkAuthIntegration({ children }) {
+  const clerkAuth = useClerkAuth();
+  const clerkUser = useClerkUser();
+
+  // Combine Clerk auth with our bulletproof system
+  const combinedAuth = {
+    ...clerkAuth,
+    user: clerkUser?.user || null,
+    mode: 'clerk'
+  };
+
+  return (
+    <AuthContext.Provider value={combinedAuth}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
 // Simple fallback auth provider that doesn't use Clerk hooks
 // This provides basic auth functionality when Clerk is not available
 function FallbackAuthProvider({ children }) {
@@ -118,7 +137,7 @@ export function BulletproofAuthProvider({ children }) {
         domain: 'champion-bulldog-92.clerk.accounts.dev'
       });
       clearTimeout(timeout);
-      // Force Clerk mode
+      // Force Clerk mode - DO NOT use fallback with valid key
       setAuthMode('clerk');
     } else {
       clearTimeout(timeout);
@@ -159,8 +178,9 @@ export function BulletproofAuthProvider({ children }) {
       return (
         <ClerkProvider
           publishableKey={clerkKey}
-          afterSignInUrl="/dashboard"
-          afterSignUpUrl="/dashboard"
+          fallbackRedirectUrl="/dashboard"
+          signInFallbackRedirectUrl="/dashboard"
+          signUpFallbackRedirectUrl="/dashboard"
           appearance={{
             elements: {
               rootBox: "w-full",
@@ -168,7 +188,7 @@ export function BulletproofAuthProvider({ children }) {
             }
           }}
         >
-          <FallbackAuthProvider>{children}</FallbackAuthProvider>
+          <ClerkAuthIntegration>{children}</ClerkAuthIntegration>
         </ClerkProvider>
       );
     } catch (err) {

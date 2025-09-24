@@ -161,8 +161,8 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Redirect to sign-in if not authenticated and not on a fullscreen page
-  if (!isAuthenticated && !isSignedIn) {
+  // Redirect to sign-in if not authenticated (only in Clerk mode)
+  if (!isAuthenticated) {
     console.log('[AuthenticatedApp] User not authenticated, redirecting to /sign-in');
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }

@@ -153,7 +153,7 @@ const DemandAnalysisStep = ({ data, onUpdate }) => {
             </label>
             <select 
               className="w-full border border-gray-300 rounded-md px-3 py-2"
-              value={data.timeHorizon || '30'}
+              value={data.timeHorizon || null}
               onChange={(e) => onUpdate({ timeHorizon: e.target.value })}
             >
               <option value="7">7 days</option>
@@ -167,7 +167,7 @@ const DemandAnalysisStep = ({ data, onUpdate }) => {
             </label>
             <select 
               className="w-full border border-gray-300 rounded-md px-3 py-2"
-              value={data.safetyStockLevel || 'medium'}
+              value={data.safetyStockLevel || null}
               onChange={(e) => onUpdate({ safetyStockLevel: e.target.value })}
             >
               <option value="low">Low (5%)</option>
@@ -381,7 +381,7 @@ const ScheduleOptimizationStep = ({ data, onUpdate }) => {
               </div>
               <div className="flex justify-between">
                 <span>Time horizon:</span>
-                <span className="font-medium">{data.timeHorizon || 30} days</span>
+                <span className="font-medium">{data.timeHorizon 0} days</span>
               </div>
               <div className="flex justify-between">
                 <span>Available resources:</span>
@@ -421,11 +421,11 @@ const ReviewApprovalStep = ({ data, onSubmit, isSubmitting }) => {
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <dt className="text-gray-500">Time Horizon:</dt>
-                <dd className="font-medium">{data.timeHorizon || 30} days</dd>
+                <dd className="font-medium">{data.timeHorizon 0} days</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Safety Stock:</dt>
-                <dd className="font-medium">{data.safetyStockLevel || 'Medium'}</dd>
+                <dd className="font-medium">{data.safetyStockLevel || null}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Products:</dt>

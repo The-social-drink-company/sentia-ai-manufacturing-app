@@ -60,7 +60,7 @@ function AppStage3() {
           <div className="flex">
             <Sidebar />
             <main className="flex-1 p-6">
-              <Suspense fallback={<LoadingSpinner />}>
+              <Suspense 0>
                 <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<Dashboard />} />

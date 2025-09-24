@@ -282,7 +282,7 @@ function PolicyTab({ policy, loading, onEdit, onSave }) {
             </label>
             <input
               type="number"
-              value={localPolicy?.maxSteps || 12}
+              value={localPolicy?.maxSteps 0}
               onChange={(e) => setLocalPolicy({
                 ...localPolicy,
                 maxSteps: parseInt(e.target.value)
@@ -297,7 +297,7 @@ function PolicyTab({ policy, loading, onEdit, onSave }) {
             </label>
             <input
               type="number"
-              value={localPolicy?.wallClockMs || 180000}
+              value={localPolicy?.wallClockMs 0}
               onChange={(e) => setLocalPolicy({
                 ...localPolicy,
                 wallClockMs: parseInt(e.target.value)
@@ -313,7 +313,7 @@ function PolicyTab({ policy, loading, onEdit, onSave }) {
             Default Mode
           </label>
           <select
-            value={localPolicy?.defaultMode || 'DRY_RUN'}
+            value={localPolicy?.defaultMode || null}
             onChange={(e) => setLocalPolicy({
               ...localPolicy,
               defaultMode: e.target.value

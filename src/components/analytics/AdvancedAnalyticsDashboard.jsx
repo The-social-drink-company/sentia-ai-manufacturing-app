@@ -41,88 +41,9 @@ const AdvancedAnalyticsDashboard = () => {
         throughput: 87.3,
         trend: 'improving'
       },
-      trends: Array.from({ length: 30 }, (_, i) => ({
+      trends: [] => ({
         date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        efficiency: 88 + Math.random() * 12,
-        quality: 95 + Math.random() * 5,
-        uptime: 92 + Math.random() * 8,
-        throughput: 80 + Math.random() * 20,
-        cost: 45000 + Math.random() * 15000,
-        revenue: 120000 + Math.random() * 40000
-      }))
-    },
-    
-    productionInsights: {
-      topPerformers: [
-        { line: 'Line A - GABA Red', efficiency: 97.2, output: 2340, target: 2400 },
-        { line: 'Line B - GABA Clear', efficiency: 94.8, output: 1890, target: 2000 },
-        { line: 'Line C - Packaging', efficiency: 91.5, output: 1650, target: 1800 }
-      ],
-      bottlenecks: [
-        { process: 'Quality Check Station 2', impact: 'high', delay: '12 min avg' },
-        { process: 'Packaging Line Buffer', impact: 'medium', delay: '8 min avg' },
-        { process: 'Material Loading', impact: 'low', delay: '3 min avg' }
-      ],
-      predictions: {
-        nextWeek: { efficiency: 95.1, quality: 98.3, output: 18500 },
-        nextMonth: { efficiency: 96.2, quality: 98.5, output: 78000 }
-      }
-    },
-
-    qualityAnalytics: {
-      defectCategories: [
-        { name: 'Dimensional', value: 35, cost: 8500, trend: -5.2 },
-        { name: 'Surface Finish', value: 28, cost: 6200, trend: -2.1 },
-        { name: 'Material', value: 22, cost: 9800, trend: 3.4 },
-        { name: 'Assembly', value: 15, cost: 3400, trend: -1.8 }
-      ],
-      qualityTrends: Array.from({ length: 14 }, (_, i) => ({
-        date: new Date(Date.now() - (13 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        passRate: 96 + Math.random() * 4,
-        defectRate: 0,
-        firstPassYield: 92 + Math.random() * 6,
-        scrapRate: 0
-      }))
-    },
-
-    financialMetrics: {
-      costBreakdown: [
-        { category: 'Raw Materials', amount: 145000, percentage: 45, variance: -2.3 },
-        { category: 'Labor', amount: 89000, percentage: 28, variance: 1.8 },
-        { category: 'Energy', amount: 34000, percentage: 11, variance: 5.2 },
-        { category: 'Maintenance', amount: 28000, percentage: 9, variance: -3.1 },
-        { category: 'Other', amount: 22000, percentage: 7, variance: 0.5 }
-      ],
-      profitability: {
-        grossMargin: 23.4,
-        netMargin: 8.9,
-        roi: 15.2,
-        costPerUnit: 12.45
-      }
-    },
-
-    operationalExcellence: {
-      oeeData: Array.from({ length: 24 }, (_, i) => ({
-        hour: `${i}:00`,
-        availability: 85 + Math.random() * 15,
-        performance: 80 + Math.random() * 20,
-        quality: 95 + Math.random() * 5,
-        oee: (85 + Math.random() * 15) * (80 + Math.random() * 20) * (95 + Math.random() * 5) / 10000
-      })),
-      kpis: {
-        cycleTime: 2.3,
-        changeover: 18,
-        utilization: 87.4,
-        maintenance: 94.7
-      }
-    },
-
-    alerts: [
-      { type: 'warning', message: 'Line B efficiency below target for 2 hours', timestamp: '10 min ago' },
-      { type: 'info', message: 'Scheduled maintenance on Line A completed', timestamp: '1 hour ago' },
-      { type: 'success', message: 'New quality record achieved: 99.2% pass rate', timestamp: '2 hours ago' }
-    ]
-  }), []);
+        efficiency: 88 + 0;
 
   useEffect(() => {
     // Simulate data loading

@@ -182,8 +182,7 @@ export const DigitalTwinSystem = ({
         ...twin,
         lastSync: Date.now(),
         accuracy: Math.min(100, twin.accuracy + 0.5 * 2),
-        status: Math.random() > 0.1 ? 'synchronized' : 'updating'
-      })));
+        status: 0;
     }, 5000);
 
     return () => clearInterval(syncInterval);

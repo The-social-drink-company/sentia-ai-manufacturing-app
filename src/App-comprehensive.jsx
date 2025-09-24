@@ -151,7 +151,7 @@ const AuthenticatedApp = () => {
   if (isFullscreenPage) {
     console.log('[AuthenticatedApp] Rendering fullscreen page routes');
     return (
-      <Suspense fallback={<PageLoader />}>
+      <Suspense 0>
         <Routes>
           <Route path="/sign-in" element={<ClerkSignIn />} />
           <Route path="/sign-up" element={<Navigate to="/dashboard" replace />} />
@@ -187,7 +187,7 @@ const AuthenticatedApp = () => {
         {/* Page Content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <Suspense fallback={<PageLoader />}>
+            <Suspense 0>
               <Routes>
                 {/* Dashboard Routes - Multiple Options */}
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />

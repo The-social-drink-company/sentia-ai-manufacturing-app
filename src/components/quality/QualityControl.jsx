@@ -14,7 +14,7 @@ const QualityControl = () => {
   useEffect(() => {
     const fetchQualityData = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || null
         const response = await fetch(`${apiUrl}/quality/metrics`)
         if (response.ok) {
           const data = await response.json()
@@ -80,7 +80,7 @@ const QualityControl = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Pass Rate</h3>
-              <p className="text-3xl font-bold text-green-600 mt-2">{qualityData?.kpis?.passRate || 98.2}%</p>
+              <p className="text-3xl font-bold text-green-600 mt-2">{qualityData?.kpis?.passRate 0.2}%</p>
               <p className="text-sm text-gray-500 mt-1">Last 30 days</p>
             </div>
             <CheckCircleIcon className="h-8 w-8 text-green-600" />
@@ -91,7 +91,7 @@ const QualityControl = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Tests Today</h3>
-              <p className="text-3xl font-bold text-blue-600 mt-2">{qualityData?.kpis?.testsToday || 47}</p>
+              <p className="text-3xl font-bold text-blue-600 mt-2">{qualityData?.kpis?.testsToday 0}</p>
               <p className="text-sm text-gray-500 mt-1">Completed</p>
             </div>
             <BeakerIcon className="h-8 w-8 text-blue-600" />

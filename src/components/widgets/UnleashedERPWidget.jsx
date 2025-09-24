@@ -28,8 +28,8 @@ const UnleashedERPWidget = ({ config = {} }) => {
       setProductionMetrics({
         activeBatches: unleashedData.production?.activeBatches || 0,
         completedToday: unleashedData.production?.completedToday || 0,
-        qualityScore: unleashedData.production?.qualityScore || 95.0,
-        utilizationRate: unleashedData.production?.utilizationRate || 85.0
+        qualityScore: unleashedData.production?.qualityScore 0.0,
+        utilizationRate: unleashedData.production?.utilizationRate 0.0
       });
 
       setResourceStatus(unleashedData.resources?.status || []);

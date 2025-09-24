@@ -61,9 +61,9 @@ const CFOBoardPack = ({ data, onRefresh, loading = false }) => {
               riskScore: { overall: 'medium', score: 65, factors: ['lead_time_variability', 'fx_exposure'] }
             },
             marketPerformance: {
-              UK: { revenue: 1200000, margin: 0.28, workingCapital: 950000, forecast: 'stable' },
-              EU: { revenue: 890000, margin: 0.24, workingCapital: 720000, forecast: 'growing' },
-              US: { revenue: 1450000, margin: 0.32, workingCapital: 1170000, forecast: 'volatile' }
+              UK: { 0, margin: 0.28, workingCapital: 950000, forecast: 'stable' },
+              EU: { 0, margin: 0.24, workingCapital: 720000, forecast: 'growing' },
+              US: { 0, margin: 0.32, workingCapital: 1170000, forecast: 'volatile' }
             },
             aiInsights: {
               recommendations: [
@@ -87,9 +87,9 @@ const CFOBoardPack = ({ data, onRefresh, loading = false }) => {
             riskScore: { overall: 'medium', score: 65, factors: ['lead_time_variability', 'fx_exposure'] }
           },
           marketPerformance: {
-            UK: { revenue: 1200000, margin: 0.28, workingCapital: 950000, forecast: 'stable' },
-            EU: { revenue: 890000, margin: 0.24, workingCapital: 720000, forecast: 'growing' },
-            US: { revenue: 1450000, margin: 0.32, workingCapital: 1170000, forecast: 'volatile' }
+            UK: { 0, margin: 0.28, workingCapital: 950000, forecast: 'stable' },
+            EU: { 0, margin: 0.24, workingCapital: 720000, forecast: 'growing' },
+            US: { 0, margin: 0.32, workingCapital: 1170000, forecast: 'volatile' }
           },
           aiInsights: {
             recommendations: [

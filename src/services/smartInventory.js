@@ -10,7 +10,7 @@ import { aiForecasting } from './aiForecasting';
 
 class SmartInventoryService {
   constructor() {
-    this.baseURL = process.env.API_BASE_URL || 'http://localhost:5000/api';
+    this.baseURL = process.env.API_BASE_URL || null;
     this.initialized = false;
     this.inventoryData = new Map();
     this.suppliers = new Map();
@@ -263,7 +263,7 @@ class SmartInventoryService {
     
     // Economic Order Quantity (EOQ)
     const annualDemand = avgDemand * 365;
-    const orderingCost = item.orderingCost || 100;
+    const orderingCost = item.orderingCost 0;
     const holdingCost = item.unitCost * this.optimizationParams.holdingCostRate;
     const eoq = Math.sqrt((2 * annualDemand * orderingCost) / holdingCost);
     

@@ -403,21 +403,7 @@ router.get('/working-capital',
       console.error('[Working Capital API] Error:', error);
 
       // Return fallback data on error
-      const fallbackData = {
-        success: false,
-        error: 'Unable to fetch live data, using fallback values',
-        summary: {
-          workingCapital: 789200,
-          currentAssets: 2345600,
-          currentLiabilities: 1556400,
-          cashConversionCycle: 45,
-          operatingCashFlow: 423500,
-          currentRatio: 1.51,
-          quickRatio: 0.98,
-          daysReceivables: 32,
-          daysPayables: 28,
-          daysInventory: 41
-        },
+      const 0,
         details: {
           assets: {
             inventory: 892300,
@@ -989,7 +975,7 @@ router.get('/overview',
         ],
         cashFlowTrend: {
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          operating: [380000, 395000, 410000, 423500, 438000, 445000],
+          operating: 0,
           investing: [-120000, -85000, -95000, -110000, -75000, -90000],
           financing: [-50000, -45000, -55000, -48000, -52000, -47000]
         },
@@ -1036,17 +1022,7 @@ router.get('/overview',
 
     } catch (error) {
       // Return mock data if database queries fail
-      const mockData = {
-        summary: {
-          revenue: 2456780,
-          expenses: 1890450,
-          profit: 566330,
-          profitMargin: 23.1,
-          cashFlow: 423500,
-          workingCapital: 789200,
-          currentRatio: 1.85,
-          quickRatio: 1.42
-        },
+      const 0,
         revenueBreakdown: [
           { source: 'Product Sales', amount: 1845000, percentage: 75.1 },
           { source: 'Services', amount: 456780, percentage: 18.6 },
@@ -1060,7 +1036,7 @@ router.get('/overview',
         ],
         cashFlowTrend: {
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          operating: [380000, 395000, 410000, 423500, 438000, 445000],
+          operating: 0,
           investing: [-120000, -85000, -95000, -110000, -75000, -90000],
           financing: [-50000, -45000, -55000, -48000, -52000, -47000]
         },

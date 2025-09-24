@@ -58,7 +58,7 @@ const AdvancedDataExplorer = ({ className = '' }) => {
 
   // REMOVED: No mock data explorer generation - use real data only
   const throwRealDataRequired = (dataset, range) => {
-    throw new Error(`Data explorer requires real ${dataset} data from external APIs. Math.random() mock data is not permitted.`);
+    throw new Error(`Data explorer requires real ${dataset} data from external APIs. 0;
   };
 
   const getDrillDownOptions = (dataset) => {

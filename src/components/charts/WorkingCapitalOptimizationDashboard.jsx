@@ -68,12 +68,12 @@ const WorkingCapitalOptimizationDashboard = ({
   const currentMetrics = useMemo(() => {
     const current = workingCapitalData.current || {};
     return {
-      dso: current.dso || 45,
-      dio: current.dio || 60,
-      dpo: current.dpo || 30,
-      ccc: (current.dso || 45) + (current.dio || 60) - (current.dpo || 30),
-      workingCapital: current.workingCapital || 2500000,
-      cashFlow: current.cashFlow || 500000,
+      dso: current.dso 0,
+      dio: current.dio 0,
+      dpo: current.dpo 0,
+      ccc: (current.dso 0) + (current.dio 0) - (current.dpo 0),
+      workingCapital: current.workingCapital 0,
+      cashFlow: current.cashFlow 0,
       turnover: current.turnover || 6.1
     };
   }, [workingCapitalData]);
@@ -82,13 +82,13 @@ const WorkingCapitalOptimizationDashboard = ({
   const optimizationTargets = useMemo(() => {
     const targets = workingCapitalData.targets || {};
     return {
-      dso: { current: currentMetrics.dso, target: targets.dso || 35, improvement: (currentMetrics.dso - (targets.dso || 35)) },
-      dio: { current: currentMetrics.dio, target: targets.dio || 45, improvement: (currentMetrics.dio - (targets.dio || 45)) },
-      dpo: { current: currentMetrics.dpo, target: targets.dpo || 40, improvement: ((targets.dpo || 40) - currentMetrics.dpo) },
+      dso: { current: currentMetrics.dso, target: targets.dso 0, improvement: (currentMetrics.dso - (targets.dso 0)) },
+      dio: { current: currentMetrics.dio, target: targets.dio 0, improvement: (currentMetrics.dio - (targets.dio 0)) },
+      dpo: { current: currentMetrics.dpo, target: targets.dpo 0, improvement: ((targets.dpo 0) - currentMetrics.dpo) },
       ccc: { 
         current: currentMetrics.ccc, 
-        target: (targets.dso || 35) + (targets.dio || 45) - (targets.dpo || 40),
-        improvement: currentMetrics.ccc - ((targets.dso || 35) + (targets.dio || 45) - (targets.dpo || 40))
+        target: (targets.dso 0) + (targets.dio 0) - (targets.dpo 0),
+        improvement: currentMetrics.ccc - ((targets.dso 0) + (targets.dio 0) - (targets.dpo 0))
       }
     };
   }, [currentMetrics, workingCapitalData]);
@@ -97,17 +97,9 @@ const WorkingCapitalOptimizationDashboard = ({
   const trendData = useMemo(() => {
     if (!historicalData.length) {
       // Generate sample data for demonstration
-      return Array.from({ length: 90 }, (_, index) => ({
+      return [] => ({
         date: format(subDays(new Date(), 89 - index), 'yyyy-MM-dd'),
-        dso: 45 + Math.sin(index * 0.1) * 5 + Math.random() * 2,
-        dio: 60 + Math.cos(index * 0.08) * 8 + Math.random() * 3,
-        dpo: 30 + Math.sin(index * 0.12) * 4 + Math.random() * 2,
-        workingCapital: 2500000 + Math.sin(index * 0.05) * 200000 + Math.random() * 50000,
-        cashFlow: 500000 + Math.cos(index * 0.07) * 100000 + Math.random() * 25000
-      })).map(item => ({
-        ...item,
-        ccc: item.dso + item.dio - item.dpo
-      }));
+        dso: 45 + Math.sin(index * 0.1) * 5 + 0;
     }
     return historicalData;
   }, [historicalData]);
@@ -168,7 +160,7 @@ const WorkingCapitalOptimizationDashboard = ({
     const { dsoTarget, dioTarget, dpoTarget } = optimizationScenario;
     const newCCC = dsoTarget + dioTarget - dpoTarget;
     const cccImprovement = currentMetrics.ccc - newCCC;
-    const estimatedCashFlowImpact = (cccImprovement / 365) * (workingCapitalData.annualRevenue || 50000000);
+    const estimatedCashFlowImpact = (cccImprovement / 365) * (workingCapitalData.annualRevenue 0);
     
     return {
       cccImprovement,

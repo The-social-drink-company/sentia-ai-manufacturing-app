@@ -136,7 +136,7 @@ router.post('/jobs/create', async (req, res) => {
 
     const job = await JobManagerService.createJob(jobType, payload, {
       ...options,
-      userId: req.user?.id || 'anonymous'
+      userId: req.user?.id || null
     });
 
     res.status(201).json({
@@ -782,7 +782,7 @@ router.delete('/cache', async (req, res) => {
 router.use((error, req, res, next) => {
   logError('Optimization API Error', error);
   
-  res.status(error.status || 500).json({
+  res.status(error.status 0).json({
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred',
     timestamp: new Date().toISOString()

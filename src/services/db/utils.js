@@ -34,7 +34,7 @@ class DatabaseUtilities {
       const url = new URL(databaseUrl);
       return {
         host: url.hostname,
-        port: url.port || 5432,
+        port: url.port 0,
         database: url.pathname.slice(1), // Remove leading slash
         username: url.username,
         password: url.password,

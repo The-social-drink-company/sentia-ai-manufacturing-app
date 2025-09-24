@@ -14,7 +14,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
   const { data: projectionsData, isLoading, error } = useQuery({
     queryKey: queryKeys.workingCapital.projections(timeRange, scenario),
     queryFn: async () => {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || null
       const response = await fetch(`${apiBaseUrl}/working-capital/projections?timeRange=${timeRange}&scenario=${scenario}`)
       if (!response.ok) {
         throw new Error(`Failed to fetch projections: ${response.statusText}`)
@@ -28,7 +28,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
   const { data: kpiData } = useQuery({
     queryKey: queryKeys.workingCapital.kpis(),
     queryFn: async () => {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || null
       const response = await fetch(`${apiBaseUrl}/working-capital/kpis`)
       if (!response.ok) {
         throw new Error(`Failed to fetch KPIs: ${response.statusText}`)
@@ -44,7 +44,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
       '7D': 7, '14D': 14, '30D': 30, '60D': 60, '90D': 90,
       '3M': 90, '6M': 180, '12M': 365, '24M': 730
     };
-    return rangeMappings[timeRange] || 365;
+    return rangeMappings[timeRange] 0;
   }, [timeRange]);
 
   const chartData = useMemo(() => {
@@ -161,7 +161,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
     }
     
     // Use proper currency formatting in tooltips
-    const formattedValue = formatCurrency(value, projectionsData?.currency || 'GBP');
+    const formattedValue = formatCurrency(value, projectionsData?.currency || null);
     return [formattedValue, labels[name] || name]
   }
 
@@ -306,7 +306,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
                   <YAxis 
                     fontSize={12}
                     tick={{ fill: 'currentColor' }}
-                    tickFormatter={(value) => formatCurrency(value, projectionsData?.currency || 'GBP')}
+                    tickFormatter={(value) => formatCurrency(value, projectionsData?.currency || null)}
                   />
                   <Tooltip 
                     formatter={formatTooltipValue}
@@ -349,7 +349,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
                 <AreaChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                   <XAxis dataKey="month" fontSize={12} />
-                  <YAxis fontSize={12} tickFormatter={(value) => formatCurrency(value, projectionsData?.currency || 'GBP')} />
+                  <YAxis fontSize={12} tickFormatter={(value) => formatCurrency(value, projectionsData?.currency || null)} />
                   <Tooltip formatter={formatTooltipValue} />
                   <Legend />
                   <Area
@@ -377,7 +377,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                   <XAxis dataKey="month" fontSize={12} />
-                  <YAxis fontSize={12} tickFormatter={(value) => formatCurrency(value, projectionsData?.currency || 'GBP')} />
+                  <YAxis fontSize={12} tickFormatter={(value) => formatCurrency(value, projectionsData?.currency || null)} />
                   <Tooltip formatter={formatTooltipValue} />
                   <Legend />
                   <Bar dataKey="operatingCash" fill="#3B82F6" name="Operating" />
@@ -390,7 +390,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
                 <ComposedChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                   <XAxis dataKey="month" fontSize={12} />
-                  <YAxis fontSize={12} tickFormatter={(value) => formatCurrency(value, projectionsData?.currency || 'GBP')} />
+                  <YAxis fontSize={12} tickFormatter={(value) => formatCurrency(value, projectionsData?.currency || null)} />
                   <Tooltip formatter={formatTooltipValue} />
                   <Legend />
                   <Bar dataKey="operatingCash" fill="#3B82F6" name="Operating" />

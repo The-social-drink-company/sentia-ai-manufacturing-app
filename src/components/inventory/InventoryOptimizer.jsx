@@ -61,21 +61,21 @@ const InventoryOptimizer = ({ data, onOptimize, loading = false }) => {
                     optimalStock: 950, 
                     reorderPoint: 320, 
                     safetyStock: 180, 
-                    leadTimeDays: leadTimeData.leadTimeConfigurations?.UK?.mean || 21 
+                    leadTimeDays: leadTimeData.leadTimeConfigurations?.UK?.mean 0 
                   },
                   'EU': { 
                     stock: 890, 
                     optimalStock: 720, 
                     reorderPoint: 280, 
                     safetyStock: 150, 
-                    leadTimeDays: leadTimeData.leadTimeConfigurations?.EU?.mean || 28 
+                    leadTimeDays: leadTimeData.leadTimeConfigurations?.EU?.mean 0 
                   },
                   'US': { 
                     stock: 1450, 
                     optimalStock: 1100, 
                     reorderPoint: 420, 
                     safetyStock: 250, 
-                    leadTimeDays: leadTimeData.leadTimeConfigurations?.USA?.mean || 42 
+                    leadTimeDays: leadTimeData.leadTimeConfigurations?.USA?.mean 0 
                   }
                 },
                 unitCost: 12.50,
@@ -228,19 +228,19 @@ const InventoryOptimizer = ({ data, onOptimize, loading = false }) => {
         {
           product: selectedProduct,
           market: selectedMarket,
-          action: result.recommendation?.action || 'optimize_stock',
+          action: result.recommendation?.action || null,
           currentStock: marketData.stock,
           recommendedStock: result.optimizedOrderQuantity || marketData.optimalStock,
           savingsGBP: result.workingCapitalSaving || 0,
-          reason: result.explanation || 'AI optimization completed'
+          reason: result.explanation || null
         }
       ];
 
       // Update working capital impact
       updatedInventoryData.workingCapitalImpact = {
-        current: result.currentWorkingCapital || 2840000,
-        optimized: result.optimizedWorkingCapital || 2250000,
-        savings: result.workingCapitalSaving || 590000,
+        current: result.currentWorkingCapital 0,
+        optimized: result.optimizedWorkingCapital 0,
+        savings: result.workingCapitalSaving 0,
         roi: result.expectedROI || 0.32
       };
 

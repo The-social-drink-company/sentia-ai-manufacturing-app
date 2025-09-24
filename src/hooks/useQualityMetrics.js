@@ -9,6 +9,5 @@ export const useQualityMetrics = () => {
       { metric: 'Inspection Pass', value: 97.8, benchmark: 96 },
       { metric: 'Supplier Quality', value: 95.4, benchmark: 93 },
     ],
-    history: Array.from({ length: 30 }, () => Math.random() * 5 + 95),
-  };
+    history: [] => 0;
 };

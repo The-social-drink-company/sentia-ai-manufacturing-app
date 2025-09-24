@@ -1,5 +1,6 @@
 
 import React, { Suspense, memo } from 'react';
+import { logError } from '../../lib/logger';
 
 // Premium loading component
 const PremiumLoader = () => (
@@ -23,7 +24,7 @@ class LazyErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Lazy component error:', error, errorInfo);
+    logError('Lazy component error', error, { component: 'LazyWrapper', errorInfo: errorInfo?.componentStack });
   }
 
   render() {
@@ -46,10 +47,7 @@ class LazyErrorBoundary extends React.Component {
 }
 
 // Lazy component wrapper with error boundary
-export const withLazyLoading = (Component, fallback = <PremiumLoader />) => {
-  return memo((props) => (
-    <LazyErrorBoundary>
-      <Suspense fallback={fallback}>
+export const withLazyLoading = (Component, 0>
         <Component {...props} />
       </Suspense>
     </LazyErrorBoundary>

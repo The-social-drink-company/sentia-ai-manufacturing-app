@@ -4,14 +4,20 @@
  */
 
 import express from 'express';
+import { logError } from '../services/observability/structuredLogger.js';
 import OptimizationService from '../services/optimization/OptimizationService.js';
+import { getLeadTimeConfig, getRegionLeadTimeDays } from '../src/config/global.js';
 import MultiWarehouseService from '../services/optimization/MultiWarehouseService.js';
 import WorkingCapitalService from '../services/optimization/WorkingCapitalService.js';
+import WorkingCapitalFinanceService from '../src/services/finance/workingCapital.js';
 import DiagnosticsService from '../services/optimization/DiagnosticsService.js';
 import CFOReportingService from '../services/optimization/CFOReportingService.js';
 import JobManagerService from '../services/optimization/JobManagerService.js';
 
 const router = express.Router();
+
+// Service instances
+const workingCapitalFinanceService = new WorkingCapitalFinanceService();
 
 // Feature flags
 const FEATURE_MULTI_WH = process.env.FEATURE_MULTI_WAREHOUSE === 'true' || false;
@@ -34,7 +40,9 @@ router.post('/sku/optimize', async (req, res) => {
     if (!sku || !sku.skuId) {
       return res.status(400).json({ 
         error: 'Missing required SKU data',
-        required: ['skuId', 'annualDemand', 'demandMean', 'demandStdDev', 'leadTimeDays', 'unitCost']
+        required: ['skuId', 'annualDemand', 'demandMean', 'demandStdDev', 'unitCost'],
+        optional: ['leadTimeDays', 'region'],
+        note: 'leadTimeDays will use FinanceFlo regional defaults if not provided. region defaults to UK.'
       });
     }
 
@@ -54,7 +62,7 @@ router.post('/sku/optimize', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('SKU optimization failed:', error);
+    logError('SKU optimization failed', error);
     res.status(500).json({
       error: 'Optimization failed',
       message: error.message,
@@ -86,7 +94,7 @@ router.post('/batch/optimize', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Batch optimization failed:', error);
+    logError('Batch optimization failed', error);
     res.status(500).json({
       error: 'Batch optimization failed',
       message: error.message,
@@ -128,7 +136,7 @@ router.post('/jobs/create', async (req, res) => {
 
     const job = await JobManagerService.createJob(jobType, payload, {
       ...options,
-      userId: req.user?.id || 'anonymous'
+      userId: req.user?.id || null
     });
 
     res.status(201).json({
@@ -138,7 +146,7 @@ router.post('/jobs/create', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Job creation failed:', error);
+    logError('Job creation failed', error);
     res.status(500).json({
       error: 'Job creation failed',
       message: error.message,
@@ -170,7 +178,7 @@ router.get('/jobs/:jobId/status', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Job status retrieval failed:', error);
+    logError('Job status retrieval failed', error);
     res.status(500).json({
       error: 'Failed to retrieve job status',
       message: error.message,
@@ -196,7 +204,7 @@ router.delete('/jobs/:jobId', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Job cancellation failed:', error);
+    logError('Job cancellation failed', error);
     res.status(400).json({
       error: 'Job cancellation failed',
       message: error.message,
@@ -222,7 +230,7 @@ router.get('/queue/status', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Queue status retrieval failed:', error);
+    logError('Queue status retrieval failed', error);
     res.status(500).json({
       error: 'Failed to retrieve queue status',
       message: error.message,
@@ -264,7 +272,7 @@ if (FEATURE_MULTI_WH) {
       });
 
     } catch (error) {
-      console.error('Multi-warehouse optimization failed:', error);
+      logError('Multi-warehouse optimization failed', error);
       res.status(500).json({
         error: 'Multi-warehouse optimization failed',
         message: error.message,
@@ -301,7 +309,7 @@ if (FEATURE_MULTI_WH) {
       });
 
     } catch (error) {
-      console.error('Source selection failed:', error);
+      logError('Source selection failed', error);
       res.status(500).json({
         error: 'Source selection failed',
         message: error.message,
@@ -333,7 +341,7 @@ if (FEATURE_MULTI_WH) {
       });
 
     } catch (error) {
-      console.error('Transfer optimization failed:', error);
+      logError('Transfer optimization failed', error);
       res.status(500).json({
         error: 'Transfer optimization failed',
         message: error.message,
@@ -366,7 +374,7 @@ if (FEATURE_MULTI_WH) {
       });
 
     } catch (error) {
-      console.error('Config retrieval failed:', error);
+      logError('Config retrieval failed', error);
       res.status(500).json({
         error: 'Failed to retrieve warehouse config',
         message: error.message,
@@ -406,7 +414,7 @@ if (FEATURE_WC_OPTIMIZATION) {
       });
 
     } catch (error) {
-      console.error('WC analysis failed:', error);
+      logError('WC analysis failed', error);
       res.status(500).json({
         error: 'Working capital analysis failed',
         message: error.message,
@@ -438,7 +446,7 @@ if (FEATURE_WC_OPTIMIZATION) {
       });
 
     } catch (error) {
-      console.error('Payment optimization failed:', error);
+      logError('Payment optimization failed', error);
       res.status(500).json({
         error: 'Payment optimization failed',
         message: error.message,
@@ -470,7 +478,7 @@ if (FEATURE_WC_OPTIMIZATION) {
       });
 
     } catch (error) {
-      console.error('WC constraint application failed:', error);
+      logError('WC constraint application failed', error);
       res.status(500).json({
         error: 'WC constraint application failed',
         message: error.message,
@@ -503,7 +511,7 @@ if (FEATURE_WC_OPTIMIZATION) {
       });
 
     } catch (error) {
-      console.error('WC limits retrieval failed:', error);
+      logError('WC limits retrieval failed', error);
       res.status(500).json({
         error: 'Failed to retrieve WC limits',
         message: error.message,
@@ -545,7 +553,7 @@ if (FEATURE_CFO_REPORTS) {
       });
 
     } catch (error) {
-      console.error('Board pack generation failed:', error);
+      logError('Board pack generation failed', error);
       res.status(500).json({
         error: 'Board pack generation failed',
         message: error.message,
@@ -585,7 +593,7 @@ if (FEATURE_CFO_REPORTS) {
       });
 
     } catch (error) {
-      console.error('Board pack export failed:', error);
+      logError('Board pack export failed', error);
       res.status(500).json({
         error: 'Board pack export failed',
         message: error.message,
@@ -623,7 +631,7 @@ if (FEATURE_DIAGNOSTICS) {
       });
 
     } catch (error) {
-      console.error('Decision explanation failed:', error);
+      logError('Decision explanation failed', error);
       res.status(500).json({
         error: 'Decision explanation failed',
         message: error.message,
@@ -655,7 +663,7 @@ if (FEATURE_DIAGNOSTICS) {
       });
 
     } catch (error) {
-      console.error('Diagnostic report generation failed:', error);
+      logError('Diagnostic report generation failed', error);
       res.status(500).json({
         error: 'Diagnostic report generation failed',
         message: error.message,
@@ -683,7 +691,7 @@ if (FEATURE_DIAGNOSTICS) {
       });
 
     } catch (error) {
-      console.error('Decision history retrieval failed:', error);
+      logError('Decision history retrieval failed', error);
       res.status(500).json({
         error: 'Failed to retrieve decision history',
         message: error.message,
@@ -718,7 +726,7 @@ router.get('/health', async (req, res) => {
     res.json(health);
 
   } catch (error) {
-    console.error('Health check failed:', error);
+    logError('Health check failed', error);
     res.status(500).json({
       status: 'unhealthy',
       error: error.message,
@@ -761,7 +769,7 @@ router.delete('/cache', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Cache clear failed:', error);
+    logError('Cache clear failed', error);
     res.status(500).json({
       error: 'Cache clear failed',
       message: error.message,
@@ -772,13 +780,137 @@ router.delete('/cache', async (req, res) => {
 
 // Error handling middleware
 router.use((error, req, res, next) => {
-  console.error('Optimization API Error:', error);
+  logError('Optimization API Error', error);
   
-  res.status(error.status || 500).json({
+  res.status(error.status 0).json({
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred',
     timestamp: new Date().toISOString()
   });
+});
+
+// ========================================
+// FINANCEFLO MULTI-CURRENCY WORKING CAPITAL
+// ========================================
+
+/**
+ * POST /api/optimization/working-capital/multi-region
+ * FinanceFlo multi-region working capital projection with FX consolidation
+ */
+router.post('/working-capital/multi-region', async (req, res) => {
+  try {
+    const {
+      horizonMonths = 12,
+      startMonth = new Date().toISOString().slice(0, 7), // YYYY-MM format
+      regions = ['UK', 'EU', 'USA'],
+      scenarios = ['baseline', 'optimistic', 'pessimistic']
+    } = req.body;
+
+    const params = {
+      horizonMonths,
+      startMonth: new Date(startMonth + '-01'), // Convert to Date object
+      regions,
+      scenarios
+    };
+
+    const results = await workingCapitalFinanceService.projectMultiRegion(params);
+
+    res.json({
+      success: true,
+      type: 'multi_region_working_capital_projection',
+      ...results,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    logError('Multi-region working capital projection failed', error);
+    res.status(500).json({
+      error: 'Multi-region working capital projection failed',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
+ * GET /api/optimization/working-capital/fx-status
+ * Get foreign exchange service status for health monitoring
+ */
+router.get('/working-capital/fx-status', async (req, res) => {
+  try {
+    const fxStatus = workingCapitalFinanceService.getFXStatus();
+    
+    res.json({
+      success: true,
+      fxService: fxStatus,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    logError('FX status check failed', error);
+    res.status(500).json({
+      error: 'Failed to get FX status',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// ========================================
+// FINANCEFLO LEAD TIME CONFIGURATION
+// ========================================
+
+/**
+ * GET /api/optimization/lead-times
+ * Get FinanceFlo regional lead time specifications
+ */
+router.get('/lead-times', async (req, res) => {
+  try {
+    const { region } = req.query;
+
+    if (region) {
+      // Get specific region configuration
+      const regionConfig = getLeadTimeConfig(region.toUpperCase());
+      if (!regionConfig) {
+        return res.status(404).json({
+          error: 'Region not supported',
+          supportedRegions: ['UK', 'EU', 'USA']
+        });
+      }
+
+      res.json({
+        success: true,
+        region: region.toUpperCase(),
+        leadTimeConfig: regionConfig,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      // Get all regions configuration
+      const allRegions = {
+        UK: getLeadTimeConfig('UK'),
+        EU: getLeadTimeConfig('EU'),
+        USA: getLeadTimeConfig('USA')
+      };
+
+      res.json({
+        success: true,
+        leadTimeConfigurations: allRegions,
+        specification: {
+          UK: 'FinanceFlo Spec: 2-4 weeks (14-28 days), medium variability',
+          EU: 'FinanceFlo Spec: 3-5 weeks (21-35 days), high variability',
+          USA: 'FinanceFlo Spec: 4-8 weeks (28-56 days), high variability'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    logError('Lead time configuration error', error);
+    res.status(500).json({
+      error: 'Failed to retrieve lead time configuration',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 export default router;

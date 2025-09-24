@@ -25,7 +25,7 @@ const AccessibleModal = ({
   const modalRef = useRef(null)
   const overlayRef = useRef(null)
   const previousActiveElement = useRef(null)
-  const titleId = `modal-title-${Math.random().toString(36).substr(2, 9)}`
+  const titleId = `modal-title-${crypto.randomUUID().substr(2, 9)}`
   
   // Size variants
   const sizeClasses = {

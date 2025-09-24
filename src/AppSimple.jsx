@@ -1,201 +1,131 @@
-import React from 'react'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
+// Simple landing page that works
+const LandingPage = () => {
+  return (
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div style={{ padding: '40px', textAlign: 'center', color: 'white' }}>
+        <h1 style={{ fontSize: '48px', marginBottom: '20px' }}>
+          Sentia Manufacturing Dashboard
+        </h1>
+        <p style={{ fontSize: '20px', marginBottom: '40px' }}>
+          Enterprise Manufacturing Intelligence Platform
+        </p>
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '60px' }}>
+          <Link to="/dashboard">
+            <button style={{
+              padding: '15px 30px',
+              fontSize: '18px',
+              background: 'white',
+              color: '#667eea',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}>
+              Enter Dashboard
+            </button>
+          </Link>
+          <Link to="/working-capital">
+            <button style={{
+              padding: '15px 30px',
+              fontSize: '18px',
+              background: 'rgba(255,255,255,0.2)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}>
+              Working Capital
+            </button>
+          </Link>
+          <Link to="/what-if">
+            <button style={{
+              padding: '15px 30px',
+              fontSize: '18px',
+              background: 'rgba(255,255,255,0.2)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}>
+              What-If Analysis
+            </button>
+          </Link>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '20px',
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          {[
+            { title: 'AI Analytics', desc: 'Machine learning insights', icon: '🤖' },
+            { title: 'Inventory', desc: 'Real-time tracking', icon: '📦' },
+            { title: 'Production', desc: 'Optimize workflows', icon: '🏭' },
+            { title: 'Quality Control', desc: 'Ensure standards', icon: '✅' },
+            { title: 'Forecasting', desc: 'Predict demand', icon: '📊' },
+            { title: 'Reports', desc: 'Financial analytics', icon: '📈' }
+          ].map((feature, i) => (
+            <div key={i} style={{
+              background: 'rgba(255,255,255,0.1)',
+              padding: '30px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,255,255,0.3)'
+            }}>
+              <div style={{ fontSize: '40px', marginBottom: '10px' }}>{feature.icon}</div>
+              <h3 style={{ marginBottom: '10px' }}>{feature.title}</h3>
+              <p style={{ opacity: 0.9 }}>{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Simple dashboard
+const Dashboard = () => (
+  <div style={{ padding: '40px' }}>
+    <h1>Dashboard</h1>
+    <p>Welcome to Sentia Manufacturing Dashboard</p>
+    <Link to="/">Back to Home</Link>
+  </div>
+);
+
+// Simple pages
+const WorkingCapital = () => (
+  <div style={{ padding: '40px' }}>
+    <h1>Working Capital Management</h1>
+    <p>Financial analytics and cash flow optimization</p>
+    <Link to="/">Back to Home</Link>
+  </div>
+);
+
+const WhatIf = () => (
+  <div style={{ padding: '40px' }}>
+    <h1>What-If Analysis</h1>
+    <p>Scenario planning and forecasting</p>
+    <Link to="/">Back to Home</Link>
+  </div>
+);
+
+// Main App
 function AppSimple() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f3f4f6',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}>
-      {/* Header */}
-      <header style={{
-        backgroundColor: '#1f2937',
-        padding: '1rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <h1 style={{ color: 'white', margin: 0, fontSize: '1.5rem' }}>
-            Sentia Manufacturing Dashboard
-          </h1>
-          <nav style={{ display: 'flex', gap: '2rem' }}>
-            <a href="#dashboard" style={{ color: 'white', textDecoration: 'none' }}>Dashboard</a>
-            <a href="#working-capital" style={{ color: 'white', textDecoration: 'none' }}>Working Capital</a>
-            <a href="#data-import" style={{ color: 'white', textDecoration: 'none' }}>Data Import</a>
-            <a href="#sign-in" style={{ color: 'white', textDecoration: 'none' }}>Sign In</a>
-          </nav>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main style={{ padding: '2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Page Title */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-              Production Dashboard
-            </h2>
-            <p style={{ color: '#6b7280' }}>
-              Real-time production metrics and KPIs
-            </p>
-          </div>
-
-          {/* KPI Cards */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '1rem',
-            marginBottom: '2rem'
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              borderRadius: '0.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <h3 style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-                Production Efficiency
-              </h3>
-              <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>98.5%</p>
-              <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                +2.3% from last month
-              </p>
-            </div>
-
-            <div style={{
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              borderRadius: '0.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <h3 style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-                Units Produced
-              </h3>
-              <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>1,234</p>
-              <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                Today's production
-              </p>
-            </div>
-
-            <div style={{
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              borderRadius: '0.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <h3 style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-                Active Jobs
-              </h3>
-              <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>45</p>
-              <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                In production queue
-              </p>
-            </div>
-
-            <div style={{
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              borderRadius: '0.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <h3 style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-                Revenue Today
-              </h3>
-              <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#8b5cf6' }}>$2.3M</p>
-              <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                +12% from average
-              </p>
-            </div>
-          </div>
-
-          {/* Status Section */}
-          <div style={{
-            backgroundColor: 'white',
-            padding: '2rem',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              System Status
-            </h3>
-            
-            <div style={{
-              backgroundColor: '#dcfce7',
-              border: '1px solid #86efac',
-              padding: '1rem',
-              borderRadius: '0.375rem',
-              marginBottom: '1rem'
-            }}>
-              <p style={{ color: '#166534', fontWeight: 'bold' }}>
-                ✓ All Systems Operational
-              </p>
-              <p style={{ color: '#166534', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-                Application is running correctly on localhost:3000
-              </p>
-            </div>
-
-            <div style={{ marginTop: '1.5rem' }}>
-              <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Quick Actions</h4>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <button style={{
-                  backgroundColor: '#3b82f6',
-                  color: 'white',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '0.375rem',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}>
-                  View Reports
-                </button>
-                <button style={{
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '0.375rem',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}>
-                  New Production Job
-                </button>
-                <button style={{
-                  backgroundColor: '#f59e0b',
-                  color: 'white',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '0.375rem',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}>
-                  Import Data
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer style={{
-        backgroundColor: '#1f2937',
-        color: '#9ca3af',
-        padding: '2rem',
-        marginTop: '4rem',
-        textAlign: 'center'
-      }}>
-        <p>© 2024 Sentia Manufacturing Dashboard. All rights reserved.</p>
-        <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
-          Powered by React + Vite | Version 1.0.0
-        </p>
-      </footer>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/working-capital" element={<WorkingCapital />} />
+        <Route path="/what-if" element={<WhatIf />} />
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default AppSimple
+export default AppSimple;

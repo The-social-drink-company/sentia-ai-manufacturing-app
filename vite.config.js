@@ -2,82 +2,54 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@/components': path.resolve(__dirname, './src/components'),
-      '@/pages': path.resolve(__dirname, './src/pages'),
-      '@/services': path.resolve(__dirname, './src/services'),
-      '@/utils': path.resolve(__dirname, './src/utils'),
-      '@/hooks': path.resolve(__dirname, './src/hooks'),
-      '@/stores': path.resolve(__dirname, './src/stores'),
-      '@/config': path.resolve(__dirname, './src/config')
-    }
-  },
   server: {
-    port: 3000,
-    host: true, // Needed for Docker
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: false
   },
   build: {
     outDir: 'dist',
-    sourcemap: process.env.NODE_ENV !== 'production', // Only generate sourcemaps in dev
-    minify: 'esbuild',
-    target: 'es2020',
-    chunkSizeWarningLimit: 1000,
+    assetsDir: 'assets',
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 2000,
+    // Memory optimizations for large builds
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Split vendor libraries into separate chunks
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
-          'vendor-charts': ['recharts'],
-          'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
-          'vendor-data': ['@tanstack/react-query', 'axios'],
-          'vendor-dnd': ['react-grid-layout', '@dnd-kit/core', '@dnd-kit/sortable']
-        },
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId
-            ? chunkInfo.facadeModuleId.split('/').pop().replace(/\.[jt]sx?$/, '')
-            : 'chunk';
-          return `js/${facadeModuleId}-[hash].js`;
-        },
-        entryFileNames: 'js/[name]-[hash].js',
-        assetFileNames: (assetInfo) => {
-          const info = assetInfo.name.split('.');
-          const ext = info[info.length - 1];
-          if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(assetInfo.name)) {
-            return `images/[name]-[hash].${ext}`;
+        // Ultra-minimal chunking to avoid variable initialization issues
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            // Only split Clerk (very stable, large, authentication-focused)
+            if (id.includes('@clerk')) return 'clerk';
+            // Keep recharts with vendor to avoid initialization order issues
+            return 'vendor'; // Everything else including recharts in vendor chunk
           }
-          if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name)) {
-            return `fonts/[name]-[hash].${ext}`;
-          }
-          return `assets/[name]-[hash].${ext}`;
+          // Let Vite handle app code chunking automatically
         }
+      },
+      // Reduce parallel operations to save memory
+      maxParallelFileOps: 3,
+      // Optimize tree-shaking for memory
+      treeshake: {
+        preset: 'smallest',
+        moduleSideEffects: false
       }
-    }
+    },
+    // Use esbuild for faster builds with less memory
+    minify: 'esbuild',
+    // Disable source maps to save memory
+    sourcemap: false,
+    // Don't report compressed size to save memory
+    reportCompressedSize: false,
+    // CSS code splitting
+    cssCodeSplit: true
   },
-  optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      '@tanstack/react-query',
-      'recharts',
-      'date-fns'
-    ],
-    exclude: ['@testing-library/react']
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
-  define: {
-    // Enable React Query devtools only in development
-    __DEV__: process.env.NODE_ENV === 'development'
-  }
 })
+

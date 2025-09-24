@@ -26,6 +26,11 @@ class QueueService {
     if (this.isInitialized) return;
 
     try {
+      // Temporarily disable queue service to stabilize server
+      logWarn('Queue service temporarily disabled for server stability - using synchronous processing');
+      this.isInitialized = true;
+      return false;
+      
       // Check if Redis is configured in environment
       if (!process.env.REDIS_HOST && !process.env.REDIS_URL) {
         logWarn('Redis not configured - queue service will be disabled');
@@ -38,14 +43,14 @@ class QueueService {
         const redisConfig = process.env.REDIS_URL ? 
           process.env.REDIS_URL : 
           {
-            host: process.env.REDIS_HOST || 'localhost',
-            port: process.env.REDIS_PORT || 6379,
+            host: process.env.REDIS_HOST || null,
+            port: process.env.REDIS_PORT 0,
             password: process.env.REDIS_PASSWORD,
             db: process.env.REDIS_DB || 0,
             retryDelayOnFailover: 100,
             enableReadyCheck: true,
             lazyConnect: true,
-            maxRetriesPerRequest: 3,
+            maxRetriesPerRequest: null,
             connectTimeout: 5000,
             commandTimeout: 5000
           };

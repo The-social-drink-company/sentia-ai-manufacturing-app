@@ -1,0 +1,55 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "avgDuration": 34.84879999999998,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "PERFORMANCE_API_RESPONSE",
+      "result": "pass",
+      "duration": 34.84879999999998,
+      "timestamp": "2025-09-07T15:21:23.775Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 145788928,
+          "heapTotal": 65929216,
+          "heapUsed": 35383576,
+          "external": 3981625,
+          "arrayBuffers": 78258
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": [
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/health",
+      "value": 16.997799999999984,
+      "timestamp": "2025-09-07T15:21:23.760Z"
+    },
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/production/status",
+      "value": 4.9868000000000166,
+      "timestamp": "2025-09-07T15:21:23.767Z"
+    },
+    {
+      "metric": "api_response_time",
+      "endpoint": "/api/analytics/kpis",
+      "value": 6.983299999999986,
+      "timestamp": "2025-09-07T15:21:23.775Z"
+    }
+  ]
+}

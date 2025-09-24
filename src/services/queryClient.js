@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import { QueryClient } from '@tanstack/react-query'
 
 // API-specific stale times based on data update frequency
@@ -123,7 +124,7 @@ export const queryClient = new QueryClient({
       retryDelay: 1000,
       // Global mutation error handling
       onError: (error, variables, context) => {
-        console.error('Mutation failed:', error, variables)
+        devLog.error('Mutation failed:', error, variables)
         // Could integrate with toast notification system here
       }
     }
@@ -143,60 +144,23 @@ export const queryConfigs = {
   // Query functions for CFO KPI Strip and other widgets
   forecast: {
     accuracy: (timeRange, region) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            mape: Math.random() * 15 + 5, // 5-20%
-            smape: Math.random() * 20 + 8, // 8-28%
-            rmse: Math.random() * 50 + 75, // 75-125
-            coverage: Math.random() * 10 + 90, // 90-100%
-            change: (Math.random() - 0.5) * 10, // ±5%
-            dataQuality: Math.random() > 0.5 ? 'excellent' : 'good'
-          })
-        }, 500)
-      })
+      throw new Error('Real API connection required - Forecast accuracy must be fetched from /api/forecasts/accuracy endpoint')
     }
   },
   
   workingCapital: {
     kpis: (timeRange, region) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            cashConversionCycle: Math.round(Math.random() * 30 + 40), // 40-70 days
-            cccChange: (Math.random() - 0.5) * 20, // ±10%
-            cccTrend: Math.random() * 100, // 0-100%
-            wcUnlockedQTD: Math.random() * 300000 + 100000, // £100k-400k
-            wcUnlockedChange: (Math.random() - 0.5) * 30 // ±15%
-          })
-        }, 500)
-      })
+      throw new Error('Real API connection required - Working capital KPIs must be fetched from /api/working-capital/kpis endpoint')
     },
-    
+
     cashPosition: (region) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            minCash90d: Math.random() * 1500000 + 200000, // £200k-1.7M
-            minCashChange: (Math.random() - 0.5) * 40, // ±20%
-            fxExposureNet: (Math.random() - 0.5) * 2000000, // ±£1M
-            fxExposureChange: (Math.random() - 0.5) * 50 // ±25%
-          })
-        }, 500)
-      })
+      throw new Error('Real API connection required - Cash position must be fetched from /api/working-capital/cash-position endpoint')
     }
   },
   
   optimization: {
     facilityUtilization: (region) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            overallUtilization: Math.random() * 40 + 60, // 60-100%
-            utilizationChange: (Math.random() - 0.5) * 20 // ±10%
-          })
-        }, 500)
-      })
+      throw new Error('Real API connection required - Facility utilization must be fetched from /api/optimization/facility-utilization endpoint')
     }
   },
   
@@ -314,7 +278,7 @@ export const errorHandlers = {
   
   // Generate error ID for support
   generateErrorId: () => {
-    return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `err_${Date.now()}_${crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : 'unknown'}`
   }
 }
 

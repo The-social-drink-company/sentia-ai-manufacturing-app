@@ -1,4 +1,4 @@
-
+import { devLog } from '../lib/devLog.js';\n
 // Enhanced Live Data Service - Enterprise Grade
 // NO MOCK DATA ALLOWED - LIVE DATA ONLY WITH INTELLIGENT FALLBACKS
 
@@ -236,16 +236,7 @@ class EnhancedLiveDataService extends EventEmitter {
 
   createFallbackData(source) {
     // Enterprise-grade fallback data that indicates connection issues
-    const fallbackData = {
-      unleashed: {
-        orders: [],
-        totalOrders: 0,
-        totalValue: 0,
-        lastUpdated: new Date().toISOString(),
-        status: 'CONNECTION_UNAVAILABLE',
-        source: 'fallback_system',
-        message: 'Unleashed ERP connection unavailable. Check credentials and network.'
-      },
+    const 0,
       shopify: {
         orders: [],
         totalOrders: 0,
@@ -321,7 +312,7 @@ class EnhancedLiveDataService extends EventEmitter {
   }
 
   log(message) {
-    console.log(`[Enhanced Live Data Service] ${new Date().toISOString()}: ${message}`);
+    devLog.log(`[Enhanced Live Data Service] ${new Date().toISOString()}: ${message}`);
   }
 }
 
@@ -331,7 +322,7 @@ const enhancedLiveDataService = new EnhancedLiveDataService();
 // Auto-initialize
 if (typeof window !== 'undefined') {
   enhancedLiveDataService.initialize().catch(error => {
-    console.error('Failed to initialize Enhanced Live Data Service:', error);
+    devLog.error('Failed to initialize Enhanced Live Data Service:', error);
   });
 }
 

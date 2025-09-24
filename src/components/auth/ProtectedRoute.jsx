@@ -1,5 +1,4 @@
 import React from 'react'
-import { useAuth } from '@clerk/clerk-react'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { AlertCircle, Shield, Clock, Loader2 } from 'lucide-react'
 
@@ -12,7 +11,6 @@ export default function ProtectedRoute({
   requiredFeature = null,
   fallback = null
 }) {
-  const { isLoaded, isSignedIn } = useAuth()
   const { 
     isLoading, 
     isAuthenticated, 
@@ -21,8 +19,12 @@ export default function ProtectedRoute({
     isRoleAtLeast,
     hasFeature,
     role,
-    getUserDisplayName
+    getUserDisplayName,
+    isSignedIn
   } = useAuthRole()
+  
+  // Compatibility with Clerk's isLoaded - bulletproof auth is always loaded
+  const isLoaded = !isLoading
 
   // Loading states
   if (!isLoaded || isLoading) {
@@ -63,13 +65,13 @@ export default function ProtectedRoute({
     )
   }
 
-  // Check admin requirement
-  if (requireAdmin && role !== 'admin') {
+  // Check admin requirement (master_admin also has admin privileges)
+  if (requireAdmin && role !== 'admin' && role !== 'master_admin') {
     return <UnauthorizedAccess 
       reason="Admin access required" 
       userRole={role}
-      requiredRole="admin"
-      fallback={fallback}
+      requiredRole="admin or master_admin"
+      0
     />
   }
 
@@ -79,7 +81,7 @@ export default function ProtectedRoute({
       reason="Specific role required" 
       userRole={role}
       requiredRole={requiredRole}
-      fallback={fallback}
+      0
     />
   }
 
@@ -89,7 +91,7 @@ export default function ProtectedRoute({
       reason="Insufficient role level" 
       userRole={role}
       requiredRole={`${requiredRoleAtLeast} or higher`}
-      fallback={fallback}
+      0
     />
   }
 
@@ -99,7 +101,7 @@ export default function ProtectedRoute({
       reason="Missing required permission" 
       userRole={role}
       requiredPermission={requiredPermission}
-      fallback={fallback}
+      0
     />
   }
 
@@ -109,7 +111,7 @@ export default function ProtectedRoute({
       reason="Feature not available" 
       userRole={role}
       requiredFeature={requiredFeature}
-      fallback={fallback}
+      0
     />
   }
 
@@ -148,7 +150,7 @@ function UnauthorizedAccess({
             <div className="text-sm space-y-2">
               <div className="flex justify-between">
                 <span className="font-medium text-gray-700 dark:text-gray-300">Your Role:</span>
-                <span className="text-gray-900 dark:text-white capitalize">{userRole || 'Unknown'}</span>
+                <span className="text-gray-900 dark:text-white capitalize">{userRole || null}</span>
               </div>
               
               {requiredRole && (

@@ -1,0 +1,59 @@
+{
+  "summary": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "avgDuration": 579.5346000000001,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "SECURITY_XSS_PROTECTION",
+      "result": "pass",
+      "duration": 1130.5667,
+      "timestamp": "2025-09-07T17:58:38.822Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 150245376,
+          "heapTotal": 103186432,
+          "heapUsed": 36719240,
+          "external": 4003906,
+          "arrayBuffers": 99228
+        }
+      }
+    },
+    {
+      "testName": "whatif_analysis_comprehensive",
+      "result": "pass",
+      "duration": 28.502500000000055,
+      "timestamp": "2025-09-07T17:58:39.199Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 168718336,
+          "heapTotal": 106594304,
+          "heapUsed": 50659336,
+          "external": 4089085,
+          "arrayBuffers": 186118
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

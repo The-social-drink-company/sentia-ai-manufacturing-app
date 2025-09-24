@@ -1,0 +1,242 @@
+/**
+ * @fileoverview [Service Description]
+ * @module services/[ServiceName]
+ * @requires TypeScript, Singleton Pattern
+ */
+
+import { logError, logInfo, logWarn } from '@/services/logger';
+import { ValidationError, ServiceError } from '@/utils/errors';
+import type { Database } from '@/types/database';
+
+/**
+ * Configuration interface for ServiceName
+ */
+interface ServiceConfig {
+  endpoint?: string;
+  timeout?: number;
+  retryAttempts?: number;
+  cacheEnabled?: boolean;
+}
+
+/**
+ * Response type for service operations
+ */
+interface ServiceResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * ServiceName - Handles [service responsibility]
+ *
+ * @class
+ * @implements {Singleton}
+ * @example
+ * ```typescript
+ * const service = ServiceName.getInstance();
+ * const result = await service.performOperation(params);
+ * ```
+ */
+export class ServiceName {
+  private static instance: ServiceName;
+  private config: ServiceConfig;
+  private cache: Map<string, unknown>;
+  private isInitialized: boolean;
+
+  /**
+   * Private constructor for singleton pattern
+   */
+  private constructor(config: ServiceConfig = {}) {
+    this.config = {
+      endpoint: process.env.SERVICE_ENDPOINT || '',
+      timeout: 30000,
+      retryAttempts: 3,
+      cacheEnabled: true,
+      ...config,
+    };
+    this.cache = new Map();
+    this.isInitialized = false;
+  }
+
+  /**
+   * Get singleton instance
+   */
+  public static getInstance(config?: ServiceConfig): ServiceName {
+    if (!ServiceName.instance) {
+      ServiceName.instance = new ServiceName(config);
+    }
+    return ServiceName.instance;
+  }
+
+  /**
+   * Initialize service
+   */
+  public async initialize(): Promise<void> {
+    if (this.isInitialized) {
+      logWarn('Service already initialized');
+      return;
+    }
+
+    try {
+      // Perform initialization
+      await this.validateConfiguration();
+      await this.establishConnections();
+
+      this.isInitialized = true;
+      logInfo('ServiceName initialized successfully');
+    } catch (error) {
+      logError('ServiceName initialization failed', error as Error);
+      throw new ServiceError('Service initialization failed', { cause: error });
+    }
+  }
+
+  /**
+   * Main service operation
+   */
+  public async performOperation<T>(
+    params: Record<string, unknown>
+  ): Promise<ServiceResponse<T>> {
+    try {
+      // Validate inputs
+      this.validateParams(params);
+
+      // Check cache
+      const cacheKey = this.getCacheKey(params);
+      if (this.config.cacheEnabled && this.cache.has(cacheKey)) {
+        logInfo('Returning cached result', { cacheKey });
+        return {
+          success: true,
+          data: this.cache.get(cacheKey) as T,
+          metadata: { cached: true }
+        };
+      }
+
+      // Perform operation with retry logic
+      const result = await this.executeWithRetry<T>(
+        () => this.executeOperation<T>(params),
+        this.config.retryAttempts || 3
+      );
+
+      // Cache result
+      if (this.config.cacheEnabled) {
+        this.cache.set(cacheKey, result);
+      }
+
+      // Log success
+      logInfo('Operation completed successfully', {
+        operation: 'performOperation',
+        params
+      });
+
+      return {
+        success: true,
+        data: result,
+        metadata: { cached: false }
+      };
+    } catch (error) {
+      logError('Operation failed', error as Error);
+      return {
+        success: false,
+        error: (error as Error).message
+      };
+    }
+  }
+
+  /**
+   * Cleanup and destroy
+   */
+  public async destroy(): Promise<void> {
+    try {
+      this.cache.clear();
+      this.isInitialized = false;
+      ServiceName.instance = null as any;
+      logInfo('ServiceName destroyed');
+    } catch (error) {
+      logError('Error destroying service', error as Error);
+    }
+  }
+
+  /**
+   * Validate service configuration
+   */
+  private async validateConfiguration(): Promise<void> {
+    if (!this.config.endpoint) {
+      throw new ValidationError('Service endpoint not configured');
+    }
+    // Additional validation
+  }
+
+  /**
+   * Establish necessary connections
+   */
+  private async establishConnections(): Promise<void> {
+    // Implementation
+  }
+
+  /**
+   * Validate operation parameters
+   */
+  private validateParams(params: Record<string, unknown>): void {
+    if (!params || typeof params !== 'object') {
+      throw new ValidationError('Invalid parameters');
+    }
+    // Additional validation
+  }
+
+  /**
+   * Generate cache key
+   */
+  private getCacheKey(params: Record<string, unknown>): string {
+    return JSON.stringify(params);
+  }
+
+  /**
+   * Execute operation with retry logic
+   */
+  private async executeWithRetry<T>(
+    operation: () => Promise<T>,
+    retries: number
+  ): Promise<T> {
+    let lastError: Error;
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error as Error;
+        logWarn(`Operation attempt ${attempt} failed`, lastError);
+
+        if (attempt === retries) {
+          throw lastError;
+        }
+
+        // Exponential backoff
+        await this.delay(Math.pow(2, attempt) * 1000);
+      }
+    }
+
+    throw lastError!;
+  }
+
+  /**
+   * Execute the actual operation
+   */
+  private async executeOperation<T>(
+    params: Record<string, unknown>
+  ): Promise<T> {
+    // Implementation
+    return {} as T;
+  }
+
+  /**
+   * Delay helper for retry logic
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+}
+
+// Export singleton instance
+export default ServiceName.getInstance();

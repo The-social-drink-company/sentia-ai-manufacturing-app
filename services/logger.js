@@ -22,49 +22,61 @@ const logFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
 // Create logs directory if it doesn't exist
 const logsDir = './logs'
 
-// Ensure logs directory exists
-if (!existsSync(logsDir)) {
+// Check if running on Railway/Render (read-only filesystem)
+const isRailwayOrRender = process.env.RAILWAY_ENVIRONMENT || process.env.RENDER || process.env.RENDER_EXTERNAL_URL
+
+// Only create logs directory if not on Railway/Render
+if (!isRailwayOrRender && !existsSync(logsDir)) {
   mkdirSync(logsDir, { recursive: true })
 }
 
-// File rotation transport for general logs
-const fileRotateTransport = new DailyRotateFile({
-  filename: `${logsDir}/application-%DATE%.log`,
-  datePattern: 'YYYY-MM-DD',
-  maxSize: '20m',
-  maxFiles: '14d',
-  format: combine(
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    errors({ stack: true }),
-    logFormat
-  )
-})
+// Create transports array based on environment
+const transports = []
 
-// Error logs only
-const errorRotateTransport = new DailyRotateFile({
-  level: 'error',
-  filename: `${logsDir}/error-%DATE%.log`,
-  datePattern: 'YYYY-MM-DD',
-  maxSize: '20m',
-  maxFiles: '30d',
-  format: combine(
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    errors({ stack: true }),
-    logFormat
-  )
-})
+// Only create file transports if not on Railway/Render
+if (!isRailwayOrRender) {
+  try {
+    // File rotation transport for general logs
+    const fileRotateTransport = new DailyRotateFile({
+      filename: `${logsDir}/application-%DATE%.log`,
+      datePattern: 'YYYY-MM-DD',
+      maxSize: '20m',
+      maxFiles: '14d',
+      format: combine(
+        timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        errors({ stack: true }),
+        logFormat
+      )
+    })
+
+    // Error logs only
+    const errorRotateTransport = new DailyRotateFile({
+      level: 'error',
+      filename: `${logsDir}/error-%DATE%.log`,
+      datePattern: 'YYYY-MM-DD',
+      maxSize: '20m',
+      maxFiles: '30d',
+      format: combine(
+        timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        errors({ stack: true }),
+        logFormat
+      )
+    })
+
+    transports.push(fileRotateTransport, errorRotateTransport)
+  } catch (err) {
+    console.warn('Unable to create file transports:', err.message)
+  }
+}
 
 // Create logger instance
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
-  transports: [
-    fileRotateTransport,
-    errorRotateTransport
-  ]
+  transports
 })
 
-// Add console transport for development
-if (process.env.NODE_ENV !== 'production') {
+// Add console transport for development or Railway/Render
+if (process.env.NODE_ENV !== 'production' || isRailwayOrRender) {
   logger.add(new winston.transports.Console({
     format: combine(
       colorize(),

@@ -1,0 +1,138 @@
+/**
+ * @fileoverview [Component Description]
+ * @module components/[category]/[ComponentName]
+ * @requires React, TypeScript
+ */
+
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { useAuthRole } from '@/hooks/useAuthRole';
+import { logError, logInfo } from '@/services/logger';
+import type { FC } from 'react';
+
+/**
+ * Props interface for ComponentName
+ * @interface ComponentNameProps
+ */
+interface ComponentNameProps {
+  /** Primary data input */
+  data?: unknown;
+  /** Loading state */
+  isLoading?: boolean;
+  /** Error callback */
+  onError?: (error: Error) => void;
+  /** Success callback */
+  onSuccess?: (result: unknown) => void;
+  /** Additional CSS classes */
+  className?: string;
+}
+
+/**
+ * ComponentName - [Brief description of component purpose]
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <ComponentName
+ *   data={data}
+ *   onSuccess={handleSuccess}
+ *   onError={handleError}
+ * />
+ * ```
+ */
+export const ComponentName: FC<ComponentNameProps> = memo(({
+  data,
+  isLoading = false,
+  onError,
+  onSuccess,
+  className = '',
+}) => {
+  // Security check
+  const { hasPermission, user } = useAuthRole();
+
+  // State management
+  const [internalState, setInternalState] = useState<unknown>(null);
+  const [error, setError] = useState<Error | null>(null);
+
+  // Permission check
+  if (!hasPermission('view:component')) {
+    logInfo('Access denied to ComponentName', { userId: user?.id });
+    return null;
+  }
+
+  /**
+   * Handle component initialization
+   */
+  useEffect(() => {
+    try {
+      // Initialization logic
+      logInfo('ComponentName initialized', { data });
+    } catch (err) {
+      const error = err as Error;
+      logError('ComponentName initialization failed', error);
+      setError(error);
+      onError?.(error);
+    }
+  }, [data, onError]);
+
+  /**
+   * Handle user interaction
+   */
+  const handleAction = useCallback(async () => {
+    try {
+      // Validate inputs
+      if (!data) {
+        throw new Error('Invalid input data');
+      }
+
+      // Perform action
+      const result = await performAction(data);
+
+      // Success handling
+      logInfo('Action completed successfully', { result });
+      onSuccess?.(result);
+    } catch (err) {
+      const error = err as Error;
+      logError('Action failed', error);
+      setError(error);
+      onError?.(error);
+    }
+  }, [data, onSuccess, onError]);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className={`loading-spinner ${className}`}>
+        Loading...
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className={`error-message ${className}`}>
+        <p>Error: {error.message}</p>
+        <button onClick={() => setError(null)}>Retry</button>
+      </div>
+    );
+  }
+
+  // Main render
+  return (
+    <div className={`component-name ${className}`}>
+      {/* Component content */}
+      <button onClick={handleAction}>
+        Perform Action
+      </button>
+    </div>
+  );
+});
+
+// Display name for debugging
+ComponentName.displayName = 'ComponentName';
+
+// Helper function (keep private to module)
+async function performAction(data: unknown): Promise<unknown> {
+  // Implementation
+  return data;
+}

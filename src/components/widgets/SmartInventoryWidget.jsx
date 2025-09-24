@@ -13,13 +13,15 @@ import {
   AdjustmentsHorizontalIcon
 } from '@heroicons/react/24/outline';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter, Tooltip, Legend } from 'recharts';
-// Import service with error handling
-let smartInventoryService;
-try {
-  smartInventoryService = require('../../services/smartInventory').default;
-} catch (error) {
-  // Fallback mock service
-  smartInventoryService = {
+import { formatCurrency } from '../../lib/utils.js';
+// Import service with error handling - use dynamic import
+const getSmartInventoryService = async () => {
+  try {
+    const serviceModule = await import('../../services/smartInventory');
+    return serviceModule.default || serviceModule;
+  } catch (error) {
+    // Return fallback mock service
+    return {
     getInventoryAnalysis: () => Promise.resolve({
       success: true,
       data: [
@@ -41,17 +43,28 @@ try {
       ],
       summary: { totalRecommendations: 1, urgentReorders: 1, totalReorderValue: 4500 }
     })
-  };
-}
+    };
+  }
+};
 
-const SmartInventoryWidget = () => {
+/**
+ * Smart Inventory Widget component with AI-powered inventory optimization
+ * Provides comprehensive inventory analysis, reorder recommendations, and AI insights
+ * @returns {React.Component} Smart Inventory Widget
+ */
+const SmartInventoryWidget = React.memo(() => {
+  /** @type {[string, function(string): void]} */
   const [activeTab, setActiveTab] = useState('overview');
+  /** @type {[object|null, function(object|null): void]} */
   const [selectedItem, setSelectedItem] = useState(null);
 
   // Fetch inventory analysis
   const { data: analysisData, isLoading: analysisLoading, refetch: refetchAnalysis } = useQuery({
     queryKey: ['inventory', 'analysis'],
-    queryFn: () => smartInventoryService.getInventoryAnalysis(),
+    queryFn: async () => {
+      const service = await getSmartInventoryService();
+      return service.getInventoryAnalysis();
+    },
     refetchInterval: 60000, // Refresh every minute
     staleTime: 50000
   });
@@ -59,7 +72,10 @@ const SmartInventoryWidget = () => {
   // Fetch reorder recommendations
   const { data: reorderData, isLoading: reorderLoading } = useQuery({
     queryKey: ['inventory', 'reorder'],
-    queryFn: () => smartInventoryService.getReorderRecommendations(),
+    queryFn: async () => {
+      const service = await getSmartInventoryService();
+      return service.getReorderRecommendations();
+    },
     refetchInterval: 300000, // Refresh every 5 minutes
     staleTime: 240000
   });
@@ -67,15 +83,20 @@ const SmartInventoryWidget = () => {
   // Fetch AI optimization insights
   const { data: aiInsights, isLoading: aiLoading } = useQuery({
     queryKey: ['inventory', 'ai-insights'],
-    queryFn: () => smartInventoryService.generateOptimizationInsights(),
+    queryFn: async () => {
+      const service = await getSmartInventoryService();
+      return service.generateOptimizationInsights();
+    },
     refetchInterval: 600000, // Refresh every 10 minutes
     staleTime: 480000
   });
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-  };
 
+  /**
+   * Get background color class for ABC classification
+   * @param {string} abcClass - ABC classification (A, B, or C)
+   * @returns {string} Tailwind CSS background color class
+   */
   const getABCColor = (abcClass) => {
     switch (abcClass) {
       case 'A': return 'bg-red-500';
@@ -670,6 +691,6 @@ const SmartInventoryWidget = () => {
       )}
     </div>
   );
-};
+});
 
 export default SmartInventoryWidget;

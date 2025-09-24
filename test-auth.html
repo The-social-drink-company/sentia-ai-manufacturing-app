@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication & Rendering Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { color: #333; }
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .test-result {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .iframe-container {
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Sentia Manufacturing Dashboard - Authentication & Rendering Test</h1>
+
+    <div class="container">
+        <h2>Server Status</h2>
+        <div id="serverStatus"></div>
+    </div>
+
+    <div class="container">
+        <h2>Authentication Tests</h2>
+        <div id="authTests"></div>
+    </div>
+
+    <div class="container">
+        <h2>API Endpoint Tests</h2>
+        <div id="apiTests"></div>
+    </div>
+
+    <div class="container">
+        <h2>Environment Variables</h2>
+        <div id="envVars"></div>
+    </div>
+
+    <div class="container">
+        <h2>Live Application View</h2>
+        <div class="iframe-container">
+            <iframe id="appFrame" src="http://localhost:3001" title="Application"></iframe>
+        </div>
+        <button class="button" onclick="reloadApp()">Reload Application</button>
+        <button class="button" onclick="checkConsole()">Check Console Errors</button>
+    </div>
+
+    <div class="container">
+        <h2>Console Output</h2>
+        <pre id="consoleOutput"></pre>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        const APP_URL = 'http://localhost:3001';
+
+        // Store console errors
+        const consoleErrors = [];
+        const originalError = console.error;
+        console.error = function(...args) {
+            consoleErrors.push({
+                timestamp: new Date().toISOString(),
+                message: args.join(' ')
+            });
+            originalError.apply(console, args);
+        };
+
+        async function checkServerStatus() {
+            const statusDiv = document.getElementById('serverStatus');
+
+            try {
+                // Check frontend
+                const frontendResponse = await fetch(APP_URL);
+                const frontendStatus = frontendResponse.ok ?
+                    '<div class="status success">✓ Frontend Server (Port 3001): Running</div>' :
+                    '<div class="status error">✗ Frontend Server (Port 3001): Not Responding</div>';
+
+                // Check backend
+                const backendResponse = await fetch(`${API_BASE}/health`);
+                const backendData = await backendResponse.json();
+                const backendStatus = backendResponse.ok ?
+                    `<div class="status success">✓ Backend Server (Port 5000): ${backendData.status} - v${backendData.version}</div>` :
+                    '<div class="status error">✗ Backend Server (Port 5000): Not Responding</div>';
+
+                statusDiv.innerHTML = frontendStatus + backendStatus;
+
+                // Show backend details
+                if (backendResponse.ok) {
+                    statusDiv.innerHTML += `
+                        <div class="test-result">
+                            Environment: ${backendData.environment}<br>
+                            Uptime: ${Math.floor(backendData.uptime / 1000)}s<br>
+                            Dist Folder: ${backendData.dist?.exists ? 'Found' : 'Missing'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">Server Check Failed: ${error.message}</div>`;
+            }
+        }
+
+        async function checkAuthentication() {
+            const authDiv = document.getElementById('authTests');
+            let results = '';
+
+            // Check Clerk public key
+            try {
+                const response = await fetch(APP_URL);
+                const html = await response.text();
+
+                if (html.includes('VITE_CLERK_PUBLISHABLE_KEY')) {
+                    results += '<div class="status warning">⚠ Clerk Key Reference Found (May not be configured)</div>';
+                } else {
+                    results += '<div class="status info">ℹ Clerk Authentication Not Detected in HTML</div>';
+                }
+            } catch (error) {
+                results += `<div class="status error">✗ Auth Check Failed: ${error.message}</div>`;
+            }
+
+            // Check API auth endpoint
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/me`);
+                if (response.status === 401) {
+                    results += '<div class="status success">✓ Auth Endpoint Responding (401 - Not Authenticated)</div>';
+                } else if (response.ok) {
+                    results += '<div class="status success">✓ Auth Endpoint Accessible</div>';
+                } else {
+                    results += `<div class="status warning">⚠ Auth Endpoint Status: ${response.status}</div>`;
+                }
+            } catch (error) {
+                results += '<div class="status info">ℹ /api/auth/me endpoint not configured</div>';
+            }
+
+            authDiv.innerHTML = results;
+        }
+
+        async function checkAPIEndpoints() {
+            const apiDiv = document.getElementById('apiTests');
+            const endpoints = [
+                '/health',
+                '/api/status',
+                '/api/dashboard/data',
+                '/api/widgets',
+                '/api/users',
+                '/api/forecasting/demand'
+            ];
+
+            let results = '<div class="grid">';
+
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(`${API_BASE}${endpoint}`);
+                    const statusClass = response.ok ? 'success' : (response.status === 404 ? 'warning' : 'error');
+                    const icon = response.ok ? '✓' : (response.status === 404 ? '⚠' : '✗');
+                    results += `
+                        <div class="status ${statusClass}">
+                            ${icon} ${endpoint}: ${response.status} ${response.statusText}
+                        </div>
+                    `;
+                } catch (error) {
+                    results += `
+                        <div class="status error">
+                            ✗ ${endpoint}: Network Error
+                        </div>
+                    `;
+                }
+            }
+
+            results += '</div>';
+            apiDiv.innerHTML = results;
+        }
+
+        async function checkEnvironmentVariables() {
+            const envDiv = document.getElementById('envVars');
+
+            try {
+                // Check backend env
+                const response = await fetch(`${API_BASE}/api/env/check`);
+                if (response.ok) {
+                    const data = await response.json();
+                    let results = '<div class="test-result">';
+                    for (const [key, value] of Object.entries(data)) {
+                        results += `${key}: ${value}<br>`;
+                    }
+                    results += '</div>';
+                    envDiv.innerHTML = results;
+                } else {
+                    // Try alternate endpoint
+                    const healthResponse = await fetch(`${API_BASE}/health`);
+                    const healthData = await healthResponse.json();
+                    envDiv.innerHTML = `
+                        <div class="status info">
+                            Environment: ${healthData.environment}<br>
+                            Server Type: ${healthData.type}<br>
+                            Version: ${healthData.version}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                envDiv.innerHTML = '<div class="status info">ℹ Environment check endpoint not available</div>';
+            }
+        }
+
+        function reloadApp() {
+            document.getElementById('appFrame').src = APP_URL;
+            setTimeout(checkConsole, 2000);
+        }
+
+        function checkConsole() {
+            const iframe = document.getElementById('appFrame');
+            try {
+                // Try to access iframe console (may be blocked by CORS)
+                const iframeWindow = iframe.contentWindow;
+                if (iframeWindow) {
+                    // This will likely fail due to CORS, but we try
+                    const errors = iframeWindow.console.errors || [];
+                    document.getElementById('consoleOutput').textContent =
+                        errors.length > 0 ? JSON.stringify(errors, null, 2) :
+                        'No console errors detected (CORS may prevent full access)';
+                }
+            } catch (e) {
+                document.getElementById('consoleOutput').textContent =
+                    'Cannot access iframe console due to CORS policy.\n' +
+                    'Open Developer Tools (F12) and check Console tab manually.\n\n' +
+                    'Local console errors:\n' +
+                    JSON.stringify(consoleErrors, null, 2);
+            }
+        }
+
+        // Run all checks on load
+        window.addEventListener('load', () => {
+            checkServerStatus();
+            checkAuthentication();
+            checkAPIEndpoints();
+            checkEnvironmentVariables();
+
+            // Check console after iframe loads
+            setTimeout(checkConsole, 3000);
+
+            // Auto-refresh status every 10 seconds
+            setInterval(() => {
+                checkServerStatus();
+            }, 10000);
+        });
+    </script>
+</body>
+</html>

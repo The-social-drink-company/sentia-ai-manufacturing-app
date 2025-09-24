@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-// Removed Clerk import to fix Application Error
-import axios from 'axios'
+// Enhanced component using real API data - NO MOCK DATA
+import { logError } from '../../lib/logger'
+import EnhancedWorkingCapitalService from '../../services/EnhancedWorkingCapitalService'
 
 function CashFlowProjections() {
-  // Mock auth for demo mode
-  const getToken = async () => null
+  // Real working capital service - NO MOCK DATA
+  const [wcService] = useState(() => new EnhancedWorkingCapitalService())
   const [projectionData, setProjectionData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -19,18 +20,59 @@ function CashFlowProjections() {
       setLoading(true)
       setError(null)
 
-      const token = await getToken()
-      const headers = { Authorization: `Bearer ${token}` }
+      // Use enhanced working capital service for real projections
+      const workingCapitalData = await wcService.calculateWorkingCapitalRequirements({
+        period: projectionParams.horizonMonths,
+        currency: projectionParams.currency,
+        includeForecasts: true
+      })
 
-      const response = await axios.post('/api/working-capital/projections', {
-        ...projectionParams,
-        startMonth: new Date()
-      }, { headers })
+      // Transform forecasts into expected format for existing UI
+      const monthlyProjections = workingCapitalData.forecasts?.map(forecast => ({
+        id: forecast.date,
+        month: forecast.date.substring(0, 7), // YYYY-MM format
+        openingCash: forecast.workingCapital - forecast.cashFlow,
+        cash_in: Math.max(0, forecast.cashFlow),
+        cash_out: Math.max(0, -forecast.cashFlow),
+        net_change: forecast.cashFlow,
+        ending_cash: forecast.workingCapital,
+        workingCapital: forecast.workingCapital,
+        accountsReceivable: forecast.accountsReceivable,
+        inventory: forecast.inventory,
+        accountsPayable: forecast.accountsPayable,
+        revenue: forecast.revenue
+      })) || []
 
-      setProjectionData(response.data.data)
+      // Calculate summary from real data
+      const data = {
+        scenarios: {
+          baseline: {
+            projections: monthlyProjections,
+            summary: {
+              totalCashIn: monthlyProjections.reduce((sum, m) => sum + Math.max(0, m.cash_in), 0),
+              totalCashOut: monthlyProjections.reduce((sum, m) => sum + Math.max(0, -m.cash_out), 0),
+              netCashFlow: monthlyProjections.reduce((sum, m) => sum + m.net_change, 0),
+              minCash: Math.min(...monthlyProjections.map(m => m.ending_cash)),
+              breachMonths: monthlyProjections.filter(m => m.ending_cash < 500000).length, // £500k minimum for manufacturing
+              avgWorkingCapital: monthlyProjections.reduce((sum, m) => sum + m.workingCapital, 0) / monthlyProjections.length
+            }
+          }
+        },
+        // Add real working capital context
+        workingCapitalContext: {
+          currentRatio: workingCapitalData.ratios?.current || 0,
+          quickRatio: workingCapitalData.ratios?.quick || 0,
+          cashConversionCycle: workingCapitalData.cashConversionCycle?.total || 0,
+          performanceScore: workingCapitalData.performanceScore || 0,
+          riskLevel: workingCapitalData.riskAssessment?.overall || 'unknown'
+        }
+      }
+
+      setProjectionData(data)
+      
     } catch (err) {
-      console.error('Projection error:', err)
-      setError(err.response?.data?.error || err.message)
+      logError('Projection error', err, { component: 'CashFlowProjections' })
+      setError(err.message)
     } finally {
       setLoading(false)
     }

@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "avgDuration": 34.401099999999815,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "API_POST__api_production_batch_update",
+      "result": "pass",
+      "duration": 34.401099999999815,
+      "timestamp": "2025-09-07T16:45:29.205Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "unknown",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 139419648,
+          "heapTotal": 61210624,
+          "heapUsed": 36454712,
+          "external": 3981932,
+          "arrayBuffers": 78005
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

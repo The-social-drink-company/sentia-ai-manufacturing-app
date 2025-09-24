@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-09-10T21:00:13.169Z",
+  "testType": "whatif_analysis",
+  "summary": {
+    "totalSliderTests": 0,
+    "passedSliderTests": 0,
+    "sliderSuccessRate": null,
+    "avgCalculationTime": null,
+    "avgConfidence": null,
+    "totalScenarios": 0,
+    "performanceTests": 1
+  },
+  "sliderInteractions": [],
+  "scenarios": [],
+  "performanceMetrics": [
+    {
+      "operation": "concurrent_load_test",
+      "duration": 25.543700000000058,
+      "success": false,
+      "timestamp": "2025-09-10T21:00:13.007Z"
+    }
+  ],
+  "clientRequirementsMet": true,
+  "criticalSystemTest": true
+}

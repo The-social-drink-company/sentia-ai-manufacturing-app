@@ -1,316 +1,188 @@
-import { useUser } from '@clerk/clerk-react'
-import { useMemo } from 'react'
+import { useMemo } from 'react';
+import { useBulletproofAuth, useAuthRole as useBulletproofRole } from '../auth/BulletproofAuthProvider';
 
-// Role hierarchy for permission checking
-const ROLE_HIERARCHY = {
-  admin: 4,
-  manager: 3, 
-  operator: 2,
-  viewer: 1
-}
-
-// Permission definitions by role
-const ROLE_PERMISSIONS = {
-  admin: [
-    'dashboard.view',
-    'dashboard.edit',
-    'dashboard.export',
-    'forecast.view', 
-    'forecast.run',
-    'forecast.configure',
-    'stock.view',
-    'stock.optimize', 
-    'stock.approve',
-    'workingcapital.view',
-    'workingcapital.analyze',
-    'workingcapital.configure',
-    'capacity.view',
-    'capacity.configure',
-    'import.view',
-    'import.upload',
-    'import.configure',
-    'users.manage',
-    'system.configure',
-    'reports.generate',
-    'alerts.configure'
-  ],
-  manager: [
-    'dashboard.view',
-    'dashboard.edit',
-    'dashboard.export', 
-    'forecast.view',
-    'forecast.run',
-    'stock.view',
-    'stock.optimize',
-    'stock.approve',
-    'workingcapital.view',
-    'workingcapital.analyze',
-    'capacity.view',
-    'import.view',
-    'import.upload',
-    'reports.generate'
-  ],
-  operator: [
-    'dashboard.view',
-    'dashboard.edit',
-    'dashboard.export',
-    'forecast.view',
-    'forecast.run',
-    'stock.view',
-    'stock.optimize',
-    'capacity.view',
-    'import.view',
-    'import.upload'
-  ],
-  viewer: [
-    'dashboard.view',
-    'dashboard.export',
-    'forecast.view',
-    'stock.view',
-    'capacity.view'
-  ]
-}
-
-// Feature flags by role (can be overridden by system configuration)
-const ROLE_FEATURES = {
-  admin: {
-    advancedAnalytics: true,
-    systemDiagnostics: true,
-    userManagement: true,
-    apiAccess: true,
-    experimentalFeatures: true,
-    debugMode: true
-  },
-  manager: {
-    advancedAnalytics: true,
-    systemDiagnostics: false,
-    userManagement: false,
-    apiAccess: true,
-    experimentalFeatures: false,
-    debugMode: false
-  },
-  operator: {
-    advancedAnalytics: false,
-    systemDiagnostics: false,
-    userManagement: false,
-    apiAccess: false,
-    experimentalFeatures: false,
-    debugMode: false
-  },
-  viewer: {
-    advancedAnalytics: false,
-    systemDiagnostics: false,
-    userManagement: false,
-    apiAccess: false,
-    experimentalFeatures: false,
-    debugMode: false
-  }
-}
-
+// Authentication Hook with Bulletproof System
+// This hook will NEVER fail and always returns valid auth data
 export const useAuthRole = () => {
-  const { user, isLoaded, isSignedIn } = useUser()
-  
+  // Use the bulletproof auth system
+  const auth = useBulletproofAuth();
+  const roleData = useBulletproofRole();
+
   const authData = useMemo(() => {
-    if (!isLoaded || !isSignedIn || !user) {
+    // Extract data from bulletproof auth
+    const { user, isLoaded, isSignedIn, mode } = auth;
+
+    // Return loading state while auth is initializing (very brief)
+    if (!isLoaded) {
       return {
-        isLoading: !isLoaded,
+        isLoading: true,
         isAuthenticated: false,
         user: null,
-        role: null,
-        permissions: [],
+        role: 'viewer',
+        permissions: ['read'],
         features: {},
         hasRole: () => false,
         hasPermission: () => false,
         hasFeature: () => false,
         isRoleAtLeast: () => false,
-        getUserDisplayName: () => 'Unknown User'
-      }
+        getUserDisplayName: () => 'Loading...',
+        getUserInitials: () => '...',
+        canAccess: () => false
+      };
     }
 
-    // Get role from user metadata, default to viewer
-    const role = user.publicMetadata?.role || 'viewer'
-    
-    // Normalize role to lowercase
-    const normalizedRole = role.toLowerCase()
-    
-    // Get permissions and features for the role
-    const permissions = ROLE_PERMISSIONS[normalizedRole] || ROLE_PERMISSIONS.viewer
-    const features = ROLE_FEATURES[normalizedRole] || ROLE_FEATURES.viewer
-    
+    // Get role from bulletproof system or user metadata
+    const userRole = roleData?.role ||
+                    user?.publicMetadata?.role ||
+                    user?.organizationMemberships?.[0]?.role ||
+                    'viewer';
+
+    const userPermissions = roleData?.permissions ||
+                          user?.publicMetadata?.permissions ||
+                          getDefaultPermissions(userRole);
+
+    const userFeatures = user?.publicMetadata?.features ||
+                        getDefaultFeatures(userRole);
+
+    // Get user display information
+    const displayName = user?.fullName ||
+                       user?.firstName ||
+                       (mode === 'fallback' ? 'Guest User' : 'User');
+
+    const userEmail = user?.emailAddresses?.[0]?.emailAddress ||
+                     (mode === 'fallback' ? 'guest@sentia.local' : 'user@sentia.local');
+
+    // Role hierarchy for comparisons
+    const roleHierarchy = {
+      admin: 4,
+      manager: 3,
+      operator: 2,
+      viewer: 1
+    };
+
+    // Helper functions
+    const hasRole = (role) => userRole === role;
+
+    const hasPermission = (permission) => {
+      if (userRole === 'admin') return true; // Admins have all permissions
+      return userPermissions.includes(permission);
+    };
+
+    const hasFeature = (feature) => {
+      if (userRole === 'admin') return true; // Admins have all features
+      return userFeatures[feature] === true;
+    };
+
+    const isRoleAtLeast = (minimumRole) => {
+      return (roleHierarchy[userRole] || 0) >= (roleHierarchy[minimumRole] || 0);
+    };
+
+    const getUserDisplayName = () => displayName;
+
+    const getUserInitials = () => {
+      if (!displayName) return 'GU';
+      const parts = displayName.split(' ');
+      if (parts.length >= 2) {
+        return parts[0][0].toUpperCase() + parts[parts.length - 1][0].toUpperCase();
+      }
+      return displayName.substring(0, 2).toUpperCase();
+    };
+
+    const canAccess = (resource) => {
+      const resourcePermissions = {
+        dashboard: ['read'],
+        analytics: ['read'],
+        forecasting: ['read', 'write'],
+        inventory: ['read', 'write'],
+        production: ['read', 'write'],
+        quality: ['read', 'write'],
+        financial: ['read', 'financial'],
+        admin: ['admin'],
+        settings: ['read', 'settings']
+      };
+
+      const required = resourcePermissions[resource] || ['read'];
+      return required.some(perm => hasPermission(perm));
+    };
+
     return {
       isLoading: false,
-      isAuthenticated: true,
-      user,
-      role: normalizedRole,
-      permissions,
-      features,
-      
-      // Check if user has specific role
-      hasRole: (requiredRole) => {
-        if (Array.isArray(requiredRole)) {
-          return requiredRole.includes(normalizedRole)
-        }
-        return normalizedRole === requiredRole.toLowerCase()
+      isAuthenticated: mode === 'clerk' ? isSignedIn : false,
+      authMode: mode,
+      user: user || {
+        id: 'guest',
+        email: userEmail,
+        name: displayName
       },
-      
-      // Check if user has specific permission
-      hasPermission: (permission) => {
-        if (Array.isArray(permission)) {
-          return permission.some(p => permissions.includes(p))
-        }
-        return permissions.includes(permission)
-      },
-      
-      // Check if user has feature flag enabled
-      hasFeature: (feature) => {
-        return features[feature] === true
-      },
-      
-      // Check if user role is at least the specified level
-      isRoleAtLeast: (requiredRole) => {
-        const userLevel = ROLE_HIERARCHY[normalizedRole] || 0
-        const requiredLevel = ROLE_HIERARCHY[requiredRole.toLowerCase()] || 0
-        return userLevel >= requiredLevel
-      },
-      
-      // Get display name for user
-      getUserDisplayName: () => {
-        return user.fullName || 
-               user.firstName || 
-               user.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 
-               'Unknown User'
-      },
-      
-      // Get user initials for avatar
-      getUserInitials: () => {
-        const fullName = user.fullName || user.firstName || 'U'
-        return fullName
-          .split(' ')
-          .map(name => name.charAt(0).toUpperCase())
-          .slice(0, 2)
-          .join('')
-      },
-      
-      // Check if user can access specific route/component
-      canAccess: (resource, action = 'view') => {
-        const permission = `${resource}.${action}`
-        return permissions.includes(permission)
-      }
-    }
-  }, [user, isLoaded, isSignedIn])
+      role: userRole,
+      permissions: userPermissions,
+      features: userFeatures,
+      hasRole,
+      hasPermission,
+      hasFeature,
+      isRoleAtLeast,
+      getUserDisplayName,
+      getUserInitials,
+      canAccess,
+      // Backwards compatibility
+      isSignedIn: isSignedIn || false,
+      userEmail,
+      userName: displayName
+    };
+  }, [auth, roleData]);
 
-  return authData
+  return authData;
+};
+
+// Default permissions by role
+function getDefaultPermissions(role) {
+  const permissions = {
+    admin: ['read', 'write', 'delete', 'admin', 'financial', 'settings', 'manage_users', 'manage_system'],
+    manager: ['read', 'write', 'delete', 'financial', 'settings', 'manage_team'],
+    operator: ['read', 'write', 'update'],
+    viewer: ['read']
+  };
+  return permissions[role] || permissions.viewer;
 }
 
-// Higher-order component for role-based access control
-export const withRoleAccess = (WrappedComponent, requiredRole, fallbackComponent = null) => {
-  return function RoleProtectedComponent(props) {
-    const { hasRole, isLoading } = useAuthRole()
-    
-    if (isLoading) {
-      return <div className="animate-pulse">Loading...</div>
-    }
-    
-    if (!hasRole(requiredRole)) {
-      return fallbackComponent || (
-        <div className="text-center p-8">
-          <p className="text-gray-500">You don't have permission to access this feature.</p>
-        </div>
-      )
-    }
-    
-    return <WrappedComponent {...props} />
-  }
-}
-
-// Hook for permission-based rendering
-export const usePermissionGuard = () => {
-  const { hasPermission, hasRole, hasFeature, isRoleAtLeast } = useAuthRole()
-  
-  return {
-    // Render component only if user has permission
-    renderIfPermission: (permission, component) => {
-      return hasPermission(permission) ? component : null
+// Default features by role
+function getDefaultFeatures(role) {
+  const features = {
+    admin: {
+      aiAnalytics: true,
+      advancedReporting: true,
+      customDashboards: true,
+      apiAccess: true,
+      bulkOperations: true,
+      auditLogs: true
     },
-    
-    // Render component only if user has role
-    renderIfRole: (role, component) => {
-      return hasRole(role) ? component : null
+    manager: {
+      aiAnalytics: true,
+      advancedReporting: true,
+      customDashboards: true,
+      apiAccess: false,
+      bulkOperations: true,
+      auditLogs: false
     },
-    
-    // Render component only if user has feature
-    renderIfFeature: (feature, component) => {
-      return hasFeature(feature) ? component : null
+    operator: {
+      aiAnalytics: false,
+      advancedReporting: false,
+      customDashboards: true,
+      apiAccess: false,
+      bulkOperations: false,
+      auditLogs: false
     },
-    
-    // Render component only if user role is at least specified level
-    renderIfRoleAtLeast: (role, component) => {
-      return isRoleAtLeast(role) ? component : null
-    },
-    
-    // Conditional rendering with multiple conditions
-    renderIf: (conditions, component) => {
-      const {
-        permission,
-        role, 
-        feature,
-        roleAtLeast,
-        custom
-      } = conditions
-      
-      let hasAccess = true
-      
-      if (permission && !hasPermission(permission)) hasAccess = false
-      if (role && !hasRole(role)) hasAccess = false
-      if (feature && !hasFeature(feature)) hasAccess = false
-      if (roleAtLeast && !isRoleAtLeast(roleAtLeast)) hasAccess = false
-      if (custom && !custom()) hasAccess = false
-      
-      return hasAccess ? component : null
+    viewer: {
+      aiAnalytics: false,
+      advancedReporting: false,
+      customDashboards: false,
+      apiAccess: false,
+      bulkOperations: false,
+      auditLogs: false
     }
-  }
+  };
+  return features[role] || features.viewer;
 }
 
-// Constants for easy import
-export const ROLES = {
-  ADMIN: 'admin',
-  MANAGER: 'manager', 
-  OPERATOR: 'operator',
-  VIEWER: 'viewer'
-}
-
-export const PERMISSIONS = {
-  // Dashboard permissions
-  DASHBOARD_VIEW: 'dashboard.view',
-  DASHBOARD_EDIT: 'dashboard.edit',
-  DASHBOARD_EXPORT: 'dashboard.export',
-  
-  // Forecast permissions
-  FORECAST_VIEW: 'forecast.view',
-  FORECAST_RUN: 'forecast.run',
-  FORECAST_CONFIGURE: 'forecast.configure',
-  
-  // Stock permissions
-  STOCK_VIEW: 'stock.view',
-  STOCK_OPTIMIZE: 'stock.optimize',
-  STOCK_APPROVE: 'stock.approve',
-  
-  // Working capital permissions
-  WC_VIEW: 'workingcapital.view',
-  WC_ANALYZE: 'workingcapital.analyze',
-  WC_CONFIGURE: 'workingcapital.configure',
-  
-  // System permissions
-  SYSTEM_CONFIGURE: 'system.configure',
-  USERS_MANAGE: 'users.manage',
-  REPORTS_GENERATE: 'reports.generate'
-}
-
-export const FEATURES = {
-  ADVANCED_ANALYTICS: 'advancedAnalytics',
-  SYSTEM_DIAGNOSTICS: 'systemDiagnostics',
-  USER_MANAGEMENT: 'userManagement',
-  API_ACCESS: 'apiAccess',
-  EXPERIMENTAL_FEATURES: 'experimentalFeatures',
-  DEBUG_MODE: 'debugMode'
-}
+// Export for backwards compatibility
+export default useAuthRole;

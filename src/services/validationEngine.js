@@ -715,7 +715,7 @@ class ValidationEngine {
   }
 
   /**
-   * Evaluate simple mathematical expressions
+   * Evaluate simple mathematical expressions safely
    */
   evaluateExpression(expression, data) {
     try {
@@ -727,14 +727,89 @@ class ValidationEngine {
         }
       }
       
-      // Basic math operations only
+      // Basic math operations only - use safe evaluation
       if (/^[\d\+\-\*\/\.\s\(\)]+$/.test(expr)) {
-        return eval(expr);
+        return this.safeEvaluate(expr);
       }
     } catch (error) {
       logWarn('Expression evaluation failed', { expression, error: error.message });
     }
     return null;
+  }
+
+  /**
+   * Safe mathematical expression evaluator without eval() or Function constructor
+   */
+  safeEvaluate(expression) {
+    // Remove whitespace
+    const expr = expression.replace(/\s/g, '');
+    
+    // Simple calculator for basic operations using manual parsing
+    try {
+      // Only allow mathematical operations
+      if (!/^[\d\+\-\*\/\.\(\)]+$/.test(expr)) {
+        throw new Error('Invalid characters in expression');
+      }
+      
+      // Use a simple recursive descent parser for safety
+      const result = this.parseExpression(expr);
+      
+      if (typeof result !== 'number' || !isFinite(result)) {
+        throw new Error('Invalid calculation result');
+      }
+      
+      return result;
+    } catch (error) {
+      logWarn('Safe evaluation failed', { expression, error: error.message });
+      return null;
+    }
+  }
+
+  /**
+   * Simple recursive descent parser for mathematical expressions
+   */
+  parseExpression(expr) {
+    let index = 0;
+    
+    const parseNumber = () => {
+      let num = '';
+      while (index < expr.length && /[\d\.]/.test(expr[index])) {
+        num += expr[index++];
+      }
+      return parseFloat(num);
+    };
+    
+    const parseFactor = () => {
+      if (expr[index] === '(') {
+        index++; // skip '('
+        const result = parseExpression();
+        index++; // skip ')'
+        return result;
+      }
+      return parseNumber();
+    };
+    
+    const parseTerm = () => {
+      let result = parseFactor();
+      while (index < expr.length && /[\*\/]/.test(expr[index])) {
+        const op = expr[index++];
+        const right = parseFactor();
+        result = op === '*' ? result * right : result / right;
+      }
+      return result;
+    };
+    
+    const parseExpression = () => {
+      let result = parseTerm();
+      while (index < expr.length && /[\+\-]/.test(expr[index])) {
+        const op = expr[index++];
+        const right = parseTerm();
+        result = op === '+' ? result + right : result - right;
+      }
+      return result;
+    };
+    
+    return parseExpression();
   }
 
   /**

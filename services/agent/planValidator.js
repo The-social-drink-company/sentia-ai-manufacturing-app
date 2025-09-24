@@ -4,8 +4,7 @@
  */
 
 import { policyGuard } from './policyGuard.js';
-import { autopilotScheduler } from './scheduler.js';
-import { logInfo, logWarn } from '../observability/structuredLogger.js';
+import { logWarn } from '../observability/structuredLogger.js';
 
 // Validation rules with plain-English messages
 const VALIDATION_RULES = {

@@ -1,7 +1,8 @@
 // All Critical Widgets with Real Data Fallbacks - 100% Rendering Guaranteed
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import UniversalWidgetWrapper from './UniversalWidgetWrapper'
 import realDataService from '../../services/realDataIntegration'
+import { devLog } from '../../lib/devLog'
 
 // 1. KPI Strip Widget - Always renders
 export const FixedKPIStrip = () => {
@@ -14,7 +15,7 @@ export const FixedKPIStrip = () => {
         const result = await realDataService.getDashboardKPIs()
         setData(result)
       } catch (error) {
-        console.log('KPI data unavailable, showing placeholder')
+        devLog.log('KPI data unavailable, showing placeholder')
       } finally {
         setLoading(false)
       }
@@ -72,7 +73,7 @@ export const FixedDemandForecast = () => {
           setData(result)
         }
       } catch (error) {
-        console.log('Forecast data unavailable')
+        devLog.log('Forecast data unavailable')
       } finally {
         setLoading(false)
       }
@@ -115,7 +116,7 @@ export const FixedMultiChannelSales = () => {
           setData(result)
         }
       } catch (error) {
-        console.log('Sales data unavailable')
+        devLog.log('Sales data unavailable')
       } finally {
         setLoading(false)
       }
@@ -179,7 +180,7 @@ export const FixedProductionMetrics = () => {
           setData(result)
         }
       } catch (error) {
-        console.log('Production data unavailable')
+        devLog.log('Production data unavailable')
       } finally {
         setLoading(false)
       }
@@ -237,7 +238,7 @@ export const FixedWorkingCapital = () => {
           setData(result)
         }
       } catch (error) {
-        console.log('Working capital data unavailable')
+        devLog.log('Working capital data unavailable')
       } finally {
         setLoading(false)
       }
@@ -302,7 +303,7 @@ export const FixedCFOKPIStrip = () => {
           setData(result)
         }
       } catch (error) {
-        console.log('Financial data unavailable')
+        devLog.log('Financial data unavailable')
       } finally {
         setLoading(false)
       }

@@ -1,0 +1,355 @@
+name: Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - development
+      - test
+      - production
+  pull_request:
+    branches:
+      - development
+      - test
+      - production
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # ==================================
+  # LINTING AND CODE QUALITY
+  # ==================================
+  lint:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check for console.log statements
+        run: |
+          if grep -r "console\.log" --include="*.js" --include="*.jsx" src/ | grep -v "// eslint-disable-line" | grep -v "devLog"; then
+            echo "Found console.log statements in production code!"
+            exit 1
+          fi
+
+  # ==================================
+  # UNIT TESTING
+  # ==================================
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run unit tests
+        run: npm test -- --run --coverage
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: github.event_name == 'pull_request'
+        with:
+          file: ./coverage/coverage-final.json
+
+      - name: Check coverage threshold
+        run: |
+          coverage=$(npm run test:coverage --silent | grep "All files" | awk '{print $10}' | sed 's/%//')
+          if (( $(echo "$coverage < 80" | bc -l) )); then
+            echo "Coverage is below 80% threshold: $coverage%"
+            exit 1
+          fi
+
+  # ==================================
+  # BUILD VALIDATION
+  # ==================================
+  build:
+    name: Build Validation
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Check build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Build failed - dist directory not created"
+            exit 1
+          fi
+
+      - name: Check bundle size
+        run: |
+          size=$(du -sb dist | awk '{print $1}')
+          max_size=5000000  # 5MB limit
+          if [ $size -gt $max_size ]; then
+            echo "Bundle size ($size bytes) exceeds limit ($max_size bytes)"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        if: github.ref == 'refs/heads/production'
+        with:
+          name: build-artifacts
+          path: dist/
+
+  # ==================================
+  # SECURITY SCANNING
+  # ==================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=moderate || true
+          audit_output=$(npm audit --json)
+          high_vulns=$(echo "$audit_output" | jq '.metadata.vulnerabilities.high // 0')
+          critical_vulns=$(echo "$audit_output" | jq '.metadata.vulnerabilities.critical // 0')
+
+          if [ "$high_vulns" -gt "0" ] || [ "$critical_vulns" -gt "0" ]; then
+            echo "Found $critical_vulns critical and $high_vulns high vulnerabilities"
+            if [ "${{ github.ref }}" == "refs/heads/production" ]; then
+              echo "Blocking production deployment due to high/critical vulnerabilities"
+              exit 1
+            fi
+          fi
+
+      - name: Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+
+  # ==================================
+  # DATABASE MIGRATION CHECK
+  # ==================================
+  database-check:
+    name: Database Migration Check
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/test' || github.ref == 'refs/heads/production'
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Check for pending migrations
+        run: |
+          npx prisma migrate status
+          if [ $? -ne 0 ]; then
+            echo "Pending database migrations detected"
+            echo "Run migrations before deployment"
+            exit 1
+          fi
+
+  # ==================================
+  # DEPLOYMENT GATE
+  # ==================================
+  deployment-gate:
+    name: Deployment Gate
+    runs-on: ubuntu-latest
+    needs: [lint, test, build, security]
+    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/test' || github.ref == 'refs/heads/production'
+    outputs:
+      deploy: ${{ steps.gate.outputs.deploy }}
+      environment: ${{ steps.gate.outputs.environment }}
+    steps:
+      - name: Determine environment
+        id: gate
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/production" ]]; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/test" ]]; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+            echo "environment=test" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/development" ]]; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+            echo "environment=development" >> $GITHUB_OUTPUT
+          else
+            echo "deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ==================================
+  # DEPLOYMENT NOTIFICATION
+  # ==================================
+  deploy-notification:
+    name: Deployment Status
+    runs-on: ubuntu-latest
+    needs: deployment-gate
+    if: needs.deployment-gate.outputs.deploy == 'true'
+    steps:
+      - name: Notify deployment started
+        run: |
+          echo "Deployment to ${{ needs.deployment-gate.outputs.environment }} started"
+          echo "Render will auto-deploy from the ${{ github.ref_name }} branch"
+
+      - name: Create deployment record
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: '${{ needs.deployment-gate.outputs.environment }}',
+              description: 'Deploying to Render',
+              auto_merge: false,
+              required_contexts: [],
+              production_environment: '${{ needs.deployment-gate.outputs.environment }}' === 'production'
+            });
+
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'in_progress',
+              log_url: 'https://dashboard.render.com',
+              description: 'Deployment triggered on Render',
+              environment_url: 'https://sentia-manufacturing-${{ needs.deployment-gate.outputs.environment }}.onrender.com'
+            });
+
+  # ==================================
+  # PR VALIDATION
+  # ==================================
+  pr-validation:
+    name: Pull Request Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [lint, test, build]
+    steps:
+      - name: Check PR description
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            // Check for required sections
+            const requiredSections = [
+              'Description',
+              'Type of Change',
+              'Testing',
+              'Checklist'
+            ];
+
+            const body = pr.body || '';
+            const missingSections = requiredSections.filter(section =>
+              !body.includes(section)
+            );
+
+            if (missingSections.length > 0) {
+              core.setFailed(`PR description missing sections: ${missingSections.join(', ')}`);
+            }
+
+      - name: Check branch naming
+        run: |
+          branch_name="${{ github.head_ref }}"
+          if [[ ! "$branch_name" =~ ^(feature|bugfix|hotfix|chore)/.+ ]]; then
+            echo "Branch name does not follow convention: feature/*, bugfix/*, hotfix/*, chore/*"
+            exit 1
+          fi
+
+      - name: Add labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const branch = context.payload.pull_request.head.ref;
+            const labels = [];
+
+            if (branch.startsWith('feature/')) labels.push('enhancement');
+            if (branch.startsWith('bugfix/')) labels.push('bug');
+            if (branch.startsWith('hotfix/')) labels.push('hotfix');
+            if (branch.startsWith('chore/')) labels.push('chore');
+
+            if (context.payload.pull_request.base.ref === 'production') {
+              labels.push('production');
+            } else if (context.payload.pull_request.base.ref === 'test') {
+              labels.push('testing');
+            }
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }
+
+  # ==================================
+  # PRODUCTION APPROVAL
+  # ==================================
+  production-approval:
+    name: Production Deployment Approval
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production'
+    needs: [deployment-gate]
+    environment: production
+    steps:
+      - name: Wait for approval
+        run: |
+          echo "Waiting for production deployment approval..."
+          echo "This requires manual approval in GitHub Actions"
+
+      - name: Deployment approved
+        run: |
+          echo "Production deployment approved"
+          echo "Render will deploy from production branch"

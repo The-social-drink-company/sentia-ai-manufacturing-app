@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "avgDuration": 200.26939999999954,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "testName": "UI_RESPONSIVE_Desktop",
+      "result": "pass",
+      "duration": 186.4301999999998,
+      "timestamp": "2025-09-07T18:43:02.928Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "http://127.0.0.1:3000/",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 152064000,
+          "heapTotal": 105213952,
+          "heapUsed": 41320360,
+          "external": 4539672,
+          "arrayBuffers": 635177
+        }
+      }
+    },
+    {
+      "testName": "UI_RESPONSIVE_Tablet",
+      "result": "pass",
+      "duration": 198.52059999999983,
+      "timestamp": "2025-09-07T18:43:07.905Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "http://127.0.0.1:3000/",
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 170360832,
+          "heapTotal": 108556288,
+          "heapUsed": 47920232,
+          "external": 5161321,
+          "arrayBuffers": 1256786
+        }
+      }
+    },
+    {
+      "testName": "UI_RESPONSIVE_Mobile",
+      "result": "pass",
+      "duration": 215.85739999999896,
+      "timestamp": "2025-09-07T18:43:13.466Z",
+      "error": null,
+      "screenshot": null,
+      "context": {
+        "url": "http://127.0.0.1:3000/",
+        "viewport": {
+          "width": 375,
+          "height": 667
+        },
+        "userAgent": "Playwright Test Agent",
+        "memoryUsage": {
+          "rss": 189181952,
+          "heapTotal": 114966528,
+          "heapUsed": 41951376,
+          "external": 8452730,
+          "arrayBuffers": 4548012
+        }
+      }
+    }
+  ],
+  "failurePatterns": {},
+  "performanceMetrics": []
+}

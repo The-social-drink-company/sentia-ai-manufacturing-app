@@ -1,0 +1,333 @@
+// Enhanced Prisma Schema for Sentia Manufacturing Dashboard
+// Supports Neon PostgreSQL with vector extensions
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "metrics", "tracing"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+// Enhanced User model with comprehensive security
+model User {
+  id                     String    @id @default(uuid()) @db.Uuid
+  username               String    @unique(map: "ix_users_username") @db.VarChar(64)
+  email                  String    @unique(map: "ix_users_email") @db.VarChar(120)
+  password_hash          String?   @db.VarChar(256)
+  first_name             String?   @db.VarChar(50)
+  last_name              String?   @db.VarChar(50)
+  display_name           String?   @db.VarChar(100)
+  role                   String    @db.VarChar(20)
+  permissions            Json?     @db.Json
+  isActive               Boolean   @map("is_active")
+  organizationId         String    @default("default")
+  is_admin               Boolean
+  department             String?   @db.VarChar(50)
+  access_regions         Json?     @db.Json
+  last_login             DateTime? @db.Timestamptz(6)
+  last_login_ip          String?   @db.VarChar(45)
+  login_count            Int?      @default(0)
+  password_reset_token   String?   @db.VarChar(255)
+  password_reset_expires DateTime? @db.Timestamptz(6)
+  failed_login_attempts  Int?      @default(0)
+  account_locked_until   DateTime? @db.Timestamptz(6)
+  two_factor_enabled     Boolean   @default(false)
+  two_factor_secret      String?   @db.VarChar(32)
+  backup_codes           Json?     @db.Json
+  session_token          String?   @db.VarChar(255)
+  session_expires        DateTime? @db.Timestamptz(6)
+
+  // Enhanced Security Extensions
+  locked_until        DateTime? @db.Timestamptz(6)
+  failed_login_count  Int?      @default(0)
+  last_failed_login   DateTime? @db.Timestamptz(6)
+  password_changed_at DateTime? @db.Timestamptz(6)
+  mfa_enabled         Boolean   @default(false)
+  mfa_secret          String?   @db.VarChar(64)
+  recovery_codes      Json?     @db.Json
+  security_questions  Json?     @db.Json
+  
+  // Global Readiness Extensions
+  default_entity_id       String? @db.Uuid
+  allowed_entity_ids      Json?
+  allowed_regions         Json?
+  preferred_currency_code String? @db.VarChar(3)
+  preferred_locale        String? @db.VarChar(10)
+  preferred_timezone      String? @db.VarChar(50)
+
+  // SSO and JIT Provisioning
+  sso_provider        String?   @db.VarChar(50)
+  last_sso_login      DateTime? @db.Timestamptz(6)
+  created_via_jit     Boolean?  @default(false)
+  approved            Boolean   @default(false)
+  force_password_change Boolean @default(false)
+  preferences         Json?     @db.Json
+  
+  // Audit columns
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  created_by String?   @db.Uuid
+  updated_by String?   @db.Uuid
+  deleted_at DateTime? @db.Timestamptz(6)
+
+  // Relations (maintaining existing structure)
+  data_imports                                       data_imports[]
+  forecasts_forecasts_approved_byTousers             Forecast[]         @relation("forecasts_approved_byTousers")
+  generatedForecasts                                 Forecast[]
+  recordedSales                                      HistoricalSale[]
+  import_errors                                      import_errors[]
+  import_jobs                                        import_job[]
+  import_templates                                   import_templates[]
+  inventory_levels                                   InventoryLevel[]
+  markets                                            Market[]
+  createdProducts                                    Product[]
+  sales_channels                                     SalesChannel[]
+  createdSchedules                                   Schedule[]
+  managedSettings                                    SystemSetting[]
+  system_settings_system_settings_updated_byTousers  SystemSetting[]    @relation("system_settings_updated_byTousers")
+  working_capital_working_capital_approved_byTousers WorkingCapital[]   @relation("working_capital_approved_byTousers")
+  working_capital_working_capital_created_byTousers  WorkingCapital[]   @relation("working_capital_created_byTousers")
+
+  // Working Capital Extensions Relations
+  ar_policies               ARPolicy[]
+  ap_policies               APPolicy[]
+  inventory_policies        InventoryPolicy[]
+  wc_projections            WCProjection[]
+  wc_kpis                   WCKPIs[]
+  wc_scenarios_creator      WCScenario[]      @relation("WCScenarioCreator")
+  wc_scenarios_approver     WCScenario[]      @relation("WCScenarioApprover")
+  wc_optimizations_creator  WCOptimization[]  @relation("WCOptimizationCreator")
+  wc_optimizations_approver WCOptimization[]  @relation("WCOptimizationApprover")
+
+  // Authentication & Session Management Relations  
+  user_sessions         UserSession[]
+  audit_logs            AuditLog[]
+  password_reset_tokens PasswordResetToken[]
+  AgentRuns             AgentRuns[]
+  Approvals             Approvals[]
+
+  @@map("users")
+}
+
+// Enhanced Product model with vector embeddings
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  sku         String   @unique @db.VarChar(50)
+  category    String   @db.VarChar(50)
+  price       Decimal  @db.Decimal(10, 2)
+  cost        Decimal? @db.Decimal(10, 2)
+  
+  // Regional and multi-channel support
+  region      String   @db.VarChar(10) // UK, EU, USA
+  source      String   @db.VarChar(20) // shopify, amazon, unleashed
+  external_id String?  @db.VarChar(100)
+  
+  // Vector embedding for AI-powered search and recommendations
+  embedding   Unsupported("vector(1536)")?
+  
+  // Product specifications and metadata
+  specifications Json?    @db.Json
+  images         Json?    @db.Json
+  tags           String[] @db.VarChar(50)
+  
+  // Inventory and sales data
+  stock_level    Int?     @default(0)
+  reorder_point  Int?     @default(0)
+  supplier_info  Json?    @db.Json
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+  created_by String?  @db.Uuid
+  
+  // Relations
+  creator User? @relation(fields: [created_by], references: [id])
+  
+  @@map("products")
+  @@index([region, source])
+  @@index([category])
+  @@index([sku])
+}
+
+// Customer insights with behavioral vectors
+model CustomerInsight {
+  id              String   @id @default(uuid()) @db.Uuid
+  customer_id     String   @db.VarChar(100)
+  customer_data   Json     @db.Json
+  behavior_vector Unsupported("vector(768)")?
+  insights        Json?    @db.Json
+  confidence      Float?   @db.Real
+  region          String   @db.VarChar(10)
+  source          String   @db.VarChar(20)
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @updatedAt @db.Timestamptz(6)
+  
+  @@map("customer_insights")
+  @@index([customer_id, region])
+  @@index([source])
+}
+
+// Business insights with vector search capabilities
+model BusinessInsight {
+  id               String   @id @default(uuid()) @db.Uuid
+  type             String   @db.VarChar(50)
+  title            String?  @db.VarChar(200)
+  content          Json     @db.Json
+  embedding        Unsupported("vector(1536)")?
+  confidence_score Float?   @db.Real
+  tags             String[] @db.VarChar(50)
+  metadata         Json?    @db.Json
+  
+  // Categorization
+  category         String   @db.VarChar(50)
+  priority         String   @db.VarChar(20) // low, medium, high, critical
+  status           String   @db.VarChar(20) // draft, active, archived
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+  created_by String?  @db.Uuid
+  
+  @@map("business_insights")
+  @@index([type, category])
+  @@index([priority, status])
+  @@index([created_at])
+}
+
+// Enhanced security audit log
+model SecurityAuditLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  user_id       String?  @db.Uuid
+  session_id    String?  @db.VarChar(255)
+  event_type    String   @db.VarChar(50)
+  event_details Json     @db.Json
+  ip_address    String?  @db.VarChar(45)
+  user_agent    String?  @db.Text
+  risk_score    Int?     @default(0)
+  blocked       Boolean  @default(false)
+  
+  // Geolocation data
+  country       String?  @db.VarChar(2)
+  region        String?  @db.VarChar(50)
+  city          String?  @db.VarChar(100)
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  
+  @@map("security_audit_logs")
+  @@index([user_id, event_type])
+  @@index([created_at])
+  @@index([risk_score])
+}
+
+// Performance monitoring
+model PerformanceMetric {
+  id          String   @id @default(uuid()) @db.Uuid
+  metric_name String   @db.VarChar(100)
+  metric_type String   @db.VarChar(50) // response_time, throughput, error_rate
+  value       Float    @db.Real
+  unit        String   @db.VarChar(20)
+  endpoint    String?  @db.VarChar(200)
+  method      String?  @db.VarChar(10)
+  status_code Int?
+  
+  // Environment and service info
+  environment String   @db.VarChar(20)
+  service     String   @db.VarChar(50)
+  version     String?  @db.VarChar(20)
+  
+  // Metadata
+  metadata   Json?    @db.Json
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  
+  @@map("performance_metrics")
+  @@index([metric_name, environment])
+  @@index([created_at])
+  @@index([endpoint, method])
+}
+
+// Integration health monitoring
+model IntegrationHealth {
+  id              String   @id @default(uuid()) @db.Uuid
+  integration     String   @db.VarChar(50) // unleashed, shopify_uk, shopify_usa, xero, etc.
+  status          String   @db.VarChar(20) // healthy, degraded, unhealthy
+  response_time   Int?     // milliseconds
+  error_rate      Float?   @db.Real
+  last_success    DateTime? @db.Timestamptz(6)
+  last_error      DateTime? @db.Timestamptz(6)
+  error_message   String?  @db.Text
+  
+  // Health check details
+  check_details   Json?    @db.Json
+  environment     String   @db.VarChar(20)
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+  
+  @@map("integration_health")
+  @@index([integration, environment])
+  @@index([status])
+  @@index([created_at])
+}
+
+// API rate limiting and usage tracking
+model ApiUsage {
+  id          String   @id @default(uuid()) @db.Uuid
+  api_key     String?  @db.VarChar(100)
+  user_id     String?  @db.Uuid
+  endpoint    String   @db.VarChar(200)
+  method      String   @db.VarChar(10)
+  status_code Int
+  
+  // Rate limiting
+  requests_count Int      @default(1)
+  window_start   DateTime @db.Timestamptz(6)
+  window_end     DateTime @db.Timestamptz(6)
+  
+  // Request details
+  ip_address  String?  @db.VarChar(45)
+  user_agent  String?  @db.Text
+  request_size Int?    // bytes
+  response_size Int?   // bytes
+  response_time Int?   // milliseconds
+  
+  // Metadata
+  metadata   Json?    @db.Json
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  
+  @@map("api_usage")
+  @@index([api_key, window_start])
+  @@index([user_id, created_at])
+  @@index([endpoint, method])
+}
+
+// Compliance and data retention
+model DataRetentionPolicy {
+  id              String   @id @default(uuid()) @db.Uuid
+  table_name      String   @db.VarChar(100)
+  retention_days  Int
+  archive_enabled Boolean  @default(false)
+  delete_enabled  Boolean  @default(false)
+  
+  // Policy details
+  conditions      Json?    @db.Json
+  last_executed   DateTime? @db.Timestamptz(6)
+  next_execution  DateTime? @db.Timestamptz(6)
+  
+  // Audit fields
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+  created_by String?  @db.Uuid
+  
+  @@map("data_retention_policies")
+  @@index([table_name])
+  @@index([next_execution])
+}
+

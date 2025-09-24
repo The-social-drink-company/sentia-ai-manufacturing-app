@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   CheckCircle, 
@@ -64,7 +65,7 @@ const DataImportResults = ({ importJobId, onRetry, onNewImport }) => {
         setError(jobData.error || resultsData.error || 'Failed to load import results');
       }
     } catch (error) {
-      console.error('Failed to fetch import results:', error);
+      devLog.error('Failed to fetch import results:', error);
       setError('Failed to fetch import results');
     } finally {
       setLoading(false);
@@ -395,29 +396,29 @@ const DataImportResults = ({ importJobId, onRetry, onNewImport }) => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className=\"space-y-1\">
+                        <div className="space-y-1">
                           {result.errors && result.errors.map((error, index) => (
-                            <div key={index} className=\"text-sm text-red-600 bg-red-50 px-2 py-1 rounded\">
+                            <div key={index} className="text-sm text-red-600 bg-red-50 px-2 py-1 rounded">
                               <strong>{error.field}:</strong> {error.message}
                             </div>
                           ))}
                           {result.warnings && result.warnings.map((warning, index) => (
-                            <div key={index} className=\"text-sm text-yellow-600 bg-yellow-50 px-2 py-1 rounded\">
+                            <div key={index} className="text-sm text-yellow-600 bg-yellow-50 px-2 py-1 rounded">
                               <strong>{warning.field}:</strong> {warning.message}
                             </div>
                           ))}
                           {result.status === 'valid' && (
-                            <div className=\"text-sm text-green-600\">✓ All validations passed</div>
+                            <div className="text-sm text-green-600">✓ All validations passed</div>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
                         <Button 
-                          variant=\"outline\" 
-                          size=\"sm\"
+                          variant="outline" 
+                          size="sm"
                           onClick={() => {
                             // Show row details modal (implement as needed)
-                            console.log('Show row details:', result);
+                            devLog.log('Show row details:', result);
                           }}
                         >
                           <Eye className=\"h-3 w-3 mr-1\" />

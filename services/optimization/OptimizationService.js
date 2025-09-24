@@ -5,6 +5,11 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { 
+  getRegionLeadTimeDays, 
+  getRegionLeadTimeStdDev,
+  getRegionLeadTimeVariability 
+} from '../src/config/global.js';
 
 class OptimizationService {
   constructor() {
@@ -219,18 +224,26 @@ class OptimizationService {
         orderingCost = 50,
         moq = 0,
         lotSize = 0,
-        serviceLevel
+        serviceLevel,
+        region = 'UK'  // Default to UK if not specified
       } = sku;
 
-      // Calculate core metrics
+      // FinanceFlo Lead Time Specifications
+      // Override generic leadTimeDays with region-specific parameters
+      const financeFloLeadTimeDays = getRegionLeadTimeDays(region);
+      const financeFloLeadTimeStdDev = getRegionLeadTimeStdDev(region);
+      const actualLeadTimeDays = leadTimeDays || financeFloLeadTimeDays;
+
+      // Calculate core metrics using FinanceFlo lead time specifications
       const eoq = this.calculateEOQ(annualDemand, orderingCost, holdingCostRate, unitCost);
-      const safetyStock = this.calculateSafetyStock(serviceLevel, dailyDemandStdDev, leadTimeDays);
+      const safetyStock = this.calculateSafetyStock(serviceLevel, dailyDemandStdDev, actualLeadTimeDays);
       const { meanLT, sigmaLT } = this.calculateLeadTimeDemandStats(
         dailyDemandMean, 
         dailyDemandStdDev, 
-        leadTimeDays
+        actualLeadTimeDays,
+        financeFloLeadTimeStdDev  // Use FinanceFlo lead time variability
       );
-      const rop = this.calculateROP(dailyDemandMean, leadTimeDays, safetyStock);
+      const rop = this.calculateROP(dailyDemandMean, actualLeadTimeDays, safetyStock);
 
       // Apply constraints
       let recommendedOrderQty = eoq;

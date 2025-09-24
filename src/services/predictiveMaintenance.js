@@ -1,4 +1,4 @@
-/**
+import { devLog } from '../lib/devLog.js';\n/**
  * Predictive Maintenance Analytics Service - REAL DATA ONLY
  * 
  * Connects to actual IoT sensors, ML models, and maintenance databases
@@ -9,7 +9,7 @@ import axios from 'axios';
 
 class PredictiveMaintenanceService {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    this.baseURL = process.env.API_BASE_URL || null;
     this.initialized = false;
     this.equipmentData = new Map();
     this.maintenanceHistory = [];
@@ -28,13 +28,13 @@ class PredictiveMaintenanceService {
     if (this.initialized) return;
     
     try {
-      console.log('Initializing Predictive Maintenance Service...');
+      devLog.log('Initializing Predictive Maintenance Service...');
       await this.loadEquipmentData();
       await this.loadMaintenanceHistory();
       this.initialized = true;
-      console.log('Predictive Maintenance Service initialized successfully');
+      devLog.log('Predictive Maintenance Service initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize Predictive Maintenance Service:', error);
+      devLog.error('Failed to initialize Predictive Maintenance Service:', error);
     }
   }
 
@@ -65,7 +65,7 @@ class PredictiveMaintenanceService {
           });
         }
       } catch (iotError) {
-        console.error('Unable to connect to equipment sensors:', error);
+        devLog.error('Unable to connect to equipment sensors:', error);
         // No mock data - keep equipmentData empty
       }
     }
@@ -88,7 +88,7 @@ class PredictiveMaintenanceService {
           this.maintenanceHistory = dbResponse.data.logs;
         }
       } catch (dbError) {
-        console.error('Unable to retrieve maintenance history:', error);
+        devLog.error('Unable to retrieve maintenance history:', error);
         // No mock data - keep maintenanceHistory empty
       }
     }
@@ -208,7 +208,7 @@ class PredictiveMaintenanceService {
         };
       }
     } catch (error) {
-      console.warn('AI insights unavailable, falling back to statistical analysis:', error.message);
+      devLog.warn('AI insights unavailable, falling back to statistical analysis:', error.message);
     }
 
     // Fallback to statistical analysis
@@ -410,7 +410,7 @@ Format your response as a JSON object with 'insights', 'recommendations', and 'k
           return altResponse.data;
         }
       } catch (altError) {
-        console.error(`Unable to fetch sensor data for ${equipmentId}:`, error);
+        devLog.error(`Unable to fetch sensor data for ${equipmentId}:`, error);
       }
     }
     return {}; // Return empty if no real data available
@@ -451,7 +451,7 @@ Format your response as a JSON object with 'insights', 'recommendations', and 'k
       'Conveyor System': 8000,
       'Press Machine': 10000,
       'Packaging Line': 6000
-    }[equipment.type] || 8000;
+    }[equipment.type] 0;
     
     const riskMultiplier = {
       'low': 0.1,
@@ -497,7 +497,7 @@ Format your response as a JSON object with 'insights', 'recommendations', and 'k
       'preventive': 1500,
       'corrective': 3000,
       'emergency': 8000
-    }[prediction.type] || 1500;
+    }[prediction.type] 0;
     
     const equipmentMultiplier = {
       'CNC Machine': 2.0,
@@ -568,7 +568,7 @@ Format your response as a JSON object with 'insights', 'recommendations', and 'k
         return response.data.alerts;
       }
     } catch (error) {
-      console.error('Unable to fetch recent alerts:', error);
+      devLog.error('Unable to fetch recent alerts:', error);
     }
     return []; // Return empty if no real data available
   }

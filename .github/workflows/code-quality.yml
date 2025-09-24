@@ -1,0 +1,137 @@
+name: Enterprise Code Quality
+
+on:
+  push:
+    branches: [development, test, production]
+  pull_request:
+    branches: [development, test, production]
+
+jobs:
+  quality-check:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          review-checklist: |
+            - Code follows CLAUDE.md guidelines
+            - No console.log statements
+            - Proper error handling
+            - TypeScript types defined
+            - Tests included
+            - Documentation updated
+
+      - name: ESLint Analysis
+        run: |
+          npm run lint
+          npm run lint:report || true
+
+      - name: TypeScript Check
+        run: npm run type-check
+
+      - name: Test Coverage
+        run: |
+          npm run test:coverage
+          echo "Coverage report generated"
+
+      - name: SonarCloud Analysis
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=sentia-manufacturing
+            -Dsonar.organization=sentia
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/*.test.*,**/*.spec.*
+
+      - name: Bundle Size Check
+        run: |
+          npm run build
+          echo "Bundle size analysis:"
+          npx bundlesize
+
+      - name: Complexity Analysis
+        run: |
+          npx complexity-report src/ --format json > complexity.json
+          echo "Complexity report generated"
+
+      - name: Documentation Check
+        run: |
+          # Check if documentation is up to date
+          npm run docs:check || echo "Documentation needs update"
+
+      - name: Performance Check
+        run: |
+          # Lighthouse CI for performance
+          npm run lighthouse:ci || true
+
+      - name: Upload Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: quality-reports
+          path: |
+            eslint-report.json
+            coverage/
+            complexity.json
+            lighthouse-report.html
+
+      - name: Quality Gate Check
+        run: |
+          # Check if quality gates pass
+          coverage=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          if (( $(echo "$coverage < 80" | bc -l) )); then
+            echo "Coverage is below 80%: $coverage%"
+            exit 1
+          fi
+
+          # Check complexity
+          max_complexity=$(cat complexity.json | jq '[.reports[].complexity] | max')
+          if (( $(echo "$max_complexity > 10" | bc -l) )); then
+            echo "Complexity exceeds threshold: $max_complexity"
+            exit 1
+          fi
+
+          echo "✅ All quality gates passed!"
+
+      - name: Update PR Status
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### 📊 Code Quality Report
+
+              **Coverage**: ${coverage.total.lines.pct}%
+              **Statements**: ${coverage.total.statements.pct}%
+              **Branches**: ${coverage.total.branches.pct}%
+              **Functions**: ${coverage.total.functions.pct}%
+
+              ✅ ESLint: Passed
+              ✅ TypeScript: No errors
+              ✅ Tests: All passing
+              ✅ Complexity: Within limits`
+            });

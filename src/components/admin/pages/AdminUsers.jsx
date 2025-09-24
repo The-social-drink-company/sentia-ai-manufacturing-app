@@ -1,5 +1,7 @@
+import { devLog } from '../../../lib/devLog.js';
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { logInfo, logError } from '../../../lib/logger'
 import {
   UserIcon,
   PlusIcon,
@@ -14,7 +16,13 @@ import {
   ShieldCheckIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ClockIcon
+  ClockIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  Squares2X2Icon,
+  EnvelopeIcon,
+  UserPlusIcon,
+  DocumentDuplicateIcon
 } from '@heroicons/react/24/outline'
 import { cn } from '../../../lib/utils'
 import { useAuthRole } from '../../../hooks/useAuthRole.jsx'
@@ -67,17 +75,13 @@ const RoleBadge = ({ role }) => {
       color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
       text: 'Manager'
     },
-    operator: {
+    user: {
       color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      text: 'Operator'
-    },
-    viewer: {
-      color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-      text: 'Viewer'
+      text: 'User'
     }
   }
 
-  const config = roleConfig[role] || roleConfig.viewer
+  const config = roleConfig[role] || roleConfig.user
 
   return (
     <span className={cn(
@@ -168,8 +172,7 @@ const UserModal = ({ user, isOpen, onClose, onSave, mode = 'create' }) => {
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
-              <option value="viewer">Viewer</option>
-              <option value="operator">Operator</option>
+              <option value="user">User</option>
               <option value="manager">Manager</option>
               <option value="admin">Administrator</option>
             </select>
@@ -236,81 +239,55 @@ const AdminUsers = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [modalMode, setModalMode] = useState('create')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedUsers, setSelectedUsers] = useState(new Set())
+  const [showBulkActions, setShowBulkActions] = useState(false)
+  const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' })
 
   // Fetch users
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin', 'users', searchTerm, roleFilter, statusFilter],
     queryFn: async () => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800))
-      
-      return [
-        {
-          id: 1,
-          email: 'john.admin@company.com',
-          firstName: 'John',
-          lastName: 'Administrator',
-          role: 'admin',
-          status: 'active',
-          lastLogin: '2025-01-15T10:30:00Z',
-          mfaEnabled: true,
-          loginCount: 245,
-          createdAt: '2024-06-01T00:00:00Z'
-        },
-        {
-          id: 2,
-          email: 'sarah.manager@company.com',
-          firstName: 'Sarah',
-          lastName: 'Johnson',
-          role: 'manager',
-          status: 'active',
-          lastLogin: '2025-01-15T08:15:00Z',
-          mfaEnabled: true,
-          loginCount: 89,
-          createdAt: '2024-08-15T00:00:00Z'
-        },
-        {
-          id: 3,
-          email: 'mike.operator@company.com',
-          firstName: 'Mike',
-          lastName: 'Wilson',
-          role: 'operator',
-          status: 'locked',
-          lastLogin: '2025-01-10T16:45:00Z',
-          mfaEnabled: false,
-          loginCount: 156,
-          createdAt: '2024-09-22T00:00:00Z'
-        },
-        {
-          id: 4,
-          email: 'emma.viewer@company.com',
-          firstName: 'Emma',
-          lastName: 'Davis',
-          role: 'viewer',
-          status: 'active',
-          lastLogin: '2025-01-14T14:20:00Z',
-          mfaEnabled: false,
-          loginCount: 34,
-          createdAt: '2024-12-01T00:00:00Z'
-        },
-        {
-          id: 5,
-          email: 'robert.pending@company.com',
-          firstName: 'Robert',
-          lastName: 'Brown',
-          role: 'operator',
-          status: 'pending',
-          lastLogin: null,
-          mfaEnabled: false,
-          loginCount: 0,
-          createdAt: '2025-01-14T00:00:00Z'
+      try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+        const response = await fetch(`${apiUrl}/admin/users`)
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch users: ${response.status}`)
         }
-      ]
+        
+        const data = await response.json()
+        
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to fetch users')
+        }
+        
+        // Transform API data to match component expectations
+        return data.users.map(user => ({
+          id: user.id,
+          email: user.email_addresses?.[0]?.email_address || '',
+          firstName: user.first_name,
+          lastName: user.last_name,
+          username: user.username,
+          role: user.public_metadata?.role || 'user',
+          status: user.public_metadata?.approved ? 'active' : 'pending',
+          department: user.public_metadata?.department || '',
+          lastLogin: user.last_sign_in_at,
+          mfaEnabled: user.public_metadata?.mfaEnabled || false,
+          loginCount: user.public_metadata?.loginCount || 0,
+          createdAt: user.created_at,
+          phoneNumbers: user.phone_numbers || [],
+          permissions: user.public_metadata?.permissions || [],
+          profileImage: user.profile_image_url
+        }))
+      } catch (error) {
+        logError('Failed to fetch users from API', error, { component: 'AdminUsers' })
+        return []
+      }
     },
     refetchInterval: 30000
   })
 
-  // Filter users
+  // Filter and sort users
   const filteredUsers = users?.filter(user => {
     const matchesSearch = searchTerm === '' || 
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -321,6 +298,8 @@ const AdminUsers = () => {
     
     return matchesSearch && matchesRole && matchesStatus
   }) || []
+
+  const sortedUsers = sortUsers(filteredUsers, sortConfig)
 
   const handleCreateUser = () => {
     setSelectedUser(null)
@@ -343,9 +322,9 @@ const AdminUsers = () => {
       queryClient.invalidateQueries(['admin', 'users'])
       setIsModalOpen(false)
       
-      console.log('User saved:', userData)
+      logInfo('User saved', { component: 'AdminUsers', userData })
     } catch (error) {
-      console.error('Error saving user:', error)
+      logError('Error saving user', error, { component: 'AdminUsers' })
     }
   }
 
@@ -359,9 +338,9 @@ const AdminUsers = () => {
       await new Promise(resolve => setTimeout(resolve, 500))
       
       queryClient.invalidateQueries(['admin', 'users'])
-      console.log(`User ${userId} status changed to ${newStatus}`)
+      logInfo('User status changed', { component: 'AdminUsers', userId, newStatus })
     } catch (error) {
-      console.error('Error updating user status:', error)
+      logError('Error updating user status', error, { component: 'AdminUsers', userId })
     }
   }
 
@@ -374,11 +353,89 @@ const AdminUsers = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
       
-      console.log(`Password reset sent for user ${userId}`)
+      logInfo('Password reset sent', { component: 'AdminUsers', userId })
       // Show success notification
     } catch (error) {
-      console.error('Error sending password reset:', error)
+      logError('Error sending password reset', error, { component: 'AdminUsers', userId })
     }
+  }
+
+  const handleBulkAction = async (action) => {
+    if (!hasPermission('admin.users.edit')) return
+    
+    const userIds = Array.from(selectedUsers)
+    if (userIds.length === 0) return
+    
+    const actionText = {
+      'activate': 'activate',
+      'deactivate': 'deactivate',
+      'delete': 'delete',
+      'reset-password': 'send password reset emails to'
+    }[action]
+    
+    if (!confirm(`This will ${actionText} ${userIds.length} user(s). Continue?`)) return
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      queryClient.invalidateQueries(['admin', 'users'])
+      setSelectedUsers(new Set())
+      setShowBulkActions(false)
+      logInfo('Bulk action completed', { component: 'AdminUsers', action, userCount: userIds.length })
+    } catch (error) {
+      logError('Error performing bulk action', error, { component: 'AdminUsers', action })
+    }
+  }
+
+  const handleSelectUser = (userId) => {
+    setSelectedUsers(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(userId)) {
+        newSet.delete(userId)
+      } else {
+        newSet.add(userId)
+      }
+      return newSet
+    })
+  }
+
+  const handleSelectAll = () => {
+    if (selectedUsers.size === filteredUsers.length) {
+      setSelectedUsers(new Set())
+    } else {
+      setSelectedUsers(new Set(filteredUsers.map(user => user.id)))
+    }
+  }
+
+  const sortUsers = (users, config) => {
+    return [...users].sort((a, b) => {
+      let aValue = a[config.key]
+      let bValue = b[config.key]
+      
+      // Handle nested properties
+      if (config.key === 'name') {
+        aValue = `${a.firstName} ${a.lastName}`
+        bValue = `${b.firstName} ${b.lastName}`
+      }
+      
+      // Handle dates
+      if (config.key === 'lastLogin') {
+        aValue = aValue ? new Date(aValue) : new Date(0)
+        bValue = bValue ? new Date(bValue) : new Date(0)
+      }
+      
+      if (aValue < bValue) return config.direction === 'asc' ? -1 : 1
+      if (aValue > bValue) return config.direction === 'asc' ? 1 : -1
+      return 0
+    })
+  }
+
+  const handleSort = (key) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }))
   }
 
   const formatLastLogin = (lastLogin) => {
@@ -454,7 +511,7 @@ const AdminUsers = () => {
         )}
       </div>
 
-      {/* Filters */}
+      {/* Filters and Search */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex flex-wrap gap-4">
           <div className="flex-1 min-w-64">
@@ -462,7 +519,7 @@ const AdminUsers = () => {
               <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search users..."
+                placeholder="Search by name, email, or username..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -478,8 +535,7 @@ const AdminUsers = () => {
             <option value="all">All Roles</option>
             <option value="admin">Admin</option>
             <option value="manager">Manager</option>
-            <option value="operator">Operator</option>
-            <option value="viewer">Viewer</option>
+            <option value="user">User</option>
           </select>
           
           <select
@@ -493,8 +549,82 @@ const AdminUsers = () => {
             <option value="suspended">Suspended</option>
             <option value="pending">Pending</option>
           </select>
+
+          <button
+            onClick={() => setShowBulkActions(!showBulkActions)}
+            className={cn(
+              "flex items-center space-x-2 px-3 py-2 border rounded-md transition-colors",
+              showBulkActions
+                ? "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
+                : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
+            )}
+          >
+            <Squares2X2Icon className="w-4 h-4" />
+            <span>Bulk Actions</span>
+          </button>
         </div>
       </div>
+
+      {/* Bulk Actions Toolbar */}
+      {showBulkActions && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 dark:bg-yellow-900/20 dark:border-yellow-800">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="text-sm">
+                <span className="font-medium text-yellow-800 dark:text-yellow-200">
+                  {selectedUsers.size} user(s) selected
+                </span>
+              </div>
+              
+              {selectedUsers.size > 0 && hasPermission('admin.users.edit') && (
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleBulkAction('activate')}
+                    className="px-3 py-1 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700"
+                  >
+                    Activate
+                  </button>
+                  <button
+                    onClick={() => handleBulkAction('deactivate')}
+                    className="px-3 py-1 text-xs font-medium bg-gray-600 text-white rounded hover:bg-gray-700"
+                  >
+                    Deactivate
+                  </button>
+                  <button
+                    onClick={() => handleBulkAction('reset-password')}
+                    className="px-3 py-1 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Reset Passwords
+                  </button>
+                  {hasPermission('admin.users.delete') && (
+                    <button
+                      onClick={() => handleBulkAction('delete')}
+                      className="px-3 py-1 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleSelectAll}
+                className="text-sm font-medium text-yellow-800 hover:text-yellow-900 dark:text-yellow-200 dark:hover:text-yellow-100"
+              >
+                {selectedUsers.size === sortedUsers.length ? 'Deselect All' : 'Select All'}
+              </button>
+              <button
+                onClick={() => setSelectedUsers(new Set())}
+                className="text-sm font-medium text-yellow-800 hover:text-yellow-900 dark:text-yellow-200 dark:hover:text-yellow-100"
+              >
+                Clear Selection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Users table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -502,17 +632,59 @@ const AdminUsers = () => {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  User
+                {showBulkActions && (
+                  <th className="px-6 py-3 text-left">
+                    <input
+                      type="checkbox"
+                      checked={selectedUsers.size === sortedUsers.length && sortedUsers.length > 0}
+                      onChange={handleSelectAll}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                  </th>
+                )}
+                <th className="px-6 py-3 text-left">
+                  <button
+                    onClick={() => handleSort('name')}
+                    className="flex items-center space-x-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <span>User</span>
+                    {sortConfig.key === 'name' && (
+                      sortConfig.direction === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />
+                    )}
+                  </button>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Role
+                <th className="px-6 py-3 text-left">
+                  <button
+                    onClick={() => handleSort('role')}
+                    className="flex items-center space-x-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <span>Role</span>
+                    {sortConfig.key === 'role' && (
+                      sortConfig.direction === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />
+                    )}
+                  </button>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status
+                <th className="px-6 py-3 text-left">
+                  <button
+                    onClick={() => handleSort('status')}
+                    className="flex items-center space-x-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <span>Status</span>
+                    {sortConfig.key === 'status' && (
+                      sortConfig.direction === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />
+                    )}
+                  </button>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Last Login
+                <th className="px-6 py-3 text-left">
+                  <button
+                    onClick={() => handleSort('lastLogin')}
+                    className="flex items-center space-x-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <span>Last Login</span>
+                    {sortConfig.key === 'lastLogin' && (
+                      sortConfig.direction === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   MFA
@@ -523,8 +695,18 @@ const AdminUsers = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredUsers.map((user) => (
+              {sortedUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  {showBulkActions && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.has(user.id)}
+                        onChange={() => handleSelectUser(user.id)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                    </td>
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 w-10 h-10">
@@ -613,7 +795,7 @@ const AdminUsers = () => {
           </table>
         </div>
 
-        {filteredUsers.length === 0 && (
+        {sortedUsers.length === 0 && (
           <div className="text-center py-12">
             <UserIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No users found</h3>

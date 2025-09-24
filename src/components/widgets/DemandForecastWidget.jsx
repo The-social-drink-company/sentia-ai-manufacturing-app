@@ -1,17 +1,20 @@
+import { devLog } from '../lib/devLog.js';
 import React, { useState, memo, useMemo, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { ArrowTrendingUpIcon, Cog6ToothIcon, SparklesIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
 import { queryKeys, queryConfigs } from '../../services/queryClient'
 import { useFeatureFlags } from '../../hooks/useFeatureFlags'
-// Optional import for SSE functionality
-let useSSEEvent
-try {
-  useSSEEvent = require('../../hooks/useSSE').useSSEEvent
-} catch (error) {
-  // Fallback if SSE hook is not available
-  useSSEEvent = () => {}
-}
+// Optional import for SSE functionality - use dynamic import
+const getSSEHook = async () => {
+  try {
+    const sseModule = await import('../../hooks/useSSE');
+    return sseModule.useSSEEvent || (() => {});
+  } catch (error) {
+    // Return fallback function if SSE hook is not available
+    return () => {};
+  }
+};
 import { CombinedTrustBadge } from '../ui/TrustBadge'
 import { ExportButton } from '../ui/ExportButton'
 import { cn } from '../../lib/utils'
@@ -152,7 +155,7 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
             }
           }
         } catch (aiError) {
-          console.warn('AI forecasting failed, falling back to statistical models:', aiError)
+          devLog.warn('AI forecasting failed, falling back to statistical models:', aiError)
         }
       }
       
@@ -165,10 +168,10 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
         
         const trend = 100 + Math.sin(i * 0.1) * 20
         const seasonal = Math.sin(i * 0.3) * 15
-        const noise = (Math.random() - 0.5) * 10
+        const noise = 0.5 * 10
         
         const aiEnhancement = activeModels.includes('AI Enhanced') ? 
-          Math.sin(i * 0.2) * 5 + (Math.random() - 0.5) * 3 : 0
+          Math.sin(i * 0.2) * 5 + 0.5 * 3 : 0
         const multiSourceBonus = activeModels.includes('Multi-Source AI') ?
           Math.cos(i * 0.15) * 8 + trend * 0.05 : 0
         
@@ -222,7 +225,7 @@ const DemandForecastWidget = memo(({ seriesId = 'UK-AMAZON-SKU123' }) => {
       }, [seriesId])
     } catch (error) {
       // Fallback if SSE hook fails
-      console.log('SSE not available, using polling fallback')
+      devLog.log('SSE not available, using polling fallback')
     }
   }
   

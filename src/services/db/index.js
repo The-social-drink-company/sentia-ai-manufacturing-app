@@ -28,6 +28,17 @@ class DatabaseService {
           },
         ],
         errorFormat: 'pretty',
+        datasources: {
+          db: {
+            url: process.env.DATABASE_URL
+          }
+        },
+        // Optimize connection pooling
+        __internal: {
+          engine: {
+            connectionLimit: 5,
+          }
+        }
       });
 
       // Set up logging for Prisma events
@@ -54,9 +65,8 @@ class DatabaseService {
         });
       });
 
-      // Test connection
-      await this.prisma.$connect();
-      await this.healthCheck();
+      // Test connection with retry logic
+      await this.connectWithRetry();
       
       this.connected = true;
       logInfo('Database connected successfully', {
@@ -69,6 +79,35 @@ class DatabaseService {
       logError('Failed to initialize database connection', error);
       this.connected = false;
       throw error;
+    }
+  }
+
+  /**
+   * Connect with retry logic
+   */
+  async connectWithRetry(maxRetries = 3, delay = 2000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        logInfo(`Database connection attempt ${attempt}/${maxRetries}`);
+        await this.prisma.$connect();
+        await this.healthCheck();
+        return;
+      } catch (error) {
+        logWarn(`Database connection attempt ${attempt} failed`, { 
+          error: error.message,
+          attempt: attempt,
+          maxRetries: maxRetries 
+        });
+        
+        if (attempt === maxRetries) {
+          throw error;
+        }
+        
+        // Wait before retrying (exponential backoff)
+        const waitTime = delay * Math.pow(2, attempt - 1);
+        logInfo(`Waiting ${waitTime}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
     }
   }
 

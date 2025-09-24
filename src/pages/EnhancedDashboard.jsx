@@ -1,851 +1,362 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useUser } from '@clerk/clerk-react';
+import {
+  ArrowTrendingUpIcon,
+  CogIcon,
+  ChartBarIcon,
+  BoltIcon,
+  CpuChipIcon,
+  BeakerIcon,
+  BanknotesIcon,
+  ShieldCheckIcon,
+  CloudIcon,
+  Squares2X2Icon,
+  ViewColumnsIcon
+} from '@heroicons/react/24/outline';
 
-// Fallback widget for error boundaries
-const WidgetFallback = ({ name, children }) => (
-  <div style={{
-    backgroundColor: 'white',
-    padding: '1.5rem',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    marginBottom: '1rem'
-  }}>
-    {children || (
-      <>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1rem' }}>{name}</h3>
-        <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            margin: '0 auto 1rem',
-            backgroundColor: '#f3f4f6',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '24px'
-          }}>📊</div>
-          <p>Loading {name}...</p>
-        </div>
-      </>
-    )}
-  </div>
-)
+// Import Dashboard Grid System
+import DashboardGrid from '../components/dashboard/DashboardGrid';
+import '../styles/dashboard-grid.css';
 
-// Error boundary for widget loading
-class WidgetErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = { hasError: false }
-  }
-  
-  static getDerivedStateFromError(error) {
-    return { hasError: true }
-  }
-  
-  render() {
-    if (this.state.hasError) {
-      return <WidgetFallback name={this.props.name} />
-    }
-    return this.props.children
-  }
-}
+// Import AI and MCP components
+import AIAnalyticsDashboard from '../components/AI/AIAnalyticsDashboard';
+import MCPConnectionStatus from '../components/AI/MCPConnectionStatus';
+import { useSSE } from '../hooks/useSSE';
 
-// Import fixed widgets that always work
-import { 
-  FixedKPIStrip,
-  FixedDemandForecast,
-  FixedMultiChannelSales,
-  FixedProductionMetrics,
-  FixedWorkingCapital,
-  FixedCFOKPIStrip
-} from '../components/widgets/AllWidgetsFixed'
-import FixedPlanningWizard from '../components/widgets/FixedPlanningWizard'
+export default function EnhancedDashboard() {
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedView, setSelectedView] = useState('grid');
+  const [userRole, setUserRole] = useState('viewer');
 
-// Lazy load widgets with fallbacks to fixed versions
-const KPIStrip = lazy(() => 
-  import('../components/widgets/RealKPIStrip').catch(() => ({
-    default: FixedKPIStrip
-  }))
-)
+  // Real-time data connection
+  const { data: realtimeData, isConnected } = useSSE('/api/kpis/realtime');
 
-const DemandForecastWidget = lazy(() => 
-  import('../components/widgets/DemandForecastWidget').catch(() => ({
-    default: FixedDemandForecast
-  }))
-)
+  // MCP Service health check (disabled - service not available in this build)
+  // const { data: mcpHealth } = useQuery({
+  //   queryKey: ['mcp-health'],
+  //   queryFn: () => ({ status: 'disconnected', services: [] }),
+  //   refetchInterval: 30000,
+  // });
 
-const MultiChannelSalesWidget = lazy(() => 
-  import('../components/widgets/MultiChannelSalesWidget').catch(() => ({
-    default: FixedMultiChannelSales
-  }))
-)
+  // Fetch dashboard data
+  const { data: dashboardData, refetch } = useQuery({
+    queryKey: ['dashboard-data', selectedView],
+    queryFn: async () => {
+      const response = await fetch('/api/dashboard/overview');
+      if (!response.ok) {
+        // Use fallback data if API not available
+        return mockDashboardData;
+      }
+      return response.json();
+    },
+    refetchInterval: 15000,
+  });
 
-const PredictiveMaintenanceWidget = lazy(() => 
-  import('../components/widgets/PredictiveMaintenanceWidget').catch(() => ({
-    default: () => <WidgetFallback name="Predictive Maintenance" />
-  }))
-)
-
-const SmartInventoryWidget = lazy(() => 
-  import('../components/widgets/SmartInventoryWidget').catch(() => ({
-    default: () => <WidgetFallback name="Smart Inventory" />
-  }))
-)
-
-// Add production metrics widget
-const ProductionMetricsWidget = lazy(() => 
-  import('../components/widgets/ProductionMetricsWidget').catch(() => ({
-    default: FixedProductionMetrics
-  }))
-)
-
-// Add CFO KPI widget  
-const CFOKPIWidget = lazy(() => 
-  import('../components/widgets/CFOKPIWidget').catch(() => ({
-    default: FixedCFOKPIStrip
-  }))
-)
-
-const WorkingCapitalChart = lazy(() => 
-  import('../components/charts/WorkingCapitalChart').catch(() => ({
-    default: () => <WidgetFallback name="Working Capital Chart" />
-  }))
-)
-
-const ManufacturingAnalytics = lazy(() => 
-  import('../components/analytics/ManufacturingAnalytics').catch(() => ({
-    default: () => <WidgetFallback name="Manufacturing Analytics" />
-  }))
-)
-
-const CFOKPIStrip = lazy(() => 
-  import('../components/widgets/CFOKPIStrip').catch(() => ({
-    default: FixedCFOKPIStrip
-  }))
-)
-
-// Add Working Capital widgets
-const WorkingCapitalWidget = lazy(() => 
-  import('../components/widgets/WorkingCapitalWidget').catch(() => ({
-    default: FixedWorkingCapital
-  }))
-)
-
-const ManufacturingPlanningWizard = lazy(() => 
-  import('../components/ManufacturingPlanningWizard').catch(() => ({
-    default: FixedPlanningWizard
-  }))
-)
-
-// Agent Monitoring Widget
-const AgentMonitoringWidget = lazy(() => 
-  import('../components/widgets/AgentMonitoringWidget').catch(() => ({
-    default: () => <WidgetFallback name="Agent Monitoring" />
-  }))
-)
-
-// Individual Agent Widgets
-const UIUXEnhancementWidget = lazy(() => 
-  import('../components/widgets/UIUXEnhancementWidget').catch(() => ({
-    default: () => <WidgetFallback name="UI/UX Enhancement Agent" />
-  }))
-)
-
-const DataIntegrationWidget = lazy(() => 
-  import('../components/widgets/DataIntegrationWidget').catch(() => ({
-    default: () => <WidgetFallback name="Data Integration Agent" />
-  }))
-)
-
-const PerformanceOptimizationWidget = lazy(() => 
-  import('../components/widgets/PerformanceOptimizationWidget').catch(() => ({
-    default: () => <WidgetFallback name="Performance Optimization Agent" />
-  }))
-)
-
-// Import all other agent widgets - need separate imports for lazy loading
-import { 
-  QualityControlWidget as QualityControl,
-  AutonomousCompletionWidget as AutonomousCompletion,
-  MonitoringAgentWidget as MonitoringAgent,
-  DashboardUpdateWidget as DashboardUpdate
-} from '../components/widgets/AllAgentWidgets'
-
-const QualityControlWidget = () => <QualityControl />
-const AutonomousCompletionWidget = () => <AutonomousCompletion />
-const MonitoringAgentWidget = () => <MonitoringAgent />
-const DashboardUpdateWidget = () => <DashboardUpdate />
-
-// Import all working capital components if they exist
-const WorkingCapitalSection = () => {
-  return (
-    <div style={{
-      backgroundColor: 'white',
-      padding: '1.5rem',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      marginBottom: '1.5rem'
-    }}>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-        Working Capital Management
-      </h2>
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: `repeat(${windowWidth < 640 ? 1 : windowWidth < 1024 ? 2 : 3}, 1fr)`,
-        gap: '1rem' 
-      }}>
-        <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
-          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Accounts Receivable</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>$1.2M</p>
-          <p style={{ fontSize: '0.75rem', color: '#10b981' }}>↓ 5% from last month</p>
-        </div>
-        <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
-          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Accounts Payable</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>$800K</p>
-          <p style={{ fontSize: '0.75rem', color: '#ef4444' }}>↑ 3% from last month</p>
-        </div>
-        <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
-          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Cash Conversion Cycle</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>45 days</p>
-          <p style={{ fontSize: '0.75rem', color: '#10b981' }}>↓ 2 days improvement</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Production metrics component
-const ProductionMetrics = () => {
-  return (
-    <div style={{
-      backgroundColor: 'white',
-      padding: '1.5rem',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      marginBottom: '1.5rem'
-    }}>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-        Production Metrics
-      </h2>
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: `repeat(${windowWidth < 640 ? 1 : windowWidth < 768 ? 2 : windowWidth < 1024 ? 3 : 4}, 1fr)`,
-        gap: '1rem' 
-      }}>
-        <div>
-          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Units Produced</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>12,345</p>
-          <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '0.5rem' }}>
-            <div style={{ width: '75%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '2px' }}></div>
-          </div>
-        </div>
-        <div>
-          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Efficiency Rate</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>89.2%</p>
-          <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '0.5rem' }}>
-            <div style={{ width: '89%', height: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
-          </div>
-        </div>
-        <div>
-          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>Defect Rate</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>0.8%</p>
-          <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '0.5rem' }}>
-            <div style={{ width: '8%', height: '100%', backgroundColor: '#fbbf24', borderRadius: '2px' }}></div>
-          </div>
-        </div>
-        <div>
-          <h3 style={{ fontSize: '0.875rem', color: '#6b7280' }}>On-Time Delivery</h3>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>95.6%</p>
-          <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '0.5rem' }}>
-            <div style={{ width: '95%', height: '100%', backgroundColor: '#8b5cf6', borderRadius: '2px' }}></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Inventory status component
-const InventoryStatus = () => {
-  const inventoryItems = [
-    { name: 'Raw Materials', value: 450, unit: 'tons', status: 'good' },
-    { name: 'Work in Progress', value: 128, unit: 'units', status: 'warning' },
-    { name: 'Finished Goods', value: 892, unit: 'units', status: 'good' },
-    { name: 'Packaging Materials', value: 3200, unit: 'pcs', status: 'critical' }
-  ]
-
-  return (
-    <div style={{
-      backgroundColor: 'white',
-      padding: '1.5rem',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    }}>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-        Inventory Status
-      </h2>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-            <th style={{ padding: '0.5rem', textAlign: 'left' }}>Item</th>
-            <th style={{ padding: '0.5rem', textAlign: 'center' }}>Quantity</th>
-            <th style={{ padding: '0.5rem', textAlign: 'center' }}>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {inventoryItems.map((item, index) => (
-            <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
-              <td style={{ padding: '0.75rem' }}>{item.name}</td>
-              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                {item.value} {item.unit}
-              </td>
-              <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                <span style={{
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '9999px',
-                  fontSize: '0.75rem',
-                  fontWeight: 'bold',
-                  backgroundColor: item.status === 'good' ? '#d1fae5' : item.status === 'warning' ? '#fef3c7' : '#fee2e2',
-                  color: item.status === 'good' ? '#065f46' : item.status === 'warning' ? '#92400e' : '#991b1b'
-                }}>
-                  {item.status.toUpperCase()}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-// Main Enhanced Dashboard Component
-function EnhancedDashboard() {
-  const [selectedTab, setSelectedTab] = useState('overview')
-  const [timeRange, setTimeRange] = useState('today')
-  const [showFeatureFlags, setShowFeatureFlags] = useState(false)
-  const [showPlanningWizard, setShowPlanningWizard] = useState(false)
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
-
-  // Handle responsive layout
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
 
-  // Feature flags
-  const features = {
-    cfoPreset: import.meta.env.VITE_FEATURE_CFO_PRESET === 'true',
-    globalTabs: import.meta.env.VITE_FEATURE_GLOBAL_TABS === 'true',
-    boardExport: import.meta.env.VITE_FEATURE_BOARD_EXPORT === 'true',
-    trustBadges: import.meta.env.VITE_FEATURE_TRUST_BADGES === 'true',
-    benchmarks: import.meta.env.VITE_FEATURE_BENCHMARKS === 'true',
-    advanced: true, // Enable advanced charts
-    analytics: true // Enable manufacturing analytics
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Get user role from Clerk metadata
+    const role = user?.publicMetadata?.role ||
+                 user?.unsafeMetadata?.role ||
+                 'viewer';
+    setUserRole(role);
+  }, [user]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Initializing Sentia Enterprise Platform...</p>
+          <p className="mt-2 text-sm text-gray-500">Loading AI Analytics & MCP Integration</p>
+        </div>
+      </div>
+    );
   }
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'production', label: 'Production', icon: '🏭' },
-    { id: 'finance', label: 'Finance', icon: '💰' },
-    { id: 'inventory', label: 'Inventory', icon: '📦' },
-    { id: 'analytics', label: 'Analytics', icon: '📈' }
-  ]
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Dashboard Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Render AI Analytics view
+  if (selectedView === 'ai-analytics') {
+    return <AIAnalyticsDashboard />;
+  }
 
   return (
-    <div style={{ 
-      minHeight: 'calc(100vh - 64px)', 
-      backgroundColor: '#f3f4f6',
-      padding: '1.5rem'
-    }}>
-      {/* Dashboard Header */}
-      <div style={{ 
-        backgroundColor: 'white',
-        padding: '1.5rem',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        marginBottom: '1.5rem'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827' }}>
-              Enhanced Manufacturing Dashboard
-            </h1>
-            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
-              Real-time production and financial metrics
-            </p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Sentia Manufacturing Dashboard
+              </h1>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                Welcome back, {user?.firstName || 'User'} • Role: <span className="font-medium capitalize">{userRole}</span>
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* View Toggle */}
+              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => setSelectedView('grid')}
+                  className={`px-3 py-1 rounded flex items-center space-x-2 ${
+                    selectedView === 'grid'
+                      ? 'bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400'
+                      : 'text-gray-600 dark:text-gray-300'
+                  }`}
+                >
+                  <Squares2X2Icon className="h-4 w-4" />
+                  <span className="text-sm">Grid View</span>
+                </button>
+                <button
+                  onClick={() => setSelectedView('classic')}
+                  className={`px-3 py-1 rounded flex items-center space-x-2 ${
+                    selectedView === 'classic'
+                      ? 'bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400'
+                      : 'text-gray-600 dark:text-gray-300'
+                  }`}
+                >
+                  <ViewColumnsIcon className="h-4 w-4" />
+                  <span className="text-sm">Classic View</span>
+                </button>
+              </div>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                ● Live Data
+              </span>
+              <span className="text-gray-500 dark:text-gray-400 text-sm">
+                {new Date().toLocaleTimeString()}
+              </span>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            {/* Time range selector */}
-            <select 
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
-              style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                border: '1px solid #d1d5db',
-                backgroundColor: 'white'
-              }}
-            >
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="quarter">This Quarter</option>
-              <option value="year">This Year</option>
-            </select>
-            
-            {/* Export button */}
-            {features.boardExport && (
-              <button style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer'
-              }}>
-                Export 📥
-              </button>
-            )}
-            
-            {/* Settings */}
-            <button 
-              onClick={() => setShowFeatureFlags(!showFeatureFlags)}
-              style={{
-                padding: '0.5rem',
-                backgroundColor: '#f3f4f6',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              ⚙️
-            </button>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        {features.globalTabs && (
-          <div style={{ 
-            display: 'flex', 
-            gap: '0.5rem', 
-            marginTop: '1rem',
-            borderTop: '1px solid #e5e7eb',
-            paddingTop: '1rem'
-          }}>
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedTab(tab.id)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  backgroundColor: selectedTab === tab.id ? '#3b82f6' : 'transparent',
-                  color: selectedTab === tab.id ? 'white' : '#6b7280',
-                  fontWeight: selectedTab === tab.id ? 'bold' : 'normal'
-                }}
-              >
-                {tab.icon} {tab.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Feature Flags Debug Panel */}
-      {showFeatureFlags && (
-        <div style={{
-          backgroundColor: '#fef3c7',
-          border: '1px solid #fbbf24',
-          padding: '1rem',
-          borderRadius: '6px',
-          marginBottom: '1rem'
-        }}>
-          <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Feature Flags</h3>
-          <ul style={{ fontSize: '0.875rem', listStyle: 'none', padding: 0 }}>
-            {Object.entries(features).map(([key, value]) => (
-              <li key={key}>
-                {value ? '✅' : '❌'} {key}: {value ? 'Enabled' : 'Disabled'}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* KPI Strips */}
-      <WidgetErrorBoundary name="KPI Strip">
-        <Suspense fallback={<WidgetFallback name="Loading KPIs..." />}>
-          {features.cfoPreset ? <CFOKPIStrip /> : <KPIStrip />}
-        </Suspense>
-      </WidgetErrorBoundary>
-
-      {/* Comprehensive Agent Monitoring Section */}
-      <div style={{ marginTop: '1.5rem' }}>
-        <h2 style={{ 
-          fontSize: '1.5rem', 
-          fontWeight: 'bold', 
-          color: '#111827',
-          marginBottom: '1rem',
-          padding: '1rem',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          🤖 Autonomous Agent Monitoring - All 7 Agents Running 24/7
-        </h2>
-        
-        {/* Agent Overview Widget */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <WidgetErrorBoundary name="Agent Monitoring Overview">
-            <Suspense fallback={<WidgetFallback name="Agent Monitoring Overview" />}>
-              <AgentMonitoringWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
-        </div>
-
-        {/* Individual Agent Widgets Grid */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: windowWidth < 768 ? '1fr' : windowWidth < 1024 ? '1fr' : '1fr 1fr',
-          gap: '1.5rem'
-        }}>
-          {/* UI/UX Enhancement Agent */}
-          <WidgetErrorBoundary name="UI/UX Enhancement Agent">
-            <Suspense fallback={<WidgetFallback name="UI/UX Enhancement Agent" />}>
-              <UIUXEnhancementWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
-
-          {/* Data Integration Agent */}
-          <WidgetErrorBoundary name="Data Integration Agent">
-            <Suspense fallback={<WidgetFallback name="Data Integration Agent" />}>
-              <DataIntegrationWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
-
-          {/* Performance Optimization Agent */}
-          <WidgetErrorBoundary name="Performance Optimization Agent">
-            <Suspense fallback={<WidgetFallback name="Performance Optimization Agent" />}>
-              <PerformanceOptimizationWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
-
-          {/* Quality Control Agent */}
-          <WidgetErrorBoundary name="Quality Control Agent">
-            <Suspense fallback={<WidgetFallback name="Quality Control Agent" />}>
-              <QualityControlWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
-
-          {/* Autonomous Completion Agent */}
-          <WidgetErrorBoundary name="Autonomous Completion Agent">
-            <Suspense fallback={<WidgetFallback name="Autonomous Completion Agent" />}>
-              <AutonomousCompletionWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
-
-          {/* Monitoring Agent */}
-          <WidgetErrorBoundary name="Monitoring Agent">
-            <Suspense fallback={<WidgetFallback name="Monitoring Agent" />}>
-              <MonitoringAgentWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
-
-          {/* Dashboard Update Agent */}
-          <WidgetErrorBoundary name="Dashboard Update Agent">
-            <Suspense fallback={<WidgetFallback name="Dashboard Update Agent" />}>
-              <DashboardUpdateWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
         </div>
       </div>
 
-      {/* Main Content Grid - Responsive */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: windowWidth < 768 ? '1fr' : windowWidth < 1024 ? '1fr' : '2fr 1fr',
-        gap: '1.5rem', 
-        marginTop: '1.5rem'
-      }}>
-        {/* Left Column */}
-        <div>
-          {/* Demand Forecast */}
-          <WidgetErrorBoundary name="Demand Forecast">
-            <Suspense fallback={<WidgetFallback name="Demand Forecast" />}>
-              <DemandForecastWidget />
-            </Suspense>
-          </WidgetErrorBoundary>
-          
-          {/* Multi-Channel Sales */}
-          <div style={{ marginTop: '1.5rem' }}>
-            <WidgetErrorBoundary name="Multi-Channel Sales">
-              <Suspense fallback={<WidgetFallback name="Multi-Channel Sales" />}>
-                <MultiChannelSalesWidget timeRange="30d" />
-              </Suspense>
-            </WidgetErrorBoundary>
-          </div>
-          
-          {/* Production Metrics */}
-          <div style={{ marginTop: '1.5rem' }}>
-            <WidgetErrorBoundary name="Production Metrics">
-              <Suspense fallback={<WidgetFallback name="Production Metrics" />}>
-                <ProductionMetricsWidget />
-              </Suspense>
-            </WidgetErrorBoundary>
-          </div>
-          
-          {/* Working Capital */}
-          <div style={{ marginTop: '1.5rem' }}>
-            <WidgetErrorBoundary name="Working Capital">
-              <Suspense fallback={<WidgetFallback name="Working Capital" />}>
-                <WorkingCapitalWidget />
-              </Suspense>
-            </WidgetErrorBoundary>
-          </div>
+      {/* Main Content */}
+      {selectedView === 'grid' ? (
+        <div className="p-4 lg:p-6">
+          <DashboardGrid userRole={userRole} />
+        </div>
+      ) : (
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
 
-          {/* Advanced Working Capital Chart */}
-          {features.advanced && (
-            <div style={{ marginTop: '1.5rem' }}>
-              <WidgetErrorBoundary name="Working Capital Chart">
-                <Suspense fallback={<WidgetFallback name="Working Capital Chart" />}>
-                  <WorkingCapitalChart timeRange="12M" scenario="baseline" />
-                </Suspense>
-              </WidgetErrorBoundary>
+        {/* KPI Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <div className="w-6 h-6 bg-blue-600 rounded"></div>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-gray-500">Production Output</h3>
+                <p className="text-2xl font-bold text-gray-900">1,234</p>
+                <p className="text-sm text-green-600">↗ +12% from yesterday</p>
+              </div>
             </div>
-          )}
-
-          {/* Manufacturing Analytics */}
-          {features.analytics && (
-            <div style={{ marginTop: '1.5rem' }}>
-              <WidgetErrorBoundary name="Manufacturing Analytics">
-                <Suspense fallback={<WidgetFallback name="Manufacturing Analytics" />}>
-                  <ManufacturingAnalytics />
-                </Suspense>
-              </WidgetErrorBoundary>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <div className="w-6 h-6 bg-green-600 rounded"></div>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-gray-500">Efficiency Rate</h3>
+                <p className="text-2xl font-bold text-gray-900">94.2%</p>
+                <p className="text-sm text-green-600">↗ +2.1% from last week</p>
+              </div>
             </div>
-          )}
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center">
+              <div className="p-2 bg-yellow-100 rounded-lg">
+                <div className="w-6 h-6 bg-yellow-600 rounded"></div>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-gray-500">Quality Score</h3>
+                <p className="text-2xl font-bold text-gray-900">98.7%</p>
+                <p className="text-sm text-yellow-600">→ Stable</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <div className="w-6 h-6 bg-purple-600 rounded"></div>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-sm font-medium text-gray-500">Active Orders</h3>
+                <p className="text-2xl font-bold text-gray-900">87</p>
+                <p className="text-sm text-blue-600">24 urgent priority</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right Column */}
-        <div>
-          {/* Agent Monitoring Widget */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <WidgetErrorBoundary name="Agent Monitoring">
-              <Suspense fallback={<WidgetFallback name="Agent Monitoring" />}>
-                <AgentMonitoringWidget />
-              </Suspense>
-            </WidgetErrorBoundary>
-          </div>
-          
-          {/* Smart Inventory Widget */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <WidgetErrorBoundary name="Smart Inventory">
-              <Suspense fallback={<WidgetFallback name="Smart Inventory" />}>
-                <SmartInventoryWidget />
-              </Suspense>
-            </WidgetErrorBoundary>
-          </div>
-          
-          {/* Predictive Maintenance Widget */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <WidgetErrorBoundary name="Predictive Maintenance">
-              <Suspense fallback={<WidgetFallback name="Predictive Maintenance" />}>
-                <PredictiveMaintenanceWidget />
-              </Suspense>
-            </WidgetErrorBoundary>
-          </div>
-          
-          {/* Manufacturing Planning Wizard - Always visible */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <WidgetErrorBoundary name="Manufacturing Planning">
-              <Suspense fallback={<WidgetFallback name="Manufacturing Planning" />}>
-                <ManufacturingPlanningWizard />
-              </Suspense>
-            </WidgetErrorBoundary>
-          </div>
-          
-          {/* Legacy Inventory Status */}
-          <InventoryStatus />
-          
-          {/* Quick Actions */}
-          <div style={{
-            backgroundColor: 'white',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            marginTop: '1.5rem'
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              Quick Actions
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <button style={{
-                padding: '0.75rem',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}>
-                📊 Generate Report
-              </button>
-              <button style={{
-                padding: '0.75rem',
-                backgroundColor: '#10b981',
-                color: 'white',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}>
-                📦 Update Inventory
-              </button>
-              <button style={{
-                padding: '0.75rem',
-                backgroundColor: '#8b5cf6',
-                color: 'white',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}>
-                💰 Review Financials
-              </button>
-              <button style={{
-                padding: '0.75rem',
-                backgroundColor: '#f59e0b',
-                color: 'white',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}>
-                🔔 Set Alerts
-              </button>
-            </div>
-          </div>
-
-          {/* Trust Badges */}
-          {features.trustBadges && (
-            <div style={{
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              borderRadius: '8px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              marginTop: '1.5rem'
-            }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-                Certifications
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.5rem' }}>🏆</span>
-                  <span>ISO 9001:2015 Certified</span>
+        {/* Main Dashboard Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Production Overview */}
+          <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Production Lines Status</h2>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <div>
+                    <p className="font-medium text-gray-900">Line A - Assembly</p>
+                    <p className="text-sm text-gray-500">Running at 98% capacity</p>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.5rem' }}>✅</span>
-                  <span>GDPR Compliant</span>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-green-600">Running</p>
+                  <p className="text-xs text-gray-500">234 units/hr</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.5rem' }}>🔒</span>
-                  <span>SOC 2 Type II</span>
+              </div>
+              
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <div>
+                    <p className="font-medium text-gray-900">Line B - Packaging</p>
+                    <p className="text-sm text-gray-500">Running at 95% capacity</p>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.5rem' }}>🌱</span>
-                  <span>Carbon Neutral</span>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-green-600">Running</p>
+                  <p className="text-xs text-gray-500">187 units/hr</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                  <div>
+                    <p className="font-medium text-gray-900">Line C - Quality Check</p>
+                    <p className="text-sm text-gray-500">Scheduled maintenance</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-yellow-600">Maintenance</p>
+                  <p className="text-xs text-gray-500">Resumes at 2:00 PM</p>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Quick Actions & Stats */}
+          <div className="space-y-6">
+            {/* Quick Actions */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <button className="w-full text-left p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                  <p className="font-medium text-blue-900">Working Capital Analysis</p>
+                  <p className="text-sm text-blue-600">Review financial metrics</p>
+                </button>
+                
+                <button className="w-full text-left p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                  <p className="font-medium text-green-900">What-If Scenarios</p>
+                  <p className="text-sm text-green-600">Model production changes</p>
+                </button>
+                
+                <button className="w-full text-left p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                  <p className="font-medium text-purple-900">Admin Panel</p>
+                  <p className="text-sm text-purple-600">System configuration</p>
+                </button>
+              </div>
+            </div>
+
+            {/* Recent Alerts */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Alerts</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm text-green-800">Order #12345 completed</p>
+                    <p className="text-xs text-green-600">2 minutes ago</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm text-yellow-800">Maintenance scheduled</p>
+                    <p className="text-xs text-yellow-600">10 minutes ago</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm text-blue-800">Quality check passed</p>
+                    <p className="text-xs text-blue-600">15 minutes ago</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Row - Financial Overview */}
+        <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Financial Overview</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-2xl font-bold text-blue-600">£1.2M</p>
+              <p className="text-gray-600 text-sm">Current Cash Flow</p>
+              <p className="text-xs text-green-600 mt-1">↗ +5.2% this month</p>
+            </div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <p className="text-2xl font-bold text-green-600">£890K</p>
+              <p className="text-gray-600 text-sm">Accounts Receivable</p>
+              <p className="text-xs text-green-600 mt-1">↗ +2.1% this month</p>
+            </div>
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
+              <p className="text-2xl font-bold text-orange-600">£450K</p>
+              <p className="text-gray-600 text-sm">Inventory Value</p>
+              <p className="text-xs text-yellow-600 mt-1">→ Stable</p>
+            </div>
+            <div className="text-center p-4 bg-purple-50 rounded-lg">
+              <p className="text-2xl font-bold text-purple-600">89 days</p>
+              <p className="text-gray-600 text-sm">Cash Conversion Cycle</p>
+              <p className="text-xs text-green-600 mt-1">↘ -3 days improvement</p>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <div style={{
-        marginTop: '2rem',
-        padding: '1.5rem',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-          Quick Actions
-        </h3>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setShowPlanningWizard(true)}
-            style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
-          >
-            🏭 Manufacturing Planning Wizard
-          </button>
-          <button
-            style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: '#10b981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#059669'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#10b981'}
-          >
-            📊 Generate Report
-          </button>
-        </div>
-      </div>
-
-      {/* Footer Status */}
-      <div style={{
-        marginTop: '2rem',
-        padding: '1rem',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        textAlign: 'center',
-        color: '#6b7280',
-        fontSize: '0.875rem'
-      }}>
-        Last updated: {new Date().toLocaleString()} | 
-        Data refresh rate: 5 seconds | 
-        System status: <span style={{ color: '#10b981', fontWeight: 'bold' }}>Operational</span>
-      </div>
-
-      {/* Manufacturing Planning Wizard Modal */}
-      {showPlanningWizard && (
-        <WidgetErrorBoundary name="Manufacturing Planning Wizard">
-          <Suspense fallback={<WidgetFallback name="Manufacturing Planning Wizard" />}>
-            <ManufacturingPlanningWizard 
-              onClose={() => setShowPlanningWizard(false)}
-            />
-          </Suspense>
-        </WidgetErrorBoundary>
       )}
     </div>
-  )
+  );
 }
-
-export default EnhancedDashboard

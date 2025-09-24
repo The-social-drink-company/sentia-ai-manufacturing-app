@@ -1,0 +1,27 @@
+# Ignore all HTML files to prevent Caddy detection
+*.html
+**/*.html
+public/index.html
+index.html
+
+# Ignore dist and public directories
+dist/
+public/
+static/
+
+# Ignore test files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Ignore docs
+docs/
+*.md
+
+# Don't deploy Dockerfile since Railway should detect it separately
+Dockerfile
+.dockerignore
+
+# Ignore backup files
+nixpacks.toml.backup

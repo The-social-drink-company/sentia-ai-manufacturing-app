@@ -1,0 +1,327 @@
+/* Mobile-First Responsive CSS */
+@import "tailwindcss";
+
+/* Base mobile styles (0-639px) */
+@layer base {
+  /* Touch-friendly tap targets */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Smooth scrolling with momentum */
+  .scrollable {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Safe area spacing for notched devices */
+  .safe-area-inset {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-top: 1px solid rgb(229 231 235);
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.mobile-nav-item.active {
+  color: rgb(79 70 229);
+  font-weight: 500;
+}
+
+/* Mobile Header */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-bottom: 1px solid rgb(229 231 235);
+  z-index: 40;
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Content with fixed header and nav */
+.mobile-content {
+  padding-top: calc(56px + env(safe-area-inset-top));
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  min-height: 100vh;
+}
+
+/* Pull to Refresh */
+.pull-to-refresh {
+  position: relative;
+  overflow-y: auto;
+}
+
+.pull-to-refresh-indicator {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.pull-to-refresh.refreshing .pull-to-refresh-indicator {
+  transform: translateX(-50%) translateY(80px);
+}
+
+/* Swipeable Cards */
+.swipeable-card {
+  touch-action: pan-y;
+  user-select: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.swipeable-card.swiping {
+  transition: none;
+}
+
+.swipeable-card.swiped-left {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.swipeable-card.swiped-right {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* Floating Action Button */
+.fab {
+  @apply fixed bottom-20 right-4 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg;
+  @apply flex items-center justify-center z-30;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.fab:active {
+  @apply scale-95;
+}
+
+/* Mobile Modal */
+.mobile-modal {
+  @apply fixed inset-0 bg-white z-50;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-modal-header {
+  @apply flex items-center justify-between p-4 border-b border-gray-200;
+}
+
+/* Bottom Sheet */
+.bottom-sheet {
+  @apply fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl z-50;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  max-height: 90vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-sheet.open {
+  transform: translateY(0);
+}
+
+.bottom-sheet-handle {
+  @apply w-12 h-1 bg-gray-300 rounded-full mx-auto my-3;
+}
+
+/* Touch Ripple Effect */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Responsive Grid */
+.responsive-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Mobile Tables */
+@media (max-width: 639px) {
+  .mobile-table {
+    display: block;
+  }
+
+  .mobile-table thead {
+    display: none;
+  }
+
+  .mobile-table tbody,
+  .mobile-table tr,
+  .mobile-table td {
+    display: block;
+  }
+
+  .mobile-table tr {
+    @apply mb-4 p-4 bg-white rounded-lg border border-gray-200;
+  }
+
+  .mobile-table td {
+    @apply flex justify-between items-center py-2;
+    text-align: right;
+  }
+
+  .mobile-table td::before {
+    content: attr(data-label);
+    @apply font-medium text-gray-700;
+    text-align: left;
+  }
+}
+
+/* Tablet Styles (640px-1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .tablet-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .mobile-nav {
+    @apply hidden;
+  }
+
+  .mobile-content {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .fab {
+    @apply bottom-8 right-8;
+  }
+}
+
+/* Landscape Adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-header {
+    @apply py-2;
+  }
+
+  .mobile-nav {
+    @apply py-1;
+  }
+
+  .mobile-nav-item {
+    @apply py-1;
+  }
+
+  .mobile-content {
+    padding-top: calc(48px + env(safe-area-inset-top));
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .dark-mode-auto {
+    @apply bg-gray-900 text-white;
+  }
+
+  .dark-mode-auto .mobile-nav,
+  .dark-mode-auto .mobile-header,
+  .dark-mode-auto .mobile-modal,
+  .dark-mode-auto .bottom-sheet {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .dark-mode-auto .mobile-nav-item.active {
+    @apply text-indigo-400;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .high-contrast {
+    @apply border-2;
+  }
+
+  button,
+  a {
+    @apply underline font-bold;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .mobile-nav,
+  .mobile-header,
+  .fab,
+  .no-print {
+    display: none !important;
+  }
+
+  .mobile-content {
+    padding: 0;
+  }
+}

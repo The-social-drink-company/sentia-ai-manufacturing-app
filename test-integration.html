@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MCP Integration Test</title>
+</head>
+<body>
+    <h1>Testing MCP Server Integration</h1>
+    <div id="status"></div>
+    <script>
+        async function testIntegration() {
+            const status = document.getElementById('status');
+            
+            try {
+                // Test MCP server health
+                status.innerHTML += '<p>Testing MCP server health...</p>';
+                const healthResponse = await fetch('http://localhost:9002/health');
+                const healthData = await healthResponse.json();
+                
+                if (healthData.status === 'healthy') {
+                    status.innerHTML += '<p>✅ MCP Server: HEALTHY</p>';
+                    status.innerHTML += `<p>   Version: ${healthData.version}</p>`;
+                    status.innerHTML += `<p>   Uptime: ${Math.round(healthData.uptime)}s</p>`;
+                } else {
+                    status.innerHTML += '<p>❌ MCP Server: UNHEALTHY</p>';
+                }
+                
+                // Test AI tool
+                status.innerHTML += '<p>Testing AI manufacturing tool...</p>';
+                const aiResponse = await fetch('http://localhost:9002/mcp/tools/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: 'ai_system_status',
+                        arguments: { includeMetrics: true }
+                    })
+                });
+                
+                const aiData = await aiResponse.json();
+                if (aiData.content && aiData.content[0]) {
+                    const result = JSON.parse(aiData.content[0].text);
+                    if (result.success) {
+                        status.innerHTML += '<p>✅ AI Manufacturing Intelligence: OPERATIONAL</p>';
+                        status.innerHTML += `<p>   LLM Providers: ${Object.keys(result.data.aiCentralNervousSystem.llmProviders).length}</p>`;
+                        status.innerHTML += `<p>   Available Tools: ${result.data.mcpServerStatus.availableTools}</p>`;
+                    }
+                } else {
+                    status.innerHTML += '<p>❌ AI Manufacturing Intelligence: FAILED</p>';
+                }
+                
+                status.innerHTML += '<h2>🚀 Integration Test Complete!</h2>';
+                
+            } catch (error) {
+                status.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        testIntegration();
+    </script>
+</body>
+</html>

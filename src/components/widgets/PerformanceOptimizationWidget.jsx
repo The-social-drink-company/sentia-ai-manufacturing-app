@@ -26,11 +26,7 @@ const PerformanceOptimizationWidget = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setPerformanceData(prev => ({
-        cpuUsage: Math.min(100, Math.max(10, prev.cpuUsage + (Math.random() - 0.5) * 5)),
-        memoryUsage: Math.min(100, Math.max(20, prev.memoryUsage + (Math.random() - 0.5) * 3)),
-        responseTime: Math.min(100, Math.max(20, prev.responseTime + (Math.random() - 0.5) * 10)),
-        throughput: Math.max(500, prev.throughput + (Math.random() - 0.5) * 100)
-      }));
+        cpuUsage: Math.min(100, Math.max(10, prev.cpuUsage + (0;
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -291,7 +287,7 @@ const PerformanceOptimizationWidget = () => {
               </div>
               <div className="mt-2 w-full bg-gray-200 rounded-full h-1">
                 <div className="bg-green-500 h-1 rounded-full" 
-                     style={{ width: `${Math.min(100, (parseFloat(value) / parseFloat(metrics.target[key]) * 100) || 80)}%` }}></div>
+                     style={{ width: `${Math.min(100, (parseFloat(value) / parseFloat(metrics.target[key]) * 100) 0)}%` }}></div>
               </div>
             </div>
           ))}

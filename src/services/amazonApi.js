@@ -1,13 +1,14 @@
+import { devLog } from '../lib/devLog.js';
 import axios from 'axios'
 
 // Amazon SP-API integration service
 class AmazonSPAPIService {
   constructor() {
     this.baseURL = 'https://sellingpartnerapi-eu.amazon.com'
-    this.clientId = import.meta.env.VITE_AMAZON_SP_API_CLIENT_ID
-    this.clientSecret = import.meta.env.VITE_AMAZON_SP_API_CLIENT_SECRET
-    this.refreshToken = import.meta.env.VITE_AMAZON_SP_API_REFRESH_TOKEN
-    this.marketplaceId = import.meta.env.VITE_AMAZON_UK_MARKETPLACE_ID || 'A1F83G8C2ARO7P'
+    this.clientId = process.env.AMAZON_SP_API_CLIENT_ID || process.env.VITE_AMAZON_SP_API_CLIENT_ID
+    this.clientSecret = process.env.AMAZON_SP_API_CLIENT_SECRET || process.env.VITE_AMAZON_SP_API_CLIENT_SECRET
+    this.refreshToken = process.env.AMAZON_SP_API_REFRESH_TOKEN || process.env.VITE_AMAZON_SP_API_REFRESH_TOKEN
+    this.marketplaceId = process.env.AMAZON_UK_MARKETPLACE_ID || process.env.VITE_AMAZON_UK_MARKETPLACE_ID || null
     
     // Access token cache
     this.accessToken = null
@@ -42,7 +43,7 @@ class AmazonSPAPIService {
       
       return this.accessToken
     } catch (error) {
-      console.error('Failed to get Amazon access token:', error)
+      devLog.error('Failed to get Amazon access token:', error)
       throw new Error('Amazon API authentication failed')
     }
   }
@@ -68,7 +69,7 @@ class AmazonSPAPIService {
         CreatedAfter: params.createdAfter || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
         CreatedBefore: params.createdBefore || new Date().toISOString(),
         OrderStatuses: params.orderStatuses || ['Shipped', 'Delivered'],
-        MaxResultsPerPage: params.maxResults || 50
+        MaxResultsPerPage: params.maxResults 0
       }
 
       const response = await this.client.get('/orders/v0/orders', {
@@ -82,7 +83,7 @@ class AmazonSPAPIService {
         pagination: response.data.payload?.NextToken ? { nextToken: response.data.payload.NextToken } : null
       }
     } catch (error) {
-      console.error('Amazon SP-API orders error:', error)
+      devLog.error('Amazon SP-API orders error:', error)
       return {
         success: false,
         error: this.handleApiError(error),
@@ -105,7 +106,7 @@ class AmazonSPAPIService {
         data: response.data.payload?.OrderItems || []
       }
     } catch (error) {
-      console.error('Amazon SP-API order items error:', error)
+      devLog.error('Amazon SP-API order items error:', error)
       return {
         success: false,
         error: this.handleApiError(error),
@@ -119,7 +120,7 @@ class AmazonSPAPIService {
     try {
       const headers = await this.getAuthHeaders()
       
-      const granularity = params.granularity || 'Day'
+      const granularity = params.granularity || null
       const startDate = params.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
       const endDate = params.endDate || new Date().toISOString().split('T')[0]
 
@@ -140,7 +141,7 @@ class AmazonSPAPIService {
         data: response.data.payload || []
       }
     } catch (error) {
-      console.error('Amazon SP-API sales metrics error:', error)
+      devLog.error('Amazon SP-API sales metrics error:', error)
       return {
         success: false,
         error: this.handleApiError(error),
@@ -169,7 +170,7 @@ class AmazonSPAPIService {
         data: response.data.payload?.inventorySummaries || []
       }
     } catch (error) {
-      console.error('Amazon SP-API inventory error:', error)
+      devLog.error('Amazon SP-API inventory error:', error)
       return {
         success: false,
         error: this.handleApiError(error),
@@ -280,8 +281,8 @@ class AmazonSPAPIService {
         data: {
           amazonOrders: {
             value: totalOrders,
-            change: Math.round((Math.random() * 20 - 10) * 10) / 10,
-            changeType: 'positive',
+            change: 0, // REAL DATA REQUIRED: Must calculate from historical comparison
+            changeType: 'unknown', // REAL DATA REQUIRED: Must determine from actual trend,
             status: 'good',
             trustLevel: 'excellent',
             freshness: 'fresh',
@@ -289,8 +290,8 @@ class AmazonSPAPIService {
           },
           amazonRevenue: {
             value: Math.round(totalRevenue * 100) / 100,
-            change: Math.round((Math.random() * 15 - 5) * 10) / 10,
-            changeType: 'positive',
+            change: 0, // REAL DATA REQUIRED: Must calculate from historical revenue
+            changeType: 'unknown', // REAL DATA REQUIRED: Must determine from actual trend,
             status: 'good',
             trustLevel: 'excellent',
             freshness: 'fresh',
@@ -298,8 +299,8 @@ class AmazonSPAPIService {
           },
           averageOrderValue: {
             value: Math.round(averageOrderValue * 100) / 100,
-            change: Math.round((Math.random() * 10 - 5) * 10) / 10,
-            changeType: Math.random() > 0.5 ? 'positive' : 'negative',
+            change: 0, // REAL DATA REQUIRED: Must calculate from historical AOV
+            changeType: 'unknown', // REAL DATA REQUIRED: Must determine from actual trend,
             status: 'good',
             trustLevel: 'good',
             freshness: 'fresh',
@@ -307,8 +308,8 @@ class AmazonSPAPIService {
           },
           inventoryItems: {
             value: stockLevels,
-            change: Math.round((Math.random() * 5 - 2) * 10) / 10,
-            changeType: 'neutral',
+            change: 0, // REAL DATA REQUIRED: Must calculate from inventory history
+            changeType: 'unknown', // REAL DATA REQUIRED: Must determine from actual trend,
             status: lowStockItems > stockLevels * 0.2 ? 'warning' : 'good',
             trustLevel: 'good',
             freshness: 'recent',
@@ -317,7 +318,7 @@ class AmazonSPAPIService {
         }
       }
     } catch (error) {
-      console.error('Error generating Amazon KPIs:', error)
+      devLog.error('Error generating Amazon KPIs:', error)
       return {
         success: false,
         error: error.message,
@@ -340,7 +341,7 @@ class AmazonSPAPIService {
         case 429:
           return 'Amazon API rate limit exceeded. Please try again later.'
         case 400:
-          return `Bad request: ${data.errors?.[0]?.message || 'Invalid parameters'}`
+          return `Bad request: ${data.errors?.[0]?.message || null}`
         default:
           return `Amazon API error (${status}): ${data.errors?.[0]?.message || error.message}`
       }

@@ -1,0 +1,239 @@
+{
+  "timestamp": "2025-09-06T07:52:21.854Z",
+  "summary": {
+    "totalTests": 27,
+    "totalPassed": 8,
+    "totalWarned": 4,
+    "totalFailed": 15
+  },
+  "environments": [
+    {
+      "environment": "Production",
+      "url": "https://sentia-manufacturing.railway.app",
+      "branch": "production",
+      "tests": [
+        {
+          "name": "SSL Certificate and Domain Resolution",
+          "critical": true,
+          "status": "PASS",
+          "details": "SSL certificate valid, responded with 200",
+          "duration": "671ms"
+        },
+        {
+          "name": "Health Check Endpoints",
+          "critical": true,
+          "status": "FAIL",
+          "details": "invalid json response body at https://sentia-manufacturing.railway.app/health reason: Unexpected token 'O', \"OK\" is not valid JSON",
+          "duration": "159ms"
+        },
+        {
+          "name": "CSS and Static Asset Loading",
+          "critical": true,
+          "status": "FAIL",
+          "details": "No CSS stylesheets found in HTML",
+          "duration": "154ms"
+        },
+        {
+          "name": "API Endpoints Functionality",
+          "critical": true,
+          "status": "PASS",
+          "details": "/api/test: 404, /api/metrics/current: 404, /api/kpis/realtime: 404",
+          "duration": "848ms"
+        },
+        {
+          "name": "Database Connectivity",
+          "critical": true,
+          "status": "FAIL",
+          "details": "Database test failed with 404",
+          "duration": "155ms"
+        },
+        {
+          "name": "AI Forecasting Service",
+          "critical": false,
+          "status": "WARN",
+          "details": "AI Forecasting: Not available - invalid json response body at https://sentia-manufacturing.railway.app/api/ai-forecasting/generate reason: Unexpected token 'N', \"Not Found\" is not valid JSON",
+          "duration": "155ms"
+        },
+        {
+          "name": "Multi-Market Data Validation",
+          "critical": true,
+          "status": "PASS",
+          "details": "UK: ERROR, USA: ERROR, EU: ERROR, ASIA: ERROR",
+          "duration": "750ms"
+        },
+        {
+          "name": "Security Headers Validation",
+          "critical": true,
+          "status": "WARN",
+          "details": "Missing headers: x-content-type-options, x-frame-options, content-security-policy, x-xss-protection",
+          "duration": "155ms"
+        },
+        {
+          "name": "Performance Metrics",
+          "critical": false,
+          "status": "PASS",
+          "details": "Load time: 537ms, HTML size: 0KB",
+          "duration": "537ms"
+        }
+      ],
+      "summary": {
+        "passed": 4,
+        "warned": 2,
+        "failed": 3,
+        "total": 9
+      }
+    },
+    {
+      "environment": "Testing",
+      "url": "https://test.sentia-manufacturing.railway.app",
+      "branch": "test",
+      "tests": [
+        {
+          "name": "SSL Certificate and Domain Resolution",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://test.sentia-manufacturing.railway.app/ failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "100ms"
+        },
+        {
+          "name": "Health Check Endpoints",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://test.sentia-manufacturing.railway.app/health failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "59ms"
+        },
+        {
+          "name": "CSS and Static Asset Loading",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://test.sentia-manufacturing.railway.app/ failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "61ms"
+        },
+        {
+          "name": "API Endpoints Functionality",
+          "critical": true,
+          "status": "PASS",
+          "details": "/api/test: ERROR - request to https://test.sentia-manufacturing.railway.app/api/test failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app, /api/metrics/current: ERROR - request to https://test.sentia-manufacturing.railway.app/api/metrics/current failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app, /api/kpis/realtime: ERROR - request to https://test.sentia-manufacturing.railway.app/api/kpis/realtime failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "180ms"
+        },
+        {
+          "name": "Database Connectivity",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://test.sentia-manufacturing.railway.app/api/db-test failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "56ms"
+        },
+        {
+          "name": "AI Forecasting Service",
+          "critical": false,
+          "status": "WARN",
+          "details": "AI Forecasting: Not available - request to https://test.sentia-manufacturing.railway.app/api/ai-forecasting/generate failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "56ms"
+        },
+        {
+          "name": "Multi-Market Data Validation",
+          "critical": true,
+          "status": "PASS",
+          "details": "UK: ERROR, USA: ERROR, EU: ERROR, ASIA: ERROR",
+          "duration": "232ms"
+        },
+        {
+          "name": "Security Headers Validation",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://test.sentia-manufacturing.railway.app/ failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "56ms"
+        },
+        {
+          "name": "Performance Metrics",
+          "critical": false,
+          "status": "FAIL",
+          "details": "request to https://test.sentia-manufacturing.railway.app/ failed, reason: Hostname/IP does not match certificate's altnames: Host: test.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "47ms"
+        }
+      ],
+      "summary": {
+        "passed": 2,
+        "warned": 1,
+        "failed": 6,
+        "total": 9
+      }
+    },
+    {
+      "environment": "Development",
+      "url": "https://dev.sentia-manufacturing.railway.app",
+      "branch": "development",
+      "tests": [
+        {
+          "name": "SSL Certificate and Domain Resolution",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://dev.sentia-manufacturing.railway.app/ failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "95ms"
+        },
+        {
+          "name": "Health Check Endpoints",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://dev.sentia-manufacturing.railway.app/health failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "51ms"
+        },
+        {
+          "name": "CSS and Static Asset Loading",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://dev.sentia-manufacturing.railway.app/ failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "62ms"
+        },
+        {
+          "name": "API Endpoints Functionality",
+          "critical": true,
+          "status": "PASS",
+          "details": "/api/test: ERROR - request to https://dev.sentia-manufacturing.railway.app/api/test failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app, /api/metrics/current: ERROR - request to https://dev.sentia-manufacturing.railway.app/api/metrics/current failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app, /api/kpis/realtime: ERROR - request to https://dev.sentia-manufacturing.railway.app/api/kpis/realtime failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "155ms"
+        },
+        {
+          "name": "Database Connectivity",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://dev.sentia-manufacturing.railway.app/api/db-test failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "43ms"
+        },
+        {
+          "name": "AI Forecasting Service",
+          "critical": false,
+          "status": "WARN",
+          "details": "AI Forecasting: Not available - request to https://dev.sentia-manufacturing.railway.app/api/ai-forecasting/generate failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "55ms"
+        },
+        {
+          "name": "Multi-Market Data Validation",
+          "critical": true,
+          "status": "PASS",
+          "details": "UK: ERROR, USA: ERROR, EU: ERROR, ASIA: ERROR",
+          "duration": "219ms"
+        },
+        {
+          "name": "Security Headers Validation",
+          "critical": true,
+          "status": "FAIL",
+          "details": "request to https://dev.sentia-manufacturing.railway.app/ failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "42ms"
+        },
+        {
+          "name": "Performance Metrics",
+          "critical": false,
+          "status": "FAIL",
+          "details": "request to https://dev.sentia-manufacturing.railway.app/ failed, reason: Hostname/IP does not match certificate's altnames: Host: dev.sentia-manufacturing.railway.app. is not in the cert's altnames: DNS:railway.app, DNS:*.railway.app",
+          "duration": "48ms"
+        }
+      ],
+      "summary": {
+        "passed": 2,
+        "warned": 1,
+        "failed": 6,
+        "total": 9
+      }
+    }
+  ]
+}

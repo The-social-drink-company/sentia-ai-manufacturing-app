@@ -1,0 +1,68 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:security/recommended"
+  ],
+  "ignorePatterns": [
+    "dist/**",
+    "build/**",
+    "*.min.js",
+    "node_modules/**",
+    "coverage/**",
+    "*.config.js",
+    "*.config.cjs",
+    "*.config.mjs",
+    "public/**",
+    "scripts/**",
+    "tests/**",
+    "mcp-server/**",
+    "database/**",
+    "monitoring/**",
+    "agents/**",
+    "FORCE-*.js",
+    "verify-*.js",
+    "deploy-*.js",
+    "validate-*.js",
+    "railway-*.js",
+    "render-*.js",
+    "auto-fix-*.js"
+  ],
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": {
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_|next", "varsIgnorePattern": "^_" }],
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "no-console": "warn",
+    "no-debugger": "error",
+    "security/detect-object-injection": "warn",
+    "security/detect-non-literal-fs-filename": "off",
+    "security/detect-unsafe-regex": "warn",
+    "react/jsx-no-target-blank": "error",
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "prefer-const": "error",
+    "no-var": "error",
+    "eqeqeq": ["error", "always"],
+    "no-throw-literal": "error",
+    "no-return-await": "error",
+    "require-await": "warn"
+  }
+}

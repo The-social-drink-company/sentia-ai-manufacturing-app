@@ -1,0 +1,42 @@
+# Nodemon ignore file to prevent restart loops
+# Ignore build outputs
+dist/
+build/
+
+# Ignore node modules
+node_modules/
+
+# Ignore logs
+logs/
+*.log
+server_output.log
+dev_output.log
+
+# Ignore test results
+playwright-results.json
+test-results/
+coverage/
+
+# Ignore temporary files
+*.tmp
+*.temp
+.cache/
+
+# Ignore development artifacts
+.vite/
+.turbo/
+
+# Ignore database files
+*.sqlite
+*.db
+
+# Ignore environment files changes during runtime
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore package lock changes
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

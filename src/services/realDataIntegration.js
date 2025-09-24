@@ -1,7 +1,9 @@
+import { devLog } from '../lib/devLog.js';
+
 // Comprehensive Real Data Integration Service
 // Handles all external data sources: Unleashed, Amazon, Shopify, Spreadsheets
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+const API_BASE = process.env.API_BASE_URL || null
 
 class RealDataIntegrationService {
   constructor() {
@@ -68,7 +70,7 @@ class RealDataIntegrationService {
         return data
       }
     } catch (error) {
-      console.error('Unleashed API error:', error)
+      devLog.error('Unleashed API error:', error)
     }
 
     // Return structured empty data instead of null
@@ -117,7 +119,7 @@ class RealDataIntegrationService {
         return data
       }
     } catch (error) {
-      console.error('Amazon SP-API error:', error)
+      devLog.error('Amazon SP-API error:', error)
     }
 
     return this.getDefaultDataStructure(endpoint)
@@ -157,7 +159,7 @@ class RealDataIntegrationService {
         return data
       }
     } catch (error) {
-      console.error('Shopify API error:', error)
+      devLog.error('Shopify API error:', error)
     }
 
     return this.getDefaultDataStructure(endpoint)
@@ -203,7 +205,7 @@ class RealDataIntegrationService {
         }
       }
     } catch (error) {
-      console.error('Spreadsheet upload error:', error)
+      devLog.error('Spreadsheet upload error:', error)
     }
 
     return {
@@ -270,7 +272,7 @@ class RealDataIntegrationService {
         return await response.json()
       }
     } catch (error) {
-      console.error('Production metrics error:', error)
+      devLog.error('Production metrics error:', error)
     }
 
     return {
@@ -285,61 +287,4 @@ class RealDataIntegrationService {
   // ===== HELPER METHODS =====
   calculateEfficiency() {
     // Real calculation would use actual production data
-    return 85 + Math.random() * 10 // 85-95% range
-  }
-
-  calculateQuality() {
-    // Real calculation would use defect rates
-    return 95 + Math.random() * 4 // 95-99% range
-  }
-
-  getDefaultDataStructure(endpoint) {
-    const structures = {
-      'stock-on-hand': { items: [], totalValue: 0 },
-      'sales-orders': { orders: [], totalOrders: 0, totalValue: 0 },
-      'products': { products: [], totalProducts: 0 },
-      'sales': { sales: [], totalRevenue: 0, orderCount: 0 },
-      'inventory': { inventory: [], fbaStock: 0, fbmStock: 0 },
-      'orders': { orders: [], totalOrders: 0, totalRevenue: 0 }
-    }
-    
-    return structures[endpoint] || {}
-  }
-
-  // ===== REAL-TIME UPDATES =====
-  subscribeToUpdates(callback) {
-    // Set up SSE or WebSocket connection
-    const eventSource = new EventSource(`${API_BASE}/events`)
-    
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      callback(data)
-    }
-
-    eventSource.onerror = (error) => {
-      console.error('SSE error:', error)
-      eventSource.close()
-      // Retry connection after delay
-      setTimeout(() => this.subscribeToUpdates(callback), 5000)
-    }
-
-    return eventSource
-  }
-}
-
-// Export singleton instance
-const realDataService = new RealDataIntegrationService()
-export default realDataService
-
-// Named exports for specific functions
-export const {
-  getDashboardKPIs,
-  getInventoryStatus,
-  getProductionMetrics,
-  getUnleashedInventory,
-  getUnleashedOrders,
-  getAmazonSales,
-  getShopifyOrders,
-  uploadSpreadsheet,
-  subscribeToUpdates
-} = realDataService
+    return 85 + 0

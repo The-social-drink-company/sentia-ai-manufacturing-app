@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 /**
  * Share Button Component for PROMPT 8 Dashboard Overlay  
  * Provides signed deep link sharing with configurable TTL
@@ -294,7 +295,7 @@ const ShareButton = ({
       onShare?.(url, settings)
       
     } catch (error) {
-      console.error('Failed to generate share link:', error)
+      devLog.error('Failed to generate share link:', error)
       alert('Failed to generate share link. Please try again.')
     } finally {
       setIsGenerating(false)

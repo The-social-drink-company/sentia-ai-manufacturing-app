@@ -9,7 +9,7 @@ coverage/
 .nyc_output
 
 # Production
-dist/
+# dist/ - Commented out to allow dist deployment for Render
 build/
 
 # Environment files
@@ -90,3 +90,10 @@ scripts/add-master-admins.js
 admin_*.js
 /src/generated/prisma
 nul
+
+# Agent dashboard data
+agent-dashboard-data.json
+
+# Temporary server files
+server-4300.js
+start-port-*.bat

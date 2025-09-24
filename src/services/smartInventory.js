@@ -1,4 +1,4 @@
-/**
+import { devLog } from '../lib/devLog.js';\n/**
  * Smart Inventory Optimization Service - REAL DATA ONLY
  * 
  * Connects to actual inventory systems, ERP databases, and supplier APIs
@@ -10,7 +10,7 @@ import { aiForecasting } from './aiForecasting';
 
 class SmartInventoryService {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    this.baseURL = process.env.API_BASE_URL || null;
     this.initialized = false;
     this.inventoryData = new Map();
     this.suppliers = new Map();
@@ -34,14 +34,14 @@ class SmartInventoryService {
     if (this.initialized) return;
     
     try {
-      console.log('Initializing Smart Inventory Service...');
+      devLog.log('Initializing Smart Inventory Service...');
       await this.loadInventoryData();
       await this.loadSupplierData();
       await this.loadDemandHistory();
       this.initialized = true;
-      console.log('Smart Inventory Service initialized successfully');
+      devLog.log('Smart Inventory Service initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize Smart Inventory Service:', error);
+      devLog.error('Failed to initialize Smart Inventory Service:', error);
     }
   }
 
@@ -73,7 +73,7 @@ class SmartInventoryService {
           });
         }
       } catch (unleashedError) {
-        console.error('Unable to connect to inventory systems:', error);
+        devLog.error('Unable to connect to inventory systems:', error);
         // No mock data - keep inventoryData empty
       }
     }
@@ -100,7 +100,7 @@ class SmartInventoryService {
           });
         }
       } catch (erpError) {
-        console.error('Unable to retrieve supplier data:', error);
+        devLog.error('Unable to retrieve supplier data:', error);
         // No mock data - keep suppliers empty
       }
     }
@@ -133,7 +133,7 @@ class SmartInventoryService {
           });
         }
       } catch (salesError) {
-        console.error('Unable to load demand history:', error);
+        devLog.error('Unable to load demand history:', error);
         // No mock data - keep demandHistory empty
       }
     }
@@ -240,7 +240,7 @@ class SmartInventoryService {
         };
       }
     } catch (error) {
-      console.warn(`AI forecasting failed for ${sku}, falling back to statistical:`, error.message);
+      devLog.warn(`AI forecasting failed for ${sku}, falling back to statistical:`, error.message);
     }
     
     // Fallback to statistical forecasting
@@ -263,7 +263,7 @@ class SmartInventoryService {
     
     // Economic Order Quantity (EOQ)
     const annualDemand = avgDemand * 365;
-    const orderingCost = item.orderingCost || 100;
+    const orderingCost = item.orderingCost 0;
     const holdingCost = item.unitCost * this.optimizationParams.holdingCostRate;
     const eoq = Math.sqrt((2 * annualDemand * orderingCost) / holdingCost);
     
@@ -379,7 +379,7 @@ class SmartInventoryService {
         };
       }
     } catch (error) {
-      console.warn('AI insights unavailable, falling back to statistical analysis:', error.message);
+      devLog.warn('AI insights unavailable, falling back to statistical analysis:', error.message);
     }
     
     // Fallback to rule-based insights

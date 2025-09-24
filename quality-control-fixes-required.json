@@ -1,11 +1,6 @@
 {
-<<<<<<< HEAD
-  "timestamp": 1757067116786,
-  "cycle": 8,
-=======
-  "timestamp": 1757070129306,
-  "cycle": 13,
->>>>>>> 0fe789259365b46f21b84b2a9395c6af295ce12b
+  "timestamp": 1757100373073,
+  "cycle": 5,
   "criticalCount": 1,
   "warningCount": 0,
   "requirements": [

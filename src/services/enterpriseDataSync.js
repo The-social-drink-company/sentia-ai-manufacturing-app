@@ -1,4 +1,4 @@
-// Enterprise Data Synchronization Service
+import { devLog } from '../lib/devLog.js';\n// Enterprise Data Synchronization Service
 // Provides real-time synchronization across all data sources
 // Ensures 100% data accuracy and live updates
 
@@ -22,7 +22,7 @@ class EnterpriseDataSyncService {
 
   // Initialize all data synchronization
   async initialize() {
-    console.log('Initializing Enterprise Data Sync Service...')
+    devLog.log('Initializing Enterprise Data Sync Service...')
     
     // Start periodic sync
     this.startPeriodicSync()
@@ -170,13 +170,13 @@ class EnterpriseDataSyncService {
 
   // Initialize Server-Sent Events for real-time updates
   initializeSSE() {
-    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+    const API_BASE = process.env.API_BASE_URL || 'http://localhost:5000/api'
     
     try {
       this.eventSource = new EventSource(`${API_BASE}/events`)
       
       this.eventSource.onopen = () => {
-        console.log('SSE connection established')
+        devLog.log('SSE connection established')
         this.retryCount = 0
       }
 
@@ -185,12 +185,12 @@ class EnterpriseDataSyncService {
           const data = JSON.parse(event.data)
           this.handleSSEUpdate(data)
         } catch (error) {
-          console.error('Error parsing SSE data:', error)
+          devLog.error('Error parsing SSE data:', error)
         }
       }
 
       this.eventSource.onerror = (error) => {
-        console.error('SSE error:', error)
+        devLog.error('SSE error:', error)
         this.handleSSEError()
       }
 
@@ -212,7 +212,7 @@ class EnterpriseDataSyncService {
       })
 
     } catch (error) {
-      console.error('Failed to initialize SSE:', error)
+      devLog.error('Failed to initialize SSE:', error)
       this.scheduleSSEReconnect()
     }
   }
@@ -235,7 +235,7 @@ class EnterpriseDataSyncService {
         this.handleMetricsUpdate(payload)
         break
       default:
-        console.log('Unhandled SSE event type:', type)
+        devLog.log('Unhandled SSE event type:', type)
     }
 
     // Notify listeners
@@ -244,7 +244,7 @@ class EnterpriseDataSyncService {
 
   // Handle inventory updates
   handleInventoryUpdate(data) {
-    console.log('Inventory update received:', data)
+    devLog.log('Inventory update received:', data)
     // Invalidate relevant queries
     if (window.queryClient) {
       window.queryClient.invalidateQueries(['inventory'])
@@ -254,7 +254,7 @@ class EnterpriseDataSyncService {
 
   // Handle new orders
   handleOrderCreated(data) {
-    console.log('New order created:', data)
+    devLog.log('New order created:', data)
     // Invalidate relevant queries
     if (window.queryClient) {
       window.queryClient.invalidateQueries(['orders'])
@@ -265,7 +265,7 @@ class EnterpriseDataSyncService {
 
   // Handle forecast updates
   handleForecastUpdate(data) {
-    console.log('Forecast update received:', data)
+    devLog.log('Forecast update received:', data)
     if (window.queryClient) {
       window.queryClient.invalidateQueries(['forecasts'])
       window.queryClient.invalidateQueries(['demand'])
@@ -274,7 +274,7 @@ class EnterpriseDataSyncService {
 
   // Handle production updates
   handleProductionUpdate(data) {
-    console.log('Production update received:', data)
+    devLog.log('Production update received:', data)
     if (window.queryClient) {
       window.queryClient.invalidateQueries(['production'])
       window.queryClient.invalidateQueries(['manufacturing'])
@@ -285,10 +285,10 @@ class EnterpriseDataSyncService {
   handleSSEError() {
     if (this.retryCount < this.maxRetries) {
       this.retryCount++
-      console.log(`SSE reconnection attempt ${this.retryCount}/${this.maxRetries}`)
+      devLog.log(`SSE reconnection attempt ${this.retryCount}/${this.maxRetries}`)
       this.scheduleSSEReconnect()
     } else {
-      console.error('Max SSE reconnection attempts reached')
+      devLog.error('Max SSE reconnection attempts reached')
       this.fallbackToPolling()
     }
   }
@@ -303,7 +303,7 @@ class EnterpriseDataSyncService {
 
   // Fallback to polling if SSE fails
   fallbackToPolling() {
-    console.log('Falling back to polling mode')
+    devLog.log('Falling back to polling mode')
     this.startPeriodicSync()
   }
 
@@ -326,7 +326,7 @@ class EnterpriseDataSyncService {
       try {
         await this.syncSource(source)
       } catch (error) {
-        console.error(`Error syncing ${source}:`, error)
+        devLog.error(`Error syncing ${source}:`, error)
       }
     }
   }
@@ -355,7 +355,7 @@ class EnterpriseDataSyncService {
       case 'shopify':
         return await this.syncShopify()
       default:
-        console.warn(`Unknown sync source: ${source}`)
+        devLog.warn(`Unknown sync source: ${source}`)
     }
   }
 
@@ -374,7 +374,7 @@ class EnterpriseDataSyncService {
     // Send to all connected clients via SSE
     if (this.eventSource && this.eventSource.readyState === EventSource.OPEN) {
       // Server would broadcast this to all clients
-      console.log('Sync completed:', results)
+      devLog.log('Sync completed:', results)
     }
 
     // Update local state
@@ -398,7 +398,7 @@ class EnterpriseDataSyncService {
 
   // Handle alerts
   handleAlert(payload) {
-    console.log('Alert received:', payload)
+    devLog.log('Alert received:', payload)
     // Could show toast notification here
   }
 
@@ -432,7 +432,7 @@ class EnterpriseDataSyncService {
         try {
           callback(data)
         } catch (error) {
-          console.error('Error in event listener:', error)
+          devLog.error('Error in event listener:', error)
         }
       })
     }
@@ -466,9 +466,9 @@ const enterpriseDataSync = new EnterpriseDataSyncService()
 // Auto-initialize on import
 if (typeof window !== 'undefined') {
   enterpriseDataSync.initialize().then(() => {
-    console.log('Enterprise data sync service initialized')
+    devLog.log('Enterprise data sync service initialized')
   }).catch(error => {
-    console.error('Failed to initialize enterprise data sync:', error)
+    devLog.error('Failed to initialize enterprise data sync:', error)
   })
 }
 

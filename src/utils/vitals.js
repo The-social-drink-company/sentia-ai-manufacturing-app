@@ -1,6 +1,8 @@
 // Web Vitals Collection Utility
 // Captures Core Web Vitals metrics for performance monitoring
 
+import { devLog } from '../lib/devLog';
+
 /**
  * Collects web vitals metrics and sends to telemetry endpoint
  * @param {Object} metric - Web vital metric data
@@ -37,7 +39,7 @@ export async function initVitals() {
                        process.env.VITE_COLLECT_VITALS === 'true';
   
   if (!shouldCollect) {
-    console.log('Web vitals collection disabled');
+    devLog.log('Web vitals collection disabled');
     return;
   }
 
@@ -52,9 +54,9 @@ export async function initVitals() {
     getLCP(sendToAnalytics);
     getTTFB(sendToAnalytics);
     
-    console.log('Web vitals collection initialized');
+    devLog.log('Web vitals collection initialized');
   } catch (error) {
-    console.warn('Failed to initialize web vitals:', error);
+    devLog.warn('Failed to initialize web vitals:', error);
   }
 }
 
@@ -139,7 +141,7 @@ export function monitorResourceTiming() {
   try {
     observer.observe({ entryTypes: ['resource'] });
   } catch (error) {
-    console.warn('Resource timing monitoring not supported:', error);
+    devLog.warn('Resource timing monitoring not supported:', error);
   }
 }
 
@@ -163,7 +165,7 @@ export function monitorLongTasks() {
   try {
     observer.observe({ entryTypes: ['longtask'] });
   } catch (error) {
-    console.warn('Long task monitoring not supported:', error);
+    devLog.warn('Long task monitoring not supported:', error);
   }
 }
 

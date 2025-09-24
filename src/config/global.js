@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 // Global Configuration Module
 // Provides global readiness settings for multi-region support
 
@@ -29,34 +30,84 @@ const GlobalConfigSchema = z.object({
     MULTI_CURRENCY_SUPPORT: z.boolean().default(false),
     REGIONAL_HOLIDAYS: z.boolean().default(false),
     BOARD_PACK_EXPORT: z.boolean().default(false)
+  }).default({}),
+  FINANCEFLO_LEAD_TIMES: z.object({
+    UK: z.object({
+      meanDays: z.number().default(21),
+      minDays: z.number().default(14),
+      maxDays: z.number().default(28),
+      variabilityLevel: z.enum(['low', 'medium', 'high']).default('medium')
+    }).default({}),
+    EU: z.object({
+      meanDays: z.number().default(28),
+      minDays: z.number().default(21),
+      maxDays: z.number().default(35),
+      variabilityLevel: z.enum(['low', 'medium', 'high']).default('high')
+    }).default({}),
+    USA: z.object({
+      meanDays: z.number().default(42),
+      minDays: z.number().default(28),
+      maxDays: z.number().default(56),
+      variabilityLevel: z.enum(['low', 'medium', 'high']).default('high')
+    }).default({})
   }).default({})
 });
 
-// Environment variable mapping
-const getEnvValue = (key, defaultValue) => {
-  const envValue = process.env[key];
-  if (!envValue) return defaultValue;
-  
+// Environment variable mapping (works in both client and server)
+const readRawEnv = (key) => {
+  // Prefer Vite client env if available
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta.env && key in import.meta.env) {
+      return import.meta.env[key];
+    }
+  } catch (_) {
+    // ignore if not in Vite context
+  }
+
+  // Fallback to Node.js env
+  try {
+    if (typeof process !== 'undefined' && process.env && key in process.env) {
+      return process.env[key];
+    }
+  } catch (_) {
+    // ignore if not in Node context
+  }
+
+  return undefined;
+};
+
+const coerceEnvType = (rawValue, defaultValue) => {
+  if (rawValue == null) return defaultValue;
+
   // Handle arrays
   if (Array.isArray(defaultValue)) {
-    return envValue.split(',').map(item => item.trim());
+    return String(rawValue).split(',').map(item => item.trim());
   }
-  
+
   // Handle objects
   if (typeof defaultValue === 'object' && defaultValue !== null) {
     try {
-      return JSON.parse(envValue);
+      return typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue;
     } catch {
       return defaultValue;
     }
   }
-  
+
   // Handle booleans
   if (typeof defaultValue === 'boolean') {
-    return envValue.toLowerCase() === 'true';
+    const normalized = String(rawValue).toLowerCase();
+    if (['true', '1', 'yes', 'y', 'on'].includes(normalized)) return true;
+    if (['false', '0', 'no', 'n', 'off'].includes(normalized)) return false;
+    return defaultValue;
   }
-  
-  return envValue;
+
+  return rawValue;
+};
+
+const getEnvValue = (key, defaultValue) => {
+  const raw = readRawEnv(key);
+  if (raw == null || raw === '') return defaultValue;
+  return coerceEnvType(raw, defaultValue);
 };
 
 // Load configuration from environment with defaults
@@ -86,13 +137,33 @@ const loadGlobalConfig = () => {
       MULTI_CURRENCY_SUPPORT: false,
       REGIONAL_HOLIDAYS: false,
       BOARD_PACK_EXPORT: false
+    }),
+    FINANCEFLO_LEAD_TIMES: getEnvValue('FINANCEFLO_LEAD_TIMES', {
+      UK: {
+        meanDays: 21,
+        minDays: 14,
+        maxDays: 28,
+        variabilityLevel: 'medium'
+      },
+      EU: {
+        meanDays: 28,
+        minDays: 21,
+        maxDays: 35,
+        variabilityLevel: 'high'
+      },
+      USA: {
+        meanDays: 42,
+        minDays: 28,
+        maxDays: 56,
+        variabilityLevel: 'high'
+      }
     })
   };
 
   try {
     return GlobalConfigSchema.parse(config);
   } catch (error) {
-    console.error('Global configuration validation failed:', error.errors);
+    devLog.error('Global configuration validation failed:', error.errors);
     // Return default configuration if validation fails
     return GlobalConfigSchema.parse({});
   }
@@ -156,6 +227,34 @@ export const getFxConfig = () => ({
 
 export const getComplianceConfig = () => GLOBAL_CONFIG.COMPLIANCE_FEATURES;
 
+// FinanceFlo Lead Time Configuration
+export const getLeadTimeConfig = (region = null) => {
+  if (!region) return GLOBAL_CONFIG.FINANCEFLO_LEAD_TIMES.UK;
+  
+  return GLOBAL_CONFIG.FINANCEFLO_LEAD_TIMES[region] || GLOBAL_CONFIG.FINANCEFLO_LEAD_TIMES.UK;
+};
+
+export const getRegionLeadTimeDays = (region = 'UK') => {
+  const config = getLeadTimeConfig(region);
+  return config.meanDays;
+};
+
+export const getRegionLeadTimeVariability = (region = 'UK') => {
+  const config = getLeadTimeConfig(region);
+  const variabilityMap = {
+    'low': 0.1,      // 10% coefficient of variation
+    'medium': 0.25,  // 25% coefficient of variation  
+    'high': 0.4      // 40% coefficient of variation
+  };
+  return variabilityMap[config.variabilityLevel] || 0.25;
+};
+
+export const getRegionLeadTimeStdDev = (region = 'UK') => {
+  const meanDays = getRegionLeadTimeDays(region);
+  const variability = getRegionLeadTimeVariability(region);
+  return meanDays * variability;
+};
+
 // Format number according to locale and currency
 export const formatCurrency = (amount, currency = null, locale = null) => {
   const actualCurrency = currency || GLOBAL_CONFIG.DEFAULT_BASE_CURRENCY;
@@ -199,9 +298,9 @@ export const formatDate = (date, locale = null, timezone = null, options = {}) =
 export const getHolidayConfig = (region = 'UK') => {
   // This would be expanded to integrate with holiday providers
   const holidayProviders = {
-    UK: { provider: 'uk-gov', apiKey: process.env.UK_HOLIDAY_API_KEY },
-    EU: { provider: 'european-central-bank', apiKey: process.env.EU_HOLIDAY_API_KEY },
-    USA: { provider: 'federal-reserve', apiKey: process.env.US_HOLIDAY_API_KEY }
+    UK: { provider: 'uk-gov', apiKey: getEnvValue('UK_HOLIDAY_API_KEY', '') },
+    EU: { provider: 'european-central-bank', apiKey: getEnvValue('EU_HOLIDAY_API_KEY', '') },
+    USA: { provider: 'federal-reserve', apiKey: getEnvValue('US_HOLIDAY_API_KEY', '') }
   };
   
   return holidayProviders[region] || holidayProviders.UK;
@@ -260,7 +359,7 @@ export const auditConfigChange = (userId, changes, previousConfig) => {
   };
   
   // In production, this would send to audit log service
-  console.log('Configuration audit:', auditEntry);
+  devLog.log('Configuration audit:', auditEntry);
   return auditEntry;
 };
 

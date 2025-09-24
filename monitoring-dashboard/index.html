@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentia Manufacturing - Autonomous Testing Monitor</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .enterprise-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .status-excellent { @apply bg-emerald-500 text-white; }
+        .status-good { @apply bg-blue-500 text-white; }
+        .status-fair { @apply bg-yellow-500 text-black; }
+        .status-poor { @apply bg-red-500 text-white; }
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .log-terminal {
+            background: #1a1a1a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-healthy { background-color: #10b981; }
+        .status-degraded { background-color: #f59e0b; }
+        .status-down { background-color: #ef4444; }
+        .status-unknown { background-color: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="enterprise-gradient text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-shield-alt text-2xl"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold">Sentia Manufacturing Dashboard</h1>
+                        <p class="text-sm opacity-90">Autonomous Testing & Self-Healing Monitor</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="connectionStatus" class="flex items-center">
+                        <span class="pulse-dot bg-green-400"></span>
+                        <span class="text-sm">Connected</span>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm opacity-90">System Health</div>
+                        <div id="systemHealth" class="text-lg font-bold">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="container mx-auto px-6 py-8">
+        <!-- System Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Testing Suite Status -->
+            <div class="metric-card rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Testing Suite</h3>
+                    <i class="fas fa-vial text-2xl text-blue-500"></i>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <span id="testingStatus" class="status-indicator status-unknown"></span>
+                        <span id="testingStatusText" class="text-sm">Initializing...</span>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800" id="testResults">0/0</div>
+                    <div class="text-xs text-gray-500" id="lastTestRun">No recent runs</div>
+                </div>
+            </div>
+
+            <!-- Self-Healing Status -->
+            <div class="metric-card rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Self-Healing</h3>
+                    <i class="fas fa-tools text-2xl text-green-500"></i>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <span id="healingStatus" class="status-indicator status-healthy"></span>
+                        <span class="text-sm">Active</span>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800" id="fixesCount">0</div>
+                    <div class="text-xs text-gray-500" id="fixesThisHour">0 fixes this hour</div>
+                </div>
+            </div>
+
+            <!-- API Health -->
+            <div class="metric-card rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">API Services</h3>
+                    <i class="fas fa-server text-2xl text-purple-500"></i>
+                </div>
+                <div class="space-y-1" id="apiHealthList">
+                    <div class="flex items-center justify-between text-sm">
+                        <span>Main App (5000)</span>
+                        <span class="status-indicator status-unknown"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span>Frontend (3000)</span>
+                        <span class="status-indicator status-unknown"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deployment Status -->
+            <div class="metric-card rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Deployment</h3>
+                    <i class="fas fa-rocket text-2xl text-orange-500"></i>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <span id="deploymentStatus" class="status-indicator status-healthy"></span>
+                        <span class="text-sm">Monitoring</span>
+                    </div>
+                    <div class="text-xs text-gray-500" id="lastDeploy">No recent deploys</div>
+                    <div class="text-xs text-blue-600" id="railwayStatus">Railway Connected</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Real-time Metrics Chart -->
+            <div class="metric-card rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">System Performance</h3>
+                    <button id="refreshMetrics" class="text-blue-500 hover:text-blue-700">
+                        <i class="fas fa-refresh"></i>
+                    </button>
+                </div>
+                <div class="h-64">
+                    <canvas id="metricsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- What-If Analysis Monitor -->
+            <div class="metric-card rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">What-If Analysis</h3>
+                    <i class="fas fa-chart-line text-blue-500"></i>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Active Users</span>
+                        <span id="activeUsers" class="font-bold text-lg">0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Calculations/Min</span>
+                        <span id="calculationsPerMin" class="font-bold text-lg">0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Avg Response Time</span>
+                        <span id="avgResponseTime" class="font-bold text-lg">0ms</span>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg p-3">
+                        <div class="text-xs text-gray-500 mb-1">System Status</div>
+                        <div id="whatifStatus" class="text-sm font-semibold text-green-600">Operational</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="metric-card rounded-xl p-6 shadow-lg mb-8">
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Control Panel</h3>
+            <div class="flex flex-wrap gap-4">
+                <button id="triggerTests" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-play mr-2"></i>
+                    Trigger Test Run
+                </button>
+                <button id="viewLogs" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-file-alt mr-2"></i>
+                    View Logs
+                </button>
+                <button id="systemReport" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-download mr-2"></i>
+                    Export Report
+                </button>
+                <button id="pauseMonitoring" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-pause mr-2"></i>
+                    Pause Monitoring
+                </button>
+            </div>
+        </div>
+
+        <!-- Live Logs Terminal -->
+        <div class="metric-card rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gray-800 px-6 py-3 flex items-center justify-between">
+                <h3 class="text-white font-semibold">Live System Logs</h3>
+                <div class="flex space-x-2">
+                    <button id="clearLogs" class="text-gray-300 hover:text-white">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button id="expandLogs" class="text-gray-300 hover:text-white">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="liveTerminal" class="log-terminal p-4 text-sm">
+                <div class="text-green-400">[SYSTEM] Enterprise Monitoring Dashboard Initialized</div>
+                <div class="text-blue-400">[INFO] Connecting to autonomous testing system...</div>
+                <div class="text-yellow-400">[STATUS] Awaiting system metrics...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 text-center">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
+            <p class="text-lg font-semibold">Processing...</p>
+        </div>
+    </div>
+
+    <script>
+        // Enterprise Monitoring Dashboard JavaScript
+        class MonitoringDashboard {
+            constructor() {
+                this.socket = io();
+                this.metricsChart = null;
+                this.systemMetrics = {};
+                this.isConnected = false;
+                
+                this.initializeSocket();
+                this.initializeChart();
+                this.bindEvents();
+                this.startPerformanceMonitoring();
+            }
+
+            initializeSocket() {
+                this.socket.on('connect', () => {
+                    this.isConnected = true;
+                    this.updateConnectionStatus(true);
+                    this.addLogEntry('[WEBSOCKET] Connected to monitoring server', 'success');
+                });
+
+                this.socket.on('disconnect', () => {
+                    this.isConnected = false;
+                    this.updateConnectionStatus(false);
+                    this.addLogEntry('[WEBSOCKET] Disconnected from monitoring server', 'error');
+                });
+
+                this.socket.on('system-status', (data) => {
+                    this.updateSystemMetrics(data);
+                });
+
+                this.socket.on('metrics-update', (data) => {
+                    this.updateSystemMetrics(data.metrics);
+                    this.updateSystemHealth(data.health);
+                });
+
+                this.socket.on('test-output', (data) => {
+                    this.addLogEntry(`[TEST] ${data.data}`, data.type === 'stderr' ? 'error' : 'info');
+                });
+
+                this.socket.on('test-completed', (data) => {
+                    this.addLogEntry(`[TEST] Completed with exit code: ${data.exitCode}`, 
+                        data.exitCode === 0 ? 'success' : 'error');
+                });
+
+                this.socket.on('log-updated', (data) => {
+                    this.addLogEntry(`[${data.file.toUpperCase()}] Log updated at ${new Date(data.timestamp).toLocaleTimeString()}`, 'info');
+                });
+            }
+
+            updateConnectionStatus(connected) {
+                const statusEl = document.getElementById('connectionStatus');
+                const dot = statusEl.querySelector('.pulse-dot');
+                const text = statusEl.querySelector('span:last-child');
+                
+                if (connected) {
+                    dot.className = 'pulse-dot bg-green-400';
+                    text.textContent = 'Connected';
+                } else {
+                    dot.className = 'pulse-dot bg-red-400';
+                    text.textContent = 'Disconnected';
+                }
+            }
+
+            updateSystemMetrics(metrics) {
+                this.systemMetrics = metrics;
+                
+                // Update testing suite
+                if (metrics.testingSuite) {
+                    const status = metrics.testingSuite.status;
+                    document.getElementById('testingStatus').className = `status-indicator ${this.getStatusClass(status)}`;
+                    document.getElementById('testingStatusText').textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                    document.getElementById('testResults').textContent = `${metrics.testingSuite.passedTests}/${metrics.testingSuite.totalTests}`;
+                    
+                    if (metrics.testingSuite.lastRun) {
+                        document.getElementById('lastTestRun').textContent = `Last run: ${new Date(metrics.testingSuite.lastRun).toLocaleTimeString()}`;
+                    }
+                }
+
+                // Update self-healing
+                if (metrics.selfHealing) {
+                    document.getElementById('fixesCount').textContent = metrics.selfHealing.totalFixes;
+                    document.getElementById('fixesThisHour').textContent = `${metrics.selfHealing.fixesThisHour} fixes this hour`;
+                }
+
+                // Update API health
+                if (metrics.apiHealth) {
+                    this.updateApiHealth(metrics.apiHealth);
+                }
+
+                // Update What-If Analysis
+                if (metrics.whatIfAnalysis) {
+                    document.getElementById('activeUsers').textContent = metrics.whatIfAnalysis.activeUsers;
+                    document.getElementById('calculationsPerMin').textContent = metrics.whatIfAnalysis.calculationsPerMinute;
+                    document.getElementById('avgResponseTime').textContent = `${metrics.whatIfAnalysis.avgResponseTime}ms`;
+                    document.getElementById('whatifStatus').textContent = metrics.whatIfAnalysis.status.charAt(0).toUpperCase() + metrics.whatIfAnalysis.status.slice(1);
+                }
+            }
+
+            updateApiHealth(apiHealth) {
+                const container = document.getElementById('apiHealthList');
+                container.innerHTML = '';
+                
+                Object.entries(apiHealth).forEach(([name, health]) => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between text-sm';
+                    div.innerHTML = `
+                        <span>${name} (${health.port})</span>
+                        <span class="status-indicator ${this.getStatusClass(health.status)}"></span>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            updateSystemHealth(health) {
+                const healthEl = document.getElementById('systemHealth');
+                healthEl.textContent = `${health.score}% ${health.status.toUpperCase()}`;
+                healthEl.className = `text-lg font-bold ${this.getHealthColor(health.status)}`;
+            }
+
+            getStatusClass(status) {
+                const statusMap = {
+                    'healthy': 'status-healthy',
+                    'active': 'status-healthy',
+                    'passing': 'status-healthy',
+                    'operational': 'status-healthy',
+                    'degraded': 'status-degraded',
+                    'running': 'status-degraded',
+                    'down': 'status-down',
+                    'failing': 'status-down',
+                    'error': 'status-down',
+                    'unknown': 'status-unknown'
+                };
+                return statusMap[status] || 'status-unknown';
+            }
+
+            getHealthColor(status) {
+                const colorMap = {
+                    'excellent': 'text-green-500',
+                    'good': 'text-blue-500',
+                    'fair': 'text-yellow-500',
+                    'poor': 'text-red-500'
+                };
+                return colorMap[status] || 'text-gray-500';
+            }
+
+            initializeChart() {
+                const ctx = document.getElementById('metricsChart').getContext('2d');
+                this.metricsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Test Pass Rate',
+                            data: [],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'API Response Time',
+                            data: [],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            bindEvents() {
+                document.getElementById('triggerTests').addEventListener('click', () => {
+                    this.showLoading(true);
+                    this.socket.emit('trigger-test-run');
+                    this.addLogEntry('[USER] Manual test execution triggered', 'info');
+                    setTimeout(() => this.showLoading(false), 2000);
+                });
+
+                document.getElementById('clearLogs').addEventListener('click', () => {
+                    document.getElementById('liveTerminal').innerHTML = '';
+                    this.addLogEntry('[SYSTEM] Terminal cleared', 'info');
+                });
+
+                document.getElementById('refreshMetrics').addEventListener('click', () => {
+                    this.fetchSystemStatus();
+                });
+
+                document.getElementById('systemReport').addEventListener('click', () => {
+                    this.exportSystemReport();
+                });
+            }
+
+            async fetchSystemStatus() {
+                try {
+                    const response = await fetch('/api/monitoring/status');
+                    const data = await response.json();
+                    this.updateSystemMetrics(data.metrics);
+                    this.updateSystemHealth(data.systemHealth);
+                    this.addLogEntry('[API] System status refreshed', 'success');
+                } catch (error) {
+                    this.addLogEntry(`[ERROR] Failed to fetch system status: ${error.message}`, 'error');
+                }
+            }
+
+            exportSystemReport() {
+                const report = {
+                    timestamp: new Date().toISOString(),
+                    systemMetrics: this.systemMetrics,
+                    exportedBy: 'Enterprise Monitoring Dashboard'
+                };
+                
+                const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sentia-system-report-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                this.addLogEntry('[EXPORT] System report generated and downloaded', 'success');
+            }
+
+            addLogEntry(message, type = 'info') {
+                const terminal = document.getElementById('liveTerminal');
+                const timestamp = new Date().toLocaleTimeString();
+                const colorClass = {
+                    'info': 'text-blue-400',
+                    'success': 'text-green-400',
+                    'error': 'text-red-400',
+                    'warning': 'text-yellow-400'
+                }[type] || 'text-gray-400';
+                
+                const logLine = document.createElement('div');
+                logLine.className = colorClass;
+                logLine.textContent = `[${timestamp}] ${message}`;
+                
+                terminal.appendChild(logLine);
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                // Keep only last 100 log entries
+                const lines = terminal.children;
+                if (lines.length > 100) {
+                    terminal.removeChild(lines[0]);
+                }
+            }
+
+            showLoading(show) {
+                const overlay = document.getElementById('loadingOverlay');
+                overlay.style.display = show ? 'flex' : 'none';
+            }
+
+            startPerformanceMonitoring() {
+                setInterval(() => {
+                    this.fetchSystemStatus();
+                }, 30000); // Refresh every 30 seconds
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.dashboard = new MonitoringDashboard();
+        });
+    </script>
+</body>
+</html>

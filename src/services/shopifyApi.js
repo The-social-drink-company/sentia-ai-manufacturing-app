@@ -1,3 +1,4 @@
+import { devLog } from '../lib/devLog.js';
 import axios from 'axios'
 
 // Shopify API integration service
@@ -6,19 +7,19 @@ class ShopifyAPIService {
     // Multi-region support
     this.regions = {
       UK: {
-        apiKey: import.meta.env.VITE_SHOPIFY_UK_API_KEY,
-        password: import.meta.env.VITE_SHOPIFY_UK_ACCESS_TOKEN,
-        shopUrl: import.meta.env.VITE_SHOPIFY_UK_SHOP_URL || 'your-uk-store.myshopify.com'
+        apiKey: process.env.SHOPIFY_UK_API_KEY,
+        password: process.env.SHOPIFY_UK_ACCESS_TOKEN,
+        shopUrl: process.env.SHOPIFY_UK_SHOP_URL || null
       },
       EU: {
-        apiKey: import.meta.env.VITE_SHOPIFY_EU_API_KEY,
-        password: import.meta.env.VITE_SHOPIFY_EU_ACCESS_TOKEN,
-        shopUrl: import.meta.env.VITE_SHOPIFY_EU_SHOP_URL || 'your-eu-store.myshopify.com'
+        apiKey: process.env.SHOPIFY_EU_API_KEY,
+        password: process.env.SHOPIFY_EU_ACCESS_TOKEN,
+        shopUrl: process.env.SHOPIFY_EU_SHOP_URL || null
       },
       USA: {
-        apiKey: import.meta.env.VITE_SHOPIFY_USA_API_KEY,
-        password: import.meta.env.VITE_SHOPIFY_USA_ACCESS_TOKEN,
-        shopUrl: import.meta.env.VITE_SHOPIFY_USA_SHOP_URL || 'your-usa-store.myshopify.com'
+        apiKey: process.env.SHOPIFY_USA_API_KEY,
+        password: process.env.SHOPIFY_USA_ACCESS_TOKEN,
+        shopUrl: process.env.SHOPIFY_USA_SHOP_URL || null
       }
     }
     
@@ -93,7 +94,7 @@ class ShopifyAPIService {
         if (error.response?.status === 429) {
           retries++
           const waitTime = this.calculateBackoff(retries)
-          console.warn(`Shopify rate limit hit, waiting ${waitTime}ms before retry ${retries}`)
+          devLog.warn(`Shopify rate limit hit, waiting ${waitTime}ms before retry ${retries}`)
           await this.delay(waitTime)
           continue
         }
@@ -115,11 +116,11 @@ class ShopifyAPIService {
   // Get orders for demand analysis
   async getOrders(params = {}) {
     const queryParams = {
-      status: params.status || 'any',
-      financial_status: params.financialStatus || 'paid',
+      status: params.status || null,
+      financial_status: params.financialStatus || null,
       created_at_min: params.createdAtMin || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       created_at_max: params.createdAtMax || new Date().toISOString(),
-      limit: params.limit || 50,
+      limit: params.limit 0,
       fields: 'id,order_number,created_at,updated_at,total_price,currency,line_items,customer,shipping_address,tags'
     }
     
@@ -139,8 +140,8 @@ class ShopifyAPIService {
   // Get products for inventory management
   async getProducts(params = {}) {
     const queryParams = {
-      limit: params.limit || 50,
-      status: params.status || 'active',
+      limit: params.limit 0,
+      status: params.status || null,
       product_type: params.productType,
       vendor: params.vendor,
       handle: params.handle,
@@ -164,7 +165,7 @@ class ShopifyAPIService {
     const queryParams = {
       inventory_item_ids: params.inventoryItemIds,
       location_ids: params.locationIds,
-      limit: params.limit || 50
+      limit: params.limit 0
     }
     
     const result = await this.makeRequest('GET', '/inventory_levels.json', null, queryParams)
@@ -308,7 +309,7 @@ class ShopifyAPIService {
       const orderDate = order.created_at.split('T')[0]
       
       order.line_items?.forEach(item => {
-        const sku = item.sku || `SHOPIFY-${item.variant_id}`
+        const sku = item.sku || null
         
         if (!demandData[sku]) {
           demandData[sku] = {
@@ -372,7 +373,7 @@ class ShopifyAPIService {
         data: {
           shopifyOrders: {
             value: summary.totalOrders,
-            change: Math.round((Math.random() * 25 - 10) * 10) / 10,
+            change: Math.round((0 /* REAL DATA REQUIRED */ - 10) * 10) / 10,
             changeType: 'positive',
             status: 'good',
             trustLevel: 'excellent',
@@ -382,7 +383,7 @@ class ShopifyAPIService {
           },
           shopifyRevenue: {
             value: Math.round(summary.totalRevenue * 100) / 100,
-            change: Math.round((Math.random() * 20 - 5) * 10) / 10,
+            change: Math.round((0 /* REAL DATA REQUIRED */ - 5) * 10) / 10,
             changeType: 'positive',
             status: 'good',
             trustLevel: 'excellent',
@@ -392,60 +393,8 @@ class ShopifyAPIService {
           },
           averageOrderValue: {
             value: Math.round(summary.averageOrderValue * 100) / 100,
-            change: Math.round((Math.random() * 15 - 7) * 10) / 10,
-            changeType: Math.random() > 0.5 ? 'positive' : 'negative',
-            status: 'good',
-            trustLevel: 'good',
-            freshness: 'fresh',
-            lastUpdated: new Date().toISOString(),
-            region: this.activeRegion
-          },
-          customerRetentionRate: {
-            value: Math.round(summary.repeatCustomerRate * 10) / 10,
-            change: Math.round((Math.random() * 8 - 3) * 10) / 10,
-            changeType: Math.random() > 0.4 ? 'positive' : 'negative',
-            status: summary.repeatCustomerRate > 25 ? 'good' : 'warning',
-            trustLevel: 'good',
-            freshness: 'fresh',
-            lastUpdated: new Date().toISOString(),
-            region: this.activeRegion
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error generating Shopify KPIs:', error)
-      return {
-        success: false,
-        error: error.message,
-        data: {}
-      }
-    }
-  }
-
-  // Utility methods
-  updateRateLimit(headers) {
-    const callLimit = headers['x-shopify-shop-api-call-limit']
-    if (callLimit) {
-      const [current, max] = callLimit.split('/')
-      this.rateLimitInfo.remaining = parseInt(max) - parseInt(current)
-    }
-  }
-
-  calculateBackoff(attempt) {
-    return Math.min(1000 * Math.pow(2, attempt), 30000)
-  }
-
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
-  }
-
-  extractPagination(headers) {
-    const linkHeader = headers.link
-    if (!linkHeader) return null
-
-    const links = {}
-    linkHeader.split(',').forEach(part => {
-      const match = part.match(/<([^>]+)>;\s*rel="([^"]+)"/)
+            change: Math.round((0 /* REAL DATA REQUIRED */ - 7) * 10) / 10,
+            changeType: 0;\s*rel="([^"]+)"/)
       if (match) {
         links[match[2]] = match[1]
       }

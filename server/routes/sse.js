@@ -158,49 +158,42 @@ setInterval(() => {
   broadcast('order-update', orderData);
 }, 12000);
 
-// Alert System
+// Alert System (requires live alerting system integration)
 setInterval(() => {
-  const shouldAlert = Math.random() > 0.85;
-  
-  if (shouldAlert) {
-    const alertTypes = [
-      { level: 'warning', message: 'Inventory level low for SKU-X789', category: 'inventory' },
-      { level: 'info', message: 'Production target exceeded by 15%', category: 'production' },
-      { level: 'error', message: 'Quality control failure on Line 4', category: 'quality' },
-      { level: 'success', message: 'Daily revenue target achieved', category: 'sales' },
-      { level: 'warning', message: 'Machine maintenance due in 2 hours', category: 'maintenance' }
-    ];
-    
-    const alert = alertTypes[Math.floor(Math.random() * alertTypes.length)];
-    broadcast('alert', {
-      id: uuidv4(),
-      ...alert,
-      timestamp: new Date().toISOString()
-    });
-  }
-}, 30000);
-
-// System Health Check
-setInterval(() => {
-  const health = {
-    status: Math.random() > 0.9 ? 'degraded' : 'healthy',
-    services: {
-      database: 'healthy',
-      api: 'healthy',
-      cache: Math.random() > 0.95 ? 'degraded' : 'healthy',
-      queue: 'healthy'
-    },
-    metrics: {
-      cpu: (Math.random() * 30 + 20).toFixed(1),
-      memory: (Math.random() * 20 + 60).toFixed(1),
-      disk: (Math.random() * 10 + 70).toFixed(1),
-      network: (Math.random() * 100).toFixed(1)
-    },
-    uptime: process.uptime(),
-    connectedClients: clients.size
+  const alertError = {
+    error: 'Real-time alerts require live monitoring system integration',
+    required_integrations: [
+      'Alert Management System (AMS) for real-time notifications',
+      'Monitoring and Observability platform (Datadog/New Relic)',
+      'Business rules engine for alert generation',
+      'Threshold monitoring systems',
+      'Incident management platform (PagerDuty/OpsGenie)'
+    ],
+    status: 'disconnected',
+    message: 'Connect monitoring systems for live alert notifications'
   };
   
-  broadcast('health', health);
+  broadcast('alert-error', alertError);
+}, 30000);
+
+// System Health Check (requires live monitoring integration)
+setInterval(() => {
+  const healthError = {
+    error: 'System health monitoring requires live infrastructure monitoring integration',
+    required_integrations: [
+      'Infrastructure monitoring platform (Datadog/New Relic/Prometheus)',
+      'Application Performance Monitoring (APM) system',
+      'Server resource monitoring agents',
+      'Database health monitoring',
+      'Service mesh monitoring for microservices health'
+    ],
+    status: 'disconnected',
+    actual_uptime: process.uptime(),
+    connected_clients: clients.size,
+    message: 'Connect monitoring systems for live health metrics'
+  };
+  
+  broadcast('health-error', healthError);
 }, 60000);
 
 // Endpoint to trigger manual updates

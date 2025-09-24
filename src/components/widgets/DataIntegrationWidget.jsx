@@ -24,11 +24,7 @@ const DataIntegrationWidget = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setRealTimeStats(prev => ({
-        recordsProcessed: prev.recordsProcessed + Math.floor(Math.random() * 50),
-        apiCalls: prev.apiCalls + Math.floor(Math.random() * 5),
-        dataStreams: 12,
-        errorRate: Math.max(0, Math.min(0.05, prev.errorRate + (Math.random() - 0.5) * 0.001))
-      }));
+        recordsProcessed: prev.recordsProcessed + Math.floor(0;
     }, 3000);
     return () => clearInterval(interval);
   }, []);

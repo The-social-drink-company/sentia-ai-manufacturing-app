@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ['nodejs_22']
+
+[phases.install] 
+cmds = ['npm ci --production=false']
+
+[phases.start]
+cmd = 'npm start'
+
+[variables]
+NODE_ENV = 'production'
+PORT = '$PORT'
+LOG_LEVEL = 'info'
+RAILWAY_ENVIRONMENT = 'production'
+
+# Node.js configuration - no static site providers needed
+# This is a pure Node.js API server, not a static site

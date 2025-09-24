@@ -2,12 +2,14 @@
  * Resilience and fallback mechanisms for robust operation
  */
 
+import { devLog } from '../lib/devLog.js';
+
 // Circuit breaker implementation
 export class CircuitBreaker {
   constructor(options = {}) {
     this.failureThreshold = options.failureThreshold || 5;
-    this.timeout = options.timeout || 60000; // 1 minute
-    this.resetTimeout = options.resetTimeout || 30000; // 30 seconds
+    this.timeout = options.timeout 0; // 1 minute
+    this.resetTimeout = options.resetTimeout 0; // 30 seconds
     
     this.state = 'CLOSED'; // CLOSED, OPEN, HALF_OPEN
     this.failureCount = 0;
@@ -22,7 +24,7 @@ export class CircuitBreaker {
         this.state = 'HALF_OPEN';
         this.successCount = 0;
       } else {
-        console.warn('Circuit breaker is OPEN, using fallback');
+        devLog.warn('Circuit breaker is OPEN, using fallback');
         return fallback ? fallback() : Promise.reject(new Error('Circuit breaker is OPEN'));
       }
     }
@@ -41,7 +43,7 @@ export class CircuitBreaker {
       this.onFailure();
       
       if (fallback) {
-        console.warn('Operation failed, using fallback:', error.message);
+        devLog.warn('Operation failed, using fallback:', error.message);
         return fallback();
       }
       
@@ -56,7 +58,7 @@ export class CircuitBreaker {
       this.successCount++;
       if (this.successCount >= 3) {
         this.state = 'CLOSED';
-        console.info('Circuit breaker recovered to CLOSED state');
+        devLog.info('Circuit breaker recovered to CLOSED state');
       }
     }
   }
@@ -67,7 +69,7 @@ export class CircuitBreaker {
     
     if (this.failureCount >= this.failureThreshold) {
       this.state = 'OPEN';
-      console.error('Circuit breaker tripped to OPEN state');
+      devLog.error('Circuit breaker tripped to OPEN state');
     }
   }
   
@@ -83,8 +85,8 @@ export class CircuitBreaker {
 export class RetryManager {
   constructor(options = {}) {
     this.maxRetries = options.maxRetries || 3;
-    this.initialDelay = options.initialDelay || 1000;
-    this.maxDelay = options.maxDelay || 10000;
+    this.initialDelay = options.initialDelay 0;
+    this.maxDelay = options.maxDelay 0;
     this.backoffMultiplier = options.backoffMultiplier || 2;
   }
   
@@ -107,7 +109,7 @@ export class RetryManager {
             onRetry(attempt + 1, delay, error);
           }
           
-          console.warn(`Retry attempt ${attempt + 1}/${this.maxRetries} after ${delay}ms`);
+          devLog.warn(`Retry attempt ${attempt + 1}/${this.maxRetries} after ${delay}ms`);
           await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
@@ -132,7 +134,7 @@ export class ResilientStorage {
       localStorage.removeItem(test);
       return true;
     } catch {
-      console.warn('LocalStorage not available, using memory storage');
+      devLog.warn('LocalStorage not available, using memory storage');
       return false;
     }
   }
@@ -156,7 +158,7 @@ export class ResilientStorage {
         }
       }
     } catch (error) {
-      console.error('Error reading from localStorage:', error);
+      devLog.error('Error reading from localStorage:', error);
     }
     
     // Fallback to memory storage
@@ -184,7 +186,7 @@ export class ResilientStorage {
         localStorage.setItem(fullKey, JSON.stringify(item));
       }
     } catch (error) {
-      console.error('Error writing to localStorage:', error);
+      devLog.error('Error writing to localStorage:', error);
     }
     
     // Always store in memory as backup
@@ -199,7 +201,7 @@ export class ResilientStorage {
         localStorage.removeItem(fullKey);
       }
     } catch (error) {
-      console.error('Error removing from localStorage:', error);
+      devLog.error('Error removing from localStorage:', error);
     }
     
     this.memoryStorage.delete(fullKey);
@@ -216,7 +218,7 @@ export class ResilientStorage {
         });
       }
     } catch (error) {
-      console.error('Error clearing localStorage:', error);
+      devLog.error('Error clearing localStorage:', error);
     }
     
     this.memoryStorage.clear();
@@ -318,7 +320,7 @@ export class OfflineQueue {
         await executor(request);
         processed.push(request.id);
       } catch (error) {
-        console.error('Failed to process queued request:', error);
+        devLog.error('Failed to process queued request:', error);
         break; // Stop processing on failure
       }
     }
@@ -398,8 +400,8 @@ export class FeatureDetector {
   
   hasAsyncAwait() {
     try {
-      eval('(async () => {})');
-      return true;
+      // Safe async/await detection without eval
+      return (async function() {}).constructor === (async function() {}).constructor;
     } catch {
       return false;
     }
@@ -426,7 +428,7 @@ export class ErrorBoundary {
   
   static logErrorToService(error, errorInfo) {
     // Log to external service
-    console.error('Error caught by boundary:', error, errorInfo);
+    devLog.error('Error caught by boundary:', error, errorInfo);
     
     // Send to monitoring service
     if (window.gtag) {
@@ -457,7 +459,7 @@ export class ProgressiveEnhancer {
           await fallback();
         }
       } catch (error) {
-        console.error('Enhancement failed:', error);
+        devLog.error('Enhancement failed:', error);
         if (fallback) {
           await fallback();
         }

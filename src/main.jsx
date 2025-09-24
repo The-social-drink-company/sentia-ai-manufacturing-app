@@ -1,56 +1,87 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
 import './index.css'
 
-// Performance monitoring with web-vitals
-import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
+// Simplified initialization
+console.log('Initializing Sentia Manufacturing Dashboard...');
 
-// Log web vitals for performance monitoring
-function sendToAnalytics(metric) {
-  console.log(`[Web Vitals] ${metric.name}:`, metric.value)
-}
+// Simple fallback App component
+const FallbackApp = () => {
+  console.log('[FallbackApp] Rendering...');
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="max-w-md w-full text-center">
+        <div className="bg-white shadow-xl rounded-lg p-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Sentia Manufacturing Dashboard
+          </h1>
+          <p className="text-gray-600 mb-6">
+            System Loading...
+          </p>
+          <a
+            href="/dashboard"
+            className="block w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Continue to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-// Measure Core Web Vitals with correct exports (FID replaced with INP in web-vitals v5)
-try {
-  onCLS(sendToAnalytics)
-  onINP(sendToAnalytics)  // Interaction to Next Paint (replaces FID)
-  onFCP(sendToAnalytics)
-  onLCP(sendToAnalytics)
-  onTTFB(sendToAnalytics)
-} catch (error) {
-  console.warn('Web vitals measurement not available:', error.message)
-}
+const initializeApp = async () => {
+  const rootElement = document.getElementById('root');
+  if (!rootElement) {
+    console.error('Root element not found');
+    document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Error: Root element not found</div>';
+    return;
+  }
 
-console.log('🚀 Starting Sentia Manufacturing Dashboard...');
-console.log('Environment:', import.meta.env.MODE);
-console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL || 'Default');
+  console.log('Root element found, mounting React app...');
 
-// Add global error handler
+  try {
+    console.log('[main.jsx] Creating React root...');
+    const root = createRoot(rootElement);
+    
+    // Try to load the full app
+    try {
+      console.log('[main.jsx] Attempting to load App-multistage...');
+      const { default: App } = await import('./App-multistage.jsx');
+      
+      console.log('[main.jsx] App-multistage loaded successfully, rendering...');
+      root.render(
+        <StrictMode>
+          <App />
+        </StrictMode>
+      );
+      console.log('[main.jsx] React app mounted successfully');
+    } catch (appError) {
+      console.error('[main.jsx] Failed to load App-multistage:', appError);
+      console.log('[main.jsx] Falling back to simple app...');
+      
+      root.render(
+        <StrictMode>
+          <FallbackApp />
+        </StrictMode>
+      );
+      console.log('[main.jsx] Fallback app mounted successfully');
+    }
+  } catch (error) {
+    console.error('[main.jsx] Critical error mounting React app:', error);
+    rootElement.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Critical Error: ' + error.message + '</div>';
+  }
+};
+
+// Handle Service Worker errors
 window.addEventListener('error', (event) => {
-  console.error('Global error:', event.error)
-})
+  console.error('[main.jsx] Global error:', event.error);
+});
 
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason)
-})
+  console.error('[main.jsx] Unhandled promise rejection:', event.reason);
+  // Don't prevent the default behavior, just log it
+});
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
-
-console.log('✅ Sentia Manufacturing Dashboard rendered successfully');
-
-// Add global error catcher for debugging
-window.onerror = function(msg, url, lineNo, columnNo, error) {
-  console.error('Global error caught:', {
-    message: msg,
-    source: url,
-    lineno: lineNo,
-    colno: columnNo,
-    error: error
-  });
-  return false;
-};
+// Initialize app
+initializeApp();

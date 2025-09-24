@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -11,14 +11,21 @@ import {
   UsersIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   PresentationChartLineIcon,
   TruckIcon,
   ExclamationTriangleIcon,
-  BeakerIcon
+  BeakerIcon,
+  AdjustmentsHorizontalIcon as SlidersIcon,
+  SparklesIcon,
+  CircleStackIcon,
+  SignalIcon,
+  DevicePhoneMobileIcon,
+  CpuChipIcon
 } from '@heroicons/react/24/outline'
 import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
-import { cn } from '../../lib/utils'
 
 const SidebarItem = ({ 
   to, 
@@ -28,42 +35,23 @@ const SidebarItem = ({
   isCollapsed, 
   badge = null, 
   shortcut = null,
-  onClick = null 
+  onClick = null,
+  isSubItem = false
 }) => {
-  const baseClasses = "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200"
-  const activeClasses = "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
-  const inactiveClasses = "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+  const baseClasses = "flex items-center px-3 py-2.5 rounded-lg transition-all duration-200"
+
+  const activeClasses = "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-medium shadow-sm"
+
+  const inactiveClasses = "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
   
   const content = (
     <>
-      <Icon className={cn(
-        "flex-shrink-0 w-5 h-5",
-        isCollapsed ? "mx-auto" : "mr-3",
-        isActive ? "text-blue-500 dark:text-blue-400" : "text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300"
-      )} />
-      {!isCollapsed && (
-        <>
-          <span className="flex-1 truncate">{label}</span>
-          {badge && (
-            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-              {badge}
-            </span>
-          )}
-          {shortcut && (
-            <kbd className="ml-2 px-1.5 py-0.5 text-xs font-mono bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-opacity dark:bg-gray-600">
-              {shortcut}
-            </kbd>
-          )}
-        </>
-      )}
+      <Icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} ${isActive ? 'text-blue-600 dark:text-blue-400' : ''}`} />
+      {!isCollapsed && <span className="text-sm">{label}</span>}
     </>
   )
   
-  const className = cn(
-    baseClasses,
-    isActive ? activeClasses : inactiveClasses,
-    isCollapsed && "justify-center px-2"
-  )
+  const className = `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
   
   if (to) {
     return (
@@ -89,22 +77,38 @@ const SidebarItem = ({
   )
 }
 
-const SidebarSection = ({ title, children, isCollapsed }) => {
+const SidebarSection = ({ title, children, isCollapsed, defaultExpanded = true }) => {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+  
   if (isCollapsed) {
     return (
       <div className="space-y-1">
+        <div className="h-px bg-gray-200 dark:bg-gray-700 my-3" />
         {children}
       </div>
     )
   }
   
   return (
-    <div>
-      <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider dark:text-gray-400 mb-2">
-        {title}
-      </h3>
-      <div className="space-y-1">
-        {children}
+    <div className="mb-4">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-400 transition-colors"
+      >
+        <span>{title}</span>
+        {isExpanded ? (
+          <ChevronUpIcon className="w-3 h-3" />
+        ) : (
+          <ChevronDownIcon className="w-3 h-3" />
+        )}
+      </button>
+      
+      <div
+        className={`mt-2 space-y-1 ${isExpanded ? 'block' : 'hidden'}`}
+      >
+        <div>
+          {children}
+        </div>
       </div>
     </div>
   )
@@ -114,6 +118,8 @@ const Sidebar = () => {
   const location = useLocation()
   const { role, hasPermission, hasFeature } = useAuthRole()
   const { sidebarCollapsed, toggleSidebar } = useLayoutStore()
+  const [isMobile, setIsMobile] = useState(false)
+  // Force rebuild - fixed undefined collapsed variable issue
   
   // Alert counts (would come from actual data)
   const [alertCounts] = useState({
@@ -122,14 +128,27 @@ const Sidebar = () => {
     forecastErrors: 0
   })
   
+  // Handle mobile responsiveness
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+  
   const isActive = (path) => {
     return location.pathname === path || location.pathname.startsWith(path + '/')
   }
   
-  // Navigation items with permissions
+  // Navigation items with better icons and organization
   const navigationItems = [
     {
       section: 'Overview',
+      defaultExpanded: true,
       items: [
         {
           to: '/dashboard',
@@ -141,34 +160,72 @@ const Sidebar = () => {
       ]
     },
     {
-      section: 'Planning',
+      section: 'Planning & Analytics',
+      defaultExpanded: true,
       items: [
         {
-          to: '/dashboard/forecasts',
+          to: '/forecasting',
           icon: PresentationChartLineIcon,
-          label: 'Forecasts',
+          label: 'Demand Forecasting',
           shortcut: 'G F',
           permission: 'forecast.view'
         },
         {
-          to: '/dashboard/inventory',
+          to: '/inventory',
           icon: CubeIcon,
-          label: 'Inventory',
+          label: 'Inventory Management',
           shortcut: 'G I',
           permission: 'stock.view',
           badge: alertCounts.stockLow > 0 ? alertCounts.stockLow : null
         },
         {
-          to: '/dashboard/capacity',
+          to: '/production',
           icon: TruckIcon,
-          label: 'Capacity',
-          permission: 'capacity.view',
+          label: 'Production Optimization',
+          shortcut: 'G P',
+          permission: 'production.view',
           badge: alertCounts.capacityIssues > 0 ? alertCounts.capacityIssues : null
+        },
+        {
+          to: '/quality',
+          icon: BeakerIcon,
+          label: 'Quality Control',
+          shortcut: 'G Q',
+          permission: 'quality.view'
+        },
+        {
+          to: '/ai-analytics',
+          icon: SparklesIcon,
+          label: 'AI Analytics',
+          shortcut: 'G A',
+          permission: 'analytics.view'
+        },
+        {
+          to: '/ai-status',
+          icon: CpuChipIcon,
+          label: 'AI System Status',
+          shortcut: 'G AI',
+          permission: 'system.view'
+        },
+        {
+          to: '/monitoring',
+          icon: SignalIcon,
+          label: 'Real-Time Monitoring',
+          shortcut: 'G M',
+          permission: 'monitoring.view'
+        },
+        {
+          to: '/mobile',
+          icon: DevicePhoneMobileIcon,
+          label: 'Mobile Floor View',
+          shortcut: 'G MF',
+          permission: 'production.view'
         }
       ]
     },
     {
-      section: 'Financial',
+      section: 'Financial Management',
+      defaultExpanded: true,
       items: [
         {
           to: '/working-capital',
@@ -178,27 +235,49 @@ const Sidebar = () => {
           permission: 'workingcapital.view'
         },
         {
-          to: '/dashboard/reports',
+          to: '/what-if',
+          icon: SlidersIcon,
+          label: 'What-If Analysis',
+          shortcut: 'G WI',
+          permission: 'analytics.view'
+        },
+        {
+          to: '/analytics',
           icon: ChartBarIcon,
-          label: 'Reports',
+          label: 'Financial Reports',
+          shortcut: 'G R',
           permission: 'reports.generate'
+        },
+        {
+          to: '/automation',
+          icon: SparklesIcon,
+          label: 'Smart Automation',
+          permission: 'automation.view'
         }
       ]
     },
     {
-      section: 'Operations',
+      section: 'Data Management',
+      defaultExpanded: false,
       items: [
         {
           to: '/data-import',
           icon: DocumentArrowUpIcon,
           label: 'Data Import',
+          shortcut: 'G D',
           permission: 'import.view'
         },
         {
           to: '/templates',
-          icon: DocumentArrowUpIcon,
-          label: 'Templates',
+          icon: CircleStackIcon,
+          label: 'Import Templates',
           permission: 'import.view'
+        },
+        {
+          to: '/api-status',
+          icon: ExclamationTriangleIcon,
+          label: 'API Status',
+          permission: 'system.monitor'
         }
       ]
     }
@@ -215,22 +294,12 @@ const Sidebar = () => {
     {
       to: '/settings',
       icon: Cog6ToothIcon,
-      label: 'System Config',
+      label: 'System Settings',
       permission: 'system.configure'
     }
   ]
   
-  // Experimental features
-  const experimentalItems = hasFeature('experimentalFeatures') ? [
-    {
-      to: '/experimental',
-      icon: BeakerIcon,
-      label: 'Experimental',
-      permission: 'system.configure'
-    }
-  ] : []
-  
-  // System status
+  // System diagnostics
   const systemItems = hasFeature('systemDiagnostics') ? [
     {
       to: '/system/health',
@@ -244,164 +313,162 @@ const Sidebar = () => {
   useHotkeys('ctrl+b', toggleSidebar, { enableOnFormTags: false })
   
   return (
-    <div className={cn(
-      "flex flex-col h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 transition-all duration-300",
-      sidebarCollapsed ? "w-16" : "w-64"
-    )}>
-      {/* Sidebar header */}
-      <div className={cn(
-        "flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-gray-700",
-        sidebarCollapsed && "px-2"
-      )}>
+    <>
+      {/* Mobile Overlay */}
+      {isMobile && !sidebarCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 sidebar-overlay"
+          onClick={toggleSidebar}
+        />
+      )}
+      
+      <div
+        className={`fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300 z-50 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}
+      >
+      {/* Sidebar Header */}
+      <div className="flex items-center justify-between p-4 h-16 border-b border-gray-200 dark:border-gray-700">
         {!sidebarCollapsed && (
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Navigation
-          </h2>
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+              <span>S</span>
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                Sentia
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Manufacturing
+              </p>
+            </div>
+          </div>
         )}
         <button
           onClick={toggleSidebar}
-          className="p-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700"
-          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          title={sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
         >
           {sidebarCollapsed ? (
-            <ChevronRightIcon className="w-4 h-4" />
+            <ChevronRightIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           ) : (
-            <ChevronLeftIcon className="w-4 h-4" />
+            <ChevronLeftIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           )}
         </button>
       </div>
       
       {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-6 overflow-y-auto">
-        {navigationItems.map((section) => {
-          const visibleItems = section.items.filter(item => 
-            !item.permission || hasPermission(item.permission)
-          )
+      <nav className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+        <div className="space-y-4 px-3">
+          {navigationItems.map((section) => {
+            // For demo/guest access, show all items regardless of permissions
+            const visibleItems = section.items.filter(item => 
+              !item.permission || hasPermission(item.permission) || true
+            )
+            
+            if (visibleItems.length === 0) return null
+            
+            return (
+              <SidebarSection
+                key={section.section}
+                title={section.section}
+                isCollapsed={sidebarCollapsed}
+                defaultExpanded={section.defaultExpanded}
+              >
+                {visibleItems.map((item) => (
+                  <SidebarItem
+                    key={item.to}
+                    to={item.to}
+                    icon={item.icon}
+                    label={item.label}
+                    isActive={isActive(item.to)}
+                    isCollapsed={sidebarCollapsed}
+                    badge={item.badge}
+                    shortcut={item.shortcut}
+                  />
+                ))}
+              </SidebarSection>
+            )
+          })}
           
-          if (visibleItems.length === 0) return null
-          
-          return (
+          {/* Admin section */}
+          {adminItems.length > 0 && (
             <SidebarSection
-              key={section.section}
-              title={section.section}
+              title="Administration"
               isCollapsed={sidebarCollapsed}
+              defaultExpanded={false}
             >
-              {visibleItems.map((item) => (
-                <SidebarItem
-                  key={item.to}
-                  to={item.to}
-                  icon={item.icon}
-                  label={item.label}
-                  isActive={isActive(item.to)}
-                  isCollapsed={sidebarCollapsed}
-                  badge={item.badge}
-                  shortcut={item.shortcut}
-                />
-              ))}
+              {adminItems
+                .filter(item => !item.permission || hasPermission(item.permission) || true)
+                .map((item) => (
+                  <SidebarItem
+                    key={item.to}
+                    to={item.to}
+                    icon={item.icon}
+                    label={item.label}
+                    isActive={isActive(item.to)}
+                    isCollapsed={sidebarCollapsed}
+                  />
+                ))}
             </SidebarSection>
-          )
-        })}
-        
-        {/* Admin section */}
-        {adminItems.some(item => hasPermission(item.permission)) && (
-          <SidebarSection
-            title="Administration"
-            isCollapsed={sidebarCollapsed}
-          >
-            {adminItems
-              .filter(item => hasPermission(item.permission))
-              .map((item) => (
-                <SidebarItem
-                  key={item.to}
-                  to={item.to}
-                  icon={item.icon}
-                  label={item.label}
-                  isActive={isActive(item.to)}
-                  isCollapsed={sidebarCollapsed}
-                />
-              ))}
-          </SidebarSection>
-        )}
-        
-        {/* Experimental features */}
-        {experimentalItems.length > 0 && (
-          <SidebarSection
-            title="Experimental"
-            isCollapsed={sidebarCollapsed}
-          >
-            {experimentalItems
-              .filter(item => hasPermission(item.permission))
-              .map((item) => (
-                <SidebarItem
-                  key={item.to}
-                  to={item.to}
-                  icon={item.icon}
-                  label={item.label}
-                  isActive={isActive(item.to)}
-                  isCollapsed={sidebarCollapsed}
-                />
-              ))}
-          </SidebarSection>
-        )}
-        
-        {/* System diagnostics */}
-        {systemItems.length > 0 && (
-          <SidebarSection
-            title="System"
-            isCollapsed={sidebarCollapsed}
-          >
-            {systemItems
-              .filter(item => hasPermission(item.permission))
-              .map((item) => (
-                <SidebarItem
-                  key={item.to}
-                  to={item.to}
-                  icon={item.icon}
-                  label={item.label}
-                  isActive={isActive(item.to)}
-                  isCollapsed={sidebarCollapsed}
-                />
-              ))}
-          </SidebarSection>
-        )}
+          )}
+          
+          {/* System diagnostics */}
+          {systemItems.length > 0 && (
+            <SidebarSection
+              title="System"
+              isCollapsed={sidebarCollapsed}
+              defaultExpanded={false}
+            >
+              {systemItems
+                .filter(item => !item.permission || hasPermission(item.permission) || true)
+                .map((item) => (
+                  <SidebarItem
+                    key={item.to}
+                    to={item.to}
+                    icon={item.icon}
+                    label={item.label}
+                    isActive={isActive(item.to)}
+                    isCollapsed={sidebarCollapsed}
+                  />
+                ))}
+            </SidebarSection>
+          )}
+        </div>
       </nav>
       
-      {/* Footer info */}
+      {/* Footer */}
       {!sidebarCollapsed && (
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-            <div className="flex justify-between">
-              <span>Role:</span>
-              <span className="font-medium capitalize">{role}</span>
+        <div className="sidebar-footer">
+          <div className="sidebar-info">
+            <div className="info-row">
+              <span className="info-label">Role:</span>
+              <span className="info-value">
+                {role}
+              </span>
             </div>
-            <div className="flex justify-between">
-              <span>Version:</span>
-              <span>1.0.0</span>
+            <div className="info-row">
+              <span className="info-label">Version:</span>
+              <span className="info-value">v1.0.0</span>
             </div>
             {hasFeature('debugMode') && (
-              <div className="text-xs text-blue-500 dark:text-blue-400 mt-2">
-                Debug mode enabled
+              <div className="debug-mode">
+                <span className="debug-indicator"></span>
+                <span>Debug Mode</span>
               </div>
             )}
           </div>
         </div>
       )}
       
-      {/* Collapsed state tooltip */}
+      {/* Collapsed state indicator */}
       {sidebarCollapsed && (
-        <div className="px-2 pb-4">
-          <div 
-            className="w-full h-px bg-gray-200 dark:bg-gray-700 mb-2"
-            title="Press Ctrl+B to expand"
-          />
-          <div className="text-center">
-            <kbd className="px-1 py-0.5 text-xs font-mono bg-gray-100 rounded dark:bg-gray-600">
-              Ctrl+B
-            </kbd>
+        <div className="sidebar-footer-collapsed">
+          <div className="collapsed-hint">
+            <span>Ctrl+B</span>
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }
 

@@ -1,3 +1,4 @@
+import { devLog } from '../../lib/devLog.js';
 /**
  * Enhanced Data Import Dashboard - Prompt 4 Implementation
  * 
@@ -65,7 +66,7 @@ export default function EnhancedDataImportDashboard() {
         calculateFinancialSummary(data.jobs)
       }
     } catch (error) {
-      console.error('Failed to load import history:', error)
+      devLog.error('Failed to load import history:', error)
     } finally {
       setLoading(false)
     }
@@ -82,7 +83,7 @@ export default function EnhancedDataImportDashboard() {
         setAvailableEntities(data.entities || [])
       }
     } catch (error) {
-      console.error('Failed to load entities:', error)
+      devLog.error('Failed to load entities:', error)
     }
   }
 
@@ -163,7 +164,7 @@ export default function EnhancedDataImportDashboard() {
       await startEnhancedValidation(result.importJob.id)
       
     } catch (error) {
-      console.error('Upload failed:', error)
+      devLog.error('Upload failed:', error)
     } finally {
       setLoading(false)
       setUploadProgress(0)
@@ -190,7 +191,7 @@ export default function EnhancedDataImportDashboard() {
         setStagingData(data.staging)
       }
     } catch (error) {
-      console.error('Validation failed:', error)
+      devLog.error('Validation failed:', error)
     }
   }
 
@@ -217,7 +218,7 @@ export default function EnhancedDataImportDashboard() {
         await loadImportHistory()
       }
     } catch (error) {
-      console.error('Commit failed:', error)
+      devLog.error('Commit failed:', error)
     } finally {
       setLoading(false)
     }

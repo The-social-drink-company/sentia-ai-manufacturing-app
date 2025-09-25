@@ -1,7 +1,8 @@
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import AppMultiStage from './AppMultiStage.jsx';
+// Temporarily bypass AppMultiStage for development
+import App from './App.jsx';
 import { logInfo, logError, logDebug } from './utils/logger.js';
 
 const mountApplication = () => {
@@ -18,11 +19,11 @@ const mountApplication = () => {
     return;
   }
 
-  logInfo('[main] Bootstrapping Sentia multi-stage orchestrator');
+  logInfo('[main] Bootstrapping Sentia application (development mode)');
   const root = createRoot(container);
   root.render(
     <StrictMode>
-      <AppMultiStage />
+      <App />
     </StrictMode>
   );
 };

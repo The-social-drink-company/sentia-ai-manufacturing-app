@@ -27,15 +27,12 @@ if (import.meta.env.PROD && !API_BASE) {
 }
 
 // Logging utilities (compatible with existing codebase)
-const logInfo = (message, data) => {
   if (import.meta.env.DEV) logDebug(`[INFO] ${message}`, data);
 };
 
-const logError = (message, error) => {
   logError(`[ERROR] ${message}`, error);
 };
 
-const logWarn = (message, data) => {
   if (import.meta.env.DEV) logWarn(`[WARN] ${message}`, data);
 };
 

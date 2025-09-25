@@ -1,13 +1,13 @@
 /** @type {import('tailwindcss').Config} */
-import forms from '@tailwindcss/forms';
-import typography from '@tailwindcss/typography';
-import aspectRatio from '@tailwindcss/aspect-ratio';
-import * as themeConfig from './src/config/theme.config.js';
-const themes = themeConfig.themes ?? themeConfig.default ?? themeConfig;
+// import forms from '@tailwindcss/forms';
+// import typography from '@tailwindcss/typography';
+// import aspectRatio from '@tailwindcss/aspect-ratio';
+// import * as themeConfig from './src/config/theme.config.js';
+// const themes = themeConfig.themes ?? themeConfig.default ?? themeConfig;
 
 // Extract colors from our theme configuration
-const quantumDark = themes.quantumDark.colors;
-const crystalClear = themes.crystalClear.colors;
+// const quantumDark = themes.quantumDark.colors;
+// const crystalClear = themes.crystalClear.colors;
 
 export default {
   content: [
@@ -276,8 +276,8 @@ export default {
     },
   },
   plugins: [
-    forms,
-    typography,
-    aspectRatio,
+    // forms,
+    // typography,
+    // aspectRatio,
   ],
 }

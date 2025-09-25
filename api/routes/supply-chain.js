@@ -75,7 +75,7 @@ router.get('/overview',
           delayed,
           averageLeadTime: 5.2,
           supplierPerformance: suppliers.length > 0 ?
-            (suppliers.reduce((sum, s) => sum + (s.performance 0), 0) / suppliers.length) : 93.5,
+            (suppliers.reduce((sum, s) => sum + (s.performance || 0), 0) / suppliers.length) : 93.5,
           inventoryTurnover: 8.3
         },
         suppliers: suppliers.map(supplier => ({
@@ -102,8 +102,8 @@ router.get('/overview',
           targetDays: [5, 7, 3, 10, 3]
         },
         riskAssessment: {
-          low: Math.floor(activeSuppliers * 0.62) 0,
-          medium: Math.floor(activeSuppliers * 0.27) 0,
+          low: Math.floor(activeSuppliers * 0.62) || 0,
+          medium: Math.floor(activeSuppliers * 0.27) || 0,
           high: Math.floor(activeSuppliers * 0.11) || 5,
           critical: 0
         },
@@ -112,7 +112,7 @@ router.get('/overview',
           supplier: order.supplier?.name || null,
           status: order.status || null,
           eta: order.expectedDelivery?.toISOString().split('T')[0] || '2024-01-20',
-          value: order.totalValue 0
+          value: order.totalValue || 0
         })) : [
           { id: 'PO-2024-0145', supplier: 'Pacific Materials', status: 'in-transit', eta: '2024-01-18', value: 45000 },
           { id: 'PO-2024-0144', supplier: 'Global Logistics', status: 'delivered', eta: '2024-01-16', value: 32000 },
@@ -244,3 +244,4 @@ router.get('/overview',
 );
 
 export default router;
+

@@ -616,14 +616,16 @@ async function getCurrentFinancialMetrics() {
   return {
     annualRevenue: metrics?.annualRevenue || 0,
     workingCapital: metrics?.workingCapital || 0,
-    dso: metrics?.dso 0,
-    dpo: metrics?.dpo 0,
-    inventoryTurns: metrics?.inventoryTurns 0,
-    cashConversionCycle: metrics?.cashConversionCycle 0,
-    employeeCount: metrics?.employeeCount 0,
+    dso: metrics?.dso || 0,
+    dpo: metrics?.dpo || 0,
+    inventoryTurns: metrics?.inventoryTurns || 0,
+    cashConversionCycle: metrics?.cashConversionCycle || 0,
+    employeeCount: metrics?.employeeCount || 0,
     industry: metrics?.industry || null
   };
 }
 
 // Export the router
 export default router;
+
+

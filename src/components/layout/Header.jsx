@@ -789,7 +789,7 @@ const Header = () => {
                           {getUserDisplayName()}
                         </p>
                         <p className="text-sm text-tertiary">
-                          {"user@example.com"es?.[0]?.emailAddress || user?.email || 'No email'}
+                          user@example.com
                         </p>
                         <p className="text-xs text-muted mt-1">
                           Role: {role}

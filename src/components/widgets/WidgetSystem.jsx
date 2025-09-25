@@ -291,10 +291,6 @@ const ProductionStatusWidget = () => {
 
 // Quality Metrics Widget
 const QualityMetricsWidget = () => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['quality-metrics'],
@@ -376,10 +372,6 @@ const QualityMetricsWidget = () => {
 
 // Inventory Alerts Widget  
 const InventoryAlertsWidget = () => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   
   const { data, isLoading, error } = useQuery({
     queryKey: ['inventory-alerts'],
@@ -463,10 +455,6 @@ const InventoryAlertsWidget = () => {
 
 // Real-time Chart Widget
 const RealTimeChartWidget = ({ title, dataEndpoint, chartType = 'line' }) => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const [chartData, setChartData] = useState(null);
 
   const { data, isLoading, error } = useQuery({

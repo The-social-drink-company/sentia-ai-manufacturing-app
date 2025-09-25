@@ -7,10 +7,6 @@ const Settings = () => {
   const user = { name: "User" };
   const isSignedIn = true;
   const isLoaded = true;
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const [activeTab, setActiveTab] = useState('general');
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
   const [notifications, setNotifications] = useState({

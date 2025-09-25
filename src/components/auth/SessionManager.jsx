@@ -193,10 +193,6 @@ const SessionManager = ({ children, warningTime = 300000 }) => { // 5 minutes wa
 
 // Hook for programmatic session management
 export const useSessionManager = () => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const { session } = useSession();
 
   const refreshSession = async () => {

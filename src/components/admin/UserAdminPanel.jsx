@@ -19,10 +19,6 @@ const UserAdminPanel = () => {
   const user = { name: "User" };
   const isSignedIn = true;
   const isLoaded = true;
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
   const [invitations, setInvitations] = useState([]);

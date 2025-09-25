@@ -258,10 +258,6 @@ export const requireAuth = () => {
 export const requireRole = async (requiredRole) => {
   requireAuth();
 
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const userRole = await getUserRole(user);
 
   // Admin can access everything
@@ -282,10 +278,6 @@ export const requireRole = async (requiredRole) => {
 export const requirePermission = async (requiredPermission) => {
   requireAuth();
 
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const userRole = await getUserRole(user);
 
   if (!checkPermission(userRole, requiredPermission)) {
@@ -417,10 +409,6 @@ export const handleAuthError = (error) => {
  * Get complete user profile from Clerk
  */
 export const getUserProfile = async () => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
 
   if (!user) {
     throw new Error('No user signed in');
@@ -450,10 +438,6 @@ export const getUserProfile = async () => {
  * Update user metadata (requires admin permissions in Clerk)
  */
 export const updateUserMetadata = async (userId, metadata) => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
 
   if (!user) {
     throw new Error('Not authenticated');
@@ -488,10 +472,6 @@ export const updateUserMetadata = async (userId, metadata) => {
  * Check if user belongs to organization
  */
 export const checkOrganizationAccess = async (organizationId) => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
 
   if (!user) {
     throw new Error('Not authenticated');
@@ -511,14 +491,6 @@ export const checkOrganizationAccess = async (organizationId) => {
  * Custom hook for authentication state
  */
 export const useAuthState = () => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
 
   return {
     isLoading: !isLoaded,
@@ -537,10 +509,6 @@ export const useAuthState = () => {
  * Custom hook for user role and permissions
  */
 export const useUserPermissions = () => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const [role, setRole] = useState(null);
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);

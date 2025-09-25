@@ -162,10 +162,6 @@ const UnauthorizedAccess = ({ userRole, requiredRoles, customMessage }) => {
 
 // Export a hook for programmatic role checking
 export const useRoleGuard = (allowedRoles = []) => {
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role || null;
 
   const roleHierarchy = {

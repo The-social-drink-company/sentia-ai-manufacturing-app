@@ -10,8 +10,10 @@ import {
 } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "react-hot-toast"
+import { ClerkProvider } from "@clerk/clerk-react"
 
 import EnterpriseSidebar from "./components/EnterpriseSidebar.jsx"
+import ClerkAuthProvider from "./providers/ClerkAuthProvider.jsx"
 import MockAuthProvider from "./providers/MockAuthProvider.jsx"
 import { useAuth } from "./hooks/useAuth.js"
 
@@ -20,8 +22,8 @@ const LoginPage = lazy(() => import("./pages/LoginPage.jsx"))
 const SignupPage = lazy(() => import("./pages/SignupPage.jsx"))
 const DashboardPage = lazy(() => import("./pages/Dashboard.jsx"))
 const WorkingCapitalPage = lazy(() => import("./pages/WorkingCapital.jsx"))
-const InventoryPage = lazy(() => import("./pages/Inventory.jsx"))
-const ProductionPage = lazy(() => import("./pages/Production.jsx"))
+const InventoryPage = lazy(() => import("./features/inventory/InventoryPage.jsx"))
+const ProductionPage = lazy(() => import("./features/production/ProductionPage.jsx"))
 const SettingsPage = lazy(() => import("./pages/Settings.jsx"))
 
 const RequireAuth = () => {
@@ -136,13 +138,32 @@ const router = isTestEnv
   ? createMemoryRouter(routes, { initialEntries: ["/dashboard"] })
   : createBrowserRouter(routes)
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <MockAuthProvider>
-      <RouterProvider router={router} />
-      <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
-    </MockAuthProvider>
-  </QueryClientProvider>
-)
+// Clerk configuration
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const shouldUseClerk = Boolean(clerkPublishableKey)
+
+const App = () => {
+  if (shouldUseClerk) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <ClerkProvider publishableKey={clerkPublishableKey}>
+          <ClerkAuthProvider>
+            <RouterProvider router={router} />
+            <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
+          </ClerkAuthProvider>
+        </ClerkProvider>
+      </QueryClientProvider>
+    )
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MockAuthProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
+      </MockAuthProvider>
+    </QueryClientProvider>
+  )
+}
 
 export default App

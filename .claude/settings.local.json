@@ -317,7 +317,9 @@
       "Bash(set NODE_OPTIONS=--max-old-space-size=3072)",
       "Bash(set PORT=6001)",
       "Bash(PORT=6001 node server-integrated-mcp.js)",
-      "Bash(set PORT=3003)"
+      "Bash(set PORT=3003)",
+      "Bash(for env in development testing production)",
+      "Bash(git clean:*)"
     ],
     "deny": [],
     "ask": []

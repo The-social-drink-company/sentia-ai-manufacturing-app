@@ -323,7 +323,8 @@
       "WebFetch(domain:dashboard.render.com)",
       "Bash(xargs ls:*)",
       "Bash(sort:*)",
-      "Bash(rd:*)"
+      "Bash(rd:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []

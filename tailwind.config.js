@@ -1,5 +1,9 @@
 /** @type {import('tailwindcss').Config} */
-import { themes } from './src/config/theme.config.js';
+import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
+import aspectRatio from '@tailwindcss/aspect-ratio';
+import * as themeConfig from './src/config/theme.config.js';
+const themes = themeConfig.themes ?? themeConfig.default ?? themeConfig;
 
 // Extract colors from our theme configuration
 const quantumDark = themes.quantumDark.colors;
@@ -272,8 +276,8 @@ export default {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/aspect-ratio'),
+    forms,
+    typography,
+    aspectRatio,
   ],
 }

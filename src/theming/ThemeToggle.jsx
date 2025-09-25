@@ -1,21 +1,42 @@
 import React from 'react';
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
-import { useTheme, THEMES } from './ThemeProvider';
-import Button from '../design-system/components/Button';
+import { useTheme, THEMES } from './ThemeProvider.jsx';
+import Button from '../design-system/components/Button.jsx';
 
-const ThemeToggle = ({ 
+const resolveLabel = (theme) => {
+  switch (theme) {
+    case THEMES.LIGHT:
+      return 'Light';
+    case THEMES.DARK:
+      return 'Dark';
+    case THEMES.HIGH_CONTRAST:
+      return 'High Contrast';
+    case THEMES.SYSTEM:
+    default:
+      return 'System';
+  }
+};
+
+const ThemeToggle = ({
   variant = 'secondary',
   size = 'md',
   showLabel = false,
   className = ''
 }) => {
-  const { theme, resolvedTheme, setTheme, isTransitioning } = useTheme();
+  const {
+    theme,
+    resolvedTheme,
+    setTheme,
+    isTransitioning,
+    isDark
+  } = useTheme();
 
   const getNextTheme = (currentTheme) => {
     switch (currentTheme) {
       case THEMES.LIGHT:
         return THEMES.DARK;
       case THEMES.DARK:
+      case THEMES.HIGH_CONTRAST:
         return THEMES.SYSTEM;
       case THEMES.SYSTEM:
       default:
@@ -29,34 +50,15 @@ const ThemeToggle = ({
   };
 
   const getThemeIcon = () => {
-    switch (theme) {
-      case THEMES.LIGHT:
-        return SunIcon;
-      case THEMES.DARK:
-        return MoonIcon;
-      case THEMES.SYSTEM:
-      default:
-        return ComputerDesktopIcon;
+    if (theme === THEMES.SYSTEM) {
+      return ComputerDesktopIcon;
     }
-  };
-
-  const getThemeLabel = () => {
-    switch (theme) {
-      case THEMES.LIGHT:
-        return 'Light';
-      case THEMES.DARK:
-        return 'Dark';
-      case THEMES.SYSTEM:
-      default:
-        return 'System';
-    }
+    return isDark ? MoonIcon : SunIcon;
   };
 
   const getAriaLabel = () => {
     const nextTheme = getNextTheme(theme);
-    const nextLabel = nextTheme === THEMES.LIGHT ? 'Light' : 
-                     nextTheme === THEMES.DARK ? 'Dark' : 'System';
-    return `Switch to ${nextLabel} theme`;
+    return `Switch to ${resolveLabel(nextTheme)} theme`;
   };
 
   const IconComponent = getThemeIcon();
@@ -67,21 +69,20 @@ const ThemeToggle = ({
       size={size}
       onClick={handleThemeToggle}
       disabled={isTransitioning}
-      className={`theme-toggle ${className} ${isTransitioning ? 'transition-opacity opacity-70' : ''}`}
+      className={`theme-toggle ${className} ${isTransitioning ? 'transition-opacity opacity-70' : ''}`.trim()}
       aria-label={getAriaLabel()}
-      title={`Current: ${getThemeLabel()} theme (resolved: ${resolvedTheme})`}
+      title={`Current: ${resolveLabel(theme)} theme (resolved: ${resolveLabel(resolvedTheme)})`}
     >
       <IconComponent className={`h-4 w-4 ${isTransitioning ? 'animate-pulse' : ''}`} />
       {showLabel && (
         <span className="ml-2 hidden sm:inline">
-          {getThemeLabel()}
+          {resolveLabel(theme)}
         </span>
       )}
     </Button>
   );
 };
 
-// Dropdown version for more explicit theme selection
 export const ThemeDropdown = ({ className = '' }) => {
   const { theme, setTheme, resolvedTheme, isTransitioning } = useTheme();
 
@@ -96,24 +97,30 @@ export const ThemeDropdown = ({ className = '' }) => {
       value: THEMES.LIGHT,
       label: 'Light',
       icon: SunIcon,
-      description: 'Always use light theme'
+      description: 'Always use Crystal Clear (light) theme'
     },
     {
       value: THEMES.DARK,
       label: 'Dark',
       icon: MoonIcon,
-      description: 'Always use dark theme'
+      description: 'Always use Quantum Dark theme'
+    },
+    {
+      value: THEMES.HIGH_CONTRAST,
+      label: 'High Contrast',
+      icon: MoonIcon,
+      description: 'High contrast accessibility mode'
     }
   ];
 
   return (
-    <div className={`theme-dropdown ${className}`}>
+    <div className={`theme-dropdown ${className}`.trim()}>
       <select
         value={theme}
-        onChange={(e) => setTheme(e.target.value)}
+        onChange={(event) => setTheme(event.target.value)}
         disabled={isTransitioning}
         className="
-          bg-white dark:bg-slate-800 
+          bg-white dark:bg-slate-800
           border border-gray-300 dark:border-slate-600
           text-gray-900 dark:text-gray-100
           rounded-md px-3 py-2 text-sm
@@ -124,7 +131,10 @@ export const ThemeDropdown = ({ className = '' }) => {
       >
         {themeOptions.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label} {option.value === theme && `(${resolvedTheme})`}
+            {option.label}
+            {option.value === theme
+              ? ` (${resolveLabel(resolvedTheme)})`
+              : ''}
           </option>
         ))}
       </select>

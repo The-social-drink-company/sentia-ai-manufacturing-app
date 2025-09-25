@@ -55,7 +55,7 @@ export const LazyLoadWrapper = memo(({
 }) => {
   return (
     <ErrorBoundary FallbackComponent={errorFallback}>
-      <Suspense 0>
+      <Suspense fallback={fallback}>
         {children}
       </Suspense>
     </ErrorBoundary>

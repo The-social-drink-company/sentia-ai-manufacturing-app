@@ -10,7 +10,7 @@ import ValidationEngine from './validationEngine.js';
 import dbService from './db/index.js';
 import fs from 'fs';
 import csv from 'csv-parser';
-import xlsx from 'xlsx';
+import ExcelJS from 'exceljs';
 
 class QueueService {
   constructor() {
@@ -44,7 +44,7 @@ class QueueService {
           process.env.REDIS_URL : 
           {
             host: process.env.REDIS_HOST || null,
-            port: process.env.REDIS_PORT 0,
+            port: process.env.REDIS_PORT || 6379,
             password: process.env.REDIS_PASSWORD,
             db: process.env.REDIS_DB || 0,
             retryDelayOnFailover: 100,
@@ -516,10 +516,53 @@ class QueueService {
         });
       } else if (fileType.includes('excel') || fileType.includes('spreadsheet')) {
         // Parse Excel
-        const workbook = xlsx.readFile(filePath);
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        return xlsx.utils.sheet_to_json(worksheet);
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(filePath);
+        const worksheet = workbook.worksheets[0];
+        if (!worksheet) {
+          return [];
+        }
+
+        const toValue = (cellValue) => {
+          if (cellValue === null || cellValue === undefined) return '';
+          if (cellValue instanceof Date) return cellValue.toISOString();
+          if (typeof cellValue === 'object') {
+            if (cellValue.text) return cellValue.text;
+            if (Array.isArray(cellValue.richText)) {
+              return cellValue.richText.map(part => part.text).join('');
+            }
+            if (typeof cellValue.result !== 'undefined') return cellValue.result;
+            if (cellValue.hyperlink) return cellValue.text || cellValue.hyperlink;
+            if (typeof cellValue.value !== 'undefined') return cellValue.value;
+          }
+          return cellValue;
+        };
+
+        const headers = worksheet
+          .getRow(1)
+          .values.slice(1)
+          .map(header => {
+            const value = toValue(header);
+            return typeof value === 'string' ? value.trim() : value;
+          });
+
+        const rows = [];
+        worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+          if (rowNumber === 1) return;
+          const record = {};
+
+          headers.forEach((header, idx) => {
+            if (!header) return;
+            const raw = toValue(row.getCell(idx + 1).value);
+            record[header] = raw;
+          });
+
+          if (Object.values(record).some(value => value !== '' && value !== null && value !== undefined)) {
+            rows.push(record);
+          }
+        });
+
+        return rows;
       } else if (fileType.includes('json')) {
         // Parse JSON
         const jsonData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -663,3 +706,4 @@ class QueueService {
 // Export singleton instance
 const queueService = new QueueService();
 export default queueService;
+

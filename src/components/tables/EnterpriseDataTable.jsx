@@ -23,7 +23,7 @@ import {
   ClipboardDocumentCheckIcon,
 } from '@heroicons/react/24/outline';
 import { useTheme } from '../ui/EnterpriseThemeSwitcher';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 /**
  * Column configuration type
@@ -222,7 +222,7 @@ export const EnterpriseDataTable = ({
   }, [processedData, selectedRows, onRowSelect]);
 
   // Export functionality
-  const handleExport = useCallback((format) => {
+  const handleExport = useCallback(async (format) => {
     const exportData = selectedRows.size > 0
       ? Array.from(selectedRows).map(i => processedData[i])
       : processedData;
@@ -249,12 +249,35 @@ export const EnterpriseDataTable = ({
         link.click();
         break;
 
-      case 'excel':
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(exportData);
-        XLSX.utils.book_append_sheet(wb, ws, 'Data');
-        XLSX.writeFile(wb, `data_${new Date().getTime()}.xlsx`);
+            case 'excel': {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Data');
+
+        worksheet.columns = columns.map(col => ({
+          header: col.label,
+          key: col.key
+        }));
+
+        exportData.forEach(row => {
+          const rowValues = {};
+          columns.forEach(col => {
+            rowValues[col.key] = row[col.key];
+          });
+          worksheet.addRow(rowValues);
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        const url = URL.createObjectURL(blob);
+        const excelLink = document.createElement('a');
+        excelLink.href = url;
+        excelLink.download = data_.xlsx;
+        excelLink.click();
+        URL.revokeObjectURL(url);
         break;
+      }
 
       case 'json':
         const jsonBlob = new Blob([JSON.stringify(exportData, null, 2)], {

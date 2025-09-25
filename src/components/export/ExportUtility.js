@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 // Export utility functions for various formats
 
 export class ExportUtility {
@@ -65,7 +67,7 @@ export class ExportUtility {
       this.downloadBlob(blob, filename);
       
     } catch (error) {
-      console.error('Excel export failed:', error);
+      logError('Excel export failed:', error);
       // Fallback to CSV
       this.exportToCSV(data, filename.replace('.xlsx', '.csv'));
     }
@@ -115,7 +117,7 @@ export class ExportUtility {
       doc.save(filename);
       
     } catch (error) {
-      console.error('PDF export failed:', error);
+      logError('PDF export failed:', error);
       // Fallback to CSV
       this.exportToCSV(data, filename.replace('.pdf', '.csv'));
     }
@@ -178,7 +180,7 @@ export class ExportUtility {
       });
       
     } catch (error) {
-      console.error('Chart PNG export failed:', error);
+      logError('Chart PNG export failed:', error);
       throw error;
     }
   }
@@ -204,7 +206,7 @@ export class ExportUtility {
       this.downloadBlob(blob, filename);
       
     } catch (error) {
-      console.error('Chart SVG export failed:', error);
+      logError('Chart SVG export failed:', error);
       throw error;
     }
   }
@@ -231,7 +233,7 @@ export class ExportUtility {
       this.downloadBlob(blob, filename);
       
     } catch (error) {
-      console.error('Multi-sheet export failed:', error);
+      logError('Multi-sheet export failed:', error);
       throw error;
     }
   }

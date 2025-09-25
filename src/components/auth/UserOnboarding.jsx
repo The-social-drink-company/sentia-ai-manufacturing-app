@@ -3,6 +3,8 @@ import { useUser } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
   UserIcon,
   BriefcaseIcon,
   ChartBarIcon,
@@ -113,7 +115,7 @@ const UserOnboarding = ({ onComplete }) => {
       onComplete?.();
       navigate('/dashboard');
     } catch (error) {
-      console.error('Failed to complete onboarding:', error);
+      logError('Failed to complete onboarding:', error);
     }
   };
 

@@ -1,5 +1,7 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import ExcelJS from 'exceljs';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class MicrosoftGraphService {
   constructor() {
@@ -35,7 +37,7 @@ class MicrosoftGraphService {
         webUrl: file.webUrl
       }));
     } catch (error) {
-      console.error('Error fetching OneDrive files:', error);
+      logError('Error fetching OneDrive files:', error);
       throw new Error('Failed to fetch OneDrive files');
     }
   }
@@ -58,7 +60,7 @@ class MicrosoftGraphService {
         createdDateTime: site.createdDateTime
       }));
     } catch (error) {
-      console.error('Error fetching SharePoint sites:', error);
+      logError('Error fetching SharePoint sites:', error);
       throw new Error('Failed to fetch SharePoint sites');
     }
   }
@@ -83,7 +85,7 @@ class MicrosoftGraphService {
         webUrl: file.webUrl
       }));
     } catch (error) {
-      console.error('Error fetching SharePoint Excel files:', error);
+      logError('Error fetching SharePoint Excel files:', error);
       throw new Error('Failed to fetch SharePoint Excel files');
     }
   }
@@ -134,7 +136,7 @@ class MicrosoftGraphService {
       
       return result;
     } catch (error) {
-      console.error('Error downloading and parsing Excel file:', error);
+      logError('Error downloading and parsing Excel file:', error);
       throw new Error('Failed to download and parse Excel file');
     }
   }
@@ -166,7 +168,7 @@ class MicrosoftGraphService {
         data: data.filter(row => row.some(cell => cell !== null && cell !== ''))
       };
     } catch (error) {
-      console.error('Error fetching Excel workbook data:', error);
+      logError('Error fetching Excel workbook data:', error);
       throw new Error('Failed to fetch Excel workbook data');
     }
   }
@@ -194,7 +196,7 @@ class MicrosoftGraphService {
         visibility: worksheet.visibility
       }));
     } catch (error) {
-      console.error('Error fetching Excel worksheets:', error);
+      logError('Error fetching Excel worksheets:', error);
       throw new Error('Failed to fetch Excel worksheets');
     }
   }
@@ -229,7 +231,7 @@ class MicrosoftGraphService {
       
       return processedData;
     } catch (error) {
-      console.error('Error processing manufacturing data:', error);
+      logError('Error processing manufacturing data:', error);
       throw new Error('Failed to process manufacturing data');
     }
   }

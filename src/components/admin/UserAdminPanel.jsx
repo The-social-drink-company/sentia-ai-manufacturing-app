@@ -12,6 +12,8 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { hasPermission, PERMISSIONS, ROLES } from '../../utils/rolePermissions';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const UserAdminPanel = () => {
   const { getToken, isLoaded: authLoaded } = useAuth();
@@ -88,7 +90,7 @@ const UserAdminPanel = () => {
         setInvitations(data.invitations || []);
       }
     } catch (err) {
-      console.error('Failed to fetch invitations:', err);
+      logError('Failed to fetch invitations:', err);
     }
   };
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
   ChatBubbleLeftIcon, 
   MicrophoneIcon, 
   PaperAirplaneIcon, 
@@ -40,8 +42,8 @@ const SentiaAIChatbot = ({
 
   useEffect(() => {
     // Debug: Log when component mounts
-    console.log('🚀 Sentia AI Chatbot Mounted!');
-    console.log('📍 Look for the blue chat button in the bottom-right corner');
+    logDebug('🚀 Sentia AI Chatbot Mounted!');
+    logDebug('📍 Look for the blue chat button in the bottom-right corner');
 
     // Initialize Sentia-specific suggested queries
     setSuggestedQueries([
@@ -181,7 +183,7 @@ What would you like to learn about today?`,
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('MCP Server connection failed:', error);
+      logError('MCP Server connection failed:', error);
       // Fallback to local knowledge base
       return generateLocalResponse(query);
     }
@@ -357,7 +359,7 @@ Please ask me about any specific feature or process you'd like to learn about.`,
       localStorage.setItem('sentia-ai-learning', JSON.stringify(existingLearning.slice(-100))); // Keep last 100
 
     } catch (error) {
-      console.error('Failed to store learning interaction:', error);
+      logError('Failed to store learning interaction:', error);
     }
   };
 

@@ -15,6 +15,8 @@ import {
   EyeIcon
 } from '@heroicons/react/24/outline';
 import { supplyChainService } from '../services/SupplyChainService.js';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const SupplyChain = () => {
   const [supplyChainData, setSupplyChainData] = useState(null);
@@ -33,7 +35,7 @@ const SupplyChain = () => {
         setError(null);
       } catch (err) {
         setError(`Failed to initialize supply chain: ${err.message}`);
-        console.error('Supply chain initialization error:', err);
+        logError('Supply chain initialization error:', err);
       } finally {
         setLoading(false);
       }
@@ -50,7 +52,7 @@ const SupplyChain = () => {
       setError(null);
     } catch (err) {
       setError(`Failed to fetch supply chain data: ${err.message}`);
-      console.error('Supply chain data error:', err);
+      logError('Supply chain data error:', err);
     }
   };
 

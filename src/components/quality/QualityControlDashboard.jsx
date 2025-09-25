@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMCPIntegration } from '../../hooks/useMCPIntegration';
 import { logInfo, logError } from '../../services/observability/structuredLogger.js';
 import {
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
   BeakerIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
@@ -624,7 +626,7 @@ const AddTestModal = ({ onClose, testTypes, inspectors }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission
-    console.log('Adding test:', formData);
+    logDebug('Adding test:', formData);
     onClose();
   };
 

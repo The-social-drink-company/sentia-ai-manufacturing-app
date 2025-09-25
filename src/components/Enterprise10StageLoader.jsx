@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircleIcon, CogIcon } from '@heroicons/react/24/solid';
 import { motion, AnimatePresence } from 'framer-motion';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const Enterprise10StageLoader = ({ onComplete, withClerk = true }) => {
   const [currentStage, setCurrentStage] = useState(0);
@@ -98,10 +100,10 @@ const Enterprise10StageLoader = ({ onComplete, withClerk = true }) => {
         try {
           const clerkCheck = await checkClerkAvailability();
           if (!clerkCheck && mounted) {
-            console.log('Clerk check completed:', clerkCheck);
+            logDebug('Clerk check completed:', clerkCheck);
           }
         } catch (err) {
-          console.warn('Clerk initialization warning:', err);
+          logWarn('Clerk initialization warning:', err);
         }
       }
 

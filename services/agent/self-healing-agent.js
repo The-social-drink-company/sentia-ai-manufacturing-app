@@ -13,6 +13,8 @@ import EventEmitter from 'events';
 // Import our custom modules
 import TestDataFactory from '../../tests/autonomous/test-data-factory.js';
 import TestResultAnalyzer from '../../tests/autonomous/result-analyzer.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -54,7 +56,7 @@ class SelfHealingAgent extends EventEmitter {
   }
 
   async initialize() {
-    console.log('🤖 INITIALIZING SELF-HEALING AUTONOMOUS AGENT');
+    logDebug('🤖 INITIALIZING SELF-HEALING AUTONOMOUS AGENT');
     
     // Create necessary directories
     this.ensureDirectories();
@@ -537,7 +539,7 @@ class SelfHealingAgent extends EventEmitter {
         const errorHandler = `
 // Error handling middleware
 app.use((error, req, res, next) => {
-  console.error('Server error:', error);
+  logError('Server error:', error);
   res.status(500).json({ 
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
@@ -838,15 +840,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async gracefulShutdown() {
-    console.log('\n🛑 Received shutdown signal - performing graceful shutdown...');
+    logDebug('\n🛑 Received shutdown signal - performing graceful shutdown...');
     
     if (this.state.currentFixes.size > 0) {
-      console.log('⏳ Waiting for current fixes to complete...');
+      logDebug('⏳ Waiting for current fixes to complete...');
       await this.waitForCurrentFixes();
     }
     
     await this.saveState();
-    console.log('✅ Shutdown complete');
+    logDebug('✅ Shutdown complete');
     process.exit(0);
   }
 
@@ -887,7 +889,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     };
 
     const color = colors[level] || colors.info;
-    console.log(`${color}[${timestamp}] [${level.toUpperCase()}] ${message}${colors.reset}`);
+    logDebug(`${color}[${timestamp}] [${level.toUpperCase()}] ${message}${colors.reset}`);
 
     this.emit('log', logEntry);
   }

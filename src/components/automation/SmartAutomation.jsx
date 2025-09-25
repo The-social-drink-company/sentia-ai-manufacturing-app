@@ -14,6 +14,8 @@ import {
 import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 import { ChartJS } from '../../lib/chartSetup';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const SmartAutomation = () => {
   const [automationData, setAutomationData] = useState(null);
@@ -39,7 +41,7 @@ const SmartAutomation = () => {
           setAutomationStats(mockAutomationStats);
         }
       } catch (error) {
-        console.error('Failed to fetch automation data:', error);
+        logError('Failed to fetch automation data:', error);
         // Use fallback data
         setAutomationData(mockAutomationData);
         setActiveProcesses(mockActiveProcesses);
@@ -126,7 +128,7 @@ const SmartAutomation = () => {
         );
       }
     } catch (error) {
-      console.error('Failed to control process:', error);
+      logError('Failed to control process:', error);
     }
   };
 

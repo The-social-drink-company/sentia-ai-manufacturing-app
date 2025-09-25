@@ -13,6 +13,8 @@ import {
   FolderArrowDownIcon
 } from '@heroicons/react/24/outline';
 import { ExportUtility } from './ExportUtility';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const ReportGenerator = ({
   data = [],
@@ -201,7 +203,7 @@ const ReportGenerator = ({
       }
 
     } catch (error) {
-      console.error('Report generation failed:', error);
+      logError('Report generation failed:', error);
       alert('Failed to generate report: ' + error.message);
     } finally {
       setIsGenerating(false);

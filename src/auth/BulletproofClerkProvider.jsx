@@ -15,6 +15,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from '@clerk/clerk-react';
 import { clerkConfig } from '../config/clerk';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Auth Context for bulletproof state management
 const BulletproofAuthContext = createContext(null);
@@ -135,7 +137,7 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
         }
       }
     } catch (error) {
-      console.warn('Failed to load persisted auth state:', error);
+      logWarn('Failed to load persisted auth state:', error);
     }
     return null;
   }, []);
@@ -149,30 +151,30 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
       };
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(toStore));
     } catch (error) {
-      console.warn('Failed to persist auth state:', error);
+      logWarn('Failed to persist auth state:', error);
     }
   }, []);
 
   // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('[BulletproofAuth] Starting initialization...');
-      console.log('[BulletproofAuth] Publishable Key:', effectiveKey ? 'Present' : 'Missing');
-      console.log('[BulletproofAuth] Key Value:', effectiveKey?.substring(0, 20) + '...');
-      console.log('[BulletproofAuth] Environment:', window.location.hostname);
-      console.log('[BulletproofAuth] Force Clerk:', forceClerkAuth);
-      console.log('[BulletproofAuth] Disable Fallback:', disableFallback);
+      logDebug('[BulletproofAuth] Starting initialization...');
+      logDebug('[BulletproofAuth] Publishable Key:', effectiveKey ? 'Present' : 'Missing');
+      logDebug('[BulletproofAuth] Key Value:', effectiveKey?.substring(0, 20) + '...');
+      logDebug('[BulletproofAuth] Environment:', window.location.hostname);
+      logDebug('[BulletproofAuth] Force Clerk:', forceClerkAuth);
+      logDebug('[BulletproofAuth] Disable Fallback:', disableFallback);
 
       // PRODUCTION FIX: Check for Clerk key and initialize properly
       if (effectiveKey && (effectiveKey.startsWith('pk_test_') || effectiveKey.startsWith('pk_live_'))) {
-        console.log('[BulletproofAuth] Valid Clerk key detected, initializing Clerk authentication');
-        console.log('[BulletproofAuth] Key type:', effectiveKey.startsWith('pk_live_') ? 'PRODUCTION' : 'TEST');
+        logDebug('[BulletproofAuth] Valid Clerk key detected, initializing Clerk authentication');
+        logDebug('[BulletproofAuth] Key type:', effectiveKey.startsWith('pk_live_') ? 'PRODUCTION' : 'TEST');
         setIsLoading(false);
         return;
       }
 
       // Only use fallback if no valid key
-      console.log('[BulletproofAuth] No valid Clerk key, using fallback mode');
+      logDebug('[BulletproofAuth] No valid Clerk key, using fallback mode');
       setAuthState(FALLBACK_AUTH_STATE);
       persistAuthState(FALLBACK_AUTH_STATE);
       setUseFallback(true);
@@ -183,7 +185,7 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
       /*
       // If no publishable key, immediately use fallback
       if (!publishableKey) {
-        console.log('[BulletproofAuth] No Clerk key provided, using fallback mode');
+        logDebug('[BulletproofAuth] No Clerk key provided, using fallback mode');
         setAuthState(FALLBACK_AUTH_STATE);
         setIsLoading(false);
         setUseFallback(true);
@@ -211,7 +213,7 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
 
         // Set a timeout for Clerk initialization
         const timeoutId = setTimeout(() => {
-          console.warn('Clerk initialization timeout, falling back to demo mode');
+          logWarn('Clerk initialization timeout, falling back to demo mode');
           setUseFallback(true);
           setAuthState(FALLBACK_AUTH_STATE);
           persistAuthState(FALLBACK_AUTH_STATE);
@@ -223,7 +225,7 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
         setIsLoading(false);
 
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        logError('Auth initialization error:', error);
         setError(error.message);
         setUseFallback(true);
         setAuthState(FALLBACK_AUTH_STATE);
@@ -248,7 +250,7 @@ export const BulletproofClerkProvider = ({ children, publishableKey }) => {
   // Switch to fallback mode (only if not disabled)
   const switchToFallback = useCallback(() => {
     if (disableFallback) {
-      console.log('Fallback mode disabled - forcing Clerk authentication');
+      logDebug('Fallback mode disabled - forcing Clerk authentication');
       return;
     }
     setUseFallback(true);
@@ -356,7 +358,7 @@ export const useAuth = () => {
     }
   } catch (error) {
     // If Clerk hooks fail (not in ClerkProvider), use fallback
-    console.warn('Clerk auth hooks not available, using fallback:', error.message);
+    logWarn('Clerk auth hooks not available, using fallback:', error.message);
   }
 
   // Fallback to bulletproof auth if Clerk fails

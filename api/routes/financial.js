@@ -5,6 +5,8 @@ import { requireAuth, requireRole, requireManager } from '../middleware/clerkAut
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 // Initialize cache with 60 second TTL for financial data
 const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
@@ -71,7 +73,7 @@ router.get('/dashboard',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Financial dashboard');
+      logDebug('[Cache Hit] Financial dashboard');
       return res.json(cached);
     }
 
@@ -250,23 +252,23 @@ router.get('/working-capital',
   requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
-    console.log('[Working Capital API] Request received');
+    logDebug('[Working Capital API] Request received');
 
     // Check cache first
     const cacheKey = 'working-capital-current';
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Working capital data');
+      logDebug('[Cache Hit] Working capital data');
       return res.json(cached);
     }
 
-    console.log('[Cache Miss] Working capital - fetching from database');
+    logDebug('[Cache Miss] Working capital - fetching from database');
 
     try {
       // Check database connection
       await prisma.$queryRaw`SELECT 1`;
-      console.log('[Working Capital API] Database connection successful');
+      logDebug('[Working Capital API] Database connection successful');
 
       // Get current assets and liabilities with error handling
       const [inventory, receivables, payables, cash] = await Promise.all([
@@ -275,7 +277,7 @@ router.get('/working-capital',
           SELECT COALESCE(SUM(quantity * unit_cost), 0) as total_value
           FROM inventory
         `.catch((err) => {
-          console.error('[Working Capital API] Inventory query failed:', err);
+          logError('[Working Capital API] Inventory query failed:', err);
           return [{ total_value: 0 }];
         }),
 
@@ -286,7 +288,7 @@ router.get('/working-capital',
           },
           _sum: { totalAmount: true }
         }).catch((err) => {
-          console.error('[Working Capital API] Receivables query failed:', err);
+          logError('[Working Capital API] Receivables query failed:', err);
           return { _sum: { totalAmount: 0 } };
         }),
 
@@ -297,7 +299,7 @@ router.get('/working-capital',
           },
           _sum: { amount: true }
         }).catch((err) => {
-          console.error('[Working Capital API] Payables query failed:', err);
+          logError('[Working Capital API] Payables query failed:', err);
           return { _sum: { amount: 0 } };
         }),
 
@@ -308,12 +310,12 @@ router.get('/working-capital',
           LIMIT 1
         `.then(rows => rows[0] || { balance: 0 })
         .catch((err) => {
-          console.error('[Working Capital API] Cash query failed:', err);
+          logError('[Working Capital API] Cash query failed:', err);
           return { balance: 0 };
         })
       ]);
 
-      console.log('[Working Capital API] Data fetched successfully');
+      logDebug('[Working Capital API] Data fetched successfully');
 
       // Calculate metrics
       const inventoryValue = Number(inventory[0]?.total_value) || 0;
@@ -392,7 +394,7 @@ router.get('/working-capital',
         ]
       };
 
-      console.log('[Working Capital API] Response prepared successfully');
+      logDebug('[Working Capital API] Response prepared successfully');
 
       // Cache the successful response
       cache.set(cacheKey, response);
@@ -400,7 +402,7 @@ router.get('/working-capital',
       res.json(response);
 
     } catch (error) {
-      console.error('[Working Capital API] Error:', error);
+      logError('[Working Capital API] Error:', error);
       res.status(500).json({
         error: 'Failed to fetch working capital data. Please ensure database connection is active.',
         message: error.message
@@ -989,7 +991,7 @@ router.get('/overview',
       });
 
     } catch (error) {
-      console.error('[Financial Reports API] Error:', error);
+      logError('[Financial Reports API] Error:', error);
       res.status(500).json({
         error: 'Failed to fetch financial reports. Please ensure database connection is active.',
         message: error.message

@@ -2,6 +2,8 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import redisCacheService from './redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class EnterpriseSecurityService {
   constructor() {
@@ -41,7 +43,7 @@ class EnterpriseSecurityService {
         authTag: authTag.toString('hex')
       };
     } catch (error) {
-      console.error('Encryption error:', error);
+      logError('Encryption error:', error);
       throw new Error('Data encryption failed');
     }
   }
@@ -60,7 +62,7 @@ class EnterpriseSecurityService {
       
       return decrypted;
     } catch (error) {
-      console.error('Decryption error:', error);
+      logError('Decryption error:', error);
       throw new Error('Data decryption failed');
     }
   }
@@ -74,7 +76,7 @@ class EnterpriseSecurityService {
       
       return await bcrypt.hash(pepperedPassword, saltRounds);
     } catch (error) {
-      console.error('Password hashing error:', error);
+      logError('Password hashing error:', error);
       throw new Error('Password hashing failed');
     }
   }
@@ -86,7 +88,7 @@ class EnterpriseSecurityService {
       
       return await bcrypt.compare(pepperedPassword, hash);
     } catch (error) {
-      console.error('Password verification error:', error);
+      logError('Password verification error:', error);
       return false;
     }
   }
@@ -117,7 +119,7 @@ class EnterpriseSecurityService {
     try {
       return jwt.sign(enhancedPayload, this.jwtSecret, tokenOptions);
     } catch (error) {
-      console.error('Token generation error:', error);
+      logError('Token generation error:', error);
       throw new Error('Token generation failed');
     }
   }
@@ -144,7 +146,7 @@ class EnterpriseSecurityService {
       
       return decoded;
     } catch (error) {
-      console.error('Token verification error:', error);
+      logError('Token verification error:', error);
       throw error;
     }
   }
@@ -163,12 +165,12 @@ class EnterpriseSecurityService {
           decoded.exp ? (decoded.exp - Math.floor(Date.now() / 1000)) : 86400
         );
         
-        console.log(`Token revoked: ${decoded.jti}`);
+        logDebug(`Token revoked: ${decoded.jti}`);
         return true;
       }
       return false;
     } catch (error) {
-      console.error('Token revocation error:', error);
+      logError('Token revocation error:', error);
       return false;
     }
   }
@@ -207,7 +209,7 @@ class EnterpriseSecurityService {
       
       return keyData;
     } catch (error) {
-      console.error('API key validation error:', error);
+      logError('API key validation error:', error);
       throw error;
     }
   }
@@ -249,7 +251,7 @@ class EnterpriseSecurityService {
       
       return isValid;
     } catch (error) {
-      console.error('TOTP verification error:', error);
+      logError('TOTP verification error:', error);
       return false;
     }
   }
@@ -412,7 +414,7 @@ class EnterpriseSecurityService {
     }
     
     // Log to console and store in Redis
-    console.log(`Security Event [${event.severity.toUpperCase()}]: ${eventType}`, data);
+    logDebug(`Security Event [${event.severity.toUpperCase()}]: ${eventType}`, data);
     redisCacheService.set(`security_event:${event.id}`, event, 86400); // 24 hours
     
     // Alert on high-severity events
@@ -523,7 +525,7 @@ class EnterpriseSecurityService {
     redisCacheService.set(`user_suspension:${userId}`, suspensionData, durationSeconds);
     
     this.logSecurityEvent('USER_SUSPENDED', suspensionData);
-    console.warn(`User ${userId} temporarily suspended: ${reason}`);
+    logWarn(`User ${userId} temporarily suspended: ${reason}`);
   }
 
   async isUserSuspended(userId) {
@@ -533,7 +535,7 @@ class EnterpriseSecurityService {
 
   sendSecurityAlert(event) {
     // Placeholder for alert system integration
-    console.error(`🚨 SECURITY ALERT: ${event.type} - ${JSON.stringify(event.data)}`);
+    logError(`🚨 SECURITY ALERT: ${event.type} - ${JSON.stringify(event.data)}`);
   }
 
   initializeSecurityPolicies() {

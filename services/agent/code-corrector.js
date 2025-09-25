@@ -11,6 +11,8 @@ import traverse from '@babel/traverse';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import { transformFromAstSync } from '@babel/core';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class CodeCorrectionEngine {
   constructor() {
@@ -124,7 +126,7 @@ class CodeCorrectionEngine {
 try {
   {{ORIGINAL_CODE}}
 } catch (error) {
-  console.error('{{OPERATION_NAME}} failed:', error);
+  logError('{{OPERATION_NAME}} failed:', error);
   {{ERROR_HANDLING}}
 }`,
 
@@ -150,12 +152,12 @@ try {
       error_middleware: `
 // Enhanced error handling middleware
 app.use((error, req, res, next) => {
-  console.error('Server error:', error);
+  logError('Server error:', error);
   
   // Log error details for debugging
-  console.error('Stack:', error.stack);
-  console.error('Request URL:', req.url);
-  console.error('Request Method:', req.method);
+  logError('Stack:', error.stack);
+  logError('Request URL:', req.url);
+  logError('Request Method:', req.method);
   
   // Determine error type and response
   let statusCode = 500;
@@ -235,7 +237,7 @@ const authenticateUser = async (req, res, next) => {
     
     next();
   } catch (error) {
-    console.error('Authentication error:', error);
+    logError('Authentication error:', error);
     
     if (error.message.includes('expired')) {
       return res.status(401).json({ 
@@ -329,7 +331,7 @@ app.use(cors({
 
   // Main correction method
   async applyCorrections(analysisResults) {
-    console.log('🔧 Starting advanced code corrections...');
+    logDebug('🔧 Starting advanced code corrections...');
     
     const correctionPlan = await this.generateCorrectionPlan(analysisResults);
     const results = {
@@ -350,9 +352,9 @@ app.use(cors({
         const result = await this.applyIndividualCorrection(correction);
         results.applied.push({ correction, result });
         
-        console.log(`✅ Applied correction: ${correction.type} to ${correction.file}`);
+        logDebug(`✅ Applied correction: ${correction.type} to ${correction.file}`);
       } catch (error) {
-        console.error(`❌ Failed to apply correction: ${correction.type} - ${error.message}`);
+        logError(`❌ Failed to apply correction: ${correction.type} - ${error.message}`);
         results.failed.push({ correction, error: error.message });
       }
     }
@@ -360,7 +362,7 @@ app.use(cors({
     // Validate all applied corrections
     await this.validateCorrections(results.applied);
 
-    console.log(`🎯 Corrections complete: ${results.applied.length} applied, ${results.failed.length} failed`);
+    logDebug(`🎯 Corrections complete: ${results.applied.length} applied, ${results.failed.length} failed`);
     return results;
   }
 
@@ -406,7 +408,7 @@ app.use(cors({
     const pattern = instruction.pattern;
     
     if (!this.fixPatterns[pattern]) {
-      console.warn(`No fix patterns available for: ${pattern}`);
+      logWarn(`No fix patterns available for: ${pattern}`);
       return corrections;
     }
 
@@ -493,7 +495,7 @@ app.use(cors({
         config: patternConfig
       };
     } catch (error) {
-      console.error(`Error analyzing file ${filePath}: ${error.message}`);
+      logError(`Error analyzing file ${filePath}: ${error.message}`);
       return null;
     }
   }
@@ -548,7 +550,7 @@ app.use(cors({
 
       return needsCorrection;
     } catch (error) {
-      console.warn(`AST analysis failed: ${error.message}`);
+      logWarn(`AST analysis failed: ${error.message}`);
       return false;
     }
   }
@@ -868,7 +870,7 @@ app.use(cors({
     }
     
     if (issues.length > 0) {
-      console.warn('Code quality issues detected:', issues);
+      logWarn('Code quality issues detected:', issues);
     }
   }
 
@@ -921,15 +923,15 @@ app.use(cors({
         // Write backup
         fs.writeFileSync(backupPath, content);
       } catch (error) {
-        console.error(`Failed to backup ${filePath}: ${error.message}`);
+        logError(`Failed to backup ${filePath}: ${error.message}`);
       }
     }
     
-    console.log(`📦 Created backups for ${affectedFiles.length} files`);
+    logDebug(`📦 Created backups for ${affectedFiles.length} files`);
   }
 
   async validateCorrections(appliedCorrections) {
-    console.log('🔍 Validating applied corrections...');
+    logDebug('🔍 Validating applied corrections...');
     
     for (const { correction, result } of appliedCorrections) {
       try {
@@ -937,9 +939,9 @@ app.use(cors({
         const content = fs.readFileSync(correction.file, 'utf8');
         await this.validateCorrectedCode(content, path.extname(correction.file));
         
-        console.log(`✅ Validation passed: ${correction.file}`);
+        logDebug(`✅ Validation passed: ${correction.file}`);
       } catch (error) {
-        console.error(`❌ Validation failed: ${correction.file} - ${error.message}`);
+        logError(`❌ Validation failed: ${correction.file} - ${error.message}`);
         
         // Attempt to restore from backup if validation fails
         await this.restoreFromBackup(correction.file);
@@ -959,20 +961,20 @@ app.use(cors({
         if (fs.existsSync(backupFile)) {
           const backupContent = fs.readFileSync(backupFile, 'utf8');
           fs.writeFileSync(filePath, backupContent);
-          console.log(`🔄 Restored ${filePath} from backup`);
+          logDebug(`🔄 Restored ${filePath} from backup`);
           return;
         }
       }
       
-      console.error(`❌ No backup found for ${filePath}`);
+      logError(`❌ No backup found for ${filePath}`);
     } catch (error) {
-      console.error(`Failed to restore backup for ${filePath}: ${error.message}`);
+      logError(`Failed to restore backup for ${filePath}: ${error.message}`);
     }
   }
 
   // Public API methods
   async analyzeCodebase() {
-    console.log('📊 Analyzing codebase for potential improvements...');
+    logDebug('📊 Analyzing codebase for potential improvements...');
     
     const analysis = {
       timestamp: new Date().toISOString(),
@@ -997,7 +999,7 @@ app.use(cors({
           });
         }
       } catch (error) {
-        console.warn(`Failed to analyze ${file}: ${error.message}`);
+        logWarn(`Failed to analyze ${file}: ${error.message}`);
       }
     }
     
@@ -1056,7 +1058,7 @@ app.use(cors({
 
   clearCache() {
     this.analysisCache.clear();
-    console.log('🧹 Analysis cache cleared');
+    logDebug('🧹 Analysis cache cleared');
   }
 }
 

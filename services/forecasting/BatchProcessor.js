@@ -1,4 +1,6 @@
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class BatchProcessor extends EventEmitter {
   constructor(options = {}) {
@@ -61,7 +63,7 @@ class BatchProcessor extends EventEmitter {
     try {
       await this.processBatch(batch);
     } catch (error) {
-      console.error(`Batch ${batchId} processing failed:`, error);
+      logError(`Batch ${batchId} processing failed:`, error);
       this.handleBatchError(batch, error);
     } finally {
       this.activeBatches.delete(batchId);

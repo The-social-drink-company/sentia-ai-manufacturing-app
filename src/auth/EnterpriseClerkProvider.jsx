@@ -30,6 +30,8 @@ import {
   UserProfile
 } from '@clerk/clerk-react';
 import { dark } from '@clerk/themes';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Enterprise Clerk configuration
 const ENTERPRISE_CLERK_CONFIG = {
@@ -218,7 +220,7 @@ export const useEnterpriseSession = () => {
       
       return token;
     } catch (error) {
-      console.error('Failed to get enterprise token:', error);
+      logError('Failed to get enterprise token:', error);
       throw error;
     }
   };
@@ -249,7 +251,7 @@ export const useEnterpriseSession = () => {
       // Redirect to home
       window.location.href = '/';
     } catch (error) {
-      console.error('Sign out failed:', error);
+      logError('Sign out failed:', error);
       throw error;
     }
   };
@@ -292,17 +294,17 @@ export const EnterpriseClerkProvider = ({ children }) => {
         
         // Initialize analytics if enabled
         if (import.meta.env.VITE_ENABLE_ANALYTICS === 'true') {
-          console.log('Enterprise analytics initialized');
+          logDebug('Enterprise analytics initialized');
         }
         
         // Initialize audit logging if enabled
         if (import.meta.env.VITE_ENABLE_AUDIT_LOGS === 'true') {
-          console.log('Enterprise audit logging initialized');
+          logDebug('Enterprise audit logging initialized');
         }
         
         setIsInitialized(true);
       } catch (error) {
-        console.error('Enterprise Clerk initialization failed:', error);
+        logError('Enterprise Clerk initialization failed:', error);
         setInitError(error);
       }
     };

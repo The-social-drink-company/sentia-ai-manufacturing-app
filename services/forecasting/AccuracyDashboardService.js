@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 class AccuracyDashboardService {
   constructor(forecastingService, options = {}) {
     this.forecastingService = forecastingService;
@@ -114,7 +116,7 @@ class AccuracyDashboardService {
           }
 
         } catch (error) {
-          console.warn(`Failed to get metrics for series ${seriesId} in region ${region}:`, error.message);
+          logWarn(`Failed to get metrics for series ${seriesId} in region ${region}:`, error.message);
         }
       }
     }
@@ -272,7 +274,7 @@ class AccuracyDashboardService {
           regionPerformance[region].forecastCount++;
 
         } catch (error) {
-          console.warn(`Regional analysis failed for series ${seriesId} in region ${region}:`, error.message);
+          logWarn(`Regional analysis failed for series ${seriesId} in region ${region}:`, error.message);
         }
       }
 
@@ -352,7 +354,7 @@ class AccuracyDashboardService {
           horizonPerformance[`${horizon}d`].forecastCount++;
 
         } catch (error) {
-          console.warn(`Horizon analysis failed for series ${seriesId} at horizon ${horizon}:`, error.message);
+          logWarn(`Horizon analysis failed for series ${seriesId} at horizon ${horizon}:`, error.message);
         }
       }
 
@@ -430,7 +432,7 @@ class AccuracyDashboardService {
         }
 
       } catch (error) {
-        console.warn(`Coverage analysis failed for series ${seriesId}:`, error.message);
+        logWarn(`Coverage analysis failed for series ${seriesId}:`, error.message);
       }
     }
 

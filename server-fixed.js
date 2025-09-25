@@ -19,6 +19,9 @@ import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import { randomUUID } from 'crypto';
 
+// Import cash coverage routes
+import cashCoverageRoutes from './api/routes/cash-coverage.js';
+
 // Load environment variables
 dotenv.config();
 
@@ -631,6 +634,13 @@ app.get('/api/analytics/reports', requireAuth, (req, res) => {
     ]
   });
 });
+
+// ============================================================================
+// CASH COVERAGE ANALYSIS ROUTES
+// ============================================================================
+
+// Mount cash coverage analysis routes
+app.use('/api/cash-coverage', cashCoverageRoutes);
 
 // ============================================================================
 // MCP INTEGRATION ROUTES

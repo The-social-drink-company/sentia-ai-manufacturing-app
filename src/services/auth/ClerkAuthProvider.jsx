@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ClerkProvider as BaseClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from '@clerk/clerk-react';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 /**
  * BULLETPROOF CLERK AUTHENTICATION SYSTEM
@@ -85,7 +87,7 @@ class ClerkHealthMonitor {
     if (this.failureCount >= this.maxFailures) {
       this.isHealthy = false;
       this.notifyListeners('unhealthy', error);
-      console.error('[ClerkHealth] Max failures reached, switching to fallback mode', error);
+      logError('[ClerkHealth] Max failures reached, switching to fallback mode', error);
     }
   }
 
@@ -112,17 +114,17 @@ function validateClerkConfig() {
   const key = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
   if (!key) {
-    console.warn('[Clerk] No publishable key found in environment variables');
+    logWarn('[Clerk] No publishable key found in environment variables');
     return { valid: false, reason: 'missing_key' };
   }
 
   if (!key.startsWith('pk_test_') && !key.startsWith('pk_live_')) {
-    console.warn('[Clerk] Invalid publishable key format:', key.substring(0, 20));
+    logWarn('[Clerk] Invalid publishable key format:', key.substring(0, 20));
     return { valid: false, reason: 'invalid_key_format' };
   }
 
   if (key.length < 30) {
-    console.warn('[Clerk] Publishable key appears to be incomplete');
+    logWarn('[Clerk] Publishable key appears to be incomplete');
     return { valid: false, reason: 'incomplete_key' };
   }
 
@@ -133,7 +135,7 @@ function validateClerkConfig() {
 
   // Check for network connectivity
   if (!navigator.onLine) {
-    console.warn('[Clerk] No network connection detected');
+    logWarn('[Clerk] No network connection detected');
     return { valid: false, reason: 'offline' };
   }
 
@@ -158,7 +160,7 @@ class ClerkErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('[ClerkErrorBoundary] Caught error:', error, errorInfo);
+    logError('[ClerkErrorBoundary] Caught error:', error, errorInfo);
     this.setState({ errorInfo });
 
     // Log to monitoring service
@@ -248,7 +250,7 @@ function FallbackAuthProvider({ children }) {
           sessionId: session.sessionId || 'fallback_session_001'
         };
       } catch (e) {
-        console.error('[FallbackAuth] Failed to parse stored session:', e);
+        logError('[FallbackAuth] Failed to parse stored session:', e);
       }
     }
     return FALLBACK_AUTH_STATE;
@@ -291,7 +293,7 @@ export function ClerkAuthProvider({ children }) {
       const unsubscribe = healthMonitor.addListener((status, error) => {
         setHealthStatus(status);
         if (status === 'unhealthy' && mode === 'clerk') {
-          console.warn('[ClerkAuth] Switching to fallback mode due to health issues');
+          logWarn('[ClerkAuth] Switching to fallback mode due to health issues');
           setMode('fallback');
         }
       });
@@ -301,14 +303,14 @@ export function ClerkAuthProvider({ children }) {
         unsubscribe();
       };
     } else {
-      console.warn('[ClerkAuth] Invalid configuration, using fallback mode:', config.reason);
+      logWarn('[ClerkAuth] Invalid configuration, using fallback mode:', config.reason);
       setMode('fallback');
     }
   }, []);
 
   // Log current mode for debugging
   useEffect(() => {
-    console.log(`[ClerkAuth] Running in ${mode} mode (health: ${healthStatus})`);
+    logDebug(`[ClerkAuth] Running in ${mode} mode (health: ${healthStatus})`);
   }, [mode, healthStatus]);
 
   // Show loading state while checking

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
   ChartBarIcon,
   CurrencyDollarIcon,
   LightBulbIcon,
@@ -22,7 +24,7 @@ const LandingPageComplete = () => {
 
   // All working navigation functions
   const handleNavigate = (path) => {
-    console.log(`Navigating to: ${path}`);
+    logDebug(`Navigating to: ${path}`);
     navigate(path);
   };
 

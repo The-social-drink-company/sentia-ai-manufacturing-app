@@ -4,6 +4,8 @@ import prisma from '../../lib/prisma.js';
 import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 
@@ -140,7 +142,7 @@ router.get('/overview',
       });
 
     } catch (error) {
-      console.error('[Supply Chain API] Error:', error);
+      logError('[Supply Chain API] Error:', error);
       res.status(500).json({
         success: false,
         error: 'Failed to fetch supply chain data. Please ensure database connection is active.',

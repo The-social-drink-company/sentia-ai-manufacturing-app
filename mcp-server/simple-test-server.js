@@ -7,6 +7,8 @@
 
 import express from 'express';
 import cors from 'cors';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const app = express();
 const port = process.env.PORT || 9001;
@@ -40,17 +42,17 @@ app.get('/', (req, res) => {
 
 // Start server
 app.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 Sentia MCP Test Server running on port ${port}`);
-  console.log(`🔗 Health check: http://localhost:${port}/health`);
+  logDebug(`🚀 Sentia MCP Test Server running on port ${port}`);
+  logDebug(`🔗 Health check: http://localhost:${port}/health`);
 });
 
 // Error handling
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error);
+  logError('Uncaught exception:', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled rejection:', reason);
+  logError('Unhandled rejection:', reason);
   process.exit(1);
 });

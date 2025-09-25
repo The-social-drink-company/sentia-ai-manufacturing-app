@@ -4,6 +4,8 @@
  */
 
 import { EventEmitter } from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class FeatureFlagsService extends EventEmitter {
   constructor() {
@@ -34,9 +36,9 @@ class FeatureFlagsService extends EventEmitter {
       this.initialized = true;
       this.emit('initialized');
 
-      console.log('Feature flags service initialized');
+      logDebug('Feature flags service initialized');
     } catch (error) {
-      console.error('Failed to initialize feature flags:', error);
+      logError('Failed to initialize feature flags:', error);
       throw error;
     }
   }
@@ -74,7 +76,7 @@ class FeatureFlagsService extends EventEmitter {
 
       this.emit('flags-updated', Array.from(this.flags.keys()));
     } catch (error) {
-      console.error('Failed to load feature flags:', error);
+      logError('Failed to load feature flags:', error);
 
       // Fall back to default flags
       this.loadDefaultFlags();
@@ -247,7 +249,7 @@ class FeatureFlagsService extends EventEmitter {
     // Get flag configuration
     const flag = this.flags.get(flagKey);
     if (!flag) {
-      console.warn(`Feature flag not found: ${flagKey}`);
+      logWarn(`Feature flag not found: ${flagKey}`);
       return false;
     }
 
@@ -520,7 +522,7 @@ class FeatureFlagsService extends EventEmitter {
     });
 
     eventSource.addEventListener('error', (error) => {
-      console.error('Feature flags stream error:', error);
+      logError('Feature flags stream error:', error);
     });
 
     this.eventSource = eventSource;

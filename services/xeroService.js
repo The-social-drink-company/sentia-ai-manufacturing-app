@@ -4,6 +4,8 @@
  */
 
 import pkg from 'xero-node';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 // Handle both old and new xero-node package exports with comprehensive error handling
 let XeroClient, XeroApi, TokenSet, XeroClientClass;
 
@@ -12,17 +14,17 @@ try {
   XeroClientClass = XeroClient || XeroApi || pkg.default || pkg;
   
   if (!XeroClientClass || typeof XeroClientClass !== 'function') {
-    console.warn('⚠️ Xero client class not found in package, using fallback');
+    logWarn('⚠️ Xero client class not found in package, using fallback');
     XeroClientClass = null;
   }
 } catch (error) {
-  console.error('❌ Failed to import Xero package:', error.message);
+  logError('❌ Failed to import Xero package:', error.message);
   XeroClientClass = null;
   TokenSet = null;
 }
 
 // Fallback for missing logError function
-const logError = (msg, error) => console.error(msg, error);
+const logError = (msg, error) => logError(msg, error);
 
 class XeroService {
   constructor() {
@@ -47,18 +49,18 @@ class XeroService {
   }
 
   initializeXeroClient() {
-    console.log('🔍 Xero Debug - XERO_CLIENT_ID:', process.env.XERO_CLIENT_ID);
-    console.log('🔍 Xero Debug - XERO_CLIENT_SECRET:', process.env.XERO_CLIENT_SECRET);
+    logDebug('🔍 Xero Debug - XERO_CLIENT_ID:', process.env.XERO_CLIENT_ID);
+    logDebug('🔍 Xero Debug - XERO_CLIENT_SECRET:', process.env.XERO_CLIENT_SECRET);
     
     this.organizationId = process.env.XERO_ORGANIZATION_ID;
     
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
-      console.log('❌ Xero credentials missing - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);
+      logDebug('❌ Xero credentials missing - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);
       return;
     }
 
     if (!XeroClientClass) {
-      console.warn('⚠️ Xero client class not available, service will not be initialized');
+      logWarn('⚠️ Xero client class not available, service will not be initialized');
       return;
     }
 
@@ -79,10 +81,10 @@ class XeroService {
         httpTimeout: 30000
       });
 
-      console.log('✅ Xero client initialized');
+      logDebug('✅ Xero client initialized');
       this.authenticate();
     } catch (error) {
-      console.error('❌ Failed to initialize Xero client:', error.message);
+      logError('❌ Failed to initialize Xero client:', error.message);
     }
   }
 
@@ -145,17 +147,17 @@ class XeroService {
               }
             }
           });
-          console.log('✅ Xero token stored in database');
+          logDebug('✅ Xero token stored in database');
         } catch (dbError) {
-          console.error('⚠️ Could not store token in database:', dbError.message);
+          logError('⚠️ Could not store token in database:', dbError.message);
           // Continue even if database storage fails
         }
       }
 
-      console.log('✅ Xero authenticated successfully');
+      logDebug('✅ Xero authenticated successfully');
       return tokenSet;
     } catch (error) {
-      console.error('❌ Xero token exchange failed:', error.message);
+      logError('❌ Xero token exchange failed:', error.message);
       this.isConnected = false;
       throw error;
     }
@@ -178,14 +180,14 @@ class XeroService {
 
         this.xero.setTokenSet(this.tokenSet);
         this.isConnected = true;
-        console.log('✅ Xero authenticated successfully');
+        logDebug('✅ Xero authenticated successfully');
         return true;
       }
 
       // Xero tokens not configured - using fallback data
       return false;
     } catch (error) {
-      console.error('❌ Xero authentication failed:', error.message);
+      logError('❌ Xero authentication failed:', error.message);
       this.isConnected = false;
       return false;
     }
@@ -196,7 +198,7 @@ class XeroService {
       try {
         return await operation();
       } catch (error) {
-        console.error(`❌ Xero API attempt ${attempt} failed:`, error.message);
+        logError(`❌ Xero API attempt ${attempt} failed:`, error.message);
         
         if (error.response?.status === 401) {
           const refreshed = await this.refreshToken();
@@ -220,10 +222,10 @@ class XeroService {
     try {
       const newTokenSet = await this.xero.refreshToken();
       this.tokenSet = newTokenSet;
-      console.log('✅ Xero token refreshed');
+      logDebug('✅ Xero token refreshed');
       return true;
     } catch (error) {
-      console.error('❌ Failed to refresh Xero token:', error.message);
+      logError('❌ Failed to refresh Xero token:', error.message);
       this.isConnected = false;
       return false;
     }
@@ -330,7 +332,7 @@ class XeroService {
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
-      console.error('❌ Working capital calculation failed:', error);
+      logError('❌ Working capital calculation failed:', error);
       throw new Error(`Real Xero API failed: ${error.message}. Authentication required for real financial data.`);
     }
   }

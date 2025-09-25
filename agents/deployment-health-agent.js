@@ -8,6 +8,8 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 // Node 18+ has global fetch
 
 const execAsync = promisify(exec);
@@ -24,7 +26,7 @@ class DeploymentHealthAgent {
   }
 
   async run() {
-    console.log(`🚀 Deployment Health Agent monitoring ${this.branch}...`);
+    logDebug(`🚀 Deployment Health Agent monitoring ${this.branch}...`);
     
     const issues = await this.detectDeploymentIssues();
     
@@ -56,7 +58,7 @@ class DeploymentHealthAgent {
       }
     } catch (error) {
       // Railway CLI might not be installed
-      console.warn('Railway CLI check failed:', error.message);
+      logWarn('Railway CLI check failed:', error.message);
     }
     
     // Check application health endpoints
@@ -167,7 +169,7 @@ class DeploymentHealthAgent {
             break;
         }
       } catch (error) {
-        console.error(`Failed to fix ${issue.type}: ${error.message}`);
+        logError(`Failed to fix ${issue.type}: ${error.message}`);
       }
     }
   }
@@ -182,7 +184,7 @@ class DeploymentHealthAgent {
         files: []
       });
     } catch (error) {
-      console.error('Failed to link Railway service:', error.message);
+      logError('Failed to link Railway service:', error.message);
     }
   }
 
@@ -196,7 +198,7 @@ class DeploymentHealthAgent {
         files: []
       });
     } catch (error) {
-      console.error('Failed to trigger deployment:', error.message);
+      logError('Failed to trigger deployment:', error.message);
     }
   }
 
@@ -230,7 +232,7 @@ router.get('/health', (req, res) => {
         });
       }
     } catch (error) {
-      console.error('Failed to fix health endpoint:', error.message);
+      logError('Failed to fix health endpoint:', error.message);
     }
   }
 
@@ -268,7 +270,7 @@ UNLEASHED_API_KEY=
         files: ['.env.template']
       });
     } catch (error) {
-      console.error('Failed to create env template:', error.message);
+      logError('Failed to create env template:', error.message);
     }
   }
 
@@ -301,7 +303,7 @@ NPM_CONFIG_PRODUCTION = "false"
         files: ['nixpacks.toml']
       });
     } catch (error) {
-      console.error('Failed to create Nixpacks config:', error.message);
+      logError('Failed to create Nixpacks config:', error.message);
     }
   }
 
@@ -315,7 +317,7 @@ NPM_CONFIG_PRODUCTION = "false"
         files: ['dist/']
       });
     } catch (error) {
-      console.error('Failed to rebuild application:', error.message);
+      logError('Failed to rebuild application:', error.message);
     }
   }
 
@@ -367,10 +369,10 @@ async function main() {
   const result = await agent.run();
   
   // Output JSON result for orchestrator
-  console.log(JSON.stringify(result));
+  logDebug(JSON.stringify(result));
 }
 
 main().catch(error => {
-  console.error(error);
+  logError(error);
   process.exit(1);
 });

@@ -4,6 +4,8 @@
  */
 
 import { EventEmitter } from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class JobManagerService extends EventEmitter {
   constructor() {
@@ -103,7 +105,7 @@ class JobManagerService extends EventEmitter {
     try {
       await this.executeJob(job);
     } catch (error) {
-      console.error(`Job processing failed: ${error.message}`);
+      logError(`Job processing failed: ${error.message}`);
       await this.handleJobError(job, error);
     }
   }

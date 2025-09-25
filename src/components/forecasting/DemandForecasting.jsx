@@ -17,6 +17,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Line, Bar } from 'react-chartjs-2';
 import DateContextEngine from '../../services/DateContextEngine';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const DemandForecasting = () => {
   // const { data: session } = ();
@@ -39,7 +41,7 @@ const DemandForecasting = () => {
           return response.json();
         }
       } catch (error) {
-        console.warn('Demand forecast API unavailable, generating realistic projections:', error.message);
+        logWarn('Demand forecast API unavailable, generating realistic projections:', error.message);
       }
 
       // Generate realistic demand forecast using DateContextEngine

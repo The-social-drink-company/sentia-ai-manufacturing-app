@@ -23,6 +23,8 @@ import FinancialOverviewWidget from '../widgets/FinancialOverviewWidget';
 import WorkingCapitalWidget from '../widgets/WorkingCapitalWidget';
 import SupplyChainWidget from '../widgets/SupplyChainWidget';
 import MaintenanceScheduleWidget from '../widgets/MaintenanceScheduleWidget';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -285,7 +287,7 @@ const DashboardGrid = ({ userRole = 'viewer' }) => {
 
       if (response.ok) {
         const data = await response.json();
-        // // // // // // // console.log('Layout saved to database:', data.message);
+        // // // // // // // logDebug('Layout saved to database:', data.message);
         // Show success notification (you can add a toast notification here)
         const successDiv = document.createElement('div');
         successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';

@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 /**
  * Enhanced Working Capital Service
  * Real-time working capital calculations using live API data
@@ -161,7 +163,7 @@ class EnhancedWorkingCapitalService {
       };
 
     } catch (error) {
-      console.error('Enhanced working capital calculation failed:', error);
+      logError('Enhanced working capital calculation failed:', error);
       throw new Error(`Working capital calculation failed: ${error.message}`);
     }
   }

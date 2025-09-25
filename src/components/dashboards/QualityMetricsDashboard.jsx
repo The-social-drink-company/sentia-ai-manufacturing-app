@@ -7,6 +7,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import {
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
   CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon,
   ArrowUpIcon, ArrowDownIcon, MinusIcon
 } from '@heroicons/react/24/solid';
@@ -50,7 +52,7 @@ const QualityMetricsDashboard = () => {
       const realData = await response.json();
       setMetrics(realData);
     } catch (error) {
-      console.error('Failed to load quality metrics:', error);
+      logError('Failed to load quality metrics:', error);
       // Set empty state when API fails - NO MOCK DATA
       setMetrics({
         overall: { score: 0, trend: 'none', change: 0 },

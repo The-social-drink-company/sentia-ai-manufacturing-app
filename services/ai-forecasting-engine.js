@@ -1,5 +1,7 @@
 import * as tf from '@tensorflow/tfjs-node';
 import redisCacheService from './redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class AIForecastingEngine {
   constructor() {
@@ -24,7 +26,7 @@ class AIForecastingEngine {
   }
 
   async initializeModels() {
-    console.log('AI Forecasting: Initializing forecasting models...');
+    logDebug('AI Forecasting: Initializing forecasting models...');
     
     // Initialize LSTM model for time series forecasting
     await this.initializeLSTMModel();
@@ -39,7 +41,7 @@ class AIForecastingEngine {
     await this.initializeProphetModel();
     
     this.isInitialized = true;
-    console.log('AI Forecasting: All models initialized successfully');
+    logDebug('AI Forecasting: All models initialized successfully');
   }
 
   async initializeLSTMModel() {
@@ -93,7 +95,7 @@ class AIForecastingEngine {
     this.models.set('lstm', model);
     this.modelConfigs.set('lstm', lstmConfig);
     
-    console.log('AI Forecasting: LSTM model initialized');
+    logDebug('AI Forecasting: LSTM model initialized');
   }
 
   async initializeRandomForestModel() {
@@ -144,7 +146,7 @@ class AIForecastingEngine {
     this.models.set('randomForest', model);
     this.modelConfigs.set('randomForest', rfConfig);
     
-    console.log('AI Forecasting: Random Forest model initialized');
+    logDebug('AI Forecasting: Random Forest model initialized');
   }
 
   async initializeARIMAModel() {
@@ -190,7 +192,7 @@ class AIForecastingEngine {
     this.models.set('arima', model);
     this.modelConfigs.set('arima', arimaConfig);
     
-    console.log('AI Forecasting: ARIMA model initialized');
+    logDebug('AI Forecasting: ARIMA model initialized');
   }
 
   async initializeProphetModel() {
@@ -240,7 +242,7 @@ class AIForecastingEngine {
     this.models.set('prophet', model);
     this.modelConfigs.set('prophet', prophetConfig);
     
-    console.log('AI Forecasting: Prophet model initialized');
+    logDebug('AI Forecasting: Prophet model initialized');
   }
 
   // Data preprocessing
@@ -389,7 +391,7 @@ class AIForecastingEngine {
     this.trainingInProgress = true;
     
     try {
-      console.log(`AI Forecasting: Training ${modelName} model...`);
+      logDebug(`AI Forecasting: Training ${modelName} model...`);
       
       const model = this.models.get(modelName);
       const config = this.modelConfigs.get(modelName);
@@ -414,7 +416,7 @@ class AIForecastingEngine {
         callbacks: {
           onEpochEnd: (epoch, logs) => {
             if (epoch % 10 === 0) {
-              console.log(`AI Forecasting: ${modelName} epoch ${epoch}: loss=${logs.loss.toFixed(4)}, val_loss=${logs.val_loss.toFixed(4)}`);
+              logDebug(`AI Forecasting: ${modelName} epoch ${epoch}: loss=${logs.loss.toFixed(4)}, val_loss=${logs.val_loss.toFixed(4)}`);
             }
           }
         }
@@ -436,7 +438,7 @@ class AIForecastingEngine {
       // Cache the trained model
       await this.saveModelToCache(modelName);
       
-      console.log(`AI Forecasting: ${modelName} training completed. MSE: ${evaluation.mse.toFixed(4)}, MAE: ${evaluation.mae.toFixed(4)}`);
+      logDebug(`AI Forecasting: ${modelName} training completed. MSE: ${evaluation.mse.toFixed(4)}, MAE: ${evaluation.mae.toFixed(4)}`);
       
       // Cleanup tensors
       xTensor.dispose();
@@ -449,7 +451,7 @@ class AIForecastingEngine {
       };
       
     } catch (error) {
-      console.error(`AI Forecasting: Training failed for ${modelName}:`, error);
+      logError(`AI Forecasting: Training failed for ${modelName}:`, error);
       throw error;
     } finally {
       this.trainingInProgress = false;
@@ -527,7 +529,7 @@ class AIForecastingEngine {
       await this.initializeModels();
     }
 
-    console.log(`AI Forecasting: Generating ${horizon}-day forecast...`);
+    logDebug(`AI Forecasting: Generating ${horizon}-day forecast...`);
     
     const forecasts = new Map();
     
@@ -542,7 +544,7 @@ class AIForecastingEngine {
         );
         forecasts.set(modelName, forecast);
       } catch (error) {
-        console.warn(`AI Forecasting: Failed to generate ${modelName} forecast:`, error.message);
+        logWarn(`AI Forecasting: Failed to generate ${modelName} forecast:`, error.message);
         // Use fallback forecast
         forecasts.set(modelName, this.generateFallbackForecast(data, horizon));
       }
@@ -561,7 +563,7 @@ class AIForecastingEngine {
     // Cache the forecast
     await this.cacheForecast(forecastWithConfidence, horizon);
     
-    console.log('AI Forecasting: Forecast generation completed');
+    logDebug('AI Forecasting: Forecast generation completed');
     
     return forecastWithConfidence;
   }
@@ -797,10 +799,10 @@ class AIForecastingEngine {
           performance,
           86400 // 24 hours
         );
-        console.log(`AI Forecasting: Model ${modelName} cached`);
+        logDebug(`AI Forecasting: Model ${modelName} cached`);
       }
     } catch (error) {
-      console.warn(`AI Forecasting: Failed to cache model ${modelName}:`, error.message);
+      logWarn(`AI Forecasting: Failed to cache model ${modelName}:`, error.message);
     }
   }
 
@@ -808,9 +810,9 @@ class AIForecastingEngine {
     try {
       const cacheKey = `ai_forecast:${horizon}d:${Date.now()}`;
       await redisCacheService.set(cacheKey, forecast, 3600); // 1 hour
-      console.log(`AI Forecasting: Forecast cached with key ${cacheKey}`);
+      logDebug(`AI Forecasting: Forecast cached with key ${cacheKey}`);
     } catch (error) {
-      console.warn('AI Forecasting: Failed to cache forecast:', error.message);
+      logWarn('AI Forecasting: Failed to cache forecast:', error.message);
     }
   }
 
@@ -865,7 +867,7 @@ class AIForecastingEngine {
     }
     
     this.ensembleWeights = { ...this.ensembleWeights, ...newWeights };
-    console.log('AI Forecasting: Ensemble weights updated:', this.ensembleWeights);
+    logDebug('AI Forecasting: Ensemble weights updated:', this.ensembleWeights);
   }
 
   getPerformanceMetrics() {

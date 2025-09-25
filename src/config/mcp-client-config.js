@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 /**
  * MCP CLIENT CONFIGURATION
  * Ensures all branches connect to the MCP server hosted on Render
@@ -115,7 +117,7 @@ export class MCPClient {
 
       return await response.json();
     } catch (error) {
-      console.error('MCP request error:', error);
+      logError('MCP request error:', error);
 
       // Retry logic
       if (options.retry !== false && (options.retryCount || 0) < this.config.api.retryAttempts) {
@@ -165,7 +167,7 @@ export class MCPClient {
     const ws = new WebSocket(this.config.websocket.url);
 
     ws.onopen = () => {
-      console.log('MCP WebSocket connected');
+      logDebug('MCP WebSocket connected');
       // Send authentication
       ws.send(JSON.stringify({
         type: 'auth',
@@ -188,17 +190,17 @@ export class MCPClient {
           onMessage(data);
         }
       } catch (error) {
-        console.error('WebSocket message parse error:', error);
+        logError('WebSocket message parse error:', error);
       }
     };
 
     ws.onerror = (error) => {
-      console.error('MCP WebSocket error:', error);
+      logError('MCP WebSocket error:', error);
       if (onError) onError(error);
     };
 
     ws.onclose = () => {
-      console.log('MCP WebSocket disconnected');
+      logDebug('MCP WebSocket disconnected');
       clearInterval(this.heartbeatInterval);
 
       // Reconnect logic

@@ -6,6 +6,8 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { getDatabaseConfig, getMCPConfig } from '../config/database-config.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 // Health check status constants
 const STATUS = {
@@ -86,7 +88,7 @@ export class HealthCheckService {
         });
         await this.prisma.$connect();
       } catch (error) {
-        console.error('Failed to initialize Prisma:', error.message);
+        logError('Failed to initialize Prisma:', error.message);
         this.prisma = null;
       }
     }
@@ -151,7 +153,7 @@ export class HealthCheckService {
 
     } catch (error) {
       health.responseTime = Date.now() - startTime;
-      console.error('Database health check failed:', error.message);
+      logError('Database health check failed:', error.message);
 
       // Categorize the error
       if (error.message.includes('P1001') || error.message.includes('ECONNREFUSED')) {

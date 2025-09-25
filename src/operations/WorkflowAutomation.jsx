@@ -15,6 +15,8 @@ import {
 import { useAI } from '../ai';
 import { useRealtime } from '../realtime/RealtimeProvider';
 import { useTheme } from '../theming';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 export const WorkflowAutomation = ({
   className = '',
@@ -186,7 +188,7 @@ export const WorkflowAutomation = ({
     if (!workflow || !workflow.enabled) return;
 
     if (activeWorkflows.size >= maxConcurrentWorkflows) {
-      console.warn('Maximum concurrent workflows reached');
+      logWarn('Maximum concurrent workflows reached');
       return;
     }
 

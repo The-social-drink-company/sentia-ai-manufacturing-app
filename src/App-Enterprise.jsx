@@ -30,6 +30,8 @@ import ErrorFallback from './components/ui/ErrorFallback';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { logDebug, logInfo, logWarn, logError } from './utils/logger';
+
 
 // Lazy-loaded components for performance
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -80,7 +82,7 @@ const AuthenticatedApp = () => {
     if (isLoaded && session) {
       const isValid = validateSession();
       if (!isValid) {
-        console.warn('Session validation failed, redirecting to sign in');
+        logWarn('Session validation failed, redirecting to sign in');
         // Session will be handled by Clerk automatically
       }
     }
@@ -264,7 +266,7 @@ const App = () => {
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
       onError={(error, errorInfo) => {
-        console.error('Application error:', error, errorInfo);
+        logError('Application error:', error, errorInfo);
         // Send to error tracking service
         if (import.meta.env.VITE_SENTRY_DSN) {
           // Sentry error reporting would go here

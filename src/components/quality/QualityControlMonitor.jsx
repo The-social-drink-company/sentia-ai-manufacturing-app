@@ -13,6 +13,8 @@ import {
   CogIcon
 } from '@heroicons/react/24/outline';
 import { qualityControlService } from '../../services/QualityControlService.js';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const QualityControlMonitor = () => {
   const [qualityStatus, setQualityStatus] = useState(null);
@@ -32,7 +34,7 @@ const QualityControlMonitor = () => {
         setError(null);
       } catch (err) {
         setError(`Failed to initialize quality control systems: ${err.message}`);
-        console.error('Quality control initialization error:', err);
+        logError('Quality control initialization error:', err);
       } finally {
         setLoading(false);
       }
@@ -50,7 +52,7 @@ const QualityControlMonitor = () => {
       setError(null);
     } catch (err) {
       setError(`Failed to fetch quality status: ${err.message}`);
-      console.error('Quality status error:', err);
+      logError('Quality status error:', err);
     }
   }, []);
 

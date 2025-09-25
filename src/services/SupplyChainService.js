@@ -4,6 +4,8 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 class SupplyChainService {
   constructor() {
@@ -30,11 +32,11 @@ class SupplyChainService {
       
       this.isInitialized = true;
       if (process.env.NODE_ENV === 'development') {
-        console.log('Supply Chain Service initialized successfully');
+        logDebug('Supply Chain Service initialized successfully');
       }
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to initialize Supply Chain Service:', error);
+        logError('Failed to initialize Supply Chain Service:', error);
       }
       throw error;
     }

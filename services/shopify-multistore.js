@@ -1,5 +1,7 @@
 import { shopifyApi } from '@shopify/shopify-api';
 import redisCacheService from './redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class ShopifyMultiStoreService {
   constructor() {
@@ -41,11 +43,11 @@ class ShopifyMultiStoreService {
 
   async connect() {
     try {
-      console.log('SHOPIFY: Initializing multi-store connections...');
+      logDebug('SHOPIFY: Initializing multi-store connections...');
       
       for (const config of this.storeConfigs) {
         if (!config.shopDomain || !config.accessToken) {
-          console.warn(`SHOPIFY: Missing credentials for ${config.name}, skipping`);
+          logWarn(`SHOPIFY: Missing credentials for ${config.name}, skipping`);
           continue;
         }
 
@@ -71,10 +73,10 @@ class ShopifyMultiStoreService {
               isActive: true
             });
             
-            console.log(`SHOPIFY: Connected to ${config.name} (${config.shopDomain})`);
+            logDebug(`SHOPIFY: Connected to ${config.name} (${config.shopDomain})`);
           }
         } catch (storeError) {
-          console.error(`SHOPIFY: Failed to connect to ${config.name}:`, storeError.message);
+          logError(`SHOPIFY: Failed to connect to ${config.name}:`, storeError.message);
           this.stores.set(config.id, {
             ...config,
             client: null,
@@ -89,15 +91,15 @@ class ShopifyMultiStoreService {
       this.isConnected = this.stores.size > 0;
       
       if (this.isConnected) {
-        console.log(`SHOPIFY: Successfully connected to ${this.stores.size} stores`);
+        logDebug(`SHOPIFY: Successfully connected to ${this.stores.size} stores`);
         await this.startSyncScheduler();
       } else {
-        console.error('SHOPIFY: No stores connected successfully');
+        logError('SHOPIFY: No stores connected successfully');
       }
 
       return this.isConnected;
     } catch (error) {
-      console.error('SHOPIFY: Connection initialization failed:', error);
+      logError('SHOPIFY: Connection initialization failed:', error);
       return false;
     }
   }
@@ -107,7 +109,7 @@ class ShopifyMultiStoreService {
       clearInterval(this.syncInterval);
     }
 
-    console.log(`SHOPIFY: Starting sync scheduler (every ${this.syncFrequency / 1000 / 60} minutes)`);
+    logDebug(`SHOPIFY: Starting sync scheduler (every ${this.syncFrequency / 1000 / 60} minutes)`);
     
     // Initial sync
     await this.syncAllStores();
@@ -117,7 +119,7 @@ class ShopifyMultiStoreService {
       try {
         await this.syncAllStores();
       } catch (error) {
-        console.error('SHOPIFY: Scheduled sync failed:', error);
+        logError('SHOPIFY: Scheduled sync failed:', error);
       }
     }, this.syncFrequency);
   }
@@ -128,12 +130,12 @@ class ShopifyMultiStoreService {
       return;
     }
 
-    console.log('SHOPIFY: Starting multi-store sync...');
+    logDebug('SHOPIFY: Starting multi-store sync...');
     const syncResults = [];
 
     for (const [storeId, store] of this.stores.entries()) {
       if (!store.isActive || !store.client) {
-        console.warn(`SHOPIFY: Skipping inactive store ${store.name}`);
+        logWarn(`SHOPIFY: Skipping inactive store ${store.name}`);
         continue;
       }
 
@@ -147,10 +149,10 @@ class ShopifyMultiStoreService {
         });
 
         store.lastSync = new Date().toISOString();
-        console.log(`SHOPIFY: Synced ${store.name} successfully`);
+        logDebug(`SHOPIFY: Synced ${store.name} successfully`);
 
       } catch (error) {
-        console.error(`SHOPIFY: Sync failed for ${store.name}:`, error);
+        logError(`SHOPIFY: Sync failed for ${store.name}:`, error);
         syncResults.push({
           storeId,
           success: false,
@@ -164,7 +166,7 @@ class ShopifyMultiStoreService {
     const consolidatedData = this.consolidateStoreData(syncResults);
     await redisCacheService.set('shopify:consolidated_data', consolidatedData, 1800); // 30 min cache
 
-    console.log(`SHOPIFY: Sync completed. ${syncResults.filter(r => r.success).length}/${syncResults.length} stores synced successfully`);
+    logDebug(`SHOPIFY: Sync completed. ${syncResults.filter(r => r.success).length}/${syncResults.length} stores synced successfully`);
     return consolidatedData;
   }
 
@@ -255,7 +257,7 @@ class ShopifyMultiStoreService {
       return storeData;
 
     } catch (error) {
-      console.error(`SHOPIFY: Error syncing ${store.name}:`, error);
+      logError(`SHOPIFY: Error syncing ${store.name}:`, error);
       throw error;
     }
   }
@@ -311,11 +313,11 @@ class ShopifyMultiStoreService {
       }
 
       // If no cache, trigger sync
-      console.log('SHOPIFY: No cached data, triggering sync...');
+      logDebug('SHOPIFY: No cached data, triggering sync...');
       return await this.syncAllStores();
       
     } catch (error) {
-      console.error('SHOPIFY: Error getting consolidated data:', error);
+      logError('SHOPIFY: Error getting consolidated data:', error);
       return {
         error: error.message,
         stores: [],
@@ -345,7 +347,7 @@ class ShopifyMultiStoreService {
       throw new Error(`Store ${storeId} not found`);
       
     } catch (error) {
-      console.error(`SHOPIFY: Error getting store data for ${storeId}:`, error);
+      logError(`SHOPIFY: Error getting store data for ${storeId}:`, error);
       return { error: error.message };
     }
   }
@@ -426,9 +428,9 @@ class ShopifyMultiStoreService {
       this.stores.clear();
       this.isConnected = false;
       
-      console.log('SHOPIFY: Disconnected from all stores');
+      logDebug('SHOPIFY: Disconnected from all stores');
     } catch (error) {
-      console.error('SHOPIFY: Disconnect error:', error);
+      logError('SHOPIFY: Disconnect error:', error);
     }
   }
 }

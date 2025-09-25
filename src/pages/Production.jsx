@@ -26,6 +26,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import ChartErrorBoundary from '../components/charts/ChartErrorBoundary';
 import RealTimeProductionMonitor from '../components/production/RealTimeProductionMonitor';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const Production = () => {
   const [activeTab, setActiveTab] = useState('realtime');
@@ -45,7 +47,7 @@ const Production = () => {
           return await response.json();
         }
       } catch (error) {
-        console.error('Production API error:', error);
+        logError('Production API error:', error);
       }
       return mockProductionData;
     },
@@ -64,7 +66,7 @@ const Production = () => {
           return result.data || [];
         }
       } catch (error) {
-        console.error('Error fetching personnel:', error);
+        logError('Error fetching personnel:', error);
       }
       return [];
     },

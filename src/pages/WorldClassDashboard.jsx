@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../auth/BulletproofClerkProvider';
-import { logInfo, logWarn } from '../services/observability/structuredLogger.js';
+import { logInfo, logWarn, logDebug, logError } from '../utils/logger';
 import EnterpriseWidget from '../components/enterprise/EnterpriseWidget';
 import {
   ChartBarIcon,
@@ -54,7 +54,7 @@ const WorldClassDashboard = () => {
         const result = await response.json();
         setDashboardData(result);
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
+        logError('Failed to fetch dashboard data:', error);
         // Set fallback data for enterprise functionality
         setDashboardData({
           totalRevenue: 2450000,

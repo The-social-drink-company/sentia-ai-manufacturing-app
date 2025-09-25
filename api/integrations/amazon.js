@@ -3,6 +3,8 @@ import crypto from 'crypto';
 
 // Import Prisma for database access
 import { PrismaClient } from '@prisma/client';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 const prisma = new PrismaClient();
 
 class AmazonIntegration {
@@ -118,7 +120,7 @@ class AmazonIntegration {
         fbaInventory: inventoryResponse
       };
     } catch (error) {
-      console.error('Amazon sync error:', error);
+      logError('Amazon sync error:', error);
 
       // Log error to mock database
       await prisma.integrationLog.create({
@@ -184,7 +186,7 @@ class AmazonIntegration {
 
       return inventory.inventorySummaries;
     } catch (error) {
-      console.error('FBA inventory error:', error);
+      logError('FBA inventory error:', error);
       throw error;
     }
   }
@@ -251,7 +253,7 @@ class AmazonIntegration {
 
       return response;
     } catch (error) {
-      console.error('Product performance error:', error);
+      logError('Product performance error:', error);
       throw error;
     }
   }
@@ -320,7 +322,7 @@ class AmazonIntegration {
         }
       };
     } catch (error) {
-      console.error('Financial events error:', error);
+      logError('Financial events error:', error);
       throw error;
     }
   }
@@ -350,7 +352,7 @@ class AmazonIntegration {
 
       return response;
     } catch (error) {
-      console.error('FBA shipment creation error:', error);
+      logError('FBA shipment creation error:', error);
       throw error;
     }
   }
@@ -396,7 +398,7 @@ class AmazonIntegration {
         returns: returns
       };
     } catch (error) {
-      console.error('Returns fetch error:', error);
+      logError('Returns fetch error:', error);
       throw error;
     }
   }

@@ -7,6 +7,8 @@ import { getAPIIntegrationService } from './api-integration-service.js';
 import { getWebSocketMonitor } from './websocket-monitor.js';
 import prisma from '../lib/prisma.js';
 import cron from 'node-cron';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class AutoSyncManager {
   constructor() {
@@ -46,7 +48,7 @@ class AutoSyncManager {
   }
 
   async initialize() {
-    console.log(`Auto-Sync Manager initializing for ${this.config.environment} environment`);
+    logDebug(`Auto-Sync Manager initializing for ${this.config.environment} environment`);
 
     // Load sync status from database
     await this.loadSyncStatus();
@@ -55,7 +57,7 @@ class AutoSyncManager {
     if (this.config.environment === 'production' || this.config.enabled) {
       this.startAutoSync();
     } else {
-      console.log('Auto-sync disabled for non-production environment');
+      logDebug('Auto-sync disabled for non-production environment');
     }
 
     // Listen for WebSocket events
@@ -79,11 +81,11 @@ class AutoSyncManager {
 
     // Listen for connection status
     this.wsMonitor.on('connection-established', () => {
-      console.log('WebSocket connected - Auto-sync ready');
+      logDebug('WebSocket connected - Auto-sync ready');
     });
 
     this.wsMonitor.on('connection-lost', () => {
-      console.log('WebSocket disconnected - Auto-sync may be delayed');
+      logDebug('WebSocket disconnected - Auto-sync may be delayed');
     });
   }
 
@@ -92,7 +94,7 @@ class AutoSyncManager {
   // ====================
 
   startAutoSync() {
-    console.log('Starting auto-sync schedules...');
+    logDebug('Starting auto-sync schedules...');
 
     // Schedule Xero sync
     if (this.shouldSyncService('xero')) {
@@ -122,19 +124,19 @@ class AutoSyncManager {
     // Schedule health check
     this.scheduleSync('health', this.config.intervals.health, () => this.healthCheck());
 
-    console.log(`Auto-sync started with ${this.syncJobs.size} scheduled jobs`);
+    logDebug(`Auto-sync started with ${this.syncJobs.size} scheduled jobs`);
   }
 
   stopAutoSync() {
-    console.log('Stopping auto-sync schedules...');
+    logDebug('Stopping auto-sync schedules...');
 
     for (const [service, job] of this.syncJobs) {
       job.stop();
-      console.log(`Stopped sync job: ${service}`);
+      logDebug(`Stopped sync job: ${service}`);
     }
 
     this.syncJobs.clear();
-    console.log('All sync jobs stopped');
+    logDebug('All sync jobs stopped');
   }
 
   scheduleSync(service, cronExpression, syncFunction) {
@@ -150,7 +152,7 @@ class AutoSyncManager {
     });
 
     this.syncJobs.set(service, job);
-    console.log(`Scheduled ${service} sync: ${cronExpression}`);
+    logDebug(`Scheduled ${service} sync: ${cronExpression}`);
   }
 
   shouldSyncService(service) {
@@ -162,7 +164,7 @@ class AutoSyncManager {
     // Check if service has API keys configured
     const hasKeys = this.checkServiceKeys(service);
     if (!hasKeys) {
-      console.log(`Skipping ${service} sync - API keys not configured`);
+      logDebug(`Skipping ${service} sync - API keys not configured`);
       return false;
     }
 
@@ -200,25 +202,25 @@ class AutoSyncManager {
       attempt++;
 
       try {
-        console.log(`Syncing ${service} (attempt ${attempt}/${this.config.retryAttempts})...`);
+        logDebug(`Syncing ${service} (attempt ${attempt}/${this.config.retryAttempts})...`);
 
         const result = await syncFunction();
 
         if (result.success) {
           this.updateSyncStatus(service, 'success');
           this.recordSyncHistory(service, 'success', result);
-          console.log(`${service} sync completed successfully`);
+          logDebug(`${service} sync completed successfully`);
           return result;
         }
 
         lastError = result.error || 'Unknown error';
       } catch (error) {
         lastError = error.message;
-        console.error(`${service} sync error:`, error.message);
+        logError(`${service} sync error:`, error.message);
       }
 
       if (attempt < this.config.retryAttempts) {
-        console.log(`Retrying ${service} sync in ${this.config.retryDelay}ms...`);
+        logDebug(`Retrying ${service} sync in ${this.config.retryDelay}ms...`);
         await this.delay(this.config.retryDelay);
       }
     }
@@ -236,19 +238,19 @@ class AutoSyncManager {
   }
 
   async triggerSync(service, reason = 'manual') {
-    console.log(`Triggering ${service} sync (reason: ${reason})`);
+    logDebug(`Triggering ${service} sync (reason: ${reason})`);
 
     const syncFunction = this.getSyncFunction(service);
     if (syncFunction) {
       return await this.executeSyncWithRetry(service, syncFunction);
     }
 
-    console.error(`No sync function found for service: ${service}`);
+    logError(`No sync function found for service: ${service}`);
     return { success: false, error: 'Service not found' };
   }
 
   async triggerFullSync(reason = 'manual') {
-    console.log(`Triggering full sync of all services (reason: ${reason})`);
+    logDebug(`Triggering full sync of all services (reason: ${reason})`);
 
     const results = await Promise.allSettled([
       this.triggerSync('xero', reason),
@@ -265,7 +267,7 @@ class AutoSyncManager {
       reason
     };
 
-    console.log(`Full sync completed: ${summary.success} success, ${summary.failed} failed`);
+    logDebug(`Full sync completed: ${summary.success} success, ${summary.failed} failed`);
     return summary;
   }
 
@@ -397,7 +399,7 @@ class AutoSyncManager {
         }
       });
     } catch (error) {
-      console.error(`Failed to save sync status for ${service}:`, error);
+      logError(`Failed to save sync status for ${service}:`, error);
     }
   }
 
@@ -415,7 +417,7 @@ class AutoSyncManager {
         }
       }
     } catch (error) {
-      console.error('Failed to load sync status:', error);
+      logError('Failed to load sync status:', error);
     }
   }
 
@@ -463,10 +465,10 @@ class AutoSyncManager {
       // Send through WebSocket if connected
       if (this.wsMonitor.getStats().currentStatus === 'connected') {
         // Emit alert through MCP Server
-        console.log(`Alert sent for ${service} sync failure`);
+        logDebug(`Alert sent for ${service} sync failure`);
       }
     } catch (err) {
-      console.error('Failed to send sync alert:', err);
+      logError('Failed to send sync alert:', err);
     }
   }
 
@@ -488,7 +490,7 @@ class AutoSyncManager {
     if (!this.config.enabled) {
       this.config.enabled = true;
       this.startAutoSync();
-      console.log('Auto-sync enabled');
+      logDebug('Auto-sync enabled');
     }
   }
 
@@ -496,7 +498,7 @@ class AutoSyncManager {
     if (this.config.enabled) {
       this.config.enabled = false;
       this.stopAutoSync();
-      console.log('Auto-sync disabled');
+      logDebug('Auto-sync disabled');
     }
   }
 

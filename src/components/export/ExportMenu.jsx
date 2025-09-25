@@ -11,6 +11,8 @@ import {
   ClockIcon
 } from '@heroicons/react/24/outline';
 import { ExportUtility } from './ExportUtility';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const ExportMenu = ({
   data = [],
@@ -122,7 +124,7 @@ const ExportMenu = ({
       }, 3000);
 
     } catch (error) {
-      console.error(`Export failed (${format}):`, error);
+      logError(`Export failed (${format}):`, error);
       setExportStatus(prev => ({ ...prev, [exportId]: 'error' }));
       
       if (onExportError) {

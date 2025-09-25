@@ -12,6 +12,8 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const AISupportChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +42,7 @@ const AISupportChatbot = () => {
         if (!response.ok) throw new Error('Failed to fetch business data');
         return await response.json();
       } catch (error) {
-        console.warn('Business data not available:', error);
+        logWarn('Business data not available:', error);
         return null;
       }
     },
@@ -153,7 +155,7 @@ const AISupportChatbot = () => {
       }
 
     } catch (error) {
-      console.error('Chatbot API error:', error);
+      logError('Chatbot API error:', error);
       
       const errorMessage = {
         id: Date.now() + 1,
@@ -204,7 +206,7 @@ const AISupportChatbot = () => {
       visualizations = generateVisualizationSuggestions(messageType);
 
     } catch (error) {
-      console.error('Error enhancing response:', error);
+      logError('Error enhancing response:', error);
     }
 
     return {

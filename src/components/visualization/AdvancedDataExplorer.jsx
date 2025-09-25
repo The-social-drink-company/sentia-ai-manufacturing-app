@@ -15,6 +15,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
 import { Line, Bar, Pie, Scatter, Doughnut } from 'react-chartjs-2';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const AdvancedDataExplorer = ({ className = '' }) => {
   const [selectedDataset, setSelectedDataset] = useState('sales');
@@ -48,7 +50,7 @@ const AdvancedDataExplorer = ({ className = '' }) => {
         if (!response.ok) throw new Error('Failed to fetch explorer data');
         return await response.json();
       } catch (error) {
-        console.error('Data explorer fetch error:', error);
+        logError('Data explorer fetch error:', error);
         return throwRealDataRequired(selectedDataset, timeRange);
       }
     },

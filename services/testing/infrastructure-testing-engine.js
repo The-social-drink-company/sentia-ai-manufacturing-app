@@ -9,6 +9,8 @@ import path from 'path';
 import EventEmitter from 'events';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -183,13 +185,13 @@ class InfrastructureTestingEngine extends EventEmitter {
   }
 
   async initialize() {
-    console.log('INITIALIZING INFRASTRUCTURE TESTING ENGINE');
+    logDebug('INITIALIZING INFRASTRUCTURE TESTING ENGINE');
     
     this.setupInfrastructureDirectories();
     await this.initializeCloudProviders();
     await this.validateCredentials();
     
-    console.log('Infrastructure Testing Engine initialized successfully');
+    logDebug('Infrastructure Testing Engine initialized successfully');
     this.emit('initialized');
   }
 
@@ -218,7 +220,7 @@ class InfrastructureTestingEngine extends EventEmitter {
       try {
         await this.initializeProvider(provider);
       } catch (error) {
-        console.warn(`Failed to initialize ${provider}: ${error.message}`);
+        logWarn(`Failed to initialize ${provider}: ${error.message}`);
       }
     }
   }
@@ -241,7 +243,7 @@ class InfrastructureTestingEngine extends EventEmitter {
         const isValid = await this.testProviderCredentials(provider);
         client.credentialsValid = isValid;
       } catch (error) {
-        console.warn(`Credential validation failed for ${provider}: ${error.message}`);
+        logWarn(`Credential validation failed for ${provider}: ${error.message}`);
         client.credentialsValid = false;
       }
     }
@@ -254,7 +256,7 @@ class InfrastructureTestingEngine extends EventEmitter {
 
   // Main Infrastructure Testing Methods
   async runInfrastructureTestSuite(targetInfrastructure = 'production') {
-    console.log(`Starting comprehensive infrastructure test suite for: ${targetInfrastructure}`);
+    logDebug(`Starting comprehensive infrastructure test suite for: ${targetInfrastructure}`);
     
     const testSuiteId = this.generateTestId('infra_suite');
     const suite = {
@@ -269,37 +271,37 @@ class InfrastructureTestingEngine extends EventEmitter {
     try {
       // Connectivity Testing
       if (this.config.testTypes.connectivity.enabled) {
-        console.log('Testing infrastructure connectivity...');
+        logDebug('Testing infrastructure connectivity...');
         suite.tests.set('connectivity', await this.runConnectivityTests());
       }
 
       // Performance Testing
       if (this.config.testTypes.performance.enabled) {
-        console.log('Testing infrastructure performance...');
+        logDebug('Testing infrastructure performance...');
         suite.tests.set('performance', await this.runPerformanceTests());
       }
 
       // Scalability Testing
       if (this.config.testTypes.scalability.enabled) {
-        console.log('Testing infrastructure scalability...');
+        logDebug('Testing infrastructure scalability...');
         suite.tests.set('scalability', await this.runScalabilityTests());
       }
 
       // Security Testing
       if (this.config.testTypes.security.enabled) {
-        console.log('Testing infrastructure security...');
+        logDebug('Testing infrastructure security...');
         suite.tests.set('security', await this.runSecurityTests());
       }
 
       // Disaster Recovery Testing
       if (this.config.testTypes.disasterRecovery.enabled) {
-        console.log('Testing disaster recovery capabilities...');
+        logDebug('Testing disaster recovery capabilities...');
         suite.tests.set('disasterRecovery', await this.runDisasterRecoveryTests());
       }
 
       // Monitoring and Alerting Testing
       if (this.config.testTypes.monitoring.enabled) {
-        console.log('Testing monitoring and alerting...');
+        logDebug('Testing monitoring and alerting...');
         suite.tests.set('monitoring', await this.runMonitoringTests());
       }
 
@@ -311,12 +313,12 @@ class InfrastructureTestingEngine extends EventEmitter {
       this.testResults.set(testSuiteId, suite);
       await this.generateInfrastructureReports(suite);
 
-      console.log(`Infrastructure test suite completed in ${Math.round(suite.duration / 1000)}s`);
+      logDebug(`Infrastructure test suite completed in ${Math.round(suite.duration / 1000)}s`);
       this.emit('testSuiteCompleted', suite);
 
     } catch (error) {
       suite.error = error.message;
-      console.error(`Infrastructure test suite failed: ${error.message}`);
+      logError(`Infrastructure test suite failed: ${error.message}`);
       this.emit('testSuiteFailed', suite);
     }
 
@@ -537,7 +539,7 @@ class InfrastructureTestingEngine extends EventEmitter {
   }
 
   async runMultiCloudCompatibilityTests() {
-    console.log('Running multi-cloud compatibility tests...');
+    logDebug('Running multi-cloud compatibility tests...');
     
     const compatibilityTests = {
       crossCloudNetworking: await this.testCrossCloudNetworking(),
@@ -694,7 +696,7 @@ class InfrastructureTestingEngine extends EventEmitter {
   }
 
   async generateInfrastructureReports(suite) {
-    console.log('Generating infrastructure reports...');
+    logDebug('Generating infrastructure reports...');
     
     const timestamp = Date.now();
     
@@ -730,7 +732,7 @@ class InfrastructureTestingEngine extends EventEmitter {
       terraformReport
     );
 
-    console.log('Infrastructure reports generated');
+    logDebug('Infrastructure reports generated');
   }
 
   generateHtmlInfrastructureReport(report) {
@@ -960,7 +962,7 @@ output "test_categories" {
 
   // Integration with autonomous testing
   async integrateWithAutonomousSystem() {
-    console.log('Integrating infrastructure testing with autonomous system...');
+    logDebug('Integrating infrastructure testing with autonomous system...');
     
     const infrastructureScenarios = [
       {
@@ -1000,7 +1002,7 @@ output "test_categories" {
       JSON.stringify(infrastructureScenarios, null, 2)
     );
 
-    console.log(`Generated ${infrastructureScenarios.length} infrastructure test scenarios`);
+    logDebug(`Generated ${infrastructureScenarios.length} infrastructure test scenarios`);
     return infrastructureScenarios;
   }
 

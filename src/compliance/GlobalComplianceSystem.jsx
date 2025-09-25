@@ -12,6 +12,8 @@ import {
   CalendarDaysIcon
 } from '@heroicons/react/24/outline';
 import { useTheme } from '../theming';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 export const GlobalComplianceSystem = ({
   className = '',
@@ -255,7 +257,7 @@ export const GlobalComplianceSystem = ({
       setViolations(newViolations);
       
     } catch (error) {
-      console.error('Validation failed:', error);
+      logError('Validation failed:', error);
     } finally {
       setIsValidating(false);
     }

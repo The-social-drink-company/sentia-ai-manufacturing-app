@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBulletproofAuth, useAuthMode } from '../auth/BulletproofAuthProvider';
 import { SignIn } from '@clerk/clerk-react';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const UniversalLogin = () => {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ const UniversalLogin = () => {
     // Simple demo login for fallback mode
     if (email && password) {
       // In fallback mode, any email/password works for demo
-      console.log('Fallback login successful');
+      logDebug('Fallback login successful');
       navigate('/dashboard');
     } else {
       setError('Please enter email and password');

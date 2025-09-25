@@ -11,6 +11,8 @@ import { PactV3 } from '@pact-foundation/pact/v3';
 import { MatchersV3 } from '@pact-foundation/pact/v3';
 import EventEmitter from 'events';
 import { execSync } from 'child_process';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class ContractTestingEngine extends EventEmitter {
   constructor(config = {}) {
@@ -86,7 +88,7 @@ class ContractTestingEngine extends EventEmitter {
   }
 
   async initializeContractFramework() {
-    console.log('🤝 INITIALIZING CONTRACT TESTING ENGINE');
+    logDebug('🤝 INITIALIZING CONTRACT TESTING ENGINE');
     
     // Setup directories
     this.setupContractDirectories();
@@ -100,7 +102,7 @@ class ContractTestingEngine extends EventEmitter {
     // Setup schema registry
     await this.initializeSchemaRegistry();
     
-    console.log('✅ Contract Testing Engine initialized successfully');
+    logDebug('✅ Contract Testing Engine initialized successfully');
     this.emit('initialized');
   }
 
@@ -150,12 +152,12 @@ class ContractTestingEngine extends EventEmitter {
           const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
           this.contractCache.set(contract.provider.name, contract);
         } catch (error) {
-          console.warn(`Failed to load contract ${file}: ${error.message}`);
+          logWarn(`Failed to load contract ${file}: ${error.message}`);
         }
       }
     }
 
-    console.log(`📋 Loaded ${this.contractCache.size} existing contracts`);
+    logDebug(`📋 Loaded ${this.contractCache.size} existing contracts`);
   }
 
   async initializeSchemaRegistry() {
@@ -209,12 +211,12 @@ class ContractTestingEngine extends EventEmitter {
       }
     });
 
-    console.log('📚 Schema registry initialized with base schemas');
+    logDebug('📚 Schema registry initialized with base schemas');
   }
 
   // Main contract testing methods
   async runConsumerTests(providerName, testSuites) {
-    console.log(`🧪 Running consumer contract tests for ${providerName}...`);
+    logDebug(`🧪 Running consumer contract tests for ${providerName}...`);
     
     const pact = this.pactInstances.get(providerName);
     if (!pact) {
@@ -253,7 +255,7 @@ class ContractTestingEngine extends EventEmitter {
         await this.publishContract(providerName);
       }
 
-      console.log(`✅ Consumer tests completed: ${testResults.summary.passed}/${testResults.tests.length} passed`);
+      logDebug(`✅ Consumer tests completed: ${testResults.summary.passed}/${testResults.tests.length} passed`);
       return testResults;
 
     } catch (error) {
@@ -274,7 +276,7 @@ class ContractTestingEngine extends EventEmitter {
 
     for (const test of testSuite.tests) {
       try {
-        console.log(`  🔬 ${test.description}`);
+        logDebug(`  🔬 ${test.description}`);
         
         // Setup interaction
         await pact.addInteraction({
@@ -494,13 +496,13 @@ class ContractTestingEngine extends EventEmitter {
         break;
         
       default:
-        console.warn(`Unknown Pact matcher: ${matcher.pact_matcher}`);
+        logWarn(`Unknown Pact matcher: ${matcher.pact_matcher}`);
     }
   }
 
   // Provider testing
   async runProviderTests(providerName, options = {}) {
-    console.log(`🔍 Running provider contract tests for ${providerName}...`);
+    logDebug(`🔍 Running provider contract tests for ${providerName}...`);
     
     const providerConfig = this.config.providers[providerName];
     if (!providerConfig) {
@@ -522,11 +524,11 @@ class ContractTestingEngine extends EventEmitter {
       const { verifyPacts } = await import('@pact-foundation/pact');
       const result = await verifyPacts(opts);
       
-      console.log(`✅ Provider verification completed for ${providerName}`);
+      logDebug(`✅ Provider verification completed for ${providerName}`);
       return result;
       
     } catch (error) {
-      console.error(`❌ Provider verification failed for ${providerName}: ${error.message}`);
+      logError(`❌ Provider verification failed for ${providerName}: ${error.message}`);
       throw error;
     }
   }
@@ -534,11 +536,11 @@ class ContractTestingEngine extends EventEmitter {
   // Contract publishing
   async publishContract(providerName) {
     if (!this.config.pactBroker.url) {
-      console.warn('Pact Broker URL not configured, skipping contract publishing');
+      logWarn('Pact Broker URL not configured, skipping contract publishing');
       return;
     }
 
-    console.log(`📤 Publishing contract for ${providerName}...`);
+    logDebug(`📤 Publishing contract for ${providerName}...`);
     
     const contractFile = path.join(
       process.cwd(), 
@@ -547,7 +549,7 @@ class ContractTestingEngine extends EventEmitter {
     );
 
     if (!fs.existsSync(contractFile)) {
-      console.warn(`Contract file not found: ${contractFile}`);
+      logWarn(`Contract file not found: ${contractFile}`);
       return;
     }
 
@@ -564,17 +566,17 @@ class ContractTestingEngine extends EventEmitter {
       });
 
       await publisher.publishPacts();
-      console.log(`✅ Contract published successfully for ${providerName}`);
+      logDebug(`✅ Contract published successfully for ${providerName}`);
       
     } catch (error) {
-      console.error(`Failed to publish contract: ${error.message}`);
+      logError(`Failed to publish contract: ${error.message}`);
       throw error;
     }
   }
 
   // API Versioning and Compatibility
   async checkApiCompatibility(providerName, newVersion, oldVersion) {
-    console.log(`🔄 Checking API compatibility: ${oldVersion} → ${newVersion}`);
+    logDebug(`🔄 Checking API compatibility: ${oldVersion} → ${newVersion}`);
     
     const compatibility = await this.analyzeVersionCompatibility(newVersion, oldVersion);
     
@@ -598,7 +600,7 @@ class ContractTestingEngine extends EventEmitter {
     
     fs.writeFileSync(reportPath, JSON.stringify(result, null, 2));
     
-    console.log(`📊 Compatibility analysis: ${compatibility.level}`);
+    logDebug(`📊 Compatibility analysis: ${compatibility.level}`);
     return result;
   }
 
@@ -632,7 +634,7 @@ class ContractTestingEngine extends EventEmitter {
   // Schema management
   registerSchema(name, schema) {
     this.schemaRegistry.set(name, schema);
-    console.log(`📋 Registered schema: ${name}`);
+    logDebug(`📋 Registered schema: ${name}`);
   }
 
   getSchema(name) {
@@ -641,7 +643,7 @@ class ContractTestingEngine extends EventEmitter {
 
   // Mock service generation
   async generateMockServices() {
-    console.log('🎭 Generating mock services from contracts...');
+    logDebug('🎭 Generating mock services from contracts...');
     
     const mockServices = new Map();
     
@@ -657,7 +659,7 @@ class ContractTestingEngine extends EventEmitter {
       JSON.stringify(mockConfig, null, 2)
     );
 
-    console.log(`🎭 Generated ${mockServices.size} mock services`);
+    logDebug(`🎭 Generated ${mockServices.size} mock services`);
     return mockServices;
   }
 
@@ -723,7 +725,7 @@ class ContractTestingEngine extends EventEmitter {
 
   // Integration with autonomous testing system
   async integrateWithAutonomousSystem() {
-    console.log('🔗 Integrating contract testing with autonomous system...');
+    logDebug('🔗 Integrating contract testing with autonomous system...');
     
     // Register contract test scenarios with the autonomous test suite
     const contractScenarios = await this.generateAutonomousTestScenarios();
@@ -734,7 +736,7 @@ class ContractTestingEngine extends EventEmitter {
       JSON.stringify(contractScenarios, null, 2)
     );
 
-    console.log(`📋 Generated ${contractScenarios.length} autonomous contract test scenarios`);
+    logDebug(`📋 Generated ${contractScenarios.length} autonomous contract test scenarios`);
     return contractScenarios;
   }
 
@@ -797,7 +799,7 @@ class ContractTestingEngine extends EventEmitter {
   }
 
   async runAllContractTests() {
-    console.log('🚀 Running all contract tests...');
+    logDebug('🚀 Running all contract tests...');
     
     const results = new Map();
     

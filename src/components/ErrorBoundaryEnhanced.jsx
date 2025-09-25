@@ -1,5 +1,7 @@
 import React from 'react';
 import { AlertTriangle, RefreshCw, Home, FileText } from 'lucide-react';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 class ErrorBoundaryEnhanced extends React.Component {
   constructor(props) {
@@ -19,8 +21,8 @@ class ErrorBoundaryEnhanced extends React.Component {
   componentDidCatch(error, errorInfo) {
     // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.error('[ErrorBoundary] Caught error:', error);
-      console.error('[ErrorBoundary] Error info:', errorInfo);
+      logError('[ErrorBoundary] Caught error:', error);
+      logError('[ErrorBoundary] Error info:', errorInfo);
     }
 
     // Update state with error details
@@ -41,7 +43,7 @@ class ErrorBoundaryEnhanced extends React.Component {
         });
       }
     } catch (loggingError) {
-      console.error('Failed to log error:', loggingError);
+      logError('Failed to log error:', loggingError);
     }
   }
 

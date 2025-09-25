@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import io from 'socket.io-client';
 import { useAuth } from '@clerk/clerk-react';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Get API URL from environment or default
 const API_URL = import.meta.env.VITE_API_BASE_URL || null;
@@ -47,17 +49,17 @@ const useSocketConnection = (namespace) => {
           setConnectionState(ConnectionState.CONNECTED);
           reconnectAttempts.current = 0;
           reconnectDelay.current = 1000;
-          console.log(`Connected to ${namespace} WebSocket`);
+          logDebug(`Connected to ${namespace} WebSocket`);
         });
 
         socketInstance.on('disconnect', (reason) => {
           setConnectionState(ConnectionState.DISCONNECTED);
-          console.log(`Disconnected from ${namespace}: ${reason}`);
+          logDebug(`Disconnected from ${namespace}: ${reason}`);
         });
 
         socketInstance.on('connect_error', (error) => {
           setConnectionState(ConnectionState.ERROR);
-          console.error(`Connection error in ${namespace}:`, error.message);
+          logError(`Connection error in ${namespace}:`, error.message);
         });
 
         socketInstance.on('reconnecting', (attemptNumber) => {
@@ -69,7 +71,7 @@ const useSocketConnection = (namespace) => {
 
         setSocket(socketInstance);
       } catch (error) {
-        console.error(`Failed to connect to ${namespace}:`, error);
+        logError(`Failed to connect to ${namespace}:`, error);
         setConnectionState(ConnectionState.ERROR);
       }
     };

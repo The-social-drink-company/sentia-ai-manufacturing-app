@@ -14,6 +14,30 @@ export default defineConfig(({ mode }) => {
   // Load env file based on mode
   const env = loadEnv(mode, process.cwd(), '');
 
+  const enableClerk = env.VITE_ENABLE_CLERK === 'true' || env.VITE_USE_AUTH === 'true';
+  const disableClerk = enableClerk ? false : env.VITE_DISABLE_CLERK !== 'false';
+
+  const alias = {
+    '@': path.resolve(__dirname, './src'),
+    '@components': path.resolve(__dirname, './src/components'),
+    '@pages': path.resolve(__dirname, './src/pages'),
+    '@hooks': path.resolve(__dirname, './src/hooks'),
+    '@utils': path.resolve(__dirname, './src/utils'),
+    '@services': path.resolve(__dirname, './src/services'),
+    '@stores': path.resolve(__dirname, './src/stores'),
+    '@lib': path.resolve(__dirname, './src/lib'),
+    '@styles': path.resolve(__dirname, './src/styles'),
+    '@assets': path.resolve(__dirname, './src/assets'),
+    '@types': path.resolve(__dirname, './src/types'),
+    '@context': path.resolve(__dirname, './src/context'),
+    '@config': path.resolve(__dirname, './src/config'),
+    '@mcp': path.resolve(__dirname, './mcp-server')
+  };
+
+  if (disableClerk) {
+    alias['@clerk/clerk-react'] = path.resolve(__dirname, './src/lib/clerk-mock.js');
+  }
+
   return {
     plugins: [
       react({
@@ -183,22 +207,7 @@ export default defineConfig(({ mode }) => {
 
     // Module resolution
     resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src'),
-        '@components': path.resolve(__dirname, './src/components'),
-        '@pages': path.resolve(__dirname, './src/pages'),
-        '@hooks': path.resolve(__dirname, './src/hooks'),
-        '@utils': path.resolve(__dirname, './src/utils'),
-        '@services': path.resolve(__dirname, './src/services'),
-        '@stores': path.resolve(__dirname, './src/stores'),
-        '@lib': path.resolve(__dirname, './src/lib'),
-        '@styles': path.resolve(__dirname, './src/styles'),
-        '@assets': path.resolve(__dirname, './src/assets'),
-        '@types': path.resolve(__dirname, './src/types'),
-        '@context': path.resolve(__dirname, './src/context'),
-        '@config': path.resolve(__dirname, './src/config'),
-        '@mcp': path.resolve(__dirname, './mcp-server')
-      },
+      alias,
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
     },
 

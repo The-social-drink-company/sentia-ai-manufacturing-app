@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMCPIntegration } from '../../hooks/useMCPIntegration';
-import { logInfo, logError } from '../../services/observability/structuredLogger.js';
-import {
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+import {
 
   CubeIcon,
   PlusIcon,

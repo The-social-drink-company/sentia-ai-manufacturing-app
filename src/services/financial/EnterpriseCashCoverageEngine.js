@@ -11,7 +11,7 @@
  * @module EnterpriseCashCoverageEngine
  */
 
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client'; // Server-side only - commented for client build
 import axios from 'axios';
 import { parse } from 'csv-parse/sync';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';

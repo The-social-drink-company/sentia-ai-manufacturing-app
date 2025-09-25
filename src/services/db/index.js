@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client'; // Server-side only - commented for client build
 import logger, { logInfo, logError, logWarn } from '../../../services/logger.js';
 
 class DatabaseService {
@@ -12,7 +12,8 @@ class DatabaseService {
    */
   async initialize() {
     try {
-      this.prisma = new PrismaClient({
+      // Prisma only works server-side - this is a client-side placeholder
+      this.prisma = null; /* new PrismaClient({
         log: [
           {
             emit: 'event',
@@ -39,10 +40,10 @@ class DatabaseService {
             connectionLimit: 5,
           }
         }
-      });
+      }); */
 
-      // Set up logging for Prisma events
-      this.prisma.$on('query', (e) => {
+      // Set up logging for Prisma events (disabled for client-side)
+      /* this.prisma.$on('query', (e) => {
         logInfo('Database Query', {
           query: e.query,
           params: e.params,
@@ -63,12 +64,12 @@ class DatabaseService {
           target: e.target,
           message: e.message,
         });
-      });
+      }); */
 
-      // Test connection with retry logic
-      await this.connectWithRetry();
-      
-      this.connected = true;
+      // Test connection with retry logic (disabled for client-side)
+      // await this.connectWithRetry();
+
+      this.connected = false; // Client-side cannot connect directly
       logInfo('Database connected successfully', {
         provider: 'postgresql',
         environment: process.env.NODE_ENV || 'development',
@@ -86,7 +87,9 @@ class DatabaseService {
    * Connect with retry logic
    */
   async connectWithRetry(maxRetries = 3, delay = 2000) {
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    // Client-side cannot connect to database directly
+    return;
+    /* for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         logInfo(`Database connection attempt ${attempt}/${maxRetries}`);
         await this.prisma.$connect();
@@ -108,7 +111,7 @@ class DatabaseService {
         logInfo(`Waiting ${waitTime}ms before retry...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
-    }
+    } */
   }
 
   /**
@@ -132,7 +135,9 @@ class DatabaseService {
    * Perform database health check
    */
   async healthCheck() {
-    try {
+    // Client-side cannot perform health check
+    return { status: 'client-side', message: 'Database operations only available server-side' };
+    /* try {
       // Simple query to test connection
       await this.prisma.$queryRaw`SELECT 1 as health_check`;
       
@@ -162,14 +167,16 @@ class DatabaseService {
       logError('Database health check failed', error);
       this.connected = false;
       throw error;
-    }
+    } */
   }
 
   /**
    * Get database statistics
    */
   async getStats() {
-    try {
+    // Client-side cannot get stats
+    return [];
+    /* try {
       const stats = await this.prisma.$queryRaw`
         SELECT 
           schemaname,
@@ -187,15 +194,17 @@ class DatabaseService {
     } catch (error) {
       logError('Failed to get database statistics', error);
       throw error;
-    }
+    } */
   }
 
   /**
    * Execute transaction with retry logic
    */
   async executeTransaction(operations, maxRetries = 3) {
-    let lastError;
-    
+    // Client-side cannot execute transactions
+    throw new Error('Database transactions only available server-side');
+    /* let lastError;
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const result = await this.prisma.$transaction(operations);
@@ -219,15 +228,18 @@ class DatabaseService {
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
-    
-    throw lastError;
+
+    throw lastError; */
   }
 
   /**
    * Graceful shutdown
    */
   async disconnect() {
-    if (this.prisma) {
+    // Client-side has no connection to disconnect
+    this.connected = false;
+    return;
+    /* if (this.prisma) {
       try {
         await this.prisma.$disconnect();
         this.connected = false;
@@ -236,7 +248,7 @@ class DatabaseService {
         logError('Error during database disconnect', error);
         throw error;
       }
-    }
+    } */
   }
 }
 

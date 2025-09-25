@@ -10,14 +10,15 @@
  * @module EnterpriseDataPipeline
  */
 
-import { Readable, Writable, Transform, pipeline } from 'stream';
-import { PrismaClient } from '@prisma/client';
-import Bull from 'bull';
-import Redis from 'ioredis';
+// Note: Server-side imports commented for client build
+// import { Readable, Writable, Transform, pipeline } from 'stream';
+// import { PrismaClient } from '@prisma/client';
+// import Bull from 'bull';
+// import Redis from 'ioredis';
 import axios from 'axios';
 import Papa from 'papaparse';
-import { EventEmitter } from 'events';
-import fs from 'fs';
+// import { EventEmitter } from 'events';
+// import fs from 'fs';
 import crypto from 'crypto';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 

@@ -4,6 +4,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, Cog6ToothIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import { queryKeys, queryConfigs } from '../../services/queryClient'
 import DateContextEngine from '../../services/DateContextEngine'
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
   const [chartType, setChartType] = useState('line')
@@ -129,7 +131,7 @@ const WorkingCapitalChart = ({ timeRange = '12M', scenario = 'baseline' }) => {
       })).sort((a, b) => a.fullDate.localeCompare(b.fullDate));
       
     } catch (error) {
-      console.error('Error generating working capital projections:', error);
+      logError('Error generating working capital projections:', error);
       return [];
     }
   }, [projectionsData, periodDays, scenario, dateEngine])

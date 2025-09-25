@@ -19,6 +19,8 @@ import {
   EyeIcon
 } from '@heroicons/react/24/outline';
 import { shopFloorService } from '../../services/ShopFloorService.js';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const ShopFloorDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -37,7 +39,7 @@ const ShopFloorDashboard = () => {
         setError(null);
       } catch (err) {
         setError(`Failed to initialize shop floor systems: ${err.message}`);
-        console.error('Shop floor initialization error:', err);
+        logError('Shop floor initialization error:', err);
       } finally {
         setLoading(false);
       }
@@ -55,7 +57,7 @@ const ShopFloorDashboard = () => {
       setError(null);
     } catch (err) {
       setError(`Failed to fetch dashboard data: ${err.message}`);
-      console.error('Dashboard data error:', err);
+      logError('Dashboard data error:', err);
     }
   }, []);
 
@@ -71,7 +73,7 @@ const ShopFloorDashboard = () => {
       await shopFloorService.recordOperatorAction(action);
       await fetchDashboardData(); // Refresh data
     } catch (error) {
-      console.error('Failed to record operator action:', error);
+      logError('Failed to record operator action:', error);
     }
   };
 

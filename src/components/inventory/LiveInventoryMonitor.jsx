@@ -12,6 +12,8 @@ import {
   DocumentTextIcon
 } from '@heroicons/react/24/outline';
 import { liveInventoryService } from '../../services/LiveInventoryService.js';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const LiveInventoryMonitor = () => {
   const [inventoryStatus, setInventoryStatus] = useState(null);
@@ -31,7 +33,7 @@ const LiveInventoryMonitor = () => {
         setError(null);
       } catch (err) {
         setError(`Failed to initialize inventory systems: ${err.message}`);
-        console.error('Inventory initialization error:', err);
+        logError('Inventory initialization error:', err);
       } finally {
         setLoading(false);
       }
@@ -49,7 +51,7 @@ const LiveInventoryMonitor = () => {
       setError(null);
     } catch (err) {
       setError(`Failed to fetch inventory status: ${err.message}`);
-      console.error('Inventory status error:', err);
+      logError('Inventory status error:', err);
     }
   }, []);
 

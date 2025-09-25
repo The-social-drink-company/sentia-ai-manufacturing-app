@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 /**
  * API Service
  * Central API client for all backend interactions
@@ -39,7 +41,7 @@ class ApiService {
 
       return await response.json();
     } catch (error) {
-      console.error(`API Request Failed: ${endpoint}`, error);
+      logError(`API Request Failed: ${endpoint}`, error);
       throw error;
     }
   }

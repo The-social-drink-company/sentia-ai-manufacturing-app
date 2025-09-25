@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
   CheckCircleIcon, 
   ExclamationTriangleIcon, 
   InformationCircleIcon, 
@@ -228,22 +230,22 @@ function Toast({ notification, onClose }) {
 // Helper functions for notifications
 export const notifySuccess = (message, title = 'Success') => {
   // This is a placeholder - in a real app, this would trigger the notification system
-  console.log('Success:', title, message);
+  logDebug('Success:', title, message);
 };
 
 export const notifyInfo = (message, title = 'Info') => {
   // This is a placeholder - in a real app, this would trigger the notification system
-  console.log('Info:', title, message);
+  logDebug('Info:', title, message);
 };
 
 export const notifyWarning = (message, title = 'Warning') => {
   // This is a placeholder - in a real app, this would trigger the notification system
-  console.log('Warning:', title, message);
+  logDebug('Warning:', title, message);
 };
 
 export const notifyError = (message, title = 'Error') => {
   // This is a placeholder - in a real app, this would trigger the notification system
-  console.log('Error:', title, message);
+  logDebug('Error:', title, message);
 };
 
 // Main notification system component

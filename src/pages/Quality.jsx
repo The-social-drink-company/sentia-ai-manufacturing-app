@@ -27,6 +27,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import ChartErrorBoundary from '../components/charts/ChartErrorBoundary';
 import QualityControlMonitor from '../components/quality/QualityControlMonitor';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const Quality = () => {
   const [activeTab, setActiveTab] = useState('realtime');
@@ -47,7 +49,7 @@ const Quality = () => {
           return await response.json();
         }
       } catch (error) {
-        console.error('Quality API error:', error);
+        logError('Quality API error:', error);
       }
       return mockQualityData;
     },
@@ -66,7 +68,7 @@ const Quality = () => {
           return result.data || [];
         }
       } catch (error) {
-        console.error('Error fetching personnel:', error);
+        logError('Error fetching personnel:', error);
       }
       return [];
     },

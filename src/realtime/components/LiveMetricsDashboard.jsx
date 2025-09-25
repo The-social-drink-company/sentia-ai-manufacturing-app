@@ -12,6 +12,8 @@ import {
 import { useRealtime } from '../RealtimeProvider';
 import { useTheme } from '../../theming';
 import { LineChart, BarChart, DoughnutChart } from '../../charts';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 export const LiveMetricsDashboard = ({
   className = '',
@@ -162,7 +164,7 @@ export const LiveMetricsDashboard = ({
     if (isConnected || !isAutoRefresh) return;
 
     // Display error message when not connected to real data sources
-    console.error('CRITICAL ERROR: Real IoT sensor connection required. No fake data simulation allowed.');
+    logError('CRITICAL ERROR: Real IoT sensor connection required. No fake data simulation allowed.');
 
     // Show user-friendly error in dashboard
     setCurrentValues({

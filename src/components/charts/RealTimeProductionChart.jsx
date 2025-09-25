@@ -12,6 +12,8 @@ import {
   Filler
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 ChartJS.register(
   CategoryScale,
@@ -55,15 +57,15 @@ const RealTimeProductionChart = ({ height = 300, refreshInterval = 30000 }) => {
         
         // More strict validation for production data
         if (hoursDiff > 24 || hoursDiff < 0) {
-          console.warn(`Production Chart: Timestamp ${item.timestamp} outside 24-hour window (${hoursDiff.toFixed(1)}h)`);
+          logWarn(`Production Chart: Timestamp ${item.timestamp} outside 24-hour window (${hoursDiff.toFixed(1)}h)`);
         }
         
         if (!isBusinessHour && isWeekday) {
-          console.warn(`Production Chart: Data point ${item.timestamp} outside business hours`);
+          logWarn(`Production Chart: Data point ${item.timestamp} outside business hours`);
         }
         
         if (!isWeekday) {
-          console.warn(`Production Chart: Weekend production data ${item.timestamp} - verify if correct`);
+          logWarn(`Production Chart: Weekend production data ${item.timestamp} - verify if correct`);
         }
         
         return {

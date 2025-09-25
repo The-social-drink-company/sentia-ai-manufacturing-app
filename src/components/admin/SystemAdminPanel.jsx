@@ -14,6 +14,8 @@ import {
 } from '@heroicons/react/24/outline';
 import ApiKeyManagement from './ApiKeyManagement';
 import { hasPermission, PERMISSIONS } from '../../utils/rolePermissions';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const SystemAdminPanel = () => {
   const { getToken } = useAuth();
@@ -76,7 +78,7 @@ const SystemAdminPanel = () => {
         setSystemHealth(health);
       }
     } catch (err) {
-      console.error('Failed to fetch system health:', err);
+      logError('Failed to fetch system health:', err);
     }
   };
 
@@ -91,7 +93,7 @@ const SystemAdminPanel = () => {
         setSystemLogs(logs.slice(0, 100)); // Last 100 logs
       }
     } catch (err) {
-      console.error('Failed to fetch system logs:', err);
+      logError('Failed to fetch system logs:', err);
     }
   };
 

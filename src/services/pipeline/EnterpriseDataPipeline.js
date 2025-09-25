@@ -19,6 +19,8 @@ import Papa from 'papaparse';
 import { EventEmitter } from 'events';
 import fs from 'fs';
 import crypto from 'crypto';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 // ==================== ENTERPRISE DATA PIPELINE ====================
 
@@ -49,7 +51,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   // ==================== INITIALIZATION ====================
 
   initializeQueues() {
-    console.log('[Pipeline] Initializing message queues...');
+    logDebug('[Pipeline] Initializing message queues...');
 
     // Message queues for reliable processing
     this.queues = {
@@ -125,7 +127,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
 
         return { success: true, recordsProcessed: transformed.length || 1 };
       } catch (error) {
-        console.error(`[Ingestion] Error processing ${source}:`, error);
+        logError(`[Ingestion] Error processing ${source}:`, error);
         throw error;
       }
     });
@@ -156,7 +158,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
 
         return { success: true, metricsCalculated: Object.keys(metrics).length };
       } catch (error) {
-        console.error(`[Processing] Error for ${source}:`, error);
+        logError(`[Processing] Error for ${source}:`, error);
         throw error;
       }
     });
@@ -200,7 +202,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
           alertsGenerated: alerts.length
         };
       } catch (error) {
-        console.error(`[Analysis] Error for ${source}:`, error);
+        logError(`[Analysis] Error for ${source}:`, error);
         throw error;
       }
     });
@@ -218,7 +220,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
 
         return { success: true, alertSent: alert.id };
       } catch (error) {
-        console.error('[Alerts] Error sending alert:', error);
+        logError('[Alerts] Error sending alert:', error);
         throw error;
       }
     });
@@ -231,14 +233,14 @@ export class EnterpriseDataPipeline extends EventEmitter {
         const result = await this.executeWarehouseOperation(table, data, operation);
         return { success: true, recordsAffected: result.count };
       } catch (error) {
-        console.error(`[Warehouse] Error in ${operation}:`, error);
+        logError(`[Warehouse] Error in ${operation}:`, error);
         throw error;
       }
     });
   }
 
   setupDataStreams() {
-    console.log('[Pipeline] Setting up data streams...');
+    logDebug('[Pipeline] Setting up data streams...');
 
     // Initialize stream processors
     this.streamProcessors = {
@@ -254,7 +256,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   // ==================== REAL-TIME DATA INGESTION ====================
 
   async startDataIngestion() {
-    console.log('[Pipeline] Starting data ingestion from all sources...');
+    logDebug('[Pipeline] Starting data ingestion from all sources...');
 
     try {
       // Start all ingestion processes
@@ -273,16 +275,16 @@ export class EnterpriseDataPipeline extends EventEmitter {
         sources: Object.keys(this.streamProcessors)
       });
 
-      console.log('[Pipeline] All ingestion processes started successfully');
+      logDebug('[Pipeline] All ingestion processes started successfully');
     } catch (error) {
-      console.error('[Pipeline] Failed to start ingestion:', error);
+      logError('[Pipeline] Failed to start ingestion:', error);
       this.emit('ingestion-error', error);
       throw error;
     }
   }
 
   async ingestAccountingData() {
-    console.log('[Ingestion] Starting Xero accounting data ingestion...');
+    logDebug('[Ingestion] Starting Xero accounting data ingestion...');
 
     // Xero Real-time Webhook and Polling
     const xeroPoller = setInterval(async () => {
@@ -326,7 +328,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   }
 
   async ingestBankingData() {
-    console.log('[Ingestion] Starting banking data ingestion...');
+    logDebug('[Ingestion] Starting banking data ingestion...');
 
     // Open Banking API Integration
     const bankingPoller = setInterval(async () => {
@@ -355,7 +357,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   }
 
   async ingestERPData() {
-    console.log('[Ingestion] Starting ERP data ingestion...');
+    logDebug('[Ingestion] Starting ERP data ingestion...');
 
     // Unleashed/SAP/Oracle Integration
     const erpWebhookHandler = async (data) => {
@@ -392,7 +394,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
           await erpWebhookHandler(updates);
         }
       } catch (error) {
-        console.error('[ERP] Polling error:', error);
+        logError('[ERP] Polling error:', error);
       }
     }, 600000); // Poll every 10 minutes
 
@@ -400,7 +402,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   }
 
   async ingestEcommerceData() {
-    console.log('[Ingestion] Starting e-commerce data ingestion...');
+    logDebug('[Ingestion] Starting e-commerce data ingestion...');
 
     // Shopify Stream
     const shopifyPoller = setInterval(async () => {
@@ -441,7 +443,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   }
 
   async ingestProductionData() {
-    console.log('[Ingestion] Starting production/IoT data ingestion...');
+    logDebug('[Ingestion] Starting production/IoT data ingestion...');
 
     // IoT/Sensor Data Stream (Production Floor)
     const productionStream = new Transform({
@@ -474,7 +476,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   }
 
   async ingestMarketData() {
-    console.log('[Ingestion] Starting market data ingestion...');
+    logDebug('[Ingestion] Starting market data ingestion...');
 
     // Market Data Feeds (commodity prices, exchange rates, etc.)
     const marketPoller = setInterval(async () => {
@@ -500,7 +502,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   }
 
   async ingestCSVUploads() {
-    console.log('[Ingestion] CSV upload handler initialized');
+    logDebug('[Ingestion] CSV upload handler initialized');
 
     // This is triggered on-demand when files are uploaded
     this.on('csv-upload', async (file, type) => {
@@ -869,7 +871,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
 
       return analytics;
     } catch (error) {
-      console.error('[Analytics] Error performing real-time analytics:', error);
+      logError('[Analytics] Error performing real-time analytics:', error);
       throw error;
     }
   }
@@ -912,7 +914,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
 
       return prioritized;
     } catch (error) {
-      console.error('[Anomaly] Detection error:', error);
+      logError('[Anomaly] Detection error:', error);
       return anomalies;
     }
   }
@@ -1056,12 +1058,12 @@ export class EnterpriseDataPipeline extends EventEmitter {
   setupErrorHandling() {
     // Global error handler
     process.on('unhandledRejection', (reason, promise) => {
-      console.error('[Pipeline] Unhandled Rejection:', reason);
+      logError('[Pipeline] Unhandled Rejection:', reason);
       this.handleGlobalError('unhandledRejection', reason);
     });
 
     process.on('uncaughtException', (error) => {
-      console.error('[Pipeline] Uncaught Exception:', error);
+      logError('[Pipeline] Uncaught Exception:', error);
       this.handleGlobalError('uncaughtException', error);
       // Graceful shutdown
       this.shutdown();
@@ -1070,19 +1072,19 @@ export class EnterpriseDataPipeline extends EventEmitter {
     // Queue error handlers
     Object.entries(this.queues).forEach(([name, queue]) => {
       queue.on('error', (error) => {
-        console.error(`[Queue: ${name}] Error:`, error);
+        logError(`[Queue: ${name}] Error:`, error);
         this.handleQueueError(name, error);
       });
 
       queue.on('failed', (job, err) => {
-        console.error(`[Queue: ${name}] Job failed:`, job.id, err);
+        logError(`[Queue: ${name}] Job failed:`, job.id, err);
         this.handleJobFailure(name, job, err);
       });
     });
   }
 
   async handlePipelineError(source, error) {
-    console.error(`[Pipeline] Error in ${source}:`, error);
+    logError(`[Pipeline] Error in ${source}:`, error);
 
     // Log to monitoring system
     await this.logError({
@@ -1117,7 +1119,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
   }
 
   async attemptRecovery(source, error) {
-    console.log(`[Recovery] Attempting recovery for ${source}...`);
+    logDebug(`[Recovery] Attempting recovery for ${source}...`);
 
     const recoveryStrategies = [
       () => this.retryDataSource(source),
@@ -1130,23 +1132,23 @@ export class EnterpriseDataPipeline extends EventEmitter {
       try {
         const recovered = await strategy();
         if (recovered) {
-          console.log(`[Recovery] Successfully recovered ${source}`);
+          logDebug(`[Recovery] Successfully recovered ${source}`);
           this.emit('recovery-success', { source, strategy: strategy.name });
           return true;
         }
       } catch (err) {
-        console.error(`[Recovery] Strategy failed:`, err);
+        logError(`[Recovery] Strategy failed:`, err);
       }
     }
 
-    console.error(`[Recovery] All recovery strategies failed for ${source}`);
+    logError(`[Recovery] All recovery strategies failed for ${source}`);
     return false;
   }
 
   // ==================== MONITORING & OBSERVABILITY ====================
 
   initializeMonitoring() {
-    console.log('[Monitoring] Initializing monitoring and observability...');
+    logDebug('[Monitoring] Initializing monitoring and observability...');
 
     // Metrics collection
     this.metrics = {
@@ -1233,7 +1235,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
 
       return response.data.items || [];
     } catch (error) {
-      console.error('[Xero] Fetch error:', error);
+      logError('[Xero] Fetch error:', error);
       throw error;
     }
   }
@@ -1251,7 +1253,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
 
       return response.data.transactions || [];
     } catch (error) {
-      console.error('[Banking] Fetch transactions error:', error);
+      logError('[Banking] Fetch transactions error:', error);
       return [];
     }
   }
@@ -1266,7 +1268,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
 
       return response.data.accounts || [];
     } catch (error) {
-      console.error('[Banking] Fetch balances error:', error);
+      logError('[Banking] Fetch balances error:', error);
       return [];
     }
   }
@@ -1274,25 +1276,25 @@ export class EnterpriseDataPipeline extends EventEmitter {
   // ==================== CLEANUP & SHUTDOWN ====================
 
   async shutdown() {
-    console.log('[Pipeline] Shutting down data pipeline...');
+    logDebug('[Pipeline] Shutting down data pipeline...');
 
     try {
       // Stop pollers
       this.pollers.forEach((poller, name) => {
-        console.log(`[Pipeline] Stopping poller: ${name}`);
+        logDebug(`[Pipeline] Stopping poller: ${name}`);
         clearInterval(poller);
       });
 
       // Close streams
       this.streams.forEach((stream, name) => {
-        console.log(`[Pipeline] Closing stream: ${name}`);
+        logDebug(`[Pipeline] Closing stream: ${name}`);
         stream.destroy();
       });
 
       // Close queues
       await Promise.all(
         Object.entries(this.queues).map(async ([name, queue]) => {
-          console.log(`[Pipeline] Closing queue: ${name}`);
+          logDebug(`[Pipeline] Closing queue: ${name}`);
           return queue.close();
         })
       );
@@ -1308,10 +1310,10 @@ export class EnterpriseDataPipeline extends EventEmitter {
       // Close Redis connection
       await this.redis.quit();
 
-      console.log('[Pipeline] Shutdown complete');
+      logDebug('[Pipeline] Shutdown complete');
       this.emit('shutdown-complete');
     } catch (error) {
-      console.error('[Pipeline] Shutdown error:', error);
+      logError('[Pipeline] Shutdown error:', error);
       this.emit('shutdown-error', error);
     }
   }

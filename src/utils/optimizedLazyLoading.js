@@ -3,6 +3,8 @@
 
 import { lazy, Suspense } from 'react';
 import { LoadingSpinner } from '../components/LoadingStates';
+import { logDebug, logInfo, logWarn, logError } from 'logger';
+
 
 // Cache for loaded components
 const componentCache = new Map();
@@ -70,7 +72,7 @@ export const createOptimizedLazyComponent = (
       : importFunc();
 
     return importPromise.catch(error => {
-      console.error(`Failed to load component ${componentName}:`, error);
+      logError(`Failed to load component ${componentName}:`, error);
 
       // Implement retry logic
       if (retryCount > 0) {

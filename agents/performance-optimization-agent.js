@@ -9,6 +9,8 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -19,7 +21,7 @@ class PerformanceOptimizationAgent {
   }
 
   async run() {
-    console.log(`⚡ Performance Optimization Agent analyzing ${this.branch}...`);
+    logDebug(`⚡ Performance Optimization Agent analyzing ${this.branch}...`);
     
     const issues = await this.detectPerformanceIssues();
     
@@ -74,7 +76,7 @@ class PerformanceOptimizationAgent {
         }
       }
     } catch (error) {
-      console.error('Build analysis failed:', error.message);
+      logError('Build analysis failed:', error.message);
     }
     
     // Check for unoptimized images
@@ -163,7 +165,7 @@ class PerformanceOptimizationAgent {
             break;
         }
       } catch (error) {
-        console.error(`Failed to optimize ${issue.type}: ${error.message}`);
+        logError(`Failed to optimize ${issue.type}: ${error.message}`);
       }
     }
   }
@@ -197,7 +199,7 @@ class PerformanceOptimizationAgent {
         });
       }
     } catch (error) {
-      console.error('Failed to optimize bundles:', error.message);
+      logError('Failed to optimize bundles:', error.message);
     }
   }
 
@@ -230,7 +232,7 @@ class PerformanceOptimizationAgent {
         });
       }
     } catch (error) {
-      console.error('Failed to optimize build config:', error.message);
+      logError('Failed to optimize build config:', error.message);
     }
   }
 
@@ -269,7 +271,7 @@ class PerformanceOptimizationAgent {
           }
         }
       } catch (error) {
-        console.error(`Failed to optimize image ${imagePath}: ${error.message}`);
+        logError(`Failed to optimize image ${imagePath}: ${error.message}`);
       }
     }
   }
@@ -324,11 +326,11 @@ class PerformanceOptimizationAgent {
             });
           }
         } catch (error) {
-          console.error(`Failed to add lazy loading to ${file}: ${error.message}`);
+          logError(`Failed to add lazy loading to ${file}: ${error.message}`);
         }
       }
     } catch (error) {
-      console.error('Failed to add lazy loading:', error.message);
+      logError('Failed to add lazy loading:', error.message);
     }
   }
 
@@ -374,7 +376,7 @@ class PerformanceOptimizationAgent {
           });
         }
       } catch (error) {
-        console.error(`Failed to optimize ${file}: ${error.message}`);
+        logError(`Failed to optimize ${file}: ${error.message}`);
       }
     }
   }
@@ -428,10 +430,10 @@ async function main() {
   const result = await agent.run();
   
   // Output JSON result for orchestrator
-  console.log(JSON.stringify(result));
+  logDebug(JSON.stringify(result));
 }
 
 main().catch(error => {
-  console.error(error);
+  logError(error);
   process.exit(1);
 });

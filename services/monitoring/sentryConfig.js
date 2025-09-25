@@ -15,7 +15,7 @@ export const initSentry = (app) => {
   const dsn = process.env.VITE_SENTRY_DSN || process.env.SENTRY_DSN;
 
   if (!dsn) {
-    console.warn('Sentry DSN not configured - error tracking disabled');
+    logWarn('Sentry DSN not configured - error tracking disabled');
     return;
   }
 
@@ -147,7 +147,7 @@ export const initSentry = (app) => {
   }
 
   // Log initialization
-  console.log(`Sentry initialized for ${environment} environment`);
+  logDebug(`Sentry initialized for ${environment} environment`);
 };
 
 /**
@@ -347,6 +347,8 @@ export const monitorAPI = async (url, options = {}) => {
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { createRoutesFromChildren, matchRoutes } from 'react-router';
 import React from 'react';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 export const SentryRoutes = Sentry.withSentryRouting(Routes);
 

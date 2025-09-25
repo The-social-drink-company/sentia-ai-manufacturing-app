@@ -9,6 +9,8 @@ import { EnterpriseSecurityFramework } from '../security/securityFramework.js';
 import { ServiceRegistry } from './serviceRegistry.js';
 import { LoadBalancer } from './loadBalancer.js';
 import { CircuitBreaker } from './circuitBreaker.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Enterprise API Gateway
@@ -289,7 +291,7 @@ export class EnterpriseAPIGateway {
 
     // Catch-all error handler
     this.app.use((err, req, res, next) => {
-      console.error('Gateway error:', err);
+      logError('Gateway error:', err);
       this.metrics.errors++;
       
       res.status(err.status || 500).json({
@@ -337,7 +339,7 @@ export class EnterpriseAPIGateway {
       },
 
       onError: (err, req, res) => {
-        console.error(`Proxy error for ${serviceName}:`, err.message);
+        logError(`Proxy error for ${serviceName}:`, err.message);
         this.updateServiceHealth(serviceName, false);
         
         // Circuit breaker logic
@@ -541,7 +543,7 @@ export class EnterpriseAPIGateway {
     try {
       // Test Redis connection
       await this.redis.ping();
-      console.log('✅ Redis connection established');
+      logDebug('✅ Redis connection established');
 
       // Register services
       for (const [name, config] of Object.entries(this.config.services)) {
@@ -549,14 +551,14 @@ export class EnterpriseAPIGateway {
       }
 
       this.server = this.app.listen(this.config.port, () => {
-        console.log(`🚀 API Gateway running on port ${this.config.port}`);
-        console.log(`📊 Metrics available at http://localhost:${this.config.port}/metrics`);
-        console.log(`🏥 Health check at http://localhost:${this.config.port}/health`);
+        logDebug(`🚀 API Gateway running on port ${this.config.port}`);
+        logDebug(`📊 Metrics available at http://localhost:${this.config.port}/metrics`);
+        logDebug(`🏥 Health check at http://localhost:${this.config.port}/health`);
       });
 
       return this.server;
     } catch (error) {
-      console.error('Failed to start API Gateway:', error);
+      logError('Failed to start API Gateway:', error);
       throw error;
     }
   }
@@ -568,7 +570,7 @@ export class EnterpriseAPIGateway {
     if (this.redis) {
       this.redis.disconnect();
     }
-    console.log('🛑 API Gateway stopped');
+    logDebug('🛑 API Gateway stopped');
   }
 }
 

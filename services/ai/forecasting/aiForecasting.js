@@ -1,6 +1,8 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../../src/utils/logger';
+
 
 /**
  * AI-Powered Forecasting & Business Intelligence Service
@@ -126,7 +128,7 @@ export class AIForecastingService extends EventEmitter {
       return forecast;
 
     } catch (error) {
-      console.error('Cash flow forecast generation failed:', error);
+      logError('Cash flow forecast generation failed:', error);
       this.emit('forecastError', { type: 'cashflow', error: error.message });
       throw error;
     }
@@ -184,7 +186,7 @@ export class AIForecastingService extends EventEmitter {
       return forecast;
 
     } catch (error) {
-      console.error('Demand forecast generation failed:', error);
+      logError('Demand forecast generation failed:', error);
       this.emit('forecastError', { type: 'demand', error: error.message });
       throw error;
     }
@@ -251,7 +253,7 @@ export class AIForecastingService extends EventEmitter {
       return intelligence;
 
     } catch (error) {
-      console.error('Business intelligence generation failed:', error);
+      logError('Business intelligence generation failed:', error);
       this.emit('intelligenceError', { type: analysisType, error: error.message });
       throw error;
     }
@@ -580,7 +582,7 @@ Return as detailed JSON with actionable insights and specific recommendations.
       try {
         await this.updateActiveForecasts();
       } catch (error) {
-        console.error('Periodic forecasting update failed:', error);
+        logError('Periodic forecasting update failed:', error);
       }
     }, this.config.forecasting.updateInterval);
   }
@@ -596,7 +598,7 @@ Return as detailed JSON with actionable insights and specific recommendations.
       try {
         await this.refreshForecast(forecast);
       } catch (error) {
-        console.error(`Failed to refresh forecast ${forecast.id}:`, error);
+        logError(`Failed to refresh forecast ${forecast.id}:`, error);
       }
     }
   }
@@ -614,7 +616,7 @@ Return as detailed JSON with actionable insights and specific recommendations.
    */
   async refreshForecast(forecast) {
     // Implementation would refresh the forecast with new data
-    console.log(`Refreshing forecast: ${forecast.id}`);
+    logDebug(`Refreshing forecast: ${forecast.id}`);
     this.emit('forecastRefreshed', forecast);
   }
 
@@ -798,7 +800,7 @@ _calculate_model_accuracy(predictions, actuals) {
 
       return forecast;
     } catch (error) {
-      console.error('Scenario forecast generation failed:', error);
+      logError('Scenario forecast generation failed:', error);
       this.emit('scenarioForecastError', { scenario, error: error.message });
       throw error;
     }

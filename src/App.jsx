@@ -20,6 +20,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from 'react-error-boundary';
+import { logDebug, logInfo, logWarn, logError } from './utils/logger';
+
 
 // ============================================================================
 // LAZY LOADED COMPONENTS
@@ -37,7 +39,7 @@ const EnterpriseDashboard = lazy(() => import('./pages/Dashboard/EnterpriseDashb
 const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'));
 
 // Financial Management Pages (NEW)
-const WorkingCapital = lazy(() => import('./components/financial/WorkingCapital'));
+const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
 const CashRunway = lazy(() => import('./pages/CashRunway'));
 const FundingCalculator = lazy(() => import('./pages/FundingCalculator'));
 const WorkingCapitalOptimizer = lazy(() => import('./pages/WorkingCapitalOptimizer'));
@@ -53,7 +55,7 @@ const SupplyChain = lazy(() => import('./pages/SupplyChain'));
 const Analytics = lazy(() => import('./pages/Analytics'));
 const Forecasting = lazy(() => import('./pages/Forecasting'));
 const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
-const AIInsights = lazy(() => import('./components/analytics/AIInsights'));
+// const AIInsights = lazy(() => import('./components/analytics/AIInsights')); // Component not created yet
 
 // Mobile Pages
 const Mobile = lazy(() => import('./pages/Mobile'));
@@ -84,7 +86,7 @@ const queryClient = new QueryClient({
     mutations: {
       retry: 1,
       onError: (error) => {
-        console.error('Mutation error:', error);
+        logError('Mutation error:', error);
       }
     }
   }
@@ -524,11 +526,12 @@ function App() {
                     </ProtectedRoute>
                   } />
 
+                  {/* AI Insights route - component not yet created
                   <Route path="/ai-insights" element={
                     <ProtectedRoute>
                       <AIInsights />
                     </ProtectedRoute>
-                  } />
+                  } /> */}
 
                   {/* Mobile Routes */}
                   <Route path="/mobile" element={

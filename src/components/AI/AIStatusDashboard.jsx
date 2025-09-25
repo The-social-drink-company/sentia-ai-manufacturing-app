@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
   CpuChipIcon, 
   CloudIcon, 
   ChartBarIcon, 
@@ -67,7 +69,7 @@ const AIStatusDashboard = () => {
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Failed to check AI system status:', error);
+      logError('Failed to check AI system status:', error);
       setIsLoading(false);
     }
   };

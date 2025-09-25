@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Translation context
 const I18nContext = createContext();
@@ -274,7 +276,7 @@ export const InternationalizationProvider = ({ children }) => {
   // Change locale and load translations
   const changeLocale = async (newLocale) => {
     if (!SUPPORTED_LOCALES[newLocale]) {
-      console.warn(`Unsupported locale: ${newLocale}`);
+      logWarn(`Unsupported locale: ${newLocale}`);
       return;
     }
 
@@ -298,7 +300,7 @@ export const InternationalizationProvider = ({ children }) => {
       document.documentElement.lang = newLocale;
 
     } catch (error) {
-      console.error('Failed to change locale:', error);
+      logError('Failed to change locale:', error);
     } finally {
       setIsLoading(false);
     }
@@ -315,7 +317,7 @@ export const InternationalizationProvider = ({ children }) => {
     }
 
     if (typeof value !== 'string') {
-      console.warn(`Translation not found for key: ${key}`);
+      logWarn(`Translation not found for key: ${key}`);
       return key;
     }
 

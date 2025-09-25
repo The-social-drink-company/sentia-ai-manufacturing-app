@@ -16,6 +16,8 @@ import Sidebar from './components/layout/Sidebar';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { logDebug, logInfo, logWarn, logError } from './utils/logger';
+
 
 // Lazy load only essential pages for stage 1
 const EnterpriseDashboard = lazy(() => import('./pages/Dashboard/EnterpriseDashboard'));
@@ -113,7 +115,7 @@ const AppStage1 = () => {
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
       onError={(error) => {
-        console.error('Application error:', error);
+        logError('Application error:', error);
       }}
     >
       <QueryClientProvider client={queryClient}>

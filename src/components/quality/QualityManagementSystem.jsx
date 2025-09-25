@@ -25,6 +25,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, RadialBarChart, RadialBar, ComposedChart, Area, AreaChart } from 'recharts';
 import ChartErrorBoundary from '../charts/ChartErrorBoundary';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const QualityManagementSystem = () => {
   const [selectedTimeRange, setSelectedTimeRange] = useState('daily');
@@ -45,7 +47,7 @@ const QualityManagementSystem = () => {
           return await response.json();
         }
       } catch (error) {
-        console.error('Error fetching quality data:', error);
+        logError('Error fetching quality data:', error);
       }
       return mockQualityData;
     },
@@ -64,7 +66,7 @@ const QualityManagementSystem = () => {
           return result.data || [];
         }
       } catch (error) {
-        console.error('Error fetching personnel:', error);
+        logError('Error fetching personnel:', error);
       }
       return [];
     },

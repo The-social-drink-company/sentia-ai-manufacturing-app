@@ -13,6 +13,8 @@ import {
 import { useAI } from '../AIProvider';
 import { useTheme } from '../../theming';
 import { LineChart, BarChart } from '../../charts';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 export const PredictiveAnalytics = ({
   className = '',
@@ -45,7 +47,7 @@ export const PredictiveAnalytics = ({
   // Run predictive analysis
   const runAnalysis = useCallback(async (analysisType) => {
     if (!isAIEnabled) {
-      console.warn('AI services are not enabled');
+      logWarn('AI services are not enabled');
       return;
     }
 
@@ -94,7 +96,7 @@ export const PredictiveAnalytics = ({
       }
 
     } catch (error) {
-      console.error(`Analysis failed for ${analysisType}:`, error);
+      logError(`Analysis failed for ${analysisType}:`, error);
       setAnalysisHistory(prev => [...prev, {
         type: analysisType,
         timestamp: Date.now(),

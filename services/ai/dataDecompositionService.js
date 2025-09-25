@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 /**
  * Advanced Data Decomposition Service - CEEMDAN Implementation
  * Complete Ensemble Empirical Mode Decomposition with Adaptive Noise
@@ -21,7 +23,7 @@ class DataDecompositionService {
    * Superior to EMD and EEMD for non-linear, non-stationary financial data
    */
   async performCEEMDAN(timeSeries, options = {}) {
-    console.log('Performing CEEMDAN decomposition...');
+    logDebug('Performing CEEMDAN decomposition...');
     
     const {
       ensembleSize = this.ensembleSize,
@@ -33,7 +35,7 @@ class DataDecompositionService {
     // Check cache first
     const cacheKey = this.generateCacheKey(timeSeries, options);
     if (enableCaching && this.decompositionCache.has(cacheKey)) {
-      console.log('Returning cached decomposition');
+      logDebug('Returning cached decomposition');
       return this.decompositionCache.get(cacheKey);
     }
 
@@ -44,7 +46,7 @@ class DataDecompositionService {
       // Step 2: Decompose each noisy signal
       const allIMFs = [];
       for (let i = 0; i < noisySignals.length; i++) {
-        console.log(`Decomposing signal ${i + 1}/${noisySignals.length}...`);
+        logDebug(`Decomposing signal ${i + 1}/${noisySignals.length}...`);
         const imfs = await this.empiricalModeDecomposition(noisySignals[i], maxIMFs);
         allIMFs.push(imfs);
       }
@@ -82,11 +84,11 @@ class DataDecompositionService {
         this.decompositionCache.set(cacheKey, result);
       }
       
-      console.log(`CEEMDAN decomposition complete. Generated ${ceemdanIMFs.length} IMFs`);
+      logDebug(`CEEMDAN decomposition complete. Generated ${ceemdanIMFs.length} IMFs`);
       return result;
       
     } catch (error) {
-      console.error('CEEMDAN decomposition failed:', error);
+      logError('CEEMDAN decomposition failed:', error);
       throw error;
     }
   }
@@ -95,7 +97,7 @@ class DataDecompositionService {
    * Generate ensemble of noisy signals for CEEMDAN
    */
   generateNoisyEnsemble(signal, ensembleSize, noiseRatio) {
-    console.log(`Generating ${ensembleSize} noisy signals...`);
+    logDebug(`Generating ${ensembleSize} noisy signals...`);
     
     const noisySignals = [];
     const signalStd = this.calculateStandardDeviation(signal);
@@ -307,7 +309,7 @@ class DataDecompositionService {
    * Calculate ensemble mean of IMFs
    */
   calculateEnsembleMean(allIMFs) {
-    console.log('Calculating ensemble mean of IMFs...');
+    logDebug('Calculating ensemble mean of IMFs...');
     
     if (allIMFs.length === 0) {
       return [];
@@ -406,7 +408,7 @@ class DataDecompositionService {
    * Analyze frequencies of IMFs using FFT
    */
   analyzeIMFFrequencies(imfs) {
-    console.log('Analyzing IMF frequencies...');
+    logDebug('Analyzing IMF frequencies...');
     
     const frequencyAnalysis = [];
     
@@ -443,7 +445,7 @@ class DataDecompositionService {
         });
         
       } catch (error) {
-        console.warn(`FFT analysis failed for IMF ${i}:`, error.message);
+        logWarn(`FFT analysis failed for IMF ${i}:`, error.message);
         frequencyAnalysis.push({
           imfIndex: i,
           dominantFrequency: 0,
@@ -519,7 +521,7 @@ class DataDecompositionService {
    * Denoise signal by removing noise components
    */
   denoiseSignal(decomposition) {
-    console.log('Denoising signal using CEEMDAN decomposition...');
+    logDebug('Denoising signal using CEEMDAN decomposition...');
     
     const { imfs, categorizedIMFs } = decomposition;
     
@@ -617,7 +619,7 @@ class DataDecompositionService {
    */
   clearCache() {
     this.decompositionCache.clear();
-    console.log('Decomposition cache cleared');
+    logDebug('Decomposition cache cleared');
   }
 
   /**

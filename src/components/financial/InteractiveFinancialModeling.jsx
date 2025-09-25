@@ -33,6 +33,8 @@ import {
 import RealDatabaseQueries from '../../services/database/RealDatabaseQueries';
 import apiClient from '../../services/api/apiClient';
 import { toast } from 'react-hot-toast';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 // Financial calculation utilities
 const calculateCAGR = (endValue, startValue, years) => {
@@ -499,7 +501,7 @@ export default function InteractiveFinancialModeling() {
     },
     onError: (error) => {
       toast.error('Failed to save scenario');
-      console.error('Save scenario error:', error);
+      logError('Save scenario error:', error);
     }
   });
 

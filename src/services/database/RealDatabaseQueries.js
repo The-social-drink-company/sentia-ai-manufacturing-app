@@ -14,6 +14,8 @@
 
 import { PrismaClient } from '@prisma/client';
 import { parse } from 'csv-parse/sync';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 // Initialize Prisma with detailed logging
 const prisma = new PrismaClient({
@@ -33,10 +35,10 @@ const validateDatabaseConnection = async () => {
   try {
     await prisma.$connect();
     await prisma.$queryRaw`SELECT 1`;
-    console.log('[Database] Connected to real PostgreSQL database');
+    logDebug('[Database] Connected to real PostgreSQL database');
     return true;
   } catch (error) {
-    console.error('[Database] Connection failed:', error);
+    logError('[Database] Connection failed:', error);
     throw new Error('CRITICAL: Real database connection required. No mock data allowed.');
   }
 };
@@ -860,7 +862,7 @@ export const DataValidation = {
 
 // ==================== ERROR HANDLING ====================
 const handleDatabaseError = (error) => {
-  console.error('[Database Error]', error);
+  logError('[Database Error]', error);
 
   if (error.code === 'P2025') {
     throw new Error('Record not found. Ensure data exists in database.');
@@ -911,12 +913,12 @@ const wrapWithErrorHandling = (queryObject) => {
 // Cleanup on exit
 process.on('beforeExit', async () => {
   await prisma.$disconnect();
-  console.log('[Database] Disconnected from PostgreSQL');
+  logDebug('[Database] Disconnected from PostgreSQL');
 });
 
 // Handle uncaught errors
 process.on('unhandledRejection', async (error) => {
-  console.error('[Database] Unhandled error:', error);
+  logError('[Database] Unhandled error:', error);
   await prisma.$disconnect();
   process.exit(1);
 });

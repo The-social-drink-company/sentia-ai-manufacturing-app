@@ -20,7 +20,7 @@ async function importSellingPartnerApi() {
     }
     return SellingPartnerApi;
   } catch (error) {
-    console.error('❌ Amazon SP-API package not available:', error.message);
+    logError('❌ Amazon SP-API package not available:', error.message);
     SellingPartnerApi = class RequiredAuthAmazonSPAPI {
       constructor() {
         throw new Error('Amazon SP-API package required. Please install: npm install amazon-sp-api and configure real credentials.');
@@ -31,6 +31,8 @@ async function importSellingPartnerApi() {
 }
 import { PrismaClient } from '@prisma/client';
 import { logInfo, logError, logWarn } from '../observability/structuredLogger.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const prisma = new PrismaClient();
 

@@ -23,6 +23,8 @@ import ErrorFallback from './components/ui/ErrorFallback';
 
 // Authentication Components
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { logDebug, logInfo, logWarn, logError } from './utils/logger';
+
 const ClerkSignIn = lazy(() => import('./pages/ClerkSignIn'));
 
 // Lazy-loaded Page Components - COMPREHENSIVE SET
@@ -116,8 +118,8 @@ const AuthenticatedApp = () => {
   const location = useLocation();
   
   // DEBUG: Add extensive logging
-  console.log('[AuthenticatedApp] Current location:', location.pathname);
-  console.log('[AuthenticatedApp] Auth state:', { isAuthenticated, isLoading, isSignedIn });
+  logDebug('[AuthenticatedApp] Current location:', location.pathname);
+  logDebug('[AuthenticatedApp] Auth state:', { isAuthenticated, isLoading, isSignedIn });
   
   // Compatibility with Clerk's isLoaded - bulletproof auth is always loaded
   const isLoaded = !isLoading;
@@ -139,17 +141,17 @@ const AuthenticatedApp = () => {
 
   // Show loading while auth is checking
   if (!isLoaded) {
-    console.log('[AuthenticatedApp] Auth still loading, showing PageLoader');
+    logDebug('[AuthenticatedApp] Auth still loading, showing PageLoader');
     return <PageLoader />;
   }
 
   // Check if it's a fullscreen page first
   const isFullscreenPage = ['/sign-in', '/sign-up', '/landing'].includes(location.pathname);
-  console.log('[AuthenticatedApp] Is fullscreen page?', isFullscreenPage, 'for path:', location.pathname);
+  logDebug('[AuthenticatedApp] Is fullscreen page?', isFullscreenPage, 'for path:', location.pathname);
 
   // Handle fullscreen pages (like sign-in) regardless of auth status
   if (isFullscreenPage) {
-    console.log('[AuthenticatedApp] Rendering fullscreen page routes');
+    logDebug('[AuthenticatedApp] Rendering fullscreen page routes');
     return (
       <Suspense 0>
         <Routes>
@@ -163,7 +165,7 @@ const AuthenticatedApp = () => {
 
   // Redirect to sign-in if not authenticated (only in Clerk mode)
   if (!isAuthenticated) {
-    console.log('[AuthenticatedApp] User not authenticated, redirecting to /sign-in');
+    logDebug('[AuthenticatedApp] User not authenticated, redirecting to /sign-in');
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
@@ -390,7 +392,7 @@ const AppComprehensive = () => {
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
       onError={(error, errorInfo) => {
-        console.error('Application error:', error, errorInfo);
+        logError('Application error:', error, errorInfo);
         // Send to error tracking service
         if (import.meta.env.VITE_SENTRY_DSN) {
           // Sentry error reporting would go here

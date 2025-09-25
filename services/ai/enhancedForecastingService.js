@@ -5,7 +5,7 @@
  */
 
 // TensorFlow.js Node.js bindings can fail in production - using simulation
-console.warn('TensorFlow.js disabled due to native binding issues in Railway deployment');
+logWarn('TensorFlow.js disabled due to native binding issues in Railway deployment');
 const tf = {
   sequential: () => ({
     add: () => {},
@@ -23,6 +23,8 @@ const tf = {
   tensor3d: (data) => ({ shape: [data.length, data[0].length, data[0][0].length] })
 };
 import pkg from 'arima';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 const { ARIMA } = pkg;
 // Prophet package not available in Node.js, using simulation
 // import Prophet from 'prophet';
@@ -59,7 +61,7 @@ class EnhancedForecastingService {
    * Based on 2025 research: 15% RMSE improvement over individual models
    */
   async buildETLSTMModel(inputShape, forecastHorizon = 30) {
-    console.log('Building Enhanced Transformer-LSTM Model...');
+    logDebug('Building Enhanced Transformer-LSTM Model...');
     
     const model = tf.sequential();
     
@@ -112,7 +114,7 @@ class EnhancedForecastingService {
     });
     
     this.models.etLstm = model;
-    console.log('ET-LSTM Model architecture built successfully');
+    logDebug('ET-LSTM Model architecture built successfully');
     return model;
   }
 
@@ -120,7 +122,7 @@ class EnhancedForecastingService {
    * Enhanced LSTM with attention mechanisms
    */
   async buildEnhancedLSTM(inputShape, forecastHorizon = 30) {
-    console.log('Building Enhanced LSTM with Attention...');
+    logDebug('Building Enhanced LSTM with Attention...');
     
     const model = tf.sequential();
     
@@ -165,7 +167,7 @@ class EnhancedForecastingService {
    * Transformer model for attention-based forecasting
    */
   async buildTransformerModel(inputShape, forecastHorizon = 30) {
-    console.log('Building Transformer Model...');
+    logDebug('Building Transformer Model...');
     
     const model = tf.sequential();
     
@@ -204,7 +206,7 @@ class EnhancedForecastingService {
    * Dynamic model weight adjustment based on recent performance
    */
   adjustModelWeights(recentErrors) {
-    console.log('Adjusting model weights based on performance...');
+    logDebug('Adjusting model weights based on performance...');
     
     const totalError = Object.values(recentErrors).reduce((sum, error) => sum + error, 0);
     
@@ -225,14 +227,14 @@ class EnhancedForecastingService {
       this.modelWeights[key] /= weightSum;
     });
     
-    console.log('Updated model weights:', this.modelWeights);
+    logDebug('Updated model weights:', this.modelWeights);
   }
 
   /**
    * Advanced data preprocessing with feature engineering
    */
   preprocessData(rawData, lookbackPeriod = 60) {
-    console.log('Preprocessing data with advanced feature engineering...');
+    logDebug('Preprocessing data with advanced feature engineering...');
     
     if (!rawData || rawData.length < lookbackPeriod) {
       throw new Error(`Insufficient data. Need at least ${lookbackPeriod} data points`);
@@ -311,7 +313,7 @@ class EnhancedForecastingService {
    * Train all models with enhanced data
    */
   async trainModels(historicalData, validationData) {
-    console.log('Training enhanced forecasting models...');
+    logDebug('Training enhanced forecasting models...');
     this.isTraining = true;
     
     try {
@@ -341,18 +343,18 @@ class EnhancedForecastingService {
       };
       
       // Train ET-LSTM (primary model)
-      console.log('Training ET-LSTM model...');
+      logDebug('Training ET-LSTM model...');
       await this.models.etLstm.fit(features, targets, {
         ...trainConfig,
         epochs: 150 // More epochs for primary model
       });
       
       // Train Enhanced LSTM
-      console.log('Training Enhanced LSTM model...');
+      logDebug('Training Enhanced LSTM model...');
       await this.models.lstm.fit(features, targets, trainConfig);
       
       // Train Transformer
-      console.log('Training Transformer model...');
+      logDebug('Training Transformer model...');
       await this.models.transformer.fit(features, targets, {
         ...trainConfig,
         epochs: 80 // Transformers can overfit quickly
@@ -367,10 +369,10 @@ class EnhancedForecastingService {
       }
       
       this.lastModelUpdate = new Date();
-      console.log('All models trained successfully');
+      logDebug('All models trained successfully');
       
     } catch (error) {
-      console.error('Error training models:', error);
+      logError('Error training models:', error);
       throw error;
     } finally {
       this.isTraining = false;
@@ -381,7 +383,7 @@ class EnhancedForecastingService {
    * Train traditional models (ARIMA, Prophet, Random Forest)
    */
   async trainTraditionalModels(historicalData) {
-    console.log('Training traditional forecasting models...');
+    logDebug('Training traditional forecasting models...');
     
     // Prepare data for traditional models
     const timeSeriesData = historicalData.map(item => ({
@@ -397,18 +399,18 @@ class EnhancedForecastingService {
         trained: true,
         data: timeSeriesData
       };
-      console.log('Prophet model simulation initialized');
+      logDebug('Prophet model simulation initialized');
     } catch (error) {
-      console.warn('Prophet simulation failed:', error.message);
+      logWarn('Prophet simulation failed:', error.message);
     }
     
     // Train ARIMA
     try {
       const values = historicalData.map(item => item.value);
       this.models.arima = new ARIMA(values, { p: 2, d: 1, q: 2 });
-      console.log('ARIMA model trained');
+      logDebug('ARIMA model trained');
     } catch (error) {
-      console.warn('ARIMA training failed:', error.message);
+      logWarn('ARIMA training failed:', error.message);
     }
     
     // Train Random Forest
@@ -427,9 +429,9 @@ class EnhancedForecastingService {
         maxDepth: 10,
         minNumSamples: 3
       });
-      console.log('Random Forest model trained');
+      logDebug('Random Forest model trained');
     } catch (error) {
-      console.warn('Random Forest training failed:', error.message);
+      logWarn('Random Forest training failed:', error.message);
     }
   }
 
@@ -437,7 +439,7 @@ class EnhancedForecastingService {
    * Generate ensemble forecast with confidence intervals
    */
   async generateEnsembleForecast(historicalData, forecastHorizon = 30) {
-    console.log(`Generating ensemble forecast for ${forecastHorizon} periods...`);
+    logDebug(`Generating ensemble forecast for ${forecastHorizon} periods...`);
     
     if (this.isTraining) {
       throw new Error('Models are currently training. Please wait.');
@@ -492,7 +494,7 @@ class EnhancedForecastingService {
       };
       
     } catch (error) {
-      console.error('Error generating ensemble forecast:', error);
+      logError('Error generating ensemble forecast:', error);
       throw error;
     }
   }
@@ -721,7 +723,7 @@ class EnhancedForecastingService {
    * Evaluate model performance and adjust weights
    */
   async evaluateAndAdjustWeights(validationData) {
-    console.log('Evaluating model performance on validation data...');
+    logDebug('Evaluating model performance on validation data...');
     
     const errors = {};
     const modelNames = Object.keys(this.models).filter(name => this.models[name]);
@@ -758,7 +760,7 @@ class EnhancedForecastingService {
         }
         
       } catch (error) {
-        console.warn(`Error evaluating ${modelName}:`, error.message);
+        logWarn(`Error evaluating ${modelName}:`, error.message);
         errors[modelName] = Infinity; // Penalize failed models
       }
     }
@@ -806,7 +808,7 @@ class EnhancedForecastingService {
    * Save models to disk
    */
   async saveModels(basePath = './models') {
-    console.log('Saving trained models...');
+    logDebug('Saving trained models...');
     
     try {
       // Save TensorFlow models
@@ -832,9 +834,9 @@ class EnhancedForecastingService {
         JSON.stringify(metadata, null, 2)
       );
       
-      console.log('Models saved successfully');
+      logDebug('Models saved successfully');
     } catch (error) {
-      console.error('Error saving models:', error);
+      logError('Error saving models:', error);
       throw error;
     }
   }
@@ -843,7 +845,7 @@ class EnhancedForecastingService {
    * Load models from disk
    */
   async loadModels(basePath = './models') {
-    console.log('Loading trained models...');
+    logDebug('Loading trained models...');
     
     try {
       // Load TensorFlow models
@@ -865,9 +867,9 @@ class EnhancedForecastingService {
         this.lastModelUpdate = metadata.lastModelUpdate ? new Date(metadata.lastModelUpdate) : null;
       }
       
-      console.log('Models loaded successfully');
+      logDebug('Models loaded successfully');
     } catch (error) {
-      console.warn('Error loading models (this is normal on first run):', error.message);
+      logWarn('Error loading models (this is normal on first run):', error.message);
     }
   }
 }

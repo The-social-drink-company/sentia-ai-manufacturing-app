@@ -4,6 +4,8 @@
  */
 
 import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 class PerformanceMonitor {
   constructor() {
@@ -53,7 +55,7 @@ class PerformanceMonitor {
   
   startMonitoring() {
     this.isMonitoring = true;
-    console.log('Performance Monitor: Started monitoring');
+    logDebug('Performance Monitor: Started monitoring');
     
     // Report metrics every 30 seconds
     this.reportInterval = setInterval(() => {
@@ -71,7 +73,7 @@ class PerformanceMonitor {
     this.observers.forEach(observer => observer.disconnect());
     this.observers.clear();
     
-    console.log('Performance Monitor: Stopped monitoring');
+    logDebug('Performance Monitor: Stopped monitoring');
   }
   
   setupWebVitals() {
@@ -181,7 +183,7 @@ class PerformanceMonitor {
         longTaskObserver.observe({ entryTypes: ['longtask'] });
         this.observers.set('longTask', longTaskObserver);
       } catch (error) {
-        console.warn('Performance Monitor: Long task observer not supported');
+        logWarn('Performance Monitor: Long task observer not supported');
       }
     }
   }
@@ -310,7 +312,7 @@ class PerformanceMonitor {
     
     // Log in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(`Performance Metric [${type}]:`, value);
+      logDebug(`Performance Metric [${type}]:`, value);
     }
   }
   
@@ -330,7 +332,7 @@ class PerformanceMonitor {
     
     // Log in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('Performance Report:', report);
+      logDebug('Performance Report:', report);
     }
   }
   
@@ -346,7 +348,7 @@ class PerformanceMonitor {
         body: JSON.stringify(data)
       });
     } catch (error) {
-      console.warn('Performance Monitor: Failed to send analytics:', error);
+      logWarn('Performance Monitor: Failed to send analytics:', error);
     }
   }
   

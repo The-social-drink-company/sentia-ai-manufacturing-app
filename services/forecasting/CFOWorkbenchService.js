@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 class CFOWorkbenchService {
   constructor(forecastingService, options = {}) {
     this.forecastingService = forecastingService;
@@ -110,7 +112,7 @@ class CFOWorkbenchService {
           regionDownside += downsideTotal;
 
         } catch (error) {
-          console.warn(`Failed to process series ${seriesId} for region ${region}:`, error.message);
+          logWarn(`Failed to process series ${seriesId} for region ${region}:`, error.message);
         }
       }
 
@@ -184,7 +186,7 @@ class CFOWorkbenchService {
             }
 
           } catch (error) {
-            console.warn(`Forecast failed for series ${seriesId}, region ${region}, horizon ${horizon}:`, error.message);
+            logWarn(`Forecast failed for series ${seriesId}, region ${region}, horizon ${horizon}:`, error.message);
           }
         }
 
@@ -247,7 +249,7 @@ class CFOWorkbenchService {
             processedSeries++;
 
           } catch (error) {
-            console.warn(`Scenario analysis failed for ${seriesId}:`, error.message);
+            logWarn(`Scenario analysis failed for ${seriesId}:`, error.message);
           }
         }
 

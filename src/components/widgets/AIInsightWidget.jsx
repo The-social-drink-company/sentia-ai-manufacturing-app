@@ -10,6 +10,8 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const AIInsightWidget = ({ className = '' }) => {
   const [selectedInsight, setSelectedInsight] = useState(null);
@@ -33,7 +35,7 @@ const AIInsightWidget = ({ className = '' }) => {
         if (!response.ok) throw new Error('Failed to fetch AI insights');
         return await response.json();
       } catch (error) {
-        console.error('AI Insights fetch error:', error);
+        logError('AI Insights fetch error:', error);
         return { insights: [], predictions: [] };
       }
     },

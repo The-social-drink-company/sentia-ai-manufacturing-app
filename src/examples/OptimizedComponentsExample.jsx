@@ -140,7 +140,7 @@ const OptimizedDashboardExample = () => {
               <OptimizedFactoryTwin
                 productionData={sampleMachineData}
                 onMachineClick={(machine) => {
-                  console.log('Machine clicked:', machine);
+                  logDebug('Machine clicked:', machine);
                 }}
                 enable3D={true}
                 enableProgressive={true}
@@ -204,6 +204,8 @@ import { LineChart } from 'recharts';
 
 // After
 import { DynamicChart } from '../components/charts/ChartLibraryOptimized.js';`}
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
               </pre>
             </div>
             

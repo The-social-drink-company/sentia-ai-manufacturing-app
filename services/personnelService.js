@@ -1,4 +1,6 @@
 import { prisma } from '../lib/prisma.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 /**
  * Personnel Service - Manages staff and personnel data
@@ -58,7 +60,7 @@ class PersonnelService {
 
       return transformedPersonnel;
     } catch (error) {
-      console.error('Error fetching personnel:', error);
+      logError('Error fetching personnel:', error);
       return [];
     }
   }
@@ -116,7 +118,7 @@ class PersonnelService {
 
       return transformedPersonnel;
     } catch (error) {
-      console.error('Error fetching personnel by role:', error);
+      logError('Error fetching personnel by role:', error);
       return [];
     }
   }
@@ -168,7 +170,7 @@ class PersonnelService {
 
       return transformedPersonnel;
     } catch (error) {
-      console.error('Error fetching personnel by department:', error);
+      logError('Error fetching personnel by department:', error);
       return [];
     }
   }
@@ -239,7 +241,7 @@ class PersonnelService {
         display_name: person.display_name || this.formatFullName(person)
       };
     } catch (error) {
-      console.error('Error fetching personnel by ID:', error);
+      logError('Error fetching personnel by ID:', error);
       return null;
     }
   }
@@ -284,7 +286,7 @@ class PersonnelService {
         display_name: person.display_name || this.formatFullName(person)
       };
     } catch (error) {
-      console.error('Error creating personnel:', error);
+      logError('Error creating personnel:', error);
       throw error;
     }
   }
@@ -318,7 +320,7 @@ class PersonnelService {
         display_name: person.display_name || this.formatFullName(person)
       };
     } catch (error) {
-      console.error('Error updating personnel:', error);
+      logError('Error updating personnel:', error);
       throw error;
     }
   }
@@ -341,7 +343,7 @@ class PersonnelService {
 
       return true;
     } catch (error) {
-      console.error('Error deactivating personnel:', error);
+      logError('Error deactivating personnel:', error);
       throw error;
     }
   }
@@ -439,7 +441,7 @@ class PersonnelService {
 
       return departmentList;
     } catch (error) {
-      console.error('Error fetching departments:', error);
+      logError('Error fetching departments:', error);
       return ['Production', 'Quality Control', 'Maintenance', 'Administration'];
     }
   }
@@ -479,7 +481,7 @@ class PersonnelService {
 
       return roleList;
     } catch (error) {
-      console.error('Error fetching roles:', error);
+      logError('Error fetching roles:', error);
       return ['admin', 'manager', 'operator', 'viewer'];
     }
   }

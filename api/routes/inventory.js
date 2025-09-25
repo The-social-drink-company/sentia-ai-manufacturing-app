@@ -5,6 +5,8 @@ import { requireAuth, requireRole, requireManager } from '../middleware/clerkAut
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import {
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
   inventoryLevelSchema,
   inventoryOptimizationSchema,
   inventoryMovementSchema,
@@ -32,11 +34,11 @@ router.get('/levels',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Inventory levels');
+      logDebug('[Cache Hit] Inventory levels');
       return res.json(cached);
     }
 
-    console.log('[Cache Miss] Inventory levels - fetching from database');
+    logDebug('[Cache Miss] Inventory levels - fetching from database');
 
     // Build where clause
     const where = {};

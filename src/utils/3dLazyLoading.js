@@ -6,6 +6,8 @@
 
 import React, { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
+import { logDebug, logInfo, logWarn, logError } from 'logger';
+
 
 // 3D-specific loading states
 const ThreeJSLoadingSpinner = () => (
@@ -192,7 +194,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('3D Component Error:', error, errorInfo);
+    logError('3D Component Error:', error, errorInfo);
     this.props.onError?.(error);
   }
 

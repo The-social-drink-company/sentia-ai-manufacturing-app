@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 /**
  * React Fallback System
  * Provides fallback implementations for React methods when they're not available
@@ -89,12 +91,12 @@ if (typeof window !== 'undefined') {
   try {
     // If React is not available, use fallback
     if (!window.React) {
-      console.warn('[React Fallback] React not available, using fallback implementation');
+      logWarn('[React Fallback] React not available, using fallback implementation');
       window.React = ReactFallback;
     } else {
       // If React is available but createContext is missing, patch it
       if (!window.React.createContext) {
-        console.warn('[React Fallback] React.createContext missing, patching with fallback');
+        logWarn('[React Fallback] React.createContext missing, patching with fallback');
         window.React.createContext = ReactFallback.createContext;
       }
       
@@ -117,7 +119,7 @@ if (typeof window !== 'undefined') {
     }
     
   } catch (error) {
-    console.error('[React Fallback] Error setting up React fallback:', error);
+    logError('[React Fallback] Error setting up React fallback:', error);
     // Force set React even if there's an error
     window.React = ReactFallback;
   }

@@ -27,6 +27,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Line, Bar } from 'react-chartjs-2';
 import { CLIENT_REQUIREMENTS } from '../config/clientRequirements';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const CashRunway = () => {
   const navigate = useNavigate();
@@ -193,7 +195,7 @@ const CashRunway = () => {
           }
         }
       } catch (error) {
-        console.error('Failed to load cash runway data:', error);
+        logError('Failed to load cash runway data:', error);
       } finally {
         setLoading(false);
       }

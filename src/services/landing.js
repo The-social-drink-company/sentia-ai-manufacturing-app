@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 // src/services/landing.js
 export const landingAPI = {
   // Check MCP connection status
@@ -6,7 +8,7 @@ export const landingAPI = {
       const response = await fetch('/api/mcp/status');
       return await response.json();
     } catch (error) {
-      console.error('MCP status check failed:', error);
+      logError('MCP status check failed:', error);
       return { connected: false, error: error.message };
     }
   },
@@ -17,7 +19,7 @@ export const landingAPI = {
       const response = await fetch('/api/ai/capabilities');
       return await response.json();
     } catch (error) {
-      console.error('AI capabilities fetch failed:', error);
+      logError('AI capabilities fetch failed:', error);
       return { 
         capabilities: [
           {
@@ -53,7 +55,7 @@ export const landingAPI = {
       });
       return await response.json();
     } catch (error) {
-      console.error('Demo scheduling failed:', error);
+      logError('Demo scheduling failed:', error);
       return { success: false, error: error.message };
     }
   },
@@ -64,7 +66,7 @@ export const landingAPI = {
       const response = await fetch('/api/testimonials');
       return await response.json();
     } catch (error) {
-      console.error('Testimonials fetch failed:', error);
+      logError('Testimonials fetch failed:', error);
       return { testimonials: [] };
     }
   },
@@ -75,7 +77,7 @@ export const landingAPI = {
       const response = await fetch('/api/case-studies');
       return await response.json();
     } catch (error) {
-      console.error('Case studies fetch failed:', error);
+      logError('Case studies fetch failed:', error);
       return { caseStudies: [] };
     }
   }

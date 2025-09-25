@@ -11,6 +11,8 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from '@clerk/clerk-react';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Authentication context that always has a value
 const AuthContext = createContext(null);
@@ -123,14 +125,14 @@ export function BulletproofAuthProvider({ children }) {
 
     // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      console.warn('Authentication timeout - switching to fallback mode');
+      logWarn('Authentication timeout - switching to fallback mode');
       setAuthMode('fallback');
     }, 3000); // 3 second timeout
 
     // Check if we should use Clerk or fallback
     if (isValidKey) {
       // Force Clerk mode for valid keys
-      console.info('Valid Clerk key detected, initializing Clerk...');
+      logInfo('Valid Clerk key detected, initializing Clerk...');
       console.info('Key info:', {
         keyStart: clerkKey?.substring(0, 30) + '...',
         keyLength: clerkKey?.length,
@@ -141,7 +143,7 @@ export function BulletproofAuthProvider({ children }) {
       setAuthMode('clerk');
     } else {
       clearTimeout(timeout);
-      console.warn('Invalid Clerk key - using fallback mode');
+      logWarn('Invalid Clerk key - using fallback mode');
       console.info('Clerk key status:', {
         hasKey: !!clerkKey,
         keyStart: clerkKey?.substring(0, 20),
@@ -192,7 +194,7 @@ export function BulletproofAuthProvider({ children }) {
         </ClerkProvider>
       );
     } catch (err) {
-      console.error('Clerk initialization error:', err);
+      logError('Clerk initialization error:', err);
       setAuthMode('fallback');
     }
   }

@@ -15,6 +15,8 @@ import { useAI } from '../ai';
 import { useRealtime } from '../realtime/RealtimeProvider';
 import { useTheme } from '../theming';
 import { LineChart } from '../charts';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 export const ManufacturingIntelligence = ({
   className = '',
@@ -195,7 +197,7 @@ export const ManufacturingIntelligence = ({
       setCostAnalysis(analysis.costAnalysis || {});
 
     } catch (error) {
-      console.error('Intelligence analysis failed:', error);
+      logError('Intelligence analysis failed:', error);
     } finally {
       setIsAnalyzing(false);
     }

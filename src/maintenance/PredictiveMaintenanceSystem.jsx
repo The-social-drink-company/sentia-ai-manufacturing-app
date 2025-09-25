@@ -14,6 +14,8 @@ import {
 import { useAI } from '../ai';
 import { useRealtime } from '../realtime/RealtimeProvider';
 import { useTheme } from '../theming';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 export const PredictiveMaintenanceSystem = ({
   className = '',
@@ -200,7 +202,7 @@ export const PredictiveMaintenanceSystem = ({
       generateMaintenanceSchedule(predictions.predictions || []);
 
     } catch (error) {
-      console.error('Predictive analysis failed:', error);
+      logError('Predictive analysis failed:', error);
     } finally {
       setIsAnalyzing(false);
     }

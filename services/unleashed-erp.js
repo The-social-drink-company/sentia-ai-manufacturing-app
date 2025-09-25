@@ -1,6 +1,8 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import redisCacheService from './redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class UnleashedERPService {
   constructor() {
@@ -68,7 +70,7 @@ class UnleashedERPService {
 
   async connect() {
     try {
-      console.log('UNLEASHED ERP: Initializing connection...');
+      logDebug('UNLEASHED ERP: Initializing connection...');
 
       if (!this.apiId || !this.apiKey) {
         throw new Error('Missing Unleashed ERP API credentials');
@@ -81,7 +83,7 @@ class UnleashedERPService {
 
       if (response.status === 200) {
         this.isConnected = true;
-        console.log('UNLEASHED ERP: Connected successfully');
+        logDebug('UNLEASHED ERP: Connected successfully');
         await this.startSyncScheduler();
         return true;
       } else {
@@ -89,7 +91,7 @@ class UnleashedERPService {
       }
 
     } catch (error) {
-      console.error('UNLEASHED ERP: Connection failed:', error.message);
+      logError('UNLEASHED ERP: Connection failed:', error.message);
       this.isConnected = false;
       return false;
     }
@@ -100,7 +102,7 @@ class UnleashedERPService {
       clearInterval(this.syncInterval);
     }
 
-    console.log(`UNLEASHED ERP: Starting sync scheduler (every ${this.syncFrequency / 1000 / 60} minutes)`);
+    logDebug(`UNLEASHED ERP: Starting sync scheduler (every ${this.syncFrequency / 1000 / 60} minutes)`);
     
     // Initial sync
     await this.syncAllData();
@@ -110,40 +112,40 @@ class UnleashedERPService {
       try {
         await this.syncAllData();
       } catch (error) {
-        console.error('UNLEASHED ERP: Scheduled sync failed:', error);
+        logError('UNLEASHED ERP: Scheduled sync failed:', error);
       }
     }, this.syncFrequency);
   }
 
   async syncAllData() {
     if (!this.isConnected) {
-      console.warn('UNLEASHED ERP: Not connected, skipping sync');
+      logWarn('UNLEASHED ERP: Not connected, skipping sync');
       return;
     }
 
-    console.log('UNLEASHED ERP: Starting comprehensive data sync...');
+    logDebug('UNLEASHED ERP: Starting comprehensive data sync...');
     const syncResults = {};
 
     try {
       // Sync production data
       syncResults.production = await this.syncProductionData();
-      console.log('UNLEASHED ERP: Production data synced');
+      logDebug('UNLEASHED ERP: Production data synced');
 
       // Sync inventory data
       syncResults.inventory = await this.syncInventoryData();
-      console.log('UNLEASHED ERP: Inventory data synced');
+      logDebug('UNLEASHED ERP: Inventory data synced');
 
       // Sync sales orders
       syncResults.salesOrders = await this.syncSalesOrderData();
-      console.log('UNLEASHED ERP: Sales orders synced');
+      logDebug('UNLEASHED ERP: Sales orders synced');
 
       // Sync purchase orders
       syncResults.purchaseOrders = await this.syncPurchaseOrderData();
-      console.log('UNLEASHED ERP: Purchase orders synced');
+      logDebug('UNLEASHED ERP: Purchase orders synced');
 
       // Sync resources/assets
       syncResults.resources = await this.syncResourceData();
-      console.log('UNLEASHED ERP: Resources synced');
+      logDebug('UNLEASHED ERP: Resources synced');
 
       // Generate consolidated manufacturing data
       const consolidatedData = this.consolidateManufacturingData(syncResults);
@@ -152,11 +154,11 @@ class UnleashedERPService {
       await redisCacheService.set('unleashed:consolidated_data', consolidatedData, 1800); // 30 min cache
       await redisCacheService.set('unleashed:last_sync', new Date().toISOString(), 3600);
 
-      console.log('UNLEASHED ERP: Sync completed successfully');
+      logDebug('UNLEASHED ERP: Sync completed successfully');
       return consolidatedData;
 
     } catch (error) {
-      console.error('UNLEASHED ERP: Sync failed:', error);
+      logError('UNLEASHED ERP: Sync failed:', error);
       throw error;
     }
   }
@@ -219,7 +221,7 @@ class UnleashedERPService {
       };
 
     } catch (error) {
-      console.error('UNLEASHED ERP: Production sync failed:', error);
+      logError('UNLEASHED ERP: Production sync failed:', error);
       return {
         metrics: { activeBatches: 0, completedToday: 0, qualityScore: 0, utilizationRate: 0 },
         schedule: [],
@@ -273,7 +275,7 @@ class UnleashedERPService {
       };
 
     } catch (error) {
-      console.error('UNLEASHED ERP: Inventory sync failed:', error);
+      logError('UNLEASHED ERP: Inventory sync failed:', error);
       return {
         metrics: { totalItems: 0, totalValue: 0, lowStockItems: 0, zeroStockItems: 0 },
         alerts: []
@@ -317,7 +319,7 @@ class UnleashedERPService {
       };
 
     } catch (error) {
-      console.error('UNLEASHED ERP: Sales order sync failed:', error);
+      logError('UNLEASHED ERP: Sales order sync failed:', error);
       return {
         metrics: { totalOrders: 0, totalValue: 0, pendingOrders: 0, fulfilledOrders: 0 }
       };
@@ -349,7 +351,7 @@ class UnleashedERPService {
       };
 
     } catch (error) {
-      console.error('UNLEASHED ERP: Purchase order sync failed:', error);
+      logError('UNLEASHED ERP: Purchase order sync failed:', error);
       return {
         metrics: { totalOrders: 0, totalValue: 0, pendingOrders: 0 }
       };
@@ -407,11 +409,11 @@ class UnleashedERPService {
       }
 
       // If no cache, trigger sync
-      console.log('UNLEASHED ERP: No cached data, triggering sync...');
+      logDebug('UNLEASHED ERP: No cached data, triggering sync...');
       return await this.syncAllData();
       
     } catch (error) {
-      console.error('UNLEASHED ERP: Error getting consolidated data:', error);
+      logError('UNLEASHED ERP: Error getting consolidated data:', error);
       return {
         error: error.message,
         production: {
@@ -479,9 +481,9 @@ class UnleashedERPService {
       }
 
       this.isConnected = false;
-      console.log('UNLEASHED ERP: Disconnected successfully');
+      logDebug('UNLEASHED ERP: Disconnected successfully');
     } catch (error) {
-      console.error('UNLEASHED ERP: Disconnect error:', error);
+      logError('UNLEASHED ERP: Disconnect error:', error);
     }
   }
 }

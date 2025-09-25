@@ -4,6 +4,8 @@
  */
 
 import { memo, useMemo, useCallback, useRef, useEffect } from 'react';
+import { logDebug, logInfo, logWarn, logError } from 'logger';
+
 
 // Performance monitoring utilities
 export class PerformanceMonitor {
@@ -90,7 +92,7 @@ export class PerformanceMonitor {
 
     // Log slow performance
     if (isSlowPerformance) {
-      console.warn(`Slow performance detected: ${name} took ${duration.toFixed(2)}ms (threshold: ${threshold}ms)`);
+      logWarn(`Slow performance detected: ${name} took ${duration.toFixed(2)}ms (threshold: ${threshold}ms)`);
     }
 
     // Send to analytics if configured
@@ -159,7 +161,7 @@ export class MemoryOptimizer {
       };
 
       if (usage.used > this.memoryThreshold) {
-        console.warn('High memory usage detected:', usage);
+        logWarn('High memory usage detected:', usage);
         this.triggerCleanup();
       }
 
@@ -179,7 +181,7 @@ export class MemoryOptimizer {
       try {
         task();
       } catch (error) {
-        console.error('Cleanup task failed:', error);
+        logError('Cleanup task failed:', error);
       }
     });
     
@@ -332,7 +334,7 @@ export class BundleOptimizer {
           })
           .catch(err => {
             setError(err);
-            console.error('Failed to load component:', err);
+            logError('Failed to load component:', err);
           })
           .finally(() => {
             setLoading(false);

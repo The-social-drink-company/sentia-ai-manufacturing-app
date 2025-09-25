@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 class IndustryBenchmarkingService {
   constructor() {
@@ -24,7 +26,7 @@ class IndustryBenchmarkingService {
         apiKey: process.env.ANTHROPIC_API_KEY,
       });
     } catch (error) {
-      console.warn('Anthropic SDK not available, using OpenAI only');
+      logWarn('Anthropic SDK not available, using OpenAI only');
     }
   }
 
@@ -61,7 +63,7 @@ class IndustryBenchmarkingService {
       return benchmarks;
       
     } catch (error) {
-      console.error('Industry benchmarking error:', error);
+      logError('Industry benchmarking error:', error);
       return this.getFallbackBenchmarks(params);
     }
   }
@@ -207,7 +209,7 @@ Focus on actionable executive insights with specific numerical benchmarks.`;
         generatedAt: new Date().toISOString()
       };
     } catch (error) {
-      console.error('Error parsing OpenAI response:', error);
+      logError('Error parsing OpenAI response:', error);
       return this.getDefaultBenchmarks();
     }
   }
@@ -236,7 +238,7 @@ Focus on actionable executive insights with specific numerical benchmarks.`;
         generatedAt: new Date().toISOString()
       };
     } catch (error) {
-      console.error('Error parsing Anthropic response:', error);
+      logError('Error parsing Anthropic response:', error);
       return this.getDefaultBenchmarks();
     }
   }

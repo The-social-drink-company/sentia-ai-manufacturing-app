@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
   BanknotesIcon,
   CubeIcon,
   PresentationChartLineIcon,
@@ -84,7 +86,7 @@ const WorldClassEnterpriseDashboard = () => {
         const result = await response.json();
         setDashboardData(result);
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
+        logError('Failed to fetch dashboard data:', error);
         // Fallback data
         setDashboardData({
           kpis: [

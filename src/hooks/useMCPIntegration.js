@@ -121,9 +121,12 @@ export const useMCPIntegration = () => {
       // Return fallback forecast data
       return {
         forecast: {
-          predictions: [] => ({
+          predictions: Array.from({ length: 7 }, (_, i) => ({
             date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            value: 1000 + 0;
+            value: 1000 + Math.random() * 200
+          }))
+        }
+      };
     }
   }, [executeTool]);
 

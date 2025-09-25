@@ -1,4 +1,4 @@
-﻿import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
@@ -7,7 +7,7 @@ export default defineConfig({
     include: ['tests/unit/**/*.test.jsx'],
     exclude: ['legacy/**'],
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.js'],
+    setupFiles: ['./tests/setup.cjs'],
     globals: true,
     // Memory optimization settings
     maxWorkers: 1,

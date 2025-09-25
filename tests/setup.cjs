@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+﻿import '@testing-library/jest-dom'
 import React from 'react'
 import { vi, beforeEach } from 'vitest'
 
@@ -25,6 +25,7 @@ vi.mock('@clerk/clerk-react', () => ({
   })),
   ClerkProvider: ({ children }) => children,
   SignIn: () => '<div>Sign In</div>',
+  useClerk: vi.fn(() => ({ openSignIn: vi.fn(), closeSignIn: vi.fn() })),
   SignUp: () => '<div>Sign Up</div>'
 }))
 

@@ -26,16 +26,6 @@ if (import.meta.env.PROD && !API_BASE) {
   throw new Error('CRITICAL: API_BASE_URL not configured. Real data service requires API endpoint.');
 }
 
-// Logging utilities (compatible with existing codebase)
-  if (import.meta.env.DEV) logDebug(`[INFO] ${message}`, data);
-};
-
-  logError(`[ERROR] ${message}`, error);
-};
-
-  if (import.meta.env.DEV) logWarn(`[WARN] ${message}`, data);
-};
-
 // Request configuration with authentication
 const getRequestConfig = async () => {
   try {
@@ -722,3 +712,4 @@ export const connectToRealTimeData = (onUpdate) => {
 
 // Export service instance
 export default realDataService;
+

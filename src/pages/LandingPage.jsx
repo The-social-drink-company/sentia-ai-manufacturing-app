@@ -165,6 +165,7 @@ export default function LandingPage() {
   const workingCapitalScore = workingCapital?.liquidityScore
   const runwayDays = workingCapital?.runwayDays
   const alertCount = overview?.summary?.alerts
+  const forecastConfidence = formatConfidence(forecast?.confidence)
 
   const summaryCards = useMemo(
     () => [
@@ -198,7 +199,7 @@ export default function LandingPage() {
       {
         id: 'inventory-levels',
         label: 'Inventory Units On Hand',
-        value: typeof totalInventoryQuantity === 'number' && totalInventoryQuantity > 0 ? formatNumber(totalInventoryQuantity) : null,
+        value: typeof totalInventoryQuantity === 'number' ? formatNumber(totalInventoryQuantity) : null,
         helper: `SKUs tracked: ${inventoryLevels.length}`,
         icon: CubeIcon
       },
@@ -209,7 +210,7 @@ export default function LandingPage() {
           typeof forecast?.demand === 'number'
             ? formatNumber(forecast.demand)
             : null,
-        helper: formatConfidence(forecast?.confidence) ? `Confidence ${formatConfidence(forecast.confidence)}` : null,
+        helper: forecastConfidence ? `Confidence ${forecastConfidence}` : null,
         icon: ChartBarIcon
       },
       {
@@ -220,7 +221,7 @@ export default function LandingPage() {
         icon: UserGroupIcon
       }
     ],
-    [alertCount, forecast, productionHealth, productionJobs, productionMetrics, totalInventoryQuantity, inventoryLevels.length, workingCapitalScore, runwayDays]
+    [alertCount, forecast, forecastConfidence, inventoryLevels.length, productionHealth, productionJobs, productionMetrics, totalInventoryQuantity, workingCapitalScore, runwayDays]
   )
 
   const systemIndicators = useMemo(() => {
@@ -273,14 +274,14 @@ export default function LandingPage() {
   }, [systemStatus])
 
   const reportEntries = useMemo(() => {
-    return reports.map((report) => ({
-      id: report.id || report.slug || report.name || `report-${Math.random().toString(36).slice(2)}`,
+    return reports.map((report, index) => ({
+      id: report.id || report.slug || report.name || `report-${index}`,
       generatedAt: report.generatedAt || report.generated_at || report.createdAt || null
     }))
   }, [reports])
 
   const heroHeading = 'Operational Command Center'
-  const heroDescription = 'Unified visibility across finance, production, and supply chain activities — sourced directly from live services.'
+  const heroDescription = 'Unified visibility across finance, production, and supply chain activities sourced directly from live services.'
 
   return (
     <div className='min-h-screen bg-slate-950 text-slate-50'>
@@ -436,8 +437,8 @@ export default function LandingPage() {
                   {inventoryLevels.length === 0 ? (
                     <p className='text-slate-400'>No inventory records returned.</p>
                   ) : (
-                    inventoryLevels.map((level) => (
-                      <div key={level.sku || level.id} className='flex items-center justify-between rounded-lg border border-slate-800/80 px-3 py-2'>
+                    inventoryLevels.map((level, index) => (
+                      <div key={level.sku || level.id || `inventory-${index}`} className='flex items-center justify-between rounded-lg border border-slate-800/80 px-3 py-2'>
                         <span className='font-medium text-slate-200'>{level.sku || level.id || 'SKU'}</span>
                         <span className='font-semibold text-white'>
                           {typeof level.quantity === 'number' ? formatNumber(level.quantity) : 'N/A'}
@@ -492,7 +493,7 @@ export default function LandingPage() {
                   <div>
                     <p className='text-xs uppercase tracking-wider text-slate-500'>Confidence</p>
                     <p className='text-2xl font-semibold text-white'>
-                      {formatConfidence(forecast?.confidence) || 'Not available'}
+                      {forecastConfidence || 'Not available'}
                     </p>
                   </div>
                   <div>
@@ -516,3 +517,4 @@ export default function LandingPage() {
     </div>
   )
 }
+

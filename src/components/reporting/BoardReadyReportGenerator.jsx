@@ -35,6 +35,8 @@ import {
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell } from 'recharts';
 import { format, addDays, parseISO } from 'date-fns';
 import MCPIntegratedAIService from '../../services/ai/MCPIntegratedAIService';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const BoardReadyReportGenerator = ({ dashboardData, companyInfo }) => {
   const { user, isLoaded } = useAuth();
@@ -114,7 +116,7 @@ const BoardReadyReportGenerator = ({ dashboardData, companyInfo }) => {
       setGeneratedReport(enhancedReport);
       
     } catch (error) {
-      console.error('Report generation error:', error);
+      logError('Report generation error:', error);
       // Generate fallback report
       const fallbackReport = generateFallbackReport();
       setGeneratedReport(fallbackReport);
@@ -432,14 +434,14 @@ const BoardReadyReportGenerator = ({ dashboardData, companyInfo }) => {
   // Export report as PDF
   const exportToPDF = () => {
     // This would integrate with a PDF generation library
-    console.log('Exporting to PDF...', generatedReport);
+    logDebug('Exporting to PDF...', generatedReport);
     alert('PDF export functionality would be implemented here');
   };
 
   // Export report as PowerPoint
   const exportToPowerPoint = () => {
     // This would integrate with a PowerPoint generation library
-    console.log('Exporting to PowerPoint...', generatedReport);
+    logDebug('Exporting to PowerPoint...', generatedReport);
     alert('PowerPoint export functionality would be implemented here');
   };
 

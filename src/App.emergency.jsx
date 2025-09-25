@@ -24,6 +24,8 @@ import {
 
 // Core components
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
+import { logDebug, logInfo, logWarn, logError } from './utils/logger';
+
 
 // Lazy-loaded components
 const Dashboard = lazy(() => import('./components/Dashboard'));
@@ -196,7 +198,7 @@ const EmergencyApp = () => {
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
       onError={(error, errorInfo) => {
-        console.error('Application error:', error, errorInfo);
+        logError('Application error:', error, errorInfo);
       }}
     >
       <EmergencyClerkProvider>

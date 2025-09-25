@@ -14,6 +14,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser, useClerk as useClerkHook } from '@clerk/clerk-react';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 // ============================================================================
 // CONFIGURATION VALIDATION
@@ -163,8 +165,8 @@ class AuthErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('[AuthErrorBoundary] Caught error:', error);
-    console.error('[AuthErrorBoundary] Error info:', errorInfo);
+    logError('[AuthErrorBoundary] Caught error:', error);
+    logError('[AuthErrorBoundary] Error info:', errorInfo);
 
     // Log to monitoring
     if (window.gtag) {
@@ -181,7 +183,7 @@ class AuthErrorBoundary extends React.Component {
 
     // Switch to fallback after max retries
     if (this.state.errorCount >= this.maxRetries) {
-      console.warn('[AuthErrorBoundary] Max retries reached, switching to fallback mode');
+      logWarn('[AuthErrorBoundary] Max retries reached, switching to fallback mode');
       this.setState({ fallbackMode: true, hasError: false });
     }
   }
@@ -349,7 +351,7 @@ export function UnbreakableAuthProvider({ children }) {
     setValidationReport(report);
 
     // Log validation results
-    console.log('[UnbreakableAuth] Configuration validation:', report);
+    logDebug('[UnbreakableAuth] Configuration validation:', report);
 
     // Determine mode based on validation
     if (isValid) {
@@ -361,7 +363,7 @@ export function UnbreakableAuthProvider({ children }) {
       // Subscribe to health changes
       const unsubscribe = healthMonitor.subscribe((status) => {
         if (!status.healthy && mode === 'clerk') {
-          console.warn('[UnbreakableAuth] Health check failed, switching to fallback');
+          logWarn('[UnbreakableAuth] Health check failed, switching to fallback');
           setMode('fallback');
         }
       });
@@ -371,7 +373,7 @@ export function UnbreakableAuthProvider({ children }) {
         healthMonitor.stop();
       };
     } else {
-      console.warn('[UnbreakableAuth] Validation failed, using fallback mode');
+      logWarn('[UnbreakableAuth] Validation failed, using fallback mode');
       setMode('fallback');
     }
   }, []);

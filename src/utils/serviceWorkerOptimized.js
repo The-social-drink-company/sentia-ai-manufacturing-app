@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from 'logger';
+
 /**
  * Optimized Service Worker for Performance Enhancement
  * Implements intelligent caching, background sync, and offline support
@@ -74,7 +76,7 @@ const performanceMetrics = {
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
+  logDebug('Service Worker: Installing...');
   
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
@@ -85,7 +87,7 @@ self.addEventListener('install', (event) => {
         '/static/css/main.css',
         '/manifest.json'
       ]).catch((error) => {
-        console.warn('Service Worker: Failed to cache some static assets:', error);
+        logWarn('Service Worker: Failed to cache some static assets:', error);
       });
     })
   );
@@ -96,7 +98,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
+  logDebug('Service Worker: Activating...');
   
   event.waitUntil(
     Promise.all([
@@ -107,7 +109,7 @@ self.addEventListener('activate', (event) => {
             if (cacheName !== STATIC_CACHE && 
                 cacheName !== DYNAMIC_CACHE && 
                 cacheName !== API_CACHE) {
-              console.log('Service Worker: Deleting old cache:', cacheName);
+              logDebug('Service Worker: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -161,7 +163,7 @@ async function handleRequest(request, strategy) {
         return await networkFirst(request);
     }
   } catch (error) {
-    console.error('Service Worker: Request failed:', error);
+    logError('Service Worker: Request failed:', error);
     return await getOfflineFallback(request);
   }
 }
@@ -289,7 +291,7 @@ async function getOfflineFallback(request) {
 
 // Background sync for offline data
 self.addEventListener('sync', (event) => {
-  console.log('Service Worker: Background sync triggered:', event.tag);
+  logDebug('Service Worker: Background sync triggered:', event.tag);
   
   if (event.tag === 'background-sync') {
     event.waitUntil(doBackgroundSync());
@@ -313,11 +315,11 @@ async function doBackgroundSync() {
         // Remove from offline storage after successful sync
         await removeOfflineData(data.id);
       } catch (error) {
-        console.error('Service Worker: Failed to sync offline data:', error);
+        logError('Service Worker: Failed to sync offline data:', error);
       }
     }
   } catch (error) {
-    console.error('Service Worker: Background sync failed:', error);
+    logError('Service Worker: Background sync failed:', error);
   }
 }
 
@@ -381,12 +383,12 @@ async function getOfflineData() {
 
 async function removeOfflineData(id) {
   // Implementation depends on your offline storage strategy
-  console.log('Removing offline data:', id);
+  logDebug('Removing offline data:', id);
 }
 
 // Performance monitoring
 setInterval(() => {
-  console.log('Service Worker Performance:', performanceMetrics);
+  logDebug('Service Worker Performance:', performanceMetrics);
 }, 60000); // Log every minute
 
-console.log('Service Worker: Loaded successfully');
+logDebug('Service Worker: Loaded successfully');

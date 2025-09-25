@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 /**
  * CashRunwayEngine - Complete cash flow calculations engine
  * Version: 2.0.0 - September 24, 2025 Feature Addition
@@ -861,11 +863,11 @@ class CashRunwayEngine {
   validateInputs(inputs) {
     for (const [key, value] of Object.entries(inputs)) {
       if (value === null || value === undefined) {
-        console.error(`Invalid input: ${key} is null or undefined`);
+        logError(`Invalid input: ${key} is null or undefined`);
         return false;
       }
       if (typeof value === 'number' && isNaN(value)) {
-        console.error(`Invalid input: ${key} is NaN`);
+        logError(`Invalid input: ${key} is NaN`);
         return false;
       }
     }

@@ -4,6 +4,8 @@
  */
 
 import CryptoJS from 'crypto-js';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Security configuration
 const SECURITY_CONFIG = {
@@ -57,7 +59,7 @@ export class DataEncryption {
         timestamp: Date.now()
       };
     } catch (error) {
-      console.error('Encryption failed:', error);
+      logError('Encryption failed:', error);
       throw new Error('Data encryption failed');
     }
   }
@@ -80,7 +82,7 @@ export class DataEncryption {
 
       return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
     } catch (error) {
-      console.error('Decryption failed:', error);
+      logError('Decryption failed:', error);
       throw new Error('Data decryption failed');
     }
   }
@@ -100,7 +102,7 @@ export class DataEncryption {
       const encryptedData = JSON.parse(stored);
       return this.decrypt(encryptedData);
     } catch (error) {
-      console.error('Failed to decrypt local storage data:', error);
+      logError('Failed to decrypt local storage data:', error);
       localStorage.removeItem(key); // Remove corrupted data
       return null;
     }
@@ -196,7 +198,7 @@ export class SessionSecurity {
       method: 'POST',
       credentials: 'include'
     }).catch(error => {
-      console.error('Failed to renew session:', error);
+      logError('Failed to renew session:', error);
     });
   }
 
@@ -416,7 +418,7 @@ export class SecurityAudit {
       this.sendToServer(event);
     }
 
-    console.log(`Security Event [${severity.toUpperCase()}]:`, event);
+    logDebug(`Security Event [${severity.toUpperCase()}]:`, event);
   }
 
   // Generate unique ID
@@ -436,7 +438,7 @@ export class SecurityAudit {
         credentials: 'include'
       });
     } catch (error) {
-      console.error('Failed to send security event to server:', error);
+      logError('Failed to send security event to server:', error);
     }
   }
 

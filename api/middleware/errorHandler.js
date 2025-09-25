@@ -1,11 +1,13 @@
 import { ZodError } from 'zod';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Global error handler middleware
  */
 const errorHandler = (err, req, res, next) => {
   // Log error for debugging
-  console.error('Error:', err);
+  logError('Error:', err);
 
   // Zod validation errors
   if (err instanceof ZodError) {

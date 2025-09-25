@@ -24,6 +24,8 @@
 
 import EventEmitter from 'events';
 import axios from 'axios';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class EnterpriseIntegrationHub extends EventEmitter {
     constructor(config = {}) {
@@ -121,10 +123,10 @@ class EnterpriseIntegrationHub extends EventEmitter {
                 timestamp: new Date().toISOString()
             });
             
-            console.log('✅ Enterprise Integration Hub initialized successfully');
+            logDebug('✅ Enterprise Integration Hub initialized successfully');
             
         } catch (error) {
-            console.error('❌ Failed to initialize integrations:', error);
+            logError('❌ Failed to initialize integrations:', error);
             this.emit('initialization_error', error);
             throw error;
         }
@@ -157,7 +159,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
         
         const regionConfig = config[region];
         if (!regionConfig || !regionConfig.accessToken) {
-            console.warn(`⚠️ Shopify ${region.toUpperCase()} configuration incomplete`);
+            logWarn(`⚠️ Shopify ${region.toUpperCase()} configuration incomplete`);
             return null;
         }
         
@@ -182,7 +184,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
         };
         
         if (!process.env.AMAZON_SP_API_CLIENT_ID) {
-            console.warn('⚠️ Amazon SP-API configuration incomplete');
+            logWarn('⚠️ Amazon SP-API configuration incomplete');
             return null;
         }
         
@@ -204,7 +206,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
      */
     initializeUnleashedClient() {
         if (!process.env.UNLEASHED_API_ID || !process.env.UNLEASHED_API_KEY) {
-            console.warn('⚠️ Unleashed Software configuration incomplete');
+            logWarn('⚠️ Unleashed Software configuration incomplete');
             return null;
         }
         
@@ -221,7 +223,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
      */
     initializeXeroClient() {
         if (!process.env.XERO_API_KEY || !process.env.XERO_SECRET) {
-            console.warn('⚠️ Xero configuration incomplete');
+            logWarn('⚠️ Xero configuration incomplete');
             return null;
         }
         
@@ -239,7 +241,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
      */
     initializeMicrosoftClient() {
         if (!process.env.MS_API_KEY || !process.env.MS_API_SECRET) {
-            console.warn('⚠️ Microsoft configuration incomplete');
+            logWarn('⚠️ Microsoft configuration incomplete');
             return null;
         }
         
@@ -260,7 +262,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
      */
     initializeSlackClient() {
         if (!process.env.SLACK_BOT_TOKEN) {
-            console.warn('⚠️ Slack configuration incomplete');
+            logWarn('⚠️ Slack configuration incomplete');
             return null;
         }
         
@@ -356,7 +358,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
             setInterval(() => this.syncXeroData(), this.config.syncIntervals.xero);
         }
         
-        console.log('🔄 Sync schedulers started');
+        logDebug('🔄 Sync schedulers started');
     }
     
     /**
@@ -401,13 +403,13 @@ class EnterpriseIntegrationHub extends EventEmitter {
                 responseTime
             });
             
-            console.log(`✅ Shopify ${region.toUpperCase()} sync completed: ${orders.length} orders, ${products.length} products`);
+            logDebug(`✅ Shopify ${region.toUpperCase()} sync completed: ${orders.length} orders, ${products.length} products`);
             
             return { orders, products, customers, inventory };
             
         } catch (error) {
             const responseTime = Date.now() - startTime;
-            console.error(`❌ Shopify ${region} sync failed:`, error.message);
+            logError(`❌ Shopify ${region} sync failed:`, error.message);
             
             this.updateMetrics('sync', 'shopify', responseTime, false);
             this.emit('sync_error', { service: 'shopify', region, error, responseTime });
@@ -513,13 +515,13 @@ class EnterpriseIntegrationHub extends EventEmitter {
                 responseTime
             });
             
-            console.log(`✅ Amazon ${region.toUpperCase()} sync completed: ${orders.length} orders`);
+            logDebug(`✅ Amazon ${region.toUpperCase()} sync completed: ${orders.length} orders`);
             
             return { orders, inventory, reports };
             
         } catch (error) {
             const responseTime = Date.now() - startTime;
-            console.error(`❌ Amazon ${region} sync failed:`, error.message);
+            logError(`❌ Amazon ${region} sync failed:`, error.message);
             
             this.updateMetrics('sync', 'amazon', responseTime, false);
             this.emit('sync_error', { service: 'amazon', region, error, responseTime });
@@ -645,13 +647,13 @@ class EnterpriseIntegrationHub extends EventEmitter {
                 responseTime
             });
             
-            console.log(`✅ Unleashed sync completed: ${products.length} products, ${salesOrders.length} sales orders`);
+            logDebug(`✅ Unleashed sync completed: ${products.length} products, ${salesOrders.length} sales orders`);
             
             return { products, stockOnHand, salesOrders, purchaseOrders };
             
         } catch (error) {
             const responseTime = Date.now() - startTime;
-            console.error('❌ Unleashed sync failed:', error.message);
+            logError('❌ Unleashed sync failed:', error.message);
             
             this.updateMetrics('sync', 'unleashed', responseTime, false);
             this.emit('sync_error', { service: 'unleashed', error, responseTime });
@@ -786,13 +788,13 @@ class EnterpriseIntegrationHub extends EventEmitter {
                 responseTime
             });
             
-            console.log(`✅ Xero sync completed: ${invoices.length} invoices, ${contacts.length} contacts`);
+            logDebug(`✅ Xero sync completed: ${invoices.length} invoices, ${contacts.length} contacts`);
             
             return { invoices, contacts, accounts, bankTransactions };
             
         } catch (error) {
             const responseTime = Date.now() - startTime;
-            console.error('❌ Xero sync failed:', error.message);
+            logError('❌ Xero sync failed:', error.message);
             
             this.updateMetrics('sync', 'xero', responseTime, false);
             this.emit('sync_error', { service: 'xero', error, responseTime });
@@ -912,7 +914,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
             }
             
         } catch (error) {
-            console.error('❌ Slack notification failed:', error.message);
+            logError('❌ Slack notification failed:', error.message);
             throw error;
         }
     }
@@ -987,7 +989,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
             });
             
         } catch (error) {
-            console.error('❌ Email sending failed:', error.message);
+            logError('❌ Email sending failed:', error.message);
             throw error;
         }
     }
@@ -1044,7 +1046,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
         } catch (error) {
             if (attempt < this.config.retry.attempts) {
                 const delay = this.config.retry.delay * Math.pow(this.config.retry.backoff, attempt - 1);
-                console.warn(`⚠️ Request failed, retrying in ${delay}ms (attempt ${attempt}/${this.config.retry.attempts})`);
+                logWarn(`⚠️ Request failed, retrying in ${delay}ms (attempt ${attempt}/${this.config.retry.attempts})`);
                 
                 await new Promise(resolve => setTimeout(resolve, delay));
                 return await this.makeRequestWithRetry(method, url, options, attempt + 1);
@@ -1070,7 +1072,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
             const waitTime = oldestRequest + rateLimiter.window - now;
             
             if (waitTime > 0) {
-                console.warn(`⚠️ Rate limit reached for ${service}, waiting ${waitTime}ms`);
+                logWarn(`⚠️ Rate limit reached for ${service}, waiting ${waitTime}ms`);
                 await new Promise(resolve => setTimeout(resolve, waitTime));
             }
         }
@@ -1152,7 +1154,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
             this.emit('metrics_updated', this.metrics);
             
         } catch (error) {
-            console.error('❌ Failed to update metrics:', error);
+            logError('❌ Failed to update metrics:', error);
         }
     }
     
@@ -1309,19 +1311,19 @@ class EnterpriseIntegrationHub extends EventEmitter {
     handleApiRequest(data) {
         // Log API requests for debugging
         if (process.env.NODE_ENV === 'development') {
-            console.log('📡 API request:', data);
+            logDebug('📡 API request:', data);
         }
     }
     
     handleApiResponse(data) {
         // Log API responses for debugging
         if (process.env.NODE_ENV === 'development' && !data.success) {
-            console.log('📡 API response error:', data);
+            logDebug('📡 API response error:', data);
         }
     }
     
     handleError(error) {
-        console.error('❌ Integration Hub error:', error);
+        logError('❌ Integration Hub error:', error);
         this.sendSlackAlert(`Integration Hub error: ${error.message}`, 'error');
     }
 }

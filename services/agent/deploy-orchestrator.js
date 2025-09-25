@@ -9,6 +9,8 @@ import path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -59,7 +61,7 @@ class DeploymentOrchestrator extends EventEmitter {
   }
 
   async initialize() {
-    console.log('🚀 INITIALIZING DEPLOYMENT ORCHESTRATOR');
+    logDebug('🚀 INITIALIZING DEPLOYMENT ORCHESTRATOR');
     
     // Verify git repository
     await this.verifyGitRepository();
@@ -70,7 +72,7 @@ class DeploymentOrchestrator extends EventEmitter {
     // Load deployment history
     await this.loadDeploymentHistory();
     
-    console.log('✅ Deployment Orchestrator initialized successfully');
+    logDebug('✅ Deployment Orchestrator initialized successfully');
     this.emit('initialized');
   }
 
@@ -80,24 +82,24 @@ class DeploymentOrchestrator extends EventEmitter {
     try {
       if (process.env.RENDER || process.env.CI) {
         this.gitAvailable = false;
-        console.warn('⚠️  Skipping git verification in container environment (RENDER/CI detected)');
+        logWarn('⚠️  Skipping git verification in container environment (RENDER/CI detected)');
         return;
       }
 
       const { stdout } = await execAsync('git status');
       if (!stdout.includes('On branch')) {
         this.gitAvailable = false;
-        console.warn('⚠️  Git repository not detected; deployment actions will be limited');
+        logWarn('⚠️  Git repository not detected; deployment actions will be limited');
         return;
       }
       
       // Verify remote origins exist
       const remotes = await execAsync('git remote -v');
-      console.log('📡 Git remotes configured:', remotes.stdout);
+      logDebug('📡 Git remotes configured:', remotes.stdout);
       this.gitAvailable = true;
     } catch (error) {
       this.gitAvailable = false;
-      console.warn(`⚠️  Git repository verification failed: ${error.message}. Continuing without git.`);
+      logWarn(`⚠️  Git repository verification failed: ${error.message}. Continuing without git.`);
     }
   }
 
@@ -123,10 +125,10 @@ class DeploymentOrchestrator extends EventEmitter {
         const history = JSON.parse(fs.readFileSync(historyFile, 'utf8'));
         this.deploymentHistory = history.deployments || [];
         this.deploymentMetrics = { ...this.deploymentMetrics, ...history.metrics };
-        console.log(`📚 Loaded ${this.deploymentHistory.length} deployment records`);
+        logDebug(`📚 Loaded ${this.deploymentHistory.length} deployment records`);
       }
     } catch (error) {
-      console.warn(`Failed to load deployment history: ${error.message}`);
+      logWarn(`Failed to load deployment history: ${error.message}`);
     }
   }
 
@@ -135,7 +137,7 @@ class DeploymentOrchestrator extends EventEmitter {
     const deploymentId = this.generateDeploymentId();
     const startTime = Date.now();
     
-    console.log(`🔄 Starting deployment orchestration: ${deploymentId}`);
+    logDebug(`🔄 Starting deployment orchestration: ${deploymentId}`);
     
     const deployment = {
       id: deploymentId,
@@ -195,11 +197,11 @@ class DeploymentOrchestrator extends EventEmitter {
       
       this.updateMetrics(deployment, true);
       
-      console.log(`✅ Deployment ${deploymentId} completed successfully in ${deployment.duration}ms`);
+      logDebug(`✅ Deployment ${deploymentId} completed successfully in ${deployment.duration}ms`);
       this.emit('deploymentCompleted', deployment);
 
     } catch (error) {
-      console.error(`❌ Deployment ${deploymentId} failed: ${error.message}`);
+      logError(`❌ Deployment ${deploymentId} failed: ${error.message}`);
       
       deployment.status = 'failed';
       deployment.error = error.message;
@@ -232,7 +234,7 @@ class DeploymentOrchestrator extends EventEmitter {
     deployment.currentStage = stageName;
     deployment.stages.push(stage);
     
-    console.log(`🔄 Executing stage: ${stageName}`);
+    logDebug(`🔄 Executing stage: ${stageName}`);
     this.emit('stageStarted', { deployment: deployment.id, stage: stageName });
 
     try {
@@ -243,14 +245,14 @@ class DeploymentOrchestrator extends EventEmitter {
       stage.duration = Date.now() - stageStartTime;
       stage.status = 'completed';
       
-      console.log(`✅ Stage ${stageName} completed in ${stage.duration}ms`);
+      logDebug(`✅ Stage ${stageName} completed in ${stage.duration}ms`);
       this.emit('stageCompleted', { deployment: deployment.id, stage: stageName, duration: stage.duration });
     } catch (error) {
       stage.endTime = new Date().toISOString();
       stage.status = 'failed';
       stage.error = error.message;
       
-      console.error(`❌ Stage ${stageName} failed: ${error.message}`);
+      logError(`❌ Stage ${stageName} failed: ${error.message}`);
       this.emit('stageFailed', { deployment: deployment.id, stage: stageName, error: error.message });
       
       throw error;
@@ -258,12 +260,12 @@ class DeploymentOrchestrator extends EventEmitter {
   }
 
   async preDeploymentValidation(deployment) {
-    console.log('🔍 Running pre-deployment validation...');
+    logDebug('🔍 Running pre-deployment validation...');
     
     // Check git status
     const gitStatus = await execAsync('git status --porcelain');
     if (gitStatus.stdout.trim()) {
-      console.log('📝 Uncommitted changes detected');
+      logDebug('📝 Uncommitted changes detected');
     }
 
     // Verify package.json and lock files are consistent
@@ -282,7 +284,7 @@ class DeploymentOrchestrator extends EventEmitter {
     // Validate environment configuration
     await this.validateEnvironmentConfig();
     
-    console.log('✅ Pre-deployment validation passed');
+    logDebug('✅ Pre-deployment validation passed');
   }
 
   async validateEnvironmentConfig() {
@@ -294,36 +296,36 @@ class DeploymentOrchestrator extends EventEmitter {
 
     for (const envVar of requiredEnvVars) {
       if (!process.env[envVar]) {
-        console.warn(`⚠️ Environment variable ${envVar} not set`);
+        logWarn(`⚠️ Environment variable ${envVar} not set`);
       }
     }
   }
 
   async buildAndTest(deployment) {
-    console.log('🔨 Building and testing application...');
+    logDebug('🔨 Building and testing application...');
     
     if (!deployment.options.skipTests) {
       // Run linting
-      console.log('🧹 Running ESLint...');
+      logDebug('🧹 Running ESLint...');
       try {
         await execAsync('npm run lint', { timeout: 120000 });
-        console.log('✅ Linting passed');
+        logDebug('✅ Linting passed');
       } catch (error) {
-        console.warn('⚠️ Linting issues detected, continuing deployment');
+        logWarn('⚠️ Linting issues detected, continuing deployment');
       }
 
       // Run unit tests
-      console.log('🧪 Running unit tests...');
+      logDebug('🧪 Running unit tests...');
       try {
         await execAsync('npm run test:run', { timeout: 180000 });
-        console.log('✅ Unit tests passed');
+        logDebug('✅ Unit tests passed');
       } catch (error) {
-        console.warn('⚠️ Some tests failed, continuing deployment');
+        logWarn('⚠️ Some tests failed, continuing deployment');
       }
     }
 
     // Build application
-    console.log('🏗️ Building application...');
+    logDebug('🏗️ Building application...');
     const buildResult = await execAsync('npm run build', { timeout: 300000 });
     
     if (buildResult.stderr && buildResult.stderr.includes('error')) {
@@ -338,7 +340,7 @@ class DeploymentOrchestrator extends EventEmitter {
     const buildStats = this.getBuildStats();
     deployment.buildStats = buildStats;
     
-    console.log(`✅ Build completed - Size: ${buildStats.totalSize}, Files: ${buildStats.fileCount}`);
+    logDebug(`✅ Build completed - Size: ${buildStats.totalSize}, Files: ${buildStats.fileCount}`);
   }
 
   getBuildStats() {
@@ -375,7 +377,7 @@ class DeploymentOrchestrator extends EventEmitter {
   }
 
   async commitChanges(deployment) {
-    console.log('📝 Committing changes...');
+    logDebug('📝 Committing changes...');
     
     // Stage all changes
     await execAsync('git add .');
@@ -390,7 +392,7 @@ class DeploymentOrchestrator extends EventEmitter {
     const { stdout } = await execAsync('git rev-parse HEAD');
     deployment.commitHash = stdout.trim();
     
-    console.log(`✅ Changes committed: ${deployment.commitHash.substring(0, 8)}`);
+    logDebug(`✅ Changes committed: ${deployment.commitHash.substring(0, 8)}`);
   }
 
   generateCommitMessage(deployment) {
@@ -415,7 +417,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       throw new Error(`Unknown environment: ${environment}`);
     }
 
-    console.log(`🚀 Deploying to ${environment}...`);
+    logDebug(`🚀 Deploying to ${environment}...`);
     
     const deployStartTime = Date.now();
     
@@ -442,7 +444,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         commitHash: deployment.commitHash
       };
 
-      console.log(`✅ Successfully deployed to ${environment} in ${deployDuration}ms`);
+      logDebug(`✅ Successfully deployed to ${environment} in ${deployDuration}ms`);
       
     } catch (error) {
       deployment.environments = deployment.environments || {};
@@ -457,7 +459,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async deployToLocalhost(deployment, env) {
-    console.log('🏠 Starting localhost deployment...');
+    logDebug('🏠 Starting localhost deployment...');
     
     // Kill existing local server if running
     try {
@@ -476,11 +478,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     // Store process ID for later cleanup
     deployment.localProcessId = serverProcess.pid;
     
-    console.log(`📍 Local server started with PID: ${serverProcess.pid}`);
+    logDebug(`📍 Local server started with PID: ${serverProcess.pid}`);
   }
 
   async deployToRemote(deployment, environment, env) {
-    console.log(`☁️ Deploying to remote environment: ${environment}`);
+    logDebug(`☁️ Deploying to remote environment: ${environment}`);
     
     const deployCommand = env.deployCommand;
     
@@ -490,10 +492,10 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         maxBuffer: 1024 * 1024 * 10 // 10MB buffer
       });
       
-      console.log(`📡 Push to ${environment} completed`);
+      logDebug(`📡 Push to ${environment} completed`);
       
       if (result.stderr) {
-        console.warn(`Deploy warnings: ${result.stderr}`);
+        logWarn(`Deploy warnings: ${result.stderr}`);
       }
       
     } catch (error) {
@@ -505,7 +507,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async waitForDeployment(deployment, environment, env) {
-    console.log(`⏳ Waiting for ${environment} deployment to be ready...`);
+    logDebug(`⏳ Waiting for ${environment} deployment to be ready...`);
     
     const maxWait = environment === 'localhost' ? 30000 : 180000; // 30s for localhost, 3min for remote
     const checkInterval = 5000; // 5 seconds
@@ -519,7 +521,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         });
         
         if (response.ok) {
-          console.log(`✅ ${environment} is responding`);
+          logDebug(`✅ ${environment} is responding`);
           return;
         }
       } catch (error) {
@@ -530,7 +532,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       waited += checkInterval;
       
       if (waited % 30000 === 0) { // Log every 30 seconds
-        console.log(`⏳ Still waiting for ${environment}... (${waited / 1000}s)`);
+        logDebug(`⏳ Still waiting for ${environment}... (${waited / 1000}s)`);
       }
     }
 
@@ -538,7 +540,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async performHealthChecks(deployment, environment, env) {
-    console.log(`🔍 Performing health checks for ${environment}...`);
+    logDebug(`🔍 Performing health checks for ${environment}...`);
     
     const healthResults = [];
     
@@ -548,7 +550,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         healthResults.push(healthResult);
         
         if (healthResult.healthy) {
-          console.log(`✅ Health check passed for ${environment} (attempt ${attempt})`);
+          logDebug(`✅ Health check passed for ${environment} (attempt ${attempt})`);
           
           deployment.healthChecks = deployment.healthChecks || {};
           deployment.healthChecks[environment] = {
@@ -560,14 +562,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
           return;
         }
         
-        console.warn(`⚠️ Health check failed for ${environment} (attempt ${attempt}): ${healthResult.error}`);
+        logWarn(`⚠️ Health check failed for ${environment} (attempt ${attempt}): ${healthResult.error}`);
         
         if (attempt < this.config.healthCheckRetries) {
           await this.sleep(this.config.healthCheckInterval);
         }
         
       } catch (error) {
-        console.error(`❌ Health check error for ${environment} (attempt ${attempt}): ${error.message}`);
+        logError(`❌ Health check error for ${environment} (attempt ${attempt}): ${error.message}`);
         
         if (attempt < this.config.healthCheckRetries) {
           await this.sleep(this.config.healthCheckInterval);
@@ -620,7 +622,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async postDeploymentValidation(deployment) {
-    console.log('🔍 Running post-deployment validation...');
+    logDebug('🔍 Running post-deployment validation...');
     
     // Run smoke tests against deployed environments
     for (const env of deployment.options.environments) {
@@ -632,11 +634,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     // Validate critical functionality
     await this.validateCriticalFunctionality(deployment);
     
-    console.log('✅ Post-deployment validation completed');
+    logDebug('✅ Post-deployment validation completed');
   }
 
   async runSmokeTests(deployment, environment) {
-    console.log(`🧪 Running smoke tests for ${environment}...`);
+    logDebug(`🧪 Running smoke tests for ${environment}...`);
     
     const env = this.config.environments[environment];
     const baseUrl = env.healthEndpoint.replace('/api/health', '');
@@ -677,15 +679,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     };
 
     if (passedTests < smokeTests.length) {
-      console.warn(`⚠️ ${smokeTests.length - passedTests} smoke tests failed for ${environment}`);
+      logWarn(`⚠️ ${smokeTests.length - passedTests} smoke tests failed for ${environment}`);
     } else {
-      console.log(`✅ All smoke tests passed for ${environment}`);
+      logDebug(`✅ All smoke tests passed for ${environment}`);
     }
   }
 
   async validateCriticalFunctionality(deployment) {
     // This would typically run critical E2E tests
-    console.log('🎯 Validating critical functionality...');
+    logDebug('🎯 Validating critical functionality...');
     
     // For now, just verify that we can reach the main endpoints
     const criticalEndpoints = [
@@ -701,11 +703,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         // Test against localhost first
         const response = await fetch(`http://localhost:3000${endpoint}`, { timeout: 5000 });
         if (!response.ok) {
-          console.warn(`⚠️ Critical endpoint failed: ${endpoint} (${response.status})`);
+          logWarn(`⚠️ Critical endpoint failed: ${endpoint} (${response.status})`);
           validationPassed = false;
         }
       } catch (error) {
-        console.warn(`⚠️ Critical endpoint error: ${endpoint} - ${error.message}`);
+        logWarn(`⚠️ Critical endpoint error: ${endpoint} - ${error.message}`);
         validationPassed = false;
       }
     }
@@ -722,7 +724,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async cleanupDeployment(deployment) {
-    console.log('🧹 Cleaning up deployment...');
+    logDebug('🧹 Cleaning up deployment...');
     
     // Clean up temporary files
     const tempDirs = ['temp', 'tmp'];
@@ -733,7 +735,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         try {
           fs.rmSync(tempPath, { recursive: true, force: true });
         } catch (error) {
-          console.warn(`Failed to clean up ${dir}: ${error.message}`);
+          logWarn(`Failed to clean up ${dir}: ${error.message}`);
         }
       }
     }
@@ -743,7 +745,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       await this.sendDeploymentNotification(deployment);
     }
 
-    console.log('✅ Cleanup completed');
+    logDebug('✅ Cleanup completed');
   }
 
   async sendDeploymentNotification(deployment) {
@@ -764,14 +766,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         timeout: 10000
       });
 
-      console.log('📢 Deployment notification sent');
+      logDebug('📢 Deployment notification sent');
     } catch (error) {
-      console.warn(`Failed to send notification: ${error.message}`);
+      logWarn(`Failed to send notification: ${error.message}`);
     }
   }
 
   async rollbackDeployment(deployment) {
-    console.log(`🔄 Rolling back deployment ${deployment.id}...`);
+    logDebug(`🔄 Rolling back deployment ${deployment.id}...`);
     
     try {
       // Reset to previous commit
@@ -782,9 +784,9 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         if (env !== 'localhost' && deployment.environments[env]?.status === 'deployed') {
           try {
             await execAsync(`git push --force origin HEAD:${this.config.environments[env].branch}`);
-            console.log(`🔄 Rolled back ${env}`);
+            logDebug(`🔄 Rolled back ${env}`);
           } catch (error) {
-            console.error(`Failed to rollback ${env}: ${error.message}`);
+            logError(`Failed to rollback ${env}: ${error.message}`);
           }
         }
       }
@@ -794,7 +796,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         try {
           process.kill(deployment.localProcessId);
         } catch (error) {
-          console.warn(`Failed to kill local process: ${error.message}`);
+          logWarn(`Failed to kill local process: ${error.message}`);
         }
       }
 
@@ -803,11 +805,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       
       this.deploymentMetrics.rollbacks++;
       
-      console.log('✅ Rollback completed');
+      logDebug('✅ Rollback completed');
       this.emit('deploymentRolledBack', deployment);
       
     } catch (error) {
-      console.error(`❌ Rollback failed: ${error.message}`);
+      logError(`❌ Rollback failed: ${error.message}`);
       deployment.rollbackError = error.message;
       throw error;
     }
@@ -852,7 +854,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       fs.writeFileSync(deploymentFile, JSON.stringify(deployment, null, 2));
       
     } catch (error) {
-      console.error(`Failed to save deployment record: ${error.message}`);
+      logError(`Failed to save deployment record: ${error.message}`);
     }
   }
 
@@ -893,22 +895,22 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   // Configuration methods
   updateConfig(newConfig) {
     this.config = { ...this.config, ...newConfig };
-    console.log('📝 Deployment configuration updated');
+    logDebug('📝 Deployment configuration updated');
   }
 
   addEnvironment(name, config) {
     this.config.environments[name] = config;
-    console.log(`➕ Added environment: ${name}`);
+    logDebug(`➕ Added environment: ${name}`);
   }
 
   removeEnvironment(name) {
     delete this.config.environments[name];
-    console.log(`➖ Removed environment: ${name}`);
+    logDebug(`➖ Removed environment: ${name}`);
   }
 
   // Emergency methods
   emergencyStop() {
-    console.log('🚨 EMERGENCY STOP - Cancelling all active deployments');
+    logDebug('🚨 EMERGENCY STOP - Cancelling all active deployments');
     
     for (const [id, deployment] of this.activeDeployments) {
       deployment.status = 'cancelled';
@@ -921,7 +923,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async emergencyRollbackAll() {
-    console.log('🚨 EMERGENCY ROLLBACK - Rolling back all recent deployments');
+    logDebug('🚨 EMERGENCY ROLLBACK - Rolling back all recent deployments');
     
     const recentDeployments = this.deploymentHistory
       .filter(d => d.status === 'completed')
@@ -931,7 +933,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       try {
         await this.rollbackDeployment(deployment);
       } catch (error) {
-        console.error(`Failed to rollback ${deployment.id}: ${error.message}`);
+        logError(`Failed to rollback ${deployment.id}: ${error.message}`);
       }
     }
   }

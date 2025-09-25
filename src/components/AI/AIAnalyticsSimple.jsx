@@ -12,6 +12,8 @@ import {
   ArrowTopRightOnSquareIcon as ExternalLink
 } from '@heroicons/react/24/outline';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const AIAnalyticsSimple = () => {
   const { user, getToken } = useBulletproofAuth();
@@ -41,7 +43,7 @@ const AIAnalyticsSimple = () => {
             return data;
           }
         } catch (error) {
-          console.warn(`AI Analytics API endpoint ${endpoint} failed:`, error.message);
+          logWarn(`AI Analytics API endpoint ${endpoint} failed:`, error.message);
         }
       }
 

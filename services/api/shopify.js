@@ -1,6 +1,8 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import shopifyMultiStoreService from '../shopify-multistore.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 
@@ -52,7 +54,7 @@ router.get('/consolidated', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('SHOPIFY API: Consolidated data error:', error);
+    logError('SHOPIFY API: Consolidated data error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process Shopify consolidated data'
@@ -75,7 +77,7 @@ router.get('/store/:storeId', async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.error(`SHOPIFY API: Store data error for ${req.params.storeId}:`, error);
+    logError(`SHOPIFY API: Store data error for ${req.params.storeId}:`, error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to fetch store data'
@@ -97,7 +99,7 @@ router.get('/inventory-sync', async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.error('SHOPIFY API: Inventory sync error:', error);
+    logError('SHOPIFY API: Inventory sync error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process inventory sync data'
@@ -138,7 +140,7 @@ router.get('/sales-analytics', async (req, res) => {
 
     res.json(analytics);
   } catch (error) {
-    console.error('SHOPIFY API: Sales analytics error:', error);
+    logError('SHOPIFY API: Sales analytics error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process sales analytics'
@@ -185,7 +187,7 @@ router.get('/recent-orders', async (req, res) => {
       lastUpdated: data.lastUpdated
     });
   } catch (error) {
-    console.error('SHOPIFY API: Recent orders error:', error);
+    logError('SHOPIFY API: Recent orders error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to fetch recent orders'
@@ -199,7 +201,7 @@ router.get('/status', async (req, res) => {
     const status = shopifyMultiStoreService.getConnectionStatus();
     res.json(status);
   } catch (error) {
-    console.error('SHOPIFY API: Status error:', error);
+    logError('SHOPIFY API: Status error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to get connection status'
@@ -210,7 +212,7 @@ router.get('/status', async (req, res) => {
 // Trigger manual sync for all stores
 router.post('/sync', async (req, res) => {
   try {
-    console.log('SHOPIFY API: Manual sync triggered');
+    logDebug('SHOPIFY API: Manual sync triggered');
     const data = await shopifyMultiStoreService.syncAllStores();
     
     res.json({
@@ -219,7 +221,7 @@ router.post('/sync', async (req, res) => {
       syncTime: new Date().toISOString()
     });
   } catch (error) {
-    console.error('SHOPIFY API: Manual sync error:', error);
+    logError('SHOPIFY API: Manual sync error:', error);
     res.status(500).json({
       error: 'Sync failed',
       message: error.message
@@ -231,7 +233,7 @@ router.post('/sync', async (req, res) => {
 router.post('/sync/:storeId', async (req, res) => {
   try {
     const { storeId } = req.params;
-    console.log(`SHOPIFY API: Manual sync triggered for store ${storeId}`);
+    logDebug(`SHOPIFY API: Manual sync triggered for store ${storeId}`);
     
     const data = await shopifyMultiStoreService.syncStore(storeId);
     
@@ -241,7 +243,7 @@ router.post('/sync/:storeId', async (req, res) => {
       syncTime: new Date().toISOString()
     });
   } catch (error) {
-    console.error(`SHOPIFY API: Manual sync error for ${req.params.storeId}:`, error);
+    logError(`SHOPIFY API: Manual sync error for ${req.params.storeId}:`, error);
     res.status(500).json({
       error: 'Store sync failed',
       message: error.message
@@ -303,7 +305,7 @@ router.get('/product-performance', async (req, res) => {
       lastUpdated: data.lastUpdated
     });
   } catch (error) {
-    console.error('SHOPIFY API: Product performance error:', error);
+    logError('SHOPIFY API: Product performance error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process product performance data'

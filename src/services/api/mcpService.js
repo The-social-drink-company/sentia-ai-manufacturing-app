@@ -4,6 +4,8 @@
  */
 
 import axios from 'axios';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 // MCP Server configuration
 const MCP_BASE_URL = import.meta.env.VITE_MCP_URL || 'http://localhost:9000/mcp';
@@ -35,7 +37,7 @@ export const mcpService = {
       const response = await mcpClient.get('/health');
       return response.data;
     } catch (error) {
-      console.error('MCP health check failed:', error);
+      logError('MCP health check failed:', error);
       return { status: 'offline', message: error.message };
     }
   },
@@ -46,7 +48,7 @@ export const mcpService = {
       const response = await mcpClient.post('/ai/insights', { context });
       return response.data;
     } catch (error) {
-      console.error('Failed to get AI insights:', error);
+      logError('Failed to get AI insights:', error);
       throw error;
     }
   },
@@ -57,7 +59,7 @@ export const mcpService = {
       const response = await mcpClient.post('/tools/optimize-manufacturing', parameters);
       return response.data;
     } catch (error) {
-      console.error('Manufacturing optimization failed:', error);
+      logError('Manufacturing optimization failed:', error);
       throw error;
     }
   },
@@ -68,7 +70,7 @@ export const mcpService = {
       const response = await mcpClient.post('/tools/forecast-demand', data);
       return response.data;
     } catch (error) {
-      console.error('Demand forecasting failed:', error);
+      logError('Demand forecasting failed:', error);
       throw error;
     }
   },
@@ -79,7 +81,7 @@ export const mcpService = {
       const response = await mcpClient.post('/tools/optimize-inventory', data);
       return response.data;
     } catch (error) {
-      console.error('Inventory optimization failed:', error);
+      logError('Inventory optimization failed:', error);
       throw error;
     }
   },
@@ -90,7 +92,7 @@ export const mcpService = {
       const response = await mcpClient.post('/tools/analyze-quality', metrics);
       return response.data;
     } catch (error) {
-      console.error('Quality analysis failed:', error);
+      logError('Quality analysis failed:', error);
       throw error;
     }
   },
@@ -101,7 +103,7 @@ export const mcpService = {
       const response = await mcpClient.post('/tools/optimize-working-capital', financials);
       return response.data;
     } catch (error) {
-      console.error('Working capital optimization failed:', error);
+      logError('Working capital optimization failed:', error);
       throw error;
     }
   },
@@ -112,7 +114,7 @@ export const mcpService = {
       const response = await mcpClient.get(`/xero/${endpoint}`);
       return response.data;
     } catch (error) {
-      console.error('Failed to get Xero data:', error);
+      logError('Failed to get Xero data:', error);
       throw error;
     }
   },
@@ -123,7 +125,7 @@ export const mcpService = {
       const response = await mcpClient.get(`/shopify/${endpoint}`);
       return response.data;
     } catch (error) {
-      console.error('Failed to get Shopify data:', error);
+      logError('Failed to get Shopify data:', error);
       throw error;
     }
   },
@@ -137,7 +139,7 @@ export const mcpService = {
       });
       return response.data;
     } catch (error) {
-      console.error(`Failed to execute tool ${toolName}:`, error);
+      logError(`Failed to execute tool ${toolName}:`, error);
       throw error;
     }
   },
@@ -148,7 +150,7 @@ export const mcpService = {
       const response = await mcpClient.post('/ai/recommendations', { context });
       return response.data;
     } catch (error) {
-      console.error('Failed to get recommendations:', error);
+      logError('Failed to get recommendations:', error);
       throw error;
     }
   },
@@ -181,7 +183,7 @@ export const mcpService = {
       const response = await mcpClient.get('/status');
       return response.data;
     } catch (error) {
-      console.error('Failed to get system status:', error);
+      logError('Failed to get system status:', error);
       return {
         mcp: 'offline',
         ai: 'unknown',

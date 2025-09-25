@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell } from 'recharts';
 import { format, addDays, parseISO } from 'date-fns';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const ExecutiveWorkingCapitalDashboard = () => {
   const { user, isLoaded } = useAuth();
@@ -73,7 +75,7 @@ const ExecutiveWorkingCapitalDashboard = () => {
       });
       
     } catch (err) {
-      console.error('Dashboard data fetch error:', err);
+      logError('Dashboard data fetch error:', err);
       setError('Failed to load dashboard data. Please try again.');
     } finally {
       setLoading(false);

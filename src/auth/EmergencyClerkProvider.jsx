@@ -10,6 +10,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ClerkProvider, useAuth, useUser, SignIn, SignUp, UserButton } from '@clerk/clerk-react';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Emergency Clerk configuration - minimal and reliable
 const EMERGENCY_CLERK_CONFIG = {
@@ -177,15 +179,15 @@ export const EmergencyClerkProvider = ({ children }) => {
 
         // Log warnings
         validation.warnings.forEach(warning => {
-          console.warn('Clerk Warning:', warning);
+          logWarn('Clerk Warning:', warning);
         });
 
         // Initialize successfully
         setIsInitialized(true);
-        console.log('Emergency Clerk Provider initialized successfully');
+        logDebug('Emergency Clerk Provider initialized successfully');
 
       } catch (error) {
-        console.error('Emergency Clerk initialization failed:', error);
+        logError('Emergency Clerk initialization failed:', error);
         setInitError(error);
       }
     };

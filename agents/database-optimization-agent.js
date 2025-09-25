@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 #!/usr/bin/env node
 // database-optimization-agent.js - Placeholder
-console.log(JSON.stringify({ fixApplied: false }));
+logDebug(JSON.stringify({ fixApplied: false }));

@@ -23,6 +23,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { CLIENT_REQUIREMENTS } from '../config/clientRequirements';
 import { realDataService } from '../../services/data/RealDataService';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const Forecasting = () => {
   // Use client-specified horizons only (30, 60, 90, 120, 180 days)
@@ -55,12 +57,12 @@ const Forecasting = () => {
           const data = await response.json();
           // Sanity check - client sells 300-400 units/day
           if (data && data.dailyUnits > 500) {
-            console.warn('Daily units exceed expected range (300-400)');
+            logWarn('Daily units exceed expected range (300-400)');
           }
           return data;
         }
       } catch (error) {
-        console.error('Forecast API error:', error);
+        logError('Forecast API error:', error);
       }
 
       // NO MOCK DATA - Return zero with prompt to import

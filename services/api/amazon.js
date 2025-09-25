@@ -2,6 +2,8 @@ import express from 'express';
 import amazonSPAPIService from '../amazon-sp-api.js';
 import { auth } from '../../middleware/auth.js';
 import { rateLimit } from 'express-rate-limit';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 
@@ -24,7 +26,7 @@ router.use(auth);
  */
 router.get('/inventory', async (req, res) => {
   try {
-    console.log('📦 API Request: Amazon inventory data');
+    logDebug('📦 API Request: Amazon inventory data');
     
     if (!amazonSPAPIService.isConnected) {
       return res.status(503).json({
@@ -49,7 +51,7 @@ router.get('/inventory', async (req, res) => {
     res.json(response);
     
   } catch (error) {
-    console.error('❌ Amazon inventory API error:', error);
+    logError('❌ Amazon inventory API error:', error);
     res.status(500).json({
       error: 'Failed to fetch Amazon inventory data',
       message: error.message,
@@ -64,7 +66,7 @@ router.get('/inventory', async (req, res) => {
  */
 router.get('/orders', async (req, res) => {
   try {
-    console.log('📋 API Request: Amazon order data');
+    logDebug('📋 API Request: Amazon order data');
     
     if (!amazonSPAPIService.isConnected) {
       return res.status(503).json({
@@ -88,7 +90,7 @@ router.get('/orders', async (req, res) => {
     res.json(response);
     
   } catch (error) {
-    console.error('❌ Amazon orders API error:', error);
+    logError('❌ Amazon orders API error:', error);
     res.status(500).json({
       error: 'Failed to fetch Amazon order data',
       message: error.message
@@ -102,7 +104,7 @@ router.get('/orders', async (req, res) => {
  */
 router.get('/sales-velocity', async (req, res) => {
   try {
-    console.log('📈 API Request: Amazon sales velocity');
+    logDebug('📈 API Request: Amazon sales velocity');
     
     const orderMetrics = await amazonSPAPIService.getOrderMetrics();
     const inventorySummary = await amazonSPAPIService.getInventorySummary();
@@ -127,7 +129,7 @@ router.get('/sales-velocity', async (req, res) => {
     res.json(response);
     
   } catch (error) {
-    console.error('❌ Amazon sales velocity API error:', error);
+    logError('❌ Amazon sales velocity API error:', error);
     res.status(500).json({
       error: 'Failed to calculate sales velocity',
       message: error.message
@@ -141,7 +143,7 @@ router.get('/sales-velocity', async (req, res) => {
  */
 router.get('/fba', async (req, res) => {
   try {
-    console.log('🚚 API Request: Amazon FBA data');
+    logDebug('🚚 API Request: Amazon FBA data');
     
     // In a real implementation, this would query the FBA shipments table
     const fbaData = {
@@ -154,7 +156,7 @@ router.get('/fba', async (req, res) => {
     res.json({ fba: fbaData });
     
   } catch (error) {
-    console.error('❌ Amazon FBA API error:', error);
+    logError('❌ Amazon FBA API error:', error);
     res.status(500).json({
       error: 'Failed to fetch FBA data',
       message: error.message
@@ -168,7 +170,7 @@ router.get('/fba', async (req, res) => {
  */
 router.get('/reorder-alerts', async (req, res) => {
   try {
-    console.log('🚨 API Request: Amazon reorder alerts');
+    logDebug('🚨 API Request: Amazon reorder alerts');
     
     // This would query the database for low stock items and calculate reorder points
     const alerts = [
@@ -196,7 +198,7 @@ router.get('/reorder-alerts', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Amazon reorder alerts API error:', error);
+    logError('❌ Amazon reorder alerts API error:', error);
     res.status(500).json({
       error: 'Failed to fetch reorder alerts',
       message: error.message
@@ -210,7 +212,7 @@ router.get('/reorder-alerts', async (req, res) => {
  */
 router.post('/sync', async (req, res) => {
   try {
-    console.log('🔄 API Request: Manual Amazon sync');
+    logDebug('🔄 API Request: Manual Amazon sync');
     
     if (!amazonSPAPIService.isConnected) {
       return res.status(503).json({
@@ -228,7 +230,7 @@ router.post('/sync', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Amazon sync API error:', error);
+    logError('❌ Amazon sync API error:', error);
     res.status(500).json({
       error: 'Failed to trigger Amazon sync',
       message: error.message
@@ -252,7 +254,7 @@ router.get('/status', async (req, res) => {
     res.json(status);
     
   } catch (error) {
-    console.error('❌ Amazon status API error:', error);
+    logError('❌ Amazon status API error:', error);
     res.status(500).json({
       error: 'Failed to get Amazon status',
       message: error.message

@@ -6,6 +6,8 @@
 
 import { getMCPClient } from './mcp-client.js';
 import prisma from '../lib/prisma.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class APIIntegrationService {
   constructor() {
@@ -75,7 +77,7 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Xero invoices:', error);
+      logError('Failed to get Xero invoices:', error);
 
       // Fallback to cached database data
       return await this.getXeroDataFromDB('invoices', options);
@@ -97,7 +99,7 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Xero contacts:', error);
+      logError('Failed to get Xero contacts:', error);
       return await this.getXeroDataFromDB('contacts', options);
     }
   }
@@ -117,14 +119,14 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Xero bank transactions:', error);
+      logError('Failed to get Xero bank transactions:', error);
       return await this.getXeroDataFromDB('bank_transactions', { accountId, ...options });
     }
   }
 
   async syncXeroData() {
     try {
-      console.log('Syncing Xero data...');
+      logDebug('Syncing Xero data...');
       const result = await this.mcpClient.syncXeroData();
 
       // Update local database with synced data
@@ -134,7 +136,7 @@ class APIIntegrationService {
 
       return result;
     } catch (error) {
-      console.error('Xero sync failed:', error);
+      logError('Xero sync failed:', error);
       throw error;
     }
   }
@@ -158,7 +160,7 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Shopify orders:', error);
+      logError('Failed to get Shopify orders:', error);
       return await this.getShopifyDataFromDB('orders', options);
     }
   }
@@ -178,7 +180,7 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Shopify products:', error);
+      logError('Failed to get Shopify products:', error);
       return await this.getShopifyDataFromDB('products', options);
     }
   }
@@ -198,14 +200,14 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Shopify inventory:', error);
+      logError('Failed to get Shopify inventory:', error);
       return await this.getShopifyDataFromDB('inventory', { locationId });
     }
   }
 
   async syncShopifyData() {
     try {
-      console.log('Syncing Shopify data...');
+      logDebug('Syncing Shopify data...');
       const result = await this.mcpClient.syncShopifyData();
 
       if (result.success) {
@@ -214,7 +216,7 @@ class APIIntegrationService {
 
       return result;
     } catch (error) {
-      console.error('Shopify sync failed:', error);
+      logError('Shopify sync failed:', error);
       throw error;
     }
   }
@@ -238,7 +240,7 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Amazon orders:', error);
+      logError('Failed to get Amazon orders:', error);
       return await this.getAmazonDataFromDB('orders', options);
     }
   }
@@ -258,14 +260,14 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Amazon inventory:', error);
+      logError('Failed to get Amazon inventory:', error);
       return await this.getAmazonDataFromDB('inventory', options);
     }
   }
 
   async syncAmazonData() {
     try {
-      console.log('Syncing Amazon data...');
+      logDebug('Syncing Amazon data...');
       const result = await this.mcpClient.syncAmazonData();
 
       if (result.success) {
@@ -274,7 +276,7 @@ class APIIntegrationService {
 
       return result;
     } catch (error) {
-      console.error('Amazon sync failed:', error);
+      logError('Amazon sync failed:', error);
       throw error;
     }
   }
@@ -298,7 +300,7 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Unleashed products:', error);
+      logError('Failed to get Unleashed products:', error);
       return await this.getUnleashedDataFromDB('products', options);
     }
   }
@@ -318,7 +320,7 @@ class APIIntegrationService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get Unleashed stock:', error);
+      logError('Failed to get Unleashed stock:', error);
       return await this.getUnleashedDataFromDB('stock', options);
     }
   }
@@ -332,7 +334,7 @@ class APIIntegrationService {
       const result = await this.mcpClient.queryDatabase(query, branch);
       return result;
     } catch (error) {
-      console.error('Database query failed:', error);
+      logError('Database query failed:', error);
 
       // Fallback to direct Prisma query
       return await prisma.$queryRawUnsafe(query);
@@ -341,16 +343,16 @@ class APIIntegrationService {
 
   async syncDatabaseBranches() {
     try {
-      console.log('Syncing database branches...');
+      logDebug('Syncing database branches...');
       const result = await this.mcpClient.syncDatabaseBranches();
 
       if (result.success) {
-        console.log('Database branches synced successfully');
+        logDebug('Database branches synced successfully');
       }
 
       return result;
     } catch (error) {
-      console.error('Database branch sync failed:', error);
+      logError('Database branch sync failed:', error);
       throw error;
     }
   }
@@ -361,7 +363,7 @@ class APIIntegrationService {
 
   async syncAllServices() {
     if (this.isSyncing) {
-      console.log('Sync already in progress, skipping...');
+      logDebug('Sync already in progress, skipping...');
       return;
     }
 
@@ -375,7 +377,7 @@ class APIIntegrationService {
     };
 
     try {
-      console.log('Starting full service sync...');
+      logDebug('Starting full service sync...');
 
       // Sync all services in parallel
       const [xeroResult, shopifyResult, amazonResult, dbResult] = await Promise.allSettled([
@@ -393,9 +395,9 @@ class APIIntegrationService {
       // Log sync results to MCP Server
       await this.mcpClient.logEvent('full-sync-completed', results);
 
-      console.log('Full service sync completed');
+      logDebug('Full service sync completed');
     } catch (error) {
-      console.error('Full sync failed:', error);
+      logError('Full sync failed:', error);
       results.error = error.message;
     } finally {
       this.isSyncing = false;
@@ -434,7 +436,7 @@ class APIIntegrationService {
         });
       }
     } catch (error) {
-      console.error(`Failed to store Xero ${type} data:`, error);
+      logError(`Failed to store Xero ${type} data:`, error);
     }
   }
 
@@ -464,7 +466,7 @@ class APIIntegrationService {
         });
       }
     } catch (error) {
-      console.error(`Failed to store Shopify ${type} data:`, error);
+      logError(`Failed to store Shopify ${type} data:`, error);
     }
   }
 
@@ -494,7 +496,7 @@ class APIIntegrationService {
         });
       }
     } catch (error) {
-      console.error(`Failed to store Amazon ${type} data:`, error);
+      logError(`Failed to store Amazon ${type} data:`, error);
     }
   }
 
@@ -524,7 +526,7 @@ class APIIntegrationService {
         });
       }
     } catch (error) {
-      console.error(`Failed to store Unleashed ${type} data:`, error);
+      logError(`Failed to store Unleashed ${type} data:`, error);
     }
   }
 
@@ -550,7 +552,7 @@ class APIIntegrationService {
         fromCache: true
       };
     } catch (error) {
-      console.error(`Failed to get Xero ${type} from database:`, error);
+      logError(`Failed to get Xero ${type} from database:`, error);
       return { [type]: [], fromCache: true, error: error.message };
     }
   }
@@ -573,7 +575,7 @@ class APIIntegrationService {
         fromCache: true
       };
     } catch (error) {
-      console.error(`Failed to get Shopify ${type} from database:`, error);
+      logError(`Failed to get Shopify ${type} from database:`, error);
       return { [type]: [], fromCache: true, error: error.message };
     }
   }
@@ -596,7 +598,7 @@ class APIIntegrationService {
         fromCache: true
       };
     } catch (error) {
-      console.error(`Failed to get Amazon ${type} from database:`, error);
+      logError(`Failed to get Amazon ${type} from database:`, error);
       return { [type]: [], fromCache: true, error: error.message };
     }
   }
@@ -619,7 +621,7 @@ class APIIntegrationService {
         fromCache: true
       };
     } catch (error) {
-      console.error(`Failed to get Unleashed ${type} from database:`, error);
+      logError(`Failed to get Unleashed ${type} from database:`, error);
       return { [type]: [], fromCache: true, error: error.message };
     }
   }
@@ -629,7 +631,7 @@ class APIIntegrationService {
   // ====================
 
   handleAPIUpdate(data) {
-    console.log('API update received:', data);
+    logDebug('API update received:', data);
 
     // Clear relevant cache
     if (data.service) {
@@ -647,7 +649,7 @@ class APIIntegrationService {
   }
 
   handleManufacturingAlert(alert) {
-    console.log('Manufacturing alert received:', alert);
+    logDebug('Manufacturing alert received:', alert);
 
     // Handle critical alerts
     if (alert.severity === 'critical') {
@@ -686,7 +688,7 @@ class APIIntegrationService {
         }
       });
     } catch (error) {
-      console.error(`Failed to update sync status for ${service}:`, error);
+      logError(`Failed to update sync status for ${service}:`, error);
     }
   }
 

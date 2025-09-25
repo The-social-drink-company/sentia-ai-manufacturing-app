@@ -24,6 +24,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, ComposedChart, Area, AreaChart, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ScatterChart, Scatter } from 'recharts';
 import ChartErrorBoundary from '../charts/ChartErrorBoundary';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const ProductionOptimization = () => {
   const [optimizationData, setOptimizationData] = useState(null);
@@ -47,7 +49,7 @@ const ProductionOptimization = () => {
           setAiRecommendations(mockOptimizationData.aiRecommendations);
         }
       } catch (error) {
-        console.error('Error fetching optimization data:', error);
+        logError('Error fetching optimization data:', error);
         setOptimizationData(mockOptimizationData);
         setAiRecommendations(mockOptimizationData.aiRecommendations);
       } finally {

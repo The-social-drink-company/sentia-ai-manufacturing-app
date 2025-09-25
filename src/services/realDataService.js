@@ -13,6 +13,8 @@
  */
 
 import axios from 'axios';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Environment configuration - NO DEFAULTS ALLOWED IN PRODUCTION
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
@@ -26,15 +28,15 @@ if (import.meta.env.PROD && !API_BASE) {
 
 // Logging utilities (compatible with existing codebase)
 const logInfo = (message, data) => {
-  if (import.meta.env.DEV) console.log(`[INFO] ${message}`, data);
+  if (import.meta.env.DEV) logDebug(`[INFO] ${message}`, data);
 };
 
 const logError = (message, error) => {
-  console.error(`[ERROR] ${message}`, error);
+  logError(`[ERROR] ${message}`, error);
 };
 
 const logWarn = (message, data) => {
-  if (import.meta.env.DEV) console.warn(`[WARN] ${message}`, data);
+  if (import.meta.env.DEV) logWarn(`[WARN] ${message}`, data);
 };
 
 // Request configuration with authentication

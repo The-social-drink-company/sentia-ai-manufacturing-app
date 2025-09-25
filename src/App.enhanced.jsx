@@ -31,6 +31,8 @@ import { Badge } from './components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from './components/ui/alert';
 import { 
+import { logDebug, logInfo, logWarn, logError } from './utils/logger';
+
   LayoutDashboard, 
   FileText, 
   Database, 
@@ -87,7 +89,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Application Error:', error, errorInfo);
+    logError('Application Error:', error, errorInfo);
   }
 
   render() {
@@ -364,7 +366,7 @@ const DashboardRouter = () => {
       const data = await response.json();
       setDashboardData(data);
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      logError('Error loading dashboard data:', error);
       setDashboardData(null);
     } finally {
       setLoading(false);
@@ -419,7 +421,7 @@ const DashboardRouter = () => {
           >
             <DataManagementCenter 
               onDataUpdate={(dataType, data) => {
-                console.log('Data updated:', dataType, data);
+                logDebug('Data updated:', dataType, data);
                 loadDashboardData(); // Refresh dashboard data
               }}
               currentAnalysisType="comprehensive"

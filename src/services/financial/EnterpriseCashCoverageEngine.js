@@ -14,6 +14,8 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { parse } from 'csv-parse/sync';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 // ==================== ENTERPRISE CASH COVERAGE ENGINE ====================
 export class EnterpriseCashCoverageEngine {
@@ -31,7 +33,7 @@ export class EnterpriseCashCoverageEngine {
    * Answers: "How much cash do I need for X days?"
    */
   async calculateCashCoverage(options = {}) {
-    console.log('[Cash Coverage] Starting Fortune 500-level analysis...');
+    logDebug('[Cash Coverage] Starting Fortune 500-level analysis...');
 
     // Fetch REAL financial data from multiple sources
     const realTimeData = await this.fetchRealTimeFinancials();
@@ -64,7 +66,7 @@ export class EnterpriseCashCoverageEngine {
     const periods = [30, 60, 90, 120, 180];
 
     for (const days of periods) {
-      console.log(`[Cash Coverage] Analyzing ${days}-day period...`);
+      logDebug(`[Cash Coverage] Analyzing ${days}-day period...`);
 
       const coverage = await this.calculatePeriodCoverage(
         realTimeData,
@@ -448,7 +450,7 @@ export class EnterpriseCashCoverageEngine {
    * Run Monte Carlo simulation for cash coverage probability
    */
   async runMonteCarloSimulation(outflows, inflows, workingCapital, days) {
-    console.log(`[Monte Carlo] Running ${this.simulationRuns} simulations...`);
+    logDebug(`[Monte Carlo] Running ${this.simulationRuns} simulations...`);
 
     const results = [];
 
@@ -1210,7 +1212,7 @@ export class EnterpriseCashCoverageEngine {
         lastUpdated: new Date()
       };
     } catch (error) {
-      console.error('Failed to fetch bank balances:', error);
+      logError('Failed to fetch bank balances:', error);
       throw new Error('Bank connection failed. Using last known balances.');
     }
   }
@@ -1227,7 +1229,7 @@ export class EnterpriseCashCoverageEngine {
 
       return xeroData[0] || {};
     } catch (error) {
-      console.error('Xero sync failed:', error);
+      logError('Xero sync failed:', error);
       return {};
     }
   }
@@ -1287,7 +1289,7 @@ export class EnterpriseCashCoverageEngine {
     const maxAge = 24 * 60 * 60 * 1000; // 24 hours
 
     if (age > maxAge) {
-      console.warn(`Financial data is ${Math.floor(age / (60 * 60 * 1000))} hours old`);
+      logWarn(`Financial data is ${Math.floor(age / (60 * 60 * 1000))} hours old`);
     }
 
     return true;

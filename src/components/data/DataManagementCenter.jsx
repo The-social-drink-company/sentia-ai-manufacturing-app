@@ -28,6 +28,8 @@ import {
 import { useDropzone } from 'react-dropzone';
 import CSVDataImportService from '../../services/data/CSVDataImportService';
 import MCPIntegratedAIService from '../../services/ai/MCPIntegratedAIService';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const DataManagementCenter = ({ onDataUpdate, currentAnalysisType = 'comprehensive' }) => {
   const { user, isLoaded } = useAuth();
@@ -99,7 +101,7 @@ const DataManagementCenter = ({ onDataUpdate, currentAnalysisType = 'comprehensi
       }
       
     } catch (error) {
-      console.error('Error loading data completeness:', error);
+      logError('Error loading data completeness:', error);
     } finally {
       setLoading(false);
     }
@@ -180,7 +182,7 @@ const DataManagementCenter = ({ onDataUpdate, currentAnalysisType = 'comprehensi
         }));
       }
     } catch (error) {
-      console.error('Upload error:', error);
+      logError('Upload error:', error);
       setUploadResults(prev => ({
         ...prev,
         [dataType]: {
@@ -208,7 +210,7 @@ const DataManagementCenter = ({ onDataUpdate, currentAnalysisType = 'comprehensi
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Template download error:', error);
+      logError('Template download error:', error);
       alert('Error downloading template');
     }
   };

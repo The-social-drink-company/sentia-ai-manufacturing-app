@@ -14,6 +14,8 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { parse } from 'csv-parse/sync';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 export class EnterpriseCashCoverageEngine {
   constructor() {
@@ -30,7 +32,7 @@ export class EnterpriseCashCoverageEngine {
    * Answers: "How much cash do I need for X days?"
    */
   async calculateCashCoverage(companyData) {
-    console.log('[Cash Coverage] Starting Fortune 500-level analysis...');
+    logDebug('[Cash Coverage] Starting Fortune 500-level analysis...');
 
     // Pull REAL data from accounting systems
     const realTimeData = await this.fetchRealTimeFinancials();
@@ -78,7 +80,7 @@ export class EnterpriseCashCoverageEngine {
   }
 
   async calculatePeriodCoverage(financials, days, companyData) {
-    console.log(`[Coverage] Calculating ${days}-day coverage...`);
+    logDebug(`[Coverage] Calculating ${days}-day coverage...`);
 
     // 1. Historical Analysis
     const historicalCashFlow = await this.getHistoricalCashFlow(days);
@@ -694,7 +696,7 @@ export class EnterpriseCashCoverageEngine {
         lastUpdated: new Date(xeroData.data.lastSyncDate)
       };
     } catch (error) {
-      console.error('Xero fetch failed:', error);
+      logError('Xero fetch failed:', error);
       throw new Error('Failed to fetch Xero data. Real data required.');
     }
   }
@@ -711,7 +713,7 @@ export class EnterpriseCashCoverageEngine {
         lastUpdated: new Date()
       };
     } catch (error) {
-      console.error('Bank data fetch failed:', error);
+      logError('Bank data fetch failed:', error);
       return { totalBalance: 0, accounts: [], lastUpdated: new Date() };
     }
   }
@@ -724,7 +726,7 @@ export class EnterpriseCashCoverageEngine {
 
       return erpData.data;
     } catch (error) {
-      console.error('ERP fetch failed:', error);
+      logError('ERP fetch failed:', error);
       return {};
     }
   }
@@ -1048,7 +1050,7 @@ export class EnterpriseCashCoverageEngine {
 
       return response.data;
     } catch (error) {
-      console.error('LLM call failed:', error);
+      logError('LLM call failed:', error);
       return null;
     }
   }

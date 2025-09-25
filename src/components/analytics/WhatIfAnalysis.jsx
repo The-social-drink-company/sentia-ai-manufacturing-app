@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import DateContextEngine from '../../services/DateContextEngine';
 import CashConversionCycleEngine from '../../services/CashConversionCycleEngine';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const WhatIfAnalysis = () => {
   // Calendar-aware engines for realistic calculations
@@ -155,7 +157,7 @@ const WhatIfAnalysis = () => {
       };
       
     } catch (error) {
-      console.error('What-If Analysis calculation error:', error);
+      logError('What-If Analysis calculation error:', error);
       // Fallback to basic calculations if calendar engine fails
       return generateFallbackCalculations(scenarios, marketData);
     }

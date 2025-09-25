@@ -6,6 +6,8 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { 
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
   Shield, 
   Users, 
   Building2, 
@@ -255,7 +257,7 @@ export const ExecutiveAuthProvider = ({ children }) => {
       }
 
     } catch (error) {
-      console.error('Error loading user role:', error);
+      logError('Error loading user role:', error);
       setAuthError('Failed to load user permissions');
       setUserRole(EXECUTIVE_ROLES.VIEWER);
       setPermissions(EXECUTIVE_ROLES.VIEWER.permissions);
@@ -550,7 +552,7 @@ export const RoleManagement = () => {
         }
       ]);
     } catch (error) {
-      console.error('Error loading users:', error);
+      logError('Error loading users:', error);
     } finally {
       setLoading(false);
     }

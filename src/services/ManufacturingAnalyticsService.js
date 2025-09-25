@@ -4,6 +4,8 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 class ManufacturingAnalyticsService {
   constructor() {
@@ -24,9 +26,9 @@ class ManufacturingAnalyticsService {
       await this.calculateInitialMetrics();
       
       this.isInitialized = true;
-      console.log('Manufacturing Analytics Service initialized successfully');
+      logDebug('Manufacturing Analytics Service initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize Manufacturing Analytics Service:', error);
+      logError('Failed to initialize Manufacturing Analytics Service:', error);
       throw error;
     }
   }

@@ -15,6 +15,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useNavigation } from './NavigationProvider';
 import { useTheme } from '../theming';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 export const QuickActions = ({ 
   className = '',
@@ -54,7 +56,7 @@ export const QuickActions = ({
         detail: { action: action.action, currentPath }
       }));
     } catch (error) {
-      console.error('Quick action failed:', error);
+      logError('Quick action failed:', error);
     } finally {
       setTimeout(() => setIsExecuting(null), 1000);
     }

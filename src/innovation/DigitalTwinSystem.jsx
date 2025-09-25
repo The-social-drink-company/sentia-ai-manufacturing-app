@@ -14,6 +14,8 @@ import {
 import { useAI } from '../ai';
 import { useRealtime } from '../realtime/RealtimeProvider';
 import { useTheme } from '../theming';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 export const DigitalTwinSystem = ({
   className = '',
@@ -234,7 +236,7 @@ export const DigitalTwinSystem = ({
       return result;
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
-        console.error('Simulation failed:', error);
+        logError('Simulation failed:', error);
       }
       return null;
     }
@@ -244,7 +246,7 @@ export const DigitalTwinSystem = ({
   const initializeAR = async () => {
     if (!enableAR || !navigator.xr) {
       if (process.env.NODE_ENV === 'development') {
-        console.warn('AR not supported or disabled');
+        logWarn('AR not supported or disabled');
       }
       return;
     }
@@ -267,7 +269,7 @@ export const DigitalTwinSystem = ({
       }
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to initialize AR:', error);
+        logError('Failed to initialize AR:', error);
       }
     }
   };
@@ -276,7 +278,7 @@ export const DigitalTwinSystem = ({
   const setupARRendering = (session) => {
     // This would include WebXR setup, Three.js integration, etc.
     if (process.env.NODE_ENV === 'development') {
-      console.log('AR rendering setup for session:', session);
+      logDebug('AR rendering setup for session:', session);
     }
   };
 
@@ -284,7 +286,7 @@ export const DigitalTwinSystem = ({
   const initializeVR = async () => {
     if (!enableVR || !navigator.xr) {
       if (process.env.NODE_ENV === 'development') {
-        console.warn('VR not supported or disabled');
+        logWarn('VR not supported or disabled');
       }
       return;
     }
@@ -304,7 +306,7 @@ export const DigitalTwinSystem = ({
       }
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to initialize VR:', error);
+        logError('Failed to initialize VR:', error);
       }
     }
   };
@@ -313,7 +315,7 @@ export const DigitalTwinSystem = ({
   const setupVRRendering = (session) => {
     // This would include WebXR setup, Three.js integration, etc.
     if (process.env.NODE_ENV === 'development') {
-      console.log('VR rendering setup for session:', session);
+      logDebug('VR rendering setup for session:', session);
     }
   };
 

@@ -5,6 +5,8 @@
  */
 
 import { useAuth, useUser, useClerk, useOrganization } from '@clerk/clerk-react';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // ==================== ENVIRONMENT VALIDATION ====================
 // Get real Clerk keys from environment - NO DEFAULTS ALLOWED
@@ -100,13 +102,13 @@ export const getUserRole = async (user) => {
   const role = user.publicMetadata?.role || user.unsafeMetadata?.role;
 
   if (!role) {
-    console.error('No role found in Clerk user metadata. User must have role assigned in Clerk dashboard.');
+    logError('No role found in Clerk user metadata. User must have role assigned in Clerk dashboard.');
     throw new Error('User role not configured. Contact administrator.');
   }
 
   // Validate role is real and valid
   if (!Object.values(VALID_ROLES).includes(role)) {
-    console.error(`Invalid role from Clerk: ${role}. Valid roles:`, VALID_ROLES);
+    logError(`Invalid role from Clerk: ${role}. Valid roles:`, VALID_ROLES);
     throw new Error(`Invalid role: ${role}. Contact administrator.`);
   }
 
@@ -126,7 +128,7 @@ export const getUserOrganization = async (user) => {
                         user.organizationMemberships?.[0]?.organization?.id;
 
   if (!organizationId) {
-    console.warn('User has no organization assigned');
+    logWarn('User has no organization assigned');
     return null;
   }
 
@@ -203,7 +205,7 @@ export const checkPermission = (userRole, requiredPermission) => {
   const userPermissions = PERMISSION_MATRIX[userRole];
 
   if (!userPermissions) {
-    console.error(`No permissions defined for role: ${userRole}`);
+    logError(`No permissions defined for role: ${userRole}`);
     return false;
   }
 
@@ -311,7 +313,7 @@ export const getAuthToken = async () => {
 
     return token;
   } catch (error) {
-    console.error('Error getting auth token:', error);
+    logError('Error getting auth token:', error);
     throw new Error(`Authentication token error: ${error.message}. No mock tokens allowed.`);
   }
 };
@@ -376,12 +378,12 @@ export const authenticatedFetch = async (url, options = {}) => {
  * NO FALLBACK TO MOCK - forces real authentication
  */
 export const handleAuthError = (error) => {
-  console.error('Authentication error:', error);
+  logError('Authentication error:', error);
 
   // Log error details for debugging
   if (error.errors) {
     error.errors.forEach(err => {
-      console.error(`Clerk Error: ${err.message} (${err.code})`);
+      logError(`Clerk Error: ${err.message} (${err.code})`);
     });
   }
 
@@ -462,7 +464,7 @@ export const updateUserMetadata = async (userId, metadata) => {
 
     return await response.json();
   } catch (error) {
-    console.error('Error updating user metadata:', error);
+    logError('Error updating user metadata:', error);
     throw error;
   }
 };
@@ -525,7 +527,7 @@ export const useUserPermissions = () => {
           setRole(userRole);
           setPermissions(getRolePermissions(userRole));
         } catch (error) {
-          console.error('Error loading permissions:', error);
+          logError('Error loading permissions:', error);
         }
       }
       setLoading(false);

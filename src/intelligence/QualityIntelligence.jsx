@@ -12,6 +12,8 @@ import {
 import { useAI } from '../ai';
 import { useRealtime } from '../realtime/RealtimeProvider';
 import { useTheme } from '../theming';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 export const QualityIntelligence = ({
   className = '',
@@ -96,7 +98,7 @@ export const QualityIntelligence = ({
       setBatchAnalysis(analysis.batchAnalysis || {});
 
     } catch (error) {
-      console.error('Quality analysis failed:', error);
+      logError('Quality analysis failed:', error);
     } finally {
       setIsAnalyzing(false);
     }

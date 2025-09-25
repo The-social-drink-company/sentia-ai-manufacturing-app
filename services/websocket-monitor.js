@@ -5,6 +5,8 @@
 
 import { getMCPClient } from './mcp-client.js';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class WebSocketMonitor extends EventEmitter {
   constructor() {
@@ -63,7 +65,7 @@ class WebSocketMonitor extends EventEmitter {
       }
     }, 1000);
 
-    console.log('WebSocket monitoring started');
+    logDebug('WebSocket monitoring started');
   }
 
   stopMonitoring() {
@@ -77,7 +79,7 @@ class WebSocketMonitor extends EventEmitter {
       this.uptimeInterval = null;
     }
 
-    console.log('WebSocket monitoring stopped');
+    logDebug('WebSocket monitoring stopped');
   }
 
   // ====================
@@ -100,7 +102,7 @@ class WebSocketMonitor extends EventEmitter {
     this.addToHistory(this.connectionHistory, connectionEvent);
     this.emit('connection-established', connectionEvent);
 
-    console.log('WebSocket connected to MCP Server');
+    logDebug('WebSocket connected to MCP Server');
     this.logStatus();
   }
 
@@ -118,7 +120,7 @@ class WebSocketMonitor extends EventEmitter {
     this.addToHistory(this.connectionHistory, disconnectionEvent);
     this.emit('connection-lost', disconnectionEvent);
 
-    console.log('WebSocket disconnected from MCP Server');
+    logDebug('WebSocket disconnected from MCP Server');
     this.logStatus();
   }
 
@@ -139,7 +141,7 @@ class WebSocketMonitor extends EventEmitter {
     this.addToHistory(this.connectionHistory, errorEvent);
     this.emit('connection-error', errorEvent);
 
-    console.error('WebSocket error:', error.message);
+    logError('WebSocket error:', error.message);
   }
 
   handleMessage(message) {
@@ -169,7 +171,7 @@ class WebSocketMonitor extends EventEmitter {
     this.addToHistory(this.messageHistory, aiEvent);
     this.emit('ai-response-received', aiEvent);
 
-    console.log(`AI Response received from ${aiEvent.model}`);
+    logDebug(`AI Response received from ${aiEvent.model}`);
   }
 
   handleManufacturingAlert(alert) {
@@ -185,7 +187,7 @@ class WebSocketMonitor extends EventEmitter {
     this.addToHistory(this.messageHistory, alertEvent);
     this.emit('manufacturing-alert-received', alertEvent);
 
-    console.log(`Manufacturing Alert: ${alert.severity} - ${alert.type}`);
+    logDebug(`Manufacturing Alert: ${alert.severity} - ${alert.type}`);
   }
 
   handleAPIUpdate(update) {
@@ -200,7 +202,7 @@ class WebSocketMonitor extends EventEmitter {
     this.addToHistory(this.messageHistory, updateEvent);
     this.emit('api-update-received', updateEvent);
 
-    console.log(`API Update from ${update.service}`);
+    logDebug(`API Update from ${update.service}`);
   }
 
   handleSystemStatus(status) {
@@ -230,7 +232,7 @@ class WebSocketMonitor extends EventEmitter {
     this.addToHistory(this.connectionHistory, failureEvent);
     this.emit('connection-failed', failureEvent);
 
-    console.error('Maximum reconnection attempts exceeded');
+    logError('Maximum reconnection attempts exceeded');
     this.logStatus();
   }
 
@@ -316,20 +318,20 @@ class WebSocketMonitor extends EventEmitter {
   }
 
   async testConnection() {
-    console.log('Testing WebSocket connection...');
+    logDebug('Testing WebSocket connection...');
 
     try {
       const result = await this.mcpClient.testConnection();
 
       if (result.healthy) {
-        console.log('WebSocket connection test successful');
+        logDebug('WebSocket connection test successful');
       } else {
-        console.log('WebSocket connection test failed:', result.error);
+        logDebug('WebSocket connection test failed:', result.error);
       }
 
       return result;
     } catch (error) {
-      console.error('WebSocket connection test error:', error);
+      logError('WebSocket connection test error:', error);
       return {
         healthy: false,
         error: error.message
@@ -338,7 +340,7 @@ class WebSocketMonitor extends EventEmitter {
   }
 
   reconnect() {
-    console.log('Forcing WebSocket reconnection...');
+    logDebug('Forcing WebSocket reconnection...');
     this.stats.connectionAttempts++;
 
     // Disconnect and reinitialize
@@ -380,15 +382,15 @@ class WebSocketMonitor extends EventEmitter {
   logStatus() {
     const stats = this.getStats();
 
-    console.log('========================================');
-    console.log('WebSocket Monitor Status');
-    console.log('========================================');
-    console.log(`Status: ${stats.currentStatus}`);
-    console.log(`Uptime: ${stats.uptimeFormatted}`);
-    console.log(`Success Rate: ${stats.successRate}%`);
-    console.log(`Messages: ${stats.messagesReceived} received, ${stats.messagesSent} sent`);
-    console.log(`Errors: ${stats.errors}`);
-    console.log('========================================');
+    logDebug('========================================');
+    logDebug('WebSocket Monitor Status');
+    logDebug('========================================');
+    logDebug(`Status: ${stats.currentStatus}`);
+    logDebug(`Uptime: ${stats.uptimeFormatted}`);
+    logDebug(`Success Rate: ${stats.successRate}%`);
+    logDebug(`Messages: ${stats.messagesReceived} received, ${stats.messagesSent} sent`);
+    logDebug(`Errors: ${stats.errors}`);
+    logDebug('========================================');
   }
 
   // ====================

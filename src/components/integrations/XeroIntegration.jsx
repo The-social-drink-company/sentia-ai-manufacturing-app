@@ -14,6 +14,8 @@ import {
   ClockIcon
 } from '@heroicons/react/24/outline';
 import { BanknotesIcon } from '@heroicons/react/24/solid';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const XeroIntegration = () => {
   const [connectionStatus, setConnectionStatus] = useState({
@@ -61,7 +63,7 @@ const XeroIntegration = () => {
       const data = await response.json();
       setConnectionStatus(data);
     } catch (error) {
-      console.error('Failed to check Xero status:', error);
+      logError('Failed to check Xero status:', error);
       setConnectionStatus({
         connected: false,
         status: 'error',
@@ -84,7 +86,7 @@ const XeroIntegration = () => {
         throw new Error('Failed to get authorization URL');
       }
     } catch (error) {
-      console.error('Failed to initiate Xero auth:', error);
+      logError('Failed to initiate Xero auth:', error);
       setConnectionStatus({
         connected: false,
         status: 'error',
@@ -111,7 +113,7 @@ const XeroIntegration = () => {
       // Refresh connection status
       await checkConnectionStatus();
     } catch (error) {
-      console.error('Manual sync failed:', error);
+      logError('Manual sync failed:', error);
       setSyncResult({
         success: false,
         error: error.message
@@ -145,7 +147,7 @@ const XeroIntegration = () => {
         setSyncResult(null);
       }
     } catch (error) {
-      console.error('Failed to disconnect Xero:', error);
+      logError('Failed to disconnect Xero:', error);
     }
   };
 

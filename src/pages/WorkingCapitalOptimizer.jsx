@@ -27,6 +27,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Radar, Bar, Line } from 'react-chartjs-2';
 import { CLIENT_REQUIREMENTS } from '../config/clientRequirements';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const WorkingCapitalOptimizer = () => {
   const navigate = useNavigate();
@@ -293,7 +295,7 @@ const WorkingCapitalOptimizer = () => {
           }
         }
       } catch (error) {
-        console.error('Failed to load working capital metrics:', error);
+        logError('Failed to load working capital metrics:', error);
       } finally {
         setLoading(false);
       }

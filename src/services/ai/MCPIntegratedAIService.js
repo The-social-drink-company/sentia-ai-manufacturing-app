@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 class MCPIntegratedAIService {
   constructor() {
@@ -16,10 +18,10 @@ class MCPIntegratedAIService {
   async initializeMCPConnection() {
     try {
       const response = await axios.get(`${this.mcpServerUrl}/health`);
-      console.log('MCP Server connected:', response.data);
+      logDebug('MCP Server connected:', response.data);
       this.mcpConnected = true;
     } catch (error) {
-      console.warn('MCP Server connection failed:', error.message);
+      logWarn('MCP Server connection failed:', error.message);
       this.mcpConnected = false;
     }
   }
@@ -54,7 +56,7 @@ class MCPIntegratedAIService {
       
       return analysis;
     } catch (error) {
-      console.error('MCP working capital analysis error:', error);
+      logError('MCP working capital analysis error:', error);
       return this.getFallbackAnalysis(data);
     }
   }
@@ -94,7 +96,7 @@ class MCPIntegratedAIService {
       
       return benchmarks;
     } catch (error) {
-      console.error('MCP benchmarking error:', error);
+      logError('MCP benchmarking error:', error);
       return this.getFallbackBenchmarks(params);
     }
   }
@@ -123,7 +125,7 @@ class MCPIntegratedAIService {
 
       return response.data;
     } catch (error) {
-      console.error('MCP cash flow forecast error:', error);
+      logError('MCP cash flow forecast error:', error);
       return this.getFallbackForecast(params);
     }
   }
@@ -150,7 +152,7 @@ class MCPIntegratedAIService {
 
       return response.data;
     } catch (error) {
-      console.error('MCP executive insights error:', error);
+      logError('MCP executive insights error:', error);
       return this.getFallbackInsights(data);
     }
   }
@@ -175,7 +177,7 @@ class MCPIntegratedAIService {
 
       return response.data;
     } catch (error) {
-      console.error('MCP scenario analysis error:', error);
+      logError('MCP scenario analysis error:', error);
       return this.getFallbackScenarioAnalysis(scenarios);
     }
   }
@@ -203,7 +205,7 @@ class MCPIntegratedAIService {
 
       return response.data;
     } catch (error) {
-      console.error('MCP real-time analysis error:', error);
+      logError('MCP real-time analysis error:', error);
       return null;
     }
   }
@@ -228,7 +230,7 @@ class MCPIntegratedAIService {
 
       return response.data;
     } catch (error) {
-      console.error('MCP multi-API integration error:', error);
+      logError('MCP multi-API integration error:', error);
       return null;
     }
   }
@@ -257,7 +259,7 @@ class MCPIntegratedAIService {
 
       return response.data;
     } catch (error) {
-      console.error('MCP pattern recognition error:', error);
+      logError('MCP pattern recognition error:', error);
       return null;
     }
   }
@@ -284,7 +286,7 @@ class MCPIntegratedAIService {
 
       return response.data;
     } catch (error) {
-      console.error('MCP board presentation error:', error);
+      logError('MCP board presentation error:', error);
       return this.getFallbackPresentation(data);
     }
   }
@@ -314,7 +316,7 @@ class MCPIntegratedAIService {
 
       return response.data;
     } catch (error) {
-      console.error('MCP risk assessment error:', error);
+      logError('MCP risk assessment error:', error);
       return this.getFallbackRiskAssessment(data);
     }
   }
@@ -436,7 +438,7 @@ class MCPIntegratedAIService {
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching AI models:', error);
+      logError('Error fetching AI models:', error);
       return [];
     }
   }
@@ -459,13 +461,13 @@ class MCPIntegratedAIService {
           const insight = JSON.parse(chunk.toString());
           callback(insight);
         } catch (error) {
-          console.error('Error parsing streamed insight:', error);
+          logError('Error parsing streamed insight:', error);
         }
       });
 
       return response.data;
     } catch (error) {
-      console.error('Error streaming insights:', error);
+      logError('Error streaming insights:', error);
       return null;
     }
   }

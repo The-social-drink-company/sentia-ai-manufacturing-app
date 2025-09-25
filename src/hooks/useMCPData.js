@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // MCP Server URL from environment
 const MCP_SERVER_URL = import.meta.env.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
@@ -29,7 +31,7 @@ export const useMCPData = (endpoint, options = {}) => {
       setData(result);
       setError(null);
     } catch (err) {
-      console.error('MCP fetch error:', err);
+      logError('MCP fetch error:', err);
       setError(err.message);
       // Fallback to mock data if MCP server is unavailable
       if (options.fallback) {
@@ -81,7 +83,7 @@ export const useMCPManufacturing = () => {
       toast.success('AI analysis complete');
       return result;
     } catch (err) {
-      console.error('MCP AI request error:', err);
+      logError('MCP AI request error:', err);
       toast.error('Failed to get AI analysis');
       throw err;
     } finally {
@@ -129,7 +131,7 @@ export const useMCPInventoryOptimization = () => {
       toast.success('Inventory optimization complete');
       return result;
     } catch (err) {
-      console.error('MCP inventory optimization error:', err);
+      logError('MCP inventory optimization error:', err);
       toast.error('Failed to optimize inventory');
       throw err;
     } finally {
@@ -165,7 +167,7 @@ export const useMCPDemandForecasting = () => {
       toast.success('Demand forecast generated');
       return result;
     } catch (err) {
-      console.error('MCP demand forecasting error:', err);
+      logError('MCP demand forecasting error:', err);
       toast.error('Failed to forecast demand');
       throw err;
     } finally {
@@ -186,7 +188,7 @@ export const useMCPWebSocket = (onMessage) => {
 
     ws.onopen = () => {
       setConnected(true);
-      console.log('Connected to MCP WebSocket');
+      logDebug('Connected to MCP WebSocket');
       toast.success('Connected to MCP real-time updates');
     };
 
@@ -197,18 +199,18 @@ export const useMCPWebSocket = (onMessage) => {
           onMessage(data);
         }
       } catch (err) {
-        console.error('WebSocket message parse error:', err);
+        logError('WebSocket message parse error:', err);
       }
     };
 
     ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      logError('WebSocket error:', error);
       toast.error('MCP WebSocket connection error');
     };
 
     ws.onclose = () => {
       setConnected(false);
-      console.log('Disconnected from MCP WebSocket');
+      logDebug('Disconnected from MCP WebSocket');
     };
 
     return () => {

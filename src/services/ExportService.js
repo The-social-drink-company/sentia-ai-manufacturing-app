@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 /**
  * ExportService - Handles dashboard data export functionality
  * Supports JSON, CSV, Excel, and PDF formats
@@ -15,7 +17,7 @@ class ExportService {
   async exportDashboardData(dashboardData, format = 'json', options = {}) {
     try {
       if (process.env.NODE_ENV === 'development') {
-        console.log('Exporting dashboard data:', { format, options, dataKeys: Object.keys(dashboardData || {}) });
+        logDebug('Exporting dashboard data:', { format, options, dataKeys: Object.keys(dashboardData || {}) });
       }
       
       const exportData = await this.prepareExportData(dashboardData, options);
@@ -33,7 +35,7 @@ class ExportService {
           throw new Error(`Unsupported export format: ${format}`);
       }
     } catch (error) {
-      console.error('Export failed:', error);
+      logError('Export failed:', error);
       alert(`Export failed: ${error.message}`);
       throw new Error(`Export failed: ${error.message}`);
     }
@@ -216,7 +218,7 @@ class ExportService {
       const success = this.downloadFile(blob, finalFilename);
       return { success, format: 'json', size: blob.size, filename: finalFilename };
     } catch (error) {
-      console.error('JSON export failed:', error);
+      logError('JSON export failed:', error);
       return { success: false, format: 'json', error: error.message };
     }
   }
@@ -234,7 +236,7 @@ class ExportService {
       const success = this.downloadFile(blob, finalFilename);
       return { success, format: 'csv', size: blob.size, filename: finalFilename };
     } catch (error) {
-      console.error('CSV export failed:', error);
+      logError('CSV export failed:', error);
       return { success: false, format: 'csv', error: error.message };
     }
   }
@@ -253,7 +255,7 @@ class ExportService {
       const success = this.downloadFile(blob, finalFilename);
       return { success, format: 'excel', size: blob.size, filename: finalFilename };
     } catch (error) {
-      console.error('Excel export failed:', error);
+      logError('Excel export failed:', error);
       return { success: false, format: 'excel', error: error.message };
     }
   }
@@ -270,7 +272,7 @@ class ExportService {
       const success = this.downloadFile(blob, finalFilename);
       return { success, format: 'pdf', size: blob.size, filename: finalFilename };
     } catch (error) {
-      console.error('PDF export failed:', error);
+      logError('PDF export failed:', error);
       return { success: false, format: 'pdf', error: error.message };
     }
   }
@@ -406,7 +408,7 @@ class ExportService {
   downloadFile(blob, filename) {
     try {
       if (process.env.NODE_ENV === 'development') {
-        console.log('Downloading file:', filename, 'Size:', blob.size, 'bytes');
+        logDebug('Downloading file:', filename, 'Size:', blob.size, 'bytes');
       }
       
       const url = window.URL.createObjectURL(blob);
@@ -425,7 +427,7 @@ class ExportService {
       
       return true;
     } catch (error) {
-      console.error('Download failed:', error);
+      logError('Download failed:', error);
       alert('Download failed. Your browser may be blocking the download.');
       return false;
     }

@@ -13,6 +13,8 @@ import { EnterpriseDataPipeline } from '../pipeline/EnterpriseDataPipeline.js';
 import Bull from 'bull';
 import { EventEmitter } from 'events';
 import pLimit from 'p-limit';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 export class StrategicPlanningAI extends EventEmitter {
   constructor() {
@@ -65,7 +67,7 @@ export class StrategicPlanningAI extends EventEmitter {
       }
       this.industryData = benchmarks;
     } catch (error) {
-      console.error('Failed to load industry benchmarks:', error);
+      logError('Failed to load industry benchmarks:', error);
       throw error;
     }
   }
@@ -89,7 +91,7 @@ export class StrategicPlanningAI extends EventEmitter {
    * Fortune 500-level strategic intelligence
    */
   async analyzeStrategicPosition() {
-    console.log('Starting comprehensive strategic analysis...');
+    logDebug('Starting comprehensive strategic analysis...');
 
     try {
       // Fetch all real business data
@@ -144,7 +146,7 @@ export class StrategicPlanningAI extends EventEmitter {
       };
 
     } catch (error) {
-      console.error('Strategic analysis failed:', error);
+      logError('Strategic analysis failed:', error);
       throw new Error('Strategic analysis requires real business data. Connect data sources.');
     }
   }
@@ -154,7 +156,7 @@ export class StrategicPlanningAI extends EventEmitter {
    * McKinsey-level growth modeling
    */
   async optimizeGrowthStrategy(context = {}) {
-    console.log('Optimizing growth strategy...');
+    logDebug('Optimizing growth strategy...');
 
     const realData = await this.fetchRealBusinessData();
     this.validateRealData(realData);
@@ -197,7 +199,7 @@ export class StrategicPlanningAI extends EventEmitter {
    * Monte Carlo + AI-powered scenario generation
    */
   async runScenarioAnalysis(parameters = {}) {
-    console.log('Running advanced scenario planning...');
+    logDebug('Running advanced scenario planning...');
 
     const baseCase = await this.fetchRealBusinessData();
     this.validateRealData(baseCase);
@@ -239,7 +241,7 @@ export class StrategicPlanningAI extends EventEmitter {
    * Real competitor analysis with market data
    */
   async analyzeCompetitiveLandscape() {
-    console.log('Analyzing competitive landscape...');
+    logDebug('Analyzing competitive landscape...');
 
     const competitorData = await this.fetchCompetitorData();
     const marketData = await this.fetchMarketIntelligence();
@@ -282,7 +284,7 @@ export class StrategicPlanningAI extends EventEmitter {
    * Investment banking-grade M&A evaluation
    */
   async evaluateMergerOpportunity(targetCompany) {
-    console.log(`Evaluating M&A opportunity: ${targetCompany}`);
+    logDebug(`Evaluating M&A opportunity: ${targetCompany}`);
 
     const targetData = await this.fetchTargetCompanyData(targetCompany);
     const ourData = await this.fetchRealBusinessData();
@@ -331,7 +333,7 @@ export class StrategicPlanningAI extends EventEmitter {
    * Enterprise risk management with AI
    */
   async assessEnterpriseRisks() {
-    console.log('Assessing enterprise risks...');
+    logDebug('Assessing enterprise risks...');
 
     const businessData = await this.fetchRealBusinessData();
     const marketData = await this.fetchMarketIntelligence();
@@ -392,7 +394,7 @@ export class StrategicPlanningAI extends EventEmitter {
    * Fortune 500 board presentation quality
    */
   async generateBoardReport(analysis, recommendations) {
-    console.log('Generating board-ready report...');
+    logDebug('Generating board-ready report...');
 
     const executiveNarrative = await this.generateExecutiveNarrative(analysis);
 
@@ -579,7 +581,7 @@ export class StrategicPlanningAI extends EventEmitter {
   async fetchCompetitorData() {
     const competitors = await RealDatabaseQueries.getCompetitorIntelligence();
     if (!competitors || competitors.length === 0) {
-      console.warn('Limited competitor data available');
+      logWarn('Limited competitor data available');
       return [];
     }
     return competitors;

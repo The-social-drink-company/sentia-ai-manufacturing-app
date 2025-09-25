@@ -9,15 +9,17 @@ const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 
 // Import bulletproof auth provider for reliable authentication
 import { BulletproofAuthProvider } from './auth/BulletproofAuthProvider';
+import { logDebug, logInfo, logWarn, logError } from './utils/logger';
+
 
 const AppMultiStage = () => {
   const [appState, setAppState] = useState('loading'); // Skip landing page, go straight to loading
   const [clerkLoaded, setClerkLoaded] = useState(true); // Start with Clerk loaded
 
-  console.log('[AppMultiStage] Current state:', { appState, clerkLoaded });
+  logDebug('[AppMultiStage] Current state:', { appState, clerkLoaded });
 
   const handleGetStarted = () => {
-    console.log('[AppMultiStage] Get started clicked');
+    logDebug('[AppMultiStage] Get started clicked');
     // Start loading Clerk and show multi-stage loader
     setAppState('loading');
 
@@ -29,7 +31,7 @@ const AppMultiStage = () => {
   };
 
   const handleLoadingComplete = () => {
-    console.log('[AppMultiStage] Loading complete, moving to authenticated');
+    logDebug('[AppMultiStage] Loading complete, moving to authenticated');
     setAppState('authenticated');
   };
 
@@ -45,19 +47,19 @@ const AppMultiStage = () => {
 
   // Landing page - no Clerk loaded yet
   if (appState === 'landing') {
-    console.log('[AppMultiStage] Rendering landing page');
+    logDebug('[AppMultiStage] Rendering landing page');
     return <LandingPage onGetStarted={handleGetStarted} />;
   }
 
   // Multi-stage loading
   if (appState === 'loading') {
-    console.log('[AppMultiStage] Rendering loading stage');
+    logDebug('[AppMultiStage] Rendering loading stage');
     return <MultiStageLoader onComplete={handleLoadingComplete} />;
   }
 
   // Authenticated app with bulletproof auth
   if (appState === 'authenticated' && clerkLoaded) {
-    console.log('[AppMultiStage] Rendering authenticated app');
+    logDebug('[AppMultiStage] Rendering authenticated app');
     return (
       <BulletproofAuthProvider>
         <Suspense fallback={<LoadingSpinner size="lg" />}>

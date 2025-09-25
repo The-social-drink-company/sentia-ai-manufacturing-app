@@ -5,6 +5,8 @@ import { requireAuth, requireRole, requireManager } from '../middleware/clerkAut
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import {
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
   productionMetricsSchema,
   productionScheduleSchema,
   productionLineSchema,
@@ -32,11 +34,11 @@ router.get('/metrics',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Production metrics');
+      logDebug('[Cache Hit] Production metrics');
       return res.json(cached);
     }
 
-    console.log('[Cache Miss] Production metrics - fetching from database');
+    logDebug('[Cache Miss] Production metrics - fetching from database');
 
     // Build where clause
     const where = {};

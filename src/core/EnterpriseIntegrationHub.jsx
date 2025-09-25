@@ -26,6 +26,8 @@ import { GlobalComplianceSystem } from '../compliance/GlobalComplianceSystem';
 import { InternationalizationProvider, useI18n } from '../i18n/InternationalizationProvider';
 import { DigitalTwinSystem } from '../innovation/DigitalTwinSystem';
 import dataAggregationService from '../realtime/services/dataAggregationService';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 // Performance monitoring
 const performanceMonitor = {
@@ -140,13 +142,13 @@ export const EnterpriseIntegrationHub = ({ children }) => {
       await verifyIntegrationHealth();
       
       const initTime = performanceMonitor.endMeasure('system-initialization');
-      console.log(`Enterprise system initialized in ${initTime.toFixed(2)}ms`);
+      logDebug(`Enterprise system initialized in ${initTime.toFixed(2)}ms`);
       
       setSystemStatus('operational');
       setIsFullyIntegrated(true);
       
     } catch (error) {
-      console.error('Failed to initialize enterprise system:', error);
+      logError('Failed to initialize enterprise system:', error);
       setSystemStatus('error');
     }
   };
@@ -175,7 +177,7 @@ export const EnterpriseIntegrationHub = ({ children }) => {
       
       return true;
     } catch (error) {
-      console.error(`Failed to initialize module ${moduleName}:`, error);
+      logError(`Failed to initialize module ${moduleName}:`, error);
       
       setIntegrationHealth(prev => ({
         ...prev,
@@ -208,7 +210,7 @@ export const EnterpriseIntegrationHub = ({ children }) => {
     const unhealthyModules = healthChecks.filter(check => !check.healthy);
     
     if (unhealthyModules.length > 0) {
-      console.warn('Unhealthy modules detected:', unhealthyModules);
+      logWarn('Unhealthy modules detected:', unhealthyModules);
     }
     
     return unhealthyModules.length === 0;
@@ -269,7 +271,7 @@ export const EnterpriseIntegrationHub = ({ children }) => {
 
   // System control functions
   const restartModule = useCallback(async (moduleName) => {
-    console.log(`Restarting module: ${moduleName}`);
+    logDebug(`Restarting module: ${moduleName}`);
     
     setActiveModules(prev => {
       const updated = new Set(prev);
@@ -283,7 +285,7 @@ export const EnterpriseIntegrationHub = ({ children }) => {
   }, []);
 
   const shutdownSystem = useCallback(() => {
-    console.log('Shutting down enterprise system...');
+    logDebug('Shutting down enterprise system...');
     
     dataAggregationService.stop();
     setSystemStatus('shutdown');

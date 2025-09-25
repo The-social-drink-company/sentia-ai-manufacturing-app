@@ -8,6 +8,8 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -18,7 +20,7 @@ class SecurityAuditAgent {
   }
 
   async run() {
-    console.log(`🔐 Security Audit Agent scanning ${this.branch}...`);
+    logDebug(`🔐 Security Audit Agent scanning ${this.branch}...`);
     
     const vulnerabilities = await this.detectVulnerabilities();
     
@@ -155,7 +157,7 @@ class SecurityAuditAgent {
             break;
         }
       } catch (error) {
-        console.error(`Failed to fix ${vuln.type}: ${error.message}`);
+        logError(`Failed to fix ${vuln.type}: ${error.message}`);
       }
     }
   }
@@ -179,7 +181,7 @@ class SecurityAuditAgent {
         });
       }
     } catch (error) {
-      console.error(`npm audit fix failed: ${error.message}`);
+      logError(`npm audit fix failed: ${error.message}`);
     }
   }
 
@@ -219,7 +221,7 @@ class SecurityAuditAgent {
           });
         }
       } catch (error) {
-        console.error(`Failed to fix secrets in ${file}: ${error.message}`);
+        logError(`Failed to fix secrets in ${file}: ${error.message}`);
       }
     }
   }
@@ -251,7 +253,7 @@ class SecurityAuditAgent {
           });
         }
       } catch (error) {
-        console.error(`Failed to fix regex in ${file}: ${error.message}`);
+        logError(`Failed to fix regex in ${file}: ${error.message}`);
       }
     }
   }
@@ -279,7 +281,7 @@ class SecurityAuditAgent {
           });
         }
       } catch (error) {
-        console.error(`Failed to fix eval in ${file}: ${error.message}`);
+        logError(`Failed to fix eval in ${file}: ${error.message}`);
       }
     }
   }
@@ -330,10 +332,10 @@ async function main() {
   const result = await agent.run();
   
   // Output JSON result for orchestrator
-  console.log(JSON.stringify(result));
+  logDebug(JSON.stringify(result));
 }
 
 main().catch(error => {
-  console.error(error);
+  logError(error);
   process.exit(1);
 });

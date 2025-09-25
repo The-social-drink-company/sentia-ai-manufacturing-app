@@ -8,6 +8,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,9 +34,9 @@ export class InteractionLearningSystem {
       // Load existing learning patterns if available
       await this.loadLearningData();
       
-      console.log('✅ Interaction Learning System initialized');
+      logDebug('✅ Interaction Learning System initialized');
     } catch (error) {
-      console.error('❌ Failed to initialize Interaction Learning System:', error);
+      logError('❌ Failed to initialize Interaction Learning System:', error);
     }
   }
 
@@ -60,7 +62,7 @@ export class InteractionLearningSystem {
       
       return enrichedInteraction;
     } catch (error) {
-      console.error('Failed to store interaction:', error);
+      logError('Failed to store interaction:', error);
       throw error;
     }
   }
@@ -279,7 +281,7 @@ export class InteractionLearningSystem {
       const logEntry = JSON.stringify(interaction) + '\n';
       await fs.appendFile(filepath, logEntry);
     } catch (error) {
-      console.error('Failed to persist interaction:', error);
+      logError('Failed to persist interaction:', error);
     }
   }
 
@@ -297,7 +299,7 @@ export class InteractionLearningSystem {
       const logEntry = JSON.stringify(gapEntry) + '\n';
       await fs.appendFile(filepath, logEntry);
     } catch (error) {
-      console.error('Failed to log knowledge gap:', error);
+      logError('Failed to log knowledge gap:', error);
     }
   }
 
@@ -313,11 +315,11 @@ export class InteractionLearningSystem {
         this.learningPatterns.set(key, value);
       }
       
-      console.log(`Loaded ${this.learningPatterns.size} learning patterns`);
+      logDebug(`Loaded ${this.learningPatterns.size} learning patterns`);
     } catch (error) {
       // File doesn't exist yet, which is fine for first run
       if (error.code !== 'ENOENT') {
-        console.error('Error loading learning data:', error);
+        logError('Error loading learning data:', error);
       }
     }
   }
@@ -331,9 +333,9 @@ export class InteractionLearningSystem {
       const patternsObj = Object.fromEntries(this.learningPatterns);
       
       await fs.writeFile(patternsFile, JSON.stringify(patternsObj, null, 2));
-      console.log('Learning patterns saved successfully');
+      logDebug('Learning patterns saved successfully');
     } catch (error) {
-      console.error('Failed to save learning data:', error);
+      logError('Failed to save learning data:', error);
     }
   }
 

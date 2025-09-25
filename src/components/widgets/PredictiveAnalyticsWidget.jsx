@@ -12,6 +12,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
 import { Line, Bar } from 'react-chartjs-2';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const PredictiveAnalyticsWidget = ({ className = '' }) => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('30d');
@@ -38,7 +40,7 @@ const PredictiveAnalyticsWidget = ({ className = '' }) => {
         if (!response.ok) throw new Error('Failed to fetch predictive analytics');
         return await response.json();
       } catch (error) {
-        console.error('Predictive analytics fetch error:', error);
+        logError('Predictive analytics fetch error:', error);
         // Return empty data structure - NO MOCK DATA
         return {
           historical: [],

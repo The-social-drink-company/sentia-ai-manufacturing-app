@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 /**
  * CENTRALIZED AUTHENTICATION CONFIGURATION
  *
@@ -13,12 +15,12 @@ export const clerkConfig = {
 
     // Validate key format
     if (!key) {
-      console.warn('[Auth] No Clerk publishable key found, using demo mode');
+      logWarn('[Auth] No Clerk publishable key found, using demo mode');
       return null;
     }
 
     if (!key.startsWith('pk_test_') && !key.startsWith('pk_live_')) {
-      console.error('[Auth] Invalid Clerk key format:', key.substring(0, 15) + '...');
+      logError('[Auth] Invalid Clerk key format:', key.substring(0, 15) + '...');
       return null;
     }
 
@@ -177,5 +179,5 @@ export function checkAuthStatus() {
 
 // Log initial auth configuration
 if (import.meta.env.MODE === 'development') {
-  console.log('[Auth Configuration]', checkAuthStatus());
+  logDebug('[Auth Configuration]', checkAuthStatus());
 }

@@ -11,6 +11,8 @@ import {
   CubeIcon
 } from '@heroicons/react/24/outline';
 import { productionIntegrationService } from '../../services/ProductionIntegrationService.js';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 const RealTimeProductionMonitor = () => {
   const [productionStatus, setProductionStatus] = useState(null);
@@ -29,7 +31,7 @@ const RealTimeProductionMonitor = () => {
         setError(null);
       } catch (err) {
         setError(`Failed to initialize production systems: ${err.message}`);
-        console.error('Production initialization error:', err);
+        logError('Production initialization error:', err);
       } finally {
         setLoading(false);
       }
@@ -47,7 +49,7 @@ const RealTimeProductionMonitor = () => {
       setError(null);
     } catch (err) {
       setError(`Failed to fetch production status: ${err.message}`);
-      console.error('Production status error:', err);
+      logError('Production status error:', err);
     }
   }, []);
 

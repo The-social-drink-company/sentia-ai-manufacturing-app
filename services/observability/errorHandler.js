@@ -1,5 +1,7 @@
 // Production Error Handler - Enterprise Grade Error Management
 import { logError, logWarn, logInfo } from './structuredLogger.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class ProductionErrorHandler {
   constructor() {
@@ -24,7 +26,7 @@ class ProductionErrorHandler {
       
       // Prevent process crash in development
       if (process.env.NODE_ENV === 'development') {
-        console.warn('Unhandled Promise Rejection handled gracefully');
+        logWarn('Unhandled Promise Rejection handled gracefully');
       }
     });
 

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 class ChartErrorBoundary extends Component {
   constructor(props) {
@@ -13,7 +15,7 @@ class ChartErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.warn('Chart rendering error:', error, errorInfo);
+    logWarn('Chart rendering error:', error, errorInfo);
   }
 
   render() {

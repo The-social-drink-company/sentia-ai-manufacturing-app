@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth, useSession } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClockIcon, ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+
 
 /**
  * SessionManager Component - Manages session lifecycle and automatic refresh
@@ -32,7 +34,7 @@ const SessionManager = ({ children, warningTime = 300000 }) => { // 5 minutes wa
       // Get a fresh token from Clerk
       const token = await getToken({ template: 'default' });
       if (token) {
-        // // // // // // // console.log('Session refreshed successfully');
+        // // // // // // // logDebug('Session refreshed successfully');
         setShowWarning(false);
         // Update session expiry time
         if (session?.lastActiveAt) {

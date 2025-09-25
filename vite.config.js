@@ -18,12 +18,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react({
         jsxRuntime: 'automatic',
-        fastRefresh: true,
-        babel: {
-          plugins: [
-            ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }]
-          ]
-        }
+        fastRefresh: true
       })
     ],
 
@@ -209,8 +204,10 @@ export default defineConfig(({ mode }) => {
       // Target modern browsers
       target: 'es2020',
 
-      // Polyfill configuration
-      polyfillModulePreload: true,
+      // Module preload configuration
+      modulePreload: {
+        polyfill: true
+      },
 
       // Asset inlining threshold
       assetsInlineLimit: 4096 // 4KB

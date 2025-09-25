@@ -26,18 +26,18 @@ import { ErrorBoundary } from 'react-error-boundary';
 // ============================================================================
 
 // Landing & Auth Pages
-const Landing = lazy(() => import('./pages/Landing'));
-const Login = lazy(() => import('./pages/Login'));
-const Signup = lazy(() => import('./pages/Signup'));
+const Landing = lazy(() => import('./pages/LandingPage'));
+const Login = lazy(() => import('./pages/LoginPage'));
+const Signup = lazy(() => import('./pages/SignupPage'));
 
 // Dashboard Pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const EnhancedDashboard = lazy(() => import('./pages/EnhancedDashboard'));
 const EnterpriseDashboard = lazy(() => import('./pages/Dashboard/EnterpriseDashboard'));
-const WorldClassDashboard = lazy(() => import('./pages/Dashboard/WorldClassDashboard'));
+const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'));
 
 // Financial Management Pages (NEW)
-const WorkingCapital = lazy(() => import('./pages/WorkingCapital'));
+const WorkingCapital = lazy(() => import('./components/financial/WorkingCapital'));
 const CashRunway = lazy(() => import('./pages/CashRunway'));
 const FundingCalculator = lazy(() => import('./pages/FundingCalculator'));
 const WorkingCapitalOptimizer = lazy(() => import('./pages/WorkingCapitalOptimizer'));
@@ -52,8 +52,8 @@ const SupplyChain = lazy(() => import('./pages/SupplyChain'));
 // Analytics Pages
 const Analytics = lazy(() => import('./pages/Analytics'));
 const Forecasting = lazy(() => import('./pages/Forecasting'));
-const WhatIfAnalysis = lazy(() => import('./pages/WhatIfAnalysis'));
-const AIInsights = lazy(() => import('./pages/AIInsights'));
+const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
+const AIInsights = lazy(() => import('./components/analytics/AIInsights'));
 
 // Mobile Pages
 const Mobile = lazy(() => import('./pages/Mobile'));
@@ -66,7 +66,7 @@ const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 // Layout Components
 const Header = lazy(() => import('./components/layout/Header'));
 const Sidebar = lazy(() => import('./components/layout/Sidebar'));
-const Footer = lazy(() => import('./components/layout/Footer'));
+// const Footer = lazy(() => import('./components/layout/Footer')); // Footer doesn't exist yet
 
 // ============================================================================
 // QUERY CLIENT CONFIGURATION
@@ -345,10 +345,7 @@ const AppLayout = () => {
         </main>
       </div>
 
-      {/* Footer */}
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      {/* Footer - Component not yet created */}
     </div>
   );
 };

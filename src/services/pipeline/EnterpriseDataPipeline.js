@@ -29,13 +29,13 @@ export class EnterpriseDataPipeline extends EventEmitter {
   constructor() {
     super();
 
-    // Initialize core services
-    this.prisma = new PrismaClient({
+    // Initialize core services (disabled for client-side)
+    this.prisma = null; /* new PrismaClient({
       log: ['error', 'warn'],
       errorFormat: 'pretty'
-    });
+    }); */
 
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    this.redis = null; // new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
     this.pollers = new Map();
     this.webhooks = new Map();
     this.streams = new Map();
@@ -54,9 +54,9 @@ export class EnterpriseDataPipeline extends EventEmitter {
   initializeQueues() {
     logDebug('[Pipeline] Initializing message queues...');
 
-    // Message queues for reliable processing
+    // Message queues for reliable processing (disabled for client-side)
     this.queues = {
-      ingestion: new Bull('data-ingestion', {
+      ingestion: null, /* new Bull('data-ingestion', {
         redis: this.redis,
         defaultJobOptions: {
           removeOnComplete: 100,
@@ -67,39 +67,39 @@ export class EnterpriseDataPipeline extends EventEmitter {
             delay: 2000
           }
         }
-      }),
+      }), */
 
-      processing: new Bull('data-processing', {
+      processing: null, /* new Bull('data-processing', {
         redis: this.redis,
         defaultJobOptions: {
           removeOnComplete: 100,
           attempts: 5
         }
-      }),
+      }), */
 
-      analysis: new Bull('data-analysis', {
+      analysis: null, /* new Bull('data-analysis', {
         redis: this.redis,
         defaultJobOptions: {
           removeOnComplete: 50,
           attempts: 3
         }
-      }),
+      }), */
 
-      alerts: new Bull('data-alerts', {
+      alerts: null, /* new Bull('data-alerts', {
         redis: this.redis,
         defaultJobOptions: {
           priority: 1,
           attempts: 5
         }
-      }),
+      }), */
 
-      warehouse: new Bull('data-warehouse', {
+      warehouse: null /* new Bull('data-warehouse', {
         redis: this.redis,
         defaultJobOptions: {
           removeOnComplete: 20,
           attempts: 10
         }
-      })
+      }) */
     };
 
     // Setup queue processors

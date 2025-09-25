@@ -57,7 +57,6 @@ import {
   CommandLineIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
-import { useAuthRole } from '../../hooks/useAuthRole';
 import { useLayoutStore } from '../../stores/layoutStore';
 import { useEnterpriseTheme } from '../ui/EnterpriseThemeSwitcher';
 import { logDebug } from '../../utils/logger';

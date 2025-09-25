@@ -54,7 +54,6 @@ import {
   RocketLaunchIcon,
   LightBulbIcon
 } from '@heroicons/react/24/outline';
-import { useAuthRole } from '../../hooks/useAuthRole';
 import { useEnterpriseTheme } from './EnterpriseThemeSwitcher';
 import { logDebug } from '../../utils/logger';
 

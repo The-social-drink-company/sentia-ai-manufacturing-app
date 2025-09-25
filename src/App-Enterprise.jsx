@@ -29,7 +29,6 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 import { logDebug, logInfo, logWarn, logError } from './utils/logger';
 
 

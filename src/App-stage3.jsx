@@ -8,14 +8,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
-import { useAuth } from '@clerk/clerk-react';
-
 // Core components
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
-import ProtectedRoute from './components/auth/ProtectedRoute';
-
 // Stage 1: Core pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Settings = lazy(() => import('./pages/Settings'));
@@ -46,7 +42,10 @@ const queryClient = new QueryClient({
 });
 
 function AppStage3() {
-  const { isLoaded, isSignedIn } = useAuth();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
 
   if (!isLoaded) {
     return <LoadingSpinner />;

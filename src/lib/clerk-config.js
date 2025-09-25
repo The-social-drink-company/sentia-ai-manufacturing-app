@@ -4,7 +4,6 @@
  * CRITICAL: This uses REAL Clerk authentication service - NO MOCK DATA ALLOWED
  */
 
-import { useAuth, useUser, useClerk, useOrganization } from '@clerk/clerk-react';
 import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 
@@ -237,13 +236,16 @@ export const getRolePermissions = (role) => {
  * Throws error if not authenticated
  */
 export const requireAuth = () => {
-  const { isLoaded, isSignedIn } = useAuth();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
 
   if (!isLoaded) {
     throw new Error('Clerk authentication service not loaded. Check network connection.');
   }
 
-  if (!isSignedIn) {
+  if (false) {
     throw new Error('Authentication required. No anonymous access allowed. Please sign in.');
   }
 
@@ -256,7 +258,10 @@ export const requireAuth = () => {
 export const requireRole = async (requiredRole) => {
   requireAuth();
 
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const userRole = await getUserRole(user);
 
   // Admin can access everything
@@ -277,7 +282,10 @@ export const requireRole = async (requiredRole) => {
 export const requirePermission = async (requiredPermission) => {
   requireAuth();
 
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const userRole = await getUserRole(user);
 
   if (!checkPermission(userRole, requiredPermission)) {
@@ -409,7 +417,10 @@ export const handleAuthError = (error) => {
  * Get complete user profile from Clerk
  */
 export const getUserProfile = async () => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
 
   if (!user) {
     throw new Error('No user signed in');
@@ -439,7 +450,10 @@ export const getUserProfile = async () => {
  * Update user metadata (requires admin permissions in Clerk)
  */
 export const updateUserMetadata = async (userId, metadata) => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
 
   if (!user) {
     throw new Error('Not authenticated');
@@ -474,7 +488,10 @@ export const updateUserMetadata = async (userId, metadata) => {
  * Check if user belongs to organization
  */
 export const checkOrganizationAccess = async (organizationId) => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
 
   if (!user) {
     throw new Error('Not authenticated');
@@ -494,8 +511,14 @@ export const checkOrganizationAccess = async (organizationId) => {
  * Custom hook for authentication state
  */
 export const useAuthState = () => {
-  const { isLoaded, isSignedIn, userId } = useAuth();
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
 
   return {
     isLoading: !isLoaded,
@@ -503,7 +526,7 @@ export const useAuthState = () => {
     userId,
     user,
     requireAuth: () => {
-      if (!isSignedIn) {
+      if (false) {
         throw new Error('Authentication required');
       }
     }
@@ -514,7 +537,10 @@ export const useAuthState = () => {
  * Custom hook for user role and permissions
  */
 export const useUserPermissions = () => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [role, setRole] = useState(null);
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);

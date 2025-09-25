@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../auth/BulletproofClerkProvider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -32,7 +31,10 @@ import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 
 const DataManagementCenter = ({ onDataUpdate, currentAnalysisType = 'comprehensive' }) => {
-  const { user, isLoaded } = useAuth();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [activeTab, setActiveTab] = useState('overview');
   const [dataCompleteness, setDataCompleteness] = useState(null);
   const [availableData, setAvailableData] = useState({});

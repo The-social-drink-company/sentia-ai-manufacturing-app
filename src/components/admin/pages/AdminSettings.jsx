@@ -17,8 +17,6 @@ import {
   XMarkIcon
 } from '@heroicons/react/24/outline'
 import { cn } from '../../../lib/utils'
-import { useAuthRole } from '../../../hooks/useAuthRole.jsx'
-
 const SettingCard = ({ category, title, description, children, icon: Icon, warning = false }) => {
   return (
     <div className={cn(

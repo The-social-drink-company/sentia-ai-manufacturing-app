@@ -1,8 +1,5 @@
 import React from 'react';
-import { SignUp } from '@clerk/clerk-react';
 import { Navigate } from 'react-router-dom';
-import { useBulletproofAuth, useAuthMode } from '../auth/BulletproofAuthProvider';
-
 const ClerkSignUp = () => {
   const auth = useBulletproofAuth();
   const mode = useAuthMode();

@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { useUser, useAuth } from '@clerk/clerk-react';
 import { CogIcon, UserIcon, BellIcon, ShieldCheckIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
 const Settings = () => {
-  const { user } = useUser();
-  const { signOut } = useAuth();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [activeTab, setActiveTab] = useState('general');
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
   const [notifications, setNotifications] = useState({
@@ -126,7 +131,7 @@ const Settings = () => {
                   />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">{user?.fullName || 'User Name'}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{user?.emailAddresses?.[0]?.emailAddress || 'email@example.com'}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{"user@example.com"es?.[0]?.emailAddress || 'email@example.com'}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Role: {user?.publicMetadata?.role || 'User'}</p>
                   </div>
                 </div>
@@ -136,7 +141,7 @@ const Settings = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First Name</label>
                     <input
                       type="text"
-                      defaultValue={user?.firstName}
+                      defaultValue={"User"}
                       className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
                     />
                   </div>

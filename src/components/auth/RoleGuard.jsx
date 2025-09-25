@@ -1,6 +1,5 @@
 import React from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useUser } from '@clerk/clerk-react';
 import { motion } from 'framer-motion';
 import { ShieldExclamationIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 
@@ -18,7 +17,10 @@ const RoleGuard = ({
   requireAuth = true,
   customMessage = null
 }) => {
-  const { user, isLoaded, isSignedIn } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const location = useLocation();
 
   // Get user role from public metadata or default to 'viewer'
@@ -160,7 +162,10 @@ const UnauthorizedAccess = ({ userRole, requiredRoles, customMessage }) => {
 
 // Export a hook for programmatic role checking
 export const useRoleGuard = (allowedRoles = []) => {
-  const { user, isSignedIn } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role || null;
 
   const roleHierarchy = {

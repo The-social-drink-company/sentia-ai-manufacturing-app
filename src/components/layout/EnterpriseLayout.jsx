@@ -10,7 +10,6 @@ import {
   HomeIcon,
   CommandLineIcon
 } from '@heroicons/react/24/outline';
-import { useAuthRole } from '../../hooks/useAuthRole';
 import { useLayoutStore } from '../../stores/layoutStore';
 import { cn } from '../../lib/utils';
 import Sidebar from './Sidebar';

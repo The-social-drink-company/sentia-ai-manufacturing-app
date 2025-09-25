@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from 'sonner'
 import './App.css'
@@ -58,7 +57,7 @@ function DashboardRoutes() {
 
 function App() {
   return (
-    <ClerkProvider publishableKey={clerkPubKey}>
+    
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <Router>
           <div className="min-h-screen bg-background">
@@ -90,7 +89,7 @@ function App() {
           </div>
         </Router>
       </ThemeProvider>
-    </ClerkProvider>
+    
   )
 }
 

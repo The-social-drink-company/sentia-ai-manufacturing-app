@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useBulletproofAuth, useAuthMode } from '../auth/BulletproofAuthProvider';
-import { SignIn } from '@clerk/clerk-react';
 import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 

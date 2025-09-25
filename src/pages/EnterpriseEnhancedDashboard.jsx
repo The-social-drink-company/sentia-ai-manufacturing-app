@@ -1,7 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
-
 // Enterprise AI Components (Lazy Loaded for Performance)
 const AIAnalyticsDashboard = lazy(() => import('../components/AI/AIAnalyticsDashboard'));
 const PredictiveAnalyticsDashboard = lazy(() => import('../components/AI/PredictiveAnalyticsDashboard'));
@@ -89,7 +87,10 @@ const EnterpriseErrorFallback = ({ error, resetError }) => (
 
 // Main Enterprise Enhanced Dashboard
 export default function EnterpriseEnhancedDashboard() {
-  const { user, isLoaded } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [selectedView, setSelectedView] = useState('overview');
   const [aiMode, setAIMode] = useState(true);
   const [mcpEnabled, setMcpEnabled] = useState(true);
@@ -169,7 +170,7 @@ export default function EnterpriseEnhancedDashboard() {
               
               <div className="flex items-center space-x-2">
                 <Shield className="w-4 h-4 text-green-500" />
-                <span className="text-xs text-secondary">{user?.firstName || null}</span>
+                <span className="text-xs text-secondary">{"User" || null}</span>
               </div>
             </div>
           </div>

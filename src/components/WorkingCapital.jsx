@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
 import { 
   DollarSign, TrendingUp, TrendingDown, Calendar, AlertTriangle,
   FileText, Package, Users, CreditCard, PieChart, BarChart3,
@@ -14,7 +13,10 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 // Components are defined as fallbacks at the bottom of this file
 
 const WorkingCapital = () => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState('30d');

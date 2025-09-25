@@ -12,12 +12,14 @@ import {
   CheckCircleIcon as CheckCircle
 } from '@heroicons/react/24/outline';
 import { Line } from 'react-chartjs-2';
-import { useUser } from '@clerk/clerk-react';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 
 const DemandForecastingSimple = () => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [forecastPeriod, setForecastPeriod] = useState('30');
   const [selectedProducts, setSelectedProducts] = useState(['all']);
   const [analysisType, setAnalysisType] = useState('demand');

@@ -3,8 +3,6 @@ import { Routes, Route, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { CubeIcon, TruckIcon, ChartBarIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import InventoryLevelsWidget from '../../components/widgets/InventoryLevelsWidget';
-import { useAuth } from '@clerk/clerk-react';
-
 const InventoryDashboard = () => {
   const { getToken } = useAuth();
   const [inventoryData, setInventoryData] = useState(null);

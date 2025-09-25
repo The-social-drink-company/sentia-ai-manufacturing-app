@@ -18,8 +18,6 @@ import {
   GlobeAltIcon
 } from '@heroicons/react/24/outline'
 import { cn } from '../../../lib/utils'
-import { useAuthRole } from '../../../hooks/useAuthRole.jsx'
-
 const StatusBadge = ({ status, lastUsed }) => {
   const getStatusConfig = () => {
     if (status === 'revoked') return {

@@ -8,8 +8,6 @@ import {
   BellIcon,
   ArrowLeftIcon
 } from '@heroicons/react/24/outline'
-import { UserButton } from '@clerk/clerk-react'
-import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
 import { cn } from '../../lib/utils'
 

@@ -1,7 +1,5 @@
 import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '@clerk/clerk-react'
-import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { logError } from '../../lib/logger'
 import { 
   Shield, 

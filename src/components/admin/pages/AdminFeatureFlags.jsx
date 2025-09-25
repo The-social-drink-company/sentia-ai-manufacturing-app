@@ -18,8 +18,6 @@ import {
   ClockIcon
 } from '@heroicons/react/24/outline'
 import { cn } from '../../../lib/utils'
-import { useAuthRole } from '../../../hooks/useAuthRole.jsx'
-
 const StatusToggle = ({ enabled, onToggle, disabled = false }) => {
   return (
     <button

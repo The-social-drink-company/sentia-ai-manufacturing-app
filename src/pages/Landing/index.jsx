@@ -1,7 +1,6 @@
 import React, { useRef, Suspense } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
-import { SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { useInView } from 'react-intersection-observer';
 
 // Components

@@ -1,6 +1,4 @@
 import { devLog } from '../lib/devLog.js';\nimport React, { useEffect, useState } from 'react';
-import microsoftAuthService from '../../services/microsoftAuthService';
-
 const MicrosoftCallbackPage = () => {
   const [status, setStatus] = useState('processing');
   const [error, setError] = useState('');

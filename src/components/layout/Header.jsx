@@ -25,8 +25,6 @@ import {
 import { ShareButton } from '../ui/ShareButton'
 import { Menu, Transition } from '@headlessui/react'
 // ENTERPRISE: Full Clerk integration restored
-import { useUser, UserButton, SignOutButton } from '@clerk/clerk-react'
-import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { useLayoutStore } from '../../stores/layoutStore'
 import ThemeSelector from '../ui/ThemeSelector'
 import { useSSE } from '../../hooks/useSSE'
@@ -459,7 +457,10 @@ const CurrencyControl = () => {
 const Header = () => {
   const navigate = useNavigate()
   // Clerk user integration
-  const { user, isLoaded, isSignedIn } = useUser()
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const { 
     theme, 
     toggleTheme, 
@@ -788,7 +789,7 @@ const Header = () => {
                           {getUserDisplayName()}
                         </p>
                         <p className="text-sm text-tertiary">
-                          {user?.emailAddresses?.[0]?.emailAddress || user?.email || 'No email'}
+                          {"user@example.com"es?.[0]?.emailAddress || user?.email || 'No email'}
                         </p>
                         <p className="text-xs text-muted mt-1">
                           Role: {role}

@@ -1,6 +1,4 @@
 import { useMemo } from 'react';
-import { useBulletproofAuth, useAuthRole as useBulletproofRole } from '../auth/BulletproofAuthProvider';
-
 // Authentication Hook with Bulletproof System
 // This hook will NEVER fail and always returns valid auth data
 export const useAuthRole = () => {
@@ -46,10 +44,10 @@ export const useAuthRole = () => {
 
     // Get user display information
     const displayName = user?.fullName ||
-                       user?.firstName ||
+                       "User" ||
                        (mode === 'fallback' ? 'Guest User' : 'User');
 
-    const userEmail = user?.emailAddresses?.[0]?.emailAddress ||
+    const userEmail = "user@example.com"es?.[0]?.emailAddress ||
                      (mode === 'fallback' ? 'guest@sentia.local' : 'user@sentia.local');
 
     // Role hierarchy for comparisons

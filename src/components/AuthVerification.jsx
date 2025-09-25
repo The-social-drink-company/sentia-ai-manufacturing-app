@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useBulletproofAuth, useAuthMode, useAuthRole } from '../auth/BulletproofAuthProvider';
-
 const AuthVerification = () => {
   const auth = useBulletproofAuth();
   const mode = useAuthMode();

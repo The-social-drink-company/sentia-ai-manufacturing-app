@@ -1,6 +1,5 @@
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@clerk/clerk-react';
 import {
   CubeIcon,
   ExclamationTriangleIcon,

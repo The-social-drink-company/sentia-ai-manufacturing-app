@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth, useUser } from '@clerk/clerk-react';
 import {
   UserGroupIcon,
   CogIcon,
@@ -22,8 +21,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import PersonnelManagement from '../components/admin/PersonnelManagement';
 
 const AdminPanelEnhanced = () => {
-  const { getToken, isLoaded: authLoaded } = useAuth();
-  const { user, isLoaded: userLoaded } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [activeTab, setActiveTab] = useState('users');
   const queryClient = useQueryClient();
 

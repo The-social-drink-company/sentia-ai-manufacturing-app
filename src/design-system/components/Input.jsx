@@ -2,7 +2,6 @@
 // Comprehensive input system with validation, states, and accessibility
 
 import React, { forwardRef, useState } from 'react';
-import { cva } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 import { EyeIcon, EyeSlashIcon, ExclamationCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 

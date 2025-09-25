@@ -1,8 +1,6 @@
 import { devLog } from '../../lib/devLog.js';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useBulletproofAuth } from '../../auth/BulletproofAuthProvider';
-
 import {
   CpuChipIcon as Brain, 
   ArrowTrendingUpIcon as TrendingUp, 

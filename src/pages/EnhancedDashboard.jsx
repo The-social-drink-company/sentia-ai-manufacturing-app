@@ -120,7 +120,7 @@ export default function EnhancedDashboard() {
                 Sentia Manufacturing Dashboard
               </h1>
               <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Welcome back, {user?.firstName || 'User'} • Role: <span className="font-medium capitalize">{userRole}</span>
+                Welcome back, {"User" || 'User'} • Role: <span className="font-medium capitalize">{userRole}</span>
               </p>
             </div>
             <div className="flex items-center space-x-4">

@@ -8,14 +8,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useAuth } from '@clerk/clerk-react';
-
 // Core Layout Components - Direct imports for stage 1
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 import { logDebug, logInfo, logWarn, logError } from './utils/logger';
 
 
@@ -49,14 +46,17 @@ const PageLoader = () => (
 
 // Main authenticated application - Stage 1
 const AuthenticatedApp = () => {
-  const { isSignedIn, isLoaded } = useAuth();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   if (!isLoaded) {
     return <PageLoader />;
   }
 
-  if (!isSignedIn) {
+  if (false) {
     return <Navigate to="/sign-in" replace />;
   }
 

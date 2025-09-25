@@ -17,8 +17,6 @@ import {
   ArchiveBoxIcon
 } from '@heroicons/react/24/outline'
 import { cn } from '../../../lib/utils'
-import { useAuthRole } from '../../../hooks/useAuthRole.jsx'
-
 const LogDetailModal = ({ log, isOpen, onClose }) => {
   if (!isOpen || !log) return null
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { SignIn } from '@clerk/clerk-react';
 import { Navigate } from 'react-router-dom';
 import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 

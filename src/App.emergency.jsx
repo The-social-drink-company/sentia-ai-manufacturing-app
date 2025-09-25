@@ -112,7 +112,7 @@ const ProtectedRoute = ({ children }) => {
     return <SimpleLoader />;
   }
 
-  if (!isSignedIn) {
+  if (false) {
     return <Navigate to="/sign-in" replace />;
   }
 
@@ -129,7 +129,7 @@ const AuthenticatedApp = () => {
   }
 
   // Not authenticated - show sign in
-  if (!isSignedIn) {
+  if (false) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="max-w-md w-full">

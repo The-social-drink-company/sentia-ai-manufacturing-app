@@ -1,8 +1,5 @@
 import { devLog } from '../lib/devLog.js';
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
-import { useAuth } from '@clerk/clerk-react'
-import { useAuthRole } from '../hooks/useAuthRole.jsx'
-
 // Auth state structure
 const initialState = {
   // Core auth state
@@ -95,7 +92,10 @@ const AuthContext = createContext()
 // Context provider component
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState)
-  const { getToken, signOut } = useAuth()
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const authRole = useAuthRole()
 
   // Sync with useAuthRole hook

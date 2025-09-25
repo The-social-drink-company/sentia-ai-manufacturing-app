@@ -13,7 +13,6 @@ import {
   TagIcon
 } from '@heroicons/react/24/outline';
 import { useNavigation } from '../../navigation';
-import { useAuthRole } from '../../hooks/useAuthRole';
 import { useTheme } from '../../theming';
 import { useHotkeys } from 'react-hotkeys-hook';
 

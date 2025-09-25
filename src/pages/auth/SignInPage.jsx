@@ -1,7 +1,5 @@
 import { devLog } from '../lib/devLog.js';\nimport React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { , getSession } from '../../services/authService';
-
 const SignInPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);

@@ -14,7 +14,6 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline'
-import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { cn } from '../../lib/utils'
 
 const AdminSidebar = ({ collapsed = false }) => {

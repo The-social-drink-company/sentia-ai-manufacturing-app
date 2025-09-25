@@ -1,5 +1,4 @@
 import React from 'react';
-import { SignIn } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';

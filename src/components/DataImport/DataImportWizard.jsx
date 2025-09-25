@@ -1,7 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useUser } from '@clerk/clerk-react';
-import { useMicrosoftAuth } from '../../contexts/MicrosoftAuthContext';
 import dataImportService from '../../services/dataImportService';
 import {
   Upload, FileSpreadsheet, Cloud, AlertCircle, CheckCircle,
@@ -10,7 +8,10 @@ import {
 import { toast } from 'react-hot-toast';
 
 const DataImportWizard = ({ onImportComplete, initialDataType = 'production' }) => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const { 
     isAuthenticated: isMicrosoftAuthenticated, 
     loginToMicrosoft, 

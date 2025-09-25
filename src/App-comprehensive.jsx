@@ -12,7 +12,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from 'react-error-boundary';
 // Using bulletproof auth system instead of direct Clerk imports
-import { useAuthRole } from './hooks/useAuthRole.jsx';
 import { ThemeProvider } from './components/ui/ThemeProvider';
 
 // Core Layout Components
@@ -22,7 +21,6 @@ import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
 
 // Authentication Components
-import ProtectedRoute from './components/auth/ProtectedRoute';
 import { logDebug, logInfo, logWarn, logError } from './utils/logger';
 
 const ClerkSignIn = lazy(() => import('./pages/ClerkSignIn'));

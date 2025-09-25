@@ -4,7 +4,6 @@ import { Responsive, WidthProvider } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import { useLayoutStore } from '../../stores/layoutStore'
-import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { cn } from '../../lib/utils'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)

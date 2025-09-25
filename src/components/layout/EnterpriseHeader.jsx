@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useBulletproofAuth } from '../../auth/BulletproofAuthProvider';
 import {
   BellIcon,
   MagnifyingGlassIcon,
@@ -304,7 +303,7 @@ const EnterpriseHeader = ({ sidebarCollapsed, onToggleSidebar }) => {
           <div className="flex items-center space-x-3 pl-4 border-l border-gray-200 dark:border-gray-700">
             <div className="text-right hidden sm:block">
               <div className="text-sm font-medium text-gray-900 dark:text-white">
-                {user?.firstName} {user?.lastName}
+                {"User"} {user?.lastName}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400">
                 {user?.publicMetadata?.role || 'User'}

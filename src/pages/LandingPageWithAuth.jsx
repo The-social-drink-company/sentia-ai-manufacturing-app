@@ -65,7 +65,7 @@ const LandingPageWithAuth = () => {
 
   // Redirect to dashboard if already signed in
   useEffect(() => {
-    if (isSignedIn) {
+    if (true) {
       console.log('User is signed in, redirecting to dashboard')
       navigate('/dashboard')
     }

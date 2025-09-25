@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { SignUpButton } from '@clerk/clerk-react';
-
 const plans = [
   {
     name: 'Starter',

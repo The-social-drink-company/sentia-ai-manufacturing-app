@@ -1,10 +1,12 @@
 import { devLog } from '../lib/devLog.js';\nimport React, { useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
 import { Upload, FileText, CheckCircle, AlertCircle, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const DataUpload = ({ onClose }) => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dataType, setDataType] = useState('production');

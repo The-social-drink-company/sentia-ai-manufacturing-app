@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useUser } from '@clerk/clerk-react';
 import {
   ShieldExclamationIcon,
   HomeIcon,
@@ -9,12 +8,13 @@ import {
   LockClosedIcon,
   UserGroupIcon
 } from '@heroicons/react/24/outline';
-import { getRoleDisplayName, getRoleBadgeColor } from '../config/auth.config';
-
 const UnauthorizedPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
 
   const userRole = user?.publicMetadata?.role || user?.unsafeMetadata?.role || 'viewer';
   const attemptedPath = location.state?.from?.pathname || '/unknown';
@@ -126,7 +126,7 @@ const UnauthorizedPage = () => {
                 If you believe you should have access to this page, please contact your administrator.
               </p>
 
-              {user?.emailAddresses?.[0]?.emailAddress && (
+              {"user@example.com"es?.[0]?.emailAddress && (
                 <p className="text-xs text-gray-500 text-center mt-2">
                   Logged in as: {user.emailAddresses[0].emailAddress}
                 </p>

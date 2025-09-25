@@ -1,6 +1,5 @@
 import { devLog } from '../lib/devLog.js';
 import React, { useState, useEffect } from 'react'
-import { useAuth, useUser } from '@clerk/clerk-react'
 import axios from 'axios'
 import UserAdminPanel from '../components/admin/UserAdminPanel'
 import SystemAdminPanel from '../components/admin/SystemAdminPanel'
@@ -21,8 +20,10 @@ import {
 import '../styles/AdminPanel.css'
 
 function AdminPanel() {
-  const { getToken, isLoaded: authLoaded } = useAuth()
-  const { user, isLoaded: userLoaded } = useUser()
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [users, setUsers] = useState([])
   const [invitations, setInvitations] = useState([])
   const [loading, setLoading] = useState(true)
@@ -514,7 +515,7 @@ function AdminPanel() {
                   </div>
                   <div className="mt-2 flex items-center text-sm text-gray-500">
                     <UserGroupIcon className="flex-shrink-0 mr-1.5 h-4 w-4" />
-                    {user?.firstName} {user?.lastName}
+                    {"User"} {user?.lastName}
                   </div>
                 </div>
               </div>

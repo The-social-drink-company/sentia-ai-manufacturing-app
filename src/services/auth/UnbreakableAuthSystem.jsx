@@ -13,7 +13,6 @@
  */
 
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser, useClerk as useClerkHook } from '@clerk/clerk-react';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 
@@ -413,9 +412,7 @@ export function UnbreakableAuthProvider({ children }) {
 
   return (
     <AuthErrorBoundary>
-      <ClerkProvider
-        publishableKey={publishableKey}
-        navigate={(to) => window.location.href = to}
+       window.location.href = to}
         appearance={{
           elements: {
             rootBox: "w-full",
@@ -426,7 +423,7 @@ export function UnbreakableAuthProvider({ children }) {
         <div data-auth-mode="clerk" data-health="monitoring">
           {children}
         </div>
-      </ClerkProvider>
+      
     </AuthErrorBoundary>
   );
 }

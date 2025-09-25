@@ -235,7 +235,7 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.firstName} {user?.lastName}
+                  {"User"} {user?.lastName}
                 </p>
                 <p className="text-xs text-gray-600 truncate">{userRole?.name}</p>
               </div>

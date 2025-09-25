@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   lazy,
   Suspense,
@@ -95,7 +95,7 @@ const AuthContext = createContext({
 
 export const useAuth = () => useContext(AuthContext);
 
-/** @param {{ children: React.ReactNode }} props */
+/** @param {{ children: import('react').ReactNode }} props */
 const MockAuthProvider = ({ children }) => {
   const [user, setUser] = useState(DEFAULT_AUTH_USER);
 

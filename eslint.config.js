@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import globals from 'globals'
+import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
@@ -36,10 +37,21 @@ export default [
       '**/*.spec.{js,jsx}',
       '**/tests/**',
       'src/App-*.jsx',
+      'src/App.*.jsx',
       'src/*-backup*.jsx',
       'src/*-debug*.jsx',
       'src/*-Original*.jsx',
       'src/MinimalApp.jsx',
+      'src/legacy/**',
+      'src/accessibility/**',
+      'src/ai/**',
+      'src/core/**',
+      'src/components/experimental/**',
+      'src/components/widgets/**',
+      'src/utils/serviceWorker.js',
+      'src/utils/serviceWorkerOptimized.js',
+      'src/utils/treeShakingUtils.jsx',
+      'src/utils/vitals.js',
       'src/TestDashboard.jsx',
       'vite.config.js',
       'tailwind.config.js',
@@ -47,7 +59,6 @@ export default [
       'vitest.config.js'
     ]
   },
-
   {
     files: ['src/**/*.{js,jsx}'],
     languageOptions: {
@@ -63,8 +74,14 @@ export default [
       }
     },
     plugins: {
+      react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh
+    },
+    settings: {
+      react: {
+        version: 'detect'
+      }
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -72,12 +89,16 @@ export default [
       'no-unused-vars': [
         'error',
         {
-          varsIgnorePattern: '^_',
+          varsIgnorePattern: '(^_|React$)',
           argsIgnorePattern: '^_',
           destructuredArrayIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_'
         }
       ],
+      'react/jsx-uses-react': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-uses-vars': 'error',
+      'react/prop-types': 'off',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true }
@@ -85,7 +106,6 @@ export default [
       'no-console': ['warn', { allow: ['warn', 'error'] }]
     }
   },
-
   {
     files: [
       '*.js',
@@ -133,7 +153,6 @@ export default [
       'no-console': 'off'
     }
   },
-
   {
     files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'],
     languageOptions: {

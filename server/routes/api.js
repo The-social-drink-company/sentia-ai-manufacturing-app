@@ -4,7 +4,7 @@ import { authMiddleware } from '../middleware/auth.js';
 import { sendSSEEvent } from './sse.js';
 import xeroService from '../../services/xeroService.js';
 import aiAnalyticsService from '../../services/aiAnalyticsService.js';
-import { logInfo, logError, logWarn } from '../../services/observability/structuredLogger.js';
+import { logInfo, logError } from '../../services/observability/structuredLogger.js';
 
 const router = express.Router();
 
@@ -274,7 +274,7 @@ router.post('/ai/analyze', authMiddleware, express.json(), async (req, res) => {
 });
 
 // Helper functions
-async function processUploadedFile(file) {
+async function processUploadedFile(_file) {
   // Implementation would process CSV/Excel files
   // For now, return mock data
   return [

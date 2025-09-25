@@ -6,9 +6,7 @@ import AppSimple from './AppSimple.jsx'
 import { logInfo, logError, logDebug } from './utils/logger.js'
 
 const selectAppComponent = () => {
-  // Always use the full App with Clerk authentication
-  logInfo('[main] Using full App with Clerk authentication')
-  return AppFull
+  if (import.meta.env?.VITE_USE_SIMPLE_APP === 'true') {\r\n    logInfo('[main] Using simplified App shell')\r\n    return AppSimple\r\n  }\r\n\r\n  logInfo('[main] Using full App shell')\r\n  return AppFull
 }
 
 const mountApplication = () => {

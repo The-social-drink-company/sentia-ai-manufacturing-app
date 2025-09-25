@@ -1,4 +1,4 @@
-﻿import { Suspense, lazy, useCallback } from 'react'
+import { Suspense, lazy, useCallback } from 'react'
 import { ClerkProvider } from '@clerk/clerk-react'
 import {
   Navigate,

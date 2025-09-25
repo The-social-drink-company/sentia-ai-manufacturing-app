@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n// Enterprise Data Synchronization Service
+import { devLog } from '../lib/devLog.js';
+// Enterprise Data Synchronization Service
 // Provides real-time synchronization across all data sources
 // Ensures 100% data accuracy and live updates
 

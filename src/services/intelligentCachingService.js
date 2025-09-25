@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n
+import { devLog } from '../lib/devLog.js';
+
 // Intelligent Caching Service - Enterprise Grade
 class IntelligentCachingService {
   constructor() {

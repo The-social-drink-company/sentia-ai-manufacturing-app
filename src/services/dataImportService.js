@@ -1,4 +1,6 @@
-import { devLog } from '../lib/devLog.js';\nimport ExcelJS from 'exceljs';
+import { devLog } from '../lib/devLog.js';
+
+import ExcelJS from 'exceljs';
 
 class DataImportService {
   constructor() {

@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../lib/devLog.js';
+/**
  * Smart Inventory Optimization Service - REAL DATA ONLY
  * 
  * Connects to actual inventory systems, ERP databases, and supplier APIs

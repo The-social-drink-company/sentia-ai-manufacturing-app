@@ -17,6 +17,8 @@ const Enterprise10StageLoaderWithRealAuth = ({
   onComplete,
   onAuthSuccess,
   onError,
+  onStageChange,
+  onStageProgress,
   clerkPublishableKey
 }) => {
   const [currentStage, setCurrentStage] = useState(0);
@@ -122,11 +124,19 @@ const Enterprise10StageLoaderWithRealAuth = ({
           setAuthCheckComplete(false);
           logError('[Stage 2] Clerk initialization failed', error);
 
+          let failureMessage = `REAL Clerk auth failed: ${error.message}`;
+          let failureCode = error?.code || 'CLERK_INIT_FAILED';
+
           if (clerkPublishableKey && !clerkPublishableKey.startsWith('pk_')) {
-            throw new Error('Invalid Clerk publishable key format detected. Verify environment configuration.');
+            failureMessage = 'Invalid Clerk publishable key format detected. Verify environment configuration.';
+            failureCode = 'INVALID_CLERK_PUBLISHABLE_KEY';
           }
 
-          throw new Error(`REAL Clerk auth failed: ${error.message}`);
+          const failure = new Error(failureMessage);
+          failure.code = failureCode;
+          failure.originalError = error;
+
+          throw failure;
         }
       }
     },
@@ -384,7 +394,9 @@ const Enterprise10StageLoaderWithRealAuth = ({
         return;
       }
 
-      
+      const stage = stages[currentStageIndex];
+      setCurrentStage(stage.id);
+
       if (typeof onStageChange === 'function') {
         onStageChange(stage.id, stage, { status: 'started' });
       }
@@ -443,6 +455,10 @@ const Enterprise10StageLoaderWithRealAuth = ({
 
       } catch (error) {
         logError(`[Loader] Stage ${stage.id} failed:`, error);
+
+        if (typeof onStageChange === 'function') {
+          onStageChange(stage.id, stage, { status: 'error', error });
+        }
 
         if (stage.critical) {
           // Critical stage failed - stop loading

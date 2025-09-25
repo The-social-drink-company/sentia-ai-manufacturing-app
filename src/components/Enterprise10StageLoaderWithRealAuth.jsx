@@ -67,67 +67,65 @@ const Enterprise10StageLoaderWithRealAuth = ({
       details: 'Establishing secure connection with REAL Clerk authentication...',
       critical: true,
       operation: async () => {
-        // REAL Clerk authentication initialization
         logInfo('[Stage 2] Starting REAL Clerk authentication');
 
         if (!clerkPublishableKey) {
           throw new Error('Clerk publishable key not provided - REAL authentication required');
         }
 
-        // Dynamically import Clerk to ensure it's available
         try {
-          const ClerkModule = await import('@clerk/clerk-react');
+          const { loadClerk } = await import('@clerk/clerk-react');
 
-          // Check if Clerk is available in window
-          if (!window.Clerk) {
-            // Initialize Clerk manually if needed
-            logInfo('[Stage 2] Loading Clerk SDK...');
-
-            // Load Clerk script dynamically
-            await new Promise((resolve, reject) => {
-              const script = document.createElement('script');
-              script.src = `https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
-              script.onload = resolve;
-              script.onerror = reject;
-              document.head.appendChild(script);
-            });
+          if (typeof loadClerk !== 'function') {
+            throw new Error('Clerk SDK did not expose loadClerk helper');
           }
 
-          // Wait for Clerk to be ready
-          await new Promise((resolve) => {
-            const checkClerk = setInterval(() => {
-              if (window.Clerk || window.__clerk_initialized) {
-                clearInterval(checkClerk);
-                resolve();
-              }
-            }, 100);
+          const hasPerformance = typeof performance !== 'undefined' && typeof performance.now === 'function';
+          const initStart = hasPerformance ? performance.now() : Date.now();
+          const clerk = await loadClerk({ publishableKey: clerkPublishableKey });
 
-            // Timeout after 10 seconds
-            setTimeout(() => {
-              clearInterval(checkClerk);
-              resolve();
-            }, 10000);
-          });
+          if (!clerk) {
+            throw new Error('Clerk failed to initialize');
+          }
 
+          window.Clerk = clerk;
+          window.__clerk_initialized = true;
           setClerkInitialized(true);
 
-          // Verify Clerk session
-          if (window.Clerk) {
-            const session = await window.Clerk.session;
-            if (session) {
-              logInfo('[Stage 2] User already authenticated');
-              if (onAuthSuccess) {
-                onAuthSuccess(session.user);
-              }
-            } else {
-              logWarn('[Stage 2] No active session - user needs to sign in');
-            }
+          if (typeof performance !== 'undefined' && typeof performance.mark === 'function') {
+            performance.mark('clerk-initialized');
           }
 
-          logInfo('[Stage 2] REAL Clerk authentication initialized successfully');
-          return { success: true };
+          const session = clerk.session ?? null;
+          if (session) {
+            logInfo('[Stage 2] User already authenticated', { userId: session.user?.id });
+            if (typeof onAuthSuccess === 'function') {
+              onAuthSuccess(session.user);
+            }
+          } else {
+            logWarn('[Stage 2] No active Clerk session detected');
+          }
+
+          const initDuration = (hasPerformance ? performance.now() : Date.now()) - initStart;
+          setAuthCheckComplete(true);
+          logInfo(`[Stage 2] REAL Clerk authentication initialized successfully in ${(initDuration / 1000).toFixed(2)}s`);
+
+          return {
+            success: true,
+            metadata: {
+              sessionActive: Boolean(session),
+              initializationMs: initDuration
+            }
+          };
         } catch (error) {
-          logError('[Stage 2] Clerk initialization failed:', error);
+          setClerkInitialized(false);
+          setAuthCheckComplete(false);
+          logError('[Stage 2] Clerk initialization failed', error);
+
+          if (clerkPublishableKey && !clerkPublishableKey.startsWith('pk_')) {
+            throw new Error('Invalid Clerk publishable key format detected. Verify environment configuration.');
+          }
+
           throw new Error(`REAL Clerk auth failed: ${error.message}`);
         }
       }
@@ -638,3 +636,4 @@ const Enterprise10StageLoaderWithRealAuth = ({
 };
 
 export default Enterprise10StageLoaderWithRealAuth;
+

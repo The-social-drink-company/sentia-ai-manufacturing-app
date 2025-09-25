@@ -901,43 +901,605 @@ function ActionButton({ label, icon, onClick, variant = 'primary' }) {
   );
 }
 
-// Placeholder components - implement as needed
+
+// Scenario and Insight Components
 function ScenarioModal({ isOpen, onClose, onRun, currentMetrics, cashCoverage }) {
-  // Implementation for scenario modeling modal
-  return null;
+  const [formState, setFormState] = useState({
+    growthRate: '15',
+    cashReserveTarget: '',
+    runwayTarget: '',
+    headcountChange: '',
+    capitalExpenditure: ''
+  });
+  const [error, setError] = useState(null);
+
+  const isRunning = Boolean(onRun?.isPending ?? onRun?.isLoading);
+  const ready = Boolean(
+    cashCoverage?.coverage &&
+      Object.values(cashCoverage.coverage).some(
+        (period) => period && period.availableCash !== undefined
+      )
+  );
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    setError(null);
+    setFormState((previous) => ({
+      ...previous,
+      cashReserveTarget:
+        currentMetrics?.targets?.cashReserves ??
+        currentMetrics?.current?.cashOnHand ??
+        previous.cashReserveTarget ??
+        '',
+      runwayTarget:
+        currentMetrics?.current?.runwayDays ??
+        previous.runwayTarget ??
+        ''
+    }));
+  }, [isOpen, currentMetrics]);
+
+  const handleChange = (field, value) => {
+    setFormState((previous) => ({
+      ...previous,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(null);
+
+    if (!ready) {
+      setError('Live working-capital data is required before running scenarios.');
+      return;
+    }
+
+    const payload = {
+      growthRate: parseFloat(formState.growthRate),
+      cashReserveTarget: formState.cashReserveTarget ? Number(formState.cashReserveTarget) : undefined,
+      runwayTarget: formState.runwayTarget ? Number(formState.runwayTarget) : undefined,
+      headcountChange: formState.headcountChange ? Number(formState.headcountChange) : undefined,
+      capitalExpenditure: formState.capitalExpenditure ? Number(formState.capitalExpenditure) : undefined
+    };
+
+    if (!Number.isFinite(payload.growthRate) || payload.growthRate <= 0) {
+      setError('Enter a valid growth rate above 0%.');
+      return;
+    }
+
+    try {
+      if (onRun?.mutateAsync) {
+        await onRun.mutateAsync(payload);
+      } else if (onRun?.mutate) {
+        onRun.mutate(payload);
+      } else if (typeof onRun === 'function') {
+        await onRun(payload);
+      }
+      onClose?.();
+    } catch (submitError) {
+      setError(submitError?.message ?? 'Unable to execute scenario.');
+    }
+  };
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-6 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-900">Run What-If Scenario</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Configure growth and liquidity assumptions to quantify capital requirements in real time.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-2 text-slate-500 hover:bg-slate-100"
+            aria-label="Close scenario builder"
+          >
+            <XCircle className="h-5 w-5" />
+          </button>
+        </div>
+
+        {!ready && (
+          <div className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900">
+            Live working-capital data is required before scenarios can be modelled. Refresh the dashboard once
+            financial feeds are available.
+          </div>
+        )}
+
+        {ready && (
+          <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col text-sm font-medium text-slate-700">
+                Target Growth Rate (%)
+                <input
+                  type="number"
+                  step="0.1"
+                  value={formState.growthRate}
+                  onChange={(event) => handleChange('growthRate', event.target.value)}
+                  className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none"
+                  required
+                />
+              </label>
+              <label className="flex flex-col text-sm font-medium text-slate-700">
+                Cash Reserve Target (USD)
+                <input
+                  type="number"
+                  step="1000"
+                  value={formState.cashReserveTarget}
+                  onChange={(event) => handleChange('cashReserveTarget', event.target.value)}
+                  className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none"
+                  required
+                />
+              </label>
+              <label className="flex flex-col text-sm font-medium text-slate-700">
+                Target Cash Runway (Days)
+                <input
+                  type="number"
+                  step="1"
+                  value={formState.runwayTarget}
+                  onChange={(event) => handleChange('runwayTarget', event.target.value)}
+                  className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none"
+                />
+              </label>
+              <label className="flex flex-col text-sm font-medium text-slate-700">
+                Headcount Change (FTE)
+                <input
+                  type="number"
+                  step="1"
+                  value={formState.headcountChange}
+                  onChange={(event) => handleChange('headcountChange', event.target.value)}
+                  className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none"
+                />
+              </label>
+              <label className="flex flex-col text-sm font-medium text-slate-700 sm:col-span-2">
+                Strategic CapEx (USD)
+                <input
+                  type="number"
+                  step="1000"
+                  value={formState.capitalExpenditure}
+                  onChange={(event) => handleChange('capitalExpenditure', event.target.value)}
+                  className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none"
+                />
+              </label>
+            </div>
+
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-slate-500">
+                Scenario inputs are applied directly to the enterprise cash coverage engine. No synthetic or mock
+                values are persisted.
+              </div>
+              <div className="flex items-center space-x-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700"
+                  disabled={isRunning}
+                >
+                  {isRunning ? 'Running' : 'Run Scenario'}
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+      </motion.div>
+    </motion.div>
+  );
 }
 
 function DecisionCard({ decision }) {
-  return null;
+  if (!decision) {
+    return null;
+  }
+
+  const { title, rationale, impact, timeframe, owner, status, actions } = decision;
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div>
+          {title && <h4 className="text-base font-semibold text-slate-900">{title}</h4>}
+          {rationale && <p className="mt-1 text-sm text-slate-600">{rationale}</p>}
+        </div>
+        {impact !== undefined && (
+          <div className="rounded-lg bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
+            Impact:{' '}
+            {Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              maximumFractionDigits: 0
+            }).format(impact)}
+          </div>
+        )}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+        {timeframe && (
+          <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1">
+            <Clock className="mr-1 h-3 w-3" />
+            {timeframe}
+          </span>
+        )}
+        {owner && (
+          <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1">
+            <BriefcaseIcon className="mr-1 h-3 w-3" />
+            {owner}
+          </span>
+        )}
+        {status && (
+          <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-blue-700">
+            <Info className="mr-1 h-3 w-3" />
+            {status}
+          </span>
+        )}
+      </div>
+      {Array.isArray(actions) && actions.length > 0 && (
+        <ul className="mt-3 space-y-1 text-xs text-slate-600">
+          {actions.map((action, index) => (
+            <li key={index} className="flex items-start">
+              <ChevronRight className="mt-0.5 h-3 w-3 text-blue-600" />
+              <span className="ml-2">{action}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function OpportunityCard({ opportunity }) {
-  return null;
+  if (!opportunity) {
+    return null;
+  }
+
+  const { name, description, cashImpact, timeframe, confidence } = opportunity;
+
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
+      {name && <h4 className="text-sm font-semibold text-emerald-900">{name}</h4>}
+      {description && <p className="mt-1 text-xs text-emerald-800">{description}</p>}
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-emerald-900">
+        {cashImpact !== undefined && (
+          <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1 font-semibold">
+            <TrendingUp className="mr-1 h-3 w-3" />
+            {Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              maximumFractionDigits: 0
+            }).format(cashImpact)}
+          </span>
+        )}
+        {timeframe && (
+          <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1">
+            <Calendar className="mr-1 h-3 w-3" />
+            {timeframe}
+          </span>
+        )}
+        {confidence && (
+          <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1">
+            <Shield className="mr-1 h-3 w-3" />
+            Confidence: {confidence}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function RiskCard({ risk }) {
-  return null;
+  if (!risk) {
+    return null;
+  }
+
+  const { title, likelihood, exposure, mitigation, owner } = risk;
+
+  return (
+    <div className="rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm">
+      <div className="flex items-center">
+        <AlertCircle className="mr-2 h-4 w-4 text-red-700" />
+        {title && <h4 className="text-sm font-semibold text-red-900">{title}</h4>}
+      </div>
+      <div className="mt-2 text-xs text-red-800">
+        {likelihood && <div>Likelihood: {likelihood}</div>}
+        {exposure !== undefined && (
+          <div>
+            Exposure:{' '}
+            {Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              maximumFractionDigits: 0
+            }).format(exposure)}
+          </div>
+        )}
+        {mitigation && <div>Mitigation Plan: {mitigation}</div>}
+        {owner && <div>Owner: {owner}</div>}
+      </div>
+    </div>
+  );
 }
 
 function AIRecommendation({ recommendation }) {
-  return null;
+  if (!recommendation) {
+    return null;
+  }
+
+  const { headline, narrative, impact, confidence, timeframe } = recommendation;
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <TrendingUpIcon className="mr-2 h-4 w-4 text-blue-600" />
+          {headline && <h4 className="text-sm font-semibold text-slate-900">{headline}</h4>}
+        </div>
+        {confidence && (
+          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+            Confidence: {confidence}
+          </span>
+        )}
+      </div>
+      {narrative && <p className="mt-2 text-sm text-slate-600">{narrative}</p>}
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+        {impact !== undefined && (
+          <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1">
+            <DollarSignIcon className="mr-1 h-3 w-3" />
+            {Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              maximumFractionDigits: 0
+            }).format(impact)}
+          </span>
+        )}
+        {timeframe && (
+          <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1">
+            <Clock className="mr-1 h-3 w-3" />
+            {timeframe}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function BenchmarkRadar({ company, industry }) {
-  return null;
+  const metrics = useMemo(() => {
+    if (!company || !industry) {
+      return [];
+    }
+
+    const configuration = [
+      { key: 'workingCapitalRatio', label: 'Working Capital %', industryKey: 'workingCapitalRatio' },
+      { key: 'dso', label: 'DSO', industryKey: 'averageDSO' },
+      { key: 'dpo', label: 'DPO', industryKey: 'averageDPO' },
+      { key: 'dio', label: 'DIO', industryKey: 'averageDIO' },
+      { key: 'ebitdaMargin', label: 'EBITDA Margin', industryKey: 'ebitdaMargin' },
+      { key: 'cashConversionCycle', label: 'Cash Conversion Cycle', industryKey: 'cashConversionCycle' }
+    ];
+
+    return configuration
+      .map((metric) => {
+        const companyValue = company[metric.key];
+        const benchmarkValue = industry[metric.industryKey];
+
+        if (companyValue === undefined || benchmarkValue === undefined) {
+          return null;
+        }
+
+        return {
+          metric: metric.label,
+          company: Number(companyValue),
+          benchmark: Number(benchmarkValue)
+        };
+      })
+      .filter(Boolean);
+  }, [company, industry]);
+
+  if (!metrics.length) {
+    return (
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+        Industry benchmarks are unavailable. Connect benchmarking feeds to unlock this view.
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={320}>
+      <RadarChart data={metrics} outerRadius={120}>
+        <PolarGrid stroke="#cbd5f5" strokeDasharray="3 3" />
+        <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11 }} />
+        <PolarRadiusAxis angle={30} tick={{ fontSize: 10 }} stroke="#cbd5f5" />
+        <Radar name="Sentia Spirits" dataKey="company" stroke="#1d4ed8" fill="#1d4ed8" fillOpacity={0.4} />
+        <Radar name="Industry" dataKey="benchmark" stroke="#22c55e" fill="#22c55e" fillOpacity={0.25} />
+        <Legend wrapperStyle={{ fontSize: 12 }} />
+      </RadarChart>
+    </ResponsiveContainer>
+  );
 }
 
 function FinancialHealthGauge({ score, breakdown }) {
-  return null;
+  if (score === undefined || score === null) {
+    return (
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+        Financial health score unavailable. Ensure AI analytics are pulling live data.
+      </div>
+    );
+  }
+
+  const normalizedScore = Math.max(0, Math.min(typeof score === 'number' ? score : Number(score), 100));
+  const arcData = [
+    { name: 'score', value: normalizedScore },
+    { name: 'remaining', value: 100 - normalizedScore }
+  ];
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="text-3xl font-bold text-slate-900">{normalizedScore.toFixed(0)}%</div>
+        <div className="text-xs uppercase tracking-wide text-slate-500">Financial Fitness</div>
+      </div>
+      <div className="mt-3 h-40">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={arcData} innerRadius={60} outerRadius={80} startAngle={180} endAngle={0} paddingAngle={2} dataKey="value">
+              <Cell key="score" fill="#2563eb" />
+              <Cell key="remaining" fill="#e2e8f0" />
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      {Array.isArray(breakdown) && breakdown.length > 0 && (
+        <ul className="mt-4 space-y-2 text-xs text-slate-600">
+          {breakdown.map((item, index) => (
+            <li key={index} className="flex items-center justify-between">
+              <span>{item.dimension}</span>
+              <span className="font-semibold text-slate-900">{item.score}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function ImplementationRoadmap({ plan }) {
-  return null;
+  if (!Array.isArray(plan) || plan.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <h4 className="text-sm font-semibold text-slate-900">Execution Roadmap</h4>
+      <ol className="mt-3 space-y-3 text-sm text-slate-600">
+        {plan.map((step, index) => (
+          <li key={step.name || index} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+            <div className="flex items-center justify-between">
+              <div className="font-semibold text-slate-900">{step.name}</div>
+              {step.owner && <span className="text-xs text-slate-500">Owner: {step.owner}</span>}
+            </div>
+            {step.description && <p className="mt-1 text-xs text-slate-600">{step.description}</p>}
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+              {step.timeline && (
+                <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1">
+                  <Calendar className="mr-1 h-3 w-3" />
+                  {step.timeline}
+                </span>
+              )}
+              {step.expectedImpact !== undefined && (
+                <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1">
+                  <DollarSignIcon className="mr-1 h-3 w-3" />
+                  {Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    maximumFractionDigits: 0
+                  }).format(step.expectedImpact)}
+                </span>
+              )}
+              {step.status && (
+                <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1">
+                  <ActivityIcon className="mr-1 h-3 w-3" />
+                  {step.status}
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
 }
 
 function ScenarioComparison({ scenarios, selectedScenario, onScenarioSelect }) {
-  return null;
+  if (!scenarios) {
+    return null;
+  }
+
+  const scenarioEntries = Object.entries(scenarios);
+
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      {scenarioEntries.map(([key, value]) => (
+        <button
+          key={key}
+          type="button"
+          onClick={() => onScenarioSelect?.(key)}
+          className={`rounded-xl border p-4 text-left shadow-sm transition-transform hover:-translate-y-0.5 ${
+            selectedScenario === key ? 'border-blue-600 bg-blue-50' : 'border-slate-200 bg-white'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold capitalize text-slate-900">{key}</h4>
+            {value?.roi !== undefined && (
+              <span className="text-xs font-semibold text-blue-600">ROI {value.roi}%</span>
+            )}
+          </div>
+          <div className="mt-2 text-xs text-slate-600">
+            {value?.immediateNeed !== undefined && (
+              <div>
+                Immediate Need:{' '}
+                {Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                  maximumFractionDigits: 0
+                }).format(value.immediateNeed)}
+              </div>
+            )}
+            {value?.optimalAmount !== undefined && (
+              <div>
+                Optimal Amount:{' '}
+                {Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                  maximumFractionDigits: 0
+                }).format(value.optimalAmount)}
+              </div>
+            )}
+            {value?.paybackPeriod && <div>Payback: {value.paybackPeriod} months</div>}
+          </div>
+          {Array.isArray(value?.sources) && value.sources.length > 0 && (
+            <div className="mt-3 text-xs text-slate-500">
+              Funding Sources:
+              <ul className="mt-1 list-disc pl-5">
+                {value.sources.slice(0, 3).map((source, index) => (
+                  <li key={index}>{source.name || source}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </button>
+      ))}
+    </div>
+  );
 }
+
 
 // ENFORCED: ALL DATA FROM REAL SOURCES
 // NO MOCK OR STATIC VALUES

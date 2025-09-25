@@ -6,34 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sentia Manufacturing Dashboard</title>
 
-    <!-- No authentication required -->
-
-    <!-- Initialize environment variables for client -->
+    <!-- Runtime environment bootstrap -->
     <script>
-      // Set global environment variables for client-side access
       window.__APP_ENV__ = {
         VITE_API_BASE_URL: window.VITE_API_BASE_URL || '/api',
         VITE_MCP_SERVER_URL: window.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'
       };
 
-      // Make environment variables available globally
       if (!window.import) window.import = {};
       if (!window.import.meta) window.import.meta = {};
       if (!window.import.meta.env) window.import.meta.env = {};
 
-      // Merge with any existing values
-      Object.keys(window.__APP_ENV__).forEach(key => {
+      Object.keys(window.__APP_ENV__).forEach((key) => {
         window.import.meta.env[key] = window.__APP_ENV__[key];
         window[key] = window.__APP_ENV__[key];
       });
 
-      console.log('Application running without authentication');
+      console.log('[App Init] Bootstrapping Sentia Manufacturing Dashboard with Clerk authentication');
     </script>
   </head>
   <body>
     <div id="root">
       <!-- Loading state while React initializes -->
-      <div style="
+      <div id="fallback-loader" style="
         display: flex;
         align-items: center;
         justify-content: center;
@@ -62,5 +57,17 @@
         </div>
       </div>
     </div>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const loader = document.getElementById('fallback-loader');
+        if (loader) {
+          requestAnimationFrame(() => loader.style.display = 'none');
+        }
+        console.log('[App Init] Environment:', window.location.hostname);
+        console.log('[App Init] Protocol:', window.location.protocol);
+        console.log('[App Init] Awaiting Clerk session...');
+      });
+    </script>
   </body>
 </html>

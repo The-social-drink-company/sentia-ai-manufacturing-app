@@ -1,0 +1,83 @@
+version: '3.9'
+
+services:
+  # DuckDB-based data lakehouse
+  lakehouse:
+    build: ./services/lakehouse
+    ports:
+      - "8100:8100"
+    environment:
+      - NODE_ENV=development
+      - LAKEHOUSE_PORT=8100
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - ./data/lakehouse:/data
+      - ./data/parquet:/parquet
+    depends_on:
+      - redis
+      - postgres
+
+  # Metrics and monitoring service
+  metrics:
+    build: ./services/metrics
+    ports:
+      - "8101:8101"
+    environment:
+      - NODE_ENV=development
+      - METRICS_PORT=8101
+      - PROMETHEUS_PORT=9090
+      - GRAFANA_PORT=3000
+    volumes:
+      - ./data/metrics:/data
+
+  # AI Agent Orchestrator
+  orchestrator:
+    build: ./services/orchestrator
+    ports:
+      - "8102:8102"
+    environment:
+      - NODE_ENV=development
+      - ORCHESTRATOR_PORT=8102
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - LANGCHAIN_TRACING_V2=true
+    depends_on:
+      - lakehouse
+      - redis
+
+  # PostgreSQL with pgvector
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=sentia
+      - POSTGRES_PASSWORD=sentia123
+      - POSTGRES_DB=financial_lakehouse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis for caching and queues
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # UI Development Server
+  ui:
+    build: ./ui
+    ports:
+      - "3100:3100"
+    environment:
+      - VITE_API_URL=http://localhost:8100
+      - VITE_ORCHESTRATOR_URL=http://localhost:8102
+    volumes:
+      - ./ui:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+  redis_data:

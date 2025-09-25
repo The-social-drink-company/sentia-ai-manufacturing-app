@@ -1,2205 +1,364 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
 }
 
-model User {
-  id                     String    @id @default(uuid()) @db.Uuid
-  username               String    @unique(map: "ix_users_username") @db.VarChar(64)
-  email                  String    @unique(map: "ix_users_email") @db.VarChar(120)
-  password_hash          String?   @db.VarChar(256)
-  first_name             String?   @db.VarChar(50)
-  last_name              String?   @db.VarChar(50)
-  display_name           String?   @db.VarChar(100)
-  role                   String    @db.VarChar(20)
-  permissions            Json?     @db.Json
-  isActive               Boolean   @map("is_active")
-  organizationId         String    @default("default")  // Enterprise organization support
-  is_admin               Boolean
-  department             String?   @db.VarChar(50)
-  access_regions         Json?     @db.Json
-  last_login             DateTime? @db.Timestamptz(6)
-  last_login_ip          String?   @db.VarChar(45)
-  login_count            Int?
-  password_reset_token   String?   @db.VarChar(255)
-  password_reset_expires DateTime? @db.Timestamptz(6)
-  failed_login_attempts  Int?
-  account_locked_until   DateTime? @db.Timestamptz(6)
-  two_factor_enabled     Boolean
-  two_factor_secret      String?   @db.VarChar(32)
-  backup_codes           Json?     @db.Json
-  session_token          String?   @db.VarChar(255)
-  session_expires        DateTime? @db.Timestamptz(6)
-
-  // Auth Security Extensions
-  locked_until        DateTime? @db.Timestamptz(6)
-  failed_login_count  Int?      @default(0)
-  last_failed_login   DateTime? @db.Timestamptz(6)
-  password_changed_at DateTime? @db.Timestamptz(6)
-
-  // Global Readiness Extensions (nullable, feature-flagged)
-  default_entity_id       String? @db.Uuid
-  allowed_entity_ids      Json? // Array of entity UUIDs
-  allowed_regions         Json? // Array: ["UK","EU","USA"] 
-  preferred_currency_code String? @db.VarChar(3) // ISO-4217
-  preferred_locale        String? @db.VarChar(10) // en-GB, en-US
-  preferred_timezone      String? @db.VarChar(50) // IANA timezone
-
-  // SSO and JIT Provisioning Extensions
-  sso_provider                                       String?            @db.VarChar(50) // okta, azuread, google
-  last_sso_login                                     DateTime?          @db.Timestamptz(6)
-  created_via_jit                                    Boolean?           @default(false) // User created via JIT provisioning
-  approved                                           Boolean            @default(false) // Manual approval status
-  force_password_change                              Boolean
-  preferences                                        Json?              @db.Json
-  // Audit columns
-  createdAt                                          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt                                          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
-  created_by                                         String?            @db.Uuid
-  updated_by                                         String?            @db.Uuid
-  // Soft delete
-  deleted_at                                         DateTime?          @db.Timestamptz(6)
-  data_imports                                       data_imports[]
-  forecasts_forecasts_approved_byTousers             Forecast[]         @relation("forecasts_approved_byTousers")
-  generatedForecasts                                 Forecast[]
-  recordedSales                                      HistoricalSale[]
-  import_errors                                      import_errors[]
-  import_jobs                                        import_job[]
-  import_templates                                   import_templates[]
-  inventory_levels                                   InventoryLevel[]
-  markets                                            Market[]
-  createdProducts                                    Product[]
-  sales_channels                                     SalesChannel[]
-  createdSchedules                                   Schedule[]
-  managedSettings                                    SystemSetting[]
-  system_settings_system_settings_updated_byTousers  SystemSetting[]    @relation("system_settings_updated_byTousers")
-  working_capital_working_capital_approved_byTousers WorkingCapital[]   @relation("working_capital_approved_byTousers")
-  working_capital_working_capital_created_byTousers  WorkingCapital[]   @relation("working_capital_created_byTousers")
-
-  // Working Capital Extensions Relations
-  ar_policies               ARPolicy[]
-  ap_policies               APPolicy[]
-  inventory_policies        InventoryPolicy[]
-  wc_projections            WCProjection[]
-  wc_kpis                   WCKPIs[]
-  wc_scenarios_creator      WCScenario[]      @relation("WCScenarioCreator")
-  wc_scenarios_approver     WCScenario[]      @relation("WCScenarioApprover")
-  wc_optimizations_creator  WCOptimization[]  @relation("WCOptimizationCreator")
-  wc_optimizations_approver WCOptimization[]  @relation("WCOptimizationApprover")
-
-  // Authentication & Session Management Relations  
-  user_sessions         UserSession[]
-  audit_logs            AuditLog[]
-  password_reset_tokens PasswordResetToken[]
-  AgentRuns             AgentRuns[]
-  Approvals             Approvals[]
-
-  @@index([last_login], map: "ix_user_last_login")
-  @@index([role, isActive], map: "ix_user_role_active")
-  @@map("users")
+enum Role {
+  ADMIN
+  MANAGER
+  OPERATOR
+  VIEWER
 }
 
-model Market {
-  id                      String           @id @default(uuid()) @db.Uuid
-  code                    String           @unique(map: "ix_markets_code") @db.VarChar(10)
-  name                    String           @db.VarChar(100)
-  region                  String           @db.VarChar(50)
-  currencyCode            String           @map("currency_code") @db.VarChar(3)
-  taxRate                 Decimal?         @map("tax_rate") @db.Decimal(5, 4)
-  standardShippingDays    Int?             @map("standard_shipping_days")
-  expressShippingDays     Int?             @map("express_shipping_days")
-  customs_requirements    String?
-  regulatory_requirements Json?            @db.Json
-  import_restrictions     String?
-  isActive                Boolean          @map("is_active")
-  createdAt               DateTime         @map("created_at") @db.Timestamptz(6)
-  updatedAt               DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  created_by              String?          @db.Uuid
-  users                   User?            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  salesChannels           SalesChannel[]
-  workingCapital          WorkingCapital[]
-
-  @@map("markets")
-}
-
-model Product {
-  id                  String            @id @default(uuid()) @db.Uuid
-  sku                 String            @unique(map: "ix_products_sku") @db.VarChar(50)
-  name                String            @db.VarChar(100)
-  category            String            @db.VarChar(50)
-  marketRegion        String            @map("market_region") @db.VarChar(10)
-  weight_kg           Decimal?          @db.Decimal(8, 3)
-  dimensions_cm       String?           @db.VarChar(50)
-  unitCost            Decimal?          @map("unit_cost") @db.Decimal(10, 2)
-  sellingPrice        Decimal?          @map("selling_price") @db.Decimal(10, 2)
-  productionTimeHours Decimal?          @map("production_time_hours") @db.Decimal(6, 2)
-  batch_size_min      Int?
-  batch_size_max      Int?
-  isActive            Boolean           @map("is_active")
-  createdAt           DateTime          @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy           String?           @map("created_by") @db.Uuid
-  forecasts           Forecast[]
-  historicalSales     HistoricalSale[]
-  inventoryLevels     InventoryLevel[]
-  productionMetrics   ProductionMetrics[]
-  qualityInspections  QualityInspection[]
-  batchProductions    BatchProduction[]
-  creator             User?             @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workingCapital      WorkingCapital[]
-  inventory_policies  InventoryPolicy[]
-
-  @@index([isActive, createdAt], map: "ix_product_active_created")
-  @@index([category, marketRegion], map: "ix_product_category_market")
-  @@map("products")
-}
-
-model SalesChannel {
-  id                        String           @id @default(uuid()) @db.Uuid
-  name                      String           @db.VarChar(100)
-  channelType               String           @map("channel_type") @db.VarChar(50)
-  marketCode                String           @map("market_code") @db.VarChar(10)
-  api_endpoint              String?          @db.VarChar(255)
-  api_credentials_encrypted String?
-  marketplace_id            String?          @db.VarChar(100)
-  commissionRate            Decimal?         @map("commission_rate") @db.Decimal(5, 4)
-  fulfillmentMethod         String?          @map("fulfillment_method") @db.VarChar(20)
-  average_processing_days   Int?
-  sync_enabled              Boolean
-  sync_frequency_minutes    Int?
-  lastSyncAt                DateTime?        @map("last_sync_at") @db.Timestamptz(6)
-  syncStatus                String?          @map("sync_status") @db.VarChar(20)
-  sync_error_message        String?
-  monthly_sales_target      Decimal?         @db.Decimal(12, 2)
-  conversionRate            Decimal?         @map("conversion_rate") @db.Decimal(5, 4)
-  return_rate               Decimal?         @db.Decimal(5, 4)
-  isActive                  Boolean          @map("is_active")
-  createdAt                 DateTime         @map("created_at") @db.Timestamptz(6)
-  updatedAt                 DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  created_by                String?          @db.Uuid
-  forecasts                 Forecast[]
-  historicalSales           HistoricalSale[]
-  users                     User?            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  market                    Market           @relation(fields: [marketCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  working_capital           WorkingCapital[]
-  ar_policies               ARPolicy[]
-
-  @@index([isActive, sync_enabled], map: "ix_sales_channel_active_sync")
-  @@index([lastSyncAt], map: "ix_sales_channel_last_sync")
-  @@index([channelType, marketCode], map: "ix_sales_channel_type_market")
-  @@map("sales_channels")
-}
-
-model HistoricalSale {
-  id                 String   @id @default(uuid()) @db.Uuid
-  productId          String   @map("product_id") @db.Uuid
-  salesChannelId     String   @map("sales_channel_id") @db.Uuid
-  saleDate           DateTime @map("sale_date") @db.Date
-  sale_datetime      DateTime @db.Timestamptz(6)
-  quantitySold       Int      @map("quantity_sold")
-  unit_price         Decimal  @db.Decimal(10, 2)
-  grossRevenue       Decimal  @map("gross_revenue") @db.Decimal(12, 2)
-  discounts          Decimal? @db.Decimal(10, 2)
-  netRevenue         Decimal  @map("net_revenue") @db.Decimal(12, 2)
-  cost_of_goods_sold Decimal? @db.Decimal(10, 2)
-  shipping_cost      Decimal? @db.Decimal(8, 2)
-  platformFees       Decimal? @map("platform_fees") @db.Decimal(8, 2)
-  taxes              Decimal? @db.Decimal(8, 2)
-  netProfit          Decimal? @map("net_profit") @db.Decimal(10, 2)
-  order_id           String?  @db.VarChar(100)
-  order_item_id      String?  @db.VarChar(100)
-  customer_type      String?  @db.VarChar(20)
-  fulfillment_method String?  @db.VarChar(20)
-  shipping_country   String?  @db.VarChar(10)
-  shipping_region    String?  @db.VarChar(50)
-  season             String?  @db.VarChar(20)
-  data_source        String?  @db.VarChar(50)
-  dataQualityScore   Decimal? @map("data_quality_score") @db.Decimal(3, 2)
-  is_validated       Boolean
-  validation_notes   String?
-
-  // Global readiness extensions (backward compatible, nullable)
-  entity_id          String?  @db.Uuid
-  region             String?  @db.VarChar(10) // UK, EU, USA
-  currency_code_tx   String?  @db.VarChar(3) // Transaction currency
-  currency_code_base String?  @db.VarChar(3) // Base currency (typically GBP)
-  amount_tx          Decimal? @db.Decimal(18, 4) // Amount in transaction currency
-  amount_base        Decimal? @db.Decimal(18, 4) // Amount in base currency (GBP)
-  fx_rate_used       Decimal? @db.Decimal(18, 8) // FX rate for conversion
-  import_batch_id    String?  @db.Uuid // Links to ImportProvenance
-
-  // Audit columns
-  createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy           String?      @map("created_by") @db.Uuid
-  updated_by          String?      @db.Uuid
-  creator             User?        @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  product             Product      @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  salesChannel        SalesChannel @relation(fields: [salesChannelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  entity              Entity?      @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  transactionCurrency Currency?    @relation("HistoricalSaleTransactionCurrency", fields: [currency_code_tx], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  baseCurrency        Currency?    @relation("HistoricalSaleBaseCurrency", fields: [currency_code_base], references: [code], onDelete: NoAction, onUpdate: NoAction)
-
-  // Enhanced indexes for global operations
-  @@index([saleDate, salesChannelId], map: "ix_historical_sales_date_channel")
-  @@index([saleDate, productId], map: "ix_historical_sales_date_product")
-  @@index([order_id], map: "ix_historical_sales_order")
-  @@index([productId, salesChannelId, saleDate], map: "ix_historical_sales_product_channel_date")
-  @@index([saleDate], map: "ix_historical_sales_sale_date")
-  @@index([productId, salesChannelId, saleDate, quantitySold], map: "ix_historical_sales_timeseries")
-  @@index([is_validated, dataQualityScore], map: "ix_historical_sales_validated")
-  // New indexes for global readiness
-  @@index([entity_id, saleDate], map: "ix_historical_sales_entity_date")
-  @@index([region, saleDate], map: "ix_historical_sales_region_date")
-  @@index([currency_code_tx, saleDate], map: "ix_historical_sales_currency_date")
-  @@index([import_batch_id], map: "ix_historical_sales_batch")
-  @@map("historical_sales")
-}
-
-model Forecast {
-  id                    String    @id @default(uuid()) @db.Uuid
-  productId             String    @map("product_id") @db.Uuid
-  salesChannelId        String    @map("sales_channel_id") @db.Uuid
-  forecastDate          DateTime  @map("forecast_date") @db.Date
-  forecast_period       String    @db.VarChar(20)
-  forecast_horizon_days Int
-  predictedDemand       Int       @map("predicted_demand")
-  demand_lower_bound    Int?
-  demand_upper_bound    Int?
-  confidenceScore       Decimal?  @map("confidence_score") @db.Decimal(3, 2)
-  predicted_revenue     Decimal?  @db.Decimal(12, 2)
-  revenue_lower_bound   Decimal?  @db.Decimal(12, 2)
-  revenue_upper_bound   Decimal?  @db.Decimal(12, 2)
-  seasonalFactor        Decimal?  @map("seasonal_factor") @db.Decimal(5, 4)
-  trendFactor           Decimal?  @map("trend_factor") @db.Decimal(5, 4)
-  promotional_factor    Decimal?  @db.Decimal(5, 4)
-  external_factors      Json?     @db.Json
-  modelType             String    @map("model_type") @db.VarChar(50)
-  modelVersion          String?   @map("model_version") @db.VarChar(20)
-  training_data_start   DateTime? @db.Date
-  training_data_end     DateTime? @db.Date
-  model_accuracy_score  Decimal?  @db.Decimal(5, 4)
-  status                String    @db.VarChar(20)
-  is_approved           Boolean
-  approvedBy            String?   @map("approved_by") @db.Uuid
-  approvedAt            DateTime? @map("approved_at") @db.Timestamptz(6)
-  actual_demand         Int?
-  actual_revenue        Decimal?  @db.Decimal(12, 2)
-  forecast_error        Decimal?  @db.Decimal(8, 2)
-  forecast_accuracy     Decimal?  @db.Decimal(5, 4)
-  notes                 String?
-  manual_adjustments    Json?     @db.Json
-
-  // Global readiness extensions (backward compatible, nullable)
-  entity_id              String?  @db.Uuid
-  region                 String?  @db.VarChar(10) // UK, EU, USA
-  currency_code_tx       String?  @db.VarChar(3) // Forecast currency
-  currency_code_base     String?  @db.VarChar(3) // Base currency (typically GBP)
-  predicted_revenue_tx   Decimal? @db.Decimal(18, 4) // Revenue in transaction currency
-  predicted_revenue_base Decimal? @db.Decimal(18, 4) // Revenue in base currency (GBP)
-  fx_rate_assumption     Decimal? @db.Decimal(18, 8) // FX rate assumption
-  series_id              String?  @db.VarChar(200) // Computed: product|market|channel|entity
-
-  // Audit columns
-  createdAt                          DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt                          DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy                          String?      @map("created_by") @db.Uuid
-  updated_by                         String?      @db.Uuid
-  users_forecasts_approved_byTousers User?        @relation("forecasts_approved_byTousers", fields: [approvedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  creator                            User?        @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  product                            Product      @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  salesChannel                       SalesChannel @relation(fields: [salesChannelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  entity                             Entity?      @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  transactionCurrency                Currency?    @relation("ForecastTransactionCurrency", fields: [currency_code_tx], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  baseCurrency                       Currency?    @relation("ForecastBaseCurrency", fields: [currency_code_base], references: [code], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([productId, salesChannelId, forecastDate, forecast_period], map: "uq_forecast_product_channel_date_period")
-  // Enhanced indexes
-  @@index([forecastDate, salesChannelId], map: "ix_forecast_date_channel")
-  @@index([forecastDate, productId], map: "ix_forecast_date_product")
-  @@index([modelType], map: "ix_forecast_model_type")
-  @@index([productId, salesChannelId, forecastDate], map: "ix_forecast_product_channel_date")
-  @@index([status, is_approved], map: "ix_forecast_status_approved")
-  @@index([forecastDate], map: "ix_forecasts_forecast_date")
-  // New indexes for global readiness
-  @@index([entity_id, forecastDate], map: "ix_forecast_entity_date")
-  @@index([region, forecastDate], map: "ix_forecast_region_date")
-  @@index([series_id], map: "ix_forecast_series_id")
-  @@index([series_id, forecastDate], map: "ix_forecast_series_date")
-  @@map("forecasts")
-}
-
-model InventoryLevel {
-  id                            String    @id @default(uuid()) @db.Uuid
-  productId                     String    @map("product_id") @db.Uuid
-  locationType                  String    @map("location_type") @db.VarChar(50)
-  locationId                    String    @map("location_id") @db.VarChar(100)
-  location_name                 String?   @db.VarChar(200)
-  country_code                  String?   @db.VarChar(10)
-  availableQuantity             Int       @map("available_quantity")
-  reservedQuantity              Int?      @map("reserved_quantity")
-  inboundQuantity               Int?      @map("inbound_quantity")
-  defectiveQuantity             Int?      @map("defective_quantity")
-  total_quantity                Int
-  reorderPoint                  Int?      @map("reorder_point")
-  safety_stock                  Int?
-  maximum_stock                 Int?
-  economic_order_quantity       Int?
-  unit_cost                     Decimal?  @db.Decimal(10, 2)
-  total_value                   Decimal?  @db.Decimal(12, 2)
-  storage_cost_per_unit_monthly Decimal?  @db.Decimal(8, 4)
-  average_age_days              Int?
-  oldest_stock_date             DateTime? @db.Date
-  turnover_rate_monthly         Decimal?  @db.Decimal(6, 4)
-  expected_demand_30d           Int?
-  daysOfSupply                  Int?      @map("days_of_supply")
-  stock_out_risk_score          Decimal?  @db.Decimal(3, 2)
-  status                        String    @db.VarChar(20)
-  last_movement_date            DateTime? @db.Date
-  lastCountDate                 DateTime? @map("last_count_date") @db.Date
-  requires_recount              Boolean?
-  data_source                   String?   @db.VarChar(50)
-  last_sync_at                  DateTime? @db.Timestamptz(6)
-  sync_status                   String?   @db.VarChar(20)
-  notes                         String?
-  adjustment_reason             String?   @db.VarChar(200)
-  snapshot_date                 DateTime  @db.Date
-
-  // Global readiness extensions (backward compatible, nullable)
-  entity_id               String?  @db.Uuid
-  region                  String?  @db.VarChar(10) // UK, EU, USA
-  currency_code_valuation String?  @db.VarChar(3) // Currency for unit_cost/total_value
-  currency_code_base      String?  @db.VarChar(3) // Base currency (typically GBP)
-  unit_cost_base          Decimal? @db.Decimal(18, 4) // Unit cost in base currency (GBP)
-  total_value_base        Decimal? @db.Decimal(18, 4) // Total value in base currency (GBP)
-  fx_rate_valuation       Decimal? @db.Decimal(18, 8) // FX rate for valuation
-
-  // Audit columns
-  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  created_by        String?   @db.Uuid
-  updated_by        String?   @db.Uuid
-  users             User?     @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  product           Product   @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  entity            Entity?   @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  valuationCurrency Currency? @relation("InventoryLevelValuationCurrency", fields: [currency_code_valuation], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  baseCurrency      Currency? @relation("InventoryLevelBaseCurrency", fields: [currency_code_base], references: [code], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([productId, locationId, snapshot_date], map: "uq_inventory_product_location_date")
-  // Enhanced indexes
-  @@index([country_code], map: "ix_inventory_country")
-  @@index([snapshot_date], map: "ix_inventory_levels_snapshot_date")
-  @@index([locationType], map: "ix_inventory_location_type")
-  @@index([productId, locationId], map: "ix_inventory_product_location")
-  @@index([snapshot_date], map: "ix_inventory_snapshot_date")
-  @@index([status, snapshot_date], map: "ix_inventory_status_date")
-  // New indexes for global readiness
-  @@index([entity_id, snapshot_date], map: "ix_inventory_entity_date")
-  @@index([region, snapshot_date], map: "ix_inventory_region_date")
-  @@index([currency_code_valuation, snapshot_date], map: "ix_inventory_currency_date")
-  @@map("inventory_levels")
-}
-
-model WorkingCapital {
-  id                         String    @id @default(uuid()) @db.Uuid
-  projectionDate             DateTime  @map("projection_date") @db.Date
-  projection_period          String    @db.VarChar(20)
-  productId                  String?   @map("product_id") @db.Uuid
-  marketCode                 String?   @map("market_code") @db.VarChar(10)
-  sales_channel_id           String?   @db.Uuid
-  currencyCode               String    @map("currency_code") @db.VarChar(3)
-  projectedSalesRevenue      Decimal?  @map("projected_sales_revenue") @db.Decimal(15, 2)
-  actual_sales_revenue       Decimal?  @db.Decimal(15, 2)
-  payment_terms_days         Int?
-  collection_rate            Decimal?  @db.Decimal(5, 4)
-  cost_of_goods_sold         Decimal?  @db.Decimal(12, 2)
-  inventory_investment       Decimal?  @db.Decimal(12, 2)
-  manufacturing_costs        Decimal?  @db.Decimal(12, 2)
-  raw_materials_cost         Decimal?  @db.Decimal(12, 2)
-  labor_costs                Decimal?  @db.Decimal(12, 2)
-  marketing_spend            Decimal?  @db.Decimal(10, 2)
-  platform_fees              Decimal?  @db.Decimal(10, 2)
-  shipping_costs             Decimal?  @db.Decimal(10, 2)
-  storage_fees               Decimal?  @db.Decimal(8, 2)
-  administrative_costs       Decimal?  @db.Decimal(8, 2)
-  vat_gst_payable            Decimal?  @db.Decimal(10, 2)
-  corporate_tax_payable      Decimal?  @db.Decimal(10, 2)
-  customs_duties             Decimal?  @db.Decimal(8, 2)
-  accounts_receivable        Decimal?  @db.Decimal(12, 2)
-  inventory_value            Decimal?  @db.Decimal(12, 2)
-  accounts_payable           Decimal?  @db.Decimal(12, 2)
-  accrued_expenses           Decimal?  @db.Decimal(10, 2)
-  netCashFlow                Decimal?  @map("net_cash_flow") @db.Decimal(15, 2)
-  cumulative_cash_flow       Decimal?  @db.Decimal(15, 2)
-  cash_conversion_cycle_days Int?
-  workingCapitalRequirement  Decimal?  @map("working_capital_requirement") @db.Decimal(15, 2)
-  working_capital_turnover   Decimal?  @db.Decimal(6, 4)
-  days_sales_outstanding     Int?
-  days_inventory_outstanding Int?
-  days_payable_outstanding   Int?
-  scenarioType               String?   @map("scenario_type") @db.VarChar(20)
-  confidence_level           Decimal?  @db.Decimal(3, 2)
-  risk_factors               Json?     @db.Json
-  sensitivity_analysis       Json?     @db.Json
-  status                     String    @db.VarChar(20)
-  is_approved                Boolean
-  approved_by                String?   @db.Uuid
-  approved_at                DateTime? @db.Timestamptz(6)
-  notes                      String?
-  assumptions                Json?     @db.Json
-  data_sources               Json?     @db.Json
-  createdAt                  DateTime  @map("created_at") @db.Timestamptz(6)
-  updatedAt                  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  created_by                 String?   @db.Uuid
-
-  // Global readiness extensions (backward compatible, nullable)
-  entity_id                     String?  @db.Uuid
-  region                        String?  @db.VarChar(10) // UK, EU, USA
-  currency_code_base            String?  @db.VarChar(3) // Base currency for consolidation
-  fx_rate_to_base               Decimal? @db.Decimal(18, 8) // FX rate for currency conversion
-  tax_jurisdiction              String?  @db.VarChar(10) // Tax jurisdiction code
-  vat_rate_applied              Decimal? @db.Decimal(5, 4) // VAT/Sales tax rate applied
-  import_duty_rate              Decimal? @db.Decimal(5, 4) // Import duty rate if applicable
-  compliance_status             String?  @db.VarChar(20) // COMPLIANT, REVIEW_REQUIRED, NON_COMPLIANT
-  risk_category                 String?  @db.VarChar(20) // LOW, MEDIUM, HIGH, CRITICAL
-  consolidation_group           String?  @db.VarChar(50) // For multi-entity reporting
-  intercompany_elimination_flag Boolean? @default(false) // For consolidated reporting
-
-  // Relations
-  users_working_capital_approved_byTousers User?         @relation("working_capital_approved_byTousers", fields: [approved_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users_working_capital_created_byTousers  User?         @relation("working_capital_created_byTousers", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  market                                   Market?       @relation(fields: [marketCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  product                                  Product?      @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  sales_channels                           SalesChannel? @relation(fields: [sales_channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  entity                                   Entity?       @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  baseCurrency                             Currency?     @relation("WorkingCapitalBaseCurrency", fields: [currency_code_base], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  projectionCurrency                       Currency?     @relation("WorkingCapitalProjectionCurrency", fields: [currencyCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([productId, marketCode, sales_channel_id, projectionDate, projection_period, scenarioType], map: "uq_working_capital_projection")
-  @@index([currencyCode], map: "ix_working_capital_currency")
-  @@index([projectionDate], map: "ix_working_capital_date")
-  @@index([marketCode, projectionDate], map: "ix_working_capital_market_date")
-  @@index([productId, projectionDate], map: "ix_working_capital_product_date")
-  @@index([projectionDate], map: "ix_working_capital_projection_date")
-  @@index([scenarioType, status], map: "ix_working_capital_scenario_status")
-  // New indexes for global readiness
-  @@index([entity_id, projectionDate, scenarioType], map: "ix_wc_entity_date_scenario")
-  @@index([region, projectionDate], map: "ix_wc_region_date")
-  @@index([currency_code_base, projectionDate], map: "ix_wc_base_currency_date")
-  @@index([tax_jurisdiction, projectionDate], map: "ix_wc_tax_jurisdiction")
-  @@index([compliance_status, risk_category], map: "ix_wc_compliance_risk")
-  @@index([consolidation_group, projectionDate], map: "ix_wc_consolidation_date")
-  @@index([intercompany_elimination_flag, projectionDate], map: "ix_wc_interco_elimination")
-  @@map("working_capital")
-}
-
-model SystemSetting {
-  id                                      String    @id @default(uuid()) @db.Uuid
-  category                                String    @db.VarChar(50)
-  key                                     String    @db.VarChar(100)
-  name                                    String    @db.VarChar(200)
-  description                             String?
-  valueText                               String?   @map("value_text")
-  valueInteger                            BigInt?   @map("value_integer")
-  valueDecimal                            Decimal?  @map("value_decimal") @db.Decimal(20, 8)
-  valueBoolean                            Boolean?  @map("value_boolean")
-  valueJson                               Json?     @map("value_json") @db.Json
-  value_date                              DateTime? @db.Date
-  value_datetime                          DateTime? @db.Timestamptz(6)
-  dataType                                String    @map("data_type") @db.VarChar(20)
-  is_encrypted                            Boolean
-  validation_rules                        Json?     @db.Json
-  default_value                           String?
-  is_system_setting                       Boolean
-  is_sensitive                            Boolean
-  requires_restart                        Boolean
-  environment                             String?   @db.VarChar(20)
-  scope                                   String?   @db.VarChar(50)
-  scopeId                                 String?   @map("scope_id") @db.VarChar(100)
-  version                                 Int
-  isActive                                Boolean   @map("is_active")
-  effective_from                          DateTime? @db.Timestamptz(6)
-  effective_to                            DateTime? @db.Timestamptz(6)
-  previousValue                           String?   @map("previous_value")
-  change_reason                           String?   @db.VarChar(200)
-  createdAt                               DateTime  @map("created_at") @db.Timestamptz(6)
-  updatedAt                               DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy                               String?   @map("created_by") @db.Uuid
-  updated_by                              String?   @db.Uuid
-  creator                                 User?     @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users_system_settings_updated_byTousers User?     @relation("system_settings_updated_byTousers", fields: [updated_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([category, key, scope, scopeId, environment, version], map: "uq_system_settings_active")
-  @@index([isActive, effective_from, effective_to], map: "ix_system_settings_active_effective")
-  @@index([category], map: "ix_system_settings_category")
-  @@index([category, key], map: "ix_system_settings_category_key")
-  @@index([environment], map: "ix_system_settings_environment")
-  @@index([key], map: "ix_system_settings_key")
-  @@index([scope, scopeId], map: "ix_system_settings_scope")
-  @@map("system_settings")
-}
-
-model Job {
-  id              String    @id @default(uuid()) @db.Uuid
-  jobNumber       String    @unique(map: "ix_jobs_job_number") @map("job_number") @db.VarChar(50)
-  customerName    String    @map("customer_name") @db.VarChar(200)
-  product_type    String?   @db.VarChar(100)
-  quantity        Int
-  priority        Int?
-  status          String?   @db.VarChar(20)
-  createdAt       DateTime? @map("created_at") @db.Timestamptz(6)
-  due_date        DateTime  @db.Timestamptz(6)
-  start_date      DateTime? @db.Timestamptz(6)
-  completion_date DateTime? @db.Timestamptz(6)
-  estimated_hours Float?
-  actual_hours    Float?
-  notes           String?
-  scheduleId      String?   @map("schedule_id") @db.Uuid
-  schedule        Schedule? @relation(fields: [scheduleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@map("jobs")
-}
-
-model Schedule {
-  id                 String    @id @default(uuid()) @db.Uuid
-  name               String    @db.VarChar(100)
-  version            Int?
-  status             String?   @db.VarChar(20)
-  createdAt          DateTime? @map("created_at") @db.Timestamptz(6)
-  createdBy          String?   @map("created_by") @db.Uuid
-  startDate          DateTime  @map("start_date") @db.Timestamptz(6)
-  endDate            DateTime  @map("end_date") @db.Timestamptz(6)
-  optimization_score Float?
-  total_jobs         Int?
-  completed_jobs     Int?
-  jobs               Job[]
-  creator            User?     @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@map("schedules")
-}
-
-model Resource {
-  id                String    @id @default(uuid()) @db.Uuid
-  name              String    @db.VarChar(100)
-  type              String    @db.VarChar(50)
-  capacity          Float?
-  status            String?   @db.VarChar(20)
-  createdAt         DateTime? @map("created_at") @db.Timestamptz(6)
-  last_maintenance  DateTime? @db.Timestamptz(6)
-  next_maintenance  DateTime? @db.Timestamptz(6)
-  efficiency_rating Float?
-  cost_per_hour     Float?
-  location          String?   @db.VarChar(100)
-  description       String?
-
-  @@index([name], map: "ix_resources_name")
-  @@map("resources")
-}
-
-model data_imports {
-  id                          String          @id @db.Uuid
-  import_name                 String          @db.VarChar(200)
-  import_type                 importtype
-  import_description          String?
-  original_filename           String?         @db.VarChar(255)
-  file_type                   filetype
-  file_path                   String?         @db.VarChar(500)
-  file_size_bytes             BigInt?
-  file_hash                   String?         @db.VarChar(64)
-  status                      importstatus
-  progress_percentage         Int?
-  current_step                String?         @db.VarChar(100)
-  total_rows                  Int?
-  processed_rows              Int?
-  successful_rows             Int?
-  failed_rows                 Int?
-  duplicate_rows              Int?
-  data_quality_score          Decimal?        @db.Decimal(3, 2)
-  completeness_score          Decimal?        @db.Decimal(3, 2)
-  accuracy_score              Decimal?        @db.Decimal(3, 2)
-  import_settings             Json?           @db.Json
-  validation_rules            Json?           @db.Json
-  field_mappings              Json?           @db.Json
-  started_at                  DateTime?       @db.Timestamptz(6)
-  completed_at                DateTime?       @db.Timestamptz(6)
-  processing_duration_seconds Int?
-  error_message               String?
-  error_details               Json?           @db.Json
-  rollback_completed          Boolean?
-  created_by                  String          @db.Uuid
-  created_at                  DateTime        @db.Timestamptz(6)
-  updated_at                  DateTime        @db.Timestamptz(6)
-  users                       User            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  import_errors               import_errors[]
-  import_logs                 import_logs[]
-
-  @@index([created_at, created_by], map: "ix_data_imports_created_user")
-  @@index([import_type], map: "ix_data_imports_import_type")
-  @@index([status, started_at], map: "ix_data_imports_processing")
-  @@index([status], map: "ix_data_imports_status")
-  @@index([status, import_type], map: "ix_data_imports_status_type")
-}
-
-model import_errors {
-  id                String       @id @db.Uuid
-  import_id         String       @db.Uuid
-  row_number        Int?
-  column_name       String?      @db.VarChar(100)
-  error_type        String       @db.VarChar(50)
-  error_code        String?      @db.VarChar(20)
-  error_message     String
-  error_severity    String?      @db.VarChar(20)
-  original_value    String?
-  suggested_value   String?
-  row_data          Json?        @db.Json
-  is_resolved       Boolean?
-  resolution_method String?      @db.VarChar(50)
-  resolved_by       String?      @db.Uuid
-  resolved_at       DateTime?    @db.Timestamptz(6)
-  resolution_notes  String?
-  created_at        DateTime     @db.Timestamptz(6)
-  data_imports      data_imports @relation(fields: [import_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users             User?        @relation(fields: [resolved_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([import_id, error_severity], map: "ix_import_errors_import_severity")
-  @@index([import_id, row_number], map: "ix_import_errors_row")
-  @@index([error_type, is_resolved], map: "ix_import_errors_type_resolved")
-}
-
-model import_logs {
-  id                 String       @id @db.Uuid
-  import_id          String       @db.Uuid
-  log_level          String       @db.VarChar(20)
-  log_message        String
-  log_context        Json?        @db.Json
-  step_name          String?      @db.VarChar(100)
-  row_number         Int?
-  processing_time_ms Int?
-  created_at         DateTime     @db.Timestamptz(6)
-  data_imports       data_imports @relation(fields: [import_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([created_at], map: "ix_import_logs_created")
-  @@index([import_id, log_level], map: "ix_import_logs_import_level")
-}
-
-model import_templates {
-  id                 String     @id @db.Uuid
-  template_name      String     @unique @db.VarChar(100)
-  import_type        importtype
-  version            String?    @db.VarChar(20)
-  description        String?
-  file_format        filetype
-  field_definitions  Json       @db.Json
-  sample_data        Json?      @db.Json
-  validation_rules   Json?      @db.Json
-  template_file_path String?    @db.VarChar(500)
-  documentation_path String?    @db.VarChar(500)
-  download_count     Int?
-  usage_count        Int?
-  success_rate       Decimal?   @db.Decimal(5, 2)
-  is_active          Boolean?
-  is_system_template Boolean?
-  created_by         String     @db.Uuid
-  created_at         DateTime   @db.Timestamptz(6)
-  updated_at         DateTime   @db.Timestamptz(6)
-  users              User       @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([import_type, is_active], map: "ix_import_templates_type_active")
-  @@index([usage_count, success_rate], map: "ix_import_templates_usage")
-}
-
-enum filetype {
-  CSV
-  XLSX
-  JSON
-  XML
-  API
-}
-
-model import_job {
-  id               Int       @id @default(autoincrement())
-  filename         String    @db.VarChar(255)
-  file_path        String    @db.VarChar(500)
-  file_size        Int
-  file_type        String    @db.VarChar(100)
-  data_type        String    @db.VarChar(50)
-  status           String    @default("uploaded") @db.VarChar(50)
-  mapping_config   Json?     @db.Json
-  validation_rules Json?     @db.Json
-  total_rows       Int       @default(0)
-  processed_rows   Int       @default(0)
-  error_rows       Int       @default(0)
-  warnings         Json?     @db.Json
-  uploaded_by      String?   @db.Uuid
-  uploaded_at      DateTime  @db.Timestamptz(6)
-  processed_at     DateTime? @db.Timestamptz(6)
-  completed_at     DateTime? @db.Timestamptz(6)
-
-  // Relations
-  user               User?               @relation(fields: [uploaded_by], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  validation_results validation_result[]
-
-  @@index([status, uploaded_at], map: "ix_import_jobs_status_date")
-  @@index([uploaded_by, uploaded_at], map: "ix_import_jobs_user_date")
-}
-
-model validation_result {
-  id             Int      @id @default(autoincrement())
-  import_job_id  Int
-  row_number     Int
-  status         String   @db.VarChar(20) // 'valid', 'error', 'warning'
-  errors         Json?    @db.Json
-  warnings       Json?    @db.Json
-  original_data  Json     @db.Json
-  processed_data Json?    @db.Json
-  created_at     DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  import_job import_job @relation(fields: [import_job_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([import_job_id, status], map: "ix_validation_results_job_status")
-  @@index([import_job_id, row_number], map: "ix_validation_results_job_row")
-}
-
-enum importstatus {
+enum ProductionStatus {
   PENDING
-  PROCESSING
-  VALIDATING
+  IN_PROGRESS
   COMPLETED
-  FAILED
+  DELAYED
   CANCELLED
 }
 
-enum importtype {
-  PRODUCTS
-  HISTORICAL_SALES
-  INVENTORY_LEVELS
-  MANUFACTURING_DATA
-  FINANCIAL_DATA
-  FORECASTS
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
 
-// ========================================
-// GLOBAL READINESS TABLES
-// Multi-Entity and Multi-Currency Support
-// ========================================
-
-model Entity {
-  id            String  @id @default(uuid()) @db.Uuid
-  name          String  @db.VarChar(100)
-  country_code  String  @db.VarChar(2) // ISO-3166-1 alpha-2
-  currency_code String  @db.VarChar(3) // ISO-4217
-  tax_number    String? @db.VarChar(50) // VAT/EIN/etc
-  address       String? @db.Text
-  is_active     Boolean @default(true)
-
-  // Audit columns
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @updatedAt @db.Timestamptz(6)
-  created_by String?  @db.Uuid
-  updated_by String?  @db.Uuid
-
-  // Relations - entities can be referenced by financial data
-  historical_sales HistoricalSale[]
-  forecasts        Forecast[]
-  inventory_levels InventoryLevel[]
-  working_capital  WorkingCapital[]
-
-  @@index([country_code], name: "ix_entity_country")
-  @@index([currency_code], name: "ix_entity_currency")
-  @@index([is_active], name: "ix_entity_active")
-  @@map("entities")
+enum MovementType {
+  IN
+  OUT
+  ADJUSTMENT
+  TRANSFER
 }
 
-model Currency {
-  code           String  @id @db.VarChar(3) // ISO-4217 PK
-  name           String  @db.VarChar(100)
-  symbol         String  @db.VarChar(10)
-  decimal_places Int     @default(2)
-  is_active      Boolean @default(true)
+model User {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  name        String?
+  role        Role
+  preferences Json?
+  dashboards  Dashboard[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  // Audit columns
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @updatedAt @db.Timestamptz(6)
-
-  // Relations
-  fx_rates_base              FxRate[]         @relation("FxRateBase")
-  fx_rates_quote             FxRate[]         @relation("FxRateQuote")
-  working_capital_base       WorkingCapital[] @relation("WorkingCapitalBaseCurrency")
-  working_capital_projection WorkingCapital[] @relation("WorkingCapitalProjectionCurrency")
-  historical_sales_tx        HistoricalSale[] @relation("HistoricalSaleTransactionCurrency")
-  historical_sales_base      HistoricalSale[] @relation("HistoricalSaleBaseCurrency")
-  forecasts_tx               Forecast[]       @relation("ForecastTransactionCurrency")
-  forecasts_base             Forecast[]       @relation("ForecastBaseCurrency")
-  inventory_levels_valuation InventoryLevel[] @relation("InventoryLevelValuationCurrency")
-  inventory_levels_base      InventoryLevel[] @relation("InventoryLevelBaseCurrency")
-
-  @@map("currencies")
+  @@index([role], name: "idx_user_role")
 }
 
-model FxRate {
-  id         String   @id @default(uuid()) @db.Uuid
-  as_of_date DateTime @db.Date
-  base_code  String   @db.VarChar(3)
-  quote_code String   @db.VarChar(3)
-  rate       Decimal  @db.Decimal(18, 8) // High precision for FX
-  source     String   @default("ecb") @db.VarChar(50) // ecb, oanda, bloomberg
+model WorkingCapital {
+  id                  String   @id @default(cuid())
+  date                DateTime @default(now())
+  currentAssets       Float
+  currentLiabilities  Float
+  inventory           Float
+  accountsReceivable  Float
+  accountsPayable     Float
+  cash                Float
+  dso                 Int
+  dpo                 Int
+  dio                 Int
+  cashConversionCycle Int
+  workingCapitalRatio Float
+  quickRatio          Float
+  createdAt           DateTime @default(now())
 
-  // Audit columns
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  base_currency  Currency @relation("FxRateBase", fields: [base_code], references: [code])
-  quote_currency Currency @relation("FxRateQuote", fields: [quote_code], references: [code])
-
-  @@unique([as_of_date, base_code, quote_code], name: "uq_fx_rate_date_pair")
-  @@index([as_of_date], name: "ix_fx_rate_date")
-  @@index([base_code, quote_code], name: "ix_fx_rate_pair")
-  @@map("fx_rates")
+  @@index([date], name: "idx_working_capital_date")
 }
 
-model VatRate {
-  id           String    @id @default(uuid()) @db.Uuid
-  country_code String    @db.VarChar(2)
-  rate_name    String    @db.VarChar(50) // "Standard", "Reduced", "Zero"
-  rate_pct     Decimal   @db.Decimal(5, 4) // 20.00% = 0.2000
-  valid_from   DateTime  @db.Date
-  valid_to     DateTime? @db.Date
+model CashRunway {
+  id              String   @id @default(cuid())
+  date            DateTime
+  cashBalance     Float
+  monthlyBurnRate Float
+  monthlyRevenue  Float
+  netBurnRate     Float
+  runwayMonths    Float
+  coverageDay30   Float
+  coverageDay60   Float
+  coverageDay90   Float
+  coverageDay120  Float
+  coverageDay180  Float
+  createdAt       DateTime @default(now())
 
-  // Audit columns
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @updatedAt @db.Timestamptz(6)
-
-  @@index([country_code, valid_from], name: "ix_vat_rate_country_date")
-  @@index([valid_from, valid_to], name: "ix_vat_rate_validity")
-  @@map("vat_rates")
+  @@index([date], name: "idx_cash_runway_date")
 }
 
-model SalesTaxUs {
-  id         String    @id @default(uuid()) @db.Uuid
-  state_code String    @db.VarChar(2) // US state codes
-  locality   String?   @db.VarChar(100) // City/county if applicable
-  rate_pct   Decimal   @db.Decimal(5, 4)
-  valid_from DateTime  @db.Date
-  valid_to   DateTime? @db.Date
-
-  // Audit columns
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @updatedAt @db.Timestamptz(6)
-
-  @@index([state_code, valid_from], name: "ix_sales_tax_state_date")
-  @@map("sales_tax_us")
-}
-
-model ImportProvenance {
-  id               String   @id @default(uuid()) @db.Uuid
-  import_job_id    String?  @db.Uuid
-  source_system    String   @db.VarChar(100) // "unleashed", "amazon_sp", "shopify"
-  batch_identifier String   @db.VarChar(100)
-  import_timestamp DateTime @default(now()) @db.Timestamptz(6)
-  record_count     Int
-
-  // Audit columns
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-
-  @@index([source_system, import_timestamp], name: "ix_provenance_system_time")
-  @@index([batch_identifier], name: "ix_provenance_batch")
-  @@map("import_provenance")
-}
-
-// Working Capital Extensions - Enhanced Models for Financial Planning
-
-model ARPolicy {
-  id           String    @id @default(uuid()) @db.Uuid
-  channel_id   String    @db.Uuid
-  term_days    Int
-  pct_share    Decimal   @db.Decimal(5, 4) // Percentage of sales using these terms
-  fees_pct     Decimal   @db.Decimal(5, 4) // Channel fees percentage
-  bad_debt_pct Decimal   @db.Decimal(5, 4) // Expected bad debt rate
-  active_from  DateTime  @db.Date
-  active_to    DateTime? @db.Date
-  created_by   String?   @db.Uuid
-  created_at   DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime  @updatedAt @db.Timestamptz(6)
-
-  // Relations
-  sales_channel SalesChannel @relation(fields: [channel_id], references: [id], onDelete: Cascade)
-  user          User?        @relation(fields: [created_by], references: [id])
-
-  @@unique([channel_id, active_from], name: "uq_ar_policy_channel_date")
-  @@index([channel_id, active_from], name: "ix_ar_policy_channel_active")
-  @@map("ar_policies")
-}
-
-model APPolicy {
-  id                     String    @id @default(uuid()) @db.Uuid
-  supplier_id            String    @db.VarChar(100) // External supplier reference
-  supplier_name          String    @db.VarChar(200)
-  term_days              Int
-  early_pay_discount_pct Decimal?  @db.Decimal(5, 4)
-  early_pay_days         Int?
-  strategy               String    @default("due") @db.VarChar(20) // 'due', 'discount', 'optimize'
-  active_from            DateTime  @db.Date
-  active_to              DateTime? @db.Date
-  created_by             String?   @db.Uuid
-  created_at             DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at             DateTime  @updatedAt @db.Timestamptz(6)
-
-  // Relations
-  user User? @relation(fields: [created_by], references: [id])
-
-  @@unique([supplier_id, active_from], name: "uq_ap_policy_supplier_date")
-  @@index([supplier_id, active_from], name: "ix_ap_policy_supplier_active")
-  @@map("ap_policies")
-}
-
-model InventoryPolicy {
-  id             String    @id @default(uuid()) @db.Uuid
-  sku            String    @db.VarChar(50)
-  product_id     String    @db.Uuid
-  target_dio     Int // Target Days Inventory Outstanding
-  service_level  Decimal   @db.Decimal(4, 3) // Service level (0.95 = 95%)
-  rop            Int // Reorder Point
-  ss             Int // Safety Stock
-  effective_from DateTime  @db.Date
-  effective_to   DateTime? @db.Date
-  created_by     String?   @db.Uuid
-  created_at     DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime  @updatedAt @db.Timestamptz(6)
-
-  // Relations
-  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  user    User?   @relation(fields: [created_by], references: [id])
-
-  @@unique([product_id, effective_from], name: "uq_inventory_policy_product_date")
-  @@index([product_id, effective_from], name: "ix_inventory_policy_product_active")
-  @@index([sku], name: "ix_inventory_policy_sku")
-  @@map("inventory_policies")
-}
-
-model WCProjection {
-  id            String   @id @default(uuid()) @db.Uuid
-  run_id        String   @db.Uuid // Groups projections from same calculation run
-  month         DateTime @db.Date // First day of month
-  cash_in       Decimal  @db.Decimal(15, 2)
-  cash_out      Decimal  @db.Decimal(15, 2)
-  net_change    Decimal  @db.Decimal(15, 2)
-  ending_cash   Decimal  @db.Decimal(15, 2)
-  scenario      String   @default("baseline") @db.VarChar(50)
-  currency_code String   @default("GBP") @db.VarChar(3)
-  created_by    String?  @db.Uuid
-  created_at    DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  user    User?    @relation(fields: [created_by], references: [id])
-  wc_kpis WCKPIs[]
-
-  @@unique([run_id, month, scenario], name: "uq_wc_projection_run_month_scenario")
-  @@index([run_id, scenario], name: "ix_wc_projection_run_scenario")
-  @@index([month], name: "ix_wc_projection_month")
-  @@map("wc_projections")
-}
-
-model WCKPIs {
-  id                   String   @id @default(uuid()) @db.Uuid
-  run_id               String   @db.Uuid
-  projection_id        String   @db.Uuid
-  scenario             String   @default("baseline") @db.VarChar(50)
-  dso                  Decimal  @db.Decimal(6, 2) // Days Sales Outstanding
-  dpo                  Decimal  @db.Decimal(6, 2) // Days Payable Outstanding
-  dio                  Decimal  @db.Decimal(6, 2) // Days Inventory Outstanding
-  ccc                  Decimal  @db.Decimal(6, 2) // Cash Conversion Cycle
-  inv_turnover         Decimal  @db.Decimal(6, 2) // Inventory Turnover
-  wc_turnover          Decimal  @db.Decimal(6, 2) // Working Capital Turnover
-  min_cash             Decimal  @db.Decimal(15, 2) // Minimum cash in period
-  facility_utilization Decimal  @db.Decimal(5, 4) // Credit facility utilization %
-  created_by           String?  @db.Uuid
-  created_at           DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  user       User?        @relation(fields: [created_by], references: [id])
-  projection WCProjection @relation(fields: [projection_id], references: [id], onDelete: Cascade)
-
-  @@unique([run_id, projection_id, scenario], name: "uq_wc_kpis_run_projection_scenario")
-  @@index([run_id, scenario], name: "ix_wc_kpis_run_scenario")
-  @@index([ccc], name: "ix_wc_kpis_ccc")
-  @@map("wc_kpis")
-}
-
-model WCScenario {
-  id            String    @id @default(uuid()) @db.Uuid
-  name          String    @db.VarChar(100)
-  description   String?   @db.Text
-  scenario_type String    @db.VarChar(20) // 'baseline', 'optimistic', 'pessimistic', 'stress', 'custom'
-  parameters    Json      @db.Json // Scenario parameters (demand%, price%, terms changes, etc.)
-  status        String    @default("draft") @db.VarChar(20)
-  run_id        String?   @db.Uuid // Latest run ID
-  created_by    String?   @db.Uuid
-  approved_by   String?   @db.Uuid
-  approved_at   DateTime? @db.Timestamptz(6)
-  created_at    DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at    DateTime  @updatedAt @db.Timestamptz(6)
-
-  // Relations
-  creator  User? @relation("WCScenarioCreator", fields: [created_by], references: [id])
-  approver User? @relation("WCScenarioApprover", fields: [approved_by], references: [id])
-
-  @@index([scenario_type, status], name: "ix_wc_scenario_type_status")
-  @@index([created_by], name: "ix_wc_scenario_creator")
-  @@map("wc_scenarios")
-}
-
-model WCOptimization {
-  id                   String    @id @default(uuid()) @db.Uuid
-  run_id               String    @db.Uuid
-  recommendation_type  String    @db.VarChar(50) // 'ar_terms', 'ap_terms', 'inventory_policy', 'channel_mix'
-  current_state        Json      @db.Json
-  recommended_state    Json      @db.Json
-  impact_analysis      Json      @db.Json // NPV, KPI changes, risk assessment
-  implementation_notes String?   @db.Text
-  priority_score       Decimal   @db.Decimal(3, 1) // 1-10 priority score
-  confidence_level     Decimal   @db.Decimal(3, 2) // 0-1 confidence
-  status               String    @default("pending") @db.VarChar(20)
-  implemented_at       DateTime? @db.Timestamptz(6)
-  created_by           String?   @db.Uuid
-  approved_by          String?   @db.Uuid
-  approved_at          DateTime? @db.Timestamptz(6)
-  created_at           DateTime  @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  creator  User? @relation("WCOptimizationCreator", fields: [created_by], references: [id])
-  approver User? @relation("WCOptimizationApprover", fields: [approved_by], references: [id])
-
-  @@index([run_id], name: "ix_wc_optimization_run")
-  @@index([recommendation_type, priority_score], name: "ix_wc_optimization_type_priority")
-  @@index([status, priority_score], name: "ix_wc_optimization_status_priority")
-  @@map("wc_optimizations")
-}
-
-// ========================================
-// AUTHENTICATION & SESSION MANAGEMENT
-// Enhanced Security Models
-// ========================================
-
-model UserSession {
-  id                 String    @id @default(uuid()) @db.Uuid
-  user_id            String    @db.Uuid
-  refresh_token_hash String    @db.VarChar(255) // bcrypt hash of refresh token
-  access_token_hash  String?   @db.VarChar(255) // bcrypt hash of access token (for replay detection)
-  device_name        String?   @db.VarChar(200)
-  user_agent         String?   @db.VarChar(500)
-  ip_address         String?   @db.VarChar(45) // IPv6 compatible
-  ip_country         String?   @db.VarChar(2) // ISO country code
-  ip_city            String?   @db.VarChar(100)
-  created_at         DateTime  @default(now()) @db.Timestamptz(6)
-  last_used_at       DateTime  @default(now()) @db.Timestamptz(6)
-  expires_at         DateTime  @db.Timestamptz(6)
-  revoked_at         DateTime? @db.Timestamptz(6)
-  revoked_reason     String?   @db.VarChar(100) // manual, security, expired, replaced
-  is_suspicious      Boolean   @default(false) // New device/location flag
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id, revoked_at], map: "ix_sessions_user_active")
-  @@index([refresh_token_hash], map: "ix_sessions_refresh_token")
-  @@index([expires_at], map: "ix_sessions_expires")
-  @@index([is_suspicious, created_at], map: "ix_sessions_suspicious")
-  @@index([ip_address, created_at], map: "ix_sessions_ip_time")
-  @@map("user_sessions")
-}
-
-model AuditLog {
-  id            String   @id @default(uuid()) @db.Uuid
-  user_id       String?  @db.Uuid // Nullable for system events
-  event_type    String   @db.VarChar(50) // LOGIN_SUCCESS, ROLE_CHANGED, etc.
-  event_data    Json?    @db.Json // Additional context
-  ip_address    String?  @db.VarChar(45)
-  user_agent    String?  @db.VarChar(500)
-  session_id    String?  @db.Uuid // Link to session
-  resource_type String?  @db.VarChar(50) // user, setting, integration
-  resource_id   String?  @db.Uuid
-  old_value     Json?    @db.Json // For change tracking
-  new_value     Json?    @db.Json // For change tracking
-  severity      String   @default("info") @db.VarChar(10) // info, warn, error
-  environment   String   @default("production") @db.VarChar(20)
-  created_at    DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
-
-  @@index([user_id, created_at], map: "ix_audit_user_time")
-  @@index([event_type, created_at], map: "ix_audit_event_time")
-  @@index([severity, created_at], map: "ix_audit_severity_time")
-  @@index([resource_type, resource_id], map: "ix_audit_resource")
-  @@index([created_at], map: "ix_audit_created")
-  @@map("audit_logs")
-}
-
-model PasswordResetToken {
-  id         String    @id @default(uuid()) @db.Uuid
-  user_id    String    @db.Uuid
-  token_hash String    @db.VarChar(255) // bcrypt hash of token
-  ip_address String?   @db.VarChar(45)
-  user_agent String?   @db.VarChar(500)
-  expires_at DateTime  @db.Timestamptz(6)
-  used_at    DateTime? @db.Timestamptz(6)
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id], map: "ix_reset_tokens_user")
-  @@index([token_hash], map: "ix_reset_tokens_hash")
-  @@index([expires_at], map: "ix_reset_tokens_expires")
-  @@map("password_reset_tokens")
-}
-
-// SSO Configuration (Future Use)
-model SSOProvider {
-  id                String   @id @default(uuid()) @db.Uuid
-  name              String   @db.VarChar(100) // "Okta", "Azure AD"
-  provider_type     String   @db.VarChar(50) // "saml2", "oidc"
-  metadata_url      String?  @db.VarChar(500)
-  client_id         String?  @db.VarChar(255)
-  client_secret     String?  @db.VarChar(255) // Encrypted
-  domain_whitelist  Json?    @db.Json // Allowed domains
-  default_role      String   @default("viewer") @db.VarChar(20)
-  default_entity_id String?  @db.Uuid
-  is_active         Boolean  @default(false)
-  created_at        DateTime @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime @updatedAt @db.Timestamptz(6)
-
-  @@map("sso_providers")
-}
-
-// Feature Flags (Enhanced)
-model FeatureFlag {
-  id           String   @id @default(uuid()) @db.Uuid
-  name         String   @unique @db.VarChar(100) // FEATURE_MULTI_ENTITY
-  description  String?  @db.VarChar(500)
-  is_enabled   Boolean  @default(false)
-  rollout_pct  Int      @default(0) // 0-100 percentage rollout
-  environments Json?    @db.Json // ["development", "test", "production"]
-  user_filters Json?    @db.Json // Role/entity filters
-  created_at   DateTime @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime @updatedAt @db.Timestamptz(6)
-
-  @@map("feature_flags")
-}
-
-// Password history for preventing password reuse
-model password_history {
-  id            Int      @id @default(autoincrement())
-  user_id       String   @db.Uuid // Foreign key to users.clerk_user_id
-  password_hash String   @db.Text // Bcrypt hashed password
-  created_at    DateTime @default(now()) @db.Timestamptz(6)
-
-  @@index([user_id, created_at], map: "ix_password_history_user_date")
-  @@map("password_history")
-}
-
-// Agentic AI Tables
-model AgentRuns {
-  id          String    @id @default(uuid()) @db.Uuid
-  goal        String
-  mode        String    @db.VarChar(20) // DRY_RUN, PROPOSE, EXECUTE
-  scope       Json?     @db.Json // {entity?, region?}
-  budgets     Json?     @db.Json // {workingCapitalCap?, timeBudget?}
-  status      String    @db.VarChar(20) // PLANNING, EXECUTING, REFLECTING, COMPLETED, FAILED
-  userId      String?   @db.Uuid
-  startedAt   DateTime  @map("started_at") @db.Timestamptz(6)
-  completedAt DateTime? @map("completed_at") @db.Timestamptz(6)
-  outcomes    Json?     @db.Json
-  reflection  Json?     @db.Json
-  lessons     Json?     @db.Json
-  nextSteps   Json?     @map("next_steps") @db.Json
-  error       String?
-
-  user        User?             @relation(fields: [userId], references: [id])
-  steps       AgentSteps[]
-  invocations ToolInvocations[]
-  reflections Reflections[]
-  approvals   Approvals[]
-
-  @@index([userId, startedAt])
-  @@index([status])
-  @@map("agent_runs")
-}
-
-model AgentSteps {
-  id              String    @id @default(uuid()) @db.Uuid
-  runId           String    @map("run_id") @db.Uuid
-  stepNumber      Int       @map("step_number")
-  toolId          String    @map("tool_id") @db.VarChar(100)
-  params          Json      @db.Json
-  dependencies    Json?     @db.Json // Array of step numbers
-  expectedOutcome Json?     @map("expected_outcome") @db.Json
-  status          String    @db.VarChar(20) // PENDING, APPROVED, EXECUTING, COMPLETED, FAILED
-  result          Json?     @db.Json
-  completedAt     DateTime? @map("completed_at") @db.Timestamptz(6)
-
-  run AgentRuns @relation(fields: [runId], references: [id])
-
-  @@index([runId, stepNumber])
-  @@index([status])
-  @@map("agent_steps")
-}
-
-model ToolInvocations {
-  id          String    @id @default(uuid()) @db.Uuid
-  runId       String    @map("run_id") @db.Uuid
-  stepId      String    @map("step_id") @db.VarChar(100)
-  toolId      String    @map("tool_id") @db.VarChar(100)
-  params      Json      @db.Json
-  result      Json?     @db.Json
-  status      String    @db.VarChar(20) // SUCCESS, FAILED, TIMEOUT
-  startedAt   DateTime  @map("started_at") @db.Timestamptz(6)
-  finishedAt  DateTime? @map("finished_at") @db.Timestamptz(6)
-  metricsJson Json?     @map("metrics_json") @db.Json
-
-  run AgentRuns @relation(fields: [runId], references: [id])
-
-  @@index([runId, stepId])
-  @@index([toolId, startedAt])
-  @@map("tool_invocations")
-}
-
-model Reflections {
-  id        String   @id @default(uuid()) @db.Uuid
-  runId     String   @map("run_id") @db.Uuid
-  content   Json     @db.Json
-  score     Decimal  @db.Decimal(3, 2)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  run AgentRuns @relation(fields: [runId], references: [id])
-
-  @@index([runId])
-  @@map("reflections")
-}
-
-model Lessons {
-  id             String   @id @default(uuid()) @db.Uuid
-  runId          String   @map("run_id") @db.Uuid
-  type           String   @db.VarChar(50) // SUCCESS_PATTERN, FAILURE_PATTERN, OPTIMIZATION
-  content        String
-  recommendation String?
-  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@index([runId])
-  @@index([type])
-  @@map("lessons")
-}
-
-model Approvals {
-  id         String    @id @default(uuid()) @db.Uuid
-  runId      String    @map("run_id") @db.Uuid
-  stepId     String    @map("step_id") @db.VarChar(100)
-  approverId String?   @map("approver_id") @db.Uuid
-  decision   String    @db.VarChar(20) // APPROVED, REJECTED, DEFERRED
-  reason     String?
-  approvedAt DateTime? @map("approved_at") @db.Timestamptz(6)
-
-  run      AgentRuns @relation(fields: [runId], references: [id])
-  approver User?     @relation(fields: [approverId], references: [id])
-
-  @@index([runId, stepId])
-  @@index([approverId])
-  @@map("approvals")
-}
-
-// Agent Evaluation Tables
-model AgentEvals {
-  id         String    @id @default(uuid()) @db.Uuid
-  goal       String
-  datasetKey String?   @map("dataset_key") @db.VarChar(100)
-  simulate   Boolean   @default(true)
-  startedAt  DateTime  @map("started_at") @db.Timestamptz(6)
-  finishedAt DateTime? @map("finished_at") @db.Timestamptz(6)
-  status     String    @db.VarChar(20) // RUNNING, COMPLETED, FAILED
-
-  cases  AgentEvalCases[]
-  scores AgentEvalScores[]
-
-  @@index([status])
-  @@map("agent_evals")
-}
-
-model AgentEvalCases {
-  id          String @id @default(uuid()) @db.Uuid
-  evalId      String @map("eval_id") @db.Uuid
-  tool        String @db.VarChar(100)
-  paramsJson  Json   @map("params_json") @db.Json
-  metricsJson Json   @map("metrics_json") @db.Json
-
-  eval AgentEvals @relation(fields: [evalId], references: [id])
-
-  @@index([evalId])
-  @@map("agent_eval_cases")
-}
-
-model AgentEvalScores {
-  id            String  @id @default(uuid()) @db.Uuid
-  evalId        String  @map("eval_id") @db.Uuid
-  scorecardJson Json    @map("scorecard_json") @db.Json
-  passed        Boolean
-
-  eval AgentEvals @relation(fields: [evalId], references: [id])
-
-  @@index([evalId])
-  @@index([passed])
-  @@map("agent_eval_scores")
-}
-
-// Agent Scheduling Tables
-model AgentSchedules {
-  id               String    @id @default(uuid()) @db.Uuid
-  name             String    @db.VarChar(100)
-  cron             String    @db.VarChar(100)
-  tz               String    @db.VarChar(50)
-  mode             String    @db.VarChar(20) // DRY_RUN, PROPOSE
-  entityId         String?   @map("entity_id") @db.Uuid
-  region           String?   @db.VarChar(10)
-  presetKey        String?   @map("preset_key") @db.VarChar(50)
-  enabled          Boolean   @default(true)
-  freezeWindowCron String?   @map("freeze_window_cron") @db.VarChar(100)
-  lastRunAt        DateTime? @map("last_run_at") @db.Timestamptz(6)
-
-  @@index([enabled])
-  @@index([lastRunAt])
-  @@map("agent_schedules")
-}
-
-// Agent Policy Tables
-model AgentPolicies {
-  id                 String   @id @default(uuid()) @db.Uuid
-  name               String   @db.VarChar(100)
-  description        String?  @db.Text
-  roleScope          String   @map("role_scope") @db.VarChar(50) // admin, manager, operator, viewer
-  allowedTools       String[] @map("allowed_tools") @db.Text // Array of allowed tool IDs
-  defaultMode        String   @default("DRY_RUN") @map("default_mode") @db.VarChar(20) // DRY_RUN, PROPOSE, EXECUTE
-  maxSteps           Int      @default(12) @map("max_steps")
-  wallClockMs        Int      @default(180000) @map("wall_clock_ms") // 3 minutes
-  perToolBudgetsJson Json?    @map("per_tool_budgets_json") @db.Json
-  numericClampsJson  Json?    @map("numeric_clamps_json") @db.Json
-  requireStepUp      Boolean  @default(true) @map("require_step_up")
-  active             Boolean  @default(true)
-  createdBy          String?  @map("created_by") @db.Uuid
-  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([roleScope, active])
-  @@index([createdAt])
-  @@map("agent_policies")
-}
-
-model AgentApprovals {
-  id           String    @id @default(uuid()) @db.Uuid
-  runId        String    @map("run_id") @db.Uuid
-  stepId       String    @map("step_id") @db.Uuid
-  approverId   String    @map("approver_id") @db.Uuid
-  approverRole String    @map("approver_role") @db.VarChar(50)
-  decision     String    @db.VarChar(20) // APPROVED, REJECTED, PENDING
-  reason       String?   @db.Text
-  stepUpToken  String?   @map("step_up_token") @db.VarChar(255)
-  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
-  approvedAt   DateTime? @map("approved_at") @db.Timestamptz(6)
-  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@index([runId, stepId])
-  @@index([approverId])
-  @@index([decision])
-  @@index([expiresAt])
-  @@map("agent_approvals")
-}
-
-model AgentSafetyMetrics {
-  id                 String   @id @default(uuid()) @db.Uuid
-  period             DateTime @db.Date
-  blockedPlans       Int      @default(0) @map("blocked_plans")
-  blockedStepsByRule Json     @map("blocked_steps_by_rule") @db.Json
-  exceededBudgets    Int      @default(0) @map("exceeded_budgets")
-  disallowedTools    Json     @map("disallowed_tools") @db.Json
-  approvalRequests   Int      @default(0) @map("approval_requests")
-  approvalsGranted   Int      @default(0) @map("approvals_granted")
-  approvalsRejected  Int      @default(0) @map("approvals_rejected")
-  rateLimitHits      Int      @default(0) @map("rate_limit_hits")
-  freezeWindowBlocks Int      @default(0) @map("freeze_window_blocks")
-  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@unique([period])
-  @@index([period])
-  @@map("agent_safety_metrics")
-}
-
-// Data Quality Tables
-model DQRules {
-  id         String   @id @default(uuid()) @db.Uuid
-  dataset    String   @db.VarChar(100)
-  ruleKey    String   @map("rule_key") @db.VarChar(100)
-  severity   String   @db.VarChar(10) // WARN, FAIL
-  configJson Json?    @map("config_json") @db.Json
-  active     Boolean  @default(true)
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@unique([dataset, ruleKey])
-  @@index([dataset, active])
-  @@map("dq_rules")
-}
-
-model DQRuns {
-  id          String    @id @default(uuid()) @db.Uuid
-  dataset     String    @db.VarChar(100)
-  startedAt   DateTime  @map("started_at") @db.Timestamptz(6)
-  finishedAt  DateTime? @map("finished_at") @db.Timestamptz(6)
-  status      String    @db.VarChar(20) // RUNNING, SUCCESS, FAILED
-  profileId   String?   @map("profile_id") @db.Uuid
-  rulesetHash String?   @map("ruleset_hash") @db.VarChar(64)
-  totalRules  Int       @default(0) @map("total_rules")
-  passedRules Int       @default(0) @map("passed_rules")
-  failedRules Int       @default(0) @map("failed_rules")
-  warnedRules Int       @default(0) @map("warned_rules")
-
-  findings DQFindings[]
-
-  @@index([dataset, startedAt])
-  @@index([status])
-  @@map("dq_runs")
-}
-
-model DQFindings {
-  id              String   @id @default(uuid()) @db.Uuid
-  runId           String   @map("run_id") @db.Uuid
-  ruleKey         String   @map("rule_key") @db.VarChar(100)
-  severity        String   @db.VarChar(10) // WARN, FAIL
-  count           Int      @default(0)
-  sampleRef       String?  @map("sample_ref") @db.Text
-  impactValueBase Decimal? @map("impact_value_base") @db.Decimal(15, 2)
-  impactCurrency  String?  @map("impact_currency") @db.VarChar(3)
-  notes           String?  @db.Text
-
-  run DQRuns @relation(fields: [runId], references: [id])
-
-  @@index([runId])
-  @@index([ruleKey, severity])
-  @@map("dq_findings")
-}
-
-// Model/Artifact Registry Tables
-model ModelArtifacts {
-  id          String   @id @default(uuid()) @db.Uuid
-  type        String   @db.VarChar(20) // forecast, opt, wc
-  runId       String?  @map("run_id") @db.Uuid
-  entityId    String?  @map("entity_id") @db.Uuid
-  region      String?  @db.VarChar(10)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  createdBy   String?  @map("created_by") @db.Uuid
-  metricsJson Json?    @map("metrics_json") @db.Json
-  paramsJson  Json?    @map("params_json") @db.Json
-  artifactUrl String?  @map("artifact_url") @db.Text
-  status      String   @db.VarChar(20) // ACTIVE, ARCHIVED
-  tags        String[] @db.Text
-  version     String?  @db.VarChar(50)
-
-  baselines ModelBaselines[]
-
-  @@index([type, createdAt])
-  @@index([entityId, region])
-  @@index([status])
-  @@map("model_artifacts")
-}
-
-model ModelBaselines {
-  id           String    @id @default(uuid()) @db.Uuid
-  type         String    @db.VarChar(20) // forecast, opt, wc
-  entityId     String?   @map("entity_id") @db.Uuid
-  region       String?   @db.VarChar(10)
-  activeFrom   DateTime  @map("active_from") @db.Timestamptz(6)
-  activeTo     DateTime? @map("active_to") @db.Timestamptz(6)
-  artifactId   String    @map("artifact_id") @db.Uuid
-  approverId   String?   @map("approver_id") @db.Uuid
-  approvedAt   DateTime? @map("approved_at") @db.Timestamptz(6)
-  notes        String?   @db.Text
-  snapshotJson Json?     @map("snapshot_json") @db.Json
-
-  artifact ModelArtifacts @relation(fields: [artifactId], references: [id])
-
-  @@unique([type, entityId, region, activeFrom])
-  @@index([type, entityId, region, activeTo])
-  @@index([artifactId])
-  @@map("model_baselines")
-}
-
-// Lineage tracking extension for imports
-model ImportLineage {
-  id                  String   @id @default(uuid()) @db.Uuid
-  importJobId         Int      @map("import_job_id")
-  validationProfileId String?  @map("validation_profile_id") @db.Uuid
-  lineageTag          String   @map("lineage_tag") @db.Text
-  rulesetHash         String?  @map("ruleset_hash") @db.VarChar(64)
-  rowsAffected        Int      @default(0) @map("rows_affected")
-  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@index([importJobId])
-  @@index([lineageTag])
-  @@map("import_lineage")
-}
-
-// Enterprise API Key Management
-model ApiKey {
-  id             String    @id @default(uuid())
-  organizationId String    @default("default")
-  service        String    // xero, shopify, amazon, unleashed, microsoft, openai, anthropic
-  keyName        String    // XERO_CLIENT_ID, SHOPIFY_API_KEY, etc.
-  value          String?   // The actual key value (consider encryption)
-  encryptedData  String?   // JSON encrypted data for complex auth flows
-  isActive       Boolean   @default(true)
-  lastUsed       DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  createdBy      String?   @db.Uuid
-
-  @@unique([organizationId, service, keyName])
-  @@index([organizationId, service])
-  @@map("api_keys")
-}
-
-// API Connection Status Monitoring
-model ApiConnectionStatus {
-  id             String    @id @default(uuid())
-  organizationId String    @default("default")
-  service        String    // Service identifier
-  status         String    // connected, error, not_configured, warning
-  lastChecked    DateTime  @default(now())
-  responseTime   Int?      // Response time in milliseconds
-  errorMessage   String?   // Error details if status is error
-  metadata       Json?     // Additional service-specific data
-  
-  @@unique([organizationId, service])
-  @@index([organizationId, service])
-  @@map("api_connection_status")
-}
-
-// API Usage Analytics
-model ApiUsageLog {
-  id             String    @id @default(uuid())
-  organizationId String    @default("default")
-  service        String    // Service identifier
-  endpoint       String?   // API endpoint called
-  method         String?   // HTTP method
-  statusCode     Int?      // HTTP status code
-  responseTime   Int?      // Response time in milliseconds
-  requestSize    Int?      // Request size in bytes
-  responseSize   Int?      // Response size in bytes
-  timestamp      DateTime  @default(now())
-  userId         String?   @db.Uuid
-  metadata       Json?     // Additional request/response data
-
-  @@index([organizationId, service, timestamp])
-  @@index([timestamp])
-  @@map("api_usage_logs")
-}
-
-// MCP Server Integration Models
-model ExternalAPIData {
-  id         String   @id @default(uuid())
-  source     String   // xero, shopify, amazon, unleashed
-  type       String   // invoices, orders, products, inventory, etc.
-  externalId String   // External system's ID
-  data       Json     // Full data from external API
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@unique([source, type, externalId])
-  @@index([source, type])
-  @@index([updatedAt])
-  @@map("external_api_data")
-}
-
-model SyncStatus {
-  id               String   @id @default(uuid())
-  service          String   @unique // xero, shopify, amazon, unleashed, database
-  lastSync         DateTime
-  status           String   // success, failed, in_progress
-  message          String?
-  recordsProcessed Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  @@index([service, lastSync])
-  @@map("sync_status")
-}
-
-model ManufacturingAlert {
-  id        String   @id @default(uuid())
-  type      String   // inventory_low, quality_issue, demand_spike, etc.
-  severity  String   // critical, high, medium, low
-  message   String
-  data      Json?    // Additional alert data
-  timestamp DateTime @default(now())
-  resolved  Boolean  @default(false)
-  resolvedAt DateTime?
-
-  @@index([type, severity])
-  @@index([timestamp])
-  @@map("manufacturing_alerts")
-}
-
-model MCPServerConnection {
-  id            String   @id @default(uuid())
-  serviceId     String   @unique @default("99691282-de66-45b2-98cf-317083dd11ba")
-  url           String   @default("https://web-production-99691282.up.railway.app")
-  status        String   // connected, disconnected, error
-  lastHeartbeat DateTime?
-  environment   String   // development, testing, production
-  neonBranch    String   // development, testing, production
-  projectId     String   @default("dry-mud-a5j3t7xw")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@map("mcp_server_connections")
-}
-
-// Financial Models for Working Capital API
-model Invoice {
-  id            String   @id @default(uuid()) @db.Uuid
-  invoiceNumber String   @unique @map("invoice_number") @db.VarChar(50)
-  customerName  String   @map("customer_name") @db.VarChar(255)
-  customerEmail String?  @map("customer_email") @db.VarChar(255)
-  totalAmount   Decimal  @map("total_amount") @db.Decimal(15, 2)
-  taxAmount     Decimal  @map("tax_amount") @db.Decimal(10, 2)
-  status        String   @db.VarChar(20) // draft, pending, paid, overdue, cancelled
-  dueDate       DateTime @map("due_date") @db.Date
-  paidDate      DateTime? @map("paid_date") @db.Date
-  terms         String?  @db.Text
-  notes         String?  @db.Text
-  items         Json     @db.Json
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([status])
-  @@index([dueDate])
-  @@index([createdAt])
-  @@index([status, dueDate])
-  @@map("invoices")
-}
-
-model Expense {
-  id             String   @id @default(uuid()) @db.Uuid
-  vendor         String   @db.VarChar(255)
-  category       String   @db.VarChar(50) // materials, labor, overhead, utilities, maintenance, other
-  amount         Decimal  @db.Decimal(15, 2)
-  description    String   @db.Text
-  date           DateTime @db.Date
-  paymentMethod  String?  @map("payment_method") @db.VarChar(50) // cash, credit, bank_transfer, check
-  reference      String?  @db.VarChar(100)
-  status         String   @db.VarChar(20) // pending, approved, paid, rejected
-  approvedBy     String?  @map("approved_by") @db.Uuid
-  approvedDate   DateTime? @map("approved_date") @db.Timestamptz(6)
-  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([status])
-  @@index([category])
-  @@index([date])
-  @@index([status, date])
-  @@index([category, date])
-  @@map("expenses")
-}
-
-model CashAccount {
-  id            String   @id @default(uuid()) @db.Uuid
-  accountName   String   @map("account_name") @db.VarChar(255)
-  accountType   String   @map("account_type") @db.VarChar(50) // checking, savings, petty_cash
-  balance       Decimal  @db.Decimal(15, 2)
-  currency      String   @db.VarChar(3)
-  isPrimary     Boolean  @default(false) @map("is_primary")
-  bankName      String?  @map("bank_name") @db.VarChar(255)
-  accountNumber String?  @map("account_number") @db.VarChar(50)
-  lastUpdated   DateTime @map("last_updated") @db.Timestamptz(6)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([isPrimary])
-  @@map("cash_accounts")
+model Production {
+  id                String           @id @default(cuid())
+  jobNumber         String           @unique
+  productName       String
+  productSKU        String?
+  quantity          Int
+  targetQuantity    Int
+  completedQuantity Int              @default(0)
+  status            ProductionStatus
+  priority          Priority
+  startDate         DateTime
+  targetDate        DateTime
+  completionDate    DateTime?
+  qualityScore      Float?
+  defectRate        Float?
+  efficiency        Float?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([status], name: "idx_production_status")
+  @@index([priority], name: "idx_production_priority")
+  @@index([targetDate], name: "idx_production_target_date")
 }
 
 model Inventory {
-  id           String   @id @default(uuid()) @db.Uuid
-  sku          String   @unique @db.VarChar(100)
-  productName  String   @map("product_name") @db.VarChar(255)
-  quantity     Decimal  @db.Decimal(15, 4)
-  quantityAllocated Decimal? @map("quantity_allocated") @db.Decimal(15, 4)
-  quantityAvailable Decimal? @map("quantity_available") @db.Decimal(15, 4)
-  warehouse    String?  @db.VarChar(100)
-  location     String?  @db.VarChar(100)
-  unitCost     Decimal  @map("unit_cost") @db.Decimal(10, 6)
-  totalValue   Decimal  @map("total_value") @db.Decimal(15, 2)
-  reorderPoint Int?     @map("reorder_point") @default(0)
-  reorderQuantity Int?  @map("reorder_quantity") @default(0)
-  lastModified DateTime? @map("last_modified") @db.Timestamptz(6)
-  status       String   @default("in-stock") @db.VarChar(50) // in-stock, low-stock, out-of-stock
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id              String              @id @default(cuid())
+  sku             String              @unique
+  name            String
+  description     String?
+  quantity        Int
+  reorderPoint    Int
+  reorderQuantity Int
+  location        String
+  warehouse       String
+  unitCost        Float
+  totalValue      Float
+  lastMovement    DateTime?
+  movements       InventoryMovement[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
-  @@index([sku])
-  @@index([warehouse])
-  @@index([quantity])
-  @@index([status])
-  @@index([warehouse, sku])
-  @@map("inventory")
+  @@index([warehouse, location], name: "idx_inventory_location")
+  @@index([quantity], name: "idx_inventory_quantity")
 }
-
-// User preferences for dashboard customization
-model UserPreferences {
-  id               String   @id @default(uuid()) @db.Uuid
-  userId           String   @unique @map("user_id") @db.VarChar(255)
-  theme            String   @default("light") @db.VarChar(20)
-  notifications    Boolean  @default(true)
-  language         String   @default("en") @db.VarChar(10)
-  timezone         String   @default("UTC") @db.VarChar(50)
-  dashboardLayout  Json?    @map("dashboard_layout") @db.Json
-  dashboardWidgets Json?    @map("dashboard_widgets") @db.Json
-  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([userId])
-  @@map("user_preferences")
-}
-
-// ===== PRODUCTION MANAGEMENT MODELS =====
-
-model ProductionLine {
-  id             String   @id @default(uuid()) @db.Uuid
-  name           String   @db.VarChar(255)
-  code           String   @unique @db.VarChar(50)
-  status         String   @db.VarChar(50) // running, idle, maintenance
-  efficiency     Float    @default(0) @db.Real
-  currentProduct String?  @map("current_product") @db.VarChar(255)
-  capacity       Int      @default(0) // units per hour
-  location       String?  @db.VarChar(100)
-  description    String?  @db.Text
-  isActive       Boolean  @default(true) @map("is_active")
-  metrics        ProductionMetrics[]
-  schedules      ProductionSchedule[]
-  batches        BatchProduction[]
-  downtime       ProductionDowntime[]
-  qualityDefects QualityDefect[]
-  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdBy      String?  @map("created_by") @db.VarChar(255)
-
-  @@index([status])
-  @@index([code])
-  @@map("production_lines")
-}
-
-model ProductionMetrics {
-  id            String   @id @default(uuid()) @db.Uuid
-  lineId        String   @map("line_id") @db.Uuid
-  line          ProductionLine @relation(fields: [lineId], references: [id])
-  productId     String?  @map("product_id") @db.VarChar(255)
-  product       Product? @relation(fields: [productId], references: [sku])
-  timestamp     DateTime @default(now()) @db.Timestamptz(6)
-  unitsProduced Int      @map("units_produced")
-  targetUnits   Int      @map("target_units")
-  defectCount   Int      @default(0) @map("defect_count")
-  defectRate    Float    @default(0) @map("defect_rate") @db.Real
-  efficiency    Float    @default(0) @db.Real
-  oee           Float    @default(0) @db.Real // Overall Equipment Effectiveness
-  availability  Float    @default(0) @db.Real
-  performance   Float    @default(0) @db.Real
-  quality       Float    @default(0) @db.Real
-  downtime      Int      @default(0) // minutes
-  shiftId       String?  @map("shift_id") @db.VarChar(50)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@index([lineId])
-  @@index([timestamp])
-  @@index([productId])
-  @@index([lineId, timestamp])
-  @@map("production_metrics")
-}
-
-model ProductionSchedule {
-  id            String   @id @default(uuid()) @db.Uuid
-  lineId        String   @map("line_id") @db.Uuid
-  line          ProductionLine @relation(fields: [lineId], references: [id])
-  productId     String   @map("product_id") @db.VarChar(255)
-  productName   String   @map("product_name") @db.VarChar(255)
-  quantity      Int
-  scheduledDate DateTime @map("scheduled_date") @db.Date
-  startTime     String   @map("start_time") @db.VarChar(10) // HH:MM format
-  endTime       String   @map("end_time") @db.VarChar(10)
-  shiftId       String?  @map("shift_id") @db.VarChar(50)
-  priority      String   @default("medium") @db.VarChar(20) // low, medium, high, urgent
-  status        String   @default("scheduled") @db.VarChar(50) // scheduled, in-progress, completed, cancelled
-  notes         String?  @db.Text
-  createdBy     String   @map("created_by") @db.VarChar(255)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([lineId])
-  @@index([scheduledDate])
-  @@index([status])
-  @@index([lineId, scheduledDate])
-  @@map("production_schedule")
-}
-
-model BatchProduction {
-  id            String   @id @default(uuid()) @db.Uuid
-  batchNumber   String   @unique @map("batch_number") @db.VarChar(100)
-  lineId        String   @map("line_id") @db.Uuid
-  line          ProductionLine @relation(fields: [lineId], references: [id])
-  productId     String   @map("product_id") @db.VarChar(255)
-  product       Product  @relation(fields: [productId], references: [sku])
-  productName   String   @map("product_name") @db.VarChar(255)
-  quantity      Int
-  targetQuantity Int     @map("target_quantity")
-  startTime     DateTime @map("start_time") @db.Timestamptz(6)
-  endTime       DateTime? @map("end_time") @db.Timestamptz(6)
-  status        String   @default("in-progress") @db.VarChar(50) // in-progress, completed, failed
-  qualityCheckPassed Boolean? @map("quality_check_passed")
-  qualityCheckDate   DateTime? @map("quality_check_date") @db.Timestamptz(6)
-  notes         String?  @db.Text
-  qualityDefects QualityDefect[]
-  createdBy     String   @map("created_by") @db.VarChar(255)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([batchNumber])
-  @@index([lineId])
-  @@index([status])
-  @@index([startTime])
-  @@map("batch_production")
-}
-
-model ProductionDowntime {
-  id            String   @id @default(uuid()) @db.Uuid
-  lineId        String   @map("line_id") @db.Uuid
-  line          ProductionLine @relation(fields: [lineId], references: [id])
-  startTime     DateTime @map("start_time") @db.Timestamptz(6)
-  endTime       DateTime? @map("end_time") @db.Timestamptz(6)
-  duration      Int?     // minutes
-  reason        String   @db.VarChar(255)
-  category      String   @db.VarChar(50) // maintenance, breakdown, changeover, other
-  description   String?  @db.Text
-  impactLevel   String   @default("medium") @map("impact_level") @db.VarChar(20) // low, medium, high, critical
-  resolved      Boolean  @default(false)
-  resolvedBy    String?  @map("resolved_by") @db.VarChar(255)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([lineId])
-  @@index([startTime])
-  @@index([category])
-  @@map("production_downtime")
-}
-
-// ===== ENHANCED INVENTORY MODELS =====
 
 model InventoryMovement {
-  id           String   @id @default(uuid()) @db.Uuid
-  inventoryId  String?  @map("inventory_id") @db.Uuid
-  sku          String   @db.VarChar(100)
-  type         String   @db.VarChar(50) // receipt, shipment, adjustment, transfer, count
-  quantity     Int
-  fromLocation String?  @map("from_location") @db.VarChar(100)
-  toLocation   String?  @map("to_location") @db.VarChar(100)
-  reference    String?  @db.VarChar(255) // PO number, SO number, etc.
-  reason       String?  @db.Text
-  status       String   @default("completed") @db.VarChar(50) // scheduled, completed, cancelled
-  scheduledDate DateTime? @map("scheduled_date") @db.Date
-  timestamp    DateTime @default(now()) @db.Timestamptz(6)
-  userId       String?  @map("user_id") @db.VarChar(255)
-  createdBy    String   @map("created_by") @db.VarChar(255)
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id          String        @id @default(cuid())
+  inventoryId String
+  inventory   Inventory     @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  type        MovementType
+  quantity    Int
+  reference   String?
+  reason      String?
+  performedBy String?
+  createdAt   DateTime      @default(now())
 
-  @@index([sku])
-  @@index([type])
-  @@index([timestamp])
-  @@index([inventoryId])
-  @@map("inventory_movements")
+  @@index([inventoryId, createdAt], name: "idx_inventory_movement_inventory_time")
+  @@index([type, createdAt], name: "idx_inventory_movement_type_time")
 }
 
-model StockTake {
-  id            String   @id @default(uuid()) @db.Uuid
-  location      String   @db.VarChar(100)
-  performedBy   String   @map("performed_by") @db.VarChar(255)
-  totalItems    Int      @map("total_items")
-  totalVariance Decimal  @map("total_variance") @db.Decimal(15, 2)
-  status        String   @default("in-progress") @db.VarChar(50) // in-progress, completed, approved
-  notes         String?  @db.Text
-  approvedBy    String?  @map("approved_by") @db.VarChar(255)
-  approvedDate  DateTime? @map("approved_date") @db.Timestamptz(6)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  completedAt   DateTime? @map("completed_at") @db.Timestamptz(6)
+model AIInsight {
+  id         String                      @id @default(cuid())
+  type       String
+  category   String
+  title      String
+  content    String                      @db.Text
+  confidence Float
+  priority   String
+  embedding  Float[]
+  metadata   Json
+  actionable Boolean                     @default(false)
+  actioned   Boolean                     @default(false)
+  createdAt  DateTime                    @default(now())
 
-  @@index([location])
-  @@index([status])
-  @@index([createdAt])
-  @@map("stock_takes")
+  @@index([type, category], name: "idx_ai_insight_type_category")
+  @@index([actionable, actioned], name: "idx_ai_insight_actionability")
+  @@index([confidence], name: "idx_ai_insight_confidence")
 }
 
-// ===== QUALITY MANAGEMENT MODELS =====
+model Dashboard {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  type      String
+  layout    Json
+  widgets   Json
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-model QualityInspection {
-  id              String   @id @default(uuid()) @db.Uuid
-  batchId         String?  @map("batch_id") @db.VarChar(100)
-  productId       String   @map("product_id") @db.VarChar(255)
-  product         Product  @relation(fields: [productId], references: [sku])
-  productName     String   @map("product_name") @db.VarChar(255)
-  inspectionDate  DateTime @map("inspection_date") @db.Timestamptz(6)
-  inspectorId     String   @map("inspector_id") @db.VarChar(255)
-  inspectorName   String   @map("inspector_name") @db.VarChar(255)
-  type            String   @db.VarChar(50) // incoming, in-process, final, random
-  sampleSize      Int      @map("sample_size")
-  passCount       Int      @map("pass_count")
-  failCount       Int      @map("fail_count")
-  defectTypes     Json?    @map("defect_types") @db.Json // Array of defect categories and counts
-  criteria        Json?    @db.Json // Inspection criteria and results
-  overallResult   String   @map("overall_result") @db.VarChar(20) // pass, fail, conditional
-  notes           String?  @db.Text
-  correctiveActions String? @map("corrective_actions") @db.Text
-  createdBy       String   @map("created_by") @db.VarChar(255)
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([batchId])
-  @@index([productId])
-  @@index([inspectionDate])
-  @@index([overallResult])
-  @@map("quality_inspections")
+  @@unique([userId, name], name: "uix_dashboard_user_name")
+  @@index([userId, type], name: "idx_dashboard_user_type")
+  @@index([isDefault], name: "idx_dashboard_is_default")
 }
 
-model QualityDefect {
-  id               String   @id @default(uuid()) @db.Uuid
-  productId        String   @map("product_id") @db.VarChar(255)
-  productName      String   @map("product_name") @db.VarChar(255)
-  batchId          String?  @map("batch_id") @db.VarChar(100)
-  lineId           String?  @map("line_id") @db.Uuid
-  category         String   @db.VarChar(50) // critical, major, minor, cosmetic
-  type             String   @db.VarChar(100)
-  description      String   @db.Text
-  quantity         Int
-  rootCause        String?  @map("root_cause") @db.Text
-  correctiveAction String?  @map("corrective_action") @db.Text
-  preventiveAction String?  @map("preventive_action") @db.Text
-  status           String   @default("open") @db.VarChar(50) // open, investigating, resolved, closed
-  inspectionId     String?  @map("inspection_id") @db.Uuid
-  resolvedAt       DateTime? @map("resolved_at") @db.Timestamptz(6)
-  closedAt         DateTime? @map("closed_at") @db.Timestamptz(6)
-  createdBy        String   @map("created_by") @db.VarChar(255)
-  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+model Analytics {
+  id        String   @id @default(cuid())
+  date      DateTime
+  metric    String
+  value     Float
+  dimension String?
+  forecast  Float?
+  actual    Float?
+  variance  Float?
+  metadata  Json
+  createdAt DateTime @default(now())
 
-  // Relations
-  batch BatchProduction? @relation(fields: [batchId], references: [batchNumber])
-  line  ProductionLine?  @relation(fields: [lineId], references: [id])
-
-  @@index([productId])
-  @@index([batchId])
-  @@index([category])
-  @@index([status])
-  @@index([createdAt])
-  @@map("quality_defects")
+  @@index([date, metric], name: "idx_analytics_date_metric")
+  @@index([metric, dimension], name: "idx_analytics_metric_dimension")
 }
 
-model QualityMetrics {
-  id            String   @id @default(uuid()) @db.Uuid
-  date          DateTime @db.Date
-  productId     String?  @map("product_id") @db.VarChar(255)
-  lineId        String?  @map("line_id") @db.Uuid
-  totalProduced Int      @map("total_produced")
-  defects       Int      @default(0)
-  rework        Int      @default(0)
-  scrap         Int      @default(0)
-  firstPassYield Float   @map("first_pass_yield") @db.Real
-  defectRate    Float    @map("defect_rate") @db.Real // DPPM (defects per million)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+model MCPRequest {
+  id             String   @id @default(cuid())
+  tool           String
+  request        Json
+  response       Json?
+  status         String
+  processingTime Int?
+  error          String?
+  createdAt      DateTime @default(now())
 
-  @@index([date])
-  @@index([productId])
-  @@index([lineId])
-  @@unique([date, productId, lineId])
-  @@map("quality_metrics")
+  @@index([tool, status], name: "idx_mcp_request_tool_status")
+  @@index([createdAt], name: "idx_mcp_request_created_at")
 }
 
-model QualitySpecification {
-  id            String   @id @default(uuid()) @db.Uuid
-  productId     String   @map("product_id") @db.VarChar(255)
-  parameter     String   @db.VarChar(100)
-  unit          String   @db.VarChar(20)
-  nominal       Float    @db.Real
-  upperLimit    Float    @map("upper_limit") @db.Real
-  lowerLimit    Float    @map("lower_limit") @db.Real
-  critical      Boolean  @default(false)
-  description   String?  @db.Text
-  testMethod    String?  @map("test_method") @db.VarChar(255)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+model CashLedger {
+  id               String   @id @default(cuid())
+  date             DateTime @default(now())
+  description      String
+  category         String
+  subCategory      String?
+  amount           Float
+  balance          Float
+  source           String
+  sourceId         String?
+  reconciledStatus String   @default("pending")
+  tags             String[]
+  metadata         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  @@unique([productId, parameter])
-  @@index([productId])
-  @@map("quality_specifications")
+  @@index([date], name: "idx_cash_ledger_date")
+  @@index([category, subCategory], name: "idx_cash_ledger_category")
+  @@index([source, sourceId], name: "idx_cash_ledger_source")
 }
 
-model QualityCertification {
-  id            String   @id @default(uuid()) @db.Uuid
-  name          String   @db.VarChar(255)
-  type          String   @db.VarChar(100) // ISO, FDA, CE, etc.
-  certNumber    String   @map("cert_number") @db.VarChar(100)
-  issuer        String   @db.VarChar(255)
-  issueDate     DateTime @map("issue_date") @db.Date
-  expiryDate    DateTime @map("expiry_date") @db.Date
-  status        String   @default("valid") @db.VarChar(50) // valid, expired, pending
-  documentUrl   String?  @map("document_url") @db.Text
-  notes         String?  @db.Text
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+model CashProjection {
+  id                String   @id @default(cuid())
+  projectionDate    DateTime
+  projectedAmount   Float
+  actualAmount      Float?
+  variance          Float?
+  confidenceLevel   Float
+  scenarioType      String   @default("base")
+  assumptions       Json
+  projectionMethod  String
+  dataSource        String
+  isAdjusted        Boolean  @default(false)
+  adjustmentReason  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  @@index([status])
-  @@index([expiryDate])
-  @@map("quality_certifications")
+  @@index([projectionDate], name: "idx_cash_projection_date")
+  @@index([scenarioType], name: "idx_cash_projection_scenario")
 }
 
-model QualityMeasurement {
-  id            String   @id @default(uuid()) @db.Uuid
-  productId     String   @map("product_id") @db.VarChar(255)
-  batchId       String?  @map("batch_id") @db.VarChar(100)
-  parameter     String   @db.VarChar(100)
-  value         Float    @db.Real
-  unit          String   @db.VarChar(20)
-  measuredAt    DateTime @map("measured_at") @db.Timestamptz(6)
-  measuredBy    String   @map("measured_by") @db.VarChar(255)
-  equipment     String?  @db.VarChar(100)
-  inSpec        Boolean  @map("in_spec") // Within specification limits
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+model Expense {
+  id              String   @id @default(cuid())
+  date            DateTime @default(now())
+  vendor          String
+  category        String
+  subCategory     String?
+  amount          Float
+  currency        String   @default("USD")
+  paymentMethod   String
+  invoiceNumber   String?
+  approvedBy      String?
+  department      String?
+  project         String?
+  isRecurring     Boolean  @default(false)
+  recurringPeriod String?
+  taxAmount       Float?
+  tags            String[]
+  attachments     String[]
+  notes           String?
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  @@index([productId])
-  @@index([batchId])
-  @@index([parameter])
-  @@index([measuredAt])
-  @@map("quality_measurements")
+  @@index([date], name: "idx_expense_date")
+  @@index([vendor], name: "idx_expense_vendor")
+  @@index([category, subCategory], name: "idx_expense_category")
+  @@index([status], name: "idx_expense_status")
 }
 
-// ===== MAINTENANCE MANAGEMENT =====
+model EnterpriseCashCoverage {
+  id                       String   @id @default(cuid())
+  period                   DateTime
+  startingCash             Float    @default(0)
+  endingCash               Float    @default(0)
 
-model MaintenanceSchedule {
-  id            String   @id @default(uuid()) @db.Uuid
-  equipmentId   String   @map("equipment_id") @db.VarChar(255)
-  equipmentName String   @map("equipment_name") @db.VarChar(255)
-  type          String   @db.VarChar(50) // preventive, corrective, predictive
-  scheduledDate DateTime @map("scheduled_date") @db.Date
-  frequency     String?  @db.VarChar(50) // daily, weekly, monthly, quarterly, yearly
-  description   String   @db.Text
-  assignedTo    String?  @map("assigned_to") @db.VarChar(255)
-  priority      String   @default("medium") @db.VarChar(20) // low, medium, high, critical
-  status        String   @default("scheduled") @db.VarChar(50) // scheduled, in-progress, completed, overdue
-  completedDate DateTime? @map("completed_date") @db.Timestamptz(6)
-  completedBy   String?  @map("completed_by") @db.VarChar(255)
-  notes         String?  @db.Text
-  createdBy     String   @map("created_by") @db.VarChar(255)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Revenue components
+  salesRevenue             Float    @default(0)
+  subscriptionRevenue      Float    @default(0)
+  serviceRevenue           Float    @default(0)
+  otherRevenue             Float    @default(0)
+  totalRevenue             Float    @default(0)
 
-  @@index([equipmentId])
-  @@index([scheduledDate])
-  @@index([status])
-  @@index([type])
-  @@map("maintenance_schedule")
-}
+  // Operating expenses
+  payrollExpenses          Float    @default(0)
+  rentExpenses             Float    @default(0)
+  utilitiesExpenses        Float    @default(0)
+  marketingExpenses        Float    @default(0)
+  suppliesExpenses         Float    @default(0)
+  maintenanceExpenses      Float    @default(0)
+  insuranceExpenses        Float    @default(0)
+  professionalFees         Float    @default(0)
+  otherOperatingExpenses   Float    @default(0)
+  totalOperatingExpenses   Float    @default(0)
 
-// ===== SUPPLY CHAIN MODELS =====
+  // Non-operating items
+  capitalExpenses          Float    @default(0)
+  loanPayments             Float    @default(0)
+  taxPayments              Float    @default(0)
+  dividendPayments         Float    @default(0)
+  otherNonOperatingExpenses Float   @default(0)
 
-model PurchaseOrder {
-  id            String   @id @default(uuid()) @db.Uuid
-  orderNumber   String   @unique @map("order_number") @db.VarChar(100)
-  supplierId    String   @map("supplier_id") @db.VarChar(255)
-  supplierName  String   @map("supplier_name") @db.VarChar(255)
-  orderDate     DateTime @map("order_date") @db.Date
-  deliveryDate  DateTime? @map("delivery_date") @db.Date
-  status        String   @default("pending") @db.VarChar(50) // pending, approved, shipped, delivered, cancelled
-  items         Json     @db.Json // Array of {sku, quantity, unitPrice, description}
-  subtotal      Decimal  @db.Decimal(15, 2)
-  tax           Decimal  @default(0) @db.Decimal(15, 2)
-  shipping      Decimal  @default(0) @db.Decimal(15, 2)
-  totalAmount   Decimal  @map("total_amount") @db.Decimal(15, 2)
-  currency      String   @default("USD") @db.VarChar(3)
-  paymentTerms  String?  @map("payment_terms") @db.VarChar(100)
-  notes         String?  @db.Text
-  approvedBy    String?  @map("approved_by") @db.VarChar(255)
-  approvedDate  DateTime? @map("approved_date") @db.Timestamptz(6)
-  createdBy     String   @map("created_by") @db.VarChar(255)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Cash flow metrics
+  netCashFlow              Float    @default(0)
+  operatingCashFlow        Float    @default(0)
+  financingCashFlow        Float    @default(0)
+  investingCashFlow        Float    @default(0)
 
-  @@index([supplierId])
-  @@index([orderDate])
-  @@index([status])
-  @@map("purchase_orders")
-}
+  // Coverage ratios
+  cashCoverageRatio        Float    @default(0)
+  quickRatio               Float    @default(0)
+  currentRatio             Float    @default(0)
+  debtServiceCoverageRatio Float    @default(0)
 
-// ===== AI/ML MODELS =====
+  // Working capital items
+  accountsReceivable       Float    @default(0)
+  accountsPayable          Float    @default(0)
+  inventory                Float    @default(0)
+  prepaidExpenses          Float    @default(0)
+  accruedLiabilities       Float    @default(0)
 
-model Embedding {
-  id          String   @id @default(uuid()) @db.Uuid
-  content     String   @db.Text
-  embedding   Unsupported("vector")?  // pgvector extension is now installed on Render
-  metadata    Json?    @db.Json
-  category    String?  @db.VarChar(50) // product, customer, supplier, document
-  entityId    String?  @map("entity_id") @db.VarChar(255) // Reference to related entity
-  dimension   Int      @default(1536) // OpenAI embedding dimension
-  model       String   @default("text-embedding-ada-002") @db.VarChar(100)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Key metrics
+  daysOfCashOnHand         Float    @default(0)
+  burnRate                 Float    @default(0)
+  runwayMonths             Float    @default(0)
 
-  @@index([category])
-  @@index([entityId])
-  @@map("embeddings")
-}
+  // Analysis flags
+  isActual                 Boolean  @default(false)
+  isForecast               Boolean  @default(true)
+  confidenceScore          Float    @default(0.5)
 
-// ===== ENHANCED FINANCIAL MODELS =====
+  // Source tracking
+  dataSource               String   @default("manual")
+  importedFrom             String?
 
-model CashFlow {
-  id          String   @id @default(uuid()) @db.Uuid
-  date        DateTime @db.Date
-  type        String   @db.VarChar(20) // inflow, outflow
-  category    String   @db.VarChar(50) // operating, investing, financing
-  subCategory String?  @map("sub_category") @db.VarChar(100)
-  description String   @db.Text
-  amount      Decimal  @db.Decimal(15, 2)
-  reference   String?  @db.VarChar(255)
-  accountId   String?  @map("account_id") @db.Uuid
-  createdBy   String   @map("created_by") @db.VarChar(255)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Metadata
+  notes                    String?
+  adjustments              Json?
+  metadata                 Json?
 
-  @@index([date])
-  @@index([type])
-  @@index([category])
-  @@map("cash_flows")
-}
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
-model CashBalance {
-  id            String   @id @default(uuid()) @db.Uuid
-  date          DateTime @unique @db.Date
-  openingBalance Decimal @map("opening_balance") @db.Decimal(15, 2)
-  inflows       Decimal  @db.Decimal(15, 2)
-  outflows      Decimal  @db.Decimal(15, 2)
-  closingBalance Decimal @map("closing_balance") @db.Decimal(15, 2)
-  balance       Decimal  @db.Decimal(15, 2) // Current balance for compatibility
-  reconciled    Boolean  @default(false)
-  notes         String?  @db.Text
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([date])
-  @@map("cash_balances")
+  @@unique([period])
+  @@index([period], name: "idx_enterprise_cash_coverage_period")
+  @@index([isActual, isForecast], name: "idx_enterprise_cash_coverage_type")
+  @@index([dataSource], name: "idx_enterprise_cash_coverage_source")
 }

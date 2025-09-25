@@ -1,7 +1,37 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import { logInfo, logWarn } from '../services/observability/structuredLogger.js';
+import {
+  themes as themeDefinitions,
+  defaultTheme as defaultThemeKey,
+  generateCSSVariables,
+  getTheme
+} from '../config/theme.config.js';
 
 const ThemeContext = createContext(null);
+
+export const THEMES = {
+  LIGHT: 'crystalClear',
+  DARK: 'quantumDark',
+  HIGH_CONTRAST: 'highContrast',
+  SYSTEM: 'system'
+};
+
+const THEME_STORAGE_KEY = 'sentia-theme-preference';
+const THEME_TRANSITION_DURATION = 200;
+const AVAILABLE_THEME_KEYS = Object.keys(themeDefinitions);
+const FALLBACK_THEME = AVAILABLE_THEME_KEYS.includes(defaultThemeKey)
+  ? defaultThemeKey
+  : THEMES.DARK;
+const DEFAULT_LIGHT_THEME = THEMES.LIGHT;
+const DEFAULT_DARK_THEME = THEMES.DARK;
+const DARK_THEMES = new Set([THEMES.DARK, THEMES.HIGH_CONTRAST]);
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
@@ -11,280 +41,186 @@ export const useTheme = () => {
   return context;
 };
 
-const THEME_STORAGE_KEY = 'sentia-theme-preference';
-const THEME_TRANSITION_DURATION = 200; // milliseconds
-
-export const THEMES = {
-  LIGHT: 'light',
-  DARK: 'dark',
-  SYSTEM: 'system'
-};
-
-// Enterprise theme tokens based on design system
-const THEME_TOKENS = {
-  light: {
-    // Background colors
-    '--bg-primary': '#ffffff',
-    '--bg-secondary': '#f8fafc',
-    '--bg-tertiary': '#f1f5f9',
-    '--bg-card': '#ffffff',
-    '--bg-overlay': 'rgba(0, 0, 0, 0.1)',
-    
-    // Text colors
-    '--text-primary': '#0f172a',
-    '--text-secondary': '#475569',
-    '--text-tertiary': '#64748b',
-    '--text-inverse': '#ffffff',
-    '--text-muted': '#94a3b8',
-    
-    // Border colors
-    '--border-primary': '#e2e8f0',
-    '--border-secondary': '#cbd5e1',
-    '--border-focus': '#3b82f6',
-    
-    // Status colors
-    '--status-success': '#10b981',
-    '--status-warning': '#f59e0b',
-    '--status-error': '#ef4444',
-    '--status-info': '#3b82f6',
-    
-    // Manufacturing specific colors
-    '--manufacturing-primary': '#1e40af',
-    '--manufacturing-secondary': '#0ea5e9',
-    '--manufacturing-accent': '#06b6d4',
-    '--manufacturing-success': '#059669',
-    '--manufacturing-warning': '#d97706',
-    '--manufacturing-critical': '#dc2626',
-    
-    // Interactive colors
-    '--interactive-primary': '#3b82f6',
-    '--interactive-primary-hover': '#2563eb',
-    '--interactive-secondary': '#6b7280',
-    '--interactive-secondary-hover': '#4b5563',
-    
-    // Shadow colors
-    '--shadow-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    '--shadow-md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    '--shadow-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-  },
-  dark: {
-    // Background colors
-    '--bg-primary': '#0f172a',
-    '--bg-secondary': '#1e293b',
-    '--bg-tertiary': '#334155',
-    '--bg-card': '#1e293b',
-    '--bg-overlay': 'rgba(255, 255, 255, 0.1)',
-    
-    // Text colors
-    '--text-primary': '#f8fafc',
-    '--text-secondary': '#cbd5e1',
-    '--text-tertiary': '#94a3b8',
-    '--text-inverse': '#0f172a',
-    '--text-muted': '#64748b',
-    
-    // Border colors
-    '--border-primary': '#334155',
-    '--border-secondary': '#475569',
-    '--border-focus': '#60a5fa',
-    
-    // Status colors
-    '--status-success': '#34d399',
-    '--status-warning': '#fbbf24',
-    '--status-error': '#f87171',
-    '--status-info': '#60a5fa',
-    
-    // Manufacturing specific colors
-    '--manufacturing-primary': '#3b82f6',
-    '--manufacturing-secondary': '#0ea5e9',
-    '--manufacturing-accent': '#06b6d4',
-    '--manufacturing-success': '#10b981',
-    '--manufacturing-warning': '#f59e0b',
-    '--manufacturing-critical': '#ef4444',
-    
-    // Interactive colors
-    '--interactive-primary': '#60a5fa',
-    '--interactive-primary-hover': '#3b82f6',
-    '--interactive-secondary': '#9ca3af',
-    '--interactive-secondary-hover': '#d1d5db',
-    
-    // Shadow colors
-    '--shadow-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
-    '--shadow-md': '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
-    '--shadow-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3)'
+const getStoredPreference = () => {
+  if (typeof window === 'undefined') return THEMES.SYSTEM;
+  try {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    if (!stored) return THEMES.SYSTEM;
+    return stored === THEMES.SYSTEM || AVAILABLE_THEME_KEYS.includes(stored)
+      ? stored
+      : THEMES.SYSTEM;
+  } catch (error) {
+    logWarn('Failed to read stored theme preference', { message: error?.message });
+    return THEMES.SYSTEM;
   }
 };
 
-export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(() => {
-    // Initialize from localStorage or default to system
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    return stored || THEMES.SYSTEM;
-  });
-
-  const [resolvedTheme, setResolvedTheme] = useState('light');
+const ThemeProvider = ({ children }) => {
+  const [preference, setPreference] = useState(getStoredPreference);
+  const [systemTheme, setSystemTheme] = useState(DEFAULT_LIGHT_THEME);
+  const [resolvedTheme, setResolvedTheme] = useState(FALLBACK_THEME);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [systemTheme, setSystemTheme] = useState('light');
 
-  // Detect system theme preference
   const detectSystemTheme = useCallback(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      return mediaQuery.matches ? 'dark' : 'light';
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return DEFAULT_LIGHT_THEME;
     }
-    return 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? DEFAULT_DARK_THEME
+      : DEFAULT_LIGHT_THEME;
   }, []);
 
-  // Apply theme tokens to CSS custom properties
-  const applyThemeTokens = useCallback((themeName) => {
+  const applyThemeTokens = useCallback((themeKey) => {
     if (typeof document === 'undefined') return;
 
-    const tokens = THEME_TOKENS[themeName];
-    if (!tokens) {
-      logWarn('Theme not found, falling back to light theme', { theme: themeName });
-      return applyThemeTokens('light');
-    }
-
+    const selectedKey = AVAILABLE_THEME_KEYS.includes(themeKey)
+      ? themeKey
+      : FALLBACK_THEME;
+    const theme = getTheme(selectedKey);
+    const cssVars = generateCSSVariables(selectedKey);
     const root = document.documentElement;
-    
-    // Apply theme tokens
-    Object.entries(tokens).forEach(([property, value]) => {
-      root.style.setProperty(property, value);
+
+    Object.entries(cssVars).forEach(([key, value]) => {
+      root.style.setProperty(key, value);
     });
 
-    // Update data attribute for CSS targeting
-    root.setAttribute('data-theme', themeName);
-    
-    // Update meta theme-color for mobile browsers
+    root.setAttribute('data-theme', selectedKey);
+    root.classList.toggle('dark', DARK_THEMES.has(selectedKey));
+
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', tokens['--bg-primary']);
+      const backgroundColor = theme.colors?.background?.primary;
+      if (backgroundColor) {
+        metaThemeColor.setAttribute('content', backgroundColor);
+      }
     }
 
-    logInfo('Theme tokens applied successfully', { theme: themeName });
+    logInfo('Theme tokens applied', { theme: selectedKey });
   }, []);
 
-  // Smooth transition between themes
-  const applyThemeWithTransition = useCallback((newTheme) => {
-    if (typeof document === 'undefined') return;
+  const applyThemeWithTransition = useCallback((themeKey) => {
+    if (typeof document === 'undefined') return undefined;
 
     setIsTransitioning(true);
-
-    // Add transition styles
     const root = document.documentElement;
-    root.style.setProperty('--theme-transition', `all ${THEME_TRANSITION_DURATION}ms ease-in-out`);
+    root.style.setProperty(
+      '--theme-transition',
+      `all ${THEME_TRANSITION_DURATION}ms ease-in-out`
+    );
 
-    // Apply new theme
-    applyThemeTokens(newTheme);
+    applyThemeTokens(themeKey);
 
-    // Remove transition after animation completes
-    setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       root.style.removeProperty('--theme-transition');
       setIsTransitioning(false);
     }, THEME_TRANSITION_DURATION);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      root.style.removeProperty('--theme-transition');
+      setIsTransitioning(false);
+    };
   }, [applyThemeTokens]);
 
-  // System theme change listener
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
     const initialSystemTheme = detectSystemTheme();
     setSystemTheme(initialSystemTheme);
 
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return undefined;
+    }
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (e) => {
-      const newSystemTheme = e.matches ? 'dark' : 'light';
-      setSystemTheme(newSystemTheme);
-      
-      logInfo('System theme changed', { 
-        oldTheme: systemTheme, 
-        newTheme: newSystemTheme 
+    const handleChange = (event) => {
+      const nextTheme = event.matches ? DEFAULT_DARK_THEME : DEFAULT_LIGHT_THEME;
+      setSystemTheme((previousTheme) => {
+        if (previousTheme !== nextTheme) {
+          logInfo('System theme changed', {
+            oldTheme: previousTheme,
+            newTheme: nextTheme
+          });
+        }
+        return nextTheme;
       });
     };
 
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
-  }, [detectSystemTheme, systemTheme]);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [detectSystemTheme]);
 
-  // Resolve theme based on preference and system
+  const nextResolvedTheme = useMemo(() => {
+    const preferredTheme = preference === THEMES.SYSTEM ? systemTheme : preference;
+    return AVAILABLE_THEME_KEYS.includes(preferredTheme)
+      ? preferredTheme
+      : FALLBACK_THEME;
+  }, [preference, systemTheme]);
+
   useEffect(() => {
-    let newResolvedTheme;
+    setResolvedTheme(nextResolvedTheme);
+    const cleanup = applyThemeWithTransition(nextResolvedTheme);
+    return cleanup;
+  }, [nextResolvedTheme, applyThemeWithTransition]);
 
-    switch (theme) {
-      case THEMES.DARK:
-        newResolvedTheme = 'dark';
-        break;
-      case THEMES.LIGHT:
-        newResolvedTheme = 'light';
-        break;
-      case THEMES.SYSTEM:
-      default:
-        newResolvedTheme = systemTheme;
-        break;
-    }
-
-    if (newResolvedTheme !== resolvedTheme) {
-      setResolvedTheme(newResolvedTheme);
-      applyThemeWithTransition(newResolvedTheme);
-    }
-  }, [theme, systemTheme, resolvedTheme, applyThemeWithTransition]);
-
-  // Persist theme preference
-  const updateTheme = useCallback((newTheme) => {
-    if (!Object.values(THEMES).includes(newTheme)) {
-      logWarn('Invalid theme provided, ignoring', { theme: newTheme });
+  const updateThemePreference = useCallback((nextTheme) => {
+    const allowedThemes = new Set([...AVAILABLE_THEME_KEYS, THEMES.SYSTEM]);
+    if (!allowedThemes.has(nextTheme)) {
+      logWarn('Invalid theme provided, ignoring', { theme: nextTheme });
       return;
     }
 
-    setTheme(newTheme);
-    localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-    
-    logInfo('Theme preference updated', { 
-      oldTheme: theme, 
-      newTheme: newTheme 
+    setPreference(nextTheme);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    } catch (error) {
+      logWarn('Failed to persist theme preference', { message: error?.message });
+    }
+
+    logInfo('Theme preference updated', {
+      oldTheme: preference,
+      newTheme: nextTheme
     });
-  }, [theme]);
+  }, [preference]);
 
-  // Toggle between light and dark themes
   const toggleTheme = useCallback(() => {
-    const newTheme = resolvedTheme === 'light' ? THEMES.DARK : THEMES.LIGHT;
-    updateTheme(newTheme);
-  }, [resolvedTheme, updateTheme]);
+    const nextTheme = DARK_THEMES.has(resolvedTheme)
+      ? DEFAULT_LIGHT_THEME
+      : DEFAULT_DARK_THEME;
+    updateThemePreference(nextTheme);
+  }, [resolvedTheme, updateThemePreference]);
 
-  // Get theme-aware CSS classes
   const getThemeClasses = useCallback((classMap = {}) => {
     const baseClasses = classMap.base || '';
-    const themeClasses = classMap[resolvedTheme] || '';
-    return `${baseClasses} ${themeClasses}`.trim();
+    const modeKey = DARK_THEMES.has(resolvedTheme) ? 'dark' : 'light';
+    const specificThemeClasses = classMap[resolvedTheme] || '';
+    const modeClasses = classMap[modeKey] || '';
+
+    return [baseClasses, modeClasses, specificThemeClasses]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
   }, [resolvedTheme]);
 
-  // Theme-aware color utilities
-  const getThemeColor = useCallback((colorName) => {
+  const getThemeColor = useCallback((token) => {
     if (typeof document === 'undefined') return '';
-    
     const root = document.documentElement;
-    return getComputedStyle(root).getPropertyValue(`--${colorName}`).trim();
+    const variableName = token.startsWith('--') ? token : `--${token}`;
+    return getComputedStyle(root).getPropertyValue(variableName).trim();
   }, []);
 
   const contextValue = {
-    // Current theme state
-    theme,
+    theme: preference,
     resolvedTheme,
     systemTheme,
     isTransitioning,
-    
-    // Theme control methods
-    setTheme: updateTheme,
+    setTheme: updateThemePreference,
     toggleTheme,
-    
-    // Utility methods
     getThemeClasses,
     getThemeColor,
-    
-    // Theme constants
     themes: THEMES,
-    isDark: resolvedTheme === 'dark',
-    isLight: resolvedTheme === 'light',
-    isSystem: theme === THEMES.SYSTEM
+    availableThemes: themeDefinitions,
+    isDark: DARK_THEMES.has(resolvedTheme),
+    isLight: !DARK_THEMES.has(resolvedTheme),
+    isSystem: preference === THEMES.SYSTEM
   };
 
   return (

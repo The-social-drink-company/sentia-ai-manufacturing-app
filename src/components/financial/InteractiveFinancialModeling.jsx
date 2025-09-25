@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import {
   ChartBarIcon,
   AdjustmentsHorizontalIcon,
@@ -506,84 +506,98 @@ export default function InteractiveFinancialModeling() {
   });
 
   // Export to Excel
-  const exportToExcel = () => {
+    const exportToExcel = useCallback(async () => {
     if (!modelResults) {
       toast.error('No data to export');
       return;
     }
 
-    const wb = XLSX.utils.book_new();
+    try {
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Sentia Manufacturing Dashboard';
 
-    // Assumptions sheet
-    const assumptions = [
-      ['Financial Model Assumptions', ''],
-      [''],
-      ['Revenue Drivers', ''],
-      ['Revenue Growth %', model.revenueGrowth],
-      ['Price Increase %', model.priceIncrease],
-      ['Volume Growth %', model.volumeGrowth],
-      [''],
-      ['Cost Structure', ''],
-      ['COGS Reduction %', model.cogsReduction],
-      ['OPEX Optimization %', model.opexOptimization],
-      ['Headcount Change %', model.headcountChange],
-      [''],
-      ['Working Capital', ''],
-      ['DSO Target (days)', model.dsoTarget],
-      ['DPO Target (days)', model.dpoTarget],
-      ['DIO Target (days)', model.dioTarget],
-      [''],
-      ['Capital Structure', ''],
-      ['Debt Ratio %', model.debtRatio],
-      ['Interest Rate %', model.interestRate],
-      ['CapEx Budget %', model.capexBudget]
-    ];
-    const ws1 = XLSX.utils.aoa_to_sheet(assumptions);
-    XLSX.utils.book_append_sheet(wb, ws1, 'Assumptions');
-
-    // Projections sheet
-    if (modelResults?.projections) {
-      const projData = [
-        ['Financial Projections', ...modelResults.projections.periods],
+      const assumptions = [
+        ['Financial Model Assumptions', ''],
         [''],
-        ['Revenue', ...modelResults.projections.revenue.map(v => Math.round(v))],
-        ['COGS', ...modelResults.projections.cogs.map(v => Math.round(v))],
-        ['Gross Profit', ...modelResults.projections.grossProfit.map(v => Math.round(v))],
-        ['Operating Expenses', ...modelResults.projections.opex.map(v => Math.round(v))],
-        ['EBITDA', ...modelResults.projections.ebitda.map(v => Math.round(v))],
-        ['EBIT', ...modelResults.projections.ebit.map(v => Math.round(v))],
-        ['Net Income', ...modelResults.projections.netIncome.map(v => Math.round(v))],
-        ['Free Cash Flow', ...modelResults.projections.cashFlow.map(v => Math.round(v))],
+        ['Revenue Drivers', ''],
+        ['Revenue Growth %', model.revenueGrowth],
+        ['Price Increase %', model.priceIncrease],
+        ['Volume Growth %', model.volumeGrowth],
         [''],
-        ['Working Capital', ...modelResults.projections.workingCapital.map(v => Math.round(v))],
-        ['Total Debt', ...modelResults.projections.debt.map(v => Math.round(v))],
-        ['Total Equity', ...modelResults.projections.equity.map(v => Math.round(v))]
+        ['Cost Structure', ''],
+        ['COGS Reduction %', model.cogsReduction],
+        ['OPEX Optimization %', model.opexOptimization],
+        ['Headcount Change %', model.headcountChange],
+        [''],
+        ['Working Capital', ''],
+        ['DSO Target (days)', model.dsoTarget],
+        ['DPO Target (days)', model.dpoTarget],
+        ['DIO Target (days)', model.dioTarget],
+        [''],
+        ['Capital Structure', ''],
+        ['Debt Ratio %', model.debtRatio],
+        ['Interest Rate %', model.interestRate],
+        ['CapEx Budget %', model.capexBudget]
       ];
-      const ws2 = XLSX.utils.aoa_to_sheet(projData);
-      XLSX.utils.book_append_sheet(wb, ws2, 'Projections');
-    }
 
-    // Valuation sheet
-    if (modelResults?.valuation) {
-      const valData = [
-        ['Valuation Summary', ''],
-        [''],
-        ['Enterprise Value', Math.round(modelResults.valuation.enterpriseValue)],
-        ['Equity Value', Math.round(modelResults.valuation.equityValue)],
-        ['EV/EBITDA Multiple', modelResults.valuation.evToEbitda],
-        ['P/E Ratio', modelResults.valuation.peRatio],
-        ['Terminal Value', Math.round(modelResults.valuation.terminalValue)],
-        ['WACC %', modelResults.valuation.wacc]
-      ];
-      const ws3 = XLSX.utils.aoa_to_sheet(valData);
-      XLSX.utils.book_append_sheet(wb, ws3, 'Valuation');
-    }
+      const assumptionsSheet = workbook.addWorksheet('Assumptions');
+      assumptions.forEach(row => assumptionsSheet.addRow(row));
 
-    // Download
-    const timestamp = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(wb, `Sentia_Financial_Model_${timestamp}.xlsx`);
-    toast.success('Excel file downloaded');
-  };
+      if (modelResults?.projections) {
+        const projData = [
+          ['Financial Projections', ...modelResults.projections.periods],
+          [''],
+          ['Revenue', ...modelResults.projections.revenue.map(v => Math.round(v))],
+          ['COGS', ...modelResults.projections.cogs.map(v => Math.round(v))],
+          ['Gross Profit', ...modelResults.projections.grossProfit.map(v => Math.round(v))],
+          ['Operating Expenses', ...modelResults.projections.opex.map(v => Math.round(v))],
+          ['EBITDA', ...modelResults.projections.ebitda.map(v => Math.round(v))],
+          ['EBIT', ...modelResults.projections.ebit.map(v => Math.round(v))],
+          ['Net Income', ...modelResults.projections.netIncome.map(v => Math.round(v))],
+          ['Free Cash Flow', ...modelResults.projections.cashFlow.map(v => Math.round(v))],
+          [''],
+          ['Working Capital', ...modelResults.projections.workingCapital.map(v => Math.round(v))],
+          ['Total Debt', ...modelResults.projections.debt.map(v => Math.round(v))],
+          ['Total Equity', ...modelResults.projections.equity.map(v => Math.round(v))]
+        ];
+
+        const projectionsSheet = workbook.addWorksheet('Projections');
+        projData.forEach(row => projectionsSheet.addRow(row));
+      }
+
+      if (modelResults?.valuation) {
+        const valData = [
+          ['Valuation Summary', ''],
+          [''],
+          ['Enterprise Value', Math.round(modelResults.valuation.enterpriseValue)],
+          ['Equity Value', Math.round(modelResults.valuation.equityValue)],
+          ['EV/EBITDA Multiple', modelResults.valuation.evToEbitda],
+          ['P/E Ratio', modelResults.valuation.peRatio],
+          ['Terminal Value', Math.round(modelResults.valuation.terminalValue)],
+          ['WACC %', modelResults.valuation.wacc]
+        ];
+
+        const valuationSheet = workbook.addWorksheet('Valuation');
+        valData.forEach(row => valuationSheet.addRow(row));
+      }
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const timestamp = new Date().toISOString().split('T')[0];
+      link.href = url;
+      link.download = Sentia_Financial_Model_.xlsx;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success('Excel file downloaded');
+    } catch (error) {
+      logError('Excel export failed', error);
+      toast.error('Failed to generate Excel file');
+    }
+  }, [modelResults, model]);
 
   // Preset scenarios
   const applyScenario = (scenarioType) => {

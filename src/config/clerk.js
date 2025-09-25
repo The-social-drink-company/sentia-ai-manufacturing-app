@@ -1,28 +1,25 @@
 // Clerk Configuration
 // Centralized configuration for Clerk authentication
 
-// Get Clerk environment variables with fallbacks
 const getClerkConfig = () => {
-  // Try multiple sources for environment variables
-  const env = import.meta.env || window.import?.meta?.env || window.clerkEnv || {};
+  const windowRef = typeof window !== 'undefined' ? window : undefined;
+  const metaEnv = typeof import.meta !== 'undefined' ? import.meta.env : undefined;
+  const runtimeEnv = metaEnv || windowRef?.import?.meta?.env || windowRef?.clerkEnv || {};
+
+  const publishableKey =
+    runtimeEnv?.VITE_CLERK_PUBLISHABLE_KEY ||
+    windowRef?.VITE_CLERK_PUBLISHABLE_KEY ||
+    '';
 
   return {
-    publishableKey: env.VITE_CLERK_PUBLISHABLE_KEY ||
-                    window.VITE_CLERK_PUBLISHABLE_KEY ||
-                    'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
-
-    // URLs for Clerk navigation
-    signInUrl: env.VITE_CLERK_SIGN_IN_URL || '/sign-in',
-    signUpUrl: env.VITE_CLERK_SIGN_UP_URL || '/sign-up',
-    afterSignInUrl: env.VITE_CLERK_AFTER_SIGN_IN_URL || '/dashboard',
-    afterSignUpUrl: env.VITE_CLERK_AFTER_SIGN_UP_URL || '/dashboard',
-    signOutUrl: env.VITE_CLERK_SIGN_OUT_URL || '/',
-
-    // API configuration
-    apiUrl: env.VITE_API_BASE_URL || '/api',
-    mcpServerUrl: env.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com',
-
-    // Appearance customization
+    publishableKey,
+    signInUrl: runtimeEnv?.VITE_CLERK_SIGN_IN_URL || '/sign-in',
+    signUpUrl: runtimeEnv?.VITE_CLERK_SIGN_UP_URL || '/sign-up',
+    afterSignInUrl: runtimeEnv?.VITE_CLERK_AFTER_SIGN_IN_URL || '/dashboard',
+    afterSignUpUrl: runtimeEnv?.VITE_CLERK_AFTER_SIGN_UP_URL || '/dashboard',
+    signOutUrl: runtimeEnv?.VITE_CLERK_SIGN_OUT_URL || '/',
+    apiUrl: runtimeEnv?.VITE_API_BASE_URL || '/api',
+    mcpServerUrl: runtimeEnv?.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com',
     appearance: {
       baseTheme: 'light',
       variables: {
@@ -76,24 +73,19 @@ export const publicRoutes = [
 ];
 
 // Helper function to check if a route is public
-export const isPublicRoute = (pathname) => {
-  return publicRoutes.some(route => {
+export const isPublicRoute = (pathname) =>
+  publicRoutes.some((route) => {
     if (route.endsWith('/*')) {
       const baseRoute = route.slice(0, -2);
       return pathname.startsWith(baseRoute);
     }
     return pathname === route;
   });
-};
 
-// Debug logging for development
-if (import.meta.env.DEV || window.location.hostname === 'localhost') {
-  console.log('[Clerk Config] Initialized with:', {
-    publishableKey: clerkConfig.publishableKey ? 'SET' : 'MISSING',
-    signInUrl: clerkConfig.signInUrl,
-    afterSignInUrl: clerkConfig.afterSignInUrl,
-    apiUrl: clerkConfig.apiUrl
-  });
+if ((typeof import.meta !== 'undefined' && import.meta.env?.DEV) || typeof window !== 'undefined') {
+  if (!clerkConfig.publishableKey) {
+    console.warn('[Clerk Config] Publishable key is not set. Real Clerk authentication will not initialize.');
+  }
 }
 
 export default clerkConfig;

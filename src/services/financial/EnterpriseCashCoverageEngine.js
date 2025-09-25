@@ -20,7 +20,7 @@ import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 // ==================== ENTERPRISE CASH COVERAGE ENGINE ====================
 export class EnterpriseCashCoverageEngine {
   constructor() {
-    this.prisma = null; // new PrismaClient(); // Server-side only
+    this.prisma = null; // PrismaClient only works server-side
     this.benchmarkCache = new Map();
     this.simulationRuns = 10000; // Monte Carlo iterations
     this.confidenceIntervals = [0.05, 0.25, 0.5, 0.75, 0.95]; // 5th to 95th percentile

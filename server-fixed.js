@@ -21,6 +21,7 @@ import { randomUUID } from 'crypto';
 
 // Import cash coverage routes
 import cashCoverageRoutes from './api/routes/cash-coverage.js';
+import strategicPlanningRoutes from './api/routes/strategic-planning.js';
 
 // Load environment variables
 dotenv.config();
@@ -641,6 +642,9 @@ app.get('/api/analytics/reports', requireAuth, (req, res) => {
 
 // Mount cash coverage analysis routes
 app.use('/api/cash-coverage', cashCoverageRoutes);
+
+// Mount strategic planning AI routes
+app.use('/api/strategic-planning', strategicPlanningRoutes);
 
 // ============================================================================
 // MCP INTEGRATION ROUTES

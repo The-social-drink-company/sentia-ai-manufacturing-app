@@ -19,15 +19,15 @@ import axios from 'axios';
 import Papa from 'papaparse';
 // import { EventEmitter } from 'events';
 // import fs from 'fs';
-import crypto from 'crypto';
+// import crypto from 'crypto'; // Node.js module not available in browser
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 
 // ==================== ENTERPRISE DATA PIPELINE ====================
 
-export class EnterpriseDataPipeline extends EventEmitter {
+export class EnterpriseDataPipeline /* extends EventEmitter */ {
   constructor() {
-    super();
+    // super(); // EventEmitter not available in browser
 
     // Initialize core services (disabled for client-side)
     this.prisma = null; /* new PrismaClient({

@@ -99,7 +99,10 @@ const EnterpriseBootstrapLoader = ({ children, onComplete, onError, onAuthReady,
           publishableKeySuffix: effectiveKey.slice(-6),
           loaded: instance.loaded,
           sessionStatus,
-          userId: instance.user?.id ?? null
+          userId: instance.user?.id ?? null,
+          user: instance.user
+            ? { id: instance.user.id, email: instance.user.primaryEmailAddress?.emailAddress || null }
+            : null
         };
 
         const durationMs = Math.round(performance.now() - start);
@@ -371,7 +374,7 @@ const EnterpriseBootstrapLoader = ({ children, onComplete, onError, onAuthReady,
       )));
 
       if (stage.id === 'clerk' && typeof onAuthReady === 'function') {
-        onAuthReady(stageContextRef.current.results.clerk);
+        onAuthReady(stageContextRef.current.results.clerk?.user || null);
       }
 
       return true;

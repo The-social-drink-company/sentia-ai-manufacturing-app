@@ -384,8 +384,10 @@ const Enterprise10StageLoaderWithRealAuth = ({
         return;
       }
 
-      const stage = stages[currentStageIndex];
-      setCurrentStage(stage.id);
+      
+      if (typeof onStageChange === 'function') {
+        onStageChange(stage.id, stage, { status: 'started' });
+      }
 
       logDebug(`[Loader] Starting stage ${stage.id}: ${stage.name}`);
 
@@ -452,7 +454,7 @@ const Enterprise10StageLoaderWithRealAuth = ({
       clearInterval(progressInterval);
       clearTimeout(stageTimeout);
     };
-  }, [onComplete, onError]);
+  }, [onComplete, onError, onStageChange, onStageProgress]);
 
   const totalProgress = (currentStage / stages.length) * 100 + (progress / stages.length);
 
@@ -636,4 +638,15 @@ const Enterprise10StageLoaderWithRealAuth = ({
 };
 
 export default Enterprise10StageLoaderWithRealAuth;
+
+
+
+
+
+
+
+
+
+
+
 

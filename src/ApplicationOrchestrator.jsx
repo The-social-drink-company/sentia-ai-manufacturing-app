@@ -4,7 +4,8 @@ import clerkConfig from './config/clerk.js';
 import { logDebug, logInfo, logWarn, logError } from './utils/logger.js';
 
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'));
-const Enterprise10StageLoader = lazy(() => import('./components/Enterprise10StageLoaderWithRealAuth.jsx'));
+const EnterpriseLoader = lazy(() => import('./components/loading/EnterpriseBootstrapLoader.jsx'));
+
 const AuthenticatedApp = lazy(() => import('./App-authenticated.jsx'));
 
 const LoadingFallback = () => (
@@ -110,12 +111,12 @@ const ApplicationOrchestrator = () => {
   );
 
   const renderLoader = () => (
-    <Enterprise10StageLoader
+    <EnterpriseLoader
       key={loaderAttempts}
       onComplete={handleLoaderComplete}
-      onAuthSuccess={handleAuthSuccess}
+      onAuthReady={handleAuthSuccess}
       onError={handleLoaderError}
-      clerkPublishableKey={clerkPublishableKey}
+      publishableKey={clerkPublishableKey}
     />
   );
 
@@ -125,7 +126,7 @@ const ApplicationOrchestrator = () => {
       return <LoadingFallback />;
     }
 
-    return <AuthenticatedApp clerkPublishableKey={clerkPublishableKey} />;
+    return <AuthenticatedApp publishableKey={clerkPublishableKey} />;
   };
 
   let content;
@@ -155,3 +156,4 @@ const ApplicationOrchestrator = () => {
 };
 
 export default ApplicationOrchestrator;
+

@@ -1,26 +1,15 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+
 import { AuthContext } from '../hooks/useAuth.js'
-import { logInfo, logWarn } from '../utils/logger.js'
 
 const STORAGE_KEY = 'sentia-mock-auth-v1'
 
 const DEFAULT_USER = {
-  id: 'mock-admin-user',
-  email: 'admin@sentia-demo.com',
-  displayName: 'Sentia Admin',
+  id: 'sentia-ops-demo',
+  email: 'ops@sentia-demo.com',
+  displayName: 'Sentia Operations',
   role: 'admin',
-  permissions: [
-    'dashboard.read',
-    'dashboard.write',
-    'working-capital.read',
-    'working-capital.write',
-    'inventory.read',
-    'inventory.write',
-    'production.read',
-    'production.write',
-    'settings.read',
-    'settings.write'
-  ],
+  permissions: ['dashboard.read', 'working-capital.read', 'inventory.read', 'production.read'],
   authProvider: 'mock'
 }
 
@@ -40,8 +29,8 @@ const readInitialState = () => {
         }
       }
     }
-  } catch (error) {
-    logWarn('[MockAuthProvider] Failed to read cached session', error)
+  } catch (_error) {
+    // Ignore storage errors in mock mode
   }
 
   return { user: DEFAULT_USER, isAuthenticated: true }
@@ -49,7 +38,7 @@ const readInitialState = () => {
 
 const persistState = (state) => {
   if (typeof window === 'undefined') {
-    return
+      return
   }
 
   try {
@@ -58,26 +47,22 @@ const persistState = (state) => {
     } else {
       window.localStorage.removeItem(STORAGE_KEY)
     }
-  } catch (error) {
-    logWarn('[MockAuthProvider] Failed to persist session cache', error)
+  } catch (_error) {
+    // Ignore storage errors in mock mode
   }
 }
 
 const MockAuthProvider = ({ children }) => {
-  const [state, setState] = useState(() => readInitialState())
+  const [session, setSession] = useState(() => readInitialState())
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    // Simulate async loading
-    setTimeout(() => {
-      setIsLoaded(true)
-      logInfo('[MockAuthProvider] Mock auth loaded', { user: state.user?.email })
-    }, 100)
+    setIsLoaded(true)
   }, [])
 
   useEffect(() => {
-    persistState(state)
-  }, [state])
+    persistState(session)
+  }, [session])
 
   const login = useCallback(async (details = {}) => {
     const nextUser = {
@@ -89,30 +74,28 @@ const MockAuthProvider = ({ children }) => {
       role: details.role || DEFAULT_USER.role
     }
 
-    logInfo('[MockAuthProvider] User signed in', { email: nextUser.email, role: nextUser.role })
-    setState({ user: nextUser, isAuthenticated: true })
+    setSession({ user: nextUser, isAuthenticated: true })
     return nextUser
   }, [])
 
   const logout = useCallback(async () => {
-    logInfo('[MockAuthProvider] User signed out')
-    setState({ user: null, isAuthenticated: false })
+    setSession({ user: null, isAuthenticated: false })
   }, [])
 
-  const getToken = useCallback(async () => 'mock-jwt-token', [])
+  const getToken = useCallback(async () => 'mock-token', [])
 
   const value = useMemo(
     () => ({
-      user: state.isAuthenticated ? state.user : null,
-      isAuthenticated: state.isAuthenticated,
+      user: session.isAuthenticated ? session.user : null,
+      role: session.isAuthenticated ? session.user?.role || 'operator' : 'guest',
+      isAuthenticated: session.isAuthenticated,
       isLoaded,
       login,
       logout,
       getToken,
-      authSource: 'mock',
-      role: state.user?.role || 'guest'
+      authSource: 'mock'
     }),
-    [getToken, isLoaded, login, logout, state]
+    [getToken, isLoaded, login, logout, session]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

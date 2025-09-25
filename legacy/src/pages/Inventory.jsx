@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+ï»¿import { useMemo } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
 
@@ -23,7 +23,7 @@ const apiGet = async (endpoint) => {
   })
 
   if (!response.ok) {
-    throw new Error(Request failed with status )
+    throw new Error(`Request failed with status ${response.status}`)
   }
 
   const payload = await response.json()
@@ -118,7 +118,9 @@ const InventoryPage = () => {
                       return (
                         <tr key={item.sku || item.id} className="hover:bg-slate-900/60">
                           <td className="px-4 py-3 font-medium text-white">{item.sku || item.id}</td>
-                          <td className="px-4 py-3 text-right text-slate-100">{typeof item.quantity === 'number' ? item.quantity.toLocaleString('en-GB') : '—'}</td>
+                          <td className="px-4 py-3 text-right text-slate-100">
+                            {typeof item.quantity === 'number' ? item.quantity.toLocaleString('en-GB') : '-'}
+                          </td>
                           <td className="px-4 py-3 text-right text-xs text-slate-400">{status}</td>
                         </tr>
                       )
@@ -126,7 +128,7 @@ const InventoryPage = () => {
                   ) : (
                     <tr>
                       <td className="px-4 py-6 text-center text-slate-500" colSpan={3}>
-                        {levelsQuery.isLoading ? 'Loading inventory levels…' : 'No inventory data returned.'}
+                        {levelsQuery.isLoading ? 'Loading inventory levels...' : 'No inventory data returned.'}
                       </td>
                     </tr>
                   )}
@@ -146,7 +148,7 @@ const InventoryPage = () => {
               disabled={optimizeMutation.isPending}
               className="mt-5 w-full rounded-md bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {optimizeMutation.isPending ? 'Submitting…' : 'Queue optimisation run'}
+              {optimizeMutation.isPending ? 'Submitting...' : 'Queue optimisation run'}
             </button>
             {optimizeMutation.isError ? (
               <p className="mt-3 text-xs text-rose-300">{optimizeMutation.error.message}</p>
@@ -154,10 +156,10 @@ const InventoryPage = () => {
             <div className="mt-6 space-y-3 text-sm text-slate-300">
               <p className="flex items-center justify-between rounded-lg border border-slate-800/70 bg-slate-900/70 px-3 py-2">
                 <span>Objectives used</span>
-                <span>Reduce stockouts · Minimise carrying costs · Prioritise fast movers</span>
+                <span>Reduce stockouts Â· Minimise carrying costs Â· Prioritise fast movers</span>
               </p>
               <p className="rounded-lg border border-slate-800/70 bg-slate-900/70 px-3 py-2 text-xs text-slate-400">
-                Optimisation runs request insights from the manufacturing control plane and will surface recommendations in the dashboard inbox.
+                Optimisation runs request insights from the manufacturing control plane and surface recommendations in the inbox.
               </p>
             </div>
           </div>
@@ -178,7 +180,7 @@ const InventoryPage = () => {
             {inventoryMovements.length ? (
               inventoryMovements.map((movement, index) => (
                 <div
-                  key={${movement.sku || movement.id || 'movement'}-}
+                  key={`${movement.sku || movement.id || 'movement'}-${index}`}
                   className="rounded-xl border border-slate-800/70 bg-slate-900/70 px-4 py-3 text-sm"
                 >
                   <div className="flex items-center justify-between text-slate-200">
@@ -196,7 +198,7 @@ const InventoryPage = () => {
               ))
             ) : (
               <p className="text-sm text-slate-500">
-                {movementsQuery.isLoading ? 'Loading movement history…' : 'No recent inventory movements returned.'}
+                {movementsQuery.isLoading ? 'Loading movement history...' : 'No recent inventory movements returned.'}
               </p>
             )}
           </div>

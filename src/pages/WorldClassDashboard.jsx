@@ -1,6 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../auth/BulletproofClerkProvider';
 import { logInfo, logWarn, logDebug, logError } from '../utils/logger';
 import EnterpriseWidget from '../components/enterprise/EnterpriseWidget';
 import {
@@ -43,7 +42,9 @@ const WorldClassDashboard = () => {
   const [alerts, setAlerts] = useState([]);
   const [aiInsights, setAiInsights] = useState([]);
   
-  const { user, isSignedIn } = useAuth();
+  // No authentication needed
+  const user = { name: 'User' };
+  const isSignedIn = true;
 
   // Fetch dashboard data from backend
   useEffect(() => {

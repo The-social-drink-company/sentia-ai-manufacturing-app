@@ -43,7 +43,7 @@ const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
 const CashRunway = lazy(() => import('./pages/CashRunway'));
 const FundingCalculator = lazy(() => import('./pages/FundingCalculator'));
 const WorkingCapitalOptimizer = lazy(() => import('./pages/WorkingCapitalOptimizer'));
-const InteractiveFinancialModeling = lazy(() => import('./components/financial/InteractiveFinancialModeling'));
+const InteractiveFinancialModeling = lazy(() => import('./components/finance/InteractiveFinancialModeling'));
 
 // Operations Pages
 const Production = lazy(() => import('./pages/Production'));

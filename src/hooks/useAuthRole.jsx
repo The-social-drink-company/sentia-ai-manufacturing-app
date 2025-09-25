@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
+
 // Mock Authentication Hook for development
 // This hook provides a simple auth interface without real authentication
+// Fixed: Syntax errors corrected
 export const useAuthRole = () => {
   // Mock auth data for development
   const auth = { user: { name: 'Admin User' }, isLoaded: true, isSignedIn: true, mode: 'mock' };
@@ -44,7 +46,7 @@ export const useAuthRole = () => {
 
     // Get user display information
     const displayName = user?.fullName ||
-                       "User" ||
+                       user?.name ||
                        (mode === 'fallback' ? 'Guest User' : 'User');
 
     const userEmail = user?.emailAddresses?.[0]?.emailAddress ||

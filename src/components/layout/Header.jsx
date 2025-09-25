@@ -188,6 +188,9 @@ const Breadcrumbs = () => {
   )
 }
 
+// Mock useAuthRole function for RegionTabs
+const useAuthRole = () => ({ hasPermission: () => true, role: 'admin', getUserDisplayName: () => 'Admin User' });
+
 const RegionTabs = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { hasPermission } = useAuthRole()
@@ -458,9 +461,6 @@ const Header = () => {
   const navigate = useNavigate()
   // Clerk user integration
   // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
   const { 
     theme, 
     toggleTheme, 

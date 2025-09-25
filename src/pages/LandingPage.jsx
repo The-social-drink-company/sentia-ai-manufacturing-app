@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '@clerk/clerk-react'
+import { useAuth as useClerkAuth } from '@clerk/clerk-react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import {
@@ -71,7 +71,17 @@ const formatMemory = (bytes) => {
 
 export default function LandingPage() {
   const navigate = useNavigate()
-  const { isSignedIn } = useAuth()
+
+  // Try to use Clerk auth if available, otherwise assume not signed in
+  let isSignedIn = false
+  try {
+    const clerkAuth = useClerkAuth()
+    isSignedIn = clerkAuth.isSignedIn || false
+  } catch (error) {
+    // Clerk provider not available, continue without auth
+    console.log('Clerk auth not available, continuing in demo mode')
+  }
+
   const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
@@ -331,7 +341,7 @@ export default function LandingPage() {
                     Environment
                   </span>
                   <span className='font-medium text-white'>
-                    {systemStatusLoading ? 'Loading…' : systemStatus?.environment || 'Unavailable'}
+                    {systemStatusLoading ? 'Loadingï¿½' : systemStatus?.environment || 'Unavailable'}
                   </span>
                 </div>
                 <div className='flex items-center justify-between'>
@@ -341,7 +351,7 @@ export default function LandingPage() {
                   </span>
                   <span className='font-medium text-white'>
                     {systemStatusLoading
-                      ? 'Loading…'
+                      ? 'Loadingï¿½'
                       : systemStatus?.database?.status || 'Unavailable'}
                   </span>
                 </div>

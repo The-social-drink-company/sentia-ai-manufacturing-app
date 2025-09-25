@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SENTIA MANUFACTURING DASHBOARD - PRODUCTION SERVER
  * Fixed and aligned with September 2025 specifications
  *
@@ -36,7 +36,20 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_PRODUCTION = NODE_ENV === 'production';
-const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
+const DEFAULT_REMOTE_MCP_URL = 'https://mcp-server-tkyu.onrender.com';
+const IS_RENDER_PLATFORM = Boolean(process.env.RENDER || process.env.RENDER_SERVICE_ID || process.env.RENDER_EXTERNAL_URL);
+const IS_RAILWAY_PLATFORM = Boolean(process.env.RAILWAY_ENVIRONMENT);
+const resolveMcpServerUrl = () => {
+  const configured = (process.env.MCP_SERVER_URL || '').trim();
+  if (configured && !configured.includes('localhost')) {
+    return configured;
+  }
+  if (IS_RENDER_PLATFORM || IS_RAILWAY_PLATFORM) {
+    return DEFAULT_REMOTE_MCP_URL;
+  }
+  return configured || DEFAULT_REMOTE_MCP_URL;
+};
+const MCP_SERVER_URL = resolveMcpServerUrl();
 const DATABASE_URL = process.env.DATABASE_URL;
 
 // Memory optimization for Render free tier
@@ -46,9 +59,9 @@ if (IS_PRODUCTION) {
 
 // Deployment detection
 const DEPLOYMENT = {
-  isRender: !!process.env.RENDER,
-  isRailway: !!process.env.RAILWAY_ENVIRONMENT,
-  platform: process.env.RENDER ? 'Render' : process.env.RAILWAY_ENVIRONMENT ? 'Railway' : 'Local'
+  isRender: IS_RENDER_PLATFORM,
+  isRailway: IS_RAILWAY_PLATFORM,
+  platform: IS_RENDER_PLATFORM ? 'Render' : IS_RAILWAY_PLATFORM ? 'Railway' : 'Local'
 };
 
 console.log(`

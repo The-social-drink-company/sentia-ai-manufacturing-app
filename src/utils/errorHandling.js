@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport toast from 'react-hot-toast';
+import { devLog } from '../lib/devLog.js';
+import toast from 'react-hot-toast';
 
 // Error types for categorization
 export const ERROR_TYPES = {

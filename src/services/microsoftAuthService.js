@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../lib/devLog.js';
+/**
  * Microsoft OAuth Authentication Service
  * Implements Microsoft OAuth 2.0 for Azure AD authentication
  */

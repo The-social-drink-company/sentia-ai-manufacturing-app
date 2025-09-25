@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n// Enterprise API Key Management Service
+import { devLog } from '../lib/devLog.js';
+// Enterprise API Key Management Service
 // Secure handling of API keys and credentials
 
 class ApiKeyManager {

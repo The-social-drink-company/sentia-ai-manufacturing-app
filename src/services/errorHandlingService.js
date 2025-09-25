@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n
+import { devLog } from '../lib/devLog.js';
+
 // Enterprise Error Handling Service
 class ErrorHandlingService {
   constructor() {

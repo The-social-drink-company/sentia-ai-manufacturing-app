@@ -46,10 +46,7 @@ export default [
       'src/accessibility/**',
       'src/ai/**',
       'src/core/**',
-      'src/components/**',
       'src/compliance/**',
-      'src/services/**',
-      'src/utils/**',
       'src/TestDashboard.jsx',
       'vite.config.js',
       'tailwind.config.js',
@@ -58,10 +55,7 @@ export default [
     ]
   },
   {
-    files: [
-      'src/App.jsx',
-      'src/pages/**/*.{js,jsx}'
-    ],
+    files: ['src/**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: {
@@ -120,9 +114,9 @@ export default [
       'ai/**/*.js',
       'analytics/**/*.js',
       'config/**/*.js',
-      'middleware/**/*.js',
-      'utils/**/*.js'
+      'middleware/**/*.js'
     ],
+    ignores: ['src/**'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: {

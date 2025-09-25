@@ -564,7 +564,7 @@ class EnhancedWorkingCapitalService {
       const response = await fetch(`${this.apiBaseUrl}/company/employees/count`);
       if (response.ok) {
         const data = await response.json();
-        return data.count 0; // fallback
+        return data.count ?? 0; // fallback
       }
     } catch (error) {
       // Employee count API unavailable

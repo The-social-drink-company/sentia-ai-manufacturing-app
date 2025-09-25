@@ -7,9 +7,7 @@ export default defineConfig({
     include: ['tests/unit/**/*.test.jsx'],
     exclude: ['legacy/**'],
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.js'],
     globals: true,
-    // Memory optimization settings
     maxWorkers: 1,
     maxConcurrency: 1,
     pool: 'threads',
@@ -18,7 +16,6 @@ export default defineConfig({
         singleThread: true
       }
     },
-    // Timeout settings
     testTimeout: 10000,
     hookTimeout: 10000,
     coverage: {
@@ -27,11 +24,10 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'dist/',
-        'tests/setup.js',
+        'tests/setup.*',
         '*.config.js',
         'server.js'
       ]
     }
   }
 })
-

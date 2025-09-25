@@ -1,7 +1,5 @@
-const ProductionPage = () => (
-  <div className="p-8 text-slate-400">
-    Production planning is not part of this demo build.
-  </div>
-)
+﻿import ProductionModule from '../features/production/ProductionPage.jsx'
+
+const ProductionPage = () => <ProductionModule />
 
 export default ProductionPage

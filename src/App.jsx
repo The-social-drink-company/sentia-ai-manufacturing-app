@@ -1,4 +1,5 @@
 import { Suspense, lazy } from 'react'
+import { ClerkProvider } from '@clerk/clerk-react'
 import {
   Navigate,
   Outlet,
@@ -13,7 +14,9 @@ import { Toaster } from 'react-hot-toast'
 
 import EnterpriseSidebar from './components/EnterpriseSidebar'
 import MockAuthProvider from './providers/MockAuthProvider.js'
+import ClerkAuthProvider from './providers/ClerkAuthProvider.jsx'
 import { useAuth } from './hooks/useAuth.js'
+import { logWarn } from './utils/logger.js'
 
 const env = import.meta.env ?? {}
 const clerkPublishableKey = env.VITE_CLERK_PUBLISHABLE_KEY || env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || env.PUBLIC_CLERK_PUBLISHABLE_KEY || ''
@@ -151,13 +154,39 @@ const router = isTestEnv
   ? createMemoryRouter(routes, { initialEntries: ['/dashboard'] })
   : createBrowserRouter(routes)
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <MockAuthProvider>
-      <RouterProvider router={router} />
-      <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
-    </MockAuthProvider>
-  </QueryClientProvider>
-)
+const App = () => {
+  // If Clerk is configured, use ClerkProvider
+  if (shouldUseClerk) {
+    return (
+      <ClerkProvider
+        publishableKey={clerkPublishableKey}
+        frontendApi={clerkFrontendApi}
+        signInUrl={signInUrl}
+        signUpUrl={signUpUrl}
+        afterSignInUrl={afterSignInUrl}
+        afterSignUpUrl={afterSignUpUrl}
+        routerPush={(to) => router.navigate(to)}
+        routerReplace={(to) => router.navigate(to, { replace: true })}
+      >
+        <QueryClientProvider client={queryClient}>
+          <ClerkAuthProvider>
+            <RouterProvider router={router} />
+            <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
+          </ClerkAuthProvider>
+        </QueryClientProvider>
+      </ClerkProvider>
+    )
+  }
+
+  // Otherwise use MockAuthProvider
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MockAuthProvider>
+        <RouterProvider router={router} />
+        <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
+      </MockAuthProvider>
+    </QueryClientProvider>
+  )
+}
 
 export default App

@@ -266,8 +266,8 @@ module.exports = {
     },
   },
   plugins: [
-    forms,
-    typography,
-    aspectRatio,
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/aspect-ratio'),
   ],
 }

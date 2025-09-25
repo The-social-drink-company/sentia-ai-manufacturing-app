@@ -8,7 +8,7 @@ process.env.VITE_API_URL = 'http://localhost:5000/api'
 process.env.VITE_CLERK_PUBLISHABLE_KEY = 'test-key'
 
 // Mock Clerk for tests
-vi.mock('@clerk/react', () => ({
+vi.mock('@clerk/clerk-react', () => ({
   useUser: vi.fn(() => ({
     user: {
       id: 'test-user',
@@ -57,9 +57,16 @@ vi.mock('react-hot-toast', () => ({
 
 // Mock react-router-dom
 vi.mock('react-router-dom', () => ({
+  __esModule: true,
   BrowserRouter: ({ children }) => children,
   Routes: ({ children }) => children,
   Route: ({ children }) => children,
+  RouterProvider: ({ router }) =>
+    React.createElement('div', { 'data-testid': 'router-provider', 'data-router-loaded': Boolean(router) }),
+  createBrowserRouter: vi.fn((routes) => ({ routes })),
+  createMemoryRouter: vi.fn((routes, options = {}) => ({ routes, options })),
+  Navigate: ({ children }) => React.createElement(React.Fragment, null, children ?? null),
+  Outlet: ({ children }) => React.createElement('div', { 'data-testid': 'outlet' }, children ?? null),
   useNavigate: vi.fn(() => vi.fn()),
   useLocation: vi.fn(() => ({ pathname: '/' }))
 }))

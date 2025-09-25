@@ -1,10 +1,26 @@
 import { useMemo } from 'react'
 import { useQueries } from '@tanstack/react-query'
 
+const runtimeApiBase = typeof window !== 'undefined' && window.VITE_API_BASE_URL ? window.VITE_API_BASE_URL : import.meta.env?.VITE_API_BASE_URL
+const API_BASE_URL = (runtimeApiBase || '/api').replace(/\/$/, '')
+
 const REFRESH_INTERVAL_MS = 30_000
 
+const toAbsoluteUrl = (endpoint) => {
+  if (typeof endpoint !== 'string' || endpoint.length === 0) {
+    return API_BASE_URL
+  }
+
+  if (/^https?:\/\//i.test(endpoint)) {
+    return endpoint
+  }
+
+  return `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
+}
+
 const parseApiJson = async (endpoint) => {
-  const response = await fetch(endpoint, {
+  const url = toAbsoluteUrl(endpoint)
+  const response = await fetch(url, {
     headers: {
       Accept: 'application/json'
     },
@@ -13,7 +29,7 @@ const parseApiJson = async (endpoint) => {
 
   if (!response.ok) {
     const errorText = await response.text().catch(() => 'Unknown error')
-    throw new Error(`${endpoint} responded with ${response.status}: ${errorText}`)
+    throw new Error(`${url} responded with ${response.status}: ${errorText}`)
   }
 
   const payload = await response.json().catch(() => null)
@@ -62,7 +78,7 @@ export const parseNumericValue = (raw) => {
     multiplier = 1_000
   }
 
-  const numericPart = cleaned.replace(/[^0-9.+\-]/g, '')
+  const numericPart = cleaned.replace(/[^0-9.+-]/g, '')
   const value = Number(numericPart)
 
   if (!Number.isFinite(value)) {

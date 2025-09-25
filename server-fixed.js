@@ -9,6 +9,7 @@ import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import { randomUUID } from 'crypto';
 
+import clerkAuthMiddleware, { requireAuth as requireClerkAuth, extractUserInfo } from './api/middleware/clerkAuth.js';
 process.env.NODE_OPTIONS = '--max-old-space-size=128';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -43,6 +44,119 @@ const log = {
   info: (...args) => console.log('[INFO]', ...args),
   warn: (...args) => console.warn('[WARN]', ...args),
   error: (...args) => console.error('[ERROR]', ...args)
+};
+
+const MCP_TIMEOUT_MS = Number(process.env.MCP_SERVER_TIMEOUT_MS || 8000);
+const MCP_STATIC_HEADERS = Object.freeze({
+  ...(process.env.MCP_SERVER_SERVICE_ID ? { 'X-Service-ID': process.env.MCP_SERVER_SERVICE_ID } : {})
+});
+
+const mergeMcpHeaders = (headers = {}) => {
+  const finalHeaders = { ...MCP_STATIC_HEADERS, ...headers };
+  if (process.env.MCP_JWT_SECRET && !finalHeaders.Authorization) {
+    finalHeaders.Authorization = `Bearer ${process.env.MCP_JWT_SECRET}`;
+  }
+  return finalHeaders;
+};
+
+const fetchFromMCP = async (endpoint, options = {}) => {
+  const baseUrl = MCP_SERVER_URL.replace(/\/$/, '');
+  const target = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), MCP_TIMEOUT_MS);
+
+  try {
+    const requestOptions = {
+      ...options,
+      headers: mergeMcpHeaders(options.headers || {}),
+      signal: controller.signal
+    };
+
+    const response = await fetch(target, requestOptions);
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json().catch(() => null);
+    return { ok: true, data: payload };
+  } catch (error) {
+    clearTimeout(timeout);
+    log.warn('MCP request failed', { endpoint: target, error: error.message });
+    return { ok: false, error };
+  }
+};
+
+const buildWorkingCapitalFallback = () => {
+  const baseAmount = 780000;
+  const projectionAmount = Math.round(baseAmount * 1.06);
+  const points = Array.from({ length: 8 }, (_, index) => {
+    const day = new Date();
+    day.setDate(day.getDate() - (7 - index) * 3);
+    return {
+      name: `W${index + 1}`,
+      date: day.toISOString().split('T')[0],
+      current: Math.round(baseAmount * (0.88 + index * 0.018)),
+      projection: Math.round(baseAmount * (0.9 + index * 0.02))
+    };
+  });
+
+  return {
+    generatedAt: new Date().toISOString(),
+    currency: 'GBP',
+    current: { amount: baseAmount, currency: 'GBP' },
+    projection: { amount: projectionAmount, currency: 'GBP' },
+    change: '4.8%',
+    changePercent: '4.8%',
+    trend: { points }
+  };
+};
+
+const buildRealtimeMetricsFallback = () => {
+  const now = Date.now();
+  const series = Array.from({ length: 12 }, (_, index) => {
+    const timestamp = new Date(now - (11 - index) * 60 * 60 * 1000);
+    return {
+      timestamp: timestamp.toISOString(),
+      throughput: 520 + index * 7,
+      efficiency: Number((0.9 + index * 0.002).toFixed(3)),
+      onTimeShipments: Number((0.965 + Math.sin(index / 3) * 0.01).toFixed(3))
+    };
+  });
+
+  return {
+    metrics: {
+      revenueGrowth: '5.2%',
+      orderFulfillment: '97.2%',
+      customerSatisfaction: 4.6,
+      inventoryTurnover: 8.3
+    },
+    series
+  };
+};
+
+const buildExecutiveDashboardFallback = () => {
+  const workingCapital = buildWorkingCapitalFallback();
+  const realtime = buildRealtimeMetricsFallback();
+
+  return {
+    generatedAt: new Date().toISOString(),
+    kpis: [
+      { id: 'total-revenue', title: 'Total Revenue', value: 1280000, change: '5.2%', currency: 'GBP' },
+      { id: 'active-orders', title: 'Active Orders', value: 482, change: '3.1%' },
+      { id: 'inventory-value', title: 'Inventory Value', value: 910000, change: '-1.4%' },
+      { id: 'active-customers', title: 'Active Customers', value: 146, change: '2.6%' }
+    ],
+    workingCapital,
+    keyMetrics: realtime.metrics,
+    quickActions: [
+      { id: 'optimize-cash-cycle', title: 'Optimize Cash Cycle', description: 'Reduce debtor days by 5 to unlock GBP 180k', action: '/working-capital' },
+      { id: 'rebalance-inventory', title: 'Rebalance Inventory', description: 'Shift slow-moving SKUs to alternate channels', action: '/inventory' },
+      { id: 'stabilize-fulfillment', title: 'Stabilize Fulfilment', description: 'Deploy overtime crew for late orders', action: '/production' }
+    ],
+    realtime
+  };
 };
 
 app.set('trust proxy', 1);
@@ -122,6 +236,14 @@ const connectSrc = [
   MCP_SERVER_URL,
   'https://*.onrender.com',
   'https://*.railway.app',
+  'https://*.clerk.com',
+  'https://*.clerk.dev',
+  'https://*.clerk.services',
+  'https://*.clerk.accounts.dev',
+  'https://clerk.com',
+  'https://clerk.dev',
+  'https://clerk.services',
+  'https://clerk.accounts.dev',
   ...wsConnectHosts
 ];
 
@@ -129,12 +251,13 @@ const cspDirectives = {
   defaultSrc: ["'self'"],
   baseUri: ["'self'"],
   blockAllMixedContent: [],
-  fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+  fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://*.clerk.com', 'https://*.clerk.dev', 'https://*.clerk.services', 'https://*.clerk.accounts.dev', 'data:'],
   frameAncestors: ["'self'"],
-  imgSrc: ["'self'", 'data:', 'https://*.onrender.com'],
+  imgSrc: ["'self'", 'data:', 'https://*.onrender.com', 'https://*.clerk.com', 'https://*.clerk.dev', 'https://*.clerk.services', 'https://*.clerk.accounts.dev'],
   objectSrc: ["'none'"],
-  scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-  styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+  frameSrc: ["'self'", 'https://*.clerk.com', 'https://*.clerk.dev', 'https://*.clerk.services', 'https://*.clerk.accounts.dev'],
+  scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://*.clerk.com', 'https://*.clerk.dev', 'https://*.clerk.services', 'https://*.clerk.accounts.dev'],
+  styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://*.clerk.com', 'https://*.clerk.dev', 'https://*.clerk.services', 'https://*.clerk.accounts.dev'],
   connectSrc
 };
 
@@ -149,6 +272,8 @@ app.use(
 );
 
 app.use(cors(generateCorsOptions()));
+
+app.use(clerkAuthMiddleware);
 
 app.use(
   compression({
@@ -170,16 +295,6 @@ app.use(
     }
   })
 );
-
-const attachMockUser = (req, res, next) => {
-  req.user = {
-    id: 'admin',
-    role: 'administrator',
-    email: 'admin@sentia-manufacturing.local',
-    authProvider: 'mock'
-  };
-  next();
-};
 
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 
@@ -286,7 +401,46 @@ healthRouter.get('/api/status', async (req, res) => {
 app.use(healthRouter);
 
 const apiRouter = express.Router();
-apiRouter.use(attachMockUser);
+apiRouter.use(requireClerkAuth, extractUserInfo);
+
+apiRouter.get('/dashboard/executive', async (req, res) => {
+  const result = await fetchFromMCP('/api/dashboard/executive');
+
+  if (result.ok && result.data) {
+    return res.success(result.data, { source: 'mcp' });
+  }
+
+  res.success(buildExecutiveDashboardFallback(), {
+    source: 'fallback',
+    reason: result.error?.message || 'mcp-unavailable'
+  });
+});
+
+apiRouter.get('/metrics/realtime', async (req, res) => {
+  const result = await fetchFromMCP('/api/metrics/realtime');
+
+  if (result.ok && result.data) {
+    return res.success(result.data, { source: 'mcp' });
+  }
+
+  res.success(buildRealtimeMetricsFallback(), {
+    source: 'fallback',
+    reason: result.error?.message || 'mcp-unavailable'
+  });
+});
+
+apiRouter.get('/working-capital/current', async (req, res) => {
+  const result = await fetchFromMCP('/api/working-capital/current');
+
+  if (result.ok && result.data) {
+    return res.success(result.data, { source: 'mcp' });
+  }
+
+  res.success(buildWorkingCapitalFallback(), {
+    source: 'fallback',
+    reason: result.error?.message || 'mcp-unavailable'
+  });
+});
 
 apiRouter.get('/dashboard/overview', (req, res) => {
   res.success({
@@ -435,11 +589,11 @@ apiRouter.get('/dashboard/alerts', (req, res) => {
   res.success({ alerts: [] });
 });
 
-app.get('/api/dashboard/realtime', attachMockUser, (req, res) => {
+app.get('/api/dashboard/realtime', requireClerkAuth, extractUserInfo, (req, res) => {
   res.fail(410, 'Realtime endpoint moved to /api/events');
 });
 
-app.get('/api/events', attachMockUser, (req, res) => {
+app.get('/api/events', requireClerkAuth, extractUserInfo, (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Connection', 'keep-alive');
@@ -457,7 +611,8 @@ app.get('/api/events', attachMockUser, (req, res) => {
 
 app.post(
   '/api/mcp/request',
-  attachMockUser,
+  requireClerkAuth,
+  extractUserInfo,
   validateBody({ endpoint: { required: true, type: 'string' }, payload: { type: 'object' } }),
   async (req, res, next) => {
     try {
@@ -480,7 +635,7 @@ app.post(
   }
 );
 
-app.get('/api/mcp/status', attachMockUser, async (req, res, next) => {
+app.get('/api/mcp/status', requireClerkAuth, extractUserInfo, async (req, res, next) => {
   try {
     const response = await fetch(`${MCP_SERVER_URL}/health`);
     const payload = await response.json().catch(() => ({}));

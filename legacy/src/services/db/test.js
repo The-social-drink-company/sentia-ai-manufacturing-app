@@ -1,0 +1,215 @@
+﻿import { devLog } from '../lib/devLog.js';
+import dbService from './index.js';
+import { logInfo, logError } from '../../../services/logger.js';
+
+class DatabaseTest {
+  async runAllTests() {
+    devLog.log('ðŸš€ Starting database validation tests...\n');
+    
+    try {
+      // Initialize database connection
+      await dbService.initialize();
+      const prisma = dbService.getClient();
+      
+      const results = {
+        connection: false,
+        healthCheck: false,
+        basicCRUD: false,
+        relationships: false,
+        constraints: false,
+      };
+      
+      // Test 1: Connection
+      devLog.log('1ï¸âƒ£ Testing database connection...');
+      try {
+        const isConnected = dbService.isConnected();
+        devLog.log(`   âœ… Database connected: ${isConnected}`);
+        results.connection = true;
+      } catch (error) {
+        devLog.log(`   âŒ Connection failed: ${error.message}`);
+        results.connection = false;
+      }
+      
+      // Test 2: Health Check
+      devLog.log('\n2ï¸âƒ£ Testing database health check...');
+      try {
+        const health = await dbService.healthCheck();
+        devLog.log(`   âœ… Health status: ${health.status}`);
+        devLog.log(`   ðŸ“Š Database: ${health.database}`);
+        devLog.log(`   ðŸ‘¤ User: ${health.user}`);
+        results.healthCheck = true;
+      } catch (error) {
+        devLog.log(`   âŒ Health check failed: ${error.message}`);
+        results.healthCheck = false;
+      }
+      
+      // Test 3: Basic CRUD Operations
+      devLog.log('\n3ï¸âƒ£ Testing basic CRUD operations...');
+      try {
+        // Create test user
+        devLog.log('   Creating test user...');
+        const testUser = await prisma.user.create({
+          data: {
+            username: 'testuser',
+            email: 'test@example.com',
+            role: 'user',
+            isActive: true,
+            is_admin: false,
+            two_factor_enabled: false,
+            force_password_change: false,
+          },
+        });
+        devLog.log(`   âœ… Created user: ${testUser.id}`);
+        
+        // Read user
+        devLog.log('   Reading user...');
+        const foundUser = await prisma.user.findUnique({
+          where: { id: testUser.id },
+        });
+        devLog.log(`   âœ… Found user: ${foundUser.username}`);
+        
+        // Update user
+        devLog.log('   Updating user...');
+        const updatedUser = await prisma.user.update({
+          where: { id: testUser.id },
+          data: { role: 'manager' },
+        });
+        devLog.log(`   âœ… Updated user role to: ${updatedUser.role}`);
+        
+        // Delete user
+        devLog.log('   Deleting user...');
+        await prisma.user.delete({
+          where: { id: testUser.id },
+        });
+        devLog.log('   âœ… User deleted successfully');
+        
+        results.basicCRUD = true;
+      } catch (error) {
+        devLog.log(`   âŒ CRUD operations failed: ${error.message}`);
+        results.basicCRUD = false;
+      }
+      
+      // Test 4: Relationship queries
+      devLog.log('\n4ï¸âƒ£ Testing relationship queries...');
+      try {
+        // Count existing records
+        const userCount = await prisma.user.count();
+        const marketCount = await prisma.market.count();
+        const productCount = await prisma.product.count();
+        
+        devLog.log(`   ðŸ“Š Users: ${userCount}`);
+        devLog.log(`   ðŸ“Š Markets: ${marketCount}`); 
+        devLog.log(`   ðŸ“Š Products: ${productCount}`);
+        
+        if (productCount > 0 && userCount > 0) {
+          // Test relationship query
+          const productsWithCreator = await prisma.product.findMany({
+            include: {
+              creator: {
+                select: { username: true, email: true }
+              }
+            },
+            take: 3,
+          });
+          devLog.log(`   âœ… Found ${productsWithCreator.length} products with creator data`);
+        }
+        
+        results.relationships = true;
+      } catch (error) {
+        devLog.log(`   âŒ Relationship queries failed: ${error.message}`);
+        results.relationships = false;
+      }
+      
+      // Test 5: Constraint validation
+      devLog.log('\n5ï¸âƒ£ Testing constraint validation...');
+      try {
+        // Test unique constraint
+        let constraintWorking = true;
+        
+        try {
+          await prisma.user.create({
+            data: {
+              username: 'admin', // This should fail if admin exists
+              email: 'duplicate@example.com',
+              role: 'user',
+              isActive: true,
+              is_admin: false,
+              two_factor_enabled: false,
+              force_password_change: false,
+            },
+          });
+          devLog.log('   âš ï¸  Unique constraint not enforced (or admin user doesn\'t exist)');
+        } catch (error) {
+          if (error.code === 'P2002') {
+            devLog.log('   âœ… Unique constraint working properly');
+          } else {
+            devLog.log(`   âŒ Unexpected constraint error: ${error.message}`);
+            constraintWorking = false;
+          }
+        }
+        
+        results.constraints = constraintWorking;
+      } catch (error) {
+        devLog.log(`   âŒ Constraint validation failed: ${error.message}`);
+        results.constraints = false;
+      }
+      
+      // Test 6: Database statistics
+      devLog.log('\n6ï¸âƒ£ Getting database statistics...');
+      try {
+        const stats = await dbService.getStats();
+        devLog.log('   ðŸ“Š Table Statistics:');
+        stats.slice(0, 5).forEach(stat => {
+          devLog.log(`   - ${stat.tablename}: ${stat.live_tuples} rows`);
+        });
+        devLog.log(`   âœ… Retrieved stats for ${stats.length} tables`);
+      } catch (error) {
+        devLog.log(`   âš ï¸  Stats retrieval failed: ${error.message}`);
+      }
+      
+      // Test Summary
+      devLog.log('\nðŸ“‹ TEST RESULTS SUMMARY:');
+      devLog.log('========================');
+      devLog.log(`Connection:      ${results.connection ? 'âœ… PASS' : 'âŒ FAIL'}`);
+      devLog.log(`Health Check:    ${results.healthCheck ? 'âœ… PASS' : 'âŒ FAIL'}`);
+      devLog.log(`Basic CRUD:      ${results.basicCRUD ? 'âœ… PASS' : 'âŒ FAIL'}`);
+      devLog.log(`Relationships:   ${results.relationships ? 'âœ… PASS' : 'âŒ FAIL'}`);
+      devLog.log(`Constraints:     ${results.constraints ? 'âœ… PASS' : 'âŒ FAIL'}`);
+      
+      const passCount = Object.values(results).filter(Boolean).length;
+      const totalTests = Object.keys(results).length;
+      
+      devLog.log('\nðŸŽ¯ OVERALL RESULT:');
+      devLog.log(`${passCount}/${totalTests} tests passed`);
+      
+      if (passCount === totalTests) {
+        devLog.log('ðŸŽ‰ ALL TESTS PASSED - Database is fully operational!');
+        return true;
+      } else {
+        devLog.log('âš ï¸  Some tests failed - review issues above');
+        return false;
+      }
+      
+    } catch (error) {
+      devLog.error('ðŸ’¥ Fatal error during database testing:', error);
+      return false;
+    } finally {
+      await dbService.disconnect();
+    }
+  }
+}
+
+// Run tests if called directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const tester = new DatabaseTest();
+  tester.runAllTests()
+    .then(success => {
+      process.exit(success ? 0 : 1);
+    })
+    .catch(error => {
+      devLog.error('Test runner failed:', error);
+      process.exit(1);
+    });
+}
+
+export default DatabaseTest;

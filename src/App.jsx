@@ -1,9 +1,21 @@
-import { Suspense, createContext, lazy, useCallback, useContext, useMemo, useState } from 'react'
-import { Navigate, Outlet, RouterProvider, createBrowserRouter, useLocation, useNavigate } from 'react-router-dom'
+﻿import { Suspense, lazy, useCallback } from 'react'
+import { ClerkProvider } from '@clerk/clerk-react'
+import {
+  Navigate,
+  Outlet,
+  RouterProvider,
+  createBrowserRouter,
+  createMemoryRouter,
+  useLocation,
+  useNavigate
+} from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 
 import EnterpriseSidebar from './components/EnterpriseSidebar'
+import { ClerkAuthProvider } from './providers/ClerkAuthProvider.jsx'
+import { useAuth } from './hooks/useAuth.js'
+import { logError, logWarn } from './utils/logger.js'
 
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'))
 const LoginPage = lazy(() => import('./pages/LoginPage.jsx'))
@@ -11,46 +23,17 @@ const SignupPage = lazy(() => import('./pages/SignupPage.jsx'))
 const DashboardPage = lazy(() => import('./pages/Dashboard.jsx'))
 const SettingsPage = lazy(() => import('./pages/Settings.jsx'))
 
-const DEFAULT_USER = {
-  id: 'sentia-ops-demo',
-  email: 'ops@sentia-demo.com',
-  role: 'admin',
-  displayName: 'Sentia Operations'
-}
-
-const AuthContext = createContext({
-  user: DEFAULT_USER,
-  isAuthenticated: true,
-  login: () => undefined,
-  logout: () => undefined
-})
-
-export const useAuth = () => useContext(AuthContext)
-
-const MockAuthProvider = ({ children }) => {
-  const [user, setUser] = useState(DEFAULT_USER)
-
-  const login = useCallback((nextUser) => {
-    setUser(nextUser ?? DEFAULT_USER)
-  }, [])
-
-  const logout = useCallback(() => {
-    setUser(null)
-  }, [])
-
-  const value = useMemo(() => ({
-    user,
-    isAuthenticated: Boolean(user),
-    login,
-    logout
-  }), [login, logout, user])
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
 const RequireAuth = () => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isLoaded } = useAuth()
   const location = useLocation()
+
+  if (!isLoaded) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-200">
+        Validating session…
+      </div>
+    )
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />
@@ -79,6 +62,10 @@ const AppLayout = () => {
     [navigate]
   )
 
+  const handleSignOut = useCallback(async () => {
+    await logout()
+  }, [logout])
+
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-50">
       <div className="hidden lg:flex">
@@ -90,10 +77,10 @@ const AppLayout = () => {
             user ? (
               <button
                 type="button"
-                onClick={logout}
+                onClick={handleSignOut}
                 className="w-full rounded border border-slate-700 px-3 py-2 text-left text-xs text-slate-300 transition hover:border-slate-500 hover:text-white"
               >
-                Sign out {user.displayName ? `(${user.displayName})` : ''}
+                {'Sign out ' + (user.displayName ? '(' + user.displayName + ')' : '')}
               </button>
             ) : null
           }
@@ -118,7 +105,7 @@ const queryClient = new QueryClient({
   }
 })
 
-const router = createBrowserRouter([
+const routes = [
   {
     element: <PublicLayout />,
     children: [
@@ -140,15 +127,62 @@ const router = createBrowserRouter([
       }
     ]
   }
-])
+]
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <MockAuthProvider>
-      <RouterProvider router={router} />
-      <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
-    </MockAuthProvider>
-  </QueryClientProvider>
-)
+const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test'
+
+const router = isTestEnv
+  ? createMemoryRouter(routes, { initialEntries: ['/dashboard'] })
+  : createBrowserRouter(routes)
+
+const env = import.meta.env ?? {}
+const clerkPublishableKey =
+  env.VITE_CLERK_PUBLISHABLE_KEY ||
+  env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  env.PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  ''
+
+const clerkFrontendApi = env.VITE_CLERK_FRONTEND_API || env.CLERK_FRONTEND_API
+const signInUrl = env.VITE_CLERK_SIGN_IN_URL || '/login'
+const signUpUrl = env.VITE_CLERK_SIGN_UP_URL || '/signup'
+const afterSignInUrl = env.VITE_CLERK_AFTER_SIGN_IN_URL || '/dashboard'
+const afterSignUpUrl = env.VITE_CLERK_AFTER_SIGN_UP_URL || '/dashboard'
+
+if (!clerkPublishableKey) {
+  logWarn('[App] Missing Clerk publishable key; authentication will not initialise correctly')
+}
+
+const App = () => {
+  if (!clerkPublishableKey) {
+    logError('[App] Clerk publishable key is required to render authentication components')
+
+    return (
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
+      </QueryClientProvider>
+    )
+  }
+
+  return (
+    <ClerkProvider
+      publishableKey={clerkPublishableKey}
+      frontendApi={clerkFrontendApi}
+      signInUrl={signInUrl}
+      signUpUrl={signUpUrl}
+      afterSignInUrl={afterSignInUrl}
+      afterSignUpUrl={afterSignUpUrl}
+      routerPush={(to) => router.navigate(to)}
+      routerReplace={(to) => router.navigate(to, { replace: true })}
+    >
+      <QueryClientProvider client={queryClient}>
+        <ClerkAuthProvider>
+          <RouterProvider router={router} />
+          <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
+        </ClerkAuthProvider>
+      </QueryClientProvider>
+    </ClerkProvider>
+  )
+}
 
 export default App

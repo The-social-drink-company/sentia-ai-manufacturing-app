@@ -1,4 +1,4 @@
-const SettingsPage = () => (
+﻿const SettingsPage = () => (
   <main className="min-h-screen bg-slate-100 p-8">
     <div className="mx-auto w-full max-w-3xl space-y-8 rounded-xl bg-white p-8 shadow">
       <header className="space-y-2">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { SignIn, useAuth } from '@clerk/clerk-react'
 import { Navigate, useLocation, Link } from 'react-router-dom'
 
@@ -26,26 +26,26 @@ class ErrorBoundaryWrapper extends React.Component {
 }
 
 const LoadingShell = ({ errorMessage, onRetry }) => (
-  <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4'>
-    <div className='bg-white p-8 rounded-lg shadow-xl max-w-md w-full'>
-      <div className='text-center'>
-        <div className='mb-4'>
-          <div className='w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto'>
-            <span className='text-white text-2xl font-bold'>S</span>
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
+    <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+      <div className="text-center">
+        <div className="mb-4">
+          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto">
+            <span className="text-white text-2xl font-bold">S</span>
           </div>
         </div>
-        <h1 className='text-2xl font-bold text-gray-900 mb-2'>Sentia Manufacturing</h1>
-        <div className='animate-pulse'>
-          <div className='h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2' />
-          <div className='h-4 bg-gray-200 rounded w-1/2 mx-auto' />
+        <h1 className="text-2xl trumpet font-bold text-gray-900 mb-2">Sentia Manufacturing</h1>
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2" />
+          <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto" />
         </div>
         {errorMessage ? (
-          <div className='mt-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm'>
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
             <p>{errorMessage}</p>
             <button
-              type='button'
+              type="button"
               onClick={onRetry}
-              className='block w-full mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700'
+              className="block w-full mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
             >
               Retry
             </button>
@@ -57,15 +57,15 @@ const LoadingShell = ({ errorMessage, onRetry }) => (
 )
 
 const SignInFallback = () => (
-  <div className='bg-white p-8 rounded-lg shadow-xl'>
-    <div className='text-center'>
-      <div className='text-red-500 text-4xl mb-4' aria-hidden='true'>!</div>
-      <h2 className='text-xl font-bold text-gray-900 mb-2'>Sign In Error</h2>
-      <p className='text-gray-600 mb-4'>Unable to load sign-in form. Please try again.</p>
+  <div className="bg-white p-8 rounded-lg shadow-xl">
+    <div className="text-center">
+      <div className="text-red-500 text-4xl mb-4" aria-hidden="true">!</div>
+      <h2 className="text-xl font-bold text-gray-900 mb-2">Sign In Error</h2>
+      <p className="text-gray-600 mb-4">Unable to load sign-in form. Please try again.</p>
       <button
-        type='button'
+        type="button"
         onClick={() => window.location.reload()}
-        className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
         Reload Page
       </button>
@@ -74,14 +74,14 @@ const SignInFallback = () => (
 )
 
 const LogoHeader = () => (
-  <div className='text-center mb-8'>
-    <div className='mb-4'>
-      <div className='w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto'>
-        <span className='text-white text-3xl font-bold'>S</span>
+  <div className="text-center mb-8">
+    <div className="mb-4">
+      <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto">
+        <span className="text-white text-3xl font-bold">S</span>
       </div>
     </div>
-    <h1 className='text-3xl font-bold text-gray-900'>Welcome Back</h1>
-    <p className='text-gray-600 mt-2'>Sign in to Sentia Manufacturing Dashboard</p>
+    <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
+    <p className="text-gray-600 mt-2">Sign in to Sentia Manufacturing Dashboard</p>
   </div>
 )
 
@@ -140,7 +140,7 @@ const useClerkReadiness = ({ onTimeout }) => {
   return isReady
 }
 
-export default function SignInPage() {
+const LoginPage = () => {
   const { isLoaded, isSignedIn } = useAuth()
   const location = useLocation()
   const from = parseRedirect(location)
@@ -165,8 +165,8 @@ export default function SignInPage() {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
-      <div className='w-full max-w-md'>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
         <LogoHeader />
         <ErrorBoundaryWrapper fallback={<SignInFallback />}>
           <SignIn
@@ -194,18 +194,18 @@ export default function SignInPage() {
             }}
             redirectUrl={from}
             afterSignInUrl={from}
-            signUpUrl='/sign-up'
+            signUpUrl="/signup"
           />
         </ErrorBoundaryWrapper>
-        <div className='mt-6 text-center'>
-          <p className='text-sm text-gray-600'>
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
-            <Link to='/sign-up' className='text-blue-600 hover:text-blue-700 font-medium'>
+            <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
               Sign up
             </Link>
           </p>
-          <p className='text-sm text-gray-500 mt-4'>
-            <Link to='/' className='hover:text-gray-700'>
+          <p className="text-sm text-gray-500 mt-4">
+            <Link to="/" className="hover:text-gray-700">
               Back to Home
             </Link>
           </p>
@@ -214,3 +214,5 @@ export default function SignInPage() {
     </div>
   )
 }
+
+export default LoginPage

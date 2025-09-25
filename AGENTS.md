@@ -1,19 +1,22 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- Keep feature code inside `src/`. Shared UI lives in `src/components`, page shells in `src/pages`, reusable logic in `src/hooks`, `src/stores`, and `src/services`. Assets go to `src/assets`. Server stubs stay in `server-fixed.js` and `mcp-server/enterprise-server-simple.js`. Specs either sit beside features as `*.test.jsx` or inside `tests/`. Prisma schemas and migrations belong to `prisma/`.
+Keep all feature code in `src/`. Shared UI primitives stay in `src/components`, page shells in `src/pages`, and cross-cutting logic in `src/hooks`, `src/stores`, and `src/services`. Tests live beside features as `*.test.jsx` or under `tests/`. Assets belong in `src/assets`. Do not touch `server-fixed.js` or `mcp-server/enterprise-server-simple.js` unless coordinating backend changes. Prisma schemas and migrations stay in `prisma/`.
 
 ## Build, Test, and Development Commands
-- Use `pm run dev` to boot the React client with mocked MCP data; `pm run dev:all` starts client, API, and MCP together. `pm run build` produces production bundles, and `pm run build:render` plus `pm run start:production` mimics the Render deployment flow. Run `pm run lint`, `pm run format:check`, and `pm run typecheck` before submitting. Execute unit tests with `pm test` and Playwright flows via `pm run test:e2e`.
+- `pm run dev`: start the React client with mocked MCP data.
+- `pm run dev:all`: run client, API, and MCP together for end-to-end smoke checks.
+- `pm run build`: produce production bundles.
+- `pm run build:render` then `pm run start:production`: simulate the Render deployment pipeline.
 
 ## Coding Style & Naming Conventions
-- Prettier and ESLint enforce two-space indentation, single quotes, and ASCII-only logging. Components and pages use PascalCase (for example `WorkingCapitalPanel.jsx`). Hooks, utilities, and helpers stay camelCase. Prefer Tailwind utility classes and shared primitives instead of custom CSS.
+The repo standardizes on Prettier and ESLint defaults: two-space indentation, single quotes, and ASCII-only logs. Components and pages use PascalCase (e.g., `WorkingCapitalPanel.jsx`); hooks, utilities, and helpers stay camelCase. Favor Tailwind classes and shared primitives over bespoke styles. Run `pm run format:check` and `pm run lint` before pushing.
 
 ## Testing Guidelines
-- Vitest drives unit tests; Playwright covers end-to-end scenarios. Keep snapshots synced with SSE payloads. Aim for at least 80% coverage on working-capital, forecasting, and orchestration modules. Name specs as `*.test.jsx|ts`. Run `pm test --coverage` when touching critical flows.
+Vitest powers unit tests (`pm test`). Critical flows such as working-capital, forecasting, and orchestration should stay above 80% coverage; run `pm test --coverage` when touching them. Keep snapshots aligned with SSE payloads. Name specs `*.test.jsx` or `*.test.ts` and colocate with the code they exercise unless they live in `tests/`. Playwright end-to-end suites run via `pm run test:e2e`.
 
 ## Commit & Pull Request Guidelines
-- Follow Conventional Commits (`feat:`, `fix:`, `chore:`). Reference SpecKit issues and attach Render preview URLs for UI work. Include before/after screenshots for visual changes. Document lint, type, and test runs in the PR description.
+Use Conventional Commit prefixes (`feat:`, `fix:`, `chore:`). Reference SpecKit issues and include Render preview URLs for UI changes. Lint, type, and test status must be noted in the PR description. Attach before/after screenshots when modifying visuals.
 
-## Security & Configuration
-- Do not commit secrets or `.env` files. Manage credentials in Render dashboards and snapshot production databases before `pm run db:migrate:prod`. After protocol changes confirm MCP health at `https://mcp-server-tkyu.onrender.com/health`.
+## Security & Configuration Tips
+Never commit secrets or `.env` files. Manage credentials in Render dashboards, snapshot production databases before `pm run db:migrate:prod`, and confirm MCP health at `https://mcp-server-tkyu.onrender.com/health` after protocol updates.

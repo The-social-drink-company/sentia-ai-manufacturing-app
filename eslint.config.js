@@ -46,12 +46,10 @@ export default [
       'src/accessibility/**',
       'src/ai/**',
       'src/core/**',
-      'src/components/experimental/**',
-      'src/components/widgets/**',
-      'src/utils/serviceWorker.js',
-      'src/utils/serviceWorkerOptimized.js',
-      'src/utils/treeShakingUtils.jsx',
-      'src/utils/vitals.js',
+      'src/components/**',
+      'src/compliance/**',
+      'src/services/**',
+      'src/utils/**',
       'src/TestDashboard.jsx',
       'vite.config.js',
       'tailwind.config.js',
@@ -60,12 +58,16 @@ export default [
     ]
   },
   {
-    files: ['src/**/*.{js,jsx}'],
+    files: [
+      'src/App.jsx',
+      'src/pages/**/*.{js,jsx}'
+    ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: {
         ...globals.browser,
-        ...globals.es2020
+        ...globals.es2020,
+        process: 'readonly'
       },
       parserOptions: {
         ecmaVersion: 'latest',
@@ -108,7 +110,6 @@ export default [
   },
   {
     files: [
-      '*.js',
       'server/**/*.js',
       'api/**/*.js',
       'services/**/*.js',

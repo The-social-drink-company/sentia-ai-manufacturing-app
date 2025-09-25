@@ -325,7 +325,9 @@
       "Bash(sort:*)",
       "Bash(rd:*)",
       "Bash(git restore:*)",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(del test-mcp-websocket.js)",
+      "Bash(npx speckit:*)"
     ],
     "deny": [],
     "ask": []

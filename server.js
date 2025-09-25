@@ -258,10 +258,78 @@ app.get(
 );
 
 app.get(
+  '/api/monitoring/dashboard',
+  asyncHandler(async (req, res) => {
+    const [database, cacheState] = await Promise.all([checkDatabaseHealth(), checkCacheHealth()]);
+
+    // Get comprehensive monitoring data
+    const monitoring = {
+      timestamp: new Date().toISOString(),
+      environment: ENV,
+      service: {
+        name: 'Sentia Manufacturing Dashboard',
+        version: process.env.VITE_APP_VERSION || 'unknown',
+        uptime: {
+          seconds: Math.round(process.uptime()),
+          formatted: formatUptime(process.uptime())
+        }
+      },
+      system: {
+        memory: process.memoryUsage(),
+        cpu: process.cpuUsage(),
+        platform: process.platform,
+        nodeVersion: process.version
+      },
+      infrastructure: {
+        database,
+        cache: cacheState
+      },
+      metrics: {
+        requestsPerMinute: 0,
+        activeConnections: sseClients.size,
+        averageResponseTime: 0
+      }
+    };
+
+    // Try to get data pipeline metrics
+    try {
+      const { EnterpriseDataPipeline } = await import('./src/services/EnterpriseDataPipeline.js');
+      const pipeline = new EnterpriseDataPipeline();
+      const pipelineHealth = await pipeline.healthCheck();
+      monitoring.dataPipeline = pipelineHealth;
+      await pipeline.shutdown();
+    } catch (error) {
+      monitoring.dataPipeline = { status: 'unavailable', error: error.message };
+    }
+
+    res.status(200).json(monitoring);
+  })
+);
+
+function formatUptime(seconds) {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${days}d ${hours}h ${minutes}m`;
+}
+
+app.get(
   '/api/health/enterprise',
   asyncHandler(async (req, res) => {
     const [database, cacheState] = await Promise.all([checkDatabaseHealth(), checkCacheHealth()]);
     const memory = process.memoryUsage();
+
+    // Get data pipeline health if available
+    let dataPipeline = null;
+    try {
+      const { EnterpriseDataPipeline } = await import('./src/services/EnterpriseDataPipeline.js');
+      const pipeline = new EnterpriseDataPipeline();
+      dataPipeline = await pipeline.healthCheck();
+      await pipeline.shutdown();
+    } catch (error) {
+      dataPipeline = { status: 'unavailable', error: error.message };
+    }
+
     res.status(200).json({
       service: 'Sentia Manufacturing Dashboard',
       environment: ENV,
@@ -273,6 +341,7 @@ app.get(
       },
       database,
       cache: cacheState,
+      dataPipeline,
       timestamp: new Date().toISOString()
     });
   })

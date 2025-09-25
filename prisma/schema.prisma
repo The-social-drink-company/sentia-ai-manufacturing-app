@@ -213,3 +213,152 @@ model MCPRequest {
   @@index([tool, status], name: "idx_mcp_request_tool_status")
   @@index([createdAt], name: "idx_mcp_request_created_at")
 }
+
+model CashLedger {
+  id               String   @id @default(cuid())
+  date             DateTime @default(now())
+  description      String
+  category         String
+  subCategory      String?
+  amount           Float
+  balance          Float
+  source           String
+  sourceId         String?
+  reconciledStatus String   @default("pending")
+  tags             String[]
+  metadata         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([date], name: "idx_cash_ledger_date")
+  @@index([category, subCategory], name: "idx_cash_ledger_category")
+  @@index([source, sourceId], name: "idx_cash_ledger_source")
+}
+
+model CashProjection {
+  id                String   @id @default(cuid())
+  projectionDate    DateTime
+  projectedAmount   Float
+  actualAmount      Float?
+  variance          Float?
+  confidenceLevel   Float
+  scenarioType      String   @default("base")
+  assumptions       Json
+  projectionMethod  String
+  dataSource        String
+  isAdjusted        Boolean  @default(false)
+  adjustmentReason  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([projectionDate], name: "idx_cash_projection_date")
+  @@index([scenarioType], name: "idx_cash_projection_scenario")
+}
+
+model Expense {
+  id              String   @id @default(cuid())
+  date            DateTime @default(now())
+  vendor          String
+  category        String
+  subCategory     String?
+  amount          Float
+  currency        String   @default("USD")
+  paymentMethod   String
+  invoiceNumber   String?
+  approvedBy      String?
+  department      String?
+  project         String?
+  isRecurring     Boolean  @default(false)
+  recurringPeriod String?
+  taxAmount       Float?
+  tags            String[]
+  attachments     String[]
+  notes           String?
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([date], name: "idx_expense_date")
+  @@index([vendor], name: "idx_expense_vendor")
+  @@index([category, subCategory], name: "idx_expense_category")
+  @@index([status], name: "idx_expense_status")
+}
+
+model EnterpriseCashCoverage {
+  id                       String   @id @default(cuid())
+  period                   DateTime
+  startingCash             Float    @default(0)
+  endingCash               Float    @default(0)
+
+  // Revenue components
+  salesRevenue             Float    @default(0)
+  subscriptionRevenue      Float    @default(0)
+  serviceRevenue           Float    @default(0)
+  otherRevenue             Float    @default(0)
+  totalRevenue             Float    @default(0)
+
+  // Operating expenses
+  payrollExpenses          Float    @default(0)
+  rentExpenses             Float    @default(0)
+  utilitiesExpenses        Float    @default(0)
+  marketingExpenses        Float    @default(0)
+  suppliesExpenses         Float    @default(0)
+  maintenanceExpenses      Float    @default(0)
+  insuranceExpenses        Float    @default(0)
+  professionalFees         Float    @default(0)
+  otherOperatingExpenses   Float    @default(0)
+  totalOperatingExpenses   Float    @default(0)
+
+  // Non-operating items
+  capitalExpenses          Float    @default(0)
+  loanPayments             Float    @default(0)
+  taxPayments              Float    @default(0)
+  dividendPayments         Float    @default(0)
+  otherNonOperatingExpenses Float   @default(0)
+
+  // Cash flow metrics
+  netCashFlow              Float    @default(0)
+  operatingCashFlow        Float    @default(0)
+  financingCashFlow        Float    @default(0)
+  investingCashFlow        Float    @default(0)
+
+  // Coverage ratios
+  cashCoverageRatio        Float    @default(0)
+  quickRatio               Float    @default(0)
+  currentRatio             Float    @default(0)
+  debtServiceCoverageRatio Float    @default(0)
+
+  // Working capital items
+  accountsReceivable       Float    @default(0)
+  accountsPayable          Float    @default(0)
+  inventory                Float    @default(0)
+  prepaidExpenses          Float    @default(0)
+  accruedLiabilities       Float    @default(0)
+
+  // Key metrics
+  daysOfCashOnHand         Float    @default(0)
+  burnRate                 Float    @default(0)
+  runwayMonths             Float    @default(0)
+
+  // Analysis flags
+  isActual                 Boolean  @default(false)
+  isForecast               Boolean  @default(true)
+  confidenceScore          Float    @default(0.5)
+
+  // Source tracking
+  dataSource               String   @default("manual")
+  importedFrom             String?
+
+  // Metadata
+  notes                    String?
+  adjustments              Json?
+  metadata                 Json?
+
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@unique([period])
+  @@index([period], name: "idx_enterprise_cash_coverage_period")
+  @@index([isActual, isForecast], name: "idx_enterprise_cash_coverage_type")
+  @@index([dataSource], name: "idx_enterprise_cash_coverage_source")
+}

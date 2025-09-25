@@ -41,6 +41,7 @@ const WorkingCapital = lazy(() => import('./pages/WorkingCapital'));
 const CashRunway = lazy(() => import('./pages/CashRunway'));
 const FundingCalculator = lazy(() => import('./pages/FundingCalculator'));
 const WorkingCapitalOptimizer = lazy(() => import('./pages/WorkingCapitalOptimizer'));
+const InteractiveFinancialModeling = lazy(() => import('./components/financial/InteractiveFinancialModeling'));
 
 // Operations Pages
 const Production = lazy(() => import('./pages/Production'));
@@ -473,6 +474,12 @@ function App() {
                   <Route path="/working-capital-optimizer" element={
                     <ProtectedRoute>
                       <WorkingCapitalOptimizer />
+                    </ProtectedRoute>
+                  } />
+
+                  <Route path="/financial-modeling" element={
+                    <ProtectedRoute>
+                      <InteractiveFinancialModeling />
                     </ProtectedRoute>
                   } />
 

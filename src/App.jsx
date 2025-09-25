@@ -1,58 +1,56 @@
-import { Suspense, lazy } from 'react'
-import { ClerkProvider } from '@clerk/clerk-react'
-import {
-  Navigate,
-  Outlet,
-  RouterProvider,
-  createBrowserRouter,
-  createMemoryRouter,
-  useLocation,
-  useNavigate
-} from 'react-router-dom'
+import { Suspense, createContext, lazy, useCallback, useContext, useMemo, useState } from 'react'
+import { Navigate, Outlet, RouterProvider, createBrowserRouter, createMemoryRouter, useLocation, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 
-import EnterpriseSidebar from './components/EnterpriseSidebar'
-import MockAuthProvider from './providers/MockAuthProvider.js'
-import ClerkAuthProvider from './providers/ClerkAuthProvider.jsx'
-import { useAuth } from './hooks/useAuth.js'
-import { logWarn } from './utils/logger.js'
-
-const env = import.meta.env ?? {}
-const clerkPublishableKey = env.VITE_CLERK_PUBLISHABLE_KEY || env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || env.PUBLIC_CLERK_PUBLISHABLE_KEY || ''
-const clerkFrontendApi = env.VITE_CLERK_FRONTEND_API || env.CLERK_FRONTEND_API
-const signInUrl = env.VITE_CLERK_SIGN_IN_URL || '/login'
-const signUpUrl = env.VITE_CLERK_SIGN_UP_URL || '/signup'
-const afterSignInUrl = env.VITE_CLERK_AFTER_SIGN_IN_URL || '/dashboard'
-const afterSignUpUrl = env.VITE_CLERK_AFTER_SIGN_UP_URL || '/dashboard'
-const shouldUseMockAuth = env.VITE_FORCE_MOCK_AUTH === 'true'
-const shouldUseClerk = Boolean(clerkPublishableKey) && !shouldUseMockAuth
-
-if (!shouldUseClerk && typeof window !== 'undefined') {
-  logWarn('[App] Clerk configuration missing; falling back to mock authentication')
-}
+import EnterpriseSidebar from './components/EnterpriseSidebar.jsx'
 
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'))
 const LoginPage = lazy(() => import('./pages/LoginPage.jsx'))
 const SignupPage = lazy(() => import('./pages/SignupPage.jsx'))
 const DashboardPage = lazy(() => import('./pages/Dashboard.jsx'))
-const WorkingCapitalPage = lazy(() => import('./pages/WorkingCapital.jsx'))
-const InventoryPage = lazy(() => import('./pages/Inventory.jsx'))
-const ProductionPage = lazy(() => import('./pages/Production.jsx'))
-const ForecastingPage = lazy(() => import('./pages/Forecasting.jsx'))
 const SettingsPage = lazy(() => import('./pages/Settings.jsx'))
 
-const RequireAuth = () => {
-  const { isAuthenticated, isLoaded } = useAuth()
-  const location = useLocation()
+const DEFAULT_USER = {
+  id: 'sentia-ops-demo',
+  email: 'ops@sentia-demo.com',
+  role: 'admin',
+  displayName: 'Sentia Operations'
+}
 
-  if (!isLoaded) {
-    return (
-      <div className='flex min-h-screen items-center justify-center bg-slate-950 text-slate-300'>
-        <span>Checking credentials...</span>
-      </div>
-    )
-  }
+const AuthContext = createContext({
+  user: DEFAULT_USER,
+  isAuthenticated: true,
+  login: () => undefined,
+  logout: () => undefined
+})
+
+export const useAuth = () => useContext(AuthContext)
+
+const MockAuthProvider = ({ children }) => {
+  const [user, setUser] = useState(DEFAULT_USER)
+
+  const login = useCallback((nextUser) => {
+    setUser(nextUser ?? DEFAULT_USER)
+  }, [])
+
+  const logout = useCallback(() => {
+    setUser(null)
+  }, [])
+
+  const value = useMemo(() => ({
+    user,
+    isAuthenticated: Boolean(user),
+    login,
+    logout
+  }), [login, logout, user])
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
+
+const RequireAuth = () => {
+  const { isAuthenticated } = useAuth()
+  const location = useLocation()
 
   if (!isAuthenticated) {
     return <Navigate to='/login' replace state={{ from: location }} />
@@ -63,7 +61,7 @@ const RequireAuth = () => {
 
 const PublicLayout = () => (
   <div className='min-h-screen bg-slate-950 text-slate-50'>
-    <Suspense fallback={<div className='flex min-h-screen items-center justify-center'>Loading�</div>}>
+    <Suspense fallback={<div className='flex min-h-screen items-center justify-center'>Loading.</div>}>
       <Outlet />
     </Suspense>
   </div>
@@ -74,14 +72,9 @@ const AppLayout = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const handleNavigate = (path) => {
+  const handleNavigate = useCallback((path) => {
     navigate(path)
-  }
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+  }, [navigate])
 
   return (
     <div className='flex min-h-screen bg-slate-950 text-slate-50'>
@@ -94,17 +87,17 @@ const AppLayout = () => {
             user ? (
               <button
                 type='button'
-                onClick={handleLogout}
+                onClick={logout}
                 className='w-full rounded border border-slate-700 px-3 py-2 text-left text-xs text-slate-300 transition hover:border-slate-500 hover:text-white'
               >
-                Sign out {user.displayName ? `(${user.displayName})` : ''}
+                {'Sign out ' + (user.displayName ? '(' + user.displayName + ')' : '')}
               </button>
             ) : null
           }
         />
       </div>
       <main className='flex-1'>
-        <Suspense fallback={<div className='flex min-h-screen items-center justify-center'>Loading dashboard�</div>}>
+        <Suspense fallback={<div className='flex min-h-screen items-center justify-center'>Loading dashboard.</div>}>
           <Outlet />
         </Suspense>
       </main>
@@ -138,9 +131,6 @@ const routes = [
         element: <AppLayout />,
         children: [
           { path: '/dashboard', element: <DashboardPage /> },
-          { path: '/working-capital', element: <WorkingCapitalPage /> },
-          { path: '/inventory', element: <InventoryPage /> },
-          { path: '/production', element: <ProductionPage /> },
           { path: '/settings', element: <SettingsPage /> },
           { path: '*', element: <Navigate to='/dashboard' replace /> }
         ]
@@ -150,43 +140,18 @@ const routes = [
 ]
 
 const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test'
+
 const router = isTestEnv
   ? createMemoryRouter(routes, { initialEntries: ['/dashboard'] })
   : createBrowserRouter(routes)
 
-const App = () => {
-  // If Clerk is configured, use ClerkProvider
-  if (shouldUseClerk) {
-    return (
-      <ClerkProvider
-        publishableKey={clerkPublishableKey}
-        frontendApi={clerkFrontendApi}
-        signInUrl={signInUrl}
-        signUpUrl={signUpUrl}
-        afterSignInUrl={afterSignInUrl}
-        afterSignUpUrl={afterSignUpUrl}
-        routerPush={(to) => router.navigate(to)}
-        routerReplace={(to) => router.navigate(to, { replace: true })}
-      >
-        <QueryClientProvider client={queryClient}>
-          <ClerkAuthProvider>
-            <RouterProvider router={router} />
-            <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
-          </ClerkAuthProvider>
-        </QueryClientProvider>
-      </ClerkProvider>
-    )
-  }
-
-  // Otherwise use MockAuthProvider
-  return (
-    <QueryClientProvider client={queryClient}>
-      <MockAuthProvider>
-        <RouterProvider router={router} />
-        <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
-      </MockAuthProvider>
-    </QueryClientProvider>
-  )
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <MockAuthProvider>
+      <RouterProvider router={router} />
+      <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
+    </MockAuthProvider>
+  </QueryClientProvider>
+)
 
 export default App

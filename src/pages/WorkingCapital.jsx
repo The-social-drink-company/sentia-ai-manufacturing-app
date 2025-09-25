@@ -1,5 +1,5 @@
-const WorkingCapitalPage = () => (
-  <div className="p-8 text-slate-400">Working capital analytics are only available in the enterprise build.</div>
-)
+﻿import WorkingCapitalModule from '../features/working-capital/WorkingCapitalPage.jsx'
+
+const WorkingCapitalPage = () => <WorkingCapitalModule />
 
 export default WorkingCapitalPage

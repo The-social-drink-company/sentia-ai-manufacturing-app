@@ -2,14 +2,20 @@ import { Suspense, createContext, lazy, useCallback, useContext, useMemo, useSta
 import { Navigate, Outlet, RouterProvider, createBrowserRouter, createMemoryRouter, useLocation, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
+import { ClerkProvider } from '@clerk/clerk-react'
 
 import EnterpriseSidebar from './components/EnterpriseSidebar.jsx'
+import ClerkAuthProvider from './providers/ClerkAuthProvider.jsx'
+import MockAuthProvider from './providers/MockAuthProvider.jsx'
 
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'))
 const LoginPage = lazy(() => import('./pages/LoginPage.jsx'))
 const SignupPage = lazy(() => import('./pages/SignupPage.jsx'))
 const DashboardPage = lazy(() => import('./pages/Dashboard.jsx'))
 const SettingsPage = lazy(() => import('./pages/Settings.jsx'))
+const WorkingCapitalPage = lazy(() => import('./pages/WorkingCapital.jsx'))
+const InventoryPage = lazy(() => import('./pages/Inventory.jsx'))
+const ProductionPage = lazy(() => import('./pages/Production.jsx'))
 
 const DEFAULT_USER = {
   id: 'sentia-ops-demo',
@@ -26,27 +32,6 @@ const AuthContext = createContext({
 })
 
 export const useAuth = () => useContext(AuthContext)
-
-const MockAuthProvider = ({ children }) => {
-  const [user, setUser] = useState(DEFAULT_USER)
-
-  const login = useCallback((nextUser) => {
-    setUser(nextUser ?? DEFAULT_USER)
-  }, [])
-
-  const logout = useCallback(() => {
-    setUser(null)
-  }, [])
-
-  const value = useMemo(() => ({
-    user,
-    isAuthenticated: Boolean(user),
-    login,
-    logout
-  }), [login, logout, user])
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
 
 const RequireAuth = () => {
   const { isAuthenticated } = useAuth()
@@ -132,6 +117,9 @@ const routes = [
         children: [
           { path: '/dashboard', element: <DashboardPage /> },
           { path: '/settings', element: <SettingsPage /> },
+          { path: '/working-capital', element: <WorkingCapitalPage /> },
+          { path: '/inventory', element: <InventoryPage /> },
+          { path: '/production', element: <ProductionPage /> },
           { path: '*', element: <Navigate to='/dashboard' replace /> }
         ]
       }
@@ -145,13 +133,51 @@ const router = isTestEnv
   ? createMemoryRouter(routes, { initialEntries: ['/dashboard'] })
   : createBrowserRouter(routes)
 
+// Clerk configuration
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const shouldUseClerk = Boolean(clerkPublishableKey)
+const clerkFrontendApi = import.meta.env.VITE_CLERK_FRONTEND_API
+const signInUrl = '/login'
+const signUpUrl = '/signup'
+const afterSignInUrl = '/dashboard'
+const afterSignUpUrl = '/dashboard'
+
+const AppContent = () => (
+  <>
+    <RouterProvider router={router} />
+    <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
+  </>
+)
+
+const AppProviders = ({ children }) => {
+  if (shouldUseClerk) {
+    return (
+      <ClerkProvider
+        publishableKey={clerkPublishableKey}
+        frontendApi={clerkFrontendApi}
+        signInUrl={signInUrl}
+        signUpUrl={signUpUrl}
+        afterSignInUrl={afterSignInUrl}
+        afterSignUpUrl={afterSignUpUrl}
+      >
+        <QueryClientProvider client={queryClient}>
+          <ClerkAuthProvider>{children}</ClerkAuthProvider>
+        </QueryClientProvider>
+      </ClerkProvider>
+    )
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MockAuthProvider>{children}</MockAuthProvider>
+    </QueryClientProvider>
+  )
+}
+
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <MockAuthProvider>
-      <RouterProvider router={router} />
-      <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
-    </MockAuthProvider>
-  </QueryClientProvider>
+  <AppProviders>
+    <AppContent />
+  </AppProviders>
 )
 
 export default App

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -19,7 +18,10 @@ import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
  * UserOnboarding Component - Guides new users through initial setup
  */
 const UserOnboarding = ({ onComplete }) => {
-  const { user, isLoaded } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [onboardingData, setOnboardingData] = useState({
@@ -48,7 +50,7 @@ const UserOnboarding = ({ onComplete }) => {
   const steps = [
     {
       id: 'welcome',
-      title: `Welcome to Sentia, ${user?.firstName || 'User'}!`,
+      title: `Welcome to Sentia, ${"User" || 'User'}!`,
       subtitle: "Let's get you set up in just a few steps",
       icon: RocketLaunchIcon,
       content: WelcomeStep

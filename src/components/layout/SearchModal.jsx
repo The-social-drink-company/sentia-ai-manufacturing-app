@@ -19,7 +19,6 @@ import {
   BanknotesIcon,
   DocumentArrowUpIcon
 } from '@heroicons/react/24/outline';
-import { useAuthRole } from '../../hooks/useAuthRole';
 import { cn } from '../../lib/utils';
 
 const SearchModal = ({ isOpen, onClose }) => {

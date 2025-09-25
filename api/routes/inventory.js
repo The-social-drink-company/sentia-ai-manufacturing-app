@@ -4,9 +4,9 @@ import prisma from '../../lib/prisma.js';
 import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import {
 import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
 
+import {
   inventoryLevelSchema,
   inventoryOptimizationSchema,
   inventoryMovementSchema,
@@ -653,7 +653,7 @@ router.get('/analytics',
       '90d': 90,
       '365d': 365
     };
-    const days = periodMap[period] 0;
+    const days = periodMap[period] || 0;
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     // Get inventory metrics
@@ -717,3 +717,4 @@ router.get('/analytics',
 );
 
 export default router;
+

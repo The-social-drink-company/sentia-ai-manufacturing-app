@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuthRole } from '../hooks/useAuthRole';
 import { logInfo, logWarn } from '../services/observability/structuredLogger.js';
 
 const NavigationContext = createContext(null);

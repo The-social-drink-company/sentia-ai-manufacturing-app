@@ -1,7 +1,5 @@
 import React from 'react'
 import { GlobeAltIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
-import { useAuthRole } from '../../../hooks/useAuthRole.jsx'
-
 const AdminWebhooks = () => {
   const { hasPermission } = useAuthRole()
 

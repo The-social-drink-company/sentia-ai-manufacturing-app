@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout';
-import { useAuth, useUser } from '@clerk/clerk-react';
 import {
   PlusIcon,
   Cog6ToothIcon,
@@ -124,7 +123,10 @@ const PRESET_LAYOUTS = {
 };
 
 const DashboardGrid = ({ userRole = 'viewer' }) => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [layouts, setLayouts] = useState({});
   const [activeWidgets, setActiveWidgets] = useState([]);
   const [showCatalog, setShowCatalog] = useState(false);

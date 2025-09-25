@@ -18,7 +18,6 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline';
 import { useNavigation } from './NavigationProvider';
-import { useAuthRole } from '../hooks/useAuthRole';
 import { useTheme } from '../theming';
 
 // Navigation configuration with role-based access

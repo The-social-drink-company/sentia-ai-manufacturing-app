@@ -2,7 +2,6 @@
 // Comprehensive button system with variants, sizes, and accessibility
 
 import React, { forwardRef } from 'react';
-import { cva } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
 // Button Variants using Class Variance Authority

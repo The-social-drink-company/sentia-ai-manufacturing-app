@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import { useAuth } from '../../auth/BulletproofClerkProvider';
 import { LoadingSpinner } from '../LoadingStates';
 
 const BulletproofAuthGuard = ({ children, 0

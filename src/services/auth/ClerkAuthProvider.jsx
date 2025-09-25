@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ClerkProvider as BaseClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from '@clerk/clerk-react';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 

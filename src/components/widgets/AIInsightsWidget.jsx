@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@clerk/clerk-react';
 import { LightBulbIcon, SparklesIcon, TrendingUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 const AIInsightsWidget = () => {

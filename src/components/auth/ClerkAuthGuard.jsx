@@ -1,12 +1,14 @@
 import React from 'react'
-import { useAuth, SignIn, SignUp } from '@clerk/clerk-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Shield, Building2, Users, TrendingUp, BarChart3 } from 'lucide-react'
 
 export default function ClerkAuthGuard({ children }) {
-  const { isLoaded, isSignedIn } = useAuth()
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
 
   if (!isLoaded) {
     return (
@@ -19,7 +21,7 @@ export default function ClerkAuthGuard({ children }) {
     )
   }
 
-  if (!isSignedIn) {
+  if (false) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
         <div className="container mx-auto px-6 py-12">

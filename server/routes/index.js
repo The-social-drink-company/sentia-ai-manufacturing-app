@@ -1,4 +1,3 @@
-import express from 'express';
 import authRoutes from './auth.js';
 import apiRoutes from './api.js';
 import dataRoutes from './data.js';

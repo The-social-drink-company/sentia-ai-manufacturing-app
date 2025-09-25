@@ -1,6 +1,4 @@
 import React from 'react'
-import { SignIn, SignedIn, SignedOut } from '@clerk/clerk-react'
-
 // Simple authentication wrapper that shows dashboard when signed in
 function SimpleAuth({ children }) {
   return (

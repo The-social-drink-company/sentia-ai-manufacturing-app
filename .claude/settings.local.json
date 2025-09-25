@@ -322,7 +322,12 @@
       "Bash(git clean:*)",
       "WebFetch(domain:dashboard.render.com)",
       "Bash(xargs ls:*)",
-      "Bash(sort:*)"
+      "Bash(sort:*)",
+      "Bash(rd:*)",
+      "Bash(git restore:*)",
+      "Bash(npx prisma:*)",
+      "Bash(del test-mcp-websocket.js)",
+      "Bash(npx speckit:*)"
     ],
     "deny": [],
     "ask": []

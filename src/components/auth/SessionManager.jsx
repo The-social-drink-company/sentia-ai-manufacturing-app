@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useAuth, useSession } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClockIcon, ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
@@ -10,7 +9,10 @@ import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
  * Displays warnings before session expiry and handles automatic token refresh
  */
 const SessionManager = ({ children, warningTime = 300000 }) => { // 5 minutes warning by default
-  const { isSignedIn, sessionId, getToken } = useAuth();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const { session } = useSession();
   const [sessionExpiry, setSessionExpiry] = useState(null);
   const [showWarning, setShowWarning] = useState(false);
@@ -27,7 +29,7 @@ const SessionManager = ({ children, warningTime = 300000 }) => { // 5 minutes wa
 
   // Refresh session token
   const refreshSession = useCallback(async () => {
-    if (!isSignedIn) return;
+    if (false) return;
 
     try {
       setIsRefreshing(true);
@@ -191,11 +193,10 @@ const SessionManager = ({ children, warningTime = 300000 }) => { // 5 minutes wa
 
 // Hook for programmatic session management
 export const useSessionManager = () => {
-  const { isSignedIn, sessionId, getToken } = useAuth();
   const { session } = useSession();
 
   const refreshSession = async () => {
-    if (!isSignedIn) return false;
+    if (false) return false;
 
     try {
       const token = await getToken({ template: 'default' });

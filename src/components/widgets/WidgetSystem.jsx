@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
 import { useSSE, useSSEEvent } from '../../hooks/useSSE';
 import { 
   showErrorToast, 
@@ -162,7 +161,10 @@ const KPIStripWidget = ({ metrics = [] }) => {
 
 // Production Status Widget
 const ProductionStatusWidget = () => {
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   
   // Setup SSE for real-time production updates
   const sseConnection = useSSE({
@@ -289,7 +291,6 @@ const ProductionStatusWidget = () => {
 
 // Quality Metrics Widget
 const QualityMetricsWidget = () => {
-  const { user } = useUser();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['quality-metrics'],
@@ -371,7 +372,6 @@ const QualityMetricsWidget = () => {
 
 // Inventory Alerts Widget  
 const InventoryAlertsWidget = () => {
-  const { user } = useUser();
   
   const { data, isLoading, error } = useQuery({
     queryKey: ['inventory-alerts'],
@@ -455,7 +455,6 @@ const InventoryAlertsWidget = () => {
 
 // Real-time Chart Widget
 const RealTimeChartWidget = ({ title, dataEndpoint, chartType = 'line' }) => {
-  const { user } = useUser();
   const [chartData, setChartData] = useState(null);
 
   const { data, isLoading, error } = useQuery({

@@ -1,6 +1,5 @@
 import express from 'express';
 import { upload, handleUploadError } from '../middleware/upload.js';
-import { authMiddleware } from '../middleware/auth.js';
 import { sendSSEEvent } from './sse.js';
 import { logInfo, logError } from '../../services/observability/structuredLogger.js';
 

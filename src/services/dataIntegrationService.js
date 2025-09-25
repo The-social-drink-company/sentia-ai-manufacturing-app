@@ -249,12 +249,55 @@ class DataIntegrationService {
    * Parse Excel content (requires xlsx library)
    */
   async parseExcel(content) {
-    // Dynamic import of xlsx library
-    const XLSX = await import('xlsx');
-    const workbook = XLSX.read(content, { type: 'array' });
-    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(firstSheet);
-    return data;
+    const { default: ExcelJS } = await import('exceljs');
+    const workbook = new ExcelJS.Workbook();
+    const buffer = content instanceof ArrayBuffer ? content : new Uint8Array(content);
+    await workbook.xlsx.load(buffer);
+    const worksheet = workbook.worksheets[0];
+    if (!worksheet) {
+      return [];
+    }
+
+    const toValue = (cellValue) => {
+      if (cellValue === null || cellValue === undefined) return '';
+      if (cellValue instanceof Date) return cellValue.toISOString();
+      if (typeof cellValue === 'object') {
+        if (cellValue.text) return cellValue.text;
+        if (Array.isArray(cellValue.richText)) {
+          return cellValue.richText.map(part => part.text).join('');
+        }
+        if (typeof cellValue.result !== 'undefined') return cellValue.result;
+        if (cellValue.hyperlink) return cellValue.text || cellValue.hyperlink;
+        if (typeof cellValue.value !== 'undefined') return cellValue.value;
+      }
+      return cellValue;
+    };
+
+    const headers = worksheet
+      .getRow(1)
+      .values.slice(1)
+      .map(header => {
+        const value = toValue(header);
+        return typeof value === 'string' ? value.trim() : value;
+      });
+
+    const rows = [];
+    worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const record = {};
+
+      headers.forEach((header, idx) => {
+        if (!header) return;
+        const raw = toValue(row.getCell(idx + 1).value);
+        record[header] = raw;
+      });
+
+      if (Object.values(record).some(value => value !== '' && value !== null && value !== undefined)) {
+        rows.push(record);
+      }
+    });
+
+    return rows;
   }
 
   /**

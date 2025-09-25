@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
-import { useUser } from '@clerk/clerk-react';
 import {
   HomeIcon,
   ChartBarIcon,
@@ -40,7 +39,10 @@ import {
 const EnterpriseNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState(['dashboard', 'analytics']);
@@ -877,7 +879,7 @@ const EnterpriseNavigation = () => {
                 <UserIcon className="w-4 h-4 text-gray-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">{user?.firstName || 'User'}</p>
+                <p className="text-sm font-medium text-gray-900">{"User" || 'User'}</p>
                 <p className="text-xs text-gray-500 capitalize">{userRole} Access</p>
               </div>
             </div>

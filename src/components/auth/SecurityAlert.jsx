@@ -1,5 +1,4 @@
 import React from 'react'
-import { useAuthContext } from '../../context/AuthContext.jsx'
 import { AlertTriangle, X, Shield, Clock, Key, LogOut } from 'lucide-react'
 
 export default function SecurityAlert() {

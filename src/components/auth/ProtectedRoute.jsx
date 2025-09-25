@@ -1,5 +1,4 @@
 import React from 'react'
-import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { AlertCircle, Shield, Clock, Loader2 } from 'lucide-react'
 
 export default function ProtectedRoute({ 

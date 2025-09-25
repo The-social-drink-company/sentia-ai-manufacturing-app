@@ -1,13 +1,10 @@
 import React from 'react'
-import { useAuth, useUser } from '@clerk/clerk-react'
 import { Link } from 'react-router-dom'
-import SignInButton from './auth/SignInButton'
-import SignUpButton from './auth/SignUpButton'
-import UserButton from './auth/UserButton'
-
 export default function Header() {
-  const { isSignedIn } = useAuth()
-  const { user } = useUser()
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const isAdmin = user?.publicMetadata?.role === 'admin'
   const hasFinancialAccess = () => {
     const userRole = user?.publicMetadata?.role

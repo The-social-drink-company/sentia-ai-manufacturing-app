@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth, useUser } from '@clerk/clerk-react';
 import {
   UserGroupIcon,
   EnvelopeIcon,
@@ -16,8 +15,10 @@ import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 
 const UserAdminPanel = () => {
-  const { getToken, isLoaded: authLoaded } = useAuth();
-  const { user, isLoaded: userLoaded } = useUser();
+  // Authentication removed
+  const user = { name: "User" };
+  const isSignedIn = true;
+  const isLoaded = true;
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
   const [invitations, setInvitations] = useState([]);

@@ -1,7 +1,5 @@
 import React from 'react'
 import { PuzzlePieceIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
-import { useAuthRole } from '../../../hooks/useAuthRole.jsx'
-
 const AdminIntegrations = () => {
   const { hasPermission } = useAuthRole()
 

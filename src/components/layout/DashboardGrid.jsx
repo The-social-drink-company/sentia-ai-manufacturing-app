@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
 import { useLayoutStore } from '../../stores/layoutStore'
-import { useAuthRole } from '../../hooks/useAuthRole'
 import { useFeatureFlags } from '../../hooks/useFeatureFlags'
 import { cn } from '../../lib/utils'
 import 'react-grid-layout/css/styles.css'

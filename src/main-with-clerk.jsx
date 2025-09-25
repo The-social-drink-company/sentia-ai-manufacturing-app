@@ -195,9 +195,9 @@ const initializeApp = async () => {
         root.render(
           <StrictMode>
             <ErrorBoundary>
-              <BulletproofClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+              
                 <App />
-              </BulletproofClerkProvider>
+              
             </ErrorBoundary>
           </StrictMode>
         );

@@ -1,345 +1,953 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
+import 'dotenv/config';
 import compression from 'compression';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
-import { createProxyMiddleware } from 'http-proxy-middleware';
-import { WebSocketServer } from 'ws';
-import { createServer } from 'http';
+import cors from 'cors';
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import Redis from 'ioredis';
+import path from 'node:path';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import process from 'node:process';
+import { performance } from 'node:perf_hooks';
+import { createServer } from 'node:http';
+import { fileURLToPath } from 'node:url';
+import { Server as SocketIOServer } from 'socket.io';
+import { PrismaClient } from '@prisma/client';
+import { ClerkExpressRequireAuth, ClerkExpressWithAuth } from '@clerk/express';
+import { createLogger, format, transports } from 'winston';
+
+const ENV = process.env.NODE_ENV ?? 'development';
+const isProduction = ENV === 'production';
+const isTest = ENV === 'test';
+const PORT = Number.parseInt(process.env.PORT ?? '', 10) || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const distDir = path.resolve(__dirname, 'dist');
 
-// Load environment variables
-if (!process.env.RENDER) {
-  dotenv.config();
-}
+const logger = createLogger({
+  level: process.env.LOG_LEVEL ?? (isProduction ? 'info' : 'debug'),
+  format: format.combine(
+    format.errors({ stack: true }),
+    format.timestamp(),
+    format.printf(({ level, message, timestamp, stack, ...meta }) => {
+      const base = { ...meta };
+      if (stack) {
+        base.stack = stack;
+      }
+      const metaString = Object.keys(base).length ? ` ${JSON.stringify(base)}` : '';
+      return `${timestamp} [${level}] ${message}${metaString}`;
+    })
+  ),
+  transports: [
+    new transports.Console({
+      handleExceptions: true,
+      handleRejections: true
+    })
+  ],
+  exitOnError: false
+});
 
-// Memory optimization: Set Node.js memory limits
-if (process.env.NODE_ENV === 'production') {
-  // Set max old space size to 128MB for Render's free tier
-  process.env.NODE_OPTIONS = '--max-old-space-size=128';
-}
+logger.info('Bootstrapping Sentia Manufacturing Dashboard server', {
+  env: ENV,
+  port: PORT
+});
 
-// Determine current environment
-const BRANCH = process.env.RENDER_GIT_BRANCH || process.env.BRANCH || process.env.NODE_ENV || null;
-const PORT = process.env.PORT || 5000;
-const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
+const prisma = new PrismaClient({
+  log: isProduction ? ['error'] : ['error', 'warn']
+});
 
-console.log('='.repeat(50));
-console.log('SENTIA MANUFACTURING - MEMORY OPTIMIZED');
-console.log('='.repeat(50));
-console.log(`Environment: ${BRANCH}`);
-console.log(`Port: ${PORT}`);
-console.log(`MCP Server: ${MCP_SERVER_URL}`);
-console.log(`Memory Limit: ${process.env.NODE_OPTIONS || null}`);
-console.log('='.repeat(50));
+const redisUrl =
+  process.env.REDIS_URL ||
+  process.env.REDIS_TLS_URL ||
+  process.env.KV_URL ||
+  'redis://127.0.0.1:6379';
 
-// Initialize Express app with memory optimizations
+const redis = new Redis(redisUrl, {
+  maxRetriesPerRequest: 2,
+  enableOfflineQueue: false
+});
+
+redis.on('connect', () => {
+  const display = redisUrl.includes('@') ? redisUrl.split('@').pop() : redisUrl;
+  logger.info('Connected to Redis', { url: display });
+});
+
+redis.on('error', (error) => {
+  logger.error('Redis connection error', { message: error.message });
+});
+
 const app = express();
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
 
-// Memory optimization: Enable compression early
-app.use(compression({
-  level: 6, // Balanced compression level
-  threshold: 1024, // Only compress files larger than 1KB
+const compressionOptions = {
+  level: 6,
+  threshold: 1024,
   filter: (req, res) => {
-    if (req.headers['x-no-compression']) {
+    if (req.path === '/api/dashboard/realtime') {
       return false;
     }
     return compression.filter(req, res);
   }
-}));
+};
+app.use(compression(compressionOptions));
 
-// SECURITY: Enhanced CSP configuration (memory optimized)
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: [
-        "'self'", 
-        "'unsafe-inline'", // Required for Tailwind CSS
-        "https://fonts.googleapis.com"
-      ],
-      scriptSrc: [
-        "'self'",
-        "'unsafe-eval'" // Temporary for React dev builds
-      ],
-      fontSrc: [
-        "'self'", 
-        "https://fonts.gstatic.com",
-        "data:"
-      ],
-      imgSrc: [
-        "'self'", 
-        "data:", 
-        "https:",
-        "blob:"
-      ],
-      connectSrc: [
-        "'self'"
-      ],
-      frameSrc: [
-        "'self'"
-      ],
-      objectSrc: ["'none'"],
-      baseUri: ["'self'"],
-      formAction: ["'self'"],
-      upgradeInsecureRequests: []
-    }
-  },
-  crossOriginEmbedderPolicy: false,
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  }
-}));
+const helmetOptions = {
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: isProduction
+    ? {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+          fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+          imgSrc: ["'self'", 'data:', 'blob:'],
+          connectSrc: ["'self'", 'https:', 'wss:', 'http:'],
+          frameAncestors: ["'self'"],
+          objectSrc: ["'none'"],
+          baseUri: ["'self'"]
+        }
+      }
+    : false
+};
+app.use(helmet(helmetOptions));
 
-// CORS configuration (memory optimized)
+const defaultOrigins = [
+  'https://deployrend.financeflo.ai',
+  'https://testingrend.financeflo.ai',
+  'https://prodrend.financeflo.ai',
+  'http://localhost:3000'
+];
+const configuredOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const allowedOrigins = new Set([...defaultOrigins, ...configuredOrigins]);
+
 const corsOptions = {
-  origin: [
-    'https://deployrend.financeflo.ai',
-    'https://testingrend.financeflo.ai',
-    'https://prodrend.financeflo.ai'
-  ],
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (!isProduction || allowedOrigins.has(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   optionsSuccessStatus: 200,
-  maxAge: 86400 // Cache preflight for 24 hours
+  maxAge: 86400,
+  exposedHeaders: ['X-Request-Id']
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
-// Memory optimization: Limit request size
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-// Health check endpoints (before authentication)
-app.get('/health', async (req, res) => {
-  const memUsage = process.memoryUsage();
-  const heapUsedMB = (memUsage.heapUsed / 1024 / 1024).toFixed(2);
-  const heapTotalMB = (memUsage.heapTotal / 1024 / 1024).toFixed(2);
-  const heapUsagePercent = ((memUsage.heapUsed / memUsage.heapTotal) * 100).toFixed(1);
-  const rssMB = (memUsage.rss / 1024 / 1024).toFixed(2);
+app.use((req, res, next) => {
+  const requestId = (req.headers['x-request-id'] || crypto.randomUUID()).toString();
+  const startTime = Date.now();
 
-  // Check MCP server health
-  let mcpStatus = 'disconnected';
-  let mcpDetails = null;
-  try {
-    const response = await fetch(`${MCP_SERVER_URL}/health`);
-    if (response.ok) {
-      mcpStatus = 'connected';
-      mcpDetails = await response.json();
-    }
-  } catch (error) {
-    mcpStatus = 'error';
-    console.error('MCP health check failed:', error.message);
-  }
+  res.setHeader('X-Request-Id', requestId);
 
-  // Determine status based on memory usage
-  let status = 'healthy';
-  if (heapUsagePercent > 85) {
-    status = 'degraded';
-  } else if (heapUsagePercent > 95) {
-    status = 'unhealthy';
-  }
+  req.requestId = requestId;
+  res.locals.requestId = requestId;
+  res.locals.logger = logger.child({ requestId });
 
-  res.json({
-    status,
-    timestamp: new Date().toISOString(),
-    environment: BRANCH,
-    memory: {
-      heapUsedMB,
-      heapTotalMB,
-      heapUsagePercent: `${heapUsagePercent}%`,
-      rssMB
-    },
-    uptime: process.uptime(),
-    mcpServer: {
-      url: MCP_SERVER_URL,
-      status: mcpStatus,
-      details: mcpDetails
-    }
+  res.on('finish', () => {
+    res.locals.logger.info('Request completed', {
+      method: req.method,
+      path: req.originalUrl,
+      statusCode: res.statusCode,
+      durationMs: Date.now() - startTime
+    });
   });
-});
 
-app.get('/health/live', (req, res) => {
-  res.json({ status: 'alive', timestamp: new Date().toISOString() });
-});
-
-app.get('/health/ready', (req, res) => {
-  res.json({ status: 'ready', timestamp: new Date().toISOString() });
-});
-
-// Memory optimization: Garbage collection endpoint (development only)
-if (BRANCH === 'development') {
-  app.post('/admin/gc', (req, res) => {
-    if (global.gc) {
-      global.gc();
-      res.json({ 
-        message: 'Garbage collection triggered',
-        memory: process.memoryUsage()
-      });
-    } else {
-      res.status(500).json({ 
-        error: 'Garbage collection not available. Start with --expose-gc flag.' 
+  res.on('close', () => {
+    if (!res.writableEnded) {
+      res.locals.logger.warn('Request connection closed prematurely', {
+        method: req.method,
+        path: req.originalUrl
       });
     }
   });
-}
 
-// MCP Server Proxy Configuration
-const mcpProxy = createProxyMiddleware({
-  target: MCP_SERVER_URL,
-  changeOrigin: true,
-  ws: true, // Enable WebSocket proxy
-  logLevel: 'info',
-  onProxyReq: (proxyReq, req, res) => {
-    // Add authentication headers if needed
-    if (process.env.MCP_JWT_SECRET) {
-      proxyReq.setHeader('Authorization', `Bearer ${process.env.MCP_JWT_SECRET}`);
-    }
-  },
-  onError: (err, req, res) => {
-    console.error('MCP Proxy Error:', err);
-    res.status(502).json({
-      error: 'MCP Server connection failed',
-      details: BRANCH === 'development' ? err.message : undefined
+  next();
+});
+
+app.use(ClerkExpressWithAuth());
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 100,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  handler: (req, res) => {
+    res.status(429).json({
+      error: 'Too many requests. Please try again shortly.',
+      requestId: res.locals.requestId
     });
   }
 });
+app.use('/api', apiLimiter);
 
-// MCP API Routes
-app.use('/api/mcp', mcpProxy);
-app.use('/mcp', mcpProxy);
+const ensureAuth = ClerkExpressRequireAuth();
 
-// API routes (minimal for memory optimization)
-app.get('/api/status', (req, res) => {
-  res.json({
-    service: 'Sentia Manufacturing Dashboard',
-    version: '1.0.0',
-    environment: BRANCH,
-    mcpServer: MCP_SERVER_URL,
-    mcpConnected: true,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// CRITICAL FIX: Serve static files BEFORE catch-all route
-const staticOptions = {
-  maxAge: BRANCH === 'production' ? '1y' : '1h',
-  etag: true,
-  lastModified: true,
-  setHeaders: (res, path) => {
-    // Cache static assets aggressively
-    if (path.endsWith('.js') || path.endsWith('.css')) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    }
+const asyncHandler = (handler) => async (req, res, next) => {
+  try {
+    await handler(req, res, next);
+  } catch (error) {
+    next(error);
   }
 };
 
-app.use(express.static(path.join(__dirname, 'dist'), staticOptions));
-
-// Catch-all handler for React Router (MUST BE LAST)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
-
-// Memory optimization: Error handling
-app.use((err, req, res, next) => {
-  console.error('Error:', err.message);
-  
-  // Don't leak error details in production
-  const isDev = BRANCH === 'development';
-  res.status(500).json({
-    error: isDev ? err.message : 'Internal server error',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Memory optimization: Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
-  process.exit(0);
-});
-
-// Memory monitoring (development only)
-if (BRANCH === 'development') {
-  setInterval(() => {
-    const memUsage = process.memoryUsage();
-    const heapUsedMB = (memUsage.heapUsed / 1024 / 1024).toFixed(2);
-    const heapUsagePercent = ((memUsage.heapUsed / memUsage.heapTotal) * 100).toFixed(1);
-    
-    if (heapUsagePercent > 80) {
-      console.warn(`⚠️  High memory usage: ${heapUsedMB}MB (${heapUsagePercent}%)`);
-    }
-  }, 30000); // Check every 30 seconds
+async function checkDatabaseHealth() {
+  const result = { status: 'unknown', latencyMs: null };
+  const start = performance.now();
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    result.status = 'up';
+  } catch (error) {
+    logger.error('Database health check failed', { message: error.message });
+    result.status = 'down';
+    result.error = error.message;
+  } finally {
+    result.latencyMs = Number((performance.now() - start).toFixed(2));
+  }
+  return result;
 }
 
-// Create HTTP server for WebSocket support
+async function checkCacheHealth() {
+  const result = { status: 'unknown', latencyMs: null };
+  const start = performance.now();
+  try {
+    const response = await redis.ping();
+    if (response === 'PONG') {
+      result.status = 'up';
+    } else {
+      result.status = 'degraded';
+      result.error = `Unexpected response: ${response}`;
+    }
+  } catch (error) {
+    logger.error('Cache health check failed', { message: error.message });
+    result.status = 'down';
+    result.error = error.message;
+  } finally {
+    result.latencyMs = Number((performance.now() - start).toFixed(2));
+  }
+  return result;
+}
+
+app.get(
+  '/api/health',
+  asyncHandler(async (req, res) => {
+    const [database, cacheState] = await Promise.all([checkDatabaseHealth(), checkCacheHealth()]);
+    res.status(200).json({
+      status: database.status === 'up' && cacheState.status === 'up' ? 'ok' : 'degraded',
+      environment: ENV,
+      timestamp: new Date().toISOString(),
+      database,
+      cache: cacheState,
+      version: process.env.VITE_APP_VERSION || process.env.APP_VERSION || 'unknown'
+    });
+  })
+);
+
+app.get(
+  '/api/monitoring/dashboard',
+  asyncHandler(async (req, res) => {
+    const [database, cacheState] = await Promise.all([checkDatabaseHealth(), checkCacheHealth()]);
+
+    // Get comprehensive monitoring data
+    const monitoring = {
+      timestamp: new Date().toISOString(),
+      environment: ENV,
+      service: {
+        name: 'Sentia Manufacturing Dashboard',
+        version: process.env.VITE_APP_VERSION || 'unknown',
+        uptime: {
+          seconds: Math.round(process.uptime()),
+          formatted: formatUptime(process.uptime())
+        }
+      },
+      system: {
+        memory: process.memoryUsage(),
+        cpu: process.cpuUsage(),
+        platform: process.platform,
+        nodeVersion: process.version
+      },
+      infrastructure: {
+        database,
+        cache: cacheState
+      },
+      metrics: {
+        requestsPerMinute: 0,
+        activeConnections: sseClients.size,
+        averageResponseTime: 0
+      }
+    };
+
+    // Try to get data pipeline metrics
+    try {
+      const { EnterpriseDataPipeline } = await import('./src/services/EnterpriseDataPipeline.js');
+      const pipeline = new EnterpriseDataPipeline();
+      const pipelineHealth = await pipeline.healthCheck();
+      monitoring.dataPipeline = pipelineHealth;
+      await pipeline.shutdown();
+    } catch (error) {
+      monitoring.dataPipeline = { status: 'unavailable', error: error.message };
+    }
+
+    res.status(200).json(monitoring);
+  })
+);
+
+function formatUptime(seconds) {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${days}d ${hours}h ${minutes}m`;
+}
+
+app.get(
+  '/api/health/enterprise',
+  asyncHandler(async (req, res) => {
+    const [database, cacheState] = await Promise.all([checkDatabaseHealth(), checkCacheHealth()]);
+    const memory = process.memoryUsage();
+
+    // Get data pipeline health if available
+    let dataPipeline = null;
+    try {
+      const { EnterpriseDataPipeline } = await import('./src/services/EnterpriseDataPipeline.js');
+      const pipeline = new EnterpriseDataPipeline();
+      dataPipeline = await pipeline.healthCheck();
+      await pipeline.shutdown();
+    } catch (error) {
+      dataPipeline = { status: 'unavailable', error: error.message };
+    }
+
+    res.status(200).json({
+      service: 'Sentia Manufacturing Dashboard',
+      environment: ENV,
+      uptimeSeconds: Math.round(process.uptime()),
+      memory: {
+        rss: memory.rss,
+        heapTotal: memory.heapTotal,
+        heapUsed: memory.heapUsed
+      },
+      database,
+      cache: cacheState,
+      dataPipeline,
+      timestamp: new Date().toISOString()
+    });
+  })
+);
+
+const cache = {
+  async get(key) {
+    if (redis.status !== 'ready') {
+      return null;
+    }
+    const value = await redis.get(key);
+    return value ? JSON.parse(value) : null;
+  },
+  async set(key, value, ttlSeconds = 60) {
+    if (redis.status !== 'ready') {
+      return;
+    }
+    await redis.set(key, JSON.stringify(value), 'EX', ttlSeconds);
+  }
+};
+
+const sseClients = new Map();
+let sseClientId = 0;
+let io;
+
+const emitRealtime = (event, payload) => {
+  const envelope = {
+    event,
+    payload,
+    timestamp: new Date().toISOString()
+  };
+
+  for (const [clientId, client] of sseClients.entries()) {
+    if (client.res.writableEnded) {
+      sseClients.delete(clientId);
+      continue;
+    }
+    try {
+      client.res.write(`event: ${event}\ndata: ${JSON.stringify(envelope)}\n\n`);
+    } catch (error) {
+      client.logger?.warn('Failed to dispatch SSE payload', {
+        event,
+        message: error.message
+      });
+      sseClients.delete(clientId);
+    }
+  }
+
+  if (io) {
+    io.emit(event, envelope);
+  } else {
+    logger.warn('Socket server not initialised; skipped WebSocket broadcast', { event });
+  }
+};
+
+app.get('/api/dashboard/realtime', ensureAuth, (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+
+  if (typeof res.flushHeaders === 'function') {
+    res.flushHeaders();
+  }
+
+  const clientId = ++sseClientId;
+  const clientLogger = res.locals.logger.child({ clientId });
+
+  sseClients.set(clientId, { res, logger: clientLogger });
+  clientLogger.info('SSE client connected');
+
+  res.write(`event: connected\ndata: ${JSON.stringify({ requestId: res.locals.requestId })}\n\n`);
+
+  const heartbeat = setInterval(() => {
+    if (res.writableEnded) {
+      clearInterval(heartbeat);
+      return;
+    }
+    res.write('event: heartbeat\ndata: {}\n\n');
+  }, 25000);
+
+  req.on('close', () => {
+    clearInterval(heartbeat);
+    sseClients.delete(clientId);
+    clientLogger.info('SSE client disconnected');
+  });
+});
+
+const dashboardRouter = express.Router();
+
+dashboardRouter.use(ensureAuth);
+
+dashboardRouter.get(
+  '/summary',
+  asyncHandler(async (req, res) => {
+    const cacheKey = 'dashboard:summary';
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
+    const summary = {
+      generatedAt: new Date().toISOString(),
+      metrics: {
+        productionEfficiency: 0.93,
+        onTimeDeliveryRate: 0.97,
+        inventoryTurns: 8.2,
+        workingCapitalRatio: 1.4
+      }
+    };
+
+    await cache.set(cacheKey, summary, 60);
+    res.json(summary);
+  })
+);
+
+dashboardRouter.get(
+  '/alerts',
+  asyncHandler(async (req, res) => {
+    const alerts = (await cache.get('dashboard:alerts')) || [];
+    res.json(alerts);
+  })
+);
+
+dashboardRouter.post(
+  '/alerts',
+  asyncHandler(async (req, res) => {
+    const alert = {
+      ...req.body,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      createdBy: req.auth?.userId || 'system'
+    };
+
+    const alerts = (await cache.get('dashboard:alerts')) || [];
+    alerts.unshift(alert);
+    await cache.set('dashboard:alerts', alerts, 300);
+
+    emitRealtime('alert:new', alert);
+
+    res.status(201).json(alert);
+  })
+);
+
+app.use('/api/dashboard', dashboardRouter);
+
+const workingCapitalRouter = express.Router();
+
+workingCapitalRouter.use(ensureAuth);
+
+workingCapitalRouter.get(
+  '/',
+  asyncHandler(async (req, res) => {
+    const cacheKey = 'working-capital:overview';
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
+    const overview = {
+      generatedAt: new Date().toISOString(),
+      liquidity: 3250000,
+      payables: 1450000,
+      receivables: 2100000,
+      netWorkingCapital: 1800000
+    };
+
+    await cache.set(cacheKey, overview, 120);
+    res.json(overview);
+  })
+);
+
+app.use('/api/working-capital', workingCapitalRouter);
+
+const financialRouter = express.Router();
+
+financialRouter.use(ensureAuth);
+
+financialRouter.get(
+  '/reports',
+  asyncHandler(async (req, res) => {
+    res.json({
+      generatedAt: new Date().toISOString(),
+      period: req.query.period || 'MTD',
+      revenue: 12500000,
+      expenses: 8300000,
+      ebitda: 4200000
+    });
+  })
+);
+
+financialRouter.get(
+  '/forecasts',
+  asyncHandler(async (req, res) => {
+    res.json({
+      horizon: req.query.horizon || '90d',
+      updatedAt: new Date().toISOString(),
+      cashFlow: {
+        best: 5800000,
+        expected: 5100000,
+        worst: 4200000
+      }
+    });
+  })
+);
+
+app.use('/api/financial', financialRouter);
+
+const inventoryRouter = express.Router();
+
+inventoryRouter.use(ensureAuth);
+
+inventoryRouter.get(
+  '/levels',
+  asyncHandler(async (req, res) => {
+    const levels = {
+      generatedAt: new Date().toISOString(),
+      facilities: [
+        { location: 'Barnsley', utilization: 0.81 },
+        { location: 'Essen', utilization: 0.74 }
+      ]
+    };
+
+    res.json(levels);
+  })
+);
+
+inventoryRouter.post(
+  '/adjustment',
+  asyncHandler(async (req, res) => {
+    const adjustment = {
+      ...req.body,
+      id: crypto.randomUUID(),
+      approved: false,
+      submittedAt: new Date().toISOString(),
+      submittedBy: req.auth?.userId || 'system'
+    };
+
+    emitRealtime('inventory:change', adjustment);
+
+    res.status(202).json(adjustment);
+  })
+);
+
+app.use('/api/inventory', inventoryRouter);
+
+const productionRouter = express.Router();
+
+productionRouter.use(ensureAuth);
+
+productionRouter.get(
+  '/schedule',
+  asyncHandler(async (req, res) => {
+    const schedule = {
+      generatedAt: new Date().toISOString(),
+      shifts: [
+        { id: 'shift-A', status: 'running', outputTarget: 1200, outputActual: 1184 },
+        { id: 'shift-B', status: 'planned', outputTarget: 1300 }
+      ]
+    };
+    res.json(schedule);
+  })
+);
+
+productionRouter.post(
+  '/events',
+  asyncHandler(async (req, res) => {
+    const event = {
+      ...req.body,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      createdBy: req.auth?.userId || 'system'
+    };
+
+    emitRealtime('production:update', event);
+
+    res.status(201).json(event);
+  })
+);
+
+app.use('/api/production', productionRouter);
+
+const analyticsRouter = express.Router();
+
+analyticsRouter.use(ensureAuth);
+
+analyticsRouter.get(
+  '/insights',
+  asyncHandler(async (req, res) => {
+    res.json({
+      generatedAt: new Date().toISOString(),
+      insights: [
+        {
+          id: crypto.randomUUID(),
+          message: 'Predictive maintenance window approaching for line 4.',
+          severity: 'warning'
+        }
+      ]
+    });
+  })
+);
+
+analyticsRouter.post(
+  '/metrics',
+  asyncHandler(async (req, res) => {
+    const metric = {
+      ...req.body,
+      id: crypto.randomUUID(),
+      capturedAt: new Date().toISOString(),
+      capturedBy: req.auth?.userId || 'system'
+    };
+
+    emitRealtime('metric:update', metric);
+
+    res.status(201).json(metric);
+  })
+);
+
+app.use('/api/analytics', analyticsRouter);
+
+const aiRouter = express.Router();
+
+
+
+aiRouter.use(ensureAuth);
+
+aiRouter.post(
+  '/prompt',
+  asyncHandler(async (req, res) => {
+    const { prompt } = req.body;
+    if (!prompt) {
+      return res.status(400).json({
+        error: 'Prompt is required',
+        requestId: res.locals.requestId
+      });
+    }
+
+    const response = {
+      prompt,
+      response: 'AI response placeholder. Integrate with Anthropic/OpenAI services.',
+      generatedAt: new Date().toISOString()
+    };
+
+    emitRealtime('ai:response', response);
+
+    res.status(201).json(response);
+  })
+);
+
+aiRouter.get(
+  '/insights',
+  asyncHandler(async (req, res) => {
+    const insights = {
+      generatedAt: new Date().toISOString(),
+      items: [
+        {
+          id: crypto.randomUUID(),
+          summary: 'AI flagged supply chain risk due to shipping delays in APAC.',
+          priority: 'high'
+        }
+      ]
+    };
+
+    emitRealtime('ai:insight', insights);
+
+    res.json(insights);
+  })
+);
+
+app.use('/api/ai', aiRouter);
+
+const integrationStatusRouter = (serviceName) => {
+  const router = express.Router();
+  router.use(ensureAuth);
+  router.get(
+    '/status',
+    asyncHandler(async (req, res) => {
+      const status = {
+        service: serviceName,
+        lastSyncAt: new Date().toISOString(),
+        state: 'operational'
+      };
+
+      res.json(status);
+    })
+  );
+  return router;
+};
+
+app.use('/api/xero', integrationStatusRouter('xero'));
+app.use('/api/shopify', integrationStatusRouter('shopify'));
+app.use('/api/amazon', integrationStatusRouter('amazon'));
+app.use('/api/unleashed', integrationStatusRouter('unleashed'));
+
+const adminRouter = express.Router();
+
+adminRouter.use(ensureAuth);
+
+adminRouter.get(
+  '/environment',
+  asyncHandler(async (req, res) => {
+    res.json({
+      environment: ENV,
+      releaseId: process.env.RAILWAY_GIT_COMMIT || process.env.RENDER_GIT_COMMIT || null,
+      nodeVersion: process.version,
+      uptimeSeconds: Math.round(process.uptime())
+    });
+  })
+);
+
+adminRouter.post(
+  '/cache/flush',
+  asyncHandler(async (req, res) => {
+    if (redis.status !== 'ready') {
+      return res.status(503).json({
+        error: 'Cache is not connected',
+        requestId: res.locals.requestId
+      });
+    }
+
+    await redis.flushall('ASYNC');
+    res.status(202).json({ message: 'Cache flush scheduled' });
+  })
+);
+
+app.use('/api/admin', adminRouter);
+
 const server = createServer(app);
 
-// WebSocket server for real-time MCP features
-const wss = new WebSocketServer({
-  server,
-  path: '/ws/mcp'
+io = new SocketIOServer(server, {
+  cors: {
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+      if (!isProduction || allowedOrigins.has(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true
+  }
 });
 
-wss.on('connection', (ws) => {
-  console.log('New WebSocket connection for MCP features');
+io.on('connection', (socket) => {
+  const socketLogger = logger.child({ socketId: socket.id });
+  socketLogger.info('Socket connected', {
+    ip: socket.handshake.address
+  });
 
-  ws.on('message', async (message) => {
-    try {
-      const data = JSON.parse(message);
+  const forward = (eventName) => {
+    socket.on(eventName, (payload) => {
+      socketLogger.debug(`Received ${eventName}`, { payload });
+      emitRealtime(eventName, payload);
+    });
+  };
 
-      // Forward to MCP server
-      const response = await fetch(`${MCP_SERVER_URL}/api/${data.endpoint}`, {
-        method: data.method || 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(process.env.MCP_JWT_SECRET && {
-            'Authorization': `Bearer ${process.env.MCP_JWT_SECRET}`
-          })
-        },
-        body: JSON.stringify(data.payload)
-      });
+  forward('production:update');
+  forward('inventory:change');
+  forward('alert:new');
+  forward('metric:update');
+  forward('ai:response');
+  forward('ai:insight');
 
-      const result = await response.json();
-      ws.send(JSON.stringify({
-        type: 'response',
-        data: result,
-        requestId: data.requestId
-      }));
-    } catch (error) {
-      ws.send(JSON.stringify({
-        type: 'error',
-        error: error.message
-      }));
+  socket.on('disconnect', (reason) => {
+    socketLogger.info('Socket disconnected', { reason });
+  });
+});
+
+if (fs.existsSync(distDir)) {
+  app.use(
+    express.static(distDir, {
+      maxAge: isProduction ? '1y' : '1h',
+      index: false
+    })
+  );
+
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
     }
+
+    const indexPath = path.join(distDir, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    }
+
+    return next();
+  });
+} else {
+  logger.warn('Static dist folder not found. Skipping static file serving.', { distDir });
+}
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({
+      error: 'Not Found',
+      requestId: res.locals.requestId
+    });
+  }
+  return next();
+});
+
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  const statusCode = err.status || err.statusCode || 500;
+  const isServerError = statusCode >= 500;
+
+  res.locals.logger.error('Unhandled error', {
+    message: err.message,
+    stack: err.stack,
+    statusCode
   });
 
-  ws.on('close', () => {
-    console.log('WebSocket connection closed');
+  res.status(statusCode).json({
+    error: isServerError ? 'Internal Server Error' : err.message,
+    requestId: res.locals.requestId
   });
 });
 
-// Start server with WebSocket support
-server.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
-  console.log(`🌐 Environment: ${BRANCH}`);
-  console.log(`🤖 MCP Server: ${MCP_SERVER_URL}`);
-  console.log(`🔌 WebSocket: ws://localhost:${PORT}/ws/mcp`);
-  console.log(`💾 Memory monitoring: ${BRANCH === 'development' ? 'enabled' : 'disabled'}`);
+async function start() {
+  try {
+    await prisma.$connect();
+    logger.info('Connected to PostgreSQL via Prisma');
+  } catch (error) {
+    logger.error('Failed to connect to PostgreSQL', { message: error.message });
+    throw error;
+  }
 
-  // Initial memory report
-  const memUsage = process.memoryUsage();
-  console.log(`📊 Initial memory: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)}MB`);
+  if (redis.status === 'end' || redis.status === 'wait') {
+    redis.connect().catch((error) => {
+      logger.error('Redis connection failure', { message: error.message });
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    server.once('error', (error) => {
+      logger.error('HTTP server failed to start', { message: error.message });
+      reject(error);
+    });
+
+    server.listen(PORT, () => {
+      logger.info(`Server listening on port ${PORT}`, { env: ENV });
+      resolve();
+    });
+  });
+}
+
+let serverStarted = false;
+
+if (!isTest) {
+  start()
+    .then(() => {
+      serverStarted = true;
+    })
+    .catch((error) => {
+      logger.error('Fatal startup error', { message: error.message });
+      process.exit(1);
+    });
+}
+
+async function shutdown(signal) {
+  logger.info('Received shutdown signal', { signal });
+
+  if (serverStarted) {
+    await new Promise((resolve) => {
+      server.close(() => {
+        logger.info('HTTP server closed');
+        resolve();
+      });
+    });
+  }
+
+  io?.close();
+
+  await prisma
+    .$disconnect()
+    .then(() => logger.info('Disconnected Prisma client'))
+    .catch((error) => logger.error('Error disconnecting Prisma', { message: error.message }));
+
+  if (redis.status === 'ready') {
+    await redis
+      .quit()
+      .then(() => logger.info('Redis connection closed'))
+      .catch((error) => logger.error('Error closing Redis connection', { message: error.message }));
+  }
+
+  process.exit(0);
+}
+
+['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
+  process.on(signal, () => {
+    shutdown(signal).catch((error) => {
+      logger.error('Error during shutdown', { message: error.message });
+      process.exit(1);
+    });
+  });
 });
 
-export default app;
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught exception', { message: error.message, stack: error.stack });
+});
+
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled rejection', { reason });
+});
+
+export { app, server, io, prisma, redis, emitRealtime };
+

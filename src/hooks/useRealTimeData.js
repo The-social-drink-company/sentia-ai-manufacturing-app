@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import io from 'socket.io-client';
-import { useAuth } from '@clerk/clerk-react';
 import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 

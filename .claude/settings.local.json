@@ -328,7 +328,8 @@
       "Bash(npx prisma:*)",
       "Bash(del test-mcp-websocket.js)",
       "Bash(npx speckit:*)",
-      "WebFetch(domain:render.com)"
+      "WebFetch(domain:render.com)",
+      "Bash(del \"C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\.git\\index.lock\")"
     ],
     "deny": [],
     "ask": []

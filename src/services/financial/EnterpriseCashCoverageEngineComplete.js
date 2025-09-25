@@ -574,14 +574,14 @@ export class EnterpriseCashCoverageEngine {
       }
     }
 
-    // Query real benchmark data
-    const benchmarks = await this.prisma.industryBenchmark.findFirst({
+    // Query real benchmark data (disabled for client-side)
+    const benchmarks = null; /* await this.prisma.industryBenchmark.findFirst({
       where: {
         industry,
         revenueRange: this.getRevenueRange(revenue),
         companyType: isListed ? 'PUBLIC' : 'PRIVATE'
       }
-    });
+    }); */
 
     if (!benchmarks) {
       // Use default spirits industry benchmarks
@@ -703,9 +703,9 @@ export class EnterpriseCashCoverageEngine {
 
   async fetchBankingData() {
     try {
-      const bankData = await this.prisma.bankAccount.findMany({
+      const bankData = []; /* await this.prisma.bankAccount.findMany({
         where: { isActive: true }
-      });
+      }); */
 
       return {
         totalBalance: bankData.reduce((sum, acc) => sum + acc.balance, 0),

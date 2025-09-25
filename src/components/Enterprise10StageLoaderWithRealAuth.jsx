@@ -233,10 +233,10 @@ const Enterprise10StageLoaderWithRealAuth = ({
 
         // Preload critical components
         const components = [
-          () => import('../dashboard/DashboardGrid'),
-          () => import('../widgets/KPIWidget'),
-          () => import('../WorkingCapital'),
-          () => import('../analytics/WhatIfAnalysis')
+          () => import('./dashboard/DashboardGrid'),
+          () => import('./widgets/KPIWidget'),
+          () => import('./WorkingCapital'),
+          () => import('./analytics/WhatIfAnalysis')
         ];
 
         try {

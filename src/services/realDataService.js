@@ -26,8 +26,6 @@ if (import.meta.env.PROD && !API_BASE) {
   throw new Error('CRITICAL: API_BASE_URL not configured. Real data service requires API endpoint.');
 }
 
-// Remove redundant logging wrappers - use imports directly
-
 // Request configuration with authentication
 const getRequestConfig = async () => {
   try {
@@ -714,3 +712,4 @@ export const connectToRealTimeData = (onUpdate) => {
 
 // Export service instance
 export default realDataService;
+

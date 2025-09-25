@@ -225,32 +225,6 @@ export default function LandingPage() {
   const alertCount = overview?.summary?.alerts
   const forecastConfidence = formatConfidence(forecast?.confidence)
 
-  const throughputDisplay = formatPercentage(productionMetrics?.throughput)
-
-  const databaseStatus = systemStatus?.database?.status === 'healthy'
-    ? 'healthy'
-    : systemStatusError
-      ? 'error'
-      : systemStatusLoading
-        ? 'checking'
-        : systemStatus?.database?.status || 'offline'
-
-  const apiStatus = overviewError
-    ? 'error'
-    : overviewStatus === 'pending'
-      ? 'checking'
-      : overview
-        ? 'healthy'
-        : 'offline'
-
-  const aiStatus = forecastError
-    ? 'error'
-    : forecastStatus === 'pending'
-      ? 'checking'
-      : forecast
-        ? 'healthy'
-        : 'offline'
-
   const summaryCards = useMemo(
     () => [
       {
@@ -281,7 +255,7 @@ export default function LandingPage() {
         id: 'inventory-levels',
         label: 'Inventory Units On Hand',
         value: typeof totalInventoryQuantity === 'number' ? formatNumber(totalInventoryQuantity) : null,
-        helper: SKUs tracked: ,
+        helper: `SKUs tracked: ${inventoryLevels.length}`,
         icon: CubeIcon
       },
       {
@@ -291,7 +265,7 @@ export default function LandingPage() {
           typeof forecast?.demand === 'number'
             ? formatNumber(forecast.demand)
             : null,
-        helper: forecastConfidence ? Confidence  : null,
+        helper: forecastConfidence ? `Confidence ${forecastConfidence}` : null,
         icon: ChartBarIcon
       },
       {
@@ -307,7 +281,7 @@ export default function LandingPage() {
         icon: UserGroupIcon
       }
     ],
-    [alertCount, forecast, forecastConfidence, inventoryLevels.length, productionHealth, productionJobs, productionJobsStatus, productionMetrics, throughputDisplay, totalInventoryQuantity, workingCapitalScore, runwayDays]
+    [alertCount, forecast, forecastConfidence, inventoryLevels.length, productionHealth, productionJobs, productionMetrics, totalInventoryQuantity, workingCapitalScore, runwayDays]
   )
 
   const systemIndicators = useMemo(() => {
@@ -361,7 +335,7 @@ export default function LandingPage() {
 
   const reportEntries = useMemo(() => {
     return reports.map((report, index) => ({
-      id: report.id || report.slug || report.name || eport-,
+      id: report.id || report.slug || report.name || `report-${index}`,
       generatedAt: report.generatedAt || report.generated_at || report.createdAt || null
     }))
   }, [reports])
@@ -518,9 +492,9 @@ export default function LandingPage() {
                     <p className='text-slate-500'>No inventory records returned.</p>
                   ) : (
                     inventoryLevels.map((level, index) => (
-                      <div key={level.sku || level.id || inventory-} className='flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2'>
-                        <span className='font-medium text-slate-800'>{level.sku || level.id || 'SKU'}</span>
-                        <span className='font-semibold text-slate-900'>
+                      <div key={level.sku || level.id || `inventory-${index}`} className='flex items-center justify-between rounded-lg border border-slate-800/80 px-3 py-2'>
+                        <span className='font-medium text-slate-200'>{level.sku || level.id || 'SKU'}</span>
+                        <span className='font-semibold text-white'>
                           {typeof level.quantity === 'number' ? formatNumber(level.quantity) : 'N/A'}
                         </span>
                       </div>
@@ -572,7 +546,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className='text-xs uppercase tracking-wider text-slate-500'>Confidence</p>
-                    <p className='text-2xl font-semibold text-slate-900'>
+                    <p className='text-2xl font-semibold text-white'>
                       {forecastConfidence || 'Not available'}
                     </p>
                   </div>
@@ -622,3 +596,4 @@ export default function LandingPage() {
     </div>
   )
 }
+

@@ -1,5 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+// import forms from '@tailwindcss/forms';
+// import typography from '@tailwindcss/typography';
+// import aspectRatio from '@tailwindcss/aspect-ratio';
+// import * as themeConfig from './src/config/theme.config.js';
+// const themes = themeConfig.themes ?? themeConfig.default ?? themeConfig;
+
+// Extract colors from our theme configuration
+// const quantumDark = themes.quantumDark.colors;
+// const crystalClear = themes.crystalClear.colors;
+
+export default {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
     "./src/components/**/*.{js,jsx,ts,tsx}",
@@ -266,8 +276,8 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/aspect-ratio'),
+    // forms,
+    // typography,
+    // aspectRatio,
   ],
 }

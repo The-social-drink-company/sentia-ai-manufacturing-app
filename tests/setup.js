@@ -1,4 +1,4 @@
-﻿import '@testing-library/jest-dom'
+import '@testing-library/jest-dom'
 import React from 'react'
 import { vi, beforeEach } from 'vitest'
 
@@ -22,7 +22,6 @@ vi.mock('@clerk/clerk-react', () => ({
   })),
   useAuth: vi.fn(() => ({
     isSignedIn: true,
-    isLoaded: true,
     getToken: vi.fn(() => Promise.resolve('test-token')),
     signOut: vi.fn()
   })),

@@ -1,15 +1,21 @@
-﻿import { createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 
-const DEFAULT_AUTH_CONTEXT = {
+// Unified AuthContext that works with both Clerk and Mock providers
+export const AuthContext = createContext({
   user: null,
   isAuthenticated: false,
   isLoaded: false,
-  login: () => {},
+  login: async () => {},
   logout: async () => {},
   getToken: async () => null,
-  authSource: 'unknown'
+  authSource: 'mock', // 'clerk' or 'mock'
+  role: 'guest'
+})
+
+export const useAuth = () => {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider (ClerkAuthProvider or MockAuthProvider)')
+  }
+  return context
 }
-
-export const AuthContext = createContext(DEFAULT_AUTH_CONTEXT)
-
-export const useAuth = () => useContext(AuthContext)

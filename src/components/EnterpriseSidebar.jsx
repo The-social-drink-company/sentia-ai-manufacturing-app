@@ -1,80 +1,57 @@
-const NAV_SECTIONS = [
-  {
-    id: 'overview',
-    label: 'Overview',
-    links: [
-      { label: 'Executive Dashboard', path: '/dashboard' }
-    ]
-  },
-  {
-    id: 'operations',
-    label: 'Operations',
-    links: [
-      { label: 'Working Capital', path: '/working-capital' },
-      { label: 'Inventory', path: '/inventory' },
-      { label: 'Production', path: '/production' }
-    ]
-  },
-  {
-    id: 'admin',
-    label: 'Administration',
-    links: [
-      { label: 'Settings', path: '/settings', roles: ['admin', 'superadmin'] }
-    ]
-  }
+import PropTypes from 'prop-types'
+
+const NAV_ITEMS = [
+  { id: 'dashboard', label: 'Dashboard', href: '/dashboard' },
+  { id: 'settings', label: 'Settings', href: '/settings' }
 ]
-
-const userCanAccess = (link, role) => {
-  if (!link.roles || link.roles.length === 0) {
-    return true
-  }
-
-  return link.roles.includes(role)
-}
 
 const EnterpriseSidebar = ({ currentPath, userRole, onNavigate, footerContent }) => {
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-slate-800 bg-slate-900 text-slate-200">
-      <div className="border-b border-slate-800 p-6">
-        <h2 className="text-lg font-semibold">Sentia Console</h2>
-        <p className="mt-1 text-sm text-slate-400">Operational intelligence</p>
+    <aside className='flex h-screen w-64 flex-col border-r border-slate-800 bg-slate-900/80 backdrop-blur'>
+      <div className='px-6 py-5'>
+        <div className='text-sm font-semibold uppercase tracking-wide text-slate-400'>Sentia Manufacturing</div>
+        <div className='mt-2 text-xl font-bold text-white'>Operations Hub</div>
+        <div className='mt-1 text-xs text-slate-500'>Signed in as {userRole || 'guest'}</div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto p-4">
-        <ul className="space-y-6">
-          {NAV_SECTIONS.map((section) => (
-            <li key={section.id}>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                {section.label}
-              </p>
-              <ul className="space-y-1">
-                {section.links
-                  .filter((link) => userCanAccess(link, userRole))
-                  .map((link) => {
-                    const isActive = currentPath.startsWith(link.path)
+      <nav className='flex-1 space-y-1 px-3'>
+        {NAV_ITEMS.map((item) => {
+          const isActive = currentPath?.startsWith(item.href)
+          const baseClasses = 'w-full rounded-lg px-3 py-2 text-left text-sm transition'
+          const stateClasses = isActive ? ' bg-slate-800 text-white' : ' text-slate-300 hover:bg-slate-800 hover:text-white'
 
-                    return (
-                      <li key={link.path}>
-                        <button
-                          type="button"
-                          onClick={() => onNavigate(link.path)}
-                          className={`flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm transition hover:bg-slate-800 ${isActive ? 'bg-slate-800 text-white' : 'text-slate-300'}`}
-                        >
-                          <span>{link.label}</span>
-                          {isActive ? <span className="text-xs text-cyan-400">Live</span> : null}
-                        </button>
-                      </li>
-                    )
-                  })}
-              </ul>
-            </li>
-          ))}
-        </ul>
+          return (
+            <button
+              key={item.id}
+              type='button'
+              onClick={() => onNavigate?.(item.href)}
+              className={baseClasses + stateClasses}
+            >
+              {item.label}
+            </button>
+          )
+        })}
       </nav>
 
-      {footerContent ? <div className="border-t border-slate-800 p-4">{footerContent}</div> : null}
+      {footerContent ? (
+        <div className='border-t border-slate-800 px-3 py-4 text-xs text-slate-400'>{footerContent}</div>
+      ) : null}
     </aside>
   )
+}
+
+EnterpriseSidebar.propTypes = {
+  currentPath: PropTypes.string,
+  userRole: PropTypes.string,
+  onNavigate: PropTypes.func,
+  footerContent: PropTypes.node
+}
+
+EnterpriseSidebar.defaultProps = {
+  currentPath: '/',
+  userRole: 'guest',
+  onNavigate: undefined,
+  footerContent: null
 }
 
 export default EnterpriseSidebar

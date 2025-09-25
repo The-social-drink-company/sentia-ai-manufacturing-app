@@ -1,5 +1,4 @@
-import { Suspense, lazy, useCallback } from 'react'
-import { ClerkProvider } from '@clerk/clerk-react'
+﻿import { Suspense, lazy } from 'react'
 import {
   Navigate,
   Outlet,
@@ -13,9 +12,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 
 import EnterpriseSidebar from './components/EnterpriseSidebar'
-import { ClerkAuthProvider } from './providers/ClerkAuthProvider.jsx'
+import MockAuthProvider from './providers/MockAuthProvider.jsx'
 import { useAuth } from './hooks/useAuth.js'
-import { logError, logWarn } from './utils/logger.js'
 
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'))
 const LoginPage = lazy(() => import('./pages/LoginPage.jsx'))
@@ -29,8 +27,8 @@ const RequireAuth = () => {
 
   if (!isLoaded) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-200">
-        Validating session…
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-300">
+        Checking credentials...
       </div>
     )
   }
@@ -55,16 +53,9 @@ const AppLayout = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const handleNavigate = useCallback(
-    (path) => {
-      navigate(path)
-    },
-    [navigate]
-  )
-
-  const handleSignOut = useCallback(async () => {
-    await logout()
-  }, [logout])
+  const handleNavigate = (path) => {
+    navigate(path)
+  }
 
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-50">
@@ -77,10 +68,10 @@ const AppLayout = () => {
             user ? (
               <button
                 type="button"
-                onClick={handleSignOut}
+                onClick={logout}
                 className="w-full rounded border border-slate-700 px-3 py-2 text-left text-xs text-slate-300 transition hover:border-slate-500 hover:text-white"
               >
-                {'Sign out ' + (user.displayName ? '(' + user.displayName + ')' : '')}
+                Sign out {user.displayName ? `(${user.displayName})` : ''}
               </button>
             ) : null
           }
@@ -130,59 +121,17 @@ const routes = [
 ]
 
 const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test'
-
 const router = isTestEnv
   ? createMemoryRouter(routes, { initialEntries: ['/dashboard'] })
   : createBrowserRouter(routes)
 
-const env = import.meta.env ?? {}
-const clerkPublishableKey =
-  env.VITE_CLERK_PUBLISHABLE_KEY ||
-  env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-  env.PUBLIC_CLERK_PUBLISHABLE_KEY ||
-  ''
-
-const clerkFrontendApi = env.VITE_CLERK_FRONTEND_API || env.CLERK_FRONTEND_API
-const signInUrl = env.VITE_CLERK_SIGN_IN_URL || '/login'
-const signUpUrl = env.VITE_CLERK_SIGN_UP_URL || '/signup'
-const afterSignInUrl = env.VITE_CLERK_AFTER_SIGN_IN_URL || '/dashboard'
-const afterSignUpUrl = env.VITE_CLERK_AFTER_SIGN_UP_URL || '/dashboard'
-
-if (!clerkPublishableKey) {
-  logWarn('[App] Missing Clerk publishable key; authentication will not initialise correctly')
-}
-
-const App = () => {
-  if (!clerkPublishableKey) {
-    logError('[App] Clerk publishable key is required to render authentication components')
-
-    return (
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
-      </QueryClientProvider>
-    )
-  }
-
-  return (
-    <ClerkProvider
-      publishableKey={clerkPublishableKey}
-      frontendApi={clerkFrontendApi}
-      signInUrl={signInUrl}
-      signUpUrl={signUpUrl}
-      afterSignInUrl={afterSignInUrl}
-      afterSignUpUrl={afterSignUpUrl}
-      routerPush={(to) => router.navigate(to)}
-      routerReplace={(to) => router.navigate(to, { replace: true })}
-    >
-      <QueryClientProvider client={queryClient}>
-        <ClerkAuthProvider>
-          <RouterProvider router={router} />
-          <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
-        </ClerkAuthProvider>
-      </QueryClientProvider>
-    </ClerkProvider>
-  )
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <MockAuthProvider>
+      <RouterProvider router={router} />
+      <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
+    </MockAuthProvider>
+  </QueryClientProvider>
+)
 
 export default App

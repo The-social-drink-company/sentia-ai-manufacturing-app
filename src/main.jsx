@@ -6,7 +6,13 @@ import AppSimple from './AppSimple.jsx'
 import { logInfo, logError, logDebug } from './utils/logger.js'
 
 const selectAppComponent = () => {
-  if (import.meta.env?.VITE_USE_SIMPLE_APP === 'true') {\r\n    logInfo('[main] Using simplified App shell')\r\n    return AppSimple\r\n  }\r\n\r\n  logInfo('[main] Using full App shell')\r\n  return AppFull
+  if (import.meta.env?.VITE_USE_SIMPLE_APP === 'true') {
+    logInfo('[main] Using simplified App shell')
+    return AppSimple
+  }
+
+  logInfo('[main] Using full App shell')
+  return AppFull
 }
 
 const mountApplication = () => {

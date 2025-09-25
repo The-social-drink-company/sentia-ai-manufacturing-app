@@ -59,6 +59,7 @@ Development practices and guidelines:
 - Git workflow
 - Testing strategies
 - Code review process
+- Repository reset log (2025-09-25)
 
 ### 🔧 `/environment-configuration/`
 Environment-specific settings:

@@ -13,6 +13,7 @@ The toolkit supports multiple AI coding assistants, allowing teams to use their 
 ## General practices
 
 - Any changes to `__init__.py` for the Specify CLI require a version rev in `pyproject.toml` and addition of entries to `CHANGELOG.md`.
+- Repository resets or fresh clones must be logged in context documentation and acknowledged in SpecKit deployment notes to keep agent guidance current.
 
 ## Adding New Agent Support
 

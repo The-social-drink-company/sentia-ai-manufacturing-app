@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth.js'
+import { useAuth as useClerkAuth } from '@clerk/clerk-react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import {
@@ -72,15 +72,23 @@ const formatMemory = (bytes) => {
 export default function LandingPage() {
   const navigate = useNavigate()
 
-  const { isAuthenticated } = useAuth()
+  // Try to use Clerk auth if available, otherwise assume not signed in
+  let isSignedIn = false
+  try {
+    const clerkAuth = useClerkAuth()
+    isSignedIn = clerkAuth.isSignedIn || false
+  } catch (error) {
+    // Clerk provider not available, continue without auth
+    console.log('Clerk auth not available, continuing in demo mode')
+  }
 
   const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isSignedIn) {
       navigate('/dashboard')
     }
-  }, [isAuthenticated, navigate])
+  }, [isSignedIn, navigate])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -99,40 +107,35 @@ export default function LandingPage() {
     queryKey: ['system-status'],
     queryFn: () => fetchApi('/api/status'),
     refetchInterval: 60_000,
-    retry: 1,
-    enabled: isAuthenticated
+    retry: 1
   })
 
   const { data: overview } = useQuery({
     queryKey: ['dashboard-overview'],
     queryFn: () => fetchApi('/api/dashboard/overview'),
     refetchInterval: 60_000,
-    retry: 1,
-    enabled: isAuthenticated
+    retry: 1
   })
 
   const { data: workingCapital } = useQuery({
     queryKey: ['working-capital-overview'],
     queryFn: () => fetchApi('/api/working-capital/overview'),
     refetchInterval: 120_000,
-    retry: 1,
-    enabled: isAuthenticated
+    retry: 1
   })
 
   const { data: productionMetrics } = useQuery({
     queryKey: ['production-metrics'],
     queryFn: () => fetchApi('/api/production/metrics'),
     refetchInterval: 60_000,
-    retry: 1,
-    enabled: isAuthenticated
+    retry: 1
   })
 
   const { data: productionJobs } = useQuery({
     queryKey: ['production-jobs'],
     queryFn: () => fetchApi('/api/production/jobs'),
     refetchInterval: 120_000,
-    retry: 1,
-    enabled: isAuthenticated
+    retry: 1
   })
 
   const { data: inventoryLevels = [] } = useQuery({
@@ -140,8 +143,7 @@ export default function LandingPage() {
     queryFn: () => fetchApi('/api/inventory/levels'),
     select: (data) => (Array.isArray(data?.levels) ? data.levels : data?.levels ? [data.levels] : []),
     refetchInterval: 120_000,
-    retry: 1,
-    enabled: isAuthenticated
+    retry: 1
   })
 
   const { data: forecast } = useQuery({
@@ -149,8 +151,7 @@ export default function LandingPage() {
     queryFn: () => fetchApi('/api/analytics/forecast'),
     select: (data) => data?.forecast ?? data,
     refetchInterval: 180_000,
-    retry: 1,
-    enabled: isAuthenticated
+    retry: 1
   })
 
   const { data: reports = [] } = useQuery({
@@ -158,8 +159,7 @@ export default function LandingPage() {
     queryFn: () => fetchApi('/api/analytics/reports'),
     select: (data) => (Array.isArray(data?.reports) ? data.reports : []),
     refetchInterval: 300_000,
-    retry: 1,
-    enabled: isAuthenticated
+    retry: 1
   })
 
   const totalInventoryQuantity = useMemo(() => {
@@ -341,7 +341,7 @@ export default function LandingPage() {
                     Environment
                   </span>
                   <span className='font-medium text-white'>
-                    {systemStatusLoading ? 'Loadingï¿½' : systemStatus?.environment || 'Unavailable'}
+                    {systemStatusLoading ? 'Loading�' : systemStatus?.environment || 'Unavailable'}
                   </span>
                 </div>
                 <div className='flex items-center justify-between'>
@@ -351,7 +351,7 @@ export default function LandingPage() {
                   </span>
                   <span className='font-medium text-white'>
                     {systemStatusLoading
-                      ? 'Loadingï¿½'
+                      ? 'Loading�'
                       : systemStatus?.database?.status || 'Unavailable'}
                   </span>
                 </div>
@@ -527,8 +527,4 @@ export default function LandingPage() {
     </div>
   )
 }
-
-
-
-
 

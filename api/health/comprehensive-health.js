@@ -88,8 +88,7 @@ router.get('/health', async (req, res) => {
   // MCP Server health check
   try {
     const mcpStart = Date.now();
-    const mcpBase = (process.env.MCP_SERVER_URL || (process.env.MCP_SERVER_PORT ? `http://localhost:${process.env.MCP_SERVER_PORT}` : 'http://localhost:3001')).replace(/\/$/, '');
-    const mcpResponse = await fetch(`${mcpBase}/health`, {
+    const mcpResponse = await fetch(`http://localhost:${process.env.MCP_PORT 0}/health`, {
       timeout: 5000
     }).catch(() => null);
 

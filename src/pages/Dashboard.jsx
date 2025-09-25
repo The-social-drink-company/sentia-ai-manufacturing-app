@@ -3,7 +3,7 @@ import { useSpring } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight, AlertTriangle, RefreshCcw } from 'lucide-react'
 import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import useExecutiveDashboard, { parseNumericValue } from '../hooks/useExecutiveDashboard.js'
-import { useAuth } from '../hooks/useAuth.js'
+import { useAuth } from '../App.jsx'
 
 const ACTION_BLUEPRINTS = [
   { id: 'run-forecast', title: 'Run Forecast', description: 'Generate demand forecast', action: '/forecasting' },
@@ -505,4 +505,3 @@ const DashboardPage = () => {
 }
 
 export default DashboardPage
-

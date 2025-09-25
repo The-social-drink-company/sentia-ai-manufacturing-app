@@ -13,7 +13,7 @@ import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
 class MCPServerClient extends EventEmitter {
   constructor() {
     super();
-    this.baseURL = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
+    this.baseURL = process.env.MCP_SERVER_URL || 'https://web-production-99691282.up.railway.app';
     this.serviceId = process.env.MCP_SERVER_SERVICE_ID || '99691282-de66-45b2-98cf-317083dd11ba';
     this.apiEndpoint = `${this.baseURL}/mcp`;
     this.healthEndpoint = `${this.baseURL}/health`;

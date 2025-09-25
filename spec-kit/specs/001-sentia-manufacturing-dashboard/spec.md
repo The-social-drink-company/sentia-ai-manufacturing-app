@@ -23,6 +23,7 @@
 6. Run Review Checklist
    → All requirements verified against implementation
 8. Return: SUCCESS (spec implemented and deployed)
+9. Repository baseline refreshed (2025-09-25 clone) to restore lint compliance
 ```
 
 ---

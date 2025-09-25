@@ -235,6 +235,11 @@ Authorization: Bearer <jwt_token>
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open Pull Request
 
+### 2025-09-25 Repository Reset
+- Fresh clone created to eliminate accumulated lint and formatting errors.
+- All context and SpecKit documentation synchronized with the new baseline.
+- Teams must rebase feature branches onto the refreshed repository before merging.
+
 ### Code Standards
 - ESLint configuration enforced
 - Prettier for code formatting

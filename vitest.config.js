@@ -8,6 +8,7 @@ export default defineConfig({
     exclude: ['legacy/**'],
     environment: 'jsdom',
     globals: true,
+    reporters: ['default', 'hanging-process'],
     maxWorkers: 1,
     maxConcurrency: 1,
     pool: 'threads',

@@ -27,6 +27,7 @@
 - **Authentication**: Clerk (production domain: clerk.financeflo.ai)
 - **AI**: MCP Server with Claude 3.5, GPT-4, Gemini Pro
 - **Deployment**: Railway (3 environments)
+- **Baseline Maintenance**: Repository re-cloned on 2025-09-25 to resolve systemic lint errors
 
 ### Project Structure
 ```

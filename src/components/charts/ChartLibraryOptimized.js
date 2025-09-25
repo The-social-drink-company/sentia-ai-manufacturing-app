@@ -1,198 +1,141 @@
+
 /**
- * Optimized Chart Library System
- * Implements dynamic imports and component-specific bundles
- * Target: 150kB bundle size reduction through chart splitting
+ * Optimized chart loader with viewport-aware hydration
  */
 
-import React, { lazy, Suspense, memo, useMemo } from 'react';
-import { useInView } from 'react-intersection-observer';
+import React, { lazy, memo, Suspense, useMemo } from 'react'
+import { useInView } from 'react-intersection-observer'
 
-// Chart loading states
 const ChartLoadingSpinner = ({ type = 'chart' }) => (
-  <div className="min-h-[200px] bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center justify-center animate-pulse">
-    <div className="text-center space-y-2">
-      <div className="w-8 h-8 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
-      <p className="text-xs text-gray-500 dark:text-gray-400">
-        Loading {type}...
-      </p>
+  <div className="flex min-h-[200px] items-center justify-center rounded-lg bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+    <div className="space-y-2 text-center">
+      <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
+      <p className="text-xs">Loading {type}?</p>
     </div>
   </div>
-);
+)
 
-// Dynamic chart imports - only load when needed
-const createLazyChart = (importFn, chartName) => {
-  const LazyChart = lazy(importFn);
-  
-  return memo(({ inView, ...props }) => {
+const createLazyChart = (importer, chartName) => {
+  const LazyChart = lazy(importer)
+
+  const WrappedChart = memo(({ inView, ...props }) => {
     if (!inView) {
-      return <ChartLoadingSpinner type={chartName} />;
+      return <ChartLoadingSpinner type={chartName} />
     }
 
     return (
-      <Suspense 0 />}>
+      <Suspense fallback={<ChartLoadingSpinner type={chartName} />}>
         <LazyChart {...props} />
       </Suspense>
-    );
-  });
-};
+    )
+  })
 
-// Line Chart Components
+  WrappedChart.displayName = `Lazy${chartName.replace(/\\\s+/g, '')}`
+  return WrappedChart
+}
+
 export const OptimizedLineChart = createLazyChart(
   () => import('./LineChart/OptimizedLineChart'),
   'Line Chart'
-);
-
+)
 export const OptimizedAreaChart = createLazyChart(
   () => import('./AreaChart/OptimizedAreaChart'),
   'Area Chart'
-);
-
-// Bar Chart Components
+)
 export const OptimizedBarChart = createLazyChart(
   () => import('./BarChart/OptimizedBarChart'),
   'Bar Chart'
-);
-
+)
 export const OptimizedHorizontalBarChart = createLazyChart(
   () => import('./BarChart/OptimizedHorizontalBarChart'),
   'Horizontal Bar Chart'
-);
-
-// Pie and Doughnut Charts
+)
 export const OptimizedPieChart = createLazyChart(
   () => import('./PieChart/OptimizedPieChart'),
   'Pie Chart'
-);
-
+)
 export const OptimizedDoughnutChart = createLazyChart(
   () => import('./DoughnutChart/OptimizedDoughnutChart'),
   'Doughnut Chart'
-);
-
-// Specialized Manufacturing Charts
+)
 export const OptimizedProductionChart = createLazyChart(
   () => import('./ProductionChart/OptimizedProductionChart'),
   'Production Chart'
-);
-
+)
 export const OptimizedQualityChart = createLazyChart(
   () => import('./QualityChart/OptimizedQualityChart'),
   'Quality Chart'
-);
-
+)
 export const OptimizedInventoryChart = createLazyChart(
   () => import('./InventoryChart/OptimizedInventoryChart'),
   'Inventory Chart'
-);
-
-// Real-time Charts
+)
 export const OptimizedRealTimeChart = createLazyChart(
   () => import('./RealTimeChart/OptimizedRealTimeChart'),
   'Real-time Chart'
-);
-
-// Advanced Charts
+)
 export const OptimizedScatterChart = createLazyChart(
   () => import('./ScatterChart/OptimizedScatterChart'),
   'Scatter Chart'
-);
-
+)
 export const OptimizedGaugeChart = createLazyChart(
   () => import('./GaugeChart/OptimizedGaugeChart'),
   'Gauge Chart'
-);
+)
 
-// Chart wrapper with viewport detection
-const ChartWrapper = memo(({ 
-  children, 
-  height = 300,
-  enableVirtualization = true,
-  rootMargin = '50px',
-  ...props 
-}) => {
-  const { ref, inView } = useInView({
-    threshold: 0,
-    rootMargin,
-    triggerOnce: false // Allow re-triggering for memory management
-  });
+const ChartWrapper = memo(({ children, height = 300, rootMargin = '50px', enableVirtualization = true, ...props }) => {
+  const { ref, inView } = useInView({ threshold: 0, rootMargin, triggerOnce: false })
+  const computedHeight = useMemo(() => Math.max(height, 200), [height])
 
-  const chartHeight = useMemo(() => Math.max(height, 200), [height]);
-
-  return (
-    <div 
-      ref={ref} 
-      style={{ minHeight: chartHeight }}
-      className="w-full"
-      {...props}
-    >
-      {React.cloneElement(children, { inView })}
-    </div>
-  );
-});
-
-ChartWrapper.displayName = 'ChartWrapper';
-
-// Dynamic chart selector with type-based loading
-export const DynamicChart = memo(({
-  type,
-  data,
-  options = {},
-  height = 300,
-  enableVirtualization = true,
-  ...props
-}) => {
-  const chartType = useMemo(() => {
-    // Normalize chart type
-    const normalizedType = type?.toLowerCase().replace(/[^a-z]/g, '');
-    
-    // Map to optimized components
-    const typeMap = {
-      'line': OptimizedLineChart,
-      'area': OptimizedAreaChart,
-      'bar': OptimizedBarChart,
-      'horizontalbar': OptimizedHorizontalBarChart,
-      'pie': OptimizedPieChart,
-      'doughnut': OptimizedDoughnutChart,
-      'production': OptimizedProductionChart,
-      'quality': OptimizedQualityChart,
-      'inventory': OptimizedInventoryChart,
-      'realtime': OptimizedRealTimeChart,
-      'scatter': OptimizedScatterChart,
-      'gauge': OptimizedGaugeChart
-    };
-
-    return typeMap[normalizedType] || OptimizedLineChart;
-  }, [type]);
-
-  const ChartComponent = chartType;
-
-  if (enableVirtualization) {
-    return (
-      <ChartWrapper height={height} enableVirtualization={enableVirtualization}>
-        <ChartComponent 
-          data={data}
-          options={options}
-          height={height}
-          {...props}
-        />
-      </ChartWrapper>
-    );
+  if (!enableVirtualization) {
+    return React.cloneElement(children, { inView: true })
   }
 
   return (
-    <ChartComponent 
-      data={data}
-      options={options}
-      height={height}
-      inView={true}
-      {...props}
-    />
-  );
-});
+    <div ref={ref} style={{ minHeight: computedHeight }} className="w-full" {...props}>
+      {React.cloneElement(children, { inView })}
+    </div>
+  )
+})
 
-DynamicChart.displayName = 'DynamicChart';
+ChartWrapper.displayName = 'ChartWrapper'
 
-// Chart registry for dynamic loading
+export const DynamicChart = memo(({ type, data, options = {}, height = 300, enableVirtualization = true, ...props }) => {
+  const chartComponent = useMemo(() => {
+    const normalized = type?.toLowerCase().replace(/[^a-z]/g, '')
+    const registry = {
+      line: OptimizedLineChart,
+      area: OptimizedAreaChart,
+      bar: OptimizedBarChart,
+      horizontalbar: OptimizedHorizontalBarChart,
+      pie: OptimizedPieChart,
+      doughnut: OptimizedDoughnutChart,
+      production: OptimizedProductionChart,
+      quality: OptimizedQualityChart,
+      inventory: OptimizedInventoryChart,
+      realtime: OptimizedRealTimeChart,
+      scatter: OptimizedScatterChart,
+      gauge: OptimizedGaugeChart
+    }
+
+    return registry[normalized] || OptimizedLineChart
+  }, [type])
+
+  const ChartComponent = chartComponent
+
+  if (!enableVirtualization) {
+    return <ChartComponent data={data} options={options} height={height} inView {...props} />
+  }
+
+  return (
+    <ChartWrapper height={height} enableVirtualization={enableVirtualization}>
+      <ChartComponent data={data} options={options} height={height} {...props} />
+    </ChartWrapper>
+  )
+})
+
+DynamicChart.displayName = 'DynamicChart'
+
 export const chartRegistry = {
   line: () => import('./LineChart/OptimizedLineChart'),
   area: () => import('./AreaChart/OptimizedAreaChart'),
@@ -206,24 +149,19 @@ export const chartRegistry = {
   realTime: () => import('./RealTimeChart/OptimizedRealTimeChart'),
   scatter: () => import('./ScatterChart/OptimizedScatterChart'),
   gauge: () => import('./GaugeChart/OptimizedGaugeChart')
-};
+}
 
-// Preload utility for chart types
 export const preloadChartType = (type) => {
-  const chartImport = chartRegistry[type];
-  if (chartImport) {
-    chartImport().catch(() => {
-      // Silently handle preload failures
-    });
+  const importer = chartRegistry[type]
+  if (importer) {
+    importer().catch(() => undefined)
   }
-};
+}
 
-// Batch preload for multiple chart types
 export const preloadChartTypes = (types) => {
-  types.forEach(type => preloadChartType(type));
-};
+  types?.forEach((type) => preloadChartType(type))
+}
 
-// Manufacturing-specific chart presets
 export const manufacturingChartPresets = {
   productionMetrics: {
     type: 'production',
@@ -231,13 +169,8 @@ export const manufacturingChartPresets = {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: 'Production Metrics'
-        }
+        legend: { position: 'top' },
+        title: { display: true, text: 'Production Metrics' }
       }
     }
   },
@@ -250,10 +183,7 @@ export const manufacturingChartPresets = {
         y: {
           beginAtZero: true,
           max: 100,
-          title: {
-            display: true,
-            text: 'Quality Score (%)'
-          }
+          title: { display: true, text: 'Quality Score (%)' }
         }
       }
     }
@@ -266,10 +196,7 @@ export const manufacturingChartPresets = {
       scales: {
         y: {
           beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Inventory Units'
-          }
+          title: { display: true, text: 'Inventory Units' }
         }
       }
     }
@@ -281,15 +208,12 @@ export const manufacturingChartPresets = {
       maintainAspectRatio: false,
       cutout: '75%',
       plugins: {
-        legend: {
-          display: false
-        }
+        legend: { display: false }
       }
     }
   }
-};
+}
 
-// Export optimized chart components
 export default {
   OptimizedLineChart,
   OptimizedAreaChart,
@@ -309,4 +233,4 @@ export default {
   preloadChartType,
   preloadChartTypes,
   manufacturingChartPresets
-};
+}

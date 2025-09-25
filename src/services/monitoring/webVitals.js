@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../lib/devLog.js';
+/**
  * Web Vitals Performance Monitoring
  * Tracks Core Web Vitals and custom performance metrics
  */

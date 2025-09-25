@@ -69,7 +69,7 @@ class AmazonSPAPIService {
         CreatedAfter: params.createdAfter || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
         CreatedBefore: params.createdBefore || new Date().toISOString(),
         OrderStatuses: params.orderStatuses || ['Shipped', 'Delivered'],
-        MaxResultsPerPage: params.maxResults 0
+        MaxResultsPerPage: params.maxResults ?? 100
       }
 
       const response = await this.client.get('/orders/v0/orders', {

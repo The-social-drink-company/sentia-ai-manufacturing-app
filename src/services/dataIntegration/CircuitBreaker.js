@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n// Circuit Breaker Pattern Implementation for API Resilience
+import { devLog } from '../lib/devLog.js';
+// Circuit Breaker Pattern Implementation for API Resilience
 // Prevents cascade failures and provides fallback mechanisms
 
 export class CircuitBreaker {

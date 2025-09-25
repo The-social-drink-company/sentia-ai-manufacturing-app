@@ -1,4 +1,6 @@
-import { devLog } from '../lib/devLog.js';\n// Authentication service for Vite/React app
+import { devLog } from '../lib/devLog.js';
+
+// Authentication service for Vite/React app
 // Using Clerk for authentication instead of NextAuth
 
 class AuthService {

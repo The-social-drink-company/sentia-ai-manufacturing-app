@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n
+import { devLog } from '../lib/devLog.js';
+
 // Enhanced Live Data Service - Enterprise Grade
 // NO MOCK DATA ALLOWED - LIVE DATA ONLY WITH INTELLIGENT FALLBACKS
 

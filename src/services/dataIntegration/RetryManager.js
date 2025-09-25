@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n// Advanced Retry Management System with Exponential Backoff
+import { devLog } from '../lib/devLog.js';
+// Advanced Retry Management System with Exponential Backoff
 // Handles transient failures with intelligent retry strategies
 
 export class RetryManager {

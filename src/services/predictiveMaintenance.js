@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\n/**
+import { devLog } from '../lib/devLog.js';
+/**
  * Predictive Maintenance Analytics Service - REAL DATA ONLY
  * 
  * Connects to actual IoT sensors, ML models, and maintenance databases

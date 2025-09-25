@@ -125,16 +125,16 @@ class ExportService {
   extractWorkingCapitalData(dashboardData) {
     return {
       components: {
-        receivables: dashboardData?.receivables 0,
-        inventory: dashboardData?.inventory 0,
-        payables: dashboardData?.payables 0
+        receivables: dashboardData?.receivables ?? 0,
+        inventory: dashboardData?.inventory ?? 0,
+        payables: dashboardData?.payables ?? 0
       },
       metrics: {
-        workingCapital: dashboardData?.workingCapital 0,
-        dso: dashboardData?.dso 0,
-        dio: dashboardData?.dio 0,
-        dpo: dashboardData?.dpo 0,
-        cashConversionCycle: dashboardData?.ccc 0
+        workingCapital: dashboardData?.workingCapital ?? 0,
+        dso: dashboardData?.dso ?? 0,
+        dio: dashboardData?.dio ?? 0,
+        dpo: dashboardData?.dpo ?? 0,
+        cashConversionCycle: dashboardData?.ccc ?? 0
       },
       projections: dashboardData?.workingCapitalProjections || []
     };
@@ -146,19 +146,19 @@ class ExportService {
   extractOperationsData(dashboardData) {
     return {
       production: {
-        currentCapacity: dashboardData?.productionCapacity 0,
-        efficiency: dashboardData?.productionEfficiency 0,
+        currentCapacity: dashboardData?.productionCapacity ?? 0,
+        efficiency: dashboardData?.productionEfficiency ?? 0,
         downtime: dashboardData?.downtime || 3.5,
-        qualityScore: dashboardData?.qualityScore 0.2
+        qualityScore: dashboardData?.qualityScore ?? 0.2
       },
       inventory: {
-        turnover: dashboardData?.inventoryTurnover 0.2,
+        turnover: dashboardData?.inventoryTurnover ?? 0.2,
         stockouts: dashboardData?.stockouts || 0.8,
         excessInventory: dashboardData?.excessInventory || 4.2
       },
       supply: {
-        supplierReliability: dashboardData?.supplierReliability 0.5,
-        leadTimes: dashboardData?.averageLeadTime 0,
+        supplierReliability: dashboardData?.supplierReliability ?? 0.5,
+        leadTimes: dashboardData?.averageLeadTime ?? 0,
         costVariance: dashboardData?.costVariance || 2.1
       }
     };
@@ -172,8 +172,8 @@ class ExportService {
       demandForecast: dashboardData?.demandForecast || [],
       accuracyMetrics: {
         mape: dashboardData?.forecastMAPE || 8.5,
-        rmse: dashboardData?.forecastRMSE 0,
-        confidence: dashboardData?.forecastConfidence 0
+        rmse: dashboardData?.forecastRMSE ?? 0,
+        confidence: dashboardData?.forecastConfidence ?? 0
       },
       seasonality: dashboardData?.seasonalPatterns || [],
       trends: dashboardData?.demandTrends || []

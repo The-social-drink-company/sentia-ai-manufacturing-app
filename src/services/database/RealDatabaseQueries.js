@@ -12,23 +12,23 @@
  * @module RealDatabaseQueries
  */
 
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client'; // Server-side only - commented for client build
 import { parse } from 'csv-parse/sync';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 
 // Initialize Prisma with detailed logging
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development'
-    ? ['query', 'error', 'warn', 'info']
-    : ['error', 'warn'],
-  errorFormat: 'pretty',
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL
-    }
-  }
-});
+// const prisma = new PrismaClient({
+//   log: process.env.NODE_ENV === 'development'
+//     ? ['query', 'error', 'warn', 'info']
+//     : ['error', 'warn'],
+//   errorFormat: 'pretty',
+//   datasources: {
+//     db: {
+//       url: process.env.DATABASE_URL
+//     }
+//   }
+const prisma = null; // Placeholder - Prisma only works server-side
 
 // Validate database connection - NO MOCK DATABASE ALLOWED
 const validateDatabaseConnection = async () => {

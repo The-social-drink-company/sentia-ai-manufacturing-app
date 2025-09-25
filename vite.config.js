@@ -92,22 +92,22 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: true,
       cssMinify: 'lightningcss',
 
-      // Minification settings
-      minify: mode === 'production' ? 'terser' : 'esbuild',
-      terserOptions: mode === 'production' ? {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
-          passes: 2
-        },
-        format: {
-          comments: false
-        },
-        mangle: {
-          safari10: true
-        }
-      } : undefined,
+      // Minification settings - DISABLED to fix initialization error
+      minify: false, // Temporarily disabled to fix blank screen issue
+      // terserOptions: mode === 'production' ? {
+      //   compress: {
+      //     drop_console: true,
+      //     drop_debugger: true,
+      //     pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+      //     passes: 2
+      //   },
+      //   format: {
+      //     comments: false
+      //   },
+      //   mangle: {
+      //     safari10: true
+      //   }
+      // } : undefined,
 
       // Rollup configuration
       rollupOptions: {
@@ -128,54 +128,22 @@ export default defineConfig(({ mode }) => {
             return `assets/[name].[hash][extname]`;
           },
 
-          // Manual chunks for better caching
-          manualChunks: (id) => {
-            // Node modules chunking
-            if (id.includes('node_modules')) {
-              // React core
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-                return 'react-core';
-              }
-              // UI libraries
-              if (id.includes('@heroicons') || id.includes('lucide-react') || id.includes('clsx') ||
-                  id.includes('tailwind-merge') || id.includes('framer-motion') ||
-                  id.includes('@react-spring')) {
-                return 'ui-libs';
-              }
-              // Chart libraries
-              if (id.includes('recharts') || id.includes('chart.js') || id.includes('react-chartjs') ||
-                  id.includes('d3') || id.includes('victory')) {
-                return 'charts';
-              }
-              // 3D libraries
-              if (id.includes('three') || id.includes('@react-three')) {
-                return 'three-d';
-              }
-              // Data management
-              if (id.includes('@tanstack/react-query') || id.includes('zustand') ||
-                  id.includes('axios') || id.includes('swr')) {
-                return 'data-libs';
-              }
-              // Form libraries
-              if (id.includes('react-hook-form') || id.includes('zod') ||
-                  id.includes('@hookform')) {
-                return 'forms';
-              }
-              // AI/ML libraries
-              if (id.includes('openai') || id.includes('@anthropic-ai') ||
-                  id.includes('@google/generative-ai') || id.includes('langchain')) {
-                return 'ai-ml';
-              }
-              // Utilities
-              if (id.includes('lodash') || id.includes('date-fns') || id.includes('uuid') ||
-                  id.includes('nanoid')) {
-                return 'utils';
-              }
-              // Everything else
-              return 'vendor';
-            }
-            // App code - let Vite handle automatically
-          },
+          // Manual chunks - SIMPLIFIED to fix initialization error
+          // Temporarily using Vite's default chunking to avoid circular dependencies
+          manualChunks: undefined,
+          // Original manual chunks commented out to fix blank screen issue
+          // manualChunks: (id) => {
+          //   if (id.includes('node_modules')) {
+          //     if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+          //       return 'react-core';
+          //     }
+          //     if (id.includes('@tanstack/react-query') || id.includes('zustand') ||
+          //         id.includes('axios') || id.includes('swr')) {
+          //       return 'data-libs'; // This chunk was causing initialization error
+          //     }
+          //     return 'vendor';
+          //   }
+          // },
 
           // Globals for external dependencies (if any)
           globals: {
@@ -312,15 +280,15 @@ export default defineConfig(({ mode }) => {
       stringify: false
     },
 
-    // ESBuild configuration
+    // ESBuild configuration - minification disabled to fix initialization error
     esbuild: {
       logLevel: 'info',
       logOverride: { 'this-is-undefined-in-esm': 'silent' },
       legalComments: 'none',
       treeShaking: true,
-      minifyIdentifiers: mode === 'production',
-      minifySyntax: mode === 'production',
-      minifyWhitespace: mode === 'production'
+      minifyIdentifiers: false, // Disabled to fix blank screen
+      minifySyntax: false, // Disabled to fix blank screen
+      minifyWhitespace: false // Disabled to fix blank screen
     },
 
     // App type

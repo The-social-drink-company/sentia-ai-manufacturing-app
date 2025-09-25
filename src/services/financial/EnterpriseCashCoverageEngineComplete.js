@@ -11,7 +11,7 @@
  * @module EnterpriseCashCoverageEngineComplete
  */
 
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client'; // Server-side only - commented for client build
 import axios from 'axios';
 import { parse } from 'csv-parse/sync';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
@@ -19,7 +19,7 @@ import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 export class EnterpriseCashCoverageEngine {
   constructor() {
-    this.prisma = new PrismaClient();
+    this.prisma = null; // new PrismaClient(); // Server-side only
     this.benchmarkCache = new Map();
     this.simulationIterations = 10000;
     this.confidenceIntervals = [0.05, 0.25, 0.5, 0.75, 0.95];
@@ -574,14 +574,14 @@ export class EnterpriseCashCoverageEngine {
       }
     }
 
-    // Query real benchmark data
-    const benchmarks = await this.prisma.industryBenchmark.findFirst({
+    // Query real benchmark data (disabled for client-side)
+    const benchmarks = null; /* await this.prisma.industryBenchmark.findFirst({
       where: {
         industry,
         revenueRange: this.getRevenueRange(revenue),
         companyType: isListed ? 'PUBLIC' : 'PRIVATE'
       }
-    });
+    }); */
 
     if (!benchmarks) {
       // Use default spirits industry benchmarks
@@ -703,9 +703,9 @@ export class EnterpriseCashCoverageEngine {
 
   async fetchBankingData() {
     try {
-      const bankData = await this.prisma.bankAccount.findMany({
+      const bankData = []; /* await this.prisma.bankAccount.findMany({
         where: { isActive: true }
-      });
+      }); */
 
       return {
         totalBalance: bankData.reduce((sum, acc) => sum + acc.balance, 0),

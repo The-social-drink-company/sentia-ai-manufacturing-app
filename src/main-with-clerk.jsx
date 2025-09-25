@@ -7,7 +7,7 @@
  * @version 3.0.0 - Full Authentication Implementation
  */
 
-import React, { StrictMode } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { logDebug, logInfo, logWarn, logError } from './utils/logger';

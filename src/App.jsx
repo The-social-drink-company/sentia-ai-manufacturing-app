@@ -10,9 +10,11 @@ import {
 } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
+import { ClerkProvider } from '@clerk/clerk-react'
 
 import EnterpriseSidebar from './components/EnterpriseSidebar.jsx'
-import MockAuthProvider from './providers/MockAuthProvider.js'
+import ClerkAuthProvider from './providers/ClerkAuthProvider.jsx'
+import MockAuthProvider from './providers/MockAuthProvider.jsx'
 import { useAuth } from './hooks/useAuth.js'
 
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'))
@@ -31,7 +33,7 @@ const RequireAuth = () => {
   if (!isLoaded) {
     return (
       <div className='flex min-h-screen items-center justify-center bg-slate-950 text-slate-300'>
-        <span>Checking credentials…</span>
+        <span>Checking credentialsï¿½</span>
       </div>
     )
   }
@@ -45,7 +47,7 @@ const RequireAuth = () => {
 
 const PublicLayout = () => (
   <div className='min-h-screen bg-slate-950 text-slate-50'>
-    <Suspense fallback={<div className='flex min-h-screen items-center justify-center'>Loading…</div>}>
+    <Suspense fallback={<div className='flex min-h-screen items-center justify-center'>Loadingï¿½</div>}>
       <Outlet />
     </Suspense>
   </div>
@@ -86,7 +88,7 @@ const AppLayout = () => {
         />
       </div>
       <main className='flex-1'>
-        <Suspense fallback={<div className='flex min-h-screen items-center justify-center'>Loading dashboard…</div>}>
+        <Suspense fallback={<div className='flex min-h-screen items-center justify-center'>Loading dashboardï¿½</div>}>
           <Outlet />
         </Suspense>
       </main>
@@ -136,13 +138,32 @@ const router = isTestEnv
   ? createMemoryRouter(routes, { initialEntries: ['/dashboard'] })
   : createBrowserRouter(routes)
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <MockAuthProvider>
-      <RouterProvider router={router} />
-      <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
-    </MockAuthProvider>
-  </QueryClientProvider>
-)
+// Clerk configuration
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const shouldUseClerk = Boolean(clerkPublishableKey)
+
+const App = () => {
+  if (shouldUseClerk) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <ClerkProvider publishableKey={clerkPublishableKey}>
+          <ClerkAuthProvider>
+            <RouterProvider router={router} />
+            <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
+          </ClerkAuthProvider>
+        </ClerkProvider>
+      </QueryClientProvider>
+    )
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MockAuthProvider>
+        <RouterProvider router={router} />
+        <Toaster position='top-right' toastOptions={{ duration: 3500 }} />
+      </MockAuthProvider>
+    </QueryClientProvider>
+  )
+}
 
 export default App

@@ -7,7 +7,7 @@ export default defineConfig({
     include: ['tests/unit/**/*.test.jsx'],
     exclude: ['legacy/**'],
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.cjs'],
+    setupFiles: ['./tests/setup.js'],
     globals: true,
     // Memory optimization settings
     maxWorkers: 1,
@@ -34,3 +34,4 @@ export default defineConfig({
     }
   }
 })
+

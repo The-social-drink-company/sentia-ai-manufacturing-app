@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+﻿import { createContext, useContext } from 'react'
 
 const DEFAULT_AUTH_CONTEXT = {
   user: null,

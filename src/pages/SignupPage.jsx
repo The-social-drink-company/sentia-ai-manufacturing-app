@@ -1,142 +1,154 @@
-﻿import React, { useEffect, useState, useRef } from 'react'
-import { SignUp, useAuth } from '@clerk/clerk-react'
-import { Link, Navigate, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, Navigate } from 'react-router-dom'
 
-const LoadingShell = ({ errorMessage, onRetry }) => (
-  <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
-    <div className="bg-slate-900/60 backdrop-blur-sm p-8 rounded-xl shadow-xl max-w-md w-full border border-slate-800">
-      <div className="text-center">
-        <div className="mb-4 flex items-center justify-center">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-400/40">
-            <span className="text-emerald-300 text-2xl font-semibold">S</span>
-          </div>
-        </div>
-        <h1 className="text-2xl font-semibold text-white mb-2">Sentia Manufacturing</h1>
-        <p className="text-sm text-slate-300">Preparing secure account creation…</p>
-        {errorMessage ? (
-          <div className="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 p-4 text-left text-sm text-rose-200">
-            <p>{errorMessage}</p>
-            <button
-              type="button"
-              onClick={onRetry}
-              className="mt-3 w-full rounded bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-500"
-            >
-              Retry
-            </button>
-          </div>
-        ) : null}
-      </div>
-    </div>
-  </div>
-)
+import { useAuth } from '../hooks/useAuth.js'
 
-const useClerkReadiness = ({ onTimeout }) => {
-  const [isReady, setIsReady] = useState(false)
-  const timeoutTriggeredRef = useRef(false)
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined
-    }
-
-    const checkReady = () => {
-      const clerk = window.Clerk
-      if (clerk && (clerk.isReady?.() || clerk.loaded)) {
-        setIsReady(true)
-        return true
-      }
-      return false
-    }
-
-    if (checkReady()) {
-      return undefined
-    }
-
-    const intervalId = window.setInterval(() => {
-      if (checkReady()) {
-        window.clearInterval(intervalId)
-        window.clearTimeout(timeoutId)
-      }
-    }, 100)
-
-    const timeoutId = window.setTimeout(() => {
-      window.clearInterval(intervalId)
-      if (!timeoutTriggeredRef.current) {
-        timeoutTriggeredRef.current = true
-        onTimeout?.()
-      }
-    }, 10_000)
-
-    return () => {
-      window.clearInterval(intervalId)
-      window.clearTimeout(timeoutId)
-    }
-  }, [onTimeout])
-
-  return isReady
-}
+const defaultRole = 'admin'
 
 const SignupPage = () => {
-  const location = useLocation()
-  const { isLoaded, isSignedIn } = useAuth()
-  const [loadError, setLoadError] = useState(null)
+  const { isAuthenticated, login } = useAuth()
+  const [email, setEmail] = useState('')
+  const [displayName, setDisplayName] = useState('')
+  const [role, setRole] = useState(defaultRole)
+  const [company, setCompany] = useState('')
+  const [agree, setAgree] = useState(false)
+  const [error, setError] = useState('')
 
-  const redirectTo = location?.state?.from?.pathname || '/dashboard'
-
-  const isClerkReady = useClerkReadiness({
-    onTimeout: () => setLoadError('Account service is taking longer than expected to initialise')
-  })
-
-  useEffect(() => {
-    if (isClerkReady && loadError) {
-      setLoadError(null)
-    }
-  }, [isClerkReady, loadError])
-
-  if (isLoaded && isSignedIn) {
-    return <Navigate to={redirectTo} replace />
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
   }
 
-  if (!isLoaded || !isClerkReady) {
-    return <LoadingShell errorMessage={loadError} onRetry={() => window.location.reload()} />
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    if (!email.trim()) {
+      setError('Enter a work email to create your workspace.')
+      return
+    }
+
+    if (!agree) {
+      setError('Accept the terms to continue.')
+      return
+    }
+
+    const user = {
+      id: email.trim().toLowerCase(),
+      email: email.trim(),
+      displayName: displayName.trim() || email.trim(),
+      role: role || defaultRole,
+      company: company.trim() || undefined
+    }
+
+    login(user)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-6">
-        <header className="text-center space-y-3">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-400/40">
-            <span className="text-emerald-300 text-3xl font-semibold">S</span>
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 text-slate-50">
+      <div className="w-full max-w-xl rounded-xl border border-slate-800 bg-slate-900/80 p-8 shadow-xl">
+        <div className="text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-sky-500/10 text-sky-300">
+            <span className="text-lg font-semibold">S</span>
           </div>
-          <div>
-            <h1 className="text-3xl font-semibold text-white">Request your Sentia account</h1>
-            <p className="text-sm text-slate-300">Create secure access to the manufacturing intelligence platform.</p>
-          </div>
-        </header>
-        <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl">
-          <SignUp
-            appearance={{
-              elements: {
-                rootBox: 'w-full',
-                card: 'bg-transparent shadow-none border-0 p-0',
-                formButtonPrimary: 'bg-emerald-500 hover:bg-emerald-400 focus:ring-2 focus:ring-emerald-300',
-                footerActionLink: 'text-emerald-300 hover:text-emerald-200',
-                formFieldLabel: 'text-slate-200',
-                formFieldInput: 'bg-slate-950/60 border-slate-700 text-slate-100 focus:border-emerald-400 focus:ring-emerald-400',
-                headerTitle: 'text-2xl font-semibold text-white',
-                headerSubtitle: 'text-slate-300',
-                socialButtonsBlockButton: 'border border-slate-700 hover:border-emerald-400 text-slate-100'
-              }
-            }}
-            redirectUrl={redirectTo}
-            afterSignUpUrl={redirectTo}
-            signInUrl="/login"
-          />
+          <h1 className="mt-4 text-2xl font-semibold text-white">Create your Sentia workspace</h1>
+          <p className="mt-2 text-sm text-slate-400">Provision a sandbox environment for manufacturing operations.</p>
         </div>
-        <p className="text-center text-sm text-slate-400">
-          Already have access?{' '}
-          <Link to="/login" className="text-emerald-300 hover:text-emerald-200 font-medium">
-            Sign in instead
+
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="text-sm font-medium text-slate-200" htmlFor="signup-email">
+                Work email
+              </label>
+              <input
+                id="signup-email"
+                type="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value)
+                  if (error) {
+                    setError('')
+                  }
+                }}
+                placeholder="executive@sentia-demo.com"
+                className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-white outline-none transition focus:border-sky-400"
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-200" htmlFor="signup-name">
+                Display name
+              </label>
+              <input
+                id="signup-name"
+                type="text"
+                value={displayName}
+                onChange={(event) => setDisplayName(event.target.value)}
+                placeholder="Sentia Executive"
+                className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-white outline-none transition focus:border-sky-400"
+                autoComplete="name"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-200" htmlFor="signup-role">
+                Role
+              </label>
+              <input
+                id="signup-role"
+                type="text"
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+                placeholder="admin"
+                className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-white outline-none transition focus:border-sky-400"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="text-sm font-medium text-slate-200" htmlFor="signup-company">
+                Company (optional)
+              </label>
+              <input
+                id="signup-company"
+                type="text"
+                value={company}
+                onChange={(event) => setCompany(event.target.value)}
+                placeholder="Sentia Manufacturing"
+                className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-white outline-none transition focus:border-sky-400"
+              />
+            </div>
+          </div>
+
+          <label className="flex items-start gap-3 text-sm text-slate-300">
+            <input
+              type="checkbox"
+              checked={agree}
+              onChange={(event) => {
+                setAgree(event.target.checked)
+                if (error) {
+                  setError('')
+                }
+              }}
+              className="mt-1 h-4 w-4 rounded border border-slate-600 bg-slate-950 text-sky-400 focus:ring-sky-400"
+            />
+            <span>By continuing you confirm that this environment will only use demo data until MCP integrations are validated.</span>
+          </label>
+
+          {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
+          >
+            Provision workspace
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-slate-400">
+          Already have access?
+          <Link className="ml-1 font-medium text-sky-300 hover:text-sky-200" to="/login">
+            Sign in
           </Link>
         </p>
       </div>

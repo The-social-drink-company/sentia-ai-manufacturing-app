@@ -6,11 +6,8 @@ import AppSimple from './AppSimple.jsx'
 import { logInfo, logError, logDebug } from './utils/logger.js'
 
 const selectAppComponent = () => {
-  if (import.meta.env?.VITE_USE_SIMPLE_APP === 'true') {
-    logInfo('[main] Using simplified App for local development')
-    return AppSimple
-  }
-
+  // Always use the full App with Clerk authentication
+  logInfo('[main] Using full App with Clerk authentication')
   return AppFull
 }
 

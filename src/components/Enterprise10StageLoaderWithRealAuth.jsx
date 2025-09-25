@@ -401,6 +401,10 @@ const Enterprise10StageLoaderWithRealAuth = ({
           [stage.id]: { ...result, completed: true }
         }));
 
+        if (typeof onStageChange === 'function') {
+          onStageChange(stage.id, stage, { status: 'completed', result });
+        }
+
         // Special handling for Clerk auth stage
         if (stage.id === 2) {
           setAuthCheckComplete(true);
@@ -418,12 +422,21 @@ const Enterprise10StageLoaderWithRealAuth = ({
           }
           currentProgress = Math.min(currentProgress + progressStep, 100);
           setProgress(currentProgress);
+
+          if (typeof onStageProgress === 'function') {
+            onStageProgress(stage.id, currentProgress, stage);
+          }
         }, 30);
 
         stageTimeout = setTimeout(() => {
           if (!mounted.current) return;
           clearInterval(progressInterval);
           setProgress(0);
+
+          if (typeof onStageProgress === 'function') {
+            onStageProgress(stage.id, 100, stage);
+          }
+
           currentStageIndex++;
           runStage();
         }, stageDuration);
@@ -638,6 +651,8 @@ const Enterprise10StageLoaderWithRealAuth = ({
 };
 
 export default Enterprise10StageLoaderWithRealAuth;
+
+
 
 
 

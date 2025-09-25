@@ -1,7 +1,9 @@
+
 import { devLog } from '../lib/devLog.js'
 import redisCache from './redis.js'
 
-const SLOW_QUERY_THRESHOLD_MS = 1000
+const SLOW_QUERY_THRESHOLD_MS = 1_000
+const MAX_SLOW_QUERY_HISTORY = 50
 
 class DatabaseOptimization {
   constructor() {
@@ -9,12 +11,7 @@ class DatabaseOptimization {
   }
 
   async optimizedQuery(sql, params = [], options = {}) {
-    const {
-      cacheKey,
-      cacheTTL = 300,
-      useCache = true,
-      explain = false
-    } = options
+    const { cacheKey, cacheTTL = 300, useCache = true, explain = false } = options
 
     if (useCache && cacheKey) {
       const cached = await redisCache.get(`query:${cacheKey}`)
@@ -24,9 +21,9 @@ class DatabaseOptimization {
       }
     }
 
-    const start = Date.now()
+    const startTime = Date.now()
     const result = await this.executeQuery(sql, params, explain)
-    const duration = Date.now() - start
+    const duration = Date.now() - startTime
 
     if (duration > SLOW_QUERY_THRESHOLD_MS) {
       devLog.warn(`[db] slow query (${duration}ms): ${sql}`)
@@ -41,7 +38,6 @@ class DatabaseOptimization {
   }
 
   async executeQuery(sql, params, explain) {
-    // Placeholder execution - replace with real database handler
     if (explain) {
       return {
         sql,
@@ -62,8 +58,8 @@ class DatabaseOptimization {
     const poolConfig = {
       max: process.env.NODE_ENV === 'production' ? 20 : 10,
       min: 2,
-      acquireTimeoutMillis: 60000,
-      idleTimeoutMillis: 300000,
+      acquireTimeoutMillis: 60_000,
+      idleTimeoutMillis: 300_000,
       ...config
     }
 
@@ -111,11 +107,11 @@ class DatabaseOptimization {
     const history = (await redisCache.get('slow_queries')) || []
     history.unshift(entry)
 
-    if (history.length > 50) {
-      history.length = 50
+    if (history.length > MAX_SLOW_QUERY_HISTORY) {
+      history.length = MAX_SLOW_QUERY_HISTORY
     }
 
-    await redisCache.set('slow_queries', history, 3600)
+    await redisCache.set('slow_queries', history, 3_600)
   }
 
   async getPerformanceMetrics() {

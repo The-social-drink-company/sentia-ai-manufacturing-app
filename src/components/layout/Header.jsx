@@ -736,37 +736,10 @@ const Header = () => {
                   </span>
                 </div>
                 
-                {/* Clerk UserButton with Pro Features */}
-                <UserButton
-                  appearance={{
-                    elements: {
-                      userButtonBox: "w-8 h-8",
-                      userButtonTrigger: "w-8 h-8 rounded-full focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
-                      userButtonPopoverCard: "bg-elevated border border-light shadow-theme-lg",
-                      userButtonPopoverMain: "bg-elevated",
-                      userButtonPopoverFooter: "bg-elevated",
-                      userButtonPopoverActionButton: "text-secondary hover:bg-secondary",
-                      userButtonPopoverActionButtonText: "text-secondary",
-                      userPreviewMainIdentifier: "text-primary font-medium",
-                      userPreviewSecondaryIdentifier: "text-tertiary",
-                      userButtonPopoverActions: "bg-elevated"
-                    },
-                    variables: {
-                      colorPrimary: "#2563eb",
-                      colorDanger: "#dc2626",
-                      colorText: "var(--color-text-primary)",
-                      colorTextOnPrimaryBackground: "#ffffff",
-                      colorBackground: "var(--color-bg-elevated)",
-                      colorInputBackground: "var(--color-bg-elevated)",
-                      colorInputText: "var(--color-text-primary)",
-                      borderRadius: "0.375rem"
-                    }
-                  }}
-                  afterSignOutUrl="/"
-                  showName={false}
-                  userProfileMode="navigation"
-                  userProfileUrl="/user-profile"
-                />
+                {/* User Avatar - Simplified */}
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
+                  {getUserDisplayName().charAt(0).toUpperCase()}
+                </div>
                 
                 {/* Custom Menu for Additional Options */}
                 <Menu as="div" className="relative">

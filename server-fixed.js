@@ -8,6 +8,7 @@ import compression from 'compression';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import { randomUUID } from 'crypto';
+import { ClerkExpressWithAuth, clerkClient } from '@clerk/clerk-sdk-node';
 
 // Note: NODE_OPTIONS should be set via environment or npm scripts
 // e.g., cross-env NODE_OPTIONS=--max-old-space-size=128 node server-fixed.js
@@ -39,6 +40,11 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server, path: '/ws' });
 
 const sseClients = new Map();
+
+const CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY?.trim();
+const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY?.trim();
+const ALLOW_MOCK_AUTH = process.env.ALLOW_MOCK_AUTH === 'true';
+const HAS_CLERK_CONFIG = Boolean(CLERK_PUBLISHABLE_KEY && CLERK_SECRET_KEY);
 
 const log = {
   info: (...args) => console.log('[INFO]', ...args),
@@ -173,47 +179,64 @@ app.use(
 );
 
 // Clerk Authentication Middleware
-const clerkAuth = async (req, res, next) => {
-  try {
-    // Get the session token from the Authorization header
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      // In development/testing, allow fallback to mock for now
-      // but in production, require authentication
-      const isProduction = process.env.NODE_ENV === 'production';
-      if (isProduction) {
-        return res.status(401).json({ error: 'Unauthorized - Missing token' });
-      } else {
-        // Fallback to mock user for development/testing
-        req.user = {
-          id: 'dev-user',
-          role: 'administrator',
-          email: 'dev@sentia-manufacturing.local',
-          authProvider: 'development-fallback'
-        };
-        return next();
+const mockAuthMiddleware = (req, res, next) => {
+  if (!ALLOW_MOCK_AUTH) {
+    return res.status(503).json({
+      success: false,
+      error: {
+        message: 'Mock authentication disabled. Configure Clerk or enable ALLOW_MOCK_AUTH=true for non-production use.'
       }
+    });
+  }
+
+  req.user = {
+    id: 'mock-user',
+    role: 'administrator',
+    email: 'mock@sentia-manufacturing.local',
+    authProvider: 'mock'
+  };
+  next();
+};
+
+const requireClerkAuth = HAS_CLERK_CONFIG
+  ? ClerkExpressWithAuth({ secretKey: CLERK_SECRET_KEY })
+  : mockAuthMiddleware;
+
+const enrichUserFromClerk = async (req, res, next) => {
+  try {
+    if (!HAS_CLERK_CONFIG) {
+      return next();
     }
 
-    const token = authHeader.split(' ')[1];
-
-    // Verify token with Clerk (would need @clerk/clerk-sdk-node)
-    // For now, implement a basic verification that checks for valid format
-    if (token && token.length > 10) {
-      req.user = {
-        id: 'clerk-user',
-        role: 'administrator',
-        email: 'user@sentia-manufacturing.local',
-        authProvider: 'clerk',
-        token: token
-      };
-      next();
-    } else {
-      res.status(401).json({ error: 'Invalid token' });
+    const sessionId = req.auth?.sessionId;
+    if (!sessionId) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Unauthorized: Clerk session missing' }
+      });
     }
+
+    const session = await clerkClient.sessions.getSession(sessionId);
+    if (!session?.userId) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Unauthorized: Clerk session invalid' }
+      });
+    }
+
+    const user = await clerkClient.users.getUser(session.userId);
+    req.user = {
+      id: user.id,
+      email: user.primaryEmailAddress?.emailAddress,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.publicMetadata?.role || 'viewer',
+      authProvider: 'clerk'
+    };
+    next();
   } catch (error) {
-    console.error('Authentication error:', error);
-    res.status(500).json({ error: 'Authentication service error' });
+    log.error('Clerk authentication error', error);
+    next(error);
   }
 };
 
@@ -332,7 +355,7 @@ healthRouter.get('/api/status', async (req, res) => {
 app.use(healthRouter);
 
 const apiRouter = express.Router();
-apiRouter.use(clerkAuth);
+apiRouter.use(requireClerkAuth, enrichUserFromClerk);
 
 apiRouter.get('/dashboard/overview', (req, res) => {
   res.success({
@@ -481,11 +504,11 @@ apiRouter.get('/dashboard/alerts', (req, res) => {
   res.success({ alerts: [] });
 });
 
-app.get('/api/dashboard/realtime', clerkAuth, (req, res) => {
+app.get('/api/dashboard/realtime', requireClerkAuth, enrichUserFromClerk, (req, res) => {
   res.fail(410, 'Realtime endpoint moved to /api/events');
 });
 
-app.get('/api/events', clerkAuth, (req, res) => {
+app.get('/api/events', requireClerkAuth, enrichUserFromClerk, (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Connection', 'keep-alive');
@@ -503,7 +526,8 @@ app.get('/api/events', clerkAuth, (req, res) => {
 
 app.post(
   '/api/mcp/request',
-  clerkAuth,
+  requireClerkAuth,
+  enrichUserFromClerk,
   validateBody({ endpoint: { required: true, type: 'string' }, payload: { type: 'object' } }),
   async (req, res, next) => {
     try {
@@ -526,7 +550,7 @@ app.post(
   }
 );
 
-app.get('/api/mcp/status', clerkAuth, async (req, res, next) => {
+app.get('/api/mcp/status', requireClerkAuth, enrichUserFromClerk, async (req, res, next) => {
   try {
     const response = await fetch(`${MCP_SERVER_URL}/health`);
     const payload = await response.json().catch(() => ({}));

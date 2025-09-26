@@ -84,7 +84,8 @@
       "Bash(npx tsc:*)",
       "Bash(dir \"C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\node_modules\\.bin\")",
       "Bash(npm test)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(yarn install)"
     ],
     "deny": [],
     "ask": []

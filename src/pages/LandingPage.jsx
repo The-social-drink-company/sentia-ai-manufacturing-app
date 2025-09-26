@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-import { useAuthContext } from '../providers/AuthProvider.jsx'
 import {
   ChartBarIcon,
   CubeIcon,
@@ -14,6 +12,9 @@ import {
   GlobeAltIcon,
   BoltIcon
 } from '@heroicons/react/24/outline'
+import { Link } from 'react-router-dom'
+
+import { useAuthContext } from '../providers/AuthProvider.jsx'
 
 export default function LandingPage() {
   const { isAuthenticated } = useAuthContext()

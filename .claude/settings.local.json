@@ -1,15 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(Select-Object Name)",
-      "Bash(git init:*)",
-      "Bash(git remote add:*)",
-      "Bash(npm install:*)",
-      "Bash(git stash:*)",
-      "Bash(git add:*)",
-      "Bash(pnpm install:*)",
-      "Bash(powershell:*)",
-      "Bash(pnpm add:*)"
+      "Bash(npx husky:*)",
+      "Bash(npx husky init:*)",
+      "Bash(npm run dev:client:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

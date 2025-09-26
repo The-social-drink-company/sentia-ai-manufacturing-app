@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui'
-import { Badge } from '../../../components/ui'
+
+import { Card, CardContent, CardHeader, CardTitle , Badge } from '../../../components/ui'
 import { cn } from '../../../utils/cn'
 
 const generateMockInventory = () => {

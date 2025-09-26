@@ -1,13 +1,14 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+
 import AppLayout from './components/layout/AppLayout.jsx'
 import ProtectedRoute from './components/layout/ProtectedRoute.jsx'
-import DashboardPage from './pages/Dashboard.jsx'
-import WorkingCapitalPage from './pages/WorkingCapital.jsx'
-import WhatIfPage from './pages/WhatIf.jsx'
 import AdminPage from './pages/Admin.jsx'
+import DashboardPage from './pages/Dashboard.jsx'
+import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/Login.jsx'
 import SignUpPage from './pages/SignUp.jsx'
-import LandingPage from './pages/LandingPage.jsx'
+import WhatIfPage from './pages/WhatIf.jsx'
+import WorkingCapitalPage from './pages/WorkingCapital.jsx'
 
 export default function App() {
   return (

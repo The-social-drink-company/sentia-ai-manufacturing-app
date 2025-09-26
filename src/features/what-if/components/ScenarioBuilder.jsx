@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui'
-import { Badge } from '../../../components/ui'
-import { Alert, AlertDescription } from '../../../components/ui'
+
+import { Card, CardContent, CardHeader, CardTitle , Badge , Alert, AlertDescription } from '../../../components/ui'
 
 const defaultScenarios = [
   {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/24/outline'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,8 +12,9 @@ import {
   Legend,
   Filler
 } from 'chart.js'
+import { useState } from 'react'
 import { Line, Bar, Doughnut, Pie } from 'react-chartjs-2'
-import { ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/24/outline'
+
 import { cn } from '../../utils/cn'
 
 // Register ChartJS components

@@ -1,5 +1,6 @@
 import { RedirectToSignIn } from '@clerk/clerk-react'
 import { Navigate, useLocation } from 'react-router-dom'
+
 import { useAuth } from '../../hooks/useAuth.js'
 
 export default function ProtectedRoute({ children }) {

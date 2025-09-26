@@ -1,5 +1,6 @@
-import { useState } from 'react'
 import { ChevronUpIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import { useState } from 'react'
+
 import { cn } from '../../utils/cn'
 
 const DataTableWidget = ({

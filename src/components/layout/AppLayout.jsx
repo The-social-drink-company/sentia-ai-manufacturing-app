@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
+
+import { cn } from '../../utils/cn'
+
 import Header from './Header'
 import Sidebar from './Sidebar'
-import { cn } from '../../utils/cn'
 
 export default function AppLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)

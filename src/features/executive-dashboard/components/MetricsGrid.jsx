@@ -1,4 +1,3 @@
-import { KPICard } from './KPICard'
 import {
   CurrencyDollarIcon,
   ChartBarIcon,
@@ -7,6 +6,8 @@ import {
   ClockIcon,
   CubeIcon
 } from '@heroicons/react/24/outline'
+
+import { KPICard } from './KPICard'
 
 const defaultMetrics = [
   {

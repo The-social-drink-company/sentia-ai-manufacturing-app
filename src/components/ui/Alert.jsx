@@ -1,10 +1,11 @@
-import { cn } from '../../utils/cn'
 import {
   ExclamationTriangleIcon,
   InformationCircleIcon,
   CheckCircleIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline'
+
+import { cn } from '../../utils/cn'
 
 const alertVariants = {
   default: 'bg-background text-foreground',

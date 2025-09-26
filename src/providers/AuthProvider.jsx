@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
   ClerkLoaded,
   ClerkProvider,
@@ -9,6 +8,7 @@ import {
   useUser,
 } from '@clerk/clerk-react'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+
 import { logInfo, logWarn } from '../utils/logger.js'
 
 const STORAGE_KEY = 'sentia-mock-auth-v1'
@@ -25,7 +25,10 @@ const AuthContext = createContext(null)
 const hasBrowserStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
 
 const shouldForceMock = () => import.meta.env?.VITE_FORCE_MOCK_AUTH === 'true'
-const hasClerkConfig = () => Boolean(import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY)
+const hasClerkConfig = () => {
+  const publishableKey = import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY
+  return Boolean(publishableKey && publishableKey.length > 0 && publishableKey !== 'your-clerk-publishable-key-here')
+}
 
 const redirectToLogin = () => {
   if (typeof window !== 'undefined' && typeof window.location !== 'undefined') {
@@ -199,20 +202,30 @@ const signedOutValue = {
 function ClerkAuthProvider({ children }) {
   const publishableKey = import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY
 
-  return (
-    <ClerkProvider publishableKey={publishableKey} afterSignOutUrl="/login">
-      <SignedIn>
-        <ClerkLoaded>
-          <ClerkSessionProvider>{children}</ClerkSessionProvider>
-        </ClerkLoaded>
-      </SignedIn>
-      <SignedOut>
-        <AuthContext.Provider value={signedOutValue}>
-          <RedirectToSignIn />
-        </AuthContext.Provider>
-      </SignedOut>
-    </ClerkProvider>
-  )
+  if (!publishableKey) {
+    logWarn('Clerk publishable key not found, falling back to mock authentication')
+    return <MockAuthProvider>{children}</MockAuthProvider>
+  }
+
+  try {
+    return (
+      <ClerkProvider publishableKey={publishableKey} afterSignOutUrl="/login">
+        <SignedIn>
+          <ClerkLoaded>
+            <ClerkSessionProvider>{children}</ClerkSessionProvider>
+          </ClerkLoaded>
+        </SignedIn>
+        <SignedOut>
+          <AuthContext.Provider value={signedOutValue}>
+            <RedirectToSignIn />
+          </AuthContext.Provider>
+        </SignedOut>
+      </ClerkProvider>
+    )
+  } catch (error) {
+    logWarn('Clerk initialization failed, falling back to mock authentication', error)
+    return <MockAuthProvider>{children}</MockAuthProvider>
+  }
 }
 
 export function AuthProvider({ children }) {

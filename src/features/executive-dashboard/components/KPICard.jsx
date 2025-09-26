@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui'
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid'
+
+import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui'
 import { cn } from '../../../utils/cn'
 
 export function KPICard({

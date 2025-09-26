@@ -1,6 +1,7 @@
 import { SignIn } from '@clerk/clerk-react'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+
 import AuthScaffold from '../components/auth/AuthScaffold.jsx'
 import clerkAppearance from '../components/auth/clerkAppearance.js'
 import { useAuth } from '../hooks/useAuth.js'

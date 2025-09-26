@@ -1,8 +1,10 @@
-import authRoutes from './auth.js';
+import { logInfo } from '../../services/observability/structuredLogger.js';
+
 import apiRoutes from './api.js';
+import authRoutes from './auth.js';
 import dataRoutes from './data.js';
 import sseRoutes from './sse.js';
-import { logInfo } from '../../services/observability/structuredLogger.js';
+
 
 export function setupRoutes(app) {
   logInfo('Setting up routes');

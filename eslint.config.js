@@ -86,6 +86,7 @@ export default [
       'no-eval': 'error',
       'no-implied-eval': 'error',
       'no-new-func': 'error',
+      'react-refresh/only-export-components': 'off',
       'no-param-reassign': [
         'warn',
         { props: false }

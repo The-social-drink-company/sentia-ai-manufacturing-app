@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
+
+import { Alert, AlertDescription, AlertTitle , Badge } from '../components/ui'
+import { useAuthRole } from '../features/auth/hooks/useAuthRole'
 import { MetricsGrid } from '../features/executive-dashboard/components/MetricsGrid'
-import { CashFlowChart } from '../features/working-capital/components/CashFlowChart'
 import { InventoryHeatmap } from '../features/inventory/components/InventoryHeatmap'
 import { ScenarioBuilder } from '../features/what-if/components/ScenarioBuilder'
+import { CashFlowChart } from '../features/working-capital/components/CashFlowChart'
 import { useSSE } from '../hooks/useSSE'
-import { useAuthRole } from '../features/auth/hooks/useAuthRole'
-import { Alert, AlertDescription, AlertTitle } from '../components/ui'
-import { Badge } from '../components/ui'
 
 export default function EnhancedDashboard() {
   const [selectedView, setSelectedView] = useState('overview')

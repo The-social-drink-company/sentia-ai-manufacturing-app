@@ -1,5 +1,6 @@
 import { SignUp } from '@clerk/clerk-react'
 import { Link } from 'react-router-dom'
+
 import AuthScaffold from '../components/auth/AuthScaffold.jsx'
 import clerkAppearance from '../components/auth/clerkAppearance.js'
 

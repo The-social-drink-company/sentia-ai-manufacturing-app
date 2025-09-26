@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { useUser, useClerk } from '@clerk/clerk-react'
 import {
   BellIcon,
@@ -11,6 +10,8 @@ import {
   XMarkIcon
 } from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+
 import { cn } from '../../utils/cn'
 
 const Header = ({ onMenuToggle, isSidebarOpen }) => {

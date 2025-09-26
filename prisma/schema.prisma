@@ -284,6 +284,87 @@ model Expense {
   @@index([status], name: "idx_expense_status")
 }
 
+model ExecutiveMetric {
+  id                    String   @id @default(cuid())
+  date                  DateTime @default(now())
+
+  // Financial KPIs
+  revenue               Float
+  revenueTarget         Float
+  revenueTrend          Float
+  cashFlow              Float
+  cashFlowTarget        Float
+  cashFlowTrend         Float
+  currentRatio          Float
+  currentRatioTarget    Float    @default(2.0)
+  currentRatioTrend     Float
+  quickRatio            Float
+  quickRatioTarget      Float    @default(1.0)
+  quickRatioTrend       Float
+
+  // Operational KPIs
+  oee                   Float
+  oeeTarget             Float    @default(85)
+  oeeTrend              Float
+  throughput            Float
+  throughputTarget      Float
+  throughputTrend       Float
+
+  // Strategic KPIs
+  marketShare           Float
+  marketShareTarget     Float
+  marketShareTrend      Float
+  customerSatisfaction  Float
+  customerSatisfactionTarget Float @default(90)
+  customerSatisfactionTrend   Float
+
+  // Working Capital Components
+  currentAssets         Float
+  currentLiabilities    Float
+  inventory             Float
+  daysInventory         Float
+  daysReceivables       Float
+  daysPayables          Float
+  cashUnlock            Float
+
+  // Metadata
+  isActual              Boolean  @default(true)
+  confidence            Float    @default(1.0)
+  dataSource            String   @default("system")
+  notes                 String?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([date], name: "idx_executive_metric_date")
+  @@index([isActual], name: "idx_executive_metric_type")
+}
+
+model ExecutiveAlert {
+  id          String   @id @default(cuid())
+  severity    String   // critical, warning, info
+  type        String   // risk, opportunity, notification
+  category    String   // financial, operational, strategic
+  title       String
+  description String   @db.Text
+  impact      String?
+  action      String?
+  source      String
+  metrics     Json?
+  isActive    Boolean  @default(true)
+  isDismissed Boolean  @default(false)
+  dismissedBy String?
+  dismissedAt DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([severity, isActive], name: "idx_executive_alert_severity")
+  @@index([type, category], name: "idx_executive_alert_type")
+  @@index([isActive, isDismissed], name: "idx_executive_alert_status")
+  @@index([createdAt], name: "idx_executive_alert_created")
+}
+
 model EnterpriseCashCoverage {
   id                       String   @id @default(cuid())
   period                   DateTime

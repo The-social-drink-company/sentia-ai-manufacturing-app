@@ -1,34 +1,47 @@
 import { useState, useEffect } from 'react'
-import { BanknotesIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon, ChartBarIcon } from '@heroicons/react/24/outline'
-
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card'
-import { Button } from '../../components/ui/Button'
-import { useAuthContext } from '../../providers/AuthProvider'
+import { Navigate } from 'react-router-dom'
+import {
+  BanknotesIcon,
+  ChartBarIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  ExclamationTriangleIcon,
+  DocumentTextIcon,
+  ArrowDownTrayIcon
+} from '@heroicons/react/24/solid'
+import { useAuth } from '../../hooks/useAuth'
 import { useWorkingCapitalMetrics } from './hooks/useWorkingCapitalMetrics'
-import CashFlowChart from './components/CashFlowChart'
-import ARAgingChart from './components/ARAgingChart'
-import APAgingChart from './components/APAgingChart'
-import InventoryTurnover from './components/InventoryTurnover'
+import MetricCard from './components/MetricCard'
+import AgingChart from './components/AgingChart'
 import CashConversionCycle from './components/CashConversionCycle'
+import CashFlowForecast from './components/CashFlowForecast'
+import OptimizationRecommendations from './components/OptimizationRecommendations'
 
 export default function WorkingCapitalDashboard() {
-  const { user } = useAuthContext()
-  const { data, loading, error, refresh } = useWorkingCapitalMetrics()
-  const [selectedPeriod, setSelectedPeriod] = useState('month')
-  const [showForecast, setShowForecast] = useState(false)
+  const { user } = useAuth()
+  const [selectedPeriod, setSelectedPeriod] = useState('current')
+  const [selectedCurrency, setSelectedCurrency] = useState('USD')
+  const { data: metrics, loading, error, refetch, exportData } = useWorkingCapitalMetrics(selectedPeriod)
 
-  // Auto-refresh every minute
+  // Role-based access control
+  if (user?.role === 'viewer') {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  // Auto-refresh every 15 minutes for critical metrics
   useEffect(() => {
-    const interval = setInterval(refresh, 60000)
+    const interval = setInterval(() => {
+      refetch()
+    }, 15 * 60 * 1000) // 15 minutes
     return () => clearInterval(interval)
-  }, [refresh])
+  }, [refetch])
 
-  if (loading && !data) {
+  if (loading && !metrics) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading financial metrics...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading working capital metrics...</p>
         </div>
       </div>
     )
@@ -36,207 +49,307 @@ export default function WorkingCapitalDashboard() {
 
   if (error) {
     return (
-      <div className="p-6">
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="pt-6">
-            <p className="text-red-600">Failed to load working capital data: {error.message}</p>
-            <Button onClick={refresh} className="mt-4">Retry</Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+            <div className="flex items-center">
+              <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400 mr-3" />
+              <div>
+                <h3 className="text-lg font-semibold text-red-800 dark:text-red-200">Error Loading Data</h3>
+                <p className="text-red-600 dark:text-red-400 mt-1">{error.message}</p>
+                <button
+                  onClick={() => refetch()}
+                  className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
 
-  const metrics = data || {}
-
-  return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Working Capital Management</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            Monitor cash flow, receivables, payables, and inventory metrics
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <select
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
-          >
-            <option value="day">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="quarter">This Quarter</option>
-            <option value="year">This Year</option>
-          </select>
-          <Button onClick={() => setShowForecast(!showForecast)}>
-            {showForecast ? 'Hide' : 'Show'} Forecast
-          </Button>
-          <Button onClick={refresh} disabled={loading}>
-            Refresh
-          </Button>
-        </div>
-      </div>
-
-      {/* Key Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          title="Cash Position"
-          value={metrics.cashPosition}
-          trend={metrics.cashTrend}
-          icon={BanknotesIcon}
-          format="currency"
-        />
-        <MetricCard
-          title="DSO (Days Sales Outstanding)"
-          value={metrics.dso}
-          trend={metrics.dsoTrend}
-          icon={ChartBarIcon}
-          format="days"
-          inverse
-        />
-        <MetricCard
-          title="DPO (Days Payable Outstanding)"
-          value={metrics.dpo}
-          trend={metrics.dpoTrend}
-          icon={ChartBarIcon}
-          format="days"
-        />
-        <MetricCard
-          title="Cash Conversion Cycle"
-          value={metrics.cashConversionCycle}
-          trend={metrics.cccTrend}
-          icon={ChartBarIcon}
-          format="days"
-          inverse
-        />
-      </div>
-
-      {/* Cash Flow Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Cash Flow Analysis</CardTitle>
-          <CardDescription>
-            Inflows, outflows, and net cash position over time
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CashFlowChart data={metrics.cashFlow} period={selectedPeriod} showForecast={showForecast} />
-        </CardContent>
-      </Card>
-
-      {/* AR/AP Analysis */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Accounts Receivable Aging</CardTitle>
-            <CardDescription>Outstanding customer invoices by age</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ARAgingChart data={metrics.arAging} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Accounts Payable Aging</CardTitle>
-            <CardDescription>Outstanding supplier invoices by age</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <APAgingChart data={metrics.apAging} />
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Inventory & Cash Conversion */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Inventory Turnover</CardTitle>
-            <CardDescription>Stock movement and efficiency metrics</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <InventoryTurnover data={metrics.inventory} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Cash Conversion Cycle</CardTitle>
-            <CardDescription>Time to convert investments back to cash</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CashConversionCycle data={metrics.cccDetails} />
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Forecast Section */}
-      {showForecast && (
-        <Card>
-          <CardHeader>
-            <CardTitle>13-Week Cash Flow Forecast</CardTitle>
-            <CardDescription>
-              Projected cash position based on current trends and scheduled transactions
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <p className="text-gray-500">Forecast visualization coming soon...</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  )
-}
-
-function MetricCard({ title, value, trend, icon: Icon, format = 'number', inverse = false }) {
-  const formatValue = (val) => {
-    if (!val && val !== 0) return '--'
-    switch (format) {
-      case 'currency':
-        return new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          notation: val > 1000000 ? 'compact' : 'standard'
-        }).format(val)
-      case 'days':
-        return `${val} days`
-      case 'percentage':
-        return `${val}%`
-      default:
-        return val.toLocaleString()
+  const handleExport = async (format) => {
+    try {
+      await exportData(format)
+    } catch (err) {
+      console.error('Export failed:', err)
     }
   }
 
-  const isPositiveTrend = inverse ? trend < 0 : trend > 0
+  const { summary, receivables, payables, inventory, cashFlow, recommendations, alerts } = metrics || {}
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
-            <p className="text-2xl font-bold mt-2">{formatValue(value)}</p>
-            {trend !== undefined && (
-              <div className={`flex items-center mt-2 text-sm ${
-                isPositiveTrend ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {isPositiveTrend ? (
-                  <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
-                ) : (
-                  <ArrowTrendingDownIcon className="w-4 h-4 mr-1" />
-                )}
-                <span>{Math.abs(trend)}% vs last period</span>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                <BanknotesIcon className="h-8 w-8 mr-3 text-blue-600" />
+                Working Capital Management
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Optimize cash flow and improve financial efficiency
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* Currency Selector */}
+              <select
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
+              >
+                <option value="USD">USD</option>
+                <option value="GBP">GBP</option>
+                <option value="EUR">EUR</option>
+              </select>
+
+              {/* Period Selector */}
+              <select
+                value={selectedPeriod}
+                onChange={(e) => setSelectedPeriod(e.target.value)}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
+              >
+                <option value="current">Current</option>
+                <option value="mtd">Month to Date</option>
+                <option value="qtd">Quarter to Date</option>
+                <option value="ytd">Year to Date</option>
+              </select>
+
+              {/* Export Menu */}
+              <div className="relative group">
+                <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center">
+                  <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+                  Export
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                  <button
+                    onClick={() => handleExport('pdf')}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Export as PDF
+                  </button>
+                  <button
+                    onClick={() => handleExport('excel')}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Export as Excel
+                  </button>
+                  <button
+                    onClick={() => handleExport('csv')}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Export as CSV
+                  </button>
+                </div>
               </div>
-            )}
+
+              {/* Refresh Button */}
+              <button
+                onClick={() => refetch()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                Refresh
+              </button>
+            </div>
           </div>
-          <Icon className="w-8 h-8 text-gray-400" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* Alerts Section */}
+        {alerts && alerts.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Alerts</h2>
+            <div className="space-y-3">
+              {alerts.map((alert, index) => (
+                <div
+                  key={index}
+                  className={`p-4 rounded-lg border flex items-start ${
+                    alert.severity === 'critical'
+                      ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                      : alert.severity === 'warning'
+                      ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+                      : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                  }`}
+                >
+                  <ExclamationTriangleIcon
+                    className={`h-5 w-5 mt-0.5 mr-3 flex-shrink-0 ${
+                      alert.severity === 'critical'
+                        ? 'text-red-600 dark:text-red-400'
+                        : alert.severity === 'warning'
+                        ? 'text-yellow-600 dark:text-yellow-400'
+                        : 'text-blue-600 dark:text-blue-400'
+                    }`}
+                  />
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900 dark:text-white">{alert.title}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{alert.description}</p>
+                    {alert.action && (
+                      <button className="text-sm font-medium text-blue-600 dark:text-blue-400 mt-2 hover:underline">
+                        {alert.action}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Summary Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <MetricCard
+            title="Working Capital"
+            value={summary?.workingCapital || 0}
+            change={summary?.workingCapitalChange}
+            format="currency"
+            icon={BanknotesIcon}
+            color="blue"
+          />
+          <MetricCard
+            title="Cash Conversion Cycle"
+            value={summary?.cashConversionCycle || 0}
+            change={summary?.cccChange}
+            format="days"
+            icon={ChartBarIcon}
+            color="green"
+            target={30}
+          />
+          <MetricCard
+            title="Current Ratio"
+            value={summary?.currentRatio || 0}
+            change={summary?.currentRatioChange}
+            format="ratio"
+            icon={ArrowTrendingUpIcon}
+            color="purple"
+            target={2.0}
+          />
+          <MetricCard
+            title="Quick Ratio"
+            value={summary?.quickRatio || 0}
+            change={summary?.quickRatioChange}
+            format="ratio"
+            icon={ArrowTrendingDownIcon}
+            color="orange"
+            target={1.5}
+          />
+        </div>
+
+        {/* Working Capital Components */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Accounts Receivable
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Total Outstanding</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  ${(receivables?.total || 0).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">DSO</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {receivables?.dso || 0} days
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Overdue</span>
+                <span className="font-semibold text-red-600 dark:text-red-400">
+                  ${(receivables?.overdue || 0).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Accounts Payable
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Total Outstanding</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  ${(payables?.total || 0).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">DPO</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {payables?.dpo || 0} days
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Discounts Available</span>
+                <span className="font-semibold text-green-600 dark:text-green-400">
+                  ${(payables?.discountsAvailable || 0).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Inventory
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Total Value</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  ${(inventory?.total || 0).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">DIO</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {inventory?.dio || 0} days
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Turnover Ratio</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {inventory?.turnoverRatio || 0}x
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <AgingChart
+            receivables={receivables?.aging}
+            payables={payables?.aging}
+            title="AR/AP Aging Analysis"
+          />
+          <CashConversionCycle
+            dso={receivables?.dso || 0}
+            dio={inventory?.dio || 0}
+            dpo={payables?.dpo || 0}
+            historical={metrics?.cccHistory}
+          />
+        </div>
+
+        {/* Cash Flow Forecast */}
+        <div className="mb-8">
+          <CashFlowForecast
+            data={cashFlow}
+            period={selectedPeriod}
+          />
+        </div>
+
+        {/* Optimization Recommendations */}
+        <OptimizationRecommendations
+          recommendations={recommendations}
+          onActionClick={(action) => console.log('Action clicked:', action)}
+        />
+      </div>
+    </div>
   )
 }

@@ -52,6 +52,20 @@ const log = {
   error: (...args) => console.error('[ERROR]', ...args)
 };
 
+// Log authentication configuration status
+if (HAS_CLERK_CONFIG) {
+  log.info('🔐 Clerk authentication enabled - All API requests require valid authentication');
+} else {
+  const isLocalDevelopment = !process.env.RENDER && !process.env.RAILWAY_ENVIRONMENT && NODE_ENV === 'development';
+  if (isLocalDevelopment && ALLOW_MOCK_AUTH) {
+    log.warn('⚠️  Mock authentication enabled for local development only');
+  } else if (isLocalDevelopment) {
+    log.error('❌ Authentication not configured - Set CLERK keys or ALLOW_MOCK_AUTH=true');
+  } else {
+    log.error('🚨 CRITICAL: Deployed environment without authentication - All API requests will be rejected');
+  }
+}
+
 app.set('trust proxy', 1);
 
 app.use((req, res, next) => {
@@ -198,9 +212,43 @@ const mockAuthMiddleware = (req, res, next) => {
   next();
 };
 
+// SECURITY: Require explicit Clerk configuration for all environments except local development
 const requireClerkAuth = HAS_CLERK_CONFIG
   ? ClerkExpressWithAuth({ secretKey: CLERK_SECRET_KEY })
-  : mockAuthMiddleware;
+  : (req, res, next) => {
+      // Only allow mock auth in local development (not Render/Railway deployments)
+      const isLocalDevelopment = !process.env.RENDER && !process.env.RAILWAY_ENVIRONMENT && NODE_ENV === 'development';
+
+      if (!isLocalDevelopment) {
+        return res.status(503).json({
+          success: false,
+          error: {
+            message: 'Authentication service not configured. CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY environment variables are required.',
+            environment: NODE_ENV,
+            deployment: DEPLOYMENT.isRender ? 'render' : DEPLOYMENT.isRailway ? 'railway' : 'local'
+          }
+        });
+      }
+
+      // Local development fallback only
+      if (ALLOW_MOCK_AUTH) {
+        req.user = {
+          id: 'local-dev-user',
+          role: 'administrator',
+          email: 'dev@sentia-manufacturing.local',
+          authProvider: 'local-development-only'
+        };
+        console.warn('[SECURITY] Using mock authentication for local development only');
+        next();
+      } else {
+        return res.status(503).json({
+          success: false,
+          error: {
+            message: 'Authentication required. Set ALLOW_MOCK_AUTH=true for local development or configure Clerk keys.'
+          }
+        });
+      }
+    };
 
 const enrichUserFromClerk = async (req, res, next) => {
   try {

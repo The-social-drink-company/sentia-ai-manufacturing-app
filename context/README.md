@@ -2,184 +2,110 @@
 
 ## Overview
 
-This directory contains comprehensive documentation for the Sentia Manufacturing Dashboard, organized by domain and purpose. Each subdirectory contains specific context files that guide development, deployment, and maintenance of the system.
+This directory houses reference material that supports the Sentia Manufacturing Dashboard. Each subdirectory groups documents by purpose so engineers, designers, and operators can quickly locate the guidance they need while rebuilding the lint-clean baseline established on 2025-09-25.
 
 ## Directory Structure
 
-### 📊 `/api-documentation/`
-External API integration documentation for third-party services:
-- Amazon SP-API integration
-- Shopify API configuration
-- Xero accounting integration
-- Unleashed inventory management
-- OpenAI and Claude AI services
+### `business-logic/`
 
-### 💼 `/business-logic/`
-Core business rules and algorithms:
-- Data validation rules
-- Forecasting algorithms
-- Inventory optimization logic
-- Working capital calculations
-- Manufacturing constraints
+Core business rules, domain models, forecasting algorithms, and optimisation guides that drive the manufacturing workflows.
 
-### 📋 `/business-requirements/`
-Business specifications and requirements:
-- User acceptance criteria
-- Admin panel requirements
-- Cash flow management specs
-- Data source definitions
-- Enterprise implementation plans
-- Seasonal pattern analysis
-- Supply chain constraints
+### `business-requirements/`
 
-### 🔐 `/clerk-authentication/`
-Clerk authentication system documentation:
-- Deployment guides
-- Configuration settings
-- Role-based access control
-- Security best practices
+Stakeholder requirements, user acceptance criteria, delivery timelines, and enterprise rollout plans.
 
-### 🗄 `/database-schemas/`
-Database structure and relationships:
-- Entity relationship diagrams
-- Prisma schema definitions
-- Migration strategies
-- pgvector configuration
+### `clerk-authentication/`
 
-### 🚀 `/deployment-configs/`
-Deployment and infrastructure configuration:
-- Render deployment settings
-- Environment configurations
-- Observability setup
-- Performance optimization
+Clerk integration playbooks, configuration guides, and security notes for the primary identity provider.
 
-### 🛠 `/development-methodology/`
-Development practices and guidelines:
-- Coding standards
-- Git workflow
-- Testing strategies
-- Code review process
-- Repository reset log (2025-09-25)
+### `database-schemas/`
 
-### 🔧 `/environment-configuration/`
-Environment-specific settings:
-- Development environment setup
-- Production configurations
-- Environment variables documentation
+Entity relationship diagrams, Prisma schemas, and migration guidelines that govern data storage.
 
-### 🎨 `/ui-components/`
-UI/UX specifications and component documentation:
-- Dashboard layouts
-- Widget specifications
-- Theme system
-- Responsive design guidelines
+### `deployment-configs/`
 
-### 📖 `/claude-code-docs/`
-Claude Code integration documentation:
-- MCP server setup
-- AI orchestration patterns
-- Tool configurations
+Render configuration, environment variable maps, process health checks, and observability runbooks.
 
-### 🔬 `/technical-specifications/`
-Technical architecture documentation:
-- System architecture
-- API design patterns
-- Performance requirements
-- Security specifications
+### `development-methodology/`
+
+Engineering processes, coding standards, Git workflow policies, testing strategies, and the **Repository Reset Log - 2025-09-25** that documents the fresh clone baseline.
+
+### `environment-configuration/`
+
+Environment setup notes for local, staging, and production systems, including required `.env` variables.
+
+### `Original brief/`
+
+The legacy product brief that informs scope, target personas, and high-level goals. Retained for historical context.
+
+### `technical-specifications/`
+
+System architecture, API design references, performance requirements, and security expectations.
+
+### `testing-scenarios/`
+
+Vitest and Playwright coverage plans, test matrices, and regression tracking for critical flows.
+
+### `ui-components/`
+
+Design system references, component inventories, and interaction guidelines for visual consistency.
+
+### `what-the-screens-should-look-like/`
+
+Annotated mocks, screen flows, and screenshot references for layout reconstruction.
 
 ## Key Documents
 
-### Critical Files for New Developers
-
-1. **[DEPLOYMENT_URLS.md](./DEPLOYMENT_URLS.md)**
-   - All deployment environment URLs
-   - Health check endpoints
-   - Monitoring dashboards
-
-2. **[ENTERPRISE_IMPLEMENTATION_PLAN.md](./business-requirements/ENTERPRISE_IMPLEMENTATION_PLAN.md)**
-   - Complete implementation roadmap
-   - Feature prioritization
-   - Timeline and milestones
-
-3. **[CLERK_ENTERPRISE_IMPLEMENTATION_COMPLETE.md](./CLERK_ENTERPRISE_IMPLEMENTATION_COMPLETE.md)**
-   - Authentication system documentation
-   - Security implementation details
-
-4. **[vibe_coding_guide.md](./development-methodology/vibe_coding_guide.md)**
-   - Coding standards and practices
-   - Development workflow
+1. **`DEPLOYMENT_URLS.md`** � Environment URLs, health checks, and monitoring dashboards.
+2. **`business-requirements/ENTERPRISE_IMPLEMENTATION_PLAN.md`** � Roadmap, prioritisation, and milestones.
+3. **`CLERK_ENTERPRISE_IMPLEMENTATION_COMPLETE.md`** � Authentication implementation details and verification steps.
+4. **`development-methodology/vibe_coding_guide.md`** � Day-to-day coding standards and workflow norms.
+5. **`development-methodology/repository-reset-2025-09-25.md`** � Source of truth for the latest clean clone and lint baseline.
 
 ## Quick Reference
 
 ### Environment URLs
-- **Development**: https://sentia-manufacturing-development.onrender.com
-- **Testing**: https://sentia-manufacturing-testing.onrender.com
-- **Production**: https://sentia-manufacturing-production.onrender.com
 
-### Key Technologies
-- Frontend: React 18 + Vite + Tailwind CSS
-- Backend: Node.js + Express + Prisma
-- Database: PostgreSQL with pgvector
-- Authentication: Clerk
-- AI: OpenAI GPT-4 + Claude via MCP
+- Development: https://sentia-manufacturing-development.onrender.com
+- Testing: https://sentia-manufacturing-testing.onrender.com
+- Production: https://sentia-manufacturing-production.onrender.com
 
-### Important Commands
+### Branch-to-Render Mapping
+
+- Push `development` to deploy the development environment.
+- Push `test` to update the testing environment.
+- Push `production` for the live deployment.
+
+### Authentication
+
+- Set `VITE_CLERK_PUBLISHABLE_KEY` in `.env.local` (and Render env vars) to enable Clerk-backed sign-in.
+- Use `VITE_FORCE_MOCK_AUTH=true` locally when you need the mock provider instead of Clerk.
+
+### Common Commands
+
 ```bash
-# Development
-npm run dev              # Start development servers
-npm run build           # Build for production
-npm run test            # Run test suite
-npm run lint            # Check code quality
-
-# Database
-npm run db:migrate      # Run migrations
-npm run db:studio       # Open Prisma Studio
-
-# Deployment
-git push origin development  # Deploy to dev
-git push origin test        # Deploy to test
-git push origin production # Deploy to production
+pm run dev            # Start Vite client and Express server
+pm run build          # Build production bundles
+pm run lint           # Run ESLint against src/ and server/
+pm run typecheck      # Validate TypeScript definitions (if enabled)
+pm run format:check   # Verify Prettier formatting
+pm test               # Execute Vitest unit tests
+pm run test:e2e       # Execute Playwright end-to-end tests
 ```
 
 ## Documentation Standards
 
-### File Naming Convention
-- Use snake_case for documentation files
-- Use UPPER_CASE for critical/important docs
-- Include timestamps in deployment docs
-
-### Content Structure
-1. **Title** - Clear, descriptive title
-2. **Overview** - Brief summary of content
-3. **Details** - Comprehensive information
-4. **Examples** - Code samples where applicable
-5. **References** - Links to related docs
-
-### Update Frequency
-- API Documentation: On integration changes
-- Business Logic: On rule modifications
-- Deployment Configs: On infrastructure updates
-- Development Guides: On process changes
-
-## Contributing
-
-When adding new context documentation:
-
-1. Place files in the appropriate subdirectory
-2. Follow the naming conventions
-3. Include a clear title and overview
-4. Update this README if adding new categories
-5. Link related documentation
+1. Use `snake_case` for filenames and ASCII-only content unless an existing document already relies on extended characters.
+2. Start each document with a clear title and overview before diving into implementation details.
+3. Link related documents within the context set to reduce duplication and aid discovery.
+4. Update this README whenever a new top-level directory is added or repurposed.
 
 ## Support
 
-For questions about documentation:
-- Check existing docs first
-- Consult the codebase index (CODEBASE_INDEX.md)
-- Review GitHub SpecKit (.github/SPECKIT.md)
-- Contact the development team
+If clarification is needed:
 
----
+- Review the codebase index (`CODEBASE_INDEX.md`).
+- Consult the GitHub SpecKit playbook (`.github/SPECKIT.md`).
+- Coordinate with the development team before diverging from the documented Git flow.
 
-Last Updated: September 2025
-Version: 1.0.0
+_Last updated_: 2025-09-25 (post-reset baseline)

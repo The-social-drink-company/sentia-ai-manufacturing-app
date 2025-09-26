@@ -1,4 +1,4 @@
-﻿import 'dotenv/config';
+import 'dotenv/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
@@ -504,13 +504,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('*', (req, res, next) => {
+app.use((req, res, next) => {
+  if (req.method !== 'GET') return next();
   if (req.path.startsWith('/api')) return next();
   res.sendFile(path.join(allowedStaticPath, 'index.html'), (err) => {
     if (err) next(err);
   });
 });
-
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   log.error(req.id || 'unknown', err.message, err.stack);

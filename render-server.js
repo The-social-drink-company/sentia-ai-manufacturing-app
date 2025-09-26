@@ -32,7 +32,7 @@ console.log('='.repeat(70));
 
 // CRITICAL: Set Clerk key for client
 if (!process.env.VITE_CLERK_PUBLISHABLE_KEY) {
-  process.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+  process.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_REDACTED';
   console.log('WARNING: Using default Clerk publishable key (production)');
 }
 

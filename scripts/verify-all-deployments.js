@@ -120,7 +120,7 @@ for (const [envKey, envConfig] of Object.entries(ENVIRONMENTS)) {
       const html = await response.text();
       
       // Check for Clerk configuration
-      const hasClerkKey = html.includes('pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ');
+      const hasClerkKey = html.includes('pk_live_REDACTED');
       const hasClerkScript = html.includes('clerk') || html.includes('Clerk');
       const hasReactApp = html.includes('React') || html.includes('react');
       
@@ -206,3 +206,4 @@ fs.writeFileSync('deployment-verification-report.json', JSON.stringify(report, n
 console.log(`\n📄 Verification report saved to: deployment-verification-report.json`);
 
 export { ENVIRONMENTS, TEST_ENDPOINTS };
+

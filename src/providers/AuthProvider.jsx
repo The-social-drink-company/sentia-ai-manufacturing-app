@@ -22,20 +22,25 @@ const DEFAULT_USER = {
 
 const AuthContext = createContext(null)
 
-const isBrowser = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+const hasBrowserStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
 
 const shouldForceMock = () => import.meta.env?.VITE_FORCE_MOCK_AUTH === 'true'
 const hasClerkConfig = () => Boolean(import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY)
 
+const redirectToLogin = () => {
+  if (typeof window !== 'undefined' && typeof window.location !== 'undefined') {
+    window.location.assign('/login')
+  } else {
+    logWarn('Attempted to redirect to /login outside of a browser environment')
+  }
+}
+
 function loadStoredUser() {
-  if (!isBrowser) {
+  if (!hasBrowserStorage()) {
     return null
   }
 
   try {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return null
-    }
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) {
       return null
@@ -49,14 +54,11 @@ function loadStoredUser() {
 }
 
 function persistUser(user) {
-  if (!isBrowser) {
+  if (!hasBrowserStorage()) {
     return
   }
 
   try {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return
-    }
     if (!user) {
       window.localStorage.removeItem(STORAGE_KEY)
       return
@@ -78,6 +80,10 @@ function MockAuthProvider({ children }) {
   })
 
   useEffect(() => {
+    if (!hasBrowserStorage()) {
+      return
+    }
+
     persistUser(user)
   }, [user])
 
@@ -140,7 +146,7 @@ function ClerkSessionProvider({ children }) {
   }, [clerkAuth])
 
   const signIn = useCallback(() => {
-    window.location.assign('/login')
+    redirectToLogin()
     return Promise.resolve()
   }, [])
 
@@ -156,7 +162,24 @@ function ClerkSessionProvider({ children }) {
   )
 
   if (!isLoaded) {
-    return <div className="auth-loading">Loading account...</div>
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span className="text-white font-bold text-2xl">S</span>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Sentia Manufacturing</h2>
+          <p className="text-gray-600">Authenticating with production Clerk...</p>
+          <div className="mt-4">
+            <div className="inline-flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-75"></div>
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-150"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
@@ -167,7 +190,7 @@ const signedOutValue = {
   isAuthenticated: false,
   user: null,
   signIn: () => {
-    window.location.assign('/login')
+    redirectToLogin()
     return Promise.resolve()
   },
   signOut: () => Promise.resolve(),

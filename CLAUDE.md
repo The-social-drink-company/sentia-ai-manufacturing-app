@@ -78,16 +78,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Critical Production Keys
 ```env
 # Frontend (React/Vite)
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 
 # Backend (Node.js/Express)
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+CLERK_SECRET_KEY=sk_live_REDACTED
 
 # Configuration
 CLERK_ENVIRONMENT=production
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 ```
 
 ### Authentication Implementation
@@ -865,3 +865,5 @@ This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase
 
     on Render
 - remember no shortcuts and no emergency pages - I want the full 100% working enterprise level software application deployed on Render
+
+

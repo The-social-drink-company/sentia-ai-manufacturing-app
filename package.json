@@ -24,8 +24,10 @@
         "test:ui": "vitest --ui",
         "test:e2e": "playwright test",
         "test:coverage": "vitest run --coverage",
-        "lint": "eslint \"src\" \"server\"",
-        "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
+        "lint": "eslint --config .eslintrc.enterprise.cjs \"src/**/*.{js,jsx}\" --fix",
+        "lint:check": "eslint --config .eslintrc.enterprise.cjs \"src/**/*.{js,jsx}\"",
+        "format": "prettier --write \"src/**/*.{js,jsx,json}\" \"*.{js,json,md}\"",
+        "format:check": "prettier --check \"src/**/*.{js,jsx,json}\" \"*.{js,json,md}\"",
         "typecheck": "tsc --noEmit",
         "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\" \"context/README.md\" \"context/development-methodology/repository-reset-2025-09-25.md\" \"context/new_product_prompt_answers.md\" \".github/SPECKIT.md\" \"spec-kit/specs/001-sentia-manufacturing-dashboard/*.md\""
     },
@@ -107,6 +109,7 @@
         "zustand": "^5.0.8"
     },
     "devDependencies": {
+        "@eslint/js": "^9.36.0",
         "@faker-js/faker": "^10.0.0",
         "@playwright/test": "^1.55.1",
         "@tailwindcss/aspect-ratio": "^0.4.2",

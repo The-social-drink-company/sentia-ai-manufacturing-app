@@ -39,7 +39,7 @@ if (!existsSync(indexPath)) {
   <script>
     // Set production environment
     window.NODE_ENV = 'production';
-    window.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+    window.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_REDACTED';
     window.VITE_API_BASE_URL = '/api';
     window.VITE_MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
 

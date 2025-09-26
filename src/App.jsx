@@ -8,7 +8,6 @@ import AdminPage from './pages/Admin.jsx'
 import LoginPage from './pages/Login.jsx'
 import SignUpPage from './pages/SignUp.jsx'
 import LandingPage from './pages/LandingPage.jsx'
-import './App.css'
 
 export default function App() {
   return (

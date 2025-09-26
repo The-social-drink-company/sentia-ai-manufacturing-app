@@ -22,8 +22,8 @@ The production deployment is failing because critical environment variables are 
    - Add each variable one by one, or use bulk edit mode
    - **CRITICAL VARIABLES TO ADD FIRST:**
      ```
-     VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-     CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+     VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+     CLERK_SECRET_KEY=sk_live_REDACTED
      PORT=5000
      NODE_ENV=production
      ```
@@ -62,8 +62,8 @@ The production deployment is failing because critical environment variables are 
 
 3. **Update Environment Variables**
    ```bash
-   render env:set VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ --service srv-ctg8hkpu0jms73ab8m00
-   render env:set CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq --service srv-ctg8hkpu0jms73ab8m00
+   render env:set VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED --service srv-ctg8hkpu0jms73ab8m00
+   render env:set CLERK_SECRET_KEY=sk_live_REDACTED --service srv-ctg8hkpu0jms73ab8m00
    # Continue for all variables...
    ```
 
@@ -116,3 +116,4 @@ If you encounter issues:
 2. Verify all critical environment variables are set
 3. Ensure the latest code from production branch is deployed
 4. Check that the build command and start command are correct
+

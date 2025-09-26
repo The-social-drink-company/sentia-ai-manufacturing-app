@@ -37,7 +37,7 @@ Add all variables from `PRODUCTION-ENV-UPDATES-REQUIRED.env`:
 
 **Critical Authentication Variables:**
 ```env
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 CLERK_SECRET_KEY=sk_live_[YOUR_CLERK_SECRET_KEY]
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
 VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard

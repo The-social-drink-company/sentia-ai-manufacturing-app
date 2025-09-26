@@ -8,7 +8,7 @@
 All three Render deployments (development, testing, production) have been aligned with consistent environment variables.
 
 #### Critical Updates Applied:
-- **Authentication**: All environments now use production Clerk keys (pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ)
+- **Authentication**: All environments now use production Clerk keys (pk_live_REDACTED)
 - **BYPASS_AUTH**: Set to `false` across all environments (authentication enabled)
 - **Startup Config**: Added SKIP_ENTERPRISE_INIT=true and INIT_TIMEOUT_MS=8000
 - **CORS Origins**: Properly configured for each environment's URL
@@ -70,10 +70,10 @@ databases:
 
 #### Authentication (All Environments)
 ```yaml
-VITE_CLERK_PUBLISHABLE_KEY: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_WEBHOOK_SECRET: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+VITE_CLERK_PUBLISHABLE_KEY: pk_live_REDACTED
+CLERK_SECRET_KEY: sk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_live_REDACTED
+CLERK_WEBHOOK_SECRET: whsec_REDACTED
 CLERK_ENVIRONMENT: production
 VITE_CLERK_DOMAIN: clerk.financeflo.ai
 BYPASS_AUTH: false

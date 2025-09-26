@@ -48,8 +48,8 @@ Write-Host "=====================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "For all environments, update these variables:" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ" -ForegroundColor White
-Write-Host "CLERK_SECRET_KEY=sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ" -ForegroundColor White
+Write-Host "VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED" -ForegroundColor White
+Write-Host "CLERK_SECRET_KEY=sk_live_REDACTED" -ForegroundColor White
 Write-Host "DATABASE_URL=postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require`&channel_binding=require" -ForegroundColor White
 Write-Host "VITE_MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com" -ForegroundColor White
 Write-Host "VITE_API_BASE_URL=/api" -ForegroundColor White
@@ -95,3 +95,5 @@ Write-Host "Next steps:" -ForegroundColor Yellow
 Write-Host "1. Update environment variables in deployment dashboards" -ForegroundColor White
 Write-Host "2. Redeploy all services" -ForegroundColor White
 Write-Host "3. Verify all deployments are working correctly" -ForegroundColor White
+
+

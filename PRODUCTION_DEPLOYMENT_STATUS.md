@@ -89,8 +89,8 @@ Expected results:
 
 | Variable | Required | Status | Value |
 |----------|----------|---------|--------|
-| VITE_CLERK_PUBLISHABLE_KEY | ✅ YES | ❌ Missing | pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ |
-| CLERK_SECRET_KEY | ✅ YES | ❌ Missing | sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq |
+| VITE_CLERK_PUBLISHABLE_KEY | ✅ YES | ❌ Missing | pk_live_REDACTED |
+| CLERK_SECRET_KEY | ✅ YES | ❌ Missing | sk_live_REDACTED |
 | PORT | ✅ YES | ❌ Missing | 5000 |
 | NODE_ENV | ✅ YES | ❌ Missing | production |
 | DATABASE_URL | ✅ YES | ✅ Auto-set | (Render PostgreSQL) |
@@ -132,3 +132,4 @@ If problems persist after adding environment variables:
 2. Verify all critical variables are set correctly
 3. Ensure latest code from production branch is deployed
 4. Check that build/start commands match configuration
+

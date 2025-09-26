@@ -11,12 +11,12 @@ import https from 'https';
 const CRITICAL_VARS = [
   {
     name: 'VITE_CLERK_PUBLISHABLE_KEY',
-    expected: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
+    expected: 'pk_live_REDACTED',
     description: 'Frontend authentication key'
   },
   {
     name: 'CLERK_SECRET_KEY',
-    expected: 'sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq',
+    expected: 'sk_live_REDACTED',
     description: 'Backend authentication secret'
   },
   {
@@ -173,3 +173,4 @@ async function runFullCheck() {
 runFullCheck().catch(console.error);
 
 export { checkLocalEnvironment, CRITICAL_VARS };
+

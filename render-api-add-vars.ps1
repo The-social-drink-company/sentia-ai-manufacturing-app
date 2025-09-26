@@ -21,7 +21,7 @@ $variables = @(
     @{key="DATABASE_URL"; value="postgresql://neondb_owner:npg_2wXVD9gdintm@ep-damp-wave-abxu46so-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require"},
     @{key="VITE_CLERK_PUBLISHABLE_KEY"; value="pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk"},
     @{key="CLERK_SECRET_KEY"; value="sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq"},
-    @{key="CLERK_WEBHOOK_SECRET"; value="whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j"},
+    @{key="CLERK_WEBHOOK_SECRET"; value="whsec_REDACTED"},
     @{key="XERO_CLIENT_ID"; value="9C0CAB921C134476A249E48BBECB8C4B"},
     @{key="XERO_CLIENT_SECRET"; value="f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5"},
     @{key="XERO_REDIRECT_URI"; value="https://sentia-manufacturing-dashboard.onrender.com/api/xero/callback"},

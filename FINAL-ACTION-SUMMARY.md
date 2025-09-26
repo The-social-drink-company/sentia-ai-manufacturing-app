@@ -42,11 +42,11 @@
 ### Go to Render Dashboard and Add These Variables:
 
 ```bash
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+CLERK_SECRET_KEY=sk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 VITE_API_BASE_URL=/api
 API_BASE_URL=/api
 ```
@@ -121,3 +121,5 @@ And can access:
 **Monitor Status**: ✅ Running - Will alert when production comes online
 
 **Next Update**: As soon as production status changes
+
+

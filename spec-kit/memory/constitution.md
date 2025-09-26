@@ -159,7 +159,7 @@ The Working Capital module MUST provide:
 
 ### Authentication Standards
 - Clerk authentication mandatory for all user access
-- Production keys: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+- Production keys: pk_live_REDACTED
 - RBAC enforcement at component and API levels
 - Session validation on every protected route
 - Webhook security with HMAC signatures

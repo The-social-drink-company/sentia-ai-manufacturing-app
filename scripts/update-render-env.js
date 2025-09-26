@@ -10,9 +10,9 @@ const SERVICE_ID = 'srv-ctg8hkpu0jms73ab8m00'; // Your Render service ID
 const envVarsToUpdate = [
   { key: 'VITE_DISABLE_CLERK', value: 'false' },
   { key: 'DISABLE_CLERK', value: 'false' },
-  { key: 'VITE_CLERK_PUBLISHABLE_KEY', value: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ' },
-  { key: 'CLERK_SECRET_KEY', value: 'sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq' },
-  { key: 'CLERK_WEBHOOK_SECRET', value: 'whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j' },
+  { key: 'VITE_CLERK_PUBLISHABLE_KEY', value: 'pk_live_REDACTED' },
+  { key: 'CLERK_SECRET_KEY', value: 'sk_live_REDACTED' },
+  { key: 'CLERK_WEBHOOK_SECRET', value: 'whsec_REDACTED' },
   { key: 'VITE_CLERK_DOMAIN', value: 'clerk.financeflo.ai' },
   { key: 'CLERK_ENVIRONMENT', value: 'production' }
 ];

@@ -34,9 +34,8 @@ const ExecutiveDashboard = lazy(() => import('./components/Executive/ExecutiveDa
 const NewExecutiveDashboard = lazy(() => import('./features/executive/ExecutiveDashboard'));
 
 // Financial Management
-const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'));
+const WorkingCapital = lazy(() => import('./pages/WorkingCapital'));
 const WorkingCapitalDashboard = lazy(() => import('./features/working-capital/WorkingCapitalDashboard'));
-const WorkingCapitalExpert = lazy(() => import('./components/WorkingCapital/WorkingCapitalExpert'));
 const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
 const FinancialReports = lazy(() => import('./pages/Financial/FinancialReports'));
 
@@ -225,11 +224,6 @@ const AuthenticatedApp = () => {
                   <ProtectedRoute requiredRoles={['admin', 'manager', 'operator']}>
                     <WorkingCapitalDashboard />
                   </ProtectedRoute>
-                } />
-                <Route path="/working-capital/expert" element={
-                  <Fragment>
-                    <WorkingCapitalExpert />
-                  </Fragment>
                 } />
                 <Route path="/what-if" element={
                   <Fragment>

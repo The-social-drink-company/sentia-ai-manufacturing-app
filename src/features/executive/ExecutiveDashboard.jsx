@@ -6,7 +6,9 @@ import {
   ChartBarIcon,
   ExclamationTriangleIcon,
   ArrowUpIcon,
-  ArrowDownIcon
+  ArrowDownIcon,
+  SignalIcon,
+  SignalSlashIcon
 } from '@heroicons/react/24/outline';
 import { useExecutiveStore } from './stores/executiveStore';
 import KPIWidget from './components/KPIWidget';
@@ -23,14 +25,38 @@ const ExecutiveDashboard = () => {
     alerts,
     trends,
     fetchExecutiveMetrics,
-    updateMetric
+    updateMetric,
+    addAlert
   } = useExecutiveStore();
 
-  // Real-time SSE updates
-  useSSE('/api/sse/executive', {
-    onMessage: (data) => {
-      if (data.type === 'metric-update') {
-        updateMetric(data.payload);
+  // Real-time SSE updates for executive metrics
+  const {
+    data: sseData,
+    isConnected: sseConnected,
+    lastUpdate: sseLastUpdate
+  } = useSSE(['executive-metrics', 'executive-alerts', 'system-status'], {
+    onEvent: (eventType, eventData) => {
+      switch (eventType) {
+        case 'executive-metrics':
+          if (eventData.metrics) {
+            // Update specific metrics in the store
+            Object.entries(eventData.metrics).forEach(([key, value]) => {
+              updateMetric({ name: key, data: value });
+            });
+          }
+          break;
+        case 'executive-alerts':
+          if (eventData.alert) {
+            // Add new alert to the store
+            addAlert(eventData.alert);
+          }
+          break;
+        case 'system-status':
+          // Handle system status updates
+          console.log('System status update:', eventData);
+          break;
+        default:
+          console.log('Unhandled SSE event:', eventType, eventData);
       }
     }
   });
@@ -152,13 +178,39 @@ const ExecutiveDashboard = () => {
     <div className="space-y-6 p-6">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">
-          Executive Dashboard
-        </h1>
-        <p className="text-blue-100">
-          Welcome back, {user?.firstName || 'Executive'}.
-          Here&apos;s your strategic overview.
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">
+              Executive Dashboard
+            </h1>
+            <p className="text-blue-100">
+              Welcome back, {user?.firstName || 'Executive'}.
+              Here&apos;s your strategic overview.
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            {/* SSE Connection Status */}
+            <div className="flex items-center space-x-2">
+              {sseConnected ? (
+                <>
+                  <SignalIcon className="h-5 w-5 text-green-300" />
+                  <span className="text-xs text-blue-100">Live</span>
+                </>
+              ) : (
+                <>
+                  <SignalSlashIcon className="h-5 w-5 text-red-300" />
+                  <span className="text-xs text-blue-100">Offline</span>
+                </>
+              )}
+            </div>
+            {/* Last Update Timestamp */}
+            {sseLastUpdate && (
+              <div className="text-xs text-blue-200">
+                Updated: {new Date(sseLastUpdate).toLocaleTimeString()}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Critical Alerts Panel - FR-005 */}

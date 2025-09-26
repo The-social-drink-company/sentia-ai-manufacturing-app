@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import WorkingCapitalCalculator from './components/WorkingCapitalCalculator';
+import WorkingCapitalDashboard from './features/working-capital/WorkingCapitalDashboard';
 import AIInsights from './components/AIInsights';
 import './App.css';
 
@@ -28,7 +28,7 @@ function App() {
   const renderCurrentView = () => {
     switch (currentView) {
       case 'working-capital':
-        return <WorkingCapitalCalculator />;
+        return <WorkingCapitalDashboard />;
       case 'ai-insights':
         return <AIInsights />;
       case 'dashboard':

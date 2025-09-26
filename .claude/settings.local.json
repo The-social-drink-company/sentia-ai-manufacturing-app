@@ -332,8 +332,7 @@
       "Bash(npx vitest run:*)",
       "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ)",
       "Bash(render whoami)",
-      "Bash(./render.exe whoami)",
-      "Bash(set RENDER_API_TOKEN=rnd_SYtmZHrAGh3XIL4yoHevlk1ZwHEV)"
+      "Bash(./render.exe whoami)"
     ],
     "deny": [],
     "ask": []

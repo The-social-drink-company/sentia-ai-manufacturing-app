@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 // Script to update Render environment variables using API token
-const https = require('https');
+import https from 'https';
 
-const RENDER_API_TOKEN = 'rnd_SYtmZHrAGh3XIL4yoHevlk1ZwHEV';
+const RENDER_API_TOKEN = process.env.RENDER_API_TOKEN || 'YOUR_RENDER_API_TOKEN_HERE';
 const SERVICE_ID = 'srv-ctg8hkpu0jms73ab8m00'; // Your Render service ID
 
 // Environment variables to update

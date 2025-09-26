@@ -337,7 +337,8 @@
       "Bash(pnpm store prune:*)",
       "Bash(pnpm run lint:*)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm test:*)"
+      "Bash(pnpm test:*)",
+      "Bash(node_modules/.bin/eslint:*)"
     ],
     "deny": [],
     "ask": []

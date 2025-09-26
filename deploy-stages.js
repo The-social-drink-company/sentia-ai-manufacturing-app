@@ -165,27 +165,17 @@ function runStageBuild() {
     fs.renameSync('vite.config.stage.js', 'vite.config.js');
 
     // Run build
-    const buildEnv = {
-      ...process.env,
-      NODE_ENV: 'production',
-      DEPLOYMENT_STAGE: DEPLOYMENT_STAGE
-    };
+    const buildCommand = `NODE_OPTIONS='--max-old-space-size=${currentStage.memoryLimit}' npm run build`;
+    console.log(`Executing: ${buildCommand}`);
 
-    if (process.platform === 'win32') {
-      buildEnv.NODE_OPTIONS = `--max-old-space-size=${currentStage.memoryLimit}`;
-      console.log('Executing: npm run build');
-      execSync('npm run build', {
-        stdio: 'inherit',
-        env: buildEnv
-      });
-    } else {
-      const buildCommand = `NODE_OPTIONS='--max-old-space-size=${currentStage.memoryLimit}' npm run build`;
-      console.log(`Executing: ${buildCommand}`);
-      execSync(buildCommand, {
-        stdio: 'inherit',
-        env: buildEnv
-      });
-    }
+    execSync(buildCommand, {
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        NODE_ENV: 'production',
+        DEPLOYMENT_STAGE: DEPLOYMENT_STAGE
+      }
+    });
 
     console.log('✓ Build completed successfully');
 

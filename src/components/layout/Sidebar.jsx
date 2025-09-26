@@ -74,11 +74,19 @@ const navigation = [
 
 const Sidebar = ({ isOpen, onToggle }) => {
   const location = useLocation()
-  const { user } = useUser()
-  const [collapsed, setCollapsed] = useState(false)
-  const [expandedSections, setExpandedSections] = useState({})
-  const [userRole, setUserRole] = useState('viewer')
-
+  const { role, hasPermission, hasFeature } = useAuthRole()
+  const { sidebarCollapsed, toggleSidebar } = useLayoutStore()
+  const [isMobile, setIsMobile] = useState(false)
+  // Force rebuild - fixed undefined collapsed variable issue
+  
+  // Alert counts (would come from actual data)
+  const [alertCounts] = useState({
+    stockLow: 3,
+    capacityIssues: 1,
+    forecastErrors: 0
+  })
+  
+  // Handle mobile responsiveness
   useEffect(() => {
     // Get user role from metadata
     const role = user?.publicMetadata?.role || 'viewer'
@@ -143,23 +151,80 @@ const Sidebar = ({ isOpen, onToggle }) => {
           onClick={onToggle}
         />
       )}
-
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          'fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300',
-          'lg:sticky lg:top-16',
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-          collapsed ? 'w-16' : 'w-64'
-        )}
+      
+      <div
+        className={`fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300 z-50 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}
       >
-        <div className="h-full flex flex-col">
-          {/* Collapse toggle */}
-          <div className="p-2 border-b border-gray-200 dark:border-gray-700">
-            <button
-              onClick={toggleCollapse}
-              className="w-full p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center"
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      {/* Sidebar Header */}
+      <div className="flex items-center justify-between p-4 h-16 border-b border-gray-200 dark:border-gray-700">
+        {!sidebarCollapsed && (
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+              <span>S</span>
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                Sentia
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Manufacturing
+              </p>
+            </div>
+          </div>
+        )}
+        <button
+          onClick={toggleSidebar}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          title={sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
+        >
+          {sidebarCollapsed ? (
+            <ChevronRightIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          ) : (
+            <ChevronLeftIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          )}
+        </button>
+      </div>
+      
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+        <div className="space-y-4 px-3">
+          {navigationItems.map((section) => {
+            // For demo/guest access, show all items regardless of permissions
+            const visibleItems = section.items.filter(item => 
+              !item.permission || hasPermission(item.permission) || true
+            )
+            
+            if (visibleItems.length === 0) return null
+            
+            return (
+              <SidebarSection
+                key={section.section}
+                title={section.section}
+                isCollapsed={sidebarCollapsed}
+                defaultExpanded={section.defaultExpanded}
+              >
+                {visibleItems.map((item) => (
+                  <SidebarItem
+                    key={item.to}
+                    to={item.to}
+                    icon={item.icon}
+                    label={item.label}
+                    isActive={isActive(item.to)}
+                    isCollapsed={sidebarCollapsed}
+                    badge={item.badge}
+                    shortcut={item.shortcut}
+                  />
+                ))}
+              </SidebarSection>
+            )
+          })}
+          
+          {/* Admin section */}
+          {adminItems.length > 0 && (
+            <SidebarSection
+              title="Administration"
+              isCollapsed={sidebarCollapsed}
+              defaultExpanded={false}
             >
               {collapsed ? (
                 <ChevronRightIcon className="h-5 w-5" />
@@ -250,7 +315,17 @@ const Sidebar = ({ isOpen, onToggle }) => {
             </div>
           )}
         </div>
-      </aside>
+      )}
+      
+      {/* Collapsed state indicator */}
+      {sidebarCollapsed && (
+        <div className="sidebar-footer-collapsed">
+          <div className="collapsed-hint">
+            <span>Ctrl+B</span>
+          </div>
+        </div>
+      )}
+      </div>
     </>
   )
 }

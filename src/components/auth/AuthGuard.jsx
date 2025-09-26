@@ -1,7 +1,8 @@
 import { useAuth } from '@clerk/clerk-react'
 import { Navigate, useLocation } from 'react-router-dom'
 
-import { Alert, AlertDescription } from '../ui'
+import { Navigate } from 'react-router-dom';
+import { LoadingSpinner } from '../ui/LoadingSpinner';
 
 /**
  * AuthGuard Component

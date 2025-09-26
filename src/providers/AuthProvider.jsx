@@ -22,6 +22,8 @@ const DEFAULT_USER = {
 
 const AuthContext = createContext(null)
 
+const isBrowser = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+
 const shouldForceMock = () => import.meta.env?.VITE_FORCE_MOCK_AUTH === 'true'
 const hasClerkConfig = () => Boolean(import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY)
 
@@ -201,3 +203,4 @@ export function useAuthContext() {
 }
 
 export { AuthContext }
+

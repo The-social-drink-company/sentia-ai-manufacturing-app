@@ -9,7 +9,8 @@ import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import { randomUUID } from 'crypto';
 
-process.env.NODE_OPTIONS = '--max-old-space-size=128';
+// Note: NODE_OPTIONS should be set via environment or npm scripts
+// e.g., cross-env NODE_OPTIONS=--max-old-space-size=128 node server-fixed.js
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -511,6 +512,7 @@ app.use((req, res, next) => {
     if (err) next(err);
   });
 });
+
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   log.error(req.id || 'unknown', err.message, err.stack);

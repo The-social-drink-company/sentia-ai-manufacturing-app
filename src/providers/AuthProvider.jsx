@@ -27,6 +27,9 @@ const hasClerkConfig = () => Boolean(import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY
 
 function loadStoredUser() {
   try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return null
+    }
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) {
       return null
@@ -41,6 +44,9 @@ function loadStoredUser() {
 
 function persistUser(user) {
   try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return
+    }
     if (!user) {
       window.localStorage.removeItem(STORAGE_KEY)
       return
@@ -140,7 +146,7 @@ function ClerkSessionProvider({ children }) {
   )
 
   if (!isLoaded) {
-    return <div className="auth-loading">Loading account�</div>
+    return <div className="auth-loading">Loading account...</div>
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

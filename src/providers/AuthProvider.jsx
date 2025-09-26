@@ -28,6 +28,10 @@ const shouldForceMock = () => import.meta.env?.VITE_FORCE_MOCK_AUTH === 'true'
 const hasClerkConfig = () => Boolean(import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY)
 
 function loadStoredUser() {
+  if (!isBrowser) {
+    return null
+  }
+
   try {
     if (typeof window === 'undefined' || !window.localStorage) {
       return null
@@ -203,4 +207,5 @@ export function useAuthContext() {
 }
 
 export { AuthContext }
+
 

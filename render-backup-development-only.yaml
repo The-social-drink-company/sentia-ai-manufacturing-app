@@ -36,7 +36,7 @@ services:
       - key: CLERK_SECRET_KEY
         value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
       - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+        value: whsec_REDACTED
 
       # Session & JWT
       - key: SESSION_SECRET

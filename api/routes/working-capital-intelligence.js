@@ -6,6 +6,8 @@ import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
 import OpenAI from 'openai';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 
@@ -76,7 +78,7 @@ router.get('/cash-runway',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Cash runway analysis');
+      logDebug('[Cache Hit] Cash runway analysis');
       return res.json(cached);
     }
 
@@ -273,7 +275,7 @@ router.get('/optimization',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Working capital optimization');
+      logDebug('[Cache Hit] Working capital optimization');
       return res.json(cached);
     }
 
@@ -423,7 +425,7 @@ router.get('/industry-benchmarks',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Industry benchmarks');
+      logDebug('[Cache Hit] Industry benchmarks');
       return res.json(cached);
     }
 
@@ -600,7 +602,7 @@ Provide 3 key insights and 3 actionable recommendations for executive decision-m
 
     return completion.choices[0].message.content;
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    logError('OpenAI API error:', error);
     return generateFallbackInsights(params);
   }
 }
@@ -614,14 +616,16 @@ async function getCurrentFinancialMetrics() {
   return {
     annualRevenue: metrics?.annualRevenue || 0,
     workingCapital: metrics?.workingCapital || 0,
-    dso: metrics?.dso || 30,
-    dpo: metrics?.dpo || 30,
-    inventoryTurns: metrics?.inventoryTurns || 12,
-    cashConversionCycle: metrics?.cashConversionCycle || 30,
-    employeeCount: metrics?.employeeCount || 50,
-    industry: metrics?.industry || 'Manufacturing'
+    dso: metrics?.dso || 0,
+    dpo: metrics?.dpo || 0,
+    inventoryTurns: metrics?.inventoryTurns || 0,
+    cashConversionCycle: metrics?.cashConversionCycle || 0,
+    employeeCount: metrics?.employeeCount || 0,
+    industry: metrics?.industry || null
   };
 }
 
 // Export the router
 export default router;
+
+

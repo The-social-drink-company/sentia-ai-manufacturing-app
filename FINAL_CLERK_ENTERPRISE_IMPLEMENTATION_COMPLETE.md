@@ -80,7 +80,7 @@ const { sessionMetrics, validateSession, getEnterpriseToken } = useEnterpriseSes
 // Enterprise security configuration
 const ENTERPRISE_CLERK_CONFIG = {
   // Production keys
-  publishableKey: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
+  publishableKey: 'pk_live_REDACTED',
   
   // Enterprise features
   enableOrganizations: true,
@@ -111,10 +111,10 @@ const ENTERPRISE_CLERK_CONFIG = {
 ### Production Environment
 ```env
 # Full Clerk Enterprise Configuration
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+CLERK_SECRET_KEY=sk_live_REDACTED
+CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 
 # Enterprise Features
 CLERK_ENABLE_ORGANIZATIONS=true
@@ -267,3 +267,5 @@ The Sentia Manufacturing Dashboard now implements the complete Clerk enterprise 
 **Implementation Completed**: September 20, 2025  
 **Status**: ✅ **ENTERPRISE-READY**  
 **Deployment**: ✅ **IMMEDIATE**
+
+

@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import { AuthProvider } from './providers/AuthProvider.jsx'
+import { logInfo, logError, logDebug } from './utils/logger.js'
 
 // Simplified initialization
 console.log('Initializing Sentia Manufacturing Dashboard...');

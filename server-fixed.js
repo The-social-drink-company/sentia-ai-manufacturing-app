@@ -1,617 +1,626 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import compression from 'compression';
-import morgan from 'morgan';
+import 'dotenv/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import compression from 'compression';
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
+import { randomUUID } from 'crypto';
 
-// Load environment variables
-dotenv.config();
+// Note: NODE_OPTIONS should be set via environment or npm scripts
+// e.g., cross-env NODE_OPTIONS=--max-old-space-size=128 node server-fixed.js
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Enterprise Configuration
-const CONFIG = {
-  PORT: process.env.PORT || 5000,
-  NODE_ENV: process.env.NODE_ENV || 'production',
-  VERSION: '1.0.7-enterprise-complete',
-  COMPANY: 'Sentia Manufacturing',
-  CORS_ORIGINS: process.env.CORS_ORIGINS || '*',
+const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const IS_PRODUCTION = NODE_ENV === 'production';
+const DATABASE_URL = process.env.DATABASE_URL || '';
+const MCP_SERVER_URL = process.env.MCP_SERVER_URL?.trim() || 'https://mcp-server-tkyu.onrender.com';
+
+const DEPLOYMENT = {
+  isRender: Boolean(process.env.RENDER || process.env.RENDER_EXTERNAL_URL),
+  isRailway: Boolean(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PUBLIC_DOMAIN)
 };
 
-// Error handling for production
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  process.exit(1);
-});
+const allowedStaticPath = path.resolve(__dirname, 'dist');
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
-
-// Suppress Node.js deprecation warnings in production
-if (CONFIG.NODE_ENV === 'production') {
-  process.removeAllListeners('warning');
-  process.on('warning', (warning) => {
-    if (warning.name === 'DeprecationWarning' && warning.message.includes('punycode')) {
-      return; // Silently ignore punycode deprecation
-    }
-    console.warn(warning.name + ': ' + warning.message);
-  });
+const renderWsHost = process.env.RENDER_EXTERNAL_URL?.replace(/^https?:\/\//, '') || '';
+const wsConnectHosts = ['ws://localhost:5000', 'wss://localhost:5000'];
+if (renderWsHost) {
+  wsConnectHosts.push(`wss://${renderWsHost}`);
 }
 
-// Create Express app
 const app = express();
+const server = createServer(app);
+const wss = new WebSocketServer({ server, path: '/ws' });
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://api.clerk.dev", "wss:", "ws:"],
-    },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
+const sseClients = new Map();
 
-// CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'https://sentia-testing.onrender.com',
-      'https://sentia.onrender.com',
-      'https://sentiaprod.financeflo.ai',
-      'https://sentia-manufacturing-production.onrender.com'
-    ];
-
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['X-Total-Count']
+const log = {
+  info: (...args) => console.log('[INFO]', ...args),
+  warn: (...args) => console.warn('[WARN]', ...args),
+  error: (...args) => console.error('[ERROR]', ...args)
 };
 
-app.use(cors(corsOptions));
+app.set('trust proxy', 1);
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // limit each IP to 1000 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
+app.use((req, res, next) => {
+  req.id = randomUUID();
+  res.locals.requestId = req.id;
+  res.setHeader('X-Request-ID', req.id);
+  next();
 });
 
-app.use(limiter);
-
-// Compression middleware
-app.use(compression());
-
-// Logging middleware
-if (CONFIG.NODE_ENV === 'production') {
-  app.use(morgan('combined'));
-} else {
-  app.use(morgan('dev'));
-}
-
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Health check endpoint (must be before authentication)
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    version: CONFIG.VERSION,
-    environment: CONFIG.NODE_ENV,
-    service: 'Sentia Manufacturing Dashboard',
-    uptime: process.uptime()
+app.use((req, res, next) => {
+  const started = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - started;
+    log.info(`${req.id} ${req.method} ${req.originalUrl} -> ${res.statusCode} (${duration}ms)`);
   });
+  next();
 });
 
-// API health check
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    version: CONFIG.VERSION,
-    environment: CONFIG.NODE_ENV,
-    api: 'operational',
-    features: {
-      authentication: 'enabled',
-      realTimeData: 'enabled',
-      aiFeatures: 'enabled',
-      mcpServer: 'enabled'
-    }
-  });
-});
-
-// Serve static files from dist directory
-const distPath = path.join(__dirname, 'dist');
-app.use(express.static(distPath));
-
-// API Routes
-app.get('/api/dashboard/executive', (req, res) => {
-  res.json({
-    totalRevenue: 2450000,
-    totalOrders: 1250,
-    activeCustomers: 850,
-    inventoryValue: 750000,
-    workingCapital: {
-      current: 1850000,
-      projected: 2100000,
-      trend: '+13.5%'
-    },
-    kpis: [
-      { name: 'Revenue Growth', value: '+15.2%', trend: 'up' },
-      { name: 'Order Fulfillment', value: '94.8%', trend: 'up' },
-      { name: 'Customer Satisfaction', value: '4.7/5', trend: 'stable' },
-      { name: 'Inventory Turnover', value: '8.2x', trend: 'up' }
-    ],
-    production: {
-      totalUnits: 3601,
-      efficiency: 91.2,
-      trend: 'increasing',
-      trendPercentage: '+5.2%'
-    },
-    quality: {
-      passRate: 96.8,
-      defectRate: 0.8,
-      inspections: 1247,
-      trend: 'stable',
-      trendPercentage: '+0.3%'
-    },
-    inventory: {
-      totalValue: 1800000,
-      lowStock: 23,
-      criticalStock: 5,
-      turnover: 8.2,
-      trend: 'stable',
-      trendPercentage: '+2.1%'
-    },
-    financial: {
-      revenue: 2800000,
-      margin: 18.5,
-      trend: 'increasing',
-      trendPercentage: '+3.2%'
-    }
-  });
-});
-
-// Inventory API
-app.get('/api/inventory/advanced', (req, res) => {
-  res.json({
-    items: [
-      {
-        id: 'SKU-001',
-        name: 'Premium Spirits Bottle',
-        category: 'Finished Goods',
-        currentStock: 1250,
-        minStock: 500,
-        maxStock: 2000,
-        unitCost: 25.50,
-        totalValue: 31875,
-        status: 'optimal',
-        location: 'Warehouse A-01',
-        supplier: 'Glass Co. Ltd',
-        lastUpdated: new Date().toISOString(),
-        movement: 'increasing',
-      },
-      {
-        id: 'SKU-002',
-        name: 'Raw Spirit Base',
-        category: 'Raw Materials',
-        currentStock: 850,
-        minStock: 300,
-        maxStock: 1500,
-        unitCost: 12.75,
-        totalValue: 10837.50,
-        status: 'optimal',
-        location: 'Storage B-02',
-        supplier: 'Distillery Supplies',
-        lastUpdated: new Date().toISOString(),
-        movement: 'stable',
-      },
-      {
-        id: 'SKU-003',
-        name: 'Packaging Labels',
-        category: 'Packaging',
-        currentStock: 150,
-        minStock: 200,
-        maxStock: 1000,
-        unitCost: 0.25,
-        totalValue: 37.50,
-        status: 'low',
-        location: 'Packaging C-03',
-        supplier: 'Label Solutions',
-        lastUpdated: new Date().toISOString(),
-        movement: 'decreasing',
-      }
-    ],
-    categories: ['Finished Goods', 'Raw Materials', 'Packaging', 'Equipment'],
-    summary: {
-      totalItems: 3,
-      totalValue: 42750,
-      lowStockItems: 1,
-      criticalStockItems: 0,
-      optimalItems: 2,
-    },
-    analytics: {
-      turnoverRate: 8.2,
-      carryingCost: 15000,
-      stockoutRisk: 0.05,
-      optimizationPotential: 0.12,
-    },
-  });
-});
-
-// Production API
-app.get('/api/production/monitoring', (req, res) => {
-  res.json({
-    lines: [
-      {
-        id: 'line1',
-        name: 'Premium Bottling Line 1',
-        status: 'running',
-        efficiency: 94.2,
-        unitsProduced: 1247,
-        targetUnits: 1300,
-        speed: 45.2,
-        targetSpeed: 50.0,
-        quality: 98.5,
-        uptime: 96.8,
-        lastMaintenance: '2024-01-15T08:00:00Z',
-        nextMaintenance: '2024-02-15T08:00:00Z',
-        operator: 'John Smith',
-        shift: 'Day',
-        temperature: 22.5,
-        humidity: 45.2,
-        pressure: 2.1,
-        vibration: 0.8,
-        alerts: [],
-        metrics: {
-          cycleTime: 1.2,
-          setupTime: 15.0,
-          changeoverTime: 8.5,
-          downtime: 3.2,
-        },
-      },
-      {
-        id: 'line2',
-        name: 'Premium Bottling Line 2',
-        status: 'running',
-        efficiency: 87.8,
-        unitsProduced: 1156,
-        targetUnits: 1300,
-        speed: 42.1,
-        targetSpeed: 50.0,
-        quality: 97.2,
-        uptime: 91.5,
-        lastMaintenance: '2024-01-10T14:00:00Z',
-        nextMaintenance: '2024-02-10T14:00:00Z',
-        operator: 'Sarah Johnson',
-        shift: 'Day',
-        temperature: 23.1,
-        humidity: 47.8,
-        pressure: 2.0,
-        vibration: 1.2,
-        alerts: [
-          {
-            id: 'alert1',
-            type: 'warning',
-            message: 'Temperature variance detected',
-            timestamp: new Date().toISOString(),
-            severity: 'medium',
-          },
-        ],
-        metrics: {
-          cycleTime: 1.4,
-          setupTime: 18.0,
-          changeoverTime: 12.0,
-          downtime: 8.5,
-        },
-      }
-    ],
-    summary: {
-      totalLines: 2,
-      activeLines: 2,
-      totalUnits: 2403,
-      targetUnits: 2600,
-      averageEfficiency: 91.0,
-      overallQuality: 97.9,
-      totalUptime: 94.2,
-    },
-    analytics: {
-      oee: 87.5,
-      availability: 94.2,
-      performance: 91.0,
-      quality: 97.9,
-      trends: {
-        efficiency: 'increasing',
-        quality: 'stable',
-        uptime: 'increasing',
-      },
-    },
-  });
-});
-
-// Quality API
-app.get('/api/quality/control', (req, res) => {
-  res.json({
-    tests: [
-      {
-        id: 'QC-001',
-        name: 'Spirit Purity Test',
-        type: 'Chemical Analysis',
-        status: 'passed',
-        result: 99.8,
-        target: 99.5,
-        unit: '%',
-        inspector: 'Dr. Sarah Johnson',
+app.use((req, res, next) => {
+  res.success = (payload = {}, meta = {}) => {
+    res.json({
+      success: true,
+      data: payload,
+      meta: {
+        requestId: req.id,
         timestamp: new Date().toISOString(),
-        batchId: 'BATCH-2024-001',
-        productLine: 'Premium Spirits',
-        duration: 45,
-        parameters: {
-          alcoholContent: 40.2,
-          impurities: 0.002,
-          pH: 6.8,
-          color: 'Clear',
-        },
-        notes: 'All parameters within acceptable range',
-        trend: 'stable',
-      },
-      {
-        id: 'QC-002',
-        name: 'Bottle Integrity Test',
-        type: 'Physical Test',
-        status: 'passed',
-        result: 100,
-        target: 99.0,
-        unit: '%',
-        inspector: 'Mike Wilson',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        batchId: 'BATCH-2024-002',
-        productLine: 'Premium Spirits',
-        duration: 30,
-        parameters: {
-          pressureTest: 'Passed',
-          leakTest: 'Passed',
-          capIntegrity: 'Passed',
-          labelAlignment: 'Passed',
-        },
-        notes: 'Perfect seal integrity',
-        trend: 'improving',
+        ...meta
       }
-    ],
-    summary: {
-      totalTests: 2,
-      passedTests: 2,
-      failedTests: 0,
-      warningTests: 0,
-      passRate: 100.0,
-      averageResult: 99.9,
-      totalInspections: 1247,
-    },
-    analytics: {
-      passRate: 100.0,
-      defectRate: 0.0,
-      inspectionTime: 37.5,
-      reworkRate: 0.0,
-      trends: {
-        passRate: 'improving',
-        defectRate: 'decreasing',
-        inspectionTime: 'stable',
+    });
+  };
+
+  res.fail = (status, message, details) => {
+    res.status(status).json({
+      success: false,
+      error: {
+        message,
+        details
       },
+      meta: {
+        requestId: req.id,
+        timestamp: new Date().toISOString()
+      }
+    });
+  };
+
+  next();
+});
+
+const generateCorsOptions = () => {
+  const staticOrigins = [
+    process.env.RENDER_EXTERNAL_URL,
+    process.env.RAILWAY_PUBLIC_DOMAIN,
+    process.env.CLIENT_URL,
+    process.env.DEPLOYMENT_URL,
+    process.env.FRONTEND_URL
+  ].filter(Boolean);
+
+  return {
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (staticOrigins.includes(origin)) return callback(null, true);
+      if (/\.onrender\.com$/i.test(origin)) return callback(null, true);
+      if (/\.railway\.app$/i.test(origin)) return callback(null, true);
+      callback(new Error('Not allowed by CORS'));
     },
-    inspectors: [
-      'Dr. Sarah Johnson',
-      'Mike Wilson',
-      'Lisa Brown',
-      'John Smith',
-      'Master Taster',
-    ],
-    testTypes: [
-      'Chemical Analysis',
-      'Physical Test',
-      'Visual Inspection',
-      'Sensory Test',
-      'Microbiological Test',
-    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
+    credentials: true,
+    optionsSuccessStatus: 204
+  };
+};
+
+const connectSrc = [
+  "'self'",
+  MCP_SERVER_URL,
+  'https://*.onrender.com',
+  'https://*.railway.app',
+  ...wsConnectHosts
+];
+
+const cspDirectives = {
+  defaultSrc: ["'self'"],
+  baseUri: ["'self'"],
+  blockAllMixedContent: [],
+  fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+  frameAncestors: ["'self'"],
+  imgSrc: ["'self'", 'data:', 'https://*.onrender.com'],
+  objectSrc: ["'none'"],
+  scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+  styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+  connectSrc
+};
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: cspDirectives
+    },
+    crossOriginEmbedderPolicy: false
+  })
+);
+
+app.use(cors(generateCorsOptions()));
+
+app.use(
+  compression({
+    level: 6,
+    threshold: 1024
+  })
+);
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+app.use(
+  express.static(allowedStaticPath, {
+    index: false,
+    maxAge: '365d',
+    immutable: true,
+    setHeaders: (res) => {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  })
+);
+
+const attachMockUser = (req, res, next) => {
+  req.user = {
+    id: 'admin',
+    role: 'administrator',
+    email: 'admin@sentia-manufacturing.local',
+    authProvider: 'mock'
+  };
+  next();
+};
+
+const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+const validators = {
+  string: (value) => typeof value === 'string',
+  number: (value) => typeof value === 'number' && Number.isFinite(value),
+  boolean: (value) => typeof value === 'boolean',
+  object: (value) => isObject(value),
+  array: (value) => Array.isArray(value)
+};
+
+const validateBody = (schema) => (req, res, next) => {
+  const errors = [];
+
+  Object.entries(schema).forEach(([key, rules]) => {
+    const value = req.body[key];
+    const { required = false, type, enum: enumValues } = rules;
+
+    if (required && value === undefined) {
+      errors.push(`${key} is required`);
+      return;
+    }
+
+    if (value === undefined) return;
+
+    if (type && !validators[type]?.(value)) {
+      errors.push(`${key} must be of type ${type}`);
+      return;
+    }
+
+    if (enumValues && !enumValues.includes(value)) {
+      errors.push(`${key} must be one of: ${enumValues.join(', ')}`);
+    }
+  });
+
+  if (errors.length > 0) {
+    return res.fail(400, 'Validation failed', { issues: errors });
+  }
+
+  next();
+};
+
+const healthRouter = express.Router();
+
+// Support both GET and HEAD requests for health checks
+healthRouter.get('/health', (req, res) => {
+  res.success({ status: 'ok', uptime: process.uptime() });
+});
+
+healthRouter.head('/health', (req, res) => {
+  res.status(200).end();
+});
+
+healthRouter.get('/health/live', (req, res) => {
+  res.success({ status: 'live', uptime: process.uptime() });
+});
+
+healthRouter.head('/health/live', (req, res) => {
+  res.status(200).end();
+});
+
+const checkDatabaseConnectivity = async () => {
+  if (!DATABASE_URL) {
+    return { status: 'skipped', message: 'DATABASE_URL not configured' };
+  }
+
+  let Client;
+  try {
+    ({ Client } = await import('pg'));
+  } catch (error) {
+    if (error.code === 'ERR_MODULE_NOT_FOUND') {
+      return { status: 'skipped', message: 'pg client not installed' };
+    }
+    return { status: 'unhealthy', message: error.message };
+  }
+
+  try {
+    const client = new Client({
+      connectionString: DATABASE_URL,
+      ssl: DEPLOYMENT.isRender || DEPLOYMENT.isRailway ? { rejectUnauthorized: false } : false
+    });
+    await client.connect();
+    await client.query('SELECT 1');
+    await client.end();
+    return { status: 'healthy' };
+  } catch (error) {
+    return { status: 'unhealthy', message: error.message };
+  }
+};
+
+healthRouter.get('/health/ready', async (req, res) => {
+  const dbStatus = await checkDatabaseConnectivity();
+  const ok = dbStatus.status === 'healthy' || dbStatus.status === 'skipped';
+
+  if (!ok) {
+    return res.fail(503, 'Service not ready', { database: dbStatus });
+  }
+
+  res.success({ status: 'ready', database: dbStatus });
+});
+
+healthRouter.get('/api/status', async (req, res) => {
+  const dbStatus = await checkDatabaseConnectivity();
+  res.success({
+    environment: NODE_ENV,
+    deployment: DEPLOYMENT.isRender ? 'render' : DEPLOYMENT.isRailway ? 'railway' : 'local',
+    node: process.version,
+    memory: process.memoryUsage(),
+    database: dbStatus,
+    time: new Date().toISOString()
   });
 });
 
-// AI Analytics API
-app.get('/api/ai/analytics', (req, res) => {
-  res.json({
-    confidence: 85,
-    predictions: 124,
-    accuracy: 91,
-    insights: [
-      {
-        title: 'Demand Peak Detected',
-        description: 'AI model predicts 25% increase in demand for next month',
-        type: 'positive',
-        impact: '+15% revenue potential'
-      },
-      {
-        title: 'Production Bottleneck Risk',
-        description: 'Assembly line capacity may be exceeded during peak period',
-        type: 'warning',
-        impact: 'Potential 5-day delay'
-      }
-    ],
-    performance: {
-      accuracy: 91.2,
-      precision: 88.7,
-      recall: 94.1,
-      f1_score: 91.3
-    },
-    recommendations: [
-      {
-        title: 'Increase Production Capacity',
-        description: 'Consider adding an extra shift during peak demand period',
-        impact: '+20% throughput'
-      },
-      {
-        title: 'Optimize Inventory Levels',
-        description: 'Preposition inventory based on demand predictions',
-        impact: '-12% carrying costs'
-      }
+app.use(healthRouter);
+
+const apiRouter = express.Router();
+apiRouter.use(attachMockUser);
+
+apiRouter.get('/dashboard/overview', (req, res) => {
+  res.success({
+    summary: {
+      productionHealth: 'stable',
+      workingCapitalStatus: 'optimal',
+      alerts: 2
+    }
+  });
+});
+
+apiRouter.get('/dashboard/widgets', (req, res) => {
+  res.success({
+    widgets: [
+      { id: 'inventoryTurns', title: 'Inventory Turns', value: 9.4 },
+      { id: 'cashRunway', title: 'Cash Runway', value: '18 months' }
     ]
   });
 });
 
-// Forecasting API
-app.post('/api/forecasting/run-model', (req, res) => {
-  res.json({
-    modelType: req.body.modelType || 'demand_forecast',
-    status: 'completed',
-    results: {
-      forecast: {
-        predictions: Array.from({ length: 30 }, (_, i) => ({
-          date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          value: 1000 + Math.random() * 500,
-          confidence: 0.85 + Math.random() * 0.1,
-        })),
-        accuracy: 0.87,
-        trend: 'increasing',
-      },
-      insights: [
-        {
-          type: 'trend',
-          message: 'Demand showing upward trend with 87% confidence',
-          impact: 'positive',
-        },
-      ],
-    },
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Server-Sent Events endpoint
-app.get('/api/events', (req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Cache-Control'
-  });
-
-  const sendEvent = (type, data) => {
-    res.write(`event: ${type}\n`);
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
-  };
-
-  // Send initial connection event
-  sendEvent('connected', {
-    message: 'Connected to Sentia Manufacturing Dashboard',
-    timestamp: new Date().toISOString()
-  });
-
-  // Send periodic updates
-  const interval = setInterval(() => {
-    sendEvent('dashboard-data', {
-      production: {
-        totalUnits: 2403 + Math.floor(Math.random() * 100),
-        efficiency: 91.0 + Math.random() * 2,
-        timestamp: new Date().toISOString()
-      },
-      quality: {
-        passRate: 97.9 + Math.random() * 1,
-        inspections: 1247 + Math.floor(Math.random() * 10),
-        timestamp: new Date().toISOString()
-      },
-      inventory: {
-        totalValue: 42750 + Math.floor(Math.random() * 1000),
-        timestamp: new Date().toISOString()
-      }
-    });
-  }, 5000);
-
-  // Handle client disconnect
-  req.on('close', () => {
-    clearInterval(interval);
-  });
-});
-
-// Catch-all handler: send back React's index.html file for client-side routing
-app.get('*', (req, res) => {
-  const indexPath = path.join(distPath, 'index.html');
-  res.sendFile(indexPath, (err) => {
-    if (err) {
-      console.error('Error serving index.html:', err);
-      res.status(404).json({ error: 'File not found' });
+apiRouter.get('/dashboard/widgets/:id', (req, res) => {
+  res.success({
+    widget: {
+      id: req.params.id,
+      title: `Widget ${req.params.id}`,
+      lastUpdated: new Date().toISOString()
     }
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({
-    error: CONFIG.NODE_ENV === 'production' ? 'Internal Server Error' : err.message,
+apiRouter.post(
+  '/dashboard/layout',
+  validateBody({ layout: { required: true, type: 'array' } }),
+  (req, res) => {
+    res.success({ message: 'Layout saved', layout: req.body.layout });
+  }
+);
+
+apiRouter.get('/dashboard/layout', (req, res) => {
+  res.success({ layout: [] });
+});
+
+apiRouter.get('/dashboard/enterprise', (req, res) => {
+  res.success({
+    regions: ['NA', 'EMEA', 'APAC'],
     timestamp: new Date().toISOString()
   });
 });
 
-// Start server
-const server = app.listen(CONFIG.PORT, () => {
-  console.log('='.repeat(70));
-  console.log('🚀 SENTIA MANUFACTURING DASHBOARD SERVER STARTED');
-  console.log('='.repeat(70));
-  console.log(`📊 Version: ${CONFIG.VERSION}`);
-  console.log(`🌍 Environment: ${CONFIG.NODE_ENV}`);
-  console.log(`🏢 Company: ${CONFIG.COMPANY}`);
-  console.log(`🔗 Port: ${CONFIG.PORT}`);
-  console.log(`📁 Serving from: ${distPath}`);
-  console.log('='.repeat(70));
-  console.log('✅ Features Enabled:');
-  console.log('   - Clerk Authentication');
-  console.log('   - Real-time Data Streaming');
-  console.log('   - AI/ML Analytics');
-  console.log('   - Manufacturing Modules');
-  console.log('   - Enterprise Dashboard');
-  console.log('   - MCP Server Integration');
-  console.log('='.repeat(70));
-  console.log(`🌐 Server running at: http://localhost:${CONFIG.PORT}`);
-  console.log(`🏥 Health check: http://localhost:${CONFIG.PORT}/health`);
-  console.log('='.repeat(70));
-});
+const workingCapitalRouter = express.Router();
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
+workingCapitalRouter.get('/overview', (req, res) => {
+  res.success({
+    liquidityScore: 87,
+    runwayDays: 245,
+    trends: { weekly: 'positive' }
   });
 });
 
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
+workingCapitalRouter.get('/cash-runway', (req, res) => {
+  res.success({ runwayMonths: 18, scenario: 'base' });
+});
+
+workingCapitalRouter.post(
+  '/optimize',
+  validateBody({ strategy: { required: true, type: 'string' } }),
+  (req, res) => {
+    res.success({
+      recommendation: `Optimization strategy ${req.body.strategy} queued`,
+      etaMinutes: 5
+    });
+  }
+);
+
+workingCapitalRouter.get('/benchmarks', (req, res) => {
+  res.success({ industry: 'Manufacturing', percentile: 78 });
+});
+
+workingCapitalRouter.get('/funding-scenarios', (req, res) => {
+  res.success({ scenarios: ['equity', 'credit', 'hybrid'] });
+});
+
+apiRouter.use('/working-capital', workingCapitalRouter);
+
+const productionRouter = express.Router();
+
+productionRouter.get('/jobs', (req, res) => {
+  res.success({ jobs: [{ id: 'JOB-101', status: 'in-progress' }] });
+});
+
+productionRouter.get('/metrics', (req, res) => {
+  res.success({ throughput: 92, downtimeMinutes: 14 });
+});
+
+productionRouter.post(
+  '/update',
+  validateBody({ jobId: { required: true, type: 'string' }, status: { required: true, type: 'string' } }),
+  (req, res) => {
+    res.success({ message: 'Production job updated', update: req.body });
+  }
+);
+
+apiRouter.use('/production', productionRouter);
+
+const inventoryRouter = express.Router();
+
+inventoryRouter.get('/levels', (req, res) => {
+  res.success({ levels: [{ sku: 'SKU-01', quantity: 150 }] });
+});
+
+inventoryRouter.get('/movements', (req, res) => {
+  res.success({ movements: [{ sku: 'SKU-01', delta: -10, reason: 'shipment' }] });
+});
+
+inventoryRouter.post(
+  '/optimize',
+  validateBody({ objectives: { required: true, type: 'array' } }),
+  (req, res) => {
+    res.success({ message: 'Inventory optimization queued', objectives: req.body.objectives });
+  }
+);
+
+apiRouter.use('/inventory', inventoryRouter);
+
+const analyticsRouter = express.Router();
+
+analyticsRouter.get('/forecast', (req, res) => {
+  res.success({ forecast: { demand: 1230, confidence: 0.92 } });
+});
+
+analyticsRouter.post(
+  '/what-if',
+  validateBody({ variables: { required: true, type: 'object' } }),
+  (req, res) => {
+    res.success({ message: 'Scenario enqueued', variables: req.body.variables });
+  }
+);
+
+analyticsRouter.get('/reports', (req, res) => {
+  res.success({ reports: [{ id: 'RPT-1', generatedAt: new Date().toISOString() }] });
+});
+
+apiRouter.use('/analytics', analyticsRouter);
+
+apiRouter.get('/dashboard/alerts', (req, res) => {
+  res.success({ alerts: [] });
+});
+
+app.get('/api/dashboard/realtime', attachMockUser, (req, res) => {
+  res.fail(410, 'Realtime endpoint moved to /api/events');
+});
+
+app.get('/api/events', attachMockUser, (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders?.();
+
+  const clientId = req.id;
+  sseClients.set(clientId, res);
+
+  res.write(`event: connected\ndata: ${JSON.stringify({ requestId: req.id, user: req.user })}\n\n`);
+
+  req.on('close', () => {
+    sseClients.delete(clientId);
+  });
+});
+
+app.post(
+  '/api/mcp/request',
+  attachMockUser,
+  validateBody({ endpoint: { required: true, type: 'string' }, payload: { type: 'object' } }),
+  async (req, res, next) => {
+    try {
+      const response = await fetch(`${MCP_SERVER_URL}/request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(req.body)
+      });
+
+      const result = await response.json();
+
+      res.success({
+        proxy: MCP_SERVER_URL,
+        status: response.status,
+        result
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.get('/api/mcp/status', attachMockUser, async (req, res, next) => {
+  try {
+    const response = await fetch(`${MCP_SERVER_URL}/health`);
+    const payload = await response.json().catch(() => ({}));
+
+    res.success({
+      proxy: MCP_SERVER_URL,
+      status: response.status,
+      payload
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.use('/api', apiRouter);
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return res.fail(404, 'API route not found');
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  // Support both GET and HEAD for SPA routes
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  if (req.path.startsWith('/api')) return next();
+
+  // For HEAD requests, just send status without body
+  if (req.method === 'HEAD') {
+    return res.status(200).end();
+  }
+
+  res.sendFile(path.join(allowedStaticPath, 'index.html'), (err) => {
+    if (err) next(err);
+  });
+});
+
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  log.error(req.id || 'unknown', err.message, err.stack);
+  res.status(status).json({
+    success: false,
+    error: {
+      message: IS_PRODUCTION ? 'Internal server error' : err.message,
+      details: !IS_PRODUCTION ? err.stack : undefined
+    },
+    meta: {
+      requestId: req.id || 'unknown',
+      timestamp: new Date().toISOString()
+    }
+  });
+});
+
+const broadcastSse = (event, data) => {
+  const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  sseClients.forEach((client) => client.write(message));
+};
+
+wss.on('connection', (socket) => {
+  const connectionId = randomUUID();
+  log.info('WebSocket connected', connectionId);
+
+  socket.send(
+    JSON.stringify({
+      type: 'welcome',
+      connectionId,
+      timestamp: new Date().toISOString()
+    })
+  );
+
+  socket.on('message', (raw) => {
+    log.info('WebSocket message', connectionId, raw.toString());
+  });
+
+  socket.on('close', () => {
+    log.info('WebSocket closed', connectionId);
+  });
+});
+
+const gracefulShutdown = (signal) => {
+  log.warn(`${signal} received. Starting graceful shutdown.`);
+
+  wss.clients.forEach((client) => client.close(1001, 'Server shutting down'));
+  sseClients.forEach((client) => client.end());
+
   server.close(() => {
-    console.log('Server closed');
+    log.info('HTTP server closed. Exiting process.');
     process.exit(0);
   });
+
+  setTimeout(() => {
+    log.error('Force exiting after timeout.');
+    process.exit(1);
+  }, 10000).unref();
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('uncaughtException', (error) => {
+  log.error('Uncaught exception', error);
+  gracefulShutdown('UNCAUGHT_EXCEPTION');
+});
+process.on('unhandledRejection', (reason) => {
+  log.error('Unhandled rejection', reason);
+});
+
+const heartbeat = setInterval(() => {
+  const payload = { timestamp: new Date().toISOString(), uptime: process.uptime() };
+  broadcastSse('heartbeat', payload);
+  wss.clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send(JSON.stringify({ type: 'heartbeat', ...payload }));
+    }
+  });
+}, 30000);
+heartbeat.unref();
+
+server.listen(PORT, '0.0.0.0', () => {
+  const details = {
+    port: PORT,
+    environment: NODE_ENV,
+    deployment: DEPLOYMENT.isRender ? 'render' : DEPLOYMENT.isRailway ? 'railway' : 'local',
+    mcpServer: MCP_SERVER_URL
+  };
+
+  log.info('Server started', details);
+  broadcastSse('server-ready', { port: PORT, startedAt: new Date().toISOString() });
 });
 
 export default app;
+

@@ -5,7 +5,7 @@
  */
 
 // TensorFlow.js Node.js bindings can fail in production - using simulation
-console.warn('TensorFlow.js disabled due to native binding issues in Railway deployment');
+logWarn('TensorFlow.js disabled due to native binding issues in Railway deployment');
 const tf = {
   sequential: () => ({
     add: () => {},
@@ -23,6 +23,8 @@ const tf = {
 // RandomForest package not available in Node.js, using simulation
 // import { RandomForest } from 'ml-random-forest';
 import kmeansPackage from 'ml-kmeans';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 const { KMeans } = kmeansPackage;
 
 class DSOOptimizationService {
@@ -77,7 +79,7 @@ class DSOOptimizationService {
    * Predicts when customers will pay based on historical patterns
    */
   async buildPaymentPredictionModel(trainingData) {
-    console.log('Building payment behavior prediction model...');
+    logDebug('Building payment behavior prediction model...');
     
     const features = [];
     const targets = [];
@@ -125,7 +127,7 @@ class DSOOptimizationService {
     });
     
     this.models.paymentPredictor = model;
-    console.log('Payment prediction model trained successfully');
+    logDebug('Payment prediction model trained successfully');
   }
 
   /**
@@ -133,7 +135,7 @@ class DSOOptimizationService {
    * Classifies customers into risk categories: Low, Medium, High
    */
   async buildRiskClassificationModel(trainingData) {
-    console.log('Building payment risk classification model...');
+    logDebug('Building payment risk classification model...');
     
     const features = [];
     const labels = [];
@@ -170,7 +172,7 @@ class DSOOptimizationService {
       }
     };
     
-    console.log('Risk classification model trained successfully');
+    logDebug('Risk classification model trained successfully');
   }
 
   /**
@@ -297,7 +299,7 @@ class DSOOptimizationService {
    * Perform customer segmentation using K-Means clustering
    */
   async performCustomerSegmentation(customers) {
-    console.log('Performing customer segmentation...');
+    logDebug('Performing customer segmentation...');
     
     const features = customers.map(customer => this.extractCustomerFeatures(customer));
     
@@ -331,7 +333,7 @@ class DSOOptimizationService {
     });
     
     this.customerSegments = segments;
-    console.log('Customer segmentation completed');
+    logDebug('Customer segmentation completed');
     return segments;
   }
 
@@ -376,7 +378,7 @@ class DSOOptimizationService {
    * Optimize collection strategy for customer
    */
   optimizeCollectionStrategy(customer, invoiceDetails) {
-    console.log(`Optimizing collection strategy for customer ${customer.id}...`);
+    logDebug(`Optimizing collection strategy for customer ${customer.id}...`);
     
     try {
       // Predict payment behavior
@@ -407,7 +409,7 @@ class DSOOptimizationService {
       };
       
     } catch (error) {
-      console.error(`Error optimizing strategy for customer ${customer.id}:`, error);
+      logError(`Error optimizing strategy for customer ${customer.id}:`, error);
       return this.getFallbackStrategy(customer, invoiceDetails);
     }
   }
@@ -444,7 +446,7 @@ class DSOOptimizationService {
       };
       
     } catch (error) {
-      console.warn('Payment prediction failed, using fallback:', error.message);
+      logWarn('Payment prediction failed, using fallback:', error.message);
       return this.getFallbackPrediction(customer, invoice);
     }
   }
@@ -469,7 +471,7 @@ class DSOOptimizationService {
       };
       
     } catch (error) {
-      console.warn('Risk classification failed, using fallback:', error.message);
+      logWarn('Risk classification failed, using fallback:', error.message);
       return this.getFallbackRiskClassification(customer);
     }
   }
@@ -593,7 +595,7 @@ class DSOOptimizationService {
    * Monitor and track DSO performance
    */
   trackDSOPerformance(actualPayments) {
-    console.log('Tracking DSO performance...');
+    logDebug('Tracking DSO performance...');
     
     const currentDate = new Date();
     const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -914,7 +916,7 @@ class DSOOptimizationService {
    */
   setDSOTarget(target) {
     this.targetDSO = target;
-    console.log(`DSO target set to ${target} days`);
+    logDebug(`DSO target set to ${target} days`);
   }
 
   /**

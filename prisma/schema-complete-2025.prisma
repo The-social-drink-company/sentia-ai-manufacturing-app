@@ -1,0 +1,810 @@
+// Sentia Manufacturing Dashboard - Complete Prisma Schema
+// Version: 3.0.0 - September 2025 Enterprise Edition
+// Database: PostgreSQL with pgvector extension
+// Features: AI/ML embeddings, MCP integration, real-time analytics
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "fullTextSearch", "views"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector", version: "0.5.1")]
+}
+
+// ==================== CORE USER & AUTHENTICATION ====================
+
+model User {
+  id                     String    @id @default(uuid())
+  email                  String    @unique
+  username               String?   @unique
+  firstName              String?   @map("first_name")
+  lastName               String?   @map("last_name")
+  displayName            String?   @map("display_name")
+  avatarUrl              String?   @map("avatar_url")
+
+  // Authentication
+  passwordHash           String?   @map("password_hash")
+  emailVerified          Boolean   @default(false) @map("email_verified")
+  emailVerificationToken String?   @map("email_verification_token")
+  passwordResetToken     String?   @map("password_reset_token")
+  passwordResetExpires   DateTime? @map("password_reset_expires")
+
+  // Role-Based Access Control
+  role                   UserRole  @default(VIEWER)
+  permissions            Json?     @db.Json // Granular permissions array
+  organizationId         String    @map("organization_id")
+  organization           Organization @relation(fields: [organizationId], references: [id])
+  departmentId           String?   @map("department_id")
+  department             Department? @relation(fields: [departmentId], references: [id])
+
+  // Security & Session
+  isActive               Boolean   @default(true) @map("is_active")
+  lastLogin              DateTime? @map("last_login")
+  lastLoginIp            String?   @map("last_login_ip")
+  loginCount             Int       @default(0) @map("login_count")
+  failedLoginAttempts    Int       @default(0) @map("failed_login_attempts")
+  accountLockedUntil     DateTime? @map("account_locked_until")
+  twoFactorEnabled       Boolean   @default(false) @map("two_factor_enabled")
+  twoFactorSecret        String?   @map("two_factor_secret")
+
+  // User Preferences
+  preferences            Json?     @db.Json // Theme, layout, notifications
+  dashboardLayout        Json?     @map("dashboard_layout") @db.Json
+  timezone               String    @default("UTC")
+  locale                 String    @default("en-US")
+  currency               String    @default("USD")
+
+  // Metadata
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+  deletedAt              DateTime? @map("deleted_at")
+
+  // Relations
+  sessions               Session[]
+  auditLogs              AuditLog[]
+  dashboards             Dashboard[]
+  workingCapitalReports  WorkingCapital[]
+  aiInsights             AIInsight[]
+  mcpRequests            MCPRequest[]
+  notifications          Notification[]
+  exports                DataExport[]
+
+  @@index([email])
+  @@index([organizationId])
+  @@index([role])
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  OPERATOR
+  ANALYST
+  VIEWER
+}
+
+model Organization {
+  id                String    @id @default(uuid())
+  name              String    @unique
+  displayName       String    @map("display_name")
+  domain            String?   @unique
+  logo              String?
+  industry          String?
+  size              String?   // SMALL, MEDIUM, LARGE, ENTERPRISE
+
+  // Configuration
+  settings          Json      @default("{}") @db.Json
+  features          Json      @default("{}") @db.Json // Feature flags
+  apiKeys           Json?     @db.Json // Encrypted API keys
+
+  // Billing
+  plan              String    @default("FREE")
+  planExpiry        DateTime? @map("plan_expiry")
+  billingEmail      String?   @map("billing_email")
+
+  // Metadata
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  users             User[]
+  departments       Department[]
+  products          Product[]
+  inventoryItems    InventoryItem[]
+  productionJobs    ProductionJob[]
+
+  @@map("organizations")
+}
+
+model Department {
+  id              String    @id @default(uuid())
+  organizationId  String    @map("organization_id")
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  name            String
+  code            String    @unique
+  description     String?
+  manager         String?   // User ID of department manager
+
+  // Metadata
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  users           User[]
+
+  @@unique([organizationId, name])
+  @@map("departments")
+}
+
+model Session {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String    @unique
+  ipAddress    String?   @map("ip_address")
+  userAgent    String?   @map("user_agent")
+  expiresAt    DateTime  @map("expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+// ==================== FINANCIAL MANAGEMENT ====================
+
+model WorkingCapital {
+  id                    String    @id @default(uuid())
+  organizationId        String    @map("organization_id")
+  periodStart           DateTime  @map("period_start")
+  periodEnd             DateTime  @map("period_end")
+
+  // Core Metrics
+  revenue               Decimal   @db.Decimal(15, 2)
+  cogs                  Decimal   @db.Decimal(15, 2) // Cost of Goods Sold
+  grossProfit           Decimal   @map("gross_profit") @db.Decimal(15, 2)
+  grossMargin           Decimal   @map("gross_margin") @db.Decimal(5, 2) // Percentage
+
+  // Working Capital Components
+  accountsReceivable    Decimal   @map("accounts_receivable") @db.Decimal(15, 2)
+  inventory             Decimal   @db.Decimal(15, 2)
+  accountsPayable       Decimal   @map("accounts_payable") @db.Decimal(15, 2)
+  workingCapital        Decimal   @map("working_capital") @db.Decimal(15, 2)
+
+  // Cash Conversion Cycle
+  dso                   Int       // Days Sales Outstanding
+  dio                   Int       // Days Inventory Outstanding
+  dpo                   Int       // Days Payables Outstanding
+  ccc                   Int       // Cash Conversion Cycle (DSO + DIO - DPO)
+
+  // Operational Metrics
+  inventoryTurnover     Decimal   @map("inventory_turnover") @db.Decimal(8, 2)
+  receivablesTurnover   Decimal   @map("receivables_turnover") @db.Decimal(8, 2)
+  payablesTurnover      Decimal   @map("payables_turnover") @db.Decimal(8, 2)
+
+  // Advanced Metrics
+  quickRatio            Decimal   @map("quick_ratio") @db.Decimal(8, 2)
+  currentRatio          Decimal   @map("current_ratio") @db.Decimal(8, 2)
+  workingCapitalRatio   Decimal   @map("working_capital_ratio") @db.Decimal(8, 2)
+
+  // AI-Generated Insights
+  aiScore               Float?    @map("ai_score") // 0-100 health score
+  aiRecommendations     Json?     @map("ai_recommendations") @db.Json
+  embedding             Unsupported("vector(1536)")? @map("embedding") // OpenAI embeddings
+
+  // Metadata
+  status                String    @default("DRAFT") // DRAFT, SUBMITTED, APPROVED
+  approvedBy            String?   @map("approved_by")
+  approvedAt            DateTime? @map("approved_at")
+  notes                 String?   @db.Text
+  createdBy             String    @map("created_by")
+  creator               User      @relation(fields: [createdBy], references: [id])
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  cashFlowForecasts     CashFlowForecast[]
+  scenarios             WhatIfScenario[]
+
+  @@index([organizationId])
+  @@index([periodStart, periodEnd])
+  @@index([status])
+  @@map("working_capital")
+}
+
+model CashFlowForecast {
+  id                String          @id @default(uuid())
+  workingCapitalId  String          @map("working_capital_id")
+  workingCapital    WorkingCapital  @relation(fields: [workingCapitalId], references: [id])
+
+  forecastDate      DateTime        @map("forecast_date")
+  horizon           Int             @default(30) // Days ahead
+
+  // Projected Cash Flows
+  openingBalance    Decimal         @map("opening_balance") @db.Decimal(15, 2)
+  cashInflows       Decimal         @map("cash_inflows") @db.Decimal(15, 2)
+  cashOutflows      Decimal         @map("cash_outflows") @db.Decimal(15, 2)
+  closingBalance    Decimal         @map("closing_balance") @db.Decimal(15, 2)
+
+  // Components
+  salesReceipts     Decimal         @map("sales_receipts") @db.Decimal(15, 2)
+  supplierPayments  Decimal         @map("supplier_payments") @db.Decimal(15, 2)
+  payrollExpenses   Decimal         @map("payroll_expenses") @db.Decimal(15, 2)
+  overheadExpenses  Decimal         @map("overhead_expenses") @db.Decimal(15, 2)
+  capitalExpenses   Decimal         @map("capital_expenses") @db.Decimal(15, 2)
+
+  // Risk Metrics
+  cashRunway        Int?            @map("cash_runway") // Days until zero cash
+  burnRate          Decimal?        @map("burn_rate") @db.Decimal(15, 2) // Daily burn
+  confidence        Float?          // 0-1 confidence score
+
+  // Metadata
+  modelVersion      String          @map("model_version")
+  assumptions       Json?           @db.Json
+  createdAt         DateTime        @default(now()) @map("created_at")
+
+  @@index([workingCapitalId])
+  @@index([forecastDate])
+  @@map("cash_flow_forecasts")
+}
+
+model WhatIfScenario {
+  id                String          @id @default(uuid())
+  workingCapitalId  String          @map("working_capital_id")
+  workingCapital    WorkingCapital  @relation(fields: [workingCapitalId], references: [id])
+
+  name              String
+  description       String?
+  type              String          // OPTIMISTIC, PESSIMISTIC, REALISTIC, CUSTOM
+
+  // Scenario Parameters (% changes)
+  revenueChange     Decimal         @map("revenue_change") @db.Decimal(5, 2)
+  cogsChange        Decimal         @map("cogs_change") @db.Decimal(5, 2)
+  dsoChange         Int             @map("dso_change")
+  dioChange         Int             @map("dio_change")
+  dpoChange         Int             @map("dpo_change")
+
+  // Calculated Results
+  projectedRevenue  Decimal         @map("projected_revenue") @db.Decimal(15, 2)
+  projectedCogs     Decimal         @map("projected_cogs") @db.Decimal(15, 2)
+  projectedWC       Decimal         @map("projected_wc") @db.Decimal(15, 2)
+  projectedCCC      Int             @map("projected_ccc")
+  impact            Decimal         @db.Decimal(15, 2) // Financial impact
+
+  // Metadata
+  isActive          Boolean         @default(true) @map("is_active")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@index([workingCapitalId])
+  @@map("what_if_scenarios")
+}
+
+// ==================== MANUFACTURING & OPERATIONS ====================
+
+model Product {
+  id                String          @id @default(uuid())
+  organizationId    String          @map("organization_id")
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+
+  sku               String          @unique
+  name              String
+  description       String?
+  category          String?
+  subcategory       String?
+
+  // Product Details
+  unitCost          Decimal         @map("unit_cost") @db.Decimal(10, 2)
+  sellingPrice      Decimal         @map("selling_price") @db.Decimal(10, 2)
+  weight            Decimal?        @db.Decimal(8, 3)
+  dimensions        Json?           @db.Json // {length, width, height}
+
+  // Manufacturing
+  leadTime          Int             @map("lead_time") // Days
+  moq               Int             @default(1) // Minimum Order Quantity
+  batchSize         Int?            @map("batch_size")
+  safetyStock       Int             @map("safety_stock") @default(0)
+  reorderPoint      Int             @map("reorder_point") @default(0)
+
+  // Status
+  isActive          Boolean         @default(true) @map("is_active")
+  discontinuedAt    DateTime?       @map("discontinued_at")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  inventoryItems    InventoryItem[]
+  productionJobs    ProductionJob[]
+  demandForecasts   DemandForecast[]
+  qualityRecords    QualityRecord[]
+
+  @@index([organizationId])
+  @@index([sku])
+  @@index([category])
+  @@map("products")
+}
+
+model InventoryItem {
+  id                String          @id @default(uuid())
+  organizationId    String          @map("organization_id")
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  productId         String          @map("product_id")
+  product           Product         @relation(fields: [productId], references: [id])
+
+  warehouseId       String          @map("warehouse_id")
+  location          String?         // Specific location within warehouse
+
+  // Quantities
+  quantityOnHand    Int             @map("quantity_on_hand")
+  quantityAvailable Int             @map("quantity_available")
+  quantityReserved  Int             @map("quantity_reserved") @default(0)
+  quantityInTransit Int             @map("quantity_in_transit") @default(0)
+
+  // Tracking
+  batchNumber       String?         @map("batch_number")
+  serialNumber      String?         @map("serial_number")
+  expiryDate        DateTime?       @map("expiry_date")
+
+  // Valuation
+  unitCost          Decimal         @map("unit_cost") @db.Decimal(10, 2)
+  totalValue        Decimal         @map("total_value") @db.Decimal(15, 2)
+  lastCounted       DateTime?       @map("last_counted")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  movements         InventoryMovement[]
+
+  @@unique([productId, warehouseId, batchNumber])
+  @@index([organizationId])
+  @@index([productId])
+  @@index([warehouseId])
+  @@map("inventory_items")
+}
+
+model InventoryMovement {
+  id                String          @id @default(uuid())
+  inventoryItemId   String          @map("inventory_item_id")
+  inventoryItem     InventoryItem   @relation(fields: [inventoryItemId], references: [id])
+
+  type              String          // IN, OUT, ADJUSTMENT, TRANSFER
+  quantity          Int
+  unitCost          Decimal         @map("unit_cost") @db.Decimal(10, 2)
+  totalCost         Decimal         @map("total_cost") @db.Decimal(15, 2)
+
+  // Reference
+  referenceType     String?         @map("reference_type") // PO, SO, PRODUCTION, ADJUSTMENT
+  referenceId       String?         @map("reference_id")
+
+  // Details
+  fromLocation      String?         @map("from_location")
+  toLocation        String?         @map("to_location")
+  reason            String?
+  notes             String?
+
+  // Metadata
+  performedBy       String          @map("performed_by")
+  performedAt       DateTime        @default(now()) @map("performed_at")
+
+  @@index([inventoryItemId])
+  @@index([performedAt])
+  @@map("inventory_movements")
+}
+
+model ProductionJob {
+  id                String          @id @default(uuid())
+  organizationId    String          @map("organization_id")
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  productId         String          @map("product_id")
+  product           Product         @relation(fields: [productId], references: [id])
+
+  jobNumber         String          @unique @map("job_number")
+  workOrderNumber   String?         @map("work_order_number")
+
+  // Quantities
+  quantityOrdered   Int             @map("quantity_ordered")
+  quantityProduced  Int             @map("quantity_produced") @default(0)
+  quantityRejected  Int             @map("quantity_rejected") @default(0)
+
+  // Scheduling
+  plannedStart      DateTime        @map("planned_start")
+  plannedEnd        DateTime        @map("planned_end")
+  actualStart       DateTime?       @map("actual_start")
+  actualEnd         DateTime?       @map("actual_end")
+
+  // Status
+  status            String          @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, CANCELLED
+  priority          Int             @default(5) // 1-10, 1 being highest
+
+  // Resources
+  assignedLine      String?         @map("assigned_line")
+  assignedTeam      String?         @map("assigned_team")
+  laborHours        Decimal?        @map("labor_hours") @db.Decimal(8, 2)
+  machineHours      Decimal?        @map("machine_hours") @db.Decimal(8, 2)
+
+  // Costs
+  materialCost      Decimal?        @map("material_cost") @db.Decimal(12, 2)
+  laborCost         Decimal?        @map("labor_cost") @db.Decimal(12, 2)
+  overheadCost      Decimal?        @map("overhead_cost") @db.Decimal(12, 2)
+  totalCost         Decimal?        @map("total_cost") @db.Decimal(12, 2)
+
+  // Quality
+  qualityScore      Float?          @map("quality_score") // 0-100
+  defectRate        Float?          @map("defect_rate") // Percentage
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  completedAt       DateTime?       @map("completed_at")
+
+  // Relations
+  qualityRecords    QualityRecord[]
+
+  @@index([organizationId])
+  @@index([productId])
+  @@index([status])
+  @@index([plannedStart])
+  @@map("production_jobs")
+}
+
+model QualityRecord {
+  id                String          @id @default(uuid())
+  productionJobId   String          @map("production_job_id")
+  productionJob     ProductionJob   @relation(fields: [productionJobId], references: [id])
+  productId         String          @map("product_id")
+  product           Product         @relation(fields: [productId], references: [id])
+
+  inspectionType    String          @map("inspection_type") // INCOMING, IN_PROCESS, FINAL
+  batchNumber       String          @map("batch_number")
+  sampleSize        Int             @map("sample_size")
+
+  // Results
+  passed            Int
+  failed            Int
+  passRate          Float           @map("pass_rate") // Percentage
+
+  // Defects
+  defects           Json?           @db.Json // Array of defect types and counts
+  rootCause         String?         @map("root_cause")
+  correctiveAction  String?         @map("corrective_action")
+
+  // Measurements
+  measurements      Json?           @db.Json // Various quality measurements
+  specifications    Json?           @db.Json // Expected specifications
+
+  // Metadata
+  inspectedBy       String          @map("inspected_by")
+  inspectedAt       DateTime        @default(now()) @map("inspected_at")
+  approvedBy        String?         @map("approved_by")
+  approvedAt        DateTime?       @map("approved_at")
+
+  @@index([productionJobId])
+  @@index([productId])
+  @@index([inspectedAt])
+  @@map("quality_records")
+}
+
+// ==================== ANALYTICS & FORECASTING ====================
+
+model DemandForecast {
+  id                String          @id @default(uuid())
+  productId         String          @map("product_id")
+  product           Product         @relation(fields: [productId], references: [id])
+
+  forecastDate      DateTime        @map("forecast_date")
+  period            String          // DAILY, WEEKLY, MONTHLY
+  horizon           Int             // Number of periods ahead
+
+  // Forecast Values
+  baselineDemand    Int             @map("baseline_demand")
+  seasonalFactor    Float           @map("seasonal_factor") @default(1.0)
+  trendFactor       Float           @map("trend_factor") @default(1.0)
+  forecastedDemand  Int             @map("forecasted_demand")
+
+  // Confidence Intervals
+  lowerBound        Int             @map("lower_bound")
+  upperBound        Int             @map("upper_bound")
+  confidence        Float           @default(0.95) // 95% confidence
+
+  // Model Info
+  modelType         String          @map("model_type") // ARIMA, LSTM, PROPHET, ENSEMBLE
+  modelVersion      String          @map("model_version")
+  accuracy          Float?          // MAPE, MAE, or other accuracy metric
+
+  // AI Enhancement
+  aiAdjustment      Float?          @map("ai_adjustment") // AI-suggested adjustment factor
+  aiRationale       String?         @map("ai_rationale") @db.Text
+  embedding         Unsupported("vector(1536)")? @map("embedding")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  expiresAt         DateTime        @map("expires_at")
+
+  @@index([productId])
+  @@index([forecastDate])
+  @@map("demand_forecasts")
+}
+
+model Dashboard {
+  id                String          @id @default(uuid())
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id])
+
+  name              String
+  description       String?
+  type              String          @default("CUSTOM") // DEFAULT, CUSTOM, SHARED
+
+  // Layout & Widgets
+  layout            Json            @db.Json // Grid layout configuration
+  widgets           Json            @db.Json // Widget configurations
+  filters           Json?           @db.Json // Default filters
+
+  // Sharing
+  isPublic          Boolean         @default(false) @map("is_public")
+  shareToken        String?         @unique @map("share_token")
+  sharedWith        Json?           @map("shared_with") @db.Json // User IDs
+
+  // Metadata
+  lastAccessedAt    DateTime?       @map("last_accessed_at")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("dashboards")
+}
+
+// ==================== AI & MCP INTEGRATION ====================
+
+model AIInsight {
+  id                String          @id @default(uuid())
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id])
+
+  type              String          // ANOMALY, TREND, RECOMMENDATION, PREDICTION
+  category          String          // FINANCIAL, INVENTORY, PRODUCTION, QUALITY
+  severity          String          @default("INFO") // INFO, WARNING, CRITICAL
+
+  // Content
+  title             String
+  description       String          @db.Text
+  details           Json            @db.Json // Structured insight data
+  metrics           Json?           @db.Json // Related metrics and values
+
+  // AI Processing
+  modelUsed         String          @map("model_used") // GPT-4, Claude, Gemini, etc.
+  confidence        Float           // 0-1 confidence score
+  reasoning         String?         @db.Text // AI reasoning chain
+  embedding         Unsupported("vector(1536)")? @map("embedding")
+
+  // Actions
+  suggestedActions  Json?           @map("suggested_actions") @db.Json
+  actionTaken       String?         @map("action_taken")
+  actionResult      String?         @map("action_result")
+
+  // Status
+  status            String          @default("NEW") // NEW, VIEWED, ACTED_ON, DISMISSED
+  viewedAt          DateTime?       @map("viewed_at")
+  dismissedAt       DateTime?       @map("dismissed_at")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  expiresAt         DateTime?       @map("expires_at")
+
+  @@index([userId])
+  @@index([type])
+  @@index([category])
+  @@index([status])
+  @@map("ai_insights")
+}
+
+model MCPRequest {
+  id                String          @id @default(uuid())
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id])
+
+  // Request Info
+  toolName          String          @map("tool_name")
+  toolVersion       String          @map("tool_version")
+  requestType       String          @map("request_type") // QUERY, COMMAND, ANALYSIS
+
+  // Payload
+  input             Json            @db.Json
+  parameters        Json?           @db.Json
+  context           Json?           @db.Json // Additional context
+
+  // Response
+  status            String          @default("PENDING") // PENDING, PROCESSING, SUCCESS, FAILED
+  output            Json?           @db.Json
+  error             String?         @db.Text
+
+  // Performance
+  processingTime    Int?            @map("processing_time") // Milliseconds
+  tokensUsed        Int?            @map("tokens_used")
+  modelUsed         String?         @map("model_used")
+
+  // Tracing
+  traceId           String          @map("trace_id")
+  parentRequestId   String?         @map("parent_request_id")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  completedAt       DateTime?       @map("completed_at")
+
+  @@index([userId])
+  @@index([toolName])
+  @@index([status])
+  @@index([createdAt])
+  @@map("mcp_requests")
+}
+
+model VectorStore {
+  id                String          @id @default(uuid())
+  namespace         String          // PRODUCTS, DOCUMENTS, INSIGHTS, KNOWLEDGE
+  key               String          // Unique identifier within namespace
+
+  // Content
+  content           String          @db.Text
+  metadata          Json            @db.Json
+  embedding         Unsupported("vector(1536)") @map("embedding")
+
+  // Versioning
+  version           Int             @default(1)
+  isLatest          Boolean         @default(true) @map("is_latest")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@unique([namespace, key, version])
+  @@index([namespace])
+  @@map("vector_store")
+}
+
+// ==================== SYSTEM & AUDIT ====================
+
+model AuditLog {
+  id                String          @id @default(uuid())
+  userId            String?         @map("user_id")
+  user              User?           @relation(fields: [userId], references: [id])
+
+  action            String          // CREATE, UPDATE, DELETE, VIEW, EXPORT
+  entityType        String          @map("entity_type")
+  entityId          String          @map("entity_id")
+
+  // Change tracking
+  oldValues         Json?           @map("old_values") @db.Json
+  newValues         Json?           @map("new_values") @db.Json
+
+  // Context
+  ipAddress         String?         @map("ip_address")
+  userAgent         String?         @map("user_agent")
+  requestId         String?         @map("request_id")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model SystemSetting {
+  id                String          @id @default(uuid())
+  key               String          @unique
+  value             Json            @db.Json
+  type              String          // STRING, NUMBER, BOOLEAN, JSON
+  category          String          // GENERAL, SECURITY, INTEGRATION, FEATURE
+
+  description       String?
+  isPublic          Boolean         @default(false) @map("is_public")
+  isEncrypted       Boolean         @default(false) @map("is_encrypted")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@map("system_settings")
+}
+
+model Notification {
+  id                String          @id @default(uuid())
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id])
+
+  type              String          // EMAIL, SMS, PUSH, IN_APP
+  category          String          // ALERT, INFO, WARNING, ERROR
+
+  // Content
+  title             String
+  message           String          @db.Text
+  data              Json?           @db.Json // Additional data
+  actionUrl         String?         @map("action_url")
+
+  // Status
+  status            String          @default("PENDING") // PENDING, SENT, DELIVERED, READ, FAILED
+  sentAt            DateTime?       @map("sent_at")
+  readAt            DateTime?       @map("read_at")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  expiresAt         DateTime?       @map("expires_at")
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model DataExport {
+  id                String          @id @default(uuid())
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id])
+
+  type              String          // CSV, EXCEL, PDF, JSON
+  entity            String          // WORKING_CAPITAL, INVENTORY, PRODUCTION, etc.
+
+  // Parameters
+  filters           Json?           @db.Json
+  columns           Json?           @db.Json
+  dateRange         Json?           @map("date_range") @db.Json
+
+  // File Info
+  fileName          String          @map("file_name")
+  fileSize          Int?            @map("file_size") // Bytes
+  fileUrl           String?         @map("file_url")
+
+  // Status
+  status            String          @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  error             String?
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  completedAt       DateTime?       @map("completed_at")
+  expiresAt         DateTime?       @map("expires_at")
+
+  @@index([userId])
+  @@index([status])
+  @@map("data_exports")
+}
+
+// ==================== SCHEDULED JOBS ====================
+
+model ScheduledJob {
+  id                String          @id @default(uuid())
+  name              String          @unique
+  type              String          // FORECAST, SYNC, CLEANUP, REPORT
+
+  // Schedule
+  cronExpression    String          @map("cron_expression")
+  timezone          String          @default("UTC")
+  isActive          Boolean         @default(true) @map("is_active")
+
+  // Configuration
+  config            Json            @db.Json
+  timeout           Int             @default(300000) // Milliseconds
+  retryCount        Int             @default(3) @map("retry_count")
+
+  // Execution
+  lastRunAt         DateTime?       @map("last_run_at")
+  lastRunStatus     String?         @map("last_run_status") // SUCCESS, FAILED, TIMEOUT
+  lastRunDuration   Int?            @map("last_run_duration") // Milliseconds
+  lastError         String?         @map("last_error")
+  nextRunAt         DateTime?       @map("next_run_at")
+
+  // Metadata
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@index([nextRunAt])
+  @@map("scheduled_jobs")
+}

@@ -31,10 +31,10 @@ Testing environment is MISSING these important variables:
 
 #### Authentication & Security
 - **CLERK_ENVIRONMENT=production**
-- **CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq**
-- **CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j**
-- **NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ**
-- **VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ**
+- **CLERK_SECRET_KEY=sk_live_REDACTED**
+- **CLERK_WEBHOOK_SECRET=whsec_REDACTED**
+- **NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED**
+- **VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED**
 - **VITE_CLERK_DOMAIN=clerk.financeflo.ai**
 - **VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard**
 - **VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard**
@@ -98,3 +98,5 @@ The testing environment is missing **35 critical variables** that are present in
 3. Add AI service API keys (OpenAI, Anthropic)
 4. Change AUTO_DEPLOY_ENABLED to false in testing
 5. Ensure XERO_REDIRECT_URI uses testing URL for testing environment
+
+

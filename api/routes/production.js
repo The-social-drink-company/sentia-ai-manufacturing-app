@@ -4,6 +4,8 @@ import prisma from '../../lib/prisma.js';
 import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 import {
   productionMetricsSchema,
   productionScheduleSchema,
@@ -32,11 +34,11 @@ router.get('/metrics',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Production metrics');
+      logDebug('[Cache Hit] Production metrics');
       return res.json(cached);
     }
 
-    console.log('[Cache Miss] Production metrics - fetching from database');
+    logDebug('[Cache Miss] Production metrics - fetching from database');
 
     // Build where clause
     const where = {};
@@ -51,7 +53,7 @@ router.get('/metrics',
     // Fetch metrics with optimized fields
     const metrics = await prisma.productionMetrics.findMany({
       where,
-      take: Math.min(query.limit || 100, 100), // Limit max results to 100
+      take: Math.min(query.limit, 100), // Limit max results to 100
       skip: query.offset,
       orderBy: { timestamp: 'desc' },
       select: {
@@ -499,3 +501,4 @@ router.get('/downtime',
 );
 
 export default router;
+

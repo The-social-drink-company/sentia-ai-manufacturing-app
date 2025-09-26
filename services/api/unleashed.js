@@ -1,6 +1,8 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import unleashedERPService from '../unleashed-erp.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 
@@ -69,7 +71,7 @@ router.get('/manufacturing', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('UNLEASHED API: Manufacturing data error:', error);
+    logError('UNLEASHED API: Manufacturing data error:', error);
     // Return fallback data on error
     res.json({
       production: {
@@ -115,7 +117,7 @@ router.get('/production', async (req, res) => {
       lastUpdated: data.lastUpdated
     });
   } catch (error) {
-    console.error('UNLEASHED API: Production data error:', error);
+    logError('UNLEASHED API: Production data error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process production data'
@@ -140,7 +142,7 @@ router.get('/resources', async (req, res) => {
       lastUpdated: data.lastUpdated
     });
   } catch (error) {
-    console.error('UNLEASHED API: Resource data error:', error);
+    logError('UNLEASHED API: Resource data error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process resource data'
@@ -170,7 +172,7 @@ router.get('/schedule', async (req, res) => {
       lastUpdated: data.lastUpdated
     });
   } catch (error) {
-    console.error('UNLEASHED API: Schedule data error:', error);
+    logError('UNLEASHED API: Schedule data error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process production schedule'
@@ -235,7 +237,7 @@ router.get('/inventory', async (req, res) => {
       lastUpdated: data.lastUpdated
     });
   } catch (error) {
-    console.error('UNLEASHED API: Inventory data error:', error);
+    logError('UNLEASHED API: Inventory data error:', error);
     // Return fallback data on error
     res.json({
       inventory: {
@@ -290,7 +292,7 @@ router.get('/quality-alerts', async (req, res) => {
       lastUpdated: data.lastUpdated
     });
   } catch (error) {
-    console.error('UNLEASHED API: Quality alerts error:', error);
+    logError('UNLEASHED API: Quality alerts error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process quality alerts'
@@ -316,7 +318,7 @@ router.get('/inventory', async (req, res) => {
       lastUpdated: data.lastUpdated
     });
   } catch (error) {
-    console.error('UNLEASHED API: Inventory data error:', error);
+    logError('UNLEASHED API: Inventory data error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process inventory data'
@@ -362,7 +364,7 @@ router.get('/kpis', async (req, res) => {
 
     res.json(kpis);
   } catch (error) {
-    console.error('UNLEASHED API: KPI data error:', error);
+    logError('UNLEASHED API: KPI data error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process manufacturing KPIs'
@@ -376,7 +378,7 @@ router.get('/status', async (req, res) => {
     const status = unleashedERPService.getConnectionStatus();
     res.json(status);
   } catch (error) {
-    console.error('UNLEASHED API: Status error:', error);
+    logError('UNLEASHED API: Status error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to get connection status'
@@ -387,7 +389,7 @@ router.get('/status', async (req, res) => {
 // Trigger manual sync
 router.post('/sync', async (req, res) => {
   try {
-    console.log('UNLEASHED API: Manual sync triggered');
+    logDebug('UNLEASHED API: Manual sync triggered');
     const data = await unleashedERPService.syncAllData();
     
     res.json({
@@ -396,7 +398,7 @@ router.post('/sync', async (req, res) => {
       syncTime: new Date().toISOString()
     });
   } catch (error) {
-    console.error('UNLEASHED API: Manual sync error:', error);
+    logError('UNLEASHED API: Manual sync error:', error);
     res.status(500).json({
       error: 'ERP sync failed',
       message: error.message
@@ -451,7 +453,7 @@ router.get('/analytics', async (req, res) => {
 
     res.json(analytics);
   } catch (error) {
-    console.error('UNLEASHED API: Analytics error:', error);
+    logError('UNLEASHED API: Analytics error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process production analytics'
@@ -508,7 +510,7 @@ router.get('/batches/:batchId?', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('UNLEASHED API: Batch tracking error:', error);
+    logError('UNLEASHED API: Batch tracking error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to process batch tracking data'

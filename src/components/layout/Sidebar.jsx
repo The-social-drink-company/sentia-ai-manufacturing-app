@@ -1,120 +1,78 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { useUser } from '@clerk/clerk-react'
 import {
   HomeIcon,
   ChartBarIcon,
+  CurrencyDollarIcon,
+  BeakerIcon,
   CubeIcon,
-  BanknotesIcon,
-  DocumentArrowUpIcon,
+  TruckIcon,
+  ClipboardDocumentCheckIcon,
+  SparklesIcon,
+  DocumentTextIcon,
   Cog6ToothIcon,
   UsersIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronDownIcon,
-  ChevronUpIcon,
+  CommandLineIcon,
   PresentationChartLineIcon,
-  TruckIcon,
-  ExclamationTriangleIcon,
-  BeakerIcon,
-  AdjustmentsHorizontalIcon as SlidersIcon,
-  SparklesIcon,
+  BanknotesIcon,
   CircleStackIcon,
-  SignalIcon,
-  DevicePhoneMobileIcon,
-  CpuChipIcon
+  DocumentChartBarIcon,
+  ServerStackIcon,
+  ShieldCheckIcon,
+  ArrowTrendingUpIcon
 } from '@heroicons/react/24/outline'
-import { useAuthRole } from '../../hooks/useAuthRole.jsx'
-import { useLayoutStore } from '../../stores/layoutStore'
+import { useState, useEffect } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 
-const SidebarItem = ({ 
-  to, 
-  icon: Icon, 
-  label, 
-  isActive, 
-  isCollapsed, 
-  badge = null, 
-  shortcut = null,
-  onClick = null,
-  isSubItem = false
-}) => {
-  const baseClasses = "flex items-center px-3 py-2.5 rounded-lg transition-all duration-200"
+import { cn } from '../../utils/cn'
 
-  const activeClasses = "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-medium shadow-sm"
 
-  const inactiveClasses = "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
-  
-  const content = (
-    <>
-      <Icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} ${isActive ? 'text-blue-600 dark:text-blue-400' : ''}`} />
-      {!isCollapsed && <span className="text-sm">{label}</span>}
-    </>
-  )
-  
-  const className = `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`
-  
-  if (to) {
-    return (
-      <Link
-        to={to}
-        className={className}
-        title={isCollapsed ? label : undefined}
-        onClick={onClick}
-      >
-        {content}
-      </Link>
-    )
+const navigation = [
+  {
+    title: 'Overview',
+    items: [
+      { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, badge: 'Live' }
+    ]
+  },
+  {
+    title: 'Planning & Analytics',
+    items: [
+      { name: 'Demand Forecasting', href: '/forecasting', icon: PresentationChartLineIcon },
+      { name: 'Inventory Management', href: '/inventory', icon: CubeIcon },
+      { name: 'Production Tracking', href: '/production', icon: TruckIcon },
+      { name: 'Quality Control', href: '/quality', icon: ClipboardDocumentCheckIcon },
+      { name: 'AI Analytics', href: '/ai-analytics', icon: SparklesIcon, badge: 'AI' }
+    ]
+  },
+  {
+    title: 'Financial Management',
+    items: [
+      { name: 'Working Capital', href: '/working-capital', icon: BanknotesIcon },
+      { name: 'What-If Analysis', href: '/what-if', icon: BeakerIcon },
+      { name: 'Financial Reports', href: '/reports', icon: DocumentChartBarIcon }
+    ]
+  },
+  {
+    title: 'Data Management',
+    items: [
+      { name: 'Data Import', href: '/import', icon: CircleStackIcon },
+      { name: 'Import Templates', href: '/templates', icon: DocumentTextIcon }
+    ]
+  },
+  {
+    title: 'Administration',
+    items: [
+      { name: 'Admin Panel', href: '/admin', icon: ShieldCheckIcon },
+      { name: 'User Management', href: '/users', icon: UsersIcon },
+      { name: 'System Configuration', href: '/config', icon: Cog6ToothIcon },
+      { name: 'Monitoring', href: '/monitoring', icon: ServerStackIcon }
+    ]
   }
-  
-  return (
-    <button
-      onClick={onClick}
-      className={className}
-      title={isCollapsed ? label : undefined}
-    >
-      {content}
-    </button>
-  )
-}
+]
 
-const SidebarSection = ({ title, children, isCollapsed, defaultExpanded = true }) => {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
-  
-  if (isCollapsed) {
-    return (
-      <div className="space-y-1">
-        <div className="h-px bg-gray-200 dark:bg-gray-700 my-3" />
-        {children}
-      </div>
-    )
-  }
-  
-  return (
-    <div className="mb-4">
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-400 transition-colors"
-      >
-        <span>{title}</span>
-        {isExpanded ? (
-          <ChevronUpIcon className="w-3 h-3" />
-        ) : (
-          <ChevronDownIcon className="w-3 h-3" />
-        )}
-      </button>
-      
-      <div
-        className={`mt-2 space-y-1 ${isExpanded ? 'block' : 'hidden'}`}
-      >
-        <div>
-          {children}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onToggle }) => {
   const location = useLocation()
   const { role, hasPermission, hasFeature } = useAuthRole()
   const { sidebarCollapsed, toggleSidebar } = useLayoutStore()
@@ -130,195 +88,67 @@ const Sidebar = () => {
   
   // Handle mobile responsiveness
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+    // Get user role from metadata
+    const role = user?.publicMetadata?.role || 'viewer'
+    setUserRole(role)
+
+    // Load sidebar state
+    const savedState = localStorage.getItem('sidebarState')
+    if (savedState) {
+      const { collapsed: savedCollapsed, expanded } = JSON.parse(savedState)
+      setCollapsed(savedCollapsed)
+      setExpandedSections(expanded || {})
+    } else {
+      // Expand all sections by default
+      const defaultExpanded = {}
+      navigation.forEach((section) => {
+        defaultExpanded[section.title] = true
+      })
+      setExpandedSections(defaultExpanded)
     }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-  
-  const isActive = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/')
+  }, [user])
+
+  const toggleSection = (title) => {
+    const newExpanded = {
+      ...expandedSections,
+      [title]: !expandedSections[title]
+    }
+    setExpandedSections(newExpanded)
+    localStorage.setItem('sidebarState', JSON.stringify({
+      collapsed,
+      expanded: newExpanded
+    }))
   }
-  
-  // Navigation items with better icons and organization
-  const navigationItems = [
-    {
-      section: 'Overview',
-      defaultExpanded: true,
-      items: [
-        {
-          to: '/dashboard',
-          icon: HomeIcon,
-          label: 'Dashboard',
-          shortcut: 'G O',
-          permission: 'dashboard.view'
-        }
-      ]
-    },
-    {
-      section: 'Planning & Analytics',
-      defaultExpanded: true,
-      items: [
-        {
-          to: '/forecasting',
-          icon: PresentationChartLineIcon,
-          label: 'Demand Forecasting',
-          shortcut: 'G F',
-          permission: 'forecast.view'
-        },
-        {
-          to: '/inventory',
-          icon: CubeIcon,
-          label: 'Inventory Management',
-          shortcut: 'G I',
-          permission: 'stock.view',
-          badge: alertCounts.stockLow > 0 ? alertCounts.stockLow : null
-        },
-        {
-          to: '/production',
-          icon: TruckIcon,
-          label: 'Production Optimization',
-          shortcut: 'G P',
-          permission: 'production.view',
-          badge: alertCounts.capacityIssues > 0 ? alertCounts.capacityIssues : null
-        },
-        {
-          to: '/quality',
-          icon: BeakerIcon,
-          label: 'Quality Control',
-          shortcut: 'G Q',
-          permission: 'quality.view'
-        },
-        {
-          to: '/ai-analytics',
-          icon: SparklesIcon,
-          label: 'AI Analytics',
-          shortcut: 'G A',
-          permission: 'analytics.view'
-        },
-        {
-          to: '/ai-status',
-          icon: CpuChipIcon,
-          label: 'AI System Status',
-          shortcut: 'G AI',
-          permission: 'system.view'
-        },
-        {
-          to: '/monitoring',
-          icon: SignalIcon,
-          label: 'Real-Time Monitoring',
-          shortcut: 'G M',
-          permission: 'monitoring.view'
-        },
-        {
-          to: '/mobile',
-          icon: DevicePhoneMobileIcon,
-          label: 'Mobile Floor View',
-          shortcut: 'G MF',
-          permission: 'production.view'
-        }
-      ]
-    },
-    {
-      section: 'Financial Management',
-      defaultExpanded: true,
-      items: [
-        {
-          to: '/working-capital',
-          icon: BanknotesIcon,
-          label: 'Working Capital',
-          shortcut: 'G W',
-          permission: 'workingcapital.view'
-        },
-        {
-          to: '/what-if',
-          icon: SlidersIcon,
-          label: 'What-If Analysis',
-          shortcut: 'G WI',
-          permission: 'analytics.view'
-        },
-        {
-          to: '/analytics',
-          icon: ChartBarIcon,
-          label: 'Financial Reports',
-          shortcut: 'G R',
-          permission: 'reports.generate'
-        },
-        {
-          to: '/automation',
-          icon: SparklesIcon,
-          label: 'Smart Automation',
-          permission: 'automation.view'
-        }
-      ]
-    },
-    {
-      section: 'Data Management',
-      defaultExpanded: false,
-      items: [
-        {
-          to: '/data-import',
-          icon: DocumentArrowUpIcon,
-          label: 'Data Import',
-          shortcut: 'G D',
-          permission: 'import.view'
-        },
-        {
-          to: '/templates',
-          icon: CircleStackIcon,
-          label: 'Import Templates',
-          permission: 'import.view'
-        },
-        {
-          to: '/api-status',
-          icon: ExclamationTriangleIcon,
-          label: 'API Status',
-          permission: 'system.monitor'
-        }
-      ]
-    }
-  ]
-  
-  // Admin section
-  const adminItems = [
-    {
-      to: '/admin',
-      icon: UsersIcon,
-      label: 'Admin Panel',
-      permission: 'users.manage'
-    },
-    {
-      to: '/settings',
-      icon: Cog6ToothIcon,
-      label: 'System Settings',
-      permission: 'system.configure'
-    }
-  ]
-  
-  // System diagnostics
-  const systemItems = hasFeature('systemDiagnostics') ? [
-    {
-      to: '/system/health',
-      icon: ExclamationTriangleIcon,
-      label: 'System Health',
-      permission: 'system.configure'
-    }
-  ] : []
-  
-  // Keyboard shortcuts
-  useHotkeys('ctrl+b', toggleSidebar, { enableOnFormTags: false })
-  
+
+  const toggleCollapse = () => {
+    const newCollapsed = !collapsed
+    setCollapsed(newCollapsed)
+    localStorage.setItem('sidebarState', JSON.stringify({
+      collapsed: newCollapsed,
+      expanded: expandedSections
+    }))
+  }
+
+  // Check if user has access to a route based on role
+  const hasAccess = (href) => {
+    const adminRoutes = ['/admin', '/users', '/config', '/monitoring']
+    const managerRoutes = ['/forecasting', '/inventory', '/production', '/quality', '/reports', '/ai-analytics']
+
+    if (userRole === 'admin') return true
+    if (userRole === 'manager' && !adminRoutes.includes(href)) return true
+    if (userRole === 'operator' && !adminRoutes.includes(href) && !managerRoutes.includes(href)) return true
+    if (!adminRoutes.includes(href) && !managerRoutes.includes(href)) return true
+
+    return false
+  }
+
   return (
     <>
-      {/* Mobile Overlay */}
-      {isMobile && !sidebarCollapsed && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 sidebar-overlay"
-          onClick={toggleSidebar}
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={onToggle}
         />
       )}
       
@@ -396,66 +226,94 @@ const Sidebar = () => {
               isCollapsed={sidebarCollapsed}
               defaultExpanded={false}
             >
-              {adminItems
-                .filter(item => !item.permission || hasPermission(item.permission) || true)
-                .map((item) => (
-                  <SidebarItem
-                    key={item.to}
-                    to={item.to}
-                    icon={item.icon}
-                    label={item.label}
-                    isActive={isActive(item.to)}
-                    isCollapsed={sidebarCollapsed}
-                  />
-                ))}
-            </SidebarSection>
-          )}
-          
-          {/* System diagnostics */}
-          {systemItems.length > 0 && (
-            <SidebarSection
-              title="System"
-              isCollapsed={sidebarCollapsed}
-              defaultExpanded={false}
-            >
-              {systemItems
-                .filter(item => !item.permission || hasPermission(item.permission) || true)
-                .map((item) => (
-                  <SidebarItem
-                    key={item.to}
-                    to={item.to}
-                    icon={item.icon}
-                    label={item.label}
-                    isActive={isActive(item.to)}
-                    isCollapsed={sidebarCollapsed}
-                  />
-                ))}
-            </SidebarSection>
-          )}
-        </div>
-      </nav>
-      
-      {/* Footer */}
-      {!sidebarCollapsed && (
-        <div className="sidebar-footer">
-          <div className="sidebar-info">
-            <div className="info-row">
-              <span className="info-label">Role:</span>
-              <span className="info-value">
-                {role}
-              </span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Version:</span>
-              <span className="info-value">v1.0.0</span>
-            </div>
-            {hasFeature('debugMode') && (
-              <div className="debug-mode">
-                <span className="debug-indicator"></span>
-                <span>Debug Mode</span>
-              </div>
-            )}
+              {collapsed ? (
+                <ChevronRightIcon className="h-5 w-5" />
+              ) : (
+                <ChevronLeftIcon className="h-5 w-5" />
+              )}
+            </button>
           </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto p-2 space-y-1">
+            {navigation.map((section) => {
+              const isExpanded = expandedSections[section.title]
+              const visibleItems = section.items.filter(item => hasAccess(item.href))
+
+              if (visibleItems.length === 0) return null
+
+              return (
+                <div key={section.title}>
+                  {!collapsed && (
+                    <button
+                      onClick={() => toggleSection(section.title)}
+                      className="w-full px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
+                    >
+                      <span>{section.title}</span>
+                      <ChevronDownIcon
+                        className={cn(
+                          'h-4 w-4 transition-transform',
+                          isExpanded ? 'rotate-180' : ''
+                        )}
+                      />
+                    </button>
+                  )}
+
+                  {(isExpanded || collapsed) && (
+                    <div className={cn('space-y-1', !collapsed && 'mt-1')}>
+                      {visibleItems.map((item) => {
+                        const isActive = location.pathname === item.href
+                        const Icon = item.icon
+
+                        return (
+                          <NavLink
+                            key={item.name}
+                            to={item.href}
+                            className={cn(
+                              'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                              isActive
+                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
+                              collapsed && 'justify-center'
+                            )}
+                            title={collapsed ? item.name : undefined}
+                          >
+                            <Icon className="h-5 w-5 flex-shrink-0" />
+                            {!collapsed && (
+                              <>
+                                <span className="ml-3 flex-1">{item.name}</span>
+                                {item.badge && (
+                                  <span className={cn(
+                                    'ml-auto inline-flex items-center px-2 py-0.5 rounded text-xs font-medium',
+                                    item.badge === 'AI' && 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+                                    item.badge === 'Live' && 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+                                    item.badge !== 'AI' && item.badge !== 'Live' && 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                                  )}>
+                                    {item.badge}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </NavLink>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </nav>
+
+          {/* Footer */}
+          {!collapsed && (
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="font-medium">Sentia Manufacturing</div>
+                <div>Enterprise v2.0</div>
+                <div className="mt-2">Role: {userRole}</div>
+              </div>
+            </div>
+          )}
         </div>
       )}
       

@@ -97,3 +97,12 @@ agent-dashboard-data.json
 # Temporary server files
 server-4300.js
 start-port-*.bat
+/dist
+# Render CLI artifacts
+.render-cli/
+
+# Local CLI installer scripts
+scripts/env-update.json
+scripts/install-render-cli.bat
+scripts/install-render-cli.ps1
+scripts/render.bat

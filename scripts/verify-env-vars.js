@@ -7,9 +7,9 @@
  */
 
 const REQUIRED_VARS = [
-  { name: 'VITE_CLERK_PUBLISHABLE_KEY', expectedValue: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ' },
-  { name: 'CLERK_SECRET_KEY', expectedValue: 'sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq' },
-  { name: 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', expectedValue: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ' },
+  { name: 'VITE_CLERK_PUBLISHABLE_KEY', expectedValue: 'pk_live_REDACTED' },
+  { name: 'CLERK_SECRET_KEY', expectedValue: 'sk_live_REDACTED' },
+  { name: 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', expectedValue: 'pk_live_REDACTED' },
   { name: 'VITE_CLERK_SIGN_IN_URL', expectedValue: '/sign-in' },
   { name: 'VITE_CLERK_SIGN_UP_URL', expectedValue: '/sign-up' },
   { name: 'VITE_CLERK_AFTER_SIGN_IN_URL', expectedValue: '/dashboard' },
@@ -183,3 +183,4 @@ if (require.main === module) {
 }
 
 module.exports = { checkRequiredVars, REQUIRED_VARS };
+

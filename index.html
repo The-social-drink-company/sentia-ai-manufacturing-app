@@ -19,29 +19,16 @@
         window.import = { meta: { env: {} } };
       }
 
-      // Set critical environment defaults immediately
-      window.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+      // Set environment defaults with Clerk Authentication
       window.VITE_MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
       window.VITE_API_BASE_URL = '/api';
       window.NODE_ENV = 'production';
-      
-      window.import.meta.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+
       window.import.meta.env.VITE_MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
       window.import.meta.env.VITE_API_BASE_URL = '/api';
       window.import.meta.env.MODE = 'production';
-    </script>
 
-    <!-- Clerk Environment Initialization with fallback -->
-    <script>
-      (function() {
-        // Try to load clerk-init.js but don't fail if it doesn't exist
-        var script = document.createElement('script');
-        script.src = '/clerk-init.js';
-        script.onerror = function() {
-          console.warn('[Clerk Init] Failed to load clerk-init.js, using defaults');
-        };
-        document.head.appendChild(script);
-      })();
+      console.log('Application running with Clerk authentication');
     </script>
   </head>
   <body>
@@ -97,7 +84,7 @@
       console.log('[App Init] Starting Sentia Manufacturing Dashboard');
       console.log('[App Init] Environment:', window.location.hostname);
       console.log('[App Init] Protocol:', window.location.protocol);
-      console.log('[App Init] Clerk Key:', window.import?.meta?.env?.VITE_CLERK_PUBLISHABLE_KEY ? 'Present' : 'Missing');
+      console.log('[App Init] Running with Clerk authentication');
     </script>
 
     <script>

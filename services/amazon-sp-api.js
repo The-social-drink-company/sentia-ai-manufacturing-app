@@ -16,7 +16,7 @@ async function importSellingPartnerApi() {
     }
     return SellingPartnerApi;
   } catch (error) {
-    console.error('❌ Amazon SP-API package not available:', error.message);
+    logError('❌ Amazon SP-API package not available:', error.message);
     SellingPartnerApi = class RequiredAuthSellingPartnerApi {
       constructor(config) {
         throw new Error('Amazon SP-API package not available. Please install: npm install amazon-sp-api and configure real credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN, AMAZON_SELLER_ID');
@@ -31,6 +31,8 @@ async function importSellingPartnerApi() {
 }
 import { PrismaClient } from '@prisma/client';
 import redisCache from '../src/lib/redis.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const prisma = new PrismaClient();
 
@@ -52,7 +54,7 @@ class AmazonSPAPIService {
     try {
       // FORCE REAL DATA ONLY - No mock data allowed
       if (!this.credentials.refresh_token || !this.credentials.lwa_app_id || !this.credentials.lwa_client_secret) {
-        console.warn('Amazon SP-API authentication required. Please configure real Amazon SP-API credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN. No mock data will be returned.');
+        logWarn('Amazon SP-API authentication required. Please configure real Amazon SP-API credentials: AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN. No mock data will be returned.');
         this.isConnected = false;
         return false;
       }
@@ -75,13 +77,13 @@ class AmazonSPAPIService {
       await this.testConnection();
       this.isConnected = true;
       
-      console.log('✅ Amazon SP-API initialized successfully');
+      logDebug('✅ Amazon SP-API initialized successfully');
       
       // Start automatic data sync
       this.startDataSync();
       
     } catch (error) {
-      console.error('❌ Failed to initialize Amazon SP-API:', error);
+      logError('❌ Failed to initialize Amazon SP-API:', error);
       this.isConnected = false;
       throw error;
     }
@@ -94,7 +96,7 @@ class AmazonSPAPIService {
         endpoint: 'sellers'
       });
       
-      console.log(`🏪 Connected to ${marketplaces.payload.length} Amazon marketplaces`);
+      logDebug(`🏪 Connected to ${marketplaces.payload.length} Amazon marketplaces`);
       return true;
     } catch (error) {
       throw new Error(`SP-API connection test failed: ${error.message}`);
@@ -107,7 +109,7 @@ class AmazonSPAPIService {
     }
 
     try {
-      console.log('📦 Syncing inventory data from Amazon...');
+      logDebug('📦 Syncing inventory data from Amazon...');
       
       // Get inventory summary
       const inventoryResponse = await this.spApi.callAPI({
@@ -148,7 +150,7 @@ class AmazonSPAPIService {
         processedItems.push(inventoryData);
       }
 
-      console.log(`✅ Processed ${processedItems.length} inventory items`);
+      logDebug(`✅ Processed ${processedItems.length} inventory items`);
       
       // Cache aggregated inventory data
       const aggregatedData = {
@@ -163,7 +165,7 @@ class AmazonSPAPIService {
       return processedItems;
       
     } catch (error) {
-      console.error('❌ Failed to sync inventory:', error);
+      logError('❌ Failed to sync inventory:', error);
       throw error;
     }
   }
@@ -172,7 +174,7 @@ class AmazonSPAPIService {
     if (!this.isConnected) return;
 
     try {
-      console.log('📋 Syncing order data from Amazon...');
+      logDebug('📋 Syncing order data from Amazon...');
       
       const endTime = new Date();
       const startTime = new Date(endTime.getTime() - 24 * 60 * 60 * 1000); // Last 24 hours
@@ -207,11 +209,11 @@ class AmazonSPAPIService {
         await this.upsertOrderItem(orderData);
       }
 
-      console.log(`✅ Processed ${orders.length} orders`);
+      logDebug(`✅ Processed ${orders.length} orders`);
       return orders;
       
     } catch (error) {
-      console.error('❌ Failed to sync orders:', error);
+      logError('❌ Failed to sync orders:', error);
       throw error;
     }
   }
@@ -220,7 +222,7 @@ class AmazonSPAPIService {
     if (!this.isConnected) return;
 
     try {
-      console.log('🚚 Syncing FBA shipment data...');
+      logDebug('🚚 Syncing FBA shipment data...');
       
       // Get FBA shipments
       const shipmentsResponse = await this.spApi.callAPI({
@@ -249,11 +251,11 @@ class AmazonSPAPIService {
         await this.upsertFBAShipment(shipmentData);
       }
 
-      console.log(`✅ Processed ${shipments.length} FBA shipments`);
+      logDebug(`✅ Processed ${shipments.length} FBA shipments`);
       return shipments;
       
     } catch (error) {
-      console.error('❌ Failed to sync FBA data:', error);
+      logError('❌ Failed to sync FBA data:', error);
       throw error;
     }
   }
@@ -266,7 +268,7 @@ class AmazonSPAPIService {
         create: data
       });
     } catch (error) {
-      console.error('❌ Database error (inventory):', error);
+      logError('❌ Database error (inventory):', error);
     }
   }
 
@@ -278,7 +280,7 @@ class AmazonSPAPIService {
         create: data
       });
     } catch (error) {
-      console.error('❌ Database error (orders):', error);
+      logError('❌ Database error (orders):', error);
     }
   }
 
@@ -290,12 +292,12 @@ class AmazonSPAPIService {
         create: data
       });
     } catch (error) {
-      console.error('❌ Database error (FBA):', error);
+      logError('❌ Database error (FBA):', error);
     }
   }
 
   startDataSync() {
-    console.log('🔄 Starting automated data sync (every 15 minutes)...');
+    logDebug('🔄 Starting automated data sync (every 15 minutes)...');
     
     // Initial sync
     this.performFullSync();
@@ -308,7 +310,7 @@ class AmazonSPAPIService {
 
   async performFullSync() {
     try {
-      console.log('🚀 Starting full Amazon data sync...');
+      logDebug('🚀 Starting full Amazon data sync...');
       
       await Promise.all([
         this.syncInventoryData(),
@@ -316,10 +318,10 @@ class AmazonSPAPIService {
         this.syncFBAData()
       ]);
       
-      console.log('✅ Full Amazon sync completed successfully');
+      logDebug('✅ Full Amazon sync completed successfully');
       
     } catch (error) {
-      console.error('❌ Full sync failed:', error);
+      logError('❌ Full sync failed:', error);
     }
   }
 
@@ -376,7 +378,7 @@ class AmazonSPAPIService {
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
       this.syncInterval = null;
-      console.log('⏹️ Amazon data sync stopped');
+      logDebug('⏹️ Amazon data sync stopped');
     }
   }
 
@@ -384,7 +386,7 @@ class AmazonSPAPIService {
     this.stopDataSync();
     this.isConnected = false;
     await prisma.$disconnect();
-    console.log('🔌 Amazon SP-API service disconnected');
+    logDebug('🔌 Amazon SP-API service disconnected');
   }
 }
 

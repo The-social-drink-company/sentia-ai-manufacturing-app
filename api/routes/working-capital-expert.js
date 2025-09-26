@@ -3,6 +3,8 @@ import axios from 'axios';
 import { requireAuth } from '../middleware/clerkAuth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { z } from 'zod';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 
@@ -36,7 +38,7 @@ const workingCapitalSchema = z.object({
 router.post('/calculate',
   requireAuth,
   asyncHandler(async (req, res) => {
-    console.log('[Working Capital Expert] Calculation request received');
+    logDebug('[Working Capital Expert] Calculation request received');
 
     // Validate input
     const params = workingCapitalSchema.parse(req.body);
@@ -55,7 +57,7 @@ router.post('/calculate',
         }
       );
 
-      console.log('[Working Capital Expert] Calculation successful');
+      logDebug('[Working Capital Expert] Calculation successful');
 
       res.json({
         success: true,
@@ -63,7 +65,7 @@ router.post('/calculate',
       });
 
     } catch (mcpError) {
-      console.error('[Working Capital Expert] MCP server error:', mcpError.message);
+      logError('[Working Capital Expert] MCP server error:', mcpError.message);
 
       // Fallback to local calculations if MCP server is unavailable
       const fallbackData = calculateLocally(params);
@@ -88,7 +90,7 @@ router.get('/benchmarks/:industry',
     const { industry } = req.params;
     const { revenue } = req.query;
 
-    console.log(`[Working Capital Expert] Fetching benchmarks for ${industry}`);
+    logDebug(`[Working Capital Expert] Fetching benchmarks for ${industry}`);
 
     try {
       // Try to get AI-powered benchmarks from MCP server
@@ -128,7 +130,7 @@ router.get('/benchmarks/:industry',
 router.get('/recommendations',
   requireAuth,
   asyncHandler(async (req, res) => {
-    console.log('[Working Capital Expert] Generating recommendations');
+    logDebug('[Working Capital Expert] Generating recommendations');
 
     try {
       // Get current working capital data

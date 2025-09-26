@@ -10,6 +10,8 @@ import CacheService from './CacheService.js';
 import BatchProcessor from './BatchProcessor.js';
 import FXService from './FXService.js';
 import RegionalCalendarService from './RegionalCalendarService.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class ForecastingService extends EventEmitter {
   constructor(options = {}) {
@@ -294,7 +296,7 @@ class ForecastingService extends EventEmitter {
 
           modelResults[modelName].predictions.push(...foldErrors);
         } catch (error) {
-          console.warn(`Model ${modelName} failed on fold ${foldIndex}: ${error.message}`);
+          logWarn(`Model ${modelName} failed on fold ${foldIndex}: ${error.message}`);
         }
       }
     }
@@ -417,7 +419,7 @@ class ForecastingService extends EventEmitter {
           const predictions = await this.models[modelName].forecast(horizon);
           forecasts[modelName] = predictions;
         } catch (error) {
-          console.warn(`Failed to generate forecast for ${modelName}: ${error.message}`);
+          logWarn(`Failed to generate forecast for ${modelName}: ${error.message}`);
         }
       }
     }

@@ -7,6 +7,8 @@
 
 import express from 'express';
 import cors from 'cors';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const app = express();
 const port = process.env.PORT || 9000;
@@ -17,7 +19,7 @@ app.use(express.json());
 
 // Basic middleware
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  logDebug(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
@@ -86,7 +88,7 @@ app.get('/mcp/status', (req, res) => {
 
 // Error handling middleware
 app.use((error, req, res, next) => {
-  console.error('Server error:', error);
+  logError('Server error:', error);
   res.status(500).json({
     status: 'error',
     message: error.message,
@@ -106,37 +108,37 @@ app.use('*', (req, res) => {
 
 // Start server
 const server = app.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 Sentia MCP Server (Simple) running on port ${port}`);
-  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🚂 Railway: ${process.env.RAILWAY_ENVIRONMENT ? 'Yes' : 'No'}`);
-  console.log(`🔗 Health check: http://localhost:${port}/health`);
-  console.log(`📋 MCP info: http://localhost:${port}/mcp/info`);
+  logDebug(`🚀 Sentia MCP Server (Simple) running on port ${port}`);
+  logDebug(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logDebug(`🚂 Railway: ${process.env.RAILWAY_ENVIRONMENT ? 'Yes' : 'No'}`);
+  logDebug(`🔗 Health check: http://localhost:${port}/health`);
+  logDebug(`📋 MCP info: http://localhost:${port}/mcp/info`);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully');
+  logDebug('Received SIGTERM, shutting down gracefully');
   server.close(() => {
-    console.log('Server closed');
+    logDebug('Server closed');
     process.exit(0);
   });
 });
 
 process.on('SIGINT', () => {
-  console.log('Received SIGINT, shutting down gracefully');
+  logDebug('Received SIGINT, shutting down gracefully');
   server.close(() => {
-    console.log('Server closed');
+    logDebug('Server closed');
     process.exit(0);
   });
 });
 
 // Error handling
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error);
+  logError('Uncaught exception:', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled rejection at:', promise, 'reason:', reason);
+  logError('Unhandled rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });

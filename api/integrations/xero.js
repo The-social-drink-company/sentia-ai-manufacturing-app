@@ -1,5 +1,7 @@
 import xeroCompleteService from '../../services/integrations/xero-complete.js';
 import { PrismaClient } from '@prisma/client';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const prisma = new PrismaClient();
 
@@ -16,7 +18,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
-    console.error('Xero API error:', error);
+    logError('Xero API error:', error);
     return res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }
@@ -575,7 +577,7 @@ async function triggerSync(req, res) {
 
     // Trigger async sync
     xeroCompleteService.performFullSync().catch(error => {
-      console.error('Xero sync failed:', error);
+      logError('Xero sync failed:', error);
     });
 
     return res.status(200).json({

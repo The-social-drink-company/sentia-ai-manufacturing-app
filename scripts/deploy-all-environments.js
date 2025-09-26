@@ -29,8 +29,8 @@ const ENVIRONMENTS = {
 };
 
 const CLERK_CONFIG = {
-  VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
-  CLERK_SECRET_KEY: 'sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
+  VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_REDACTED',
+  CLERK_SECRET_KEY: 'sk_live_REDACTED',
   VITE_MCP_SERVER_URL: 'https://mcp-server-tkyu.onrender.com',
   VITE_API_BASE_URL: '/api',
   NODE_ENV: 'production'
@@ -175,3 +175,5 @@ function verifyAllDeployments() {
 
 // Export for use in other scripts
 export { ENVIRONMENTS, CLERK_CONFIG };
+
+

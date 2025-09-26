@@ -10,6 +10,8 @@ import crypto from 'crypto';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -159,7 +161,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async initialize() {
-    console.log('🔒 INITIALIZING SECURITY TESTING ENGINE');
+    logDebug('🔒 INITIALIZING SECURITY TESTING ENGINE');
     
     // Setup security testing directories
     this.setupSecurityDirectories();
@@ -173,7 +175,7 @@ class SecurityTestingEngine extends EventEmitter {
     // Setup security monitoring
     this.setupSecurityMonitoring();
     
-    console.log('✅ Security Testing Engine initialized successfully');
+    logDebug('✅ Security Testing Engine initialized successfully');
     this.emit('initialized');
   }
 
@@ -204,10 +206,10 @@ class SecurityTestingEngine extends EventEmitter {
       try {
         await execAsync(`${tool} --version`);
         availableTools.set(tool, true);
-        console.log(`✅ Security tool available: ${tool}`);
+        logDebug(`✅ Security tool available: ${tool}`);
       } catch (error) {
         availableTools.set(tool, false);
-        console.warn(`⚠️ Security tool not available: ${tool}`);
+        logWarn(`⚠️ Security tool not available: ${tool}`);
       }
     }
     
@@ -216,7 +218,7 @@ class SecurityTestingEngine extends EventEmitter {
 
   async loadVulnerabilityDatabases() {
     // Load CVE database, CWE mappings, etc.
-    console.log('📚 Loading vulnerability databases...');
+    logDebug('📚 Loading vulnerability databases...');
     
     // This would typically load from external sources
     this.vulnerabilityDb = {
@@ -250,7 +252,7 @@ class SecurityTestingEngine extends EventEmitter {
 
   setupSecurityMonitoring() {
     // Setup continuous security monitoring
-    console.log('📡 Setting up security monitoring...');
+    logDebug('📡 Setting up security monitoring...');
     
     // This would integrate with security monitoring tools
     this.securityMonitoringActive = true;
@@ -258,7 +260,7 @@ class SecurityTestingEngine extends EventEmitter {
 
   // Main Security Testing Methods
   async runComprehensiveSecurityScan(target = null) {
-    console.log('🔍 Starting comprehensive security scan...');
+    logDebug('🔍 Starting comprehensive security scan...');
     
     const scanId = this.generateScanId();
     const scanSession = {
@@ -276,37 +278,37 @@ class SecurityTestingEngine extends EventEmitter {
     try {
       // OWASP Top 10 Testing
       if (this.config.owaspTesting.enabled) {
-        console.log('🔍 Running OWASP Top 10 tests...');
+        logDebug('🔍 Running OWASP Top 10 tests...');
         scanSession.results.set('owasp', await this.runOwaspTop10Tests(scanSession.target));
       }
 
       // Authentication Testing
       if (this.config.authTesting.enabled) {
-        console.log('🔐 Running authentication tests...');
+        logDebug('🔐 Running authentication tests...');
         scanSession.results.set('auth', await this.runAuthenticationTests(scanSession.target));
       }
 
       // Data Security Testing
       if (this.config.dataSecurityTesting.enabled) {
-        console.log('🛡️ Running data security tests...');
+        logDebug('🛡️ Running data security tests...');
         scanSession.results.set('dataSecurity', await this.runDataSecurityTests(scanSession.target));
       }
 
       // Infrastructure Security Testing
       if (this.config.infrastructureSecurity.enabled) {
-        console.log('🏗️ Running infrastructure security tests...');
+        logDebug('🏗️ Running infrastructure security tests...');
         scanSession.results.set('infrastructure', await this.runInfrastructureSecurityTests(scanSession.target));
       }
 
       // Vulnerability Scanning
       if (this.config.vulnerabilityScanning.enabled) {
-        console.log('🔎 Running vulnerability scans...');
+        logDebug('🔎 Running vulnerability scans...');
         scanSession.results.set('vulnerabilities', await this.runVulnerabilityScans(scanSession.target));
       }
 
       // Penetration Testing
       if (this.config.penetrationTesting.enabled) {
-        console.log('🎯 Running penetration tests...');
+        logDebug('🎯 Running penetration tests...');
         scanSession.results.set('penetration', await this.runPenetrationTests(scanSession.target));
       }
 
@@ -316,7 +318,7 @@ class SecurityTestingEngine extends EventEmitter {
       scanSession.status = 'completed';
       scanSession.endTime = new Date().toISOString();
 
-      console.log(`✅ Security scan completed: ${scanSession.vulnerabilities.length} vulnerabilities found`);
+      logDebug(`✅ Security scan completed: ${scanSession.vulnerabilities.length} vulnerabilities found`);
       this.emit('scanCompleted', scanSession);
 
     } catch (error) {
@@ -324,7 +326,7 @@ class SecurityTestingEngine extends EventEmitter {
       scanSession.error = error.message;
       scanSession.endTime = new Date().toISOString();
       
-      console.error(`❌ Security scan failed: ${error.message}`);
+      logError(`❌ Security scan failed: ${error.message}`);
       this.emit('scanFailed', scanSession);
     }
 
@@ -406,7 +408,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async testAccessControl(target) {
-    console.log('  🔐 Testing access control...');
+    logDebug('  🔐 Testing access control...');
     
     const results = {
       testName: 'Access Control',
@@ -501,7 +503,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async testCryptographicImplementation(target) {
-    console.log('  🔒 Testing cryptographic implementation...');
+    logDebug('  🔒 Testing cryptographic implementation...');
     
     const results = {
       testName: 'Cryptographic Failures',
@@ -616,7 +618,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async testInjectionFlaws(target) {
-    console.log('  💉 Testing injection flaws...');
+    logDebug('  💉 Testing injection flaws...');
     
     const results = {
       testName: 'Injection Flaws',
@@ -791,7 +793,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async testAuthenticationFlaws(target) {
-    console.log('  🔑 Testing authentication flaws...');
+    logDebug('  🔑 Testing authentication flaws...');
     
     const results = {
       testName: 'Authentication Failures',
@@ -931,7 +933,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async testSecurityMisconfiguration(target) {
-    console.log('  ⚙️ Testing security misconfiguration...');
+    logDebug('  ⚙️ Testing security misconfiguration...');
     
     const vulnerabilities = [];
     const details = { headers: {}, exposedFiles: [] };
@@ -985,7 +987,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async testCrossSiteScripting(target) {
-    console.log('  🕷️ Testing cross-site scripting...');
+    logDebug('  🕷️ Testing cross-site scripting...');
     
     const vulnerabilities = [];
     const details = { testedEndpoints: [], payloadResults: [] };
@@ -1050,7 +1052,7 @@ class SecurityTestingEngine extends EventEmitter {
 
   // Additional testing methods (simplified implementations)
   async runAuthenticationTests(target) {
-    console.log('🔐 Running comprehensive authentication tests...');
+    logDebug('🔐 Running comprehensive authentication tests...');
     
     return {
       target,
@@ -1061,7 +1063,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async runDataSecurityTests(target) {
-    console.log('🛡️ Running data security tests...');
+    logDebug('🛡️ Running data security tests...');
     
     return {
       target,
@@ -1072,7 +1074,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async runInfrastructureSecurityTests(target) {
-    console.log('🏗️ Running infrastructure security tests...');
+    logDebug('🏗️ Running infrastructure security tests...');
     
     return {
       target,
@@ -1083,7 +1085,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async runVulnerabilityScans(target) {
-    console.log('🔎 Running vulnerability scans...');
+    logDebug('🔎 Running vulnerability scans...');
     
     const scanResults = {
       target,
@@ -1122,7 +1124,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async runPenetrationTests(target) {
-    console.log('🎯 Running penetration tests...');
+    logDebug('🎯 Running penetration tests...');
     
     return {
       target,
@@ -1183,7 +1185,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async generateSecurityReports(scanSession) {
-    console.log('📊 Generating security reports...');
+    logDebug('📊 Generating security reports...');
     
     // Generate JSON report
     const jsonReport = {
@@ -1214,7 +1216,7 @@ class SecurityTestingEngine extends EventEmitter {
 
     fs.writeFileSync(htmlPath, htmlReport);
 
-    console.log(`📄 Reports generated: ${reportPath}, ${htmlPath}`);
+    logDebug(`📄 Reports generated: ${reportPath}, ${htmlPath}`);
   }
 
   generateHtmlReport(jsonReport) {
@@ -1275,7 +1277,7 @@ class SecurityTestingEngine extends EventEmitter {
 
   // Integration methods
   async integrateWithAutonomousSystem() {
-    console.log('🔗 Integrating security testing with autonomous system...');
+    logDebug('🔗 Integrating security testing with autonomous system...');
     
     const securityScenarios = this.generateSecurityTestScenarios();
     
@@ -1284,7 +1286,7 @@ class SecurityTestingEngine extends EventEmitter {
       JSON.stringify(securityScenarios, null, 2)
     );
 
-    console.log(`🔒 Generated ${securityScenarios.length} security test scenarios`);
+    logDebug(`🔒 Generated ${securityScenarios.length} security test scenarios`);
     return securityScenarios;
   }
 
@@ -1319,7 +1321,7 @@ class SecurityTestingEngine extends EventEmitter {
   }
 
   async runQuickSecurityScan(target = null) {
-    console.log('⚡ Running quick security scan...');
+    logDebug('⚡ Running quick security scan...');
     
     const scanTarget = target || this.config.penetrationTesting.targets.webApplication;
     const quickResults = {

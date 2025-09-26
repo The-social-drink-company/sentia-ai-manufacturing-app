@@ -15,19 +15,19 @@ Click "Add Environment Variable" for each entry below. Copy and paste exactly as
 #### 1. Frontend Publishable Key
 ```
 Name: VITE_CLERK_PUBLISHABLE_KEY
-Value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+Value: pk_live_REDACTED
 ```
 
 #### 2. Backend Secret Key
 ```
 Name: CLERK_SECRET_KEY
-Value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+Value: sk_live_REDACTED
 ```
 
 #### 3. Next.js Compatibility Key
 ```
 Name: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-Value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+Value: pk_live_REDACTED
 ```
 
 #### 4. Sign In URL
@@ -96,9 +96,9 @@ Value: true
 ### Add Same Variables
 Add the exact same 11 environment variables as above:
 
-1. `VITE_CLERK_PUBLISHABLE_KEY` = `pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ`
-2. `CLERK_SECRET_KEY` = `sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq`
-3. `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` = `pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ`
+1. `VITE_CLERK_PUBLISHABLE_KEY` = `pk_live_REDACTED`
+2. `CLERK_SECRET_KEY` = `sk_live_REDACTED`
+3. `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` = `pk_live_REDACTED`
 4. `VITE_CLERK_SIGN_IN_URL` = `/sign-in`
 5. `VITE_CLERK_SIGN_UP_URL` = `/sign-up`
 6. `VITE_CLERK_AFTER_SIGN_IN_URL` = `/dashboard`
@@ -130,9 +130,9 @@ Value: https://mcp-server-tkyu.onrender.com
 
 ### All Variables in One Block
 ```env
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+CLERK_SECRET_KEY=sk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
 VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
@@ -258,3 +258,4 @@ After both services are configured and deployed:
 **Document Version**: 1.0
 **Last Updated**: September 2025
 **Keys Valid Until**: Check Clerk Dashboard
+

@@ -1,5 +1,7 @@
 import EventEmitter from 'events';
 import redisCacheService from './redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class MicroservicesOrchestrator extends EventEmitter {
   constructor() {
@@ -68,7 +70,7 @@ class MicroservicesOrchestrator extends EventEmitter {
     // Setup load balancer
     this.setupLoadBalancer(name, serviceConfig);
     
-    console.log(`Microservices: Registered service ${name} v${serviceConfig.version}`);
+    logDebug(`Microservices: Registered service ${name} v${serviceConfig.version}`);
     this.emit('service:registered', { name, config: serviceConfig });
     
     return serviceConfig;
@@ -110,7 +112,7 @@ class MicroservicesOrchestrator extends EventEmitter {
         instance.status = 'running';
         instance.health = 'healthy';
       });
-      console.log(`Microservices: ${serviceName} instances initialized`);
+      logDebug(`Microservices: ${serviceName} instances initialized`);
     }, 2000);
   }
 
@@ -237,7 +239,7 @@ class MicroservicesOrchestrator extends EventEmitter {
       return response;
       
     } catch (error) {
-      console.error(`Request routing failed for ${serviceName}:`, error.message);
+      logError(`Request routing failed for ${serviceName}:`, error.message);
       
       // Record failure metrics
       const service = this.services.get(serviceName);
@@ -273,7 +275,7 @@ class MicroservicesOrchestrator extends EventEmitter {
         
         if (attempt < retryConfig.attempts) {
           const backoffDelay = retryConfig.backoff * Math.pow(2, attempt - 1);
-          console.log(`Retry attempt ${attempt + 1} for ${instance.id} in ${backoffDelay}ms`);
+          logDebug(`Retry attempt ${attempt + 1} for ${instance.id} in ${backoffDelay}ms`);
           await this.sleep(backoffDelay);
         }
       }
@@ -329,14 +331,14 @@ class MicroservicesOrchestrator extends EventEmitter {
           instance.lastHealthCheck = new Date().toISOString();
           
           if (!isHealthy && instance.status === 'running') {
-            console.warn(`Health check failed for ${instance.id}`);
+            logWarn(`Health check failed for ${instance.id}`);
             this.emit('instance:unhealthy', { instance, serviceName });
           }
           
         } catch (error) {
           instance.health = 'unhealthy';
           instance.lastHealthCheck = new Date().toISOString();
-          console.error(`Health check error for ${instance.id}:`, error.message);
+          logError(`Health check error for ${instance.id}:`, error.message);
         }
       }
     }
@@ -438,14 +440,14 @@ class MicroservicesOrchestrator extends EventEmitter {
         newInstance.health = 'healthy';
       }, 5000);
       
-      console.log(`Microservices: Scaled up ${serviceName} (${instances.length} instances)`);
+      logDebug(`Microservices: Scaled up ${serviceName} (${instances.length} instances)`);
       this.emit('service:scaled', { serviceName, direction: 'up', instances: instances.length });
       
     } else if (direction === 'down' && instances.length > serviceConfig.scaling.min) {
       const instanceToRemove = instances.pop();
       instanceToRemove.status = 'terminating';
       
-      console.log(`Microservices: Scaled down ${serviceName} (${instances.length} instances)`);
+      logDebug(`Microservices: Scaled down ${serviceName} (${instances.length} instances)`);
       this.emit('service:scaled', { serviceName, direction: 'down', instances: instances.length });
     }
   }
@@ -476,7 +478,7 @@ class MicroservicesOrchestrator extends EventEmitter {
     
     if (cb.failures >= cb.failureThreshold && cb.state === 'closed') {
       cb.state = 'open';
-      console.warn(`Circuit breaker opened for service ${service.name}`);
+      logWarn(`Circuit breaker opened for service ${service.name}`);
       this.emit('circuit-breaker:opened', { service: service.name });
     }
   }
@@ -487,7 +489,7 @@ class MicroservicesOrchestrator extends EventEmitter {
     if (cb.state === 'half-open') {
       cb.state = 'closed';
       cb.failures = 0;
-      console.log(`Circuit breaker closed for service ${service.name}`);
+      logDebug(`Circuit breaker closed for service ${service.name}`);
       this.emit('circuit-breaker:closed', { service: service.name });
     } else if (cb.state === 'closed') {
       cb.failures = Math.max(0, cb.failures - 1);
@@ -576,23 +578,23 @@ class MicroservicesOrchestrator extends EventEmitter {
 
   setupEventHandlers() {
     this.on('service:registered', (event) => {
-      console.log(`Event: Service ${event.name} registered`);
+      logDebug(`Event: Service ${event.name} registered`);
     });
 
     this.on('instance:unhealthy', (event) => {
-      console.warn(`Event: Instance ${event.instance.id} is unhealthy`);
+      logWarn(`Event: Instance ${event.instance.id} is unhealthy`);
     });
 
     this.on('service:scaled', (event) => {
-      console.log(`Event: Service ${event.serviceName} scaled ${event.direction} to ${event.instances} instances`);
+      logDebug(`Event: Service ${event.serviceName} scaled ${event.direction} to ${event.instances} instances`);
     });
 
     this.on('circuit-breaker:opened', (event) => {
-      console.warn(`Event: Circuit breaker opened for ${event.service}`);
+      logWarn(`Event: Circuit breaker opened for ${event.service}`);
     });
 
     this.on('circuit-breaker:closed', (event) => {
-      console.log(`Event: Circuit breaker closed for ${event.service}`);
+      logDebug(`Event: Circuit breaker closed for ${event.service}`);
     });
   }
 

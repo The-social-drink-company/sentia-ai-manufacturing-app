@@ -10,6 +10,8 @@ import { spawn, exec } from 'child_process';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -564,7 +566,7 @@ class AutonomousWatchdog {
     const timestamp = new Date().toISOString();
     const logEntry = `[${timestamp}] [WATCHDOG] [${level}] ${message}\n`;
     
-    console.log(logEntry.trim());
+    logDebug(logEntry.trim());
     
     try {
       // Ensure log directory exists
@@ -573,7 +575,7 @@ class AutonomousWatchdog {
       
       await fs.appendFile(this.logFile, logEntry);
     } catch (error) {
-      console.error('Failed to write to log file:', error);
+      logError('Failed to write to log file:', error);
     }
   }
 

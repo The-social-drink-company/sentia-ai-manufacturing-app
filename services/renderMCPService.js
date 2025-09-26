@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 /**
  * Render MCP Service
  * Handles integration with Render-hosted MCP server
@@ -132,7 +134,7 @@ class RenderMCPService {
         body: data
       });
     } catch (error) {
-      console.error('MCP Analytics request failed:', error);
+      logError('MCP Analytics request failed:', error);
       return null;
     }
   }
@@ -141,7 +143,7 @@ class RenderMCPService {
     try {
       return await this.makeRequest('/mcp/diagnostics');
     } catch (error) {
-      console.error('MCP Diagnostics request failed:', error);
+      logError('MCP Diagnostics request failed:', error);
       return null;
     }
   }
@@ -153,7 +155,7 @@ class RenderMCPService {
         body: { message }
       });
     } catch (error) {
-      console.error('MCP Chat request failed:', error);
+      logError('MCP Chat request failed:', error);
       return null;
     }
   }

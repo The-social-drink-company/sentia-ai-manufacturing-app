@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot Test - Sentia Manufacturing</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chatbot-preview {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #3b82f6;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: bounce 3s infinite;
+        }
+
+        .chatbot-preview:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .chat-icon {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .arrow {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            animation: point 2s infinite;
+        }
+
+        @keyframes point {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 Enterprise AI Chatbot Test</h1>
+
+    <div class="info-box">
+        <h2>Your AI Assistant is Ready!</h2>
+        <p>The Enterprise AI Chatbot should appear as a blue circular button in the bottom-right corner of this page.</p>
+
+        <div class="status">
+            <div class="indicator"></div>
+            <span>Chatbot Active</span>
+        </div>
+
+        <h3>Features Available:</h3>
+        <ul style="text-align: left; max-width: 400px; margin: 1rem auto;">
+            <li>Multi-LLM Support (Claude, GPT-4, Gemini)</li>
+            <li>Voice Input & Text-to-Speech</li>
+            <li>File Attachments & Analysis</li>
+            <li>Real-time Data Visualization</li>
+            <li>Export/Import Conversations</li>
+            <li>Multiple Chat Modes</li>
+        </ul>
+
+        <p style="margin-top: 2rem;">
+            <strong>Click the blue chat button to start!</strong>
+        </p>
+    </div>
+
+    <div class="arrow">👉</div>
+
+    <!-- Visual representation of where chatbot should be -->
+    <div class="chatbot-preview" onclick="alert('The actual AI Chatbot will appear here when running in the React app!')">
+        <svg class="chat-icon" viewBox="0 0 24 24">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+            <path d="M7 9h10v2H7zm0-3h10v2H7z"/>
+        </svg>
+    </div>
+
+    <script>
+        console.log('🚀 AI Chatbot Test Page Loaded');
+        console.log('📍 Look for the blue chat button in the bottom-right corner');
+        console.log('💡 If you don\'t see it, check the React app at http://localhost:5176');
+
+        // Check if running in React app
+        if (window.location.port === '5176') {
+            console.log('✅ Running in React development server - Chatbot should be visible!');
+        } else {
+            console.log('⚠️ Not running in React app - Open http://localhost:5176 to see the actual chatbot');
+        }
+    </script>
+</body>
+</html>

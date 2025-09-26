@@ -1,11 +1,13 @@
-import multer from 'multer';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+
+import multer from 'multer';
+
 import { logInfo, logError } from '../../services/observability/structuredLogger.js';
 
 // File upload configuration
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination (req, file, cb) {
     const uploadDir = 'uploads';
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -13,8 +15,8 @@ const storage = multer.diskStorage({
     }
     cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+  filename (req, file, cb) {
+    const uniqueSuffix = `${Date.now()  }-${  Math.round(Math.random() * 1E9)}`;
     const filename = `${uniqueSuffix}-${file.originalname}`;
     logInfo('File upload started', { filename, originalname: file.originalname });
     cb(null, filename);
@@ -40,8 +42,8 @@ const fileFilter = (req, file, cb) => {
 
 // Create multer upload instance
 export const upload = multer({ 
-  storage: storage,
-  fileFilter: fileFilter,
+  storage,
+  fileFilter,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
     files: 5 // Maximum 5 files per request

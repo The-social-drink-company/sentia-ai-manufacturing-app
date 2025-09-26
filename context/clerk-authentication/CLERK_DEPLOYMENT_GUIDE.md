@@ -11,11 +11,11 @@ Clerk provides complete user management and authentication for the Sentia Manufa
 #### Required Production Variables
 ```env
 # Frontend (React/Vite)
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 
 # Backend (Node.js/Express)
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+CLERK_SECRET_KEY=sk_live_REDACTED
 
 # Clerk Configuration
 CLERK_ENVIRONMENT=production
@@ -26,7 +26,7 @@ VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
 VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
 
 # Webhook (if using)
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 ```
 
 ### 2. Key Differences: Development vs Production
@@ -98,9 +98,9 @@ services:
     startCommand: npm start
     envVars:
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+        value: pk_live_REDACTED
       - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+        value: sk_live_REDACTED
       - key: NODE_ENV
         value: production
 ```

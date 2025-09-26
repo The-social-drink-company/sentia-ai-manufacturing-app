@@ -39,10 +39,10 @@
 ```bash
 # Copy this entire block and paste into Render Environment tab
 
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+CLERK_SECRET_KEY=sk_live_REDACTED
+CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 VITE_API_BASE_URL=https://sentia-manufacturing-production.onrender.com/api
 API_BASE_URL=https://sentia-manufacturing-production.onrender.com/api
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
@@ -50,7 +50,7 @@ VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
 VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
 VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
 VITE_MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
 MCP_JWT_SECRET=production-mcp-jwt-secret-2025
@@ -204,3 +204,5 @@ You'll know it's working when:
 
 **Auto-refresh**: Check status every 5 minutes until resolved
 **Expected Resolution**: Within 15 minutes of adding environment variables
+
+

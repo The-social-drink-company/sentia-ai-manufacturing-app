@@ -30,8 +30,8 @@ npm run build
 ```
 
 ## Environment Variables Required
-- VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-- CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+- VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+- CLERK_SECRET_KEY=sk_live_REDACTED
 - NODE_ENV=production
 
 ## Force Rebuild Trigger

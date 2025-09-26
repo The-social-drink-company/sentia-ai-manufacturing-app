@@ -14,9 +14,13 @@ export const logError = (...args) => {
 }
 
 export const logInfo = (...args) => {
-  logWarn(...args)
+  if (allowed()) {
+    console.log(`[${namespace}]`, ...args)
+  }
 }
 
 export const logDebug = (...args) => {
-  logWarn(...args)
+  if (allowed() && import.meta.env?.MODE === 'development') {
+    console.debug(`[${namespace}]`, ...args)
+  }
 }

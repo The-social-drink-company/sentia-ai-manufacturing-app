@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WorkingCapitalDashboard from './features/working-capital/WorkingCapitalDashboard';
+import InventoryDashboard from './features/inventory/InventoryDashboard';
 import AIInsights from './components/AIInsights';
 import './App.css';
 
@@ -29,6 +30,8 @@ function App() {
     switch (currentView) {
       case 'working-capital':
         return <WorkingCapitalDashboard />;
+      case 'inventory':
+        return <InventoryDashboard />;
       case 'ai-insights':
         return <AIInsights />;
       case 'dashboard':
@@ -74,20 +77,25 @@ function App() {
                 </div>
                 
                 <div className="feature-card">
+                  <h4>📦 Inventory Management</h4>
+                  <p>Monitor stock levels, reorder points, and turnover</p>
+                  <button
+                    className="feature-button active"
+                    onClick={() => setCurrentView('inventory')}
+                  >
+                    Manage Inventory
+                  </button>
+                </div>
+
+                <div className="feature-card">
                   <h4>🤖 AI Insights</h4>
                   <p>AI-powered manufacturing intelligence</p>
-                  <button 
+                  <button
                     className="feature-button active"
                     onClick={() => setCurrentView('ai-insights')}
                   >
                     View Insights
                   </button>
-                </div>
-                
-                <div className="feature-card">
-                  <h4>📈 Real-time Analytics</h4>
-                  <p>Live production and financial metrics</p>
-                  <button disabled>Coming Soon</button>
                 </div>
                 
                 <div className="feature-card">

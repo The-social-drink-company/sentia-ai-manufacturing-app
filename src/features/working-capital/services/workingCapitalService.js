@@ -1,6 +1,9 @@
 const API_BASE = import.meta.env?.VITE_API_BASE_URL || '/api'
 const MCP_BASE = import.meta.env?.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'
 
+// Import forecasting utilities for advanced analytics
+import { forecastingUtils } from '../utils/forecastingUtils.js'
+
 // Mock data for development/fallback
 const generateMockData = (period = 'month') => {
   const now = new Date()
@@ -192,15 +195,89 @@ export async function fetchWorkingCapitalMetrics(period = 'month') {
   }
 }
 
-export async function exportWorkingCapitalData(format = 'csv', period = 'month') {
+// Enhanced export function using the comprehensive export service
+export async function exportWorkingCapitalData(format = 'csv', period = 'month', options = {}) {
+  try {
+    // Import the export service dynamically to avoid bundle size issues
+    const { exportWorkingCapitalData: exportData } = await import('./exportService.js')
+
+    // Get comprehensive data for export
+    const data = await fetchWorkingCapitalMetrics(period)
+
+    // Add forecast data if requested
+    if (options.includeForecasts) {
+      try {
+        const forecastResult = await generateCashFlowForecast({ periods: 6 })
+        if (forecastResult.success) {
+          data.forecasts = forecastResult.forecast
+        }
+      } catch (error) {
+        console.warn('Could not include forecasts in export:', error)
+      }
+    }
+
+    // Add optimization recommendations if requested
+    if (options.includeRecommendations) {
+      try {
+        const recsResult = await generateOptimizationRecommendations(data.summary || {})
+        if (recsResult.success) {
+          data.recommendations = recsResult.opportunities
+        }
+      } catch (error) {
+        console.warn('Could not include recommendations in export:', error)
+      }
+    }
+
+    // Add risk assessment if requested
+    if (options.includeRiskAssessment && data.forecasts) {
+      try {
+        const riskResult = await assessCashFlowRisk(data.forecasts.base || [])
+        if (riskResult.success) {
+          data.risks = riskResult
+        }
+      } catch (error) {
+        console.warn('Could not include risk assessment in export:', error)
+      }
+    }
+
+    // Export using the enhanced export service
+    const result = await exportData(data, format, {
+      includeCharts: options.includeCharts || false,
+      includeForecasts: options.includeForecasts || true,
+      includeRecommendations: options.includeRecommendations || true,
+      dateRange: period,
+      ...options
+    })
+
+    return result
+  } catch (error) {
+    console.error('Enhanced export failed, falling back to simple export:', error)
+
+    // Fallback to simple export for compatibility
+    const data = await fetchWorkingCapitalMetrics(period)
+
+    if (format === 'csv') {
+      const csv = convertToCSV(data)
+      downloadFile(csv, `working-capital-${period}-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv')
+      return { success: true, filename: `working-capital-${period}.csv` }
+    } else if (format === 'json') {
+      const json = JSON.stringify(data, null, 2)
+      downloadFile(json, `working-capital-${period}-${new Date().toISOString().split('T')[0]}.json`, 'application/json')
+      return { success: true, filename: `working-capital-${period}.json` }
+    }
+
+    return { success: false, error: error.message }
+  }
+}
+
+// Legacy export function for backward compatibility
+export async function exportWorkingCapitalDataLegacy(format = 'csv', period = 'month') {
   const data = await fetchWorkingCapitalMetrics(period)
 
   if (format === 'csv') {
-    // Convert to CSV
     const csv = convertToCSV(data)
     downloadFile(csv, `working-capital-${period}-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv')
   } else if (format === 'json') {
-    // Download as JSON
     const json = JSON.stringify(data, null, 2)
     downloadFile(json, `working-capital-${period}-${new Date().toISOString().split('T')[0]}.json`, 'application/json')
   }
@@ -235,4 +312,231 @@ function downloadFile(content, filename, mimeType) {
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+// Enhanced forecasting services
+export async function generateCashFlowForecast(options = {}) {
+  try {
+    // First try to get real historical data
+    let historicalData = []
+    try {
+      const response = await fetch(`${MCP_BASE}/api/working-capital/historical-cash-flow`)
+      if (response.ok) {
+        historicalData = await response.json()
+      }
+    } catch (error) {
+      console.warn('Could not fetch historical cash flow data, using mock data')
+    }
+
+    // Use mock data if no real data available
+    if (historicalData.length === 0) {
+      historicalData = generateMockCashFlowHistory(12) // 12 months of mock data
+    }
+
+    // Generate forecast using forecasting utilities
+    const forecast = forecastingUtils.generateCashFlowForecast(historicalData, {
+      periods: options.periods || 6,
+      includeMonteCarlo: options.includeMonteCarlo || false,
+      iterations: options.iterations || 1000
+    })
+
+    return {
+      success: true,
+      forecast,
+      historical: historicalData,
+      metadata: {
+        periods: options.periods || 6,
+        confidenceLevel: 0.95,
+        lastUpdated: new Date().toISOString()
+      }
+    }
+  } catch (error) {
+    console.error('Error generating cash flow forecast:', error)
+    return {
+      success: false,
+      error: 'Failed to generate cash flow forecast'
+    }
+  }
+}
+
+export async function generateWorkingCapitalForecast(options = {}) {
+  try {
+    // Get historical working capital metrics
+    let historicalMetrics = []
+    try {
+      const response = await fetch(`${MCP_BASE}/api/working-capital/historical-metrics`)
+      if (response.ok) {
+        historicalMetrics = await response.json()
+      }
+    } catch (error) {
+      console.warn('Could not fetch historical metrics, using mock data')
+    }
+
+    // Use mock data if no real data available
+    if (historicalMetrics.length === 0) {
+      historicalMetrics = generateMockMetricsHistory(12)
+    }
+
+    // Generate forecast
+    const forecast = forecastingUtils.forecastWorkingCapitalMetrics(historicalMetrics, {
+      periods: options.periods || 6
+    })
+
+    return {
+      success: true,
+      forecast,
+      historical: historicalMetrics,
+      metadata: {
+        periods: options.periods || 6,
+        lastUpdated: new Date().toISOString()
+      }
+    }
+  } catch (error) {
+    console.error('Error generating working capital forecast:', error)
+    return {
+      success: false,
+      error: 'Failed to generate working capital forecast'
+    }
+  }
+}
+
+export async function generateOptimizationRecommendations(currentMetrics, options = {}) {
+  try {
+    // Industry benchmarks (could be fetched from API in real implementation)
+    const industryBenchmarks = {
+      dso: 35,
+      dio: 30,
+      dpo: 40,
+      currentRatio: 2.0,
+      quickRatio: 1.5,
+      ...options.benchmarks
+    }
+
+    const recommendations = forecastingUtils.generateOptimizationRecommendations(
+      currentMetrics,
+      industryBenchmarks
+    )
+
+    return {
+      success: true,
+      ...recommendations,
+      metadata: {
+        benchmarksUsed: industryBenchmarks,
+        lastUpdated: new Date().toISOString()
+      }
+    }
+  } catch (error) {
+    console.error('Error generating optimization recommendations:', error)
+    return {
+      success: false,
+      error: 'Failed to generate optimization recommendations'
+    }
+  }
+}
+
+export async function assessCashFlowRisk(forecastData, options = {}) {
+  try {
+    const riskAssessment = forecastingUtils.assessCashFlowRisk(forecastData, options.thresholds)
+
+    return {
+      success: true,
+      ...riskAssessment,
+      metadata: {
+        thresholdsUsed: options.thresholds || {},
+        lastUpdated: new Date().toISOString()
+      }
+    }
+  } catch (error) {
+    console.error('Error assessing cash flow risk:', error)
+    return {
+      success: false,
+      error: 'Failed to assess cash flow risk'
+    }
+  }
+}
+
+export async function createScenarioAnalysis(baseData, scenarioDefinitions = {}) {
+  try {
+    const scenarios = forecastingUtils.createScenarioModels(baseData, scenarioDefinitions)
+
+    return {
+      success: true,
+      scenarios,
+      baseData,
+      metadata: {
+        scenariosGenerated: Object.keys(scenarios),
+        lastUpdated: new Date().toISOString()
+      }
+    }
+  } catch (error) {
+    console.error('Error creating scenario analysis:', error)
+    return {
+      success: false,
+      error: 'Failed to create scenario analysis'
+    }
+  }
+}
+
+// Helper functions to generate mock historical data
+function generateMockCashFlowHistory(months) {
+  const history = []
+  const baseDate = new Date()
+
+  for (let i = months - 1; i >= 0; i--) {
+    const date = new Date(baseDate)
+    date.setMonth(date.getMonth() - i)
+
+    const seasonalFactor = 1 + (0.15 * Math.sin((date.getMonth() / 12) * 2 * Math.PI))
+    const baseInflow = 150000 * seasonalFactor
+    const baseOutflow = 120000 * seasonalFactor
+
+    history.push({
+      date: date.toISOString(),
+      period: date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+      cashInflow: Math.round(baseInflow + ((Math.random() - 0.5) * 30000)),
+      cashOutflow: Math.round(baseOutflow + ((Math.random() - 0.5) * 20000)),
+      netCashFlow: 0, // Will be calculated
+      cumulativeCash: 0 // Will be calculated
+    })
+  }
+
+  // Calculate net flow and cumulative cash
+  let runningCash = 200000 // Starting balance
+  history.forEach(period => {
+    period.netCashFlow = period.cashInflow - period.cashOutflow
+    runningCash += period.netCashFlow
+    period.cumulativeCash = runningCash
+  })
+
+  return history
+}
+
+function generateMockMetricsHistory(months) {
+  const history = []
+  const baseDate = new Date()
+
+  for (let i = months - 1; i >= 0; i--) {
+    const date = new Date(baseDate)
+    date.setMonth(date.getMonth() - i)
+
+    // Add some realistic variance over time
+    const trendFactor = 1 - (i * 0.02) // Slight improvement over time
+    const randomFactor = 0.9 + (Math.random() * 0.2) // ±10% variance
+
+    history.push({
+      date: date.toISOString(),
+      period: date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+      dso: Math.round(38 * trendFactor * randomFactor),
+      dio: Math.round(32 * trendFactor * randomFactor),
+      dpo: Math.round(35 * (1 + (1 - trendFactor)) * randomFactor), // DPO improvement is inverse
+      ccc: 0 // Will be calculated
+    })
+  }
+
+  // Calculate CCC for each period
+  history.forEach(period => {
+    period.ccc = period.dso + period.dio - period.dpo
+  })
+
+  return history
 }

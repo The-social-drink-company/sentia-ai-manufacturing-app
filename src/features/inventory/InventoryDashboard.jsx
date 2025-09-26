@@ -2,41 +2,44 @@ import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import {
   CubeIcon,
+  ChartBarIcon,
   ExclamationTriangleIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
-  ClockIcon,
   TruckIcon,
-  ChartBarIcon,
+  ClockIcon,
   ArrowDownTrayIcon
 } from '@heroicons/react/24/solid'
 import { useAuth } from '../../hooks/useAuth'
 import { useInventoryMetrics } from './hooks/useInventoryMetrics'
-import { InventoryHeatmap } from './components/InventoryHeatmap'
+import InventoryCard from './components/InventoryCard'
 import StockLevelChart from './components/StockLevelChart'
-import ReorderPointsWidget from './components/ReorderPointsWidget'
-import InventoryTurnoverChart from './components/InventoryTurnoverChart'
-import SlowMovingStock from './components/SlowMovingStock'
-import StockMovementForecast from './components/StockMovementForecast'
-import MetricCard from '../working-capital/components/MetricCard'
+import DemandForecast from './components/DemandForecast'
+import SupplierPerformance from './components/SupplierPerformance'
+import ReorderRecommendations from './components/ReorderRecommendations'
+import ABCAnalysis from './components/ABCAnalysis'
 
 export default function InventoryDashboard() {
   const { user } = useAuth()
-  const [selectedPeriod, setSelectedPeriod] = useState('current')
-  const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedLocation, setSelectedLocation] = useState('all')
-  const { data: metrics, loading, error, refetch, exportData } = useInventoryMetrics(selectedPeriod, selectedCategory, selectedLocation)
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [timeRange, setTimeRange] = useState('30d')
+  const { data: metrics, loading, error, refetch, exportData } = useInventoryMetrics({
+    location: selectedLocation,
+    category: selectedCategory,
+    timeRange
+  })
 
-  // Role-based access control - allow manager and above
+  // Role-based access control
   if (user?.role === 'viewer') {
     return <Navigate to="/dashboard" replace />
   }
 
-  // Auto-refresh every 5 minutes for inventory data
+  // Auto-refresh every 30 seconds for inventory data
   useEffect(() => {
     const interval = setInterval(() => {
       refetch()
-    }, 5 * 60 * 1000) // 5 minutes
+    }, 30 * 1000) // 30 seconds for real-time inventory
     return () => clearInterval(interval)
   }, [refetch])
 
@@ -83,12 +86,7 @@ export default function InventoryDashboard() {
     }
   }
 
-  const handleHeatmapCellClick = (sku, locationData) => {
-    console.log('Clicked inventory cell:', sku, locationData)
-    // Could open a detailed view modal here
-  }
-
-  const { summary, stockLevels, reorderPoints, turnover, slowMoving, forecast, alerts } = metrics || {}
+  const { summary, stockLevels, forecast, suppliers, reorders, analysis, alerts } = metrics || {}
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -102,7 +100,7 @@ export default function InventoryDashboard() {
                 Inventory Management
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Monitor stock levels, reorder points, and inventory turnover
+                Real-time inventory tracking, demand forecasting, and optimization
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -113,13 +111,9 @@ export default function InventoryDashboard() {
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
               >
                 <option value="all">All Locations</option>
-                <option value="UK-London">London</option>
-                <option value="UK-Manchester">Manchester</option>
-                <option value="EU-Amsterdam">Amsterdam</option>
-                <option value="EU-Berlin">Berlin</option>
-                <option value="US-NYC">New York</option>
-                <option value="US-LA">Los Angeles</option>
-                <option value="US-Chicago">Chicago</option>
+                <option value="main">Main Warehouse</option>
+                <option value="secondary">Secondary Warehouse</option>
+                <option value="production">Production Floor</option>
               </select>
 
               {/* Category Filter */}
@@ -130,22 +124,21 @@ export default function InventoryDashboard() {
               >
                 <option value="all">All Categories</option>
                 <option value="raw-materials">Raw Materials</option>
-                <option value="work-in-progress">WIP</option>
+                <option value="wip">Work in Progress</option>
                 <option value="finished-goods">Finished Goods</option>
-                <option value="packaging">Packaging</option>
+                <option value="consumables">Consumables</option>
               </select>
 
-              {/* Period Selector */}
+              {/* Time Range */}
               <select
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
               >
-                <option value="current">Current</option>
-                <option value="daily">Daily View</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="quarterly">Quarterly</option>
+                <option value="7d">7 Days</option>
+                <option value="30d">30 Days</option>
+                <option value="90d">90 Days</option>
+                <option value="1y">1 Year</option>
               </select>
 
               {/* Export Menu */}
@@ -189,10 +182,10 @@ export default function InventoryDashboard() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Alerts Section */}
+        {/* Critical Alerts Section */}
         {alerts && alerts.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Inventory Alerts</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Critical Inventory Alerts</h2>
             <div className="space-y-3">
               {alerts.map((alert, index) => (
                 <div
@@ -229,78 +222,100 @@ export default function InventoryDashboard() {
           </div>
         )}
 
-        {/* Summary Metrics */}
+        {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricCard
-            title="Total Stock Value"
-            value={summary?.totalValue || 0}
-            change={summary?.valueChange}
-            format="currency"
+          <InventoryCard
+            title="Total Items"
+            value={summary?.totalItems || 0}
+            change={summary?.itemsChange}
+            format="number"
             icon={CubeIcon}
             color="blue"
           />
-          <MetricCard
-            title="Inventory Turnover"
+          <InventoryCard
+            title="Inventory Value"
+            value={summary?.totalValue || 0}
+            change={summary?.valueChange}
+            format="currency"
+            icon={ChartBarIcon}
+            color="green"
+          />
+          <InventoryCard
+            title="Turnover Ratio"
             value={summary?.turnoverRatio || 0}
             change={summary?.turnoverChange}
-            format="ratio"
+            format="decimal"
             icon={ArrowTrendingUpIcon}
-            color="green"
-            target={12}
+            color="purple"
+            target={6.0}
           />
-          <MetricCard
-            title="Days on Hand"
-            value={summary?.daysOnHand || 0}
-            change={summary?.daysOnHandChange}
-            format="days"
-            icon={ClockIcon}
-            color="orange"
-            target={30}
-          />
-          <MetricCard
+          <InventoryCard
             title="Stockout Risk"
             value={summary?.stockoutRisk || 0}
-            change={summary?.stockoutRiskChange}
-            format="number"
+            change={summary?.riskChange}
+            format="percentage"
             icon={ExclamationTriangleIcon}
             color="red"
+            target={5}
+            inverted={true}
           />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="space-y-8">
-          {/* Inventory Heatmap */}
-          <div>
-            <InventoryHeatmap
-              data={stockLevels?.heatmapData}
-              onCellClick={handleHeatmapCellClick}
-            />
-          </div>
+        {/* Charts Row 1 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <StockLevelChart
+            data={stockLevels}
+            title="Stock Level Overview"
+            timeRange={timeRange}
+          />
+          <DemandForecast
+            data={forecast}
+            title="Demand Forecast"
+            period={timeRange}
+          />
+        </div>
 
-          {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <StockLevelChart
-              data={stockLevels?.chartData}
-              period={selectedPeriod}
-            />
-            <InventoryTurnoverChart
-              data={turnover?.chartData}
-              period={selectedPeriod}
-            />
-          </div>
+        {/* ABC Analysis */}
+        <div className="mb-8">
+          <ABCAnalysis
+            data={analysis}
+            title="ABC Analysis"
+          />
+        </div>
 
-          {/* Widgets Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <ReorderPointsWidget
-              data={reorderPoints}
-            />
-            <SlowMovingStock
-              data={slowMoving}
-            />
-            <StockMovementForecast
-              data={forecast}
-              period={selectedPeriod}
-            />
+        {/* Charts Row 2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <SupplierPerformance
+            data={suppliers}
+            title="Supplier Performance"
+          />
+          <ReorderRecommendations
+            data={reorders}
+            title="Reorder Recommendations"
+            onReorderAction={(item) => console.log('Reorder action:', item)}
+          />
+        </div>
+
+        {/* Quick Actions Panel */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+              <CubeIcon className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Cycle Count</span>
+            </button>
+            <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+              <TruckIcon className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Create PO</span>
+            </button>
+            <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+              <ClockIcon className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Adjust Stock</span>
+            </button>
+            <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+              <ChartBarIcon className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">View Reports</span>
+            </button>
           </div>
         </div>
       </div>

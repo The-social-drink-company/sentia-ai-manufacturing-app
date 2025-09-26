@@ -17,3 +17,5 @@ export { Button } from './Button'
 
 // Modal components
 export { Modal, ModalBody, ModalFooter } from './Modal'
+// Loading spinner
+export { LoadingSpinner } from './LoadingSpinner'

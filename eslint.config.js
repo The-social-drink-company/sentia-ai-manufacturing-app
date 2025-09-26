@@ -1,173 +1,114 @@
 import js from '@eslint/js'
-import globals from 'globals'
-import react from 'eslint-plugin-react'
+import reactPlugin from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
+import importPlugin from 'eslint-plugin-import'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
+import globals from 'globals'
+
+const files = ['src/**/*.{js,jsx}', 'server/**/*.js']
 
 export default [
   {
-    ignores: [
-      'dist',
-      'dist/**',
-      '**/dist/**',
-      'build',
-      'build/**',
-      '**/build/**',
-      'coverage/**',
-      'node_modules/**',
-      '*.min.js',
-      '*.min.css',
-      '.vite/**',
-      'public/**',
-      'database/**',
-      'scripts/**',
-      'agents/**',
-      '*-agent.js',
-      '*-agent.cjs',
-      'agent-*.js',
-      'agent-*.cjs',
-      '*agent*.js',
-      '*agent*.cjs',
-      'services/monitoring/**',
-      'services/observability/**',
-      '**/monitoring/**',
-      '**/*monitoring*.js',
-      'tests/**',
-      '**/*.test.{js,jsx}',
-      '**/*.spec.{js,jsx}',
-      '**/tests/**',
-      'src/App-*.jsx',
-      'src/App.*.jsx',
-      'src/*-backup*.jsx',
-      'src/*-debug*.jsx',
-      'src/*-Original*.jsx',
-      'src/MinimalApp.jsx',
-      'src/legacy/**',
-      'src/accessibility/**',
-      'src/ai/**',
-      'src/core/**',
-      'src/compliance/**',
-      'src/TestDashboard.jsx',
-      'vite.config.js',
-      'tailwind.config.js',
-      'playwright.config.js',
-      'vitest.config.js'
-    ]
-  },
-  {
-    files: ['src/**/*.{js,jsx}'],
+    files,
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
         ...globals.browser,
-        ...globals.es2020,
-        process: 'readonly'
+        ...globals.node
       },
       parserOptions: {
-        ecmaVersion: 'latest',
-        ecmaFeatures: { jsx: true },
-        sourceType: 'module'
+        ecmaFeatures: {
+          jsx: true
+        }
       }
     },
     plugins: {
-      react,
+      react: reactPlugin,
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh
+      import: importPlugin,
+      'jsx-a11y': jsxA11y
     },
     settings: {
       react: {
         version: 'detect'
-      }
-    },
-    rules: {
-      ...js.configs.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
-      'no-unused-vars': [
-        'error',
-        {
-          varsIgnorePattern: '(^_|React$)',
-          argsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_'
-        }
-      ],
-      'react/jsx-uses-react': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/jsx-uses-vars': 'error',
-      'react/prop-types': 'off',
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true }
-      ],
-      'no-console': ['warn', { allow: ['warn', 'error'] }]
-    }
-  },
-  {
-    files: [
-      'server/**/*.js',
-      'api/**/*.js',
-      'services/**/*.js',
-      'database/**/*.js',
-      'scripts/**/*.js',
-      'agents/**/*.js',
-      'mcp-server/**/*.js',
-      'ai/**/*.js',
-      'analytics/**/*.js',
-      'config/**/*.js',
-      'middleware/**/*.js'
-    ],
-    ignores: ['src/**'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: {
-        ...globals.node,
-        ...globals.es2020,
-        Buffer: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        process: 'readonly',
-        global: 'readonly',
-        console: 'readonly'
       },
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module'
+      'import/resolver': {
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx']
+        }
       }
     },
     rules: {
       ...js.configs.recommended.rules,
-      'no-unused-vars': [
+      ...reactPlugin.configs.flat.recommended.rules,
+      ...reactPlugin.configs.flat['jsx-runtime'].rules,
+      ...reactHooks.configs['recommended-latest'].rules,
+      ...importPlugin.configs.recommended.rules,
+      ...jsxA11y.configs.recommended.rules,
+      'react/prop-types': 'off',
+      'react/jsx-no-target-blank': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+      'import/no-unresolved': 'error',
+      'import/named': 'error',
+      'import/default': 'error',
+      'import/namespace': 'error',
+      'import/no-cycle': 'warn',
+      'import/order': [
         'error',
         {
-          varsIgnorePattern: '^_',
-          argsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_'
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true
+          }
         }
       ],
-      'no-console': 'off'
+      'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+      'no-debugger': 'error',
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_'
+        }
+      ],
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'prefer-template': 'warn',
+      'object-shorthand': 'warn',
+      'array-callback-return': 'error',
+      'consistent-return': 'warn',
+      'default-case': 'warn',
+      'dot-notation': 'warn',
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-new-func': 'error',
+      'no-param-reassign': [
+        'warn',
+        { props: false }
+      ],
+      'no-return-await': 'warn',
+      'no-script-url': 'error',
+      'no-self-compare': 'error',
+      'no-throw-literal': 'error',
+      'no-useless-concat': 'warn',
+      'prefer-promise-reject-errors': 'error',
+      radix: 'error',
+      'require-await': 'warn'
     }
   },
   {
-    files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        ...globals.jest,
-        describe: 'readonly',
-        it: 'readonly',
-        expect: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-        beforeAll: 'readonly',
-        afterAll: 'readonly',
-        test: 'readonly',
-        vi: 'readonly'
-      }
-    },
-    rules: {
-      'no-console': 'off'
-    }
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'build/**',
+      'coverage/**',
+      'public/**',
+      '*.config.js',
+      '*.config.cjs'
+    ]
   }
 ]

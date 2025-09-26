@@ -5,7 +5,17 @@
       "Bash(npx husky init:*)",
       "Bash(npm run dev:client:*)",
       "Bash(npm run typecheck:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:server:*)",
+      "Bash(npm install:*)",
+      "Bash(chmod:*)",
+      "Bash(npm run lint)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)"
     ],
     "deny": [],
     "ask": []

@@ -48,7 +48,7 @@ export function AuthGuard({ children, requiredRole, fallbackPath = '/sign-in' })
         <div className="min-h-screen bg-gradient-to-br from-red-50 to-gray-100 flex items-center justify-center p-4">
           <Alert variant="destructive" className="max-w-md">
             <AlertDescription>
-              You don't have permission to access this page. Required role: {requiredRole}
+              You don&apos;t have permission to access this page. Required role: {requiredRole}
             </AlertDescription>
           </Alert>
         </div>

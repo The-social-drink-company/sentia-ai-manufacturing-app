@@ -171,7 +171,7 @@ const DashboardEnhanced = () => {
           Welcome back, {user?.firstName || 'User'}!
         </h1>
         <p className="text-blue-100">
-          Here's what's happening in your manufacturing operations today.
+          Here&apos;s what&apos;s happening in your manufacturing operations today.
         </p>
       </div>
 

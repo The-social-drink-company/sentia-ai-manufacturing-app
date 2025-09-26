@@ -11,3 +11,9 @@ export { Badge } from './Badge'
 
 // Alert components
 export { Alert, AlertTitle, AlertDescription } from './Alert'
+
+// Button component
+export { Button } from './Button'
+
+// Modal components
+export { Modal, ModalBody, ModalFooter } from './Modal'

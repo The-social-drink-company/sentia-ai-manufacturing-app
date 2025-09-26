@@ -3,14 +3,16 @@
 
 echo "Running pre-push validation..."
 
-# Run TypeScript type checking
-echo "Running TypeScript validation..."
-npm run typecheck
-if [ $? -ne 0 ]; then
-    echo "TypeScript validation failed. Please fix type errors before pushing."
-    exit 1
-fi
+# Run lint check
+echo "Checking code quality with ESLint..."
+npm run lint:check
 
-# Note: ESLint and tests currently have dependency issues
-# They will be re-enabled once resolved
-echo "Pre-push validation completed successfully!"
+# Run type checking  
+echo "Checking TypeScript types..."
+npm run typecheck
+
+# Run tests
+echo "Running test suite..."
+npm test -- --run
+
+echo "All checks passed! Push approved."

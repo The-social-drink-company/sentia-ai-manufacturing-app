@@ -101,6 +101,7 @@ export default function LoginPage() {
             return (
               <label
                 key={role.id}
+                htmlFor={`role-${role.id}`}
                 className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-sky-400 ${
                   isActive
                     ? 'border-brand-primary/50 bg-brand-primary/10 shadow-glow-blue'
@@ -108,6 +109,7 @@ export default function LoginPage() {
                 }`}
               >
                 <input
+                  id={`role-${role.id}`}
                   type="radio"
                   name="role"
                   value={role.id}

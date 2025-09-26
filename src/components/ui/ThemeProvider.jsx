@@ -1,58 +1,26 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
-const ThemeContext = createContext({
-  theme: 'light',
-  setTheme: () => null,
-})
-
-export function ThemeProvider({
-  children,
+function ThemeProvider({
+  attribute = 'class',
   defaultTheme = 'system',
-  storageKey = 'sentia-ui-theme',
+  enableSystem = true,
+  disableTransitionOnChange = true,
+  storageKey = 'sentia-theme',
+  children,
   ...props
 }) {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem(storageKey) || defaultTheme
-  )
-
-  useEffect(() => {
-    const root = window.document.documentElement
-
-    root.classList.remove('light', 'dark')
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light'
-
-      root.classList.add(systemTheme)
-      return
-    }
-
-    root.classList.add(theme)
-  }, [theme])
-
-  const value = {
-    theme,
-    setTheme: (theme) => {
-      localStorage.setItem(storageKey, theme)
-      setTheme(theme)
-    },
-  }
-
   return (
-    <ThemeContext.Provider {...props} value={value}>
+    <NextThemesProvider
+      attribute={attribute}
+      defaultTheme={defaultTheme}
+      enableSystem={enableSystem}
+      disableTransitionOnChange={disableTransitionOnChange}
+      storageKey={storageKey}
+      {...props}
+    >
       {children}
-    </ThemeContext.Provider>
-  )
+    </NextThemesProvider>
+  );
 }
 
-export const useTheme = () => {
-  const context = useContext(ThemeContext)
-
-  if (context === undefined)
-    throw new Error('useTheme must be used within a ThemeProvider')
-
-  return context
-}
+export { ThemeProvider };

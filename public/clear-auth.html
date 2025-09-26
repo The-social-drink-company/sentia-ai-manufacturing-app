@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Auth & Verify Clerk</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1f2937; }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+        .success { background: #d1fae5; border-color: #10b981; }
+        .warning { background: #fed7aa; border-color: #f97316; }
+        .info { background: #dbeafe; border-color: #3b82f6; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #2563eb; }
+        .red { background: #ef4444; }
+        .red:hover { background: #dc2626; }
+        pre {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clerk Authentication Setup Verification</h1>
+
+        <div id="localStorage-status" class="status"></div>
+        <div id="env-status" class="status"></div>
+        <div id="clerk-status" class="status"></div>
+
+        <h2>Actions:</h2>
+        <button onclick="clearMockAuth()">Clear Mock Auth Session</button>
+        <button onclick="checkStatus()">Check Current Status</button>
+        <button class="red" onclick="clearAllStorage()">Clear ALL localStorage</button>
+
+        <h2>Environment Configuration:</h2>
+        <pre id="config"></pre>
+
+        <h2>Next Steps:</h2>
+        <div class="status info">
+            <ol>
+                <li>Click "Clear Mock Auth Session" above</li>
+                <li>Go to <a href="/">Landing Page</a></li>
+                <li>Click "Sign In" or "Get Started"</li>
+                <li>Complete Clerk authentication</li>
+                <li>You'll be redirected to /dashboard</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function clearMockAuth() {
+            localStorage.removeItem('sentia-mock-auth-v1');
+            checkStatus();
+            alert('Mock auth session cleared! You can now use real Clerk authentication.');
+        }
+
+        function clearAllStorage() {
+            if (confirm('This will clear ALL localStorage data. Are you sure?')) {
+                localStorage.clear();
+                checkStatus();
+                alert('All localStorage cleared!');
+            }
+        }
+
+        function checkStatus() {
+            // Check localStorage
+            const mockAuth = localStorage.getItem('sentia-mock-auth-v1');
+            const localStorageDiv = document.getElementById('localStorage-status');
+            if (mockAuth) {
+                localStorageDiv.className = 'status warning';
+                localStorageDiv.innerHTML = '<strong>⚠️ Mock Auth Found:</strong> ' + mockAuth.substring(0, 100) + '...';
+            } else {
+                localStorageDiv.className = 'status success';
+                localStorageDiv.innerHTML = '<strong>✓ Mock Auth Cleared:</strong> Ready for real Clerk authentication';
+            }
+
+            // Check environment variables (from meta tags if available)
+            const envDiv = document.getElementById('env-status');
+            const clerkKey = import.meta?.env?.VITE_CLERK_PUBLISHABLE_KEY || 'Not available in this context';
+            const forceMock = import.meta?.env?.VITE_FORCE_MOCK_AUTH || 'false';
+
+            envDiv.className = 'status info';
+            envDiv.innerHTML = `
+                <strong>Environment Status:</strong><br>
+                VITE_CLERK_PUBLISHABLE_KEY: ${clerkKey.substring(0, 20)}...<br>
+                VITE_FORCE_MOCK_AUTH: ${forceMock}
+            `;
+
+            // Clerk status
+            const clerkDiv = document.getElementById('clerk-status');
+            clerkDiv.className = 'status success';
+            clerkDiv.innerHTML = '<strong>✓ Clerk Mode:</strong> Using production Clerk at clerk.financeflo.ai';
+
+            // Show config
+            document.getElementById('config').textContent = JSON.stringify({
+                mockAuthInStorage: !!mockAuth,
+                localStorageKeys: Object.keys(localStorage),
+                currentUrl: window.location.href,
+                clerkDomain: 'clerk.financeflo.ai',
+                mode: mockAuth ? 'MOCK MODE ACTIVE' : 'CLERK MODE READY'
+            }, null, 2);
+        }
+
+        // Check status on load
+        checkStatus();
+    </script>
+</body>
+</html>

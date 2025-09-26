@@ -49,6 +49,10 @@ function loadStoredUser() {
 }
 
 function persistUser(user) {
+  if (!isBrowser) {
+    return
+  }
+
   try {
     if (typeof window === 'undefined' || !window.localStorage) {
       return
@@ -207,5 +211,7 @@ export function useAuthContext() {
 }
 
 export { AuthContext }
+
+
 
 

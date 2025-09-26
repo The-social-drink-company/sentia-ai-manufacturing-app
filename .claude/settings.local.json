@@ -329,7 +329,10 @@
       "Bash(del test-mcp-websocket.js)",
       "Bash(npx speckit:*)",
       "WebFetch(domain:render.com)",
-      "Bash(npx vitest run:*)"
+      "Bash(npx vitest run:*)",
+      "Bash(set VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ)",
+      "Bash(render whoami)",
+      "Bash(./render.exe whoami)"
     ],
     "deny": [],
     "ask": []

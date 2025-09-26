@@ -1,7 +1,26 @@
 import { SignUp } from '@clerk/clerk-react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth.js'
 
 export default function SignUpPage() {
+  const { mode } = useAuth()
+
+  if (mode !== 'clerk') {
+    return (
+      <div className="auth auth--mock">
+        <div className="auth__card">
+          <header className="auth__header">
+            <h1>Clerk sign-up unavailable</h1>
+            <p>Mock authentication is active locally. Use the role picker on the sign-in screen.</p>
+          </header>
+          <Link to="/login" className="auth__submit">
+            Back to sign in
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -44,10 +63,11 @@ export default function SignUpPage() {
 
         <div className="mt-8 text-center">
           <Link to="/" className="text-sm text-gray-500 hover:text-gray-700">
-            ← Back to homepage
+            Back to homepage
           </Link>
         </div>
       </div>
     </div>
   )
 }
+

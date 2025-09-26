@@ -24,3 +24,4 @@ export const logDebug = (...args) => {
     console.debug(`[${namespace}]`, ...args)
   }
 }
+

@@ -41,7 +41,6 @@
         "@react-spring/web": "^10.0.3",
         "@react-three/drei": "^10.7.6",
         "@react-three/fiber": "^9.3.0",
-        "@tailwindcss/postcss": "^4.1.13",
         "@tanstack/react-query": "^5.90.2",
         "@tanstack/react-query-devtools": "^5.90.2",
         "axios": "^1.12.2",
@@ -223,5 +222,3 @@
     },
     "homepage": "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard#readme"
 }
-
-

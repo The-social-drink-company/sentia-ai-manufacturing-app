@@ -224,12 +224,22 @@ const validateBody = (schema) => (req, res, next) => {
 };
 
 const healthRouter = express.Router();
+
+// Support both GET and HEAD requests for health checks
 healthRouter.get('/health', (req, res) => {
   res.success({ status: 'ok', uptime: process.uptime() });
 });
 
+healthRouter.head('/health', (req, res) => {
+  res.status(200).end();
+});
+
 healthRouter.get('/health/live', (req, res) => {
   res.success({ status: 'live', uptime: process.uptime() });
+});
+
+healthRouter.head('/health/live', (req, res) => {
+  res.status(200).end();
 });
 
 const checkDatabaseConnectivity = async () => {
@@ -506,8 +516,15 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (req.method !== 'GET') return next();
+  // Support both GET and HEAD for SPA routes
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
   if (req.path.startsWith('/api')) return next();
+
+  // For HEAD requests, just send status without body
+  if (req.method === 'HEAD') {
+    return res.status(200).end();
+  }
+
   res.sendFile(path.join(allowedStaticPath, 'index.html'), (err) => {
     if (err) next(err);
   });
@@ -606,3 +623,4 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 
 export default app;
+

@@ -3,7 +3,7 @@ import { useDashboardSummary } from '../hooks/useDashboardSummary.js'
 const formatNumber = (value, unit) =>
   typeof value === 'number'
     ? `${value.toLocaleString(undefined, { maximumFractionDigits: 1 })}${unit ? ` ${unit}` : ''}`
-    : '�'
+    : '--'
 
 const formatTrend = trend => {
   if (typeof trend !== 'number') {
@@ -11,7 +11,7 @@ const formatTrend = trend => {
   }
 
   const direction = trend === 0 ? 'stable' : trend > 0 ? 'up' : 'down'
-  const symbol = trend === 0 ? '?' : trend > 0 ? '?' : '?'
+  const symbol = trend === 0 ? 'STABLE' : trend > 0 ? 'UP' : 'DOWN'
   const className = `metric-card__trend metric-card__trend--${direction}`
 
   return (
@@ -85,3 +85,5 @@ export default function DashboardPage() {
     </section>
   )
 }
+
+

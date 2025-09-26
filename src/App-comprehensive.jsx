@@ -30,6 +30,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const EnterpriseDashboard = lazy(() => import('./pages/Dashboard/EnterpriseDashboard'));
 const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'));
 const ExecutiveDashboard = lazy(() => import('./components/Executive/ExecutiveDashboard'));
+const NewExecutiveDashboard = lazy(() => import('./features/executive/ExecutiveDashboard'));
 
 // Financial Management
 const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'));
@@ -205,6 +206,11 @@ const AuthenticatedApp = () => {
                   <Fragment>
                     <ExecutiveDashboard />
                   </Fragment>
+                } />
+                <Route path="/executive" element={
+                  <ProtectedRoute requiredRoles={['executive', 'admin', 'manager']}>
+                    <NewExecutiveDashboard />
+                  </ProtectedRoute>
                 } />
                 <Route path="/dashboard/world-class" element={
                   <Fragment>

@@ -62,7 +62,10 @@
       "Bash(set NODE_OPTIONS=--max-old-space-size=4096)",
       "Bash(set DEPLOYMENT_STAGE=1)",
       "Bash(set NODE_OPTIONS=--max-old-space-size=3072)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr merge:*)"
     ],
     "deny": [],
     "ask": []

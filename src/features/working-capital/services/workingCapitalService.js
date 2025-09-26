@@ -4,6 +4,9 @@ const MCP_BASE = import.meta.env?.VITE_MCP_SERVER_URL || 'https://mcp-server-tky
 // Import forecasting utilities for advanced analytics
 import { forecastingUtils } from '../utils/forecastingUtils.js'
 
+// Import caching service for performance optimization
+import { cacheService } from '../../../services/cache/redisCacheService.js'
+
 // Mock data for development/fallback
 const generateMockData = (period = 'month') => {
   const now = new Date()
@@ -144,7 +147,8 @@ const generateMockData = (period = 'month') => {
   }
 }
 
-export async function fetchWorkingCapitalMetrics(period = 'month') {
+// Internal function without caching for actual data fetching
+async function _fetchWorkingCapitalMetricsInternal(period = 'month') {
   try {
     // Try MCP server first
     const response = await fetch(`${MCP_BASE}/v1/financial/working-capital?period=${period}`, {
@@ -163,7 +167,7 @@ export async function fetchWorkingCapitalMetrics(period = 'month') {
       }
     }
   } catch (error) {
-    console.warn('MCP server unavailable, falling back to mock data:', error.message)
+    console.warn('MCP server unavailable, falling back to API:', error.message)
   }
 
   // Try main API
@@ -193,6 +197,21 @@ export async function fetchWorkingCapitalMetrics(period = 'month') {
     ...generateMockData(period),
     source: 'mock'
   }
+}
+
+// Cached version of fetchWorkingCapitalMetrics with performance optimization
+export async function fetchWorkingCapitalMetrics(period = 'month') {
+  const cacheKey = `working-capital:metrics:${period}`;
+
+  return cacheService.getOrSet(
+    cacheKey,
+    () => _fetchWorkingCapitalMetricsInternal(period),
+    240, // 4 minutes TTL
+    {
+      namespace: 'working-capital',
+      tags: ['financial', 'metrics', period]
+    }
+  );
 }
 
 // Enhanced export function using the comprehensive export service

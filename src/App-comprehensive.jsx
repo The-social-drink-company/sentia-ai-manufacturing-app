@@ -28,7 +28,8 @@ const ClerkSignIn = lazy(() => import('./pages/ClerkSignIn'));
 // Lazy-loaded Page Components - COMPREHENSIVE SET
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const EnterpriseDashboard = lazy(() => import('./pages/Dashboard'));
-const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'));
+// WorldClassDashboard component not available - using Dashboard instead
+const WorldClassDashboard = lazy(() => import('./pages/Dashboard'));
 const ExecutiveDashboard = lazy(() => import('./components/Executive/ExecutiveDashboard'));
 const NewExecutiveDashboard = lazy(() => import('./features/executive/ExecutiveDashboard'));
 

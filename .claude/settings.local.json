@@ -69,7 +69,22 @@
       "Bash(git pull:*)",
       "Bash(npm run dev:*)",
       "Bash(rm:*)",
-      "Bash(npm cache clean:*)"
+      "Bash(npm cache clean:*)",
+      "Bash(npm run test:unit:*)",
+      "Bash(npx vitest run:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(npm audit:*)",
+      "Bash(npx eslint:*)",
+      "Bash(curl:*)",
+      "Bash(time npm run build)",
+      "Bash(npx browserslist:*)",
+      "Bash(npm run clean-install:*)",
+      "Bash(dir /b \"C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\src\\features\\working-capital\\tests\")",
+      "Bash(npx tsc:*)",
+      "Bash(dir \"C:\\Projects\\Sentia Manufacturing Dashboard\\sentia-manufacturing-dashboard\\node_modules\\.bin\")",
+      "Bash(npm test)",
+      "Bash(npx vitest:*)"
     ],
     "deny": [],
     "ask": []

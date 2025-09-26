@@ -17,7 +17,15 @@ export default [
         ...js.configs.recommended.languageOptions.globals,
         window: 'readonly',
         document: 'readonly',
-        navigator: 'readonly'
+        navigator: 'readonly',
+        process: 'readonly',
+        global: 'readonly',
+        Buffer: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly'
       },
       parserOptions: {
         ecmaFeatures: {
@@ -88,10 +96,11 @@ export default [
       'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
       'no-debugger': 'error',
       'no-unused-vars': [
-        'warn',
+        'error',
         {
           argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_'
+          varsIgnorePattern: '^[A-Z_]|^_',
+          ignoreRestSiblings: true
         }
       ],
       'no-var': 'error',
@@ -120,6 +129,41 @@ export default [
       'require-await': 'warn'
     }
   },
+  // Test files configuration
+  {
+    files: ['**/*.test.js', '**/*.test.jsx', '**/*.spec.js', '**/*.spec.jsx'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        global: 'readonly',
+        process: 'readonly'
+      }
+    },
+    rules: {
+      'no-unused-vars': 'warn',
+      'security/detect-object-injection': 'off',
+      'react-hooks/exhaustive-deps': 'off'
+    }
+  },
+  // Legacy files with relaxed rules
+  {
+    files: [
+      'src/App-*.jsx',
+      'src/LandingPage.jsx',
+      'src/components/LandingPage.jsx',
+      'src/components/DashboardLayout.jsx',
+      'src/components/ExecutiveDashboard.jsx'
+    ],
+    rules: {
+      'no-unused-vars': 'warn',
+      'react-hooks/exhaustive-deps': 'warn'
+    }
+  },
   {
     ignores: [
       'dist/**',
@@ -128,7 +172,8 @@ export default [
       'coverage/**',
       'public/**',
       '*.config.js',
-      '*.config.cjs'
+      '*.config.cjs',
+      'tests/fixtures/**'
     ]
   }
 ]

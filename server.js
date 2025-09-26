@@ -5,6 +5,8 @@ import compression from 'compression';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { rateLimiter, apiLimiter, authLimiter } from './middleware/rate-limiter.js';
+import { cacheService } from './src/services/cache/redisCacheService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -117,6 +119,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Note: Rate limiting will be initialized in startup function
 
 // Memory optimization: Limit request size
 app.use(express.json({ limit: '1mb' }));
@@ -243,15 +247,39 @@ if (BRANCH === 'development') {
   }, 30000); // Check every 30 seconds
 }
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
-  console.log(`🌐 Environment: ${BRANCH}`);
-  console.log(`💾 Memory monitoring: ${BRANCH === 'development' ? 'enabled' : 'disabled'}`);
-  
-  // Initial memory report
-  const memUsage = process.memoryUsage();
-  console.log(`📊 Initial memory: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)}MB`);
-});
+// Async startup function
+async function startServer() {
+  try {
+    // Initialize caching service
+    await cacheService.initialize();
+    console.log('⚡ Cache service initialized');
+
+    // Initialize rate limiting
+    await rateLimiter.initialize();
+    console.log('🔒 Rate limiting initialized');
+
+    // Apply rate limiting to API routes
+    app.use('/api/', apiLimiter());
+    app.use('/auth/', authLimiter());
+    console.log('🛡️  Rate limiting middleware applied');
+
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+      console.log(`🌐 Environment: ${BRANCH}`);
+      console.log(`💾 Memory monitoring: ${BRANCH === 'development' ? 'enabled' : 'disabled'}`);
+
+      // Initial memory report
+      const memUsage = process.memoryUsage();
+      console.log(`📊 Initial memory: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)}MB`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();
 
 export default app;

@@ -1,9 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useXeroWorkingCapitalData } from './useXeroIntegration'
 
 export function useWorkingCapitalMetrics(period = 'current') {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // Try to get real data from Xero first
+  const xeroData = useXeroWorkingCapitalData()
 
   // Mock data generator for working capital metrics
   const generateMockData = useCallback(() => {
@@ -193,13 +197,57 @@ export function useWorkingCapitalMetrics(period = 'current') {
     return alerts
   }
 
-  // Fetch data function (mocked)
+  // Fetch data function (prioritize Xero, fallback to mock)
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
 
     try {
-      // Simulate API call delay
+      // If Xero is connected and has data, use real data
+      if (xeroData.isConnected && xeroData.summary) {
+        const realData = {
+          ...xeroData,
+          // Add mock alerts and recommendations for now
+          alerts: generateAlerts(),
+          recommendations: [
+            {
+              id: 1,
+              type: 'receivables',
+              priority: 'high',
+              title: 'Accelerate Collections',
+              description: `DSO is ${xeroData.receivables?.dso || 0} days - consider early payment incentives`,
+              impact: `$${Math.round((xeroData.receivables?.overdue || 0) * 0.1).toLocaleString()}`,
+              effort: 'medium',
+              timeframe: '2-3 weeks'
+            },
+            {
+              id: 2,
+              type: 'payables',
+              priority: 'medium',
+              title: 'Optimize Payment Terms',
+              description: `DPO is ${xeroData.payables?.dpo || 0} days - negotiate extended terms`,
+              impact: `$${Math.round((xeroData.payables?.discountsAvailable || 0) * 1.5).toLocaleString()}`,
+              effort: 'low',
+              timeframe: '1-2 weeks'
+            }
+          ],
+          // Add cash conversion cycle history (would need historical Xero data)
+          cccHistory: [
+            { month: 'Jan', ccc: 52 },
+            { month: 'Feb', ccc: 48 },
+            { month: 'Mar', ccc: 50 },
+            { month: 'Apr', ccc: 47 },
+            { month: 'May', ccc: 49 },
+            { month: 'Jun', ccc: xeroData.summary?.cashConversionCycle || 45 }
+          ]
+        }
+
+        setData(realData)
+        setLoading(false)
+        return
+      }
+
+      // Fallback to mock data
       await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 500))
 
       // Simulate occasional errors
@@ -214,12 +262,22 @@ export function useWorkingCapitalMetrics(period = 'current') {
       setError(err)
       setLoading(false)
     }
-  }, [generateMockData])
+  }, [generateMockData, xeroData])
 
   // Refetch function
-  const refetch = useCallback(() => {
-    fetchData()
-  }, [fetchData])
+  const refetch = useCallback(async () => {
+    // If Xero is connected, refresh Xero data first
+    if (xeroData.isConnected && xeroData.refetch) {
+      try {
+        await xeroData.refetch()
+      } catch (err) {
+        console.warn('Failed to refresh Xero data:', err)
+      }
+    }
+
+    // Then fetch/update our combined data
+    await fetchData()
+  }, [fetchData, xeroData])
 
   // Export data function
   const exportData = useCallback(async (format) => {
@@ -307,6 +365,10 @@ export function useWorkingCapitalMetrics(period = 'current') {
     loading,
     error,
     refetch,
-    exportData
+    exportData,
+    // Xero integration status
+    isXeroConnected: xeroData.isConnected,
+    xeroStatus: xeroData.connectionStatus,
+    isUsingRealData: xeroData.isConnected && !!xeroData.summary
   }
 }

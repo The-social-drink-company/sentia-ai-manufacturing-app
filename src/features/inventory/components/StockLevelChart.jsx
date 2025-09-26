@@ -1,188 +1,245 @@
 import React from 'react'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Area,
+  ComposedChart,
+  Bar
+} from 'recharts'
 
-export default function StockLevelChart({ data, period = 'current' }) {
-  // Mock stock level data if not provided
-  const mockData = data || [
-    { date: '2024-01-01', current: 2500, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-02', current: 2300, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-03', current: 2100, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-04', current: 1900, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-05', current: 1700, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-06', current: 1500, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-07', current: 1300, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-08', current: 1100, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-09', current: 900, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-10', current: 700, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' },
-    { date: '2024-01-11', current: 2800, minimum: 500, maximum: 4000, reorderPoint: 800, sku: 'SNTG-001' } // Restock
-  ]
-
-  const maxValue = Math.max(...mockData.map(d => Math.max(d.current, d.maximum)))
-  const dateRange = `${new Date(mockData[0].date).toLocaleDateString()} - ${new Date(mockData[mockData.length - 1].date).toLocaleDateString()}`
-
-  const getStockStatus = (current, reorderPoint, minimum) => {
-    if (current <= minimum) return { status: 'critical', color: 'bg-red-500' }
-    if (current <= reorderPoint) return { status: 'warning', color: 'bg-yellow-500' }
-    return { status: 'healthy', color: 'bg-green-500' }
+export default function StockLevelChart({ data, title, timeRange }) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-500 dark:text-gray-400">No stock level data available</p>
+        </div>
+      </div>
+    )
   }
 
-  const currentStock = mockData[mockData.length - 1]
-  const stockStatus = getStockStatus(currentStock.current, currentStock.reorderPoint, currentStock.minimum)
+  const formatTooltipValue = (value, name) => {
+    if (name.includes('Level') || name.includes('Stock')) {
+      return [value.toLocaleString(), name]
+    }
+    if (name.includes('Value')) {
+      return [`$${value.toLocaleString()}`, name]
+    }
+    return [value, name]
+  }
+
+  const formatYAxisTick = (value) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`
+    }
+    if (value >= 1000) {
+      return `${(value / 1000).toFixed(0)}K`
+    }
+    return value.toString()
+  }
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4">
+          <p className="text-gray-900 dark:text-white font-medium mb-2">{label}</p>
+          {payload.map((entry, index) => (
+            <div key={index} className="flex items-center justify-between min-w-32">
+              <div className="flex items-center">
+                <div
+                  className="w-3 h-3 rounded mr-2"
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {entry.name}:
+                </span>
+              </div>
+              <span className="text-sm font-medium text-gray-900 dark:text-white ml-4">
+                {formatTooltipValue(entry.value, entry.name)[0]}
+              </span>
+            </div>
+          ))}
+        </div>
+      )
+    }
+    return null
+  }
+
+  // Determine chart type based on data structure
+  const hasMultipleMetrics = data.some(item =>
+    item.hasOwnProperty('currentStock') &&
+    item.hasOwnProperty('minLevel') &&
+    item.hasOwnProperty('maxLevel')
+  )
+
+  const hasValueData = data.some(item => item.hasOwnProperty('value'))
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Stock Level Trend
-        </h3>
-        <div className="text-sm text-gray-600 dark:text-gray-400">
-          {dateRange}
-        </div>
-      </div>
-
-      {/* Current Status */}
-      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-        <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+        <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full mr-2 ${stockStatus.color}`}></div>
-            <span className="text-sm font-medium text-gray-900 dark:text-white">
-              Current: {currentStock.current.toLocaleString()} units
-            </span>
+            <div className="w-3 h-3 rounded bg-blue-600 mr-2" />
+            <span className="text-gray-600 dark:text-gray-400">Current Stock</span>
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            Status: <span className={`font-medium ${
-              stockStatus.status === 'critical' ? 'text-red-600' :
-              stockStatus.status === 'warning' ? 'text-yellow-600' : 'text-green-600'
-            }`}>
-              {stockStatus.status.charAt(0).toUpperCase() + stockStatus.status.slice(1)}
-            </span>
-          </div>
+          {hasMultipleMetrics && (
+            <>
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded bg-red-500 mr-2" />
+                <span className="text-gray-600 dark:text-gray-400">Min Level</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded bg-green-500 mr-2" />
+                <span className="text-gray-600 dark:text-gray-400">Max Level</span>
+              </div>
+            </>
+          )}
+          {hasValueData && (
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded bg-purple-500 mr-2" />
+              <span className="text-gray-600 dark:text-gray-400">Value</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Chart Area */}
-      <div className="relative h-64 bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-        {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 dark:text-gray-400 pr-2">
-          <span>{maxValue.toLocaleString()}</span>
-          <span>{Math.round(maxValue * 0.75).toLocaleString()}</span>
-          <span>{Math.round(maxValue * 0.5).toLocaleString()}</span>
-          <span>{Math.round(maxValue * 0.25).toLocaleString()}</span>
-          <span>0</span>
-        </div>
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          {hasMultipleMetrics ? (
+            <ComposedChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+              <XAxis
+                dataKey="period"
+                className="text-xs text-gray-600 dark:text-gray-400"
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis
+                yAxisId="left"
+                className="text-xs text-gray-600 dark:text-gray-400"
+                tick={{ fontSize: 12 }}
+                tickFormatter={formatYAxisTick}
+              />
+              {hasValueData && (
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  className="text-xs text-gray-600 dark:text-gray-400"
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={(value) => `$${formatYAxisTick(value)}`}
+                />
+              )}
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
 
-        {/* Chart area */}
-        <div className="ml-12 h-full relative">
-          {/* Reference lines */}
-          <div className="absolute inset-0">
-            {/* Maximum line */}
-            <div
-              className="absolute w-full border-t-2 border-dashed border-blue-300 dark:border-blue-600"
-              style={{ top: `${100 - (currentStock.maximum / maxValue) * 100}%` }}
-            >
-              <span className="absolute -top-4 left-2 text-xs text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-800 px-1">
-                Max: {currentStock.maximum.toLocaleString()}
-              </span>
-            </div>
-
-            {/* Reorder point line */}
-            <div
-              className="absolute w-full border-t-2 border-dashed border-yellow-400"
-              style={{ top: `${100 - (currentStock.reorderPoint / maxValue) * 100}%` }}
-            >
-              <span className="absolute -top-4 right-2 text-xs text-yellow-600 dark:text-yellow-400 bg-white dark:bg-gray-800 px-1">
-                Reorder: {currentStock.reorderPoint.toLocaleString()}
-              </span>
-            </div>
-
-            {/* Minimum line */}
-            <div
-              className="absolute w-full border-t-2 border-dashed border-red-400"
-              style={{ top: `${100 - (currentStock.minimum / maxValue) * 100}%` }}
-            >
-              <span className="absolute -top-4 left-2 text-xs text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 px-1">
-                Min: {currentStock.minimum.toLocaleString()}
-              </span>
-            </div>
-          </div>
-
-          {/* Stock level line */}
-          <div className="absolute inset-0">
-            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <polyline
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="text-blue-600 dark:text-blue-400"
-                points={mockData.map((point, index) => {
-                  const x = (index / (mockData.length - 1)) * 100
-                  const y = 100 - (point.current / maxValue) * 100
-                  return `${x},${y}`
-                }).join(' ')}
+              {/* Stock level lines */}
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="currentStock"
+                stroke="#2563eb"
+                strokeWidth={3}
+                name="Current Stock"
+                dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
+              />
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="minLevel"
+                stroke="#ef4444"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                name="Min Level"
+                dot={{ fill: '#ef4444', strokeWidth: 2, r: 3 }}
+              />
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="maxLevel"
+                stroke="#22c55e"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                name="Max Level"
+                dot={{ fill: '#22c55e', strokeWidth: 2, r: 3 }}
               />
 
-              {/* Data points */}
-              {mockData.map((point, index) => {
-                const x = (index / (mockData.length - 1)) * 100
-                const y = 100 - (point.current / maxValue) * 100
-                const status = getStockStatus(point.current, point.reorderPoint, point.minimum)
+              {/* Value bars if available */}
+              {hasValueData && (
+                <Bar
+                  yAxisId="right"
+                  dataKey="value"
+                  fill="#8b5cf6"
+                  fillOpacity={0.3}
+                  name="Inventory Value"
+                />
+              )}
+            </ComposedChart>
+          ) : (
+            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+              <XAxis
+                dataKey="period"
+                className="text-xs text-gray-600 dark:text-gray-400"
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis
+                className="text-xs text-gray-600 dark:text-gray-400"
+                tick={{ fontSize: 12 }}
+                tickFormatter={formatYAxisTick}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
 
-                return (
-                  <circle
-                    key={index}
-                    cx={x}
-                    cy={y}
-                    r="0.8"
-                    className={`${
-                      status.status === 'critical' ? 'fill-red-500' :
-                      status.status === 'warning' ? 'fill-yellow-500' : 'fill-green-500'
-                    }`}
-                  />
-                )
-              })}
-            </svg>
-          </div>
-        </div>
-
-        {/* X-axis dates */}
-        <div className="absolute bottom-0 left-12 right-0 flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
-          <span>{new Date(mockData[0].date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</span>
-          <span>{new Date(mockData[Math.floor(mockData.length / 2)].date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</span>
-          <span>{new Date(mockData[mockData.length - 1].date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</span>
-        </div>
+              <Line
+                type="monotone"
+                dataKey="currentStock"
+                stroke="#2563eb"
+                strokeWidth={3}
+                name="Stock Level"
+                dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
+              />
+            </LineChart>
+          )}
+        </ResponsiveContainer>
       </div>
 
-      {/* Legend */}
-      <div className="mt-4 flex items-center justify-center space-x-6 text-xs">
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
-          <span className="text-gray-600 dark:text-gray-400">Healthy</span>
+      {/* Summary Stats */}
+      <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Avg Stock</p>
+          <p className="text-lg font-semibold text-gray-900 dark:text-white">
+            {Math.round(data.reduce((sum, item) => sum + (item.currentStock || 0), 0) / data.length).toLocaleString()}
+          </p>
         </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-yellow-500 rounded-full mr-1"></div>
-          <span className="text-gray-600 dark:text-gray-400">Reorder Needed</span>
+        <div className="text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Stock Items</p>
+          <p className="text-lg font-semibold text-gray-900 dark:text-white">
+            {data.length}
+          </p>
         </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
-          <span className="text-gray-600 dark:text-gray-400">Critical Low</span>
-        </div>
-      </div>
-
-      {/* Stock Velocity */}
-      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-gray-600 dark:text-gray-400">Daily Usage Rate:</span>
-            <span className="ml-2 font-medium text-gray-900 dark:text-white">
-              {Math.round((mockData[0].current - mockData[mockData.length - 2].current) / (mockData.length - 2))} units/day
-            </span>
+        {hasMultipleMetrics && (
+          <div className="text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Below Min</p>
+            <p className="text-lg font-semibold text-red-600 dark:text-red-400">
+              {data.filter(item => (item.currentStock || 0) < (item.minLevel || 0)).length}
+            </p>
           </div>
-          <div>
-            <span className="text-gray-600 dark:text-gray-400">Days Until Reorder:</span>
-            <span className="ml-2 font-medium text-gray-900 dark:text-white">
-              {Math.max(0, Math.round((currentStock.current - currentStock.reorderPoint) / 180))} days
-            </span>
+        )}
+        {hasValueData && (
+          <div className="text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Total Value</p>
+            <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+              ${data.reduce((sum, item) => sum + (item.value || 0), 0).toLocaleString()}
+            </p>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

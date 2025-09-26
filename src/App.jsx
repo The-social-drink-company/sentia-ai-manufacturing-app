@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import WorkingCapitalDashboard from './features/working-capital/WorkingCapitalDashboard';
-import InventoryDashboard from './features/inventory/InventoryDashboard';
-import AIInsights from './components/AIInsights';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import './App.css';
+
+// Lazy load feature components for better performance
+const WorkingCapitalDashboard = lazy(() => import('./features/working-capital/WorkingCapitalDashboard'));
+const InventoryDashboard = lazy(() => import('./features/inventory/InventoryDashboard'));
+const ProductionDashboard = lazy(() => import('./features/production/ProductionDashboard'));
+const AIInsights = lazy(() => import('./components/AIInsights'));
 
 function App() {
   const [status, setStatus] = useState('Loading...');
@@ -26,14 +29,40 @@ function App() {
       });
   }, []);
 
+  // Loading component for lazy-loaded features
+  const LoadingSpinner = () => (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+      <span className="ml-4 text-lg text-gray-600">Loading component...</span>
+    </div>
+  );
+
   const renderCurrentView = () => {
     switch (currentView) {
       case 'working-capital':
-        return <WorkingCapitalDashboard />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <WorkingCapitalDashboard />
+          </Suspense>
+        );
       case 'inventory':
-        return <InventoryDashboard />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <InventoryDashboard />
+          </Suspense>
+        );
+      case 'production':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <ProductionDashboard />
+          </Suspense>
+        );
       case 'ai-insights':
-        return <AIInsights />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <AIInsights />
+          </Suspense>
+        );
       case 'dashboard':
       default:
         return (
@@ -88,6 +117,17 @@ function App() {
                 </div>
 
                 <div className="feature-card">
+                  <h4>🏭 Production Tracking</h4>
+                  <p>Real-time OEE monitoring and production optimization</p>
+                  <button
+                    className="feature-button active"
+                    onClick={() => setCurrentView('production')}
+                  >
+                    Track Production
+                  </button>
+                </div>
+
+                <div className="feature-card">
                   <h4>🤖 AI Insights</h4>
                   <p>AI-powered manufacturing intelligence</p>
                   <button
@@ -112,6 +152,8 @@ function App() {
                 <p>✅ Static Assets: Serving Correctly</p>
                 <p>✅ Health Checks: Operational</p>
                 <p>✅ Working Capital Calculator: Ready</p>
+                <p>✅ Inventory Management: Ready</p>
+                <p>✅ Production Tracking: Ready</p>
                 <p>✅ AI Insights: Ready</p>
               </div>
             </header>

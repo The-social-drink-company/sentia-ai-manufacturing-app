@@ -15,36 +15,63 @@ export default defineConfig({
     assetsDir: 'assets',
     emptyOutDir: true,
     chunkSizeWarningLimit: 2000,
-    // Memory optimizations for large builds
+    // Enhanced chunking strategy for better performance
     rollupOptions: {
       output: {
-        // Ultra-minimal chunking to avoid variable initialization issues
+        // Optimized manual chunking for lazy loading
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // Only split Clerk (very stable, large, authentication-focused)
+            // Core authentication chunk (always needed)
             if (id.includes('@clerk')) return 'clerk';
-            // Keep recharts with vendor to avoid initialization order issues
-            return 'vendor'; // Everything else including recharts in vendor chunk
+
+            // Charts and visualization (can be lazy loaded)
+            if (id.includes('recharts') || id.includes('chart.js') || id.includes('d3')) {
+              return 'charts';
+            }
+
+            // React ecosystem (frequently used)
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+
+            // Utility libraries (can be shared)
+            if (id.includes('date-fns') || id.includes('lodash') || id.includes('axios')) {
+              return 'utils';
+            }
+
+            // Everything else
+            return 'vendor';
           }
-          // Let Vite handle app code chunking automatically
-        }
+
+          // Application code splitting by feature
+          if (id.includes('src/features/executive')) return 'feature-executive';
+          if (id.includes('src/features/working-capital')) return 'feature-working-capital';
+          if (id.includes('src/features/inventory')) return 'feature-inventory';
+          if (id.includes('src/features/production')) return 'feature-production';
+
+          // Let Vite handle other app code
+        },
+        // Optimize chunk naming
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       },
-      // Reduce parallel operations to save memory
-      maxParallelFileOps: 3,
-      // Optimize tree-shaking for memory
+      // Performance optimizations
+      maxParallelFileOps: 5, // Increased for better build performance
       treeshake: {
         preset: 'smallest',
         moduleSideEffects: false
       }
     },
-    // Use esbuild for faster builds with less memory
+    // Enhanced minification
     minify: 'esbuild',
-    // Disable source maps to save memory
-    sourcemap: false,
-    // Don't report compressed size to save memory
+    target: 'es2020', // Modern browsers for better optimization
+    // Source maps only in development
+    sourcemap: process.env.NODE_ENV === 'development',
     reportCompressedSize: false,
-    // CSS code splitting
-    cssCodeSplit: true
+    cssCodeSplit: true,
+    // Asset inlining threshold
+    assetsInlineLimit: 4096 // 4KB
   },
   resolve: {
     alias: {

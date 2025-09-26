@@ -407,6 +407,9 @@ importers:
       sonner:
         specifier: ^2.0.3
         version: 2.0.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      std-env:
+        specifier: ^3.7.0
+        version: 3.9.0
       tailwind-merge:
         specifier: ^3.3.0
         version: 3.3.1

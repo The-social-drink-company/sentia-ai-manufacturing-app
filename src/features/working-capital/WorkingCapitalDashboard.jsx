@@ -11,17 +11,41 @@ import {
 } from '@heroicons/react/24/solid'
 import { useAuth } from '../../hooks/useAuth'
 import { useWorkingCapitalMetrics } from './hooks/useWorkingCapitalMetrics'
+import { useDashboardAudit } from './hooks/useAuditTrail'
 import MetricCard from './components/MetricCard'
 import AgingChart from './components/AgingChart'
 import CashConversionCycle from './components/CashConversionCycle'
 import CashFlowForecast from './components/CashFlowForecast'
 import OptimizationRecommendations from './components/OptimizationRecommendations'
+import XeroConnection from './components/XeroConnection'
 
 export default function WorkingCapitalDashboard() {
   const { user } = useAuth()
   const [selectedPeriod, setSelectedPeriod] = useState('current')
   const [selectedCurrency, setSelectedCurrency] = useState('USD')
-  const { data: metrics, loading, error, refetch, exportData } = useWorkingCapitalMetrics(selectedPeriod)
+  const {
+    data: metrics,
+    loading,
+    error,
+    refetch,
+    exportData,
+    isXeroConnected,
+    isUsingRealData
+  } = useWorkingCapitalMetrics(selectedPeriod)
+
+  // Audit trail logging
+  const audit = useDashboardAudit()
+
+  // Track dashboard load performance
+  useEffect(() => {
+    const loadStartTime = performance.now()
+
+    if (metrics && !loading) {
+      const loadTime = performance.now() - loadStartTime
+      const dataPoints = Object.keys(metrics).length
+      audit.logDashboardLoad(loadTime, dataPoints)
+    }
+  }, [metrics, loading, audit])
 
   // Role-based access control
   if (user?.role === 'viewer') {
@@ -31,10 +55,11 @@ export default function WorkingCapitalDashboard() {
   // Auto-refresh every 15 minutes for critical metrics
   useEffect(() => {
     const interval = setInterval(() => {
+      audit.logMetricRefresh('auto_refresh', 'periodic')
       refetch()
     }, 15 * 60 * 1000) // 15 minutes
     return () => clearInterval(interval)
-  }, [refetch])
+  }, [refetch, audit])
 
   if (loading && !metrics) {
     return (
@@ -58,7 +83,10 @@ export default function WorkingCapitalDashboard() {
                 <h3 className="text-lg font-semibold text-red-800 dark:text-red-200">Error Loading Data</h3>
                 <p className="text-red-600 dark:text-red-400 mt-1">{error.message}</p>
                 <button
-                  onClick={() => refetch()}
+                  onClick={() => {
+                    audit.logError(error, { action: 'retry_data_load', userInitiated: true })
+                    refetch()
+                  }}
                   className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
                 >
                   Retry
@@ -72,11 +100,53 @@ export default function WorkingCapitalDashboard() {
   }
 
   const handleExport = async (format) => {
+    const startTime = performance.now()
+
     try {
+      // Log export attempt
+      audit.logExport(format, {
+        includeForecasts: true,
+        includeRecommendations: true,
+        dateRange: selectedPeriod
+      })
+
       await exportData(format)
+
+      // Log successful export
+      const duration = performance.now() - startTime
+      audit.trackAction('export_success', {
+        format,
+        duration: Math.round(duration),
+        period: selectedPeriod
+      })
     } catch (err) {
+      // Log export failure
+      audit.logError(err, {
+        action: 'data_export',
+        format,
+        period: selectedPeriod,
+        duration: performance.now() - startTime
+      })
       console.error('Export failed:', err)
     }
+  }
+
+  // Handle period changes with audit logging
+  const handlePeriodChange = (newPeriod) => {
+    audit.logPeriodChange(selectedPeriod, newPeriod)
+    setSelectedPeriod(newPeriod)
+  }
+
+  // Handle currency changes with audit logging
+  const handleCurrencyChange = (newCurrency) => {
+    audit.logCurrencyChange(selectedCurrency, newCurrency)
+    setSelectedCurrency(newCurrency)
+  }
+
+  // Handle manual refresh with audit logging
+  const handleRefresh = () => {
+    audit.logMetricRefresh('manual_refresh', 'user_initiated')
+    refetch()
   }
 
   const { summary, receivables, payables, inventory, cashFlow, recommendations, alerts } = metrics || {}
@@ -100,7 +170,7 @@ export default function WorkingCapitalDashboard() {
               {/* Currency Selector */}
               <select
                 value={selectedCurrency}
-                onChange={(e) => setSelectedCurrency(e.target.value)}
+                onChange={(e) => handleCurrencyChange(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
               >
                 <option value="USD">USD</option>
@@ -111,7 +181,7 @@ export default function WorkingCapitalDashboard() {
               {/* Period Selector */}
               <select
                 value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
+                onChange={(e) => handlePeriodChange(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
               >
                 <option value="current">Current</option>
@@ -150,7 +220,7 @@ export default function WorkingCapitalDashboard() {
 
               {/* Refresh Button */}
               <button
-                onClick={() => refetch()}
+                onClick={handleRefresh}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
               >
                 Refresh
@@ -161,6 +231,33 @@ export default function WorkingCapitalDashboard() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* Xero Integration Section */}
+        <div className="mb-8">
+          <XeroConnection
+            onConnectionChange={(connected, status) => {
+              audit.trackAction('xero_connection_changed', {
+                connected,
+                tenantName: status?.tenantName,
+                isUsingRealData: connected && !!metrics
+              })
+            }}
+          />
+        </div>
+
+        {/* Data Source Indicator */}
+        <div className="mb-6">
+          <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+            isUsingRealData
+              ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
+              : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200'
+          }`}>
+            <div className={`w-2 h-2 rounded-full mr-2 ${
+              isUsingRealData ? 'bg-green-600' : 'bg-yellow-600'
+            }`} />
+            {isUsingRealData ? 'Live Data from Xero' : 'Sample Data'}
+          </div>
+        </div>
+
         {/* Alerts Section */}
         {alerts && alerts.length > 0 && (
           <div className="mb-8">

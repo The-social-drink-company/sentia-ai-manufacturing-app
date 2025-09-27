@@ -210,13 +210,15 @@ let mcpConnected = false;
 })();
 
 // Health check endpoint - simplified for Render deployment
+// DEPLOYMENT TRIGGER: Force redeploy - 2025-09-27 19:54
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     service: 'sentia-manufacturing-dashboard',
-    version: '1.0.6',
+    version: '1.0.7',
     environment: NODE_ENV,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    deployment: 'forced-update-2025-09-27'
   });
 });
 

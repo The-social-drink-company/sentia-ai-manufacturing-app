@@ -4,20 +4,20 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { cn } from '../../utils/cn'
 
 export const Modal = ({
-  isOpen,
+  _isOpen,
   onClose,
   title,
   description,
-  children,
+  _children,
   size = 'md',
   className,
-  closeOnOverlayClick = true,
-  closeOnEscape = true,
+  closeOnOverlayClick = _true,
+  closeOnEscape = _true,
   showCloseButton = true
 }) => {
   const modalRef = useRef(null)
 
-  useEffect(() => {
+  useEffect(() {
     const handleEscape = (e) => {
       if (closeOnEscape && e.key === 'Escape') {
         onClose()

@@ -10,12 +10,12 @@ vi.mock('../services/dashboardService', () => ({
 
 import { fetchDashboardSummary } from '../services/dashboardService'
 
-describe('useDashboardSummary', () => {
-  beforeEach(() => {
+describe('useDashboardSummary', _() => {
+  beforeEach(_() => {
     vi.clearAllMocks()
   })
 
-  it('should initialize with idle status', () => {
+  it('should initialize with idle _status', _() => {
     const { result } = renderHook(() => useDashboardSummary())
 
     expect(result.current.status).toBe('idle')
@@ -23,7 +23,7 @@ describe('useDashboardSummary', () => {
     expect(result.current.source).toBe('mock')
   })
 
-  it('should fetch dashboard summary successfully from MCP', async () => {
+  it('should fetch dashboard summary successfully from _MCP', async _() => {
     const mockData = {
       generatedAt: '2025-09-26T12:00:00Z',
       metrics: {
@@ -39,7 +39,7 @@ describe('useDashboardSummary', () => {
 
     const { result } = renderHook(() => useDashboardSummary())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.status).toBe('success')
     })
 
@@ -48,12 +48,12 @@ describe('useDashboardSummary', () => {
     expect(fetchDashboardSummary).toHaveBeenCalledTimes(1)
   })
 
-  it('should fall back to mock data on error', async () => {
+  it('should fall back to mock data on _error', async _() => {
     fetchDashboardSummary.mockRejectedValue(new Error('Network error'))
 
     const { result } = renderHook(() => useDashboardSummary())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.status).toBe('error')
     })
 
@@ -61,7 +61,7 @@ describe('useDashboardSummary', () => {
     expect(result.current.source).toBe('mock')
   })
 
-  it('should handle mock data fallback', async () => {
+  it('should handle mock data _fallback', async _() => {
     const mockData = {
       generatedAt: new Date().toISOString(),
       metrics: {
@@ -76,7 +76,7 @@ describe('useDashboardSummary', () => {
 
     const { result } = renderHook(() => useDashboardSummary())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.status).toBe('success')
     })
 
@@ -84,7 +84,7 @@ describe('useDashboardSummary', () => {
     expect(result.current.source).toBe('mock')
   })
 
-  it('should set loading status while fetching', async () => {
+  it('should set loading status while _fetching', async _() => {
     fetchDashboardSummary.mockImplementation(
       () => new Promise(resolve => setTimeout(() => resolve({
         source: 'mcp',
@@ -94,12 +94,12 @@ describe('useDashboardSummary', () => {
 
     const { result } = renderHook(() => useDashboardSummary())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.status).toBe('loading')
     })
   })
 
-  it('should cleanup on unmount', () => {
+  it('should cleanup on _unmount', _() => {
     const { unmount } = renderHook(() => useDashboardSummary())
 
     unmount()

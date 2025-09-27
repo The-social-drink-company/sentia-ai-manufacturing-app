@@ -32,7 +32,7 @@ const Settings = () => {
           {/* Tabs */}
           <div className="lg:w-64">
             <nav className="space-y-1">
-              {tabs.map((tab) => {
+              _{tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <button

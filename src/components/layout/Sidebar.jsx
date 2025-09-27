@@ -91,7 +91,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
   });
 
   // Handle responsive behavior
-  useEffect(() => {
+  useEffect(() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
     };
@@ -102,7 +102,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
   }, []);
 
   // Load saved sidebar state
-  useEffect(() => {
+  useEffect(() {
     const savedState = localStorage.getItem('sidebarState');
     if (savedState) {
       try {
@@ -128,7 +128,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
   };
 
   // Toggle section expansion
-  const toggleSection = useCallback((title) => {
+  const toggleSection = useCallback(_(title) => {
     const newExpanded = {
       ...expandedSections,
       [title]: !expandedSections[title]
@@ -141,7 +141,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
   }, [expandedSections, collapsed]);
 
   // Toggle sidebar collapse
-  const toggleCollapse = useCallback(() => {
+  const toggleCollapse = useCallback(() {
     const newCollapsed = !collapsed;
     setCollapsed(newCollapsed);
     localStorage.setItem('sidebarState', JSON.stringify({
@@ -151,7 +151,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
   }, [collapsed, expandedSections]);
 
   // Check if user has access to a route based on role
-  const hasAccess = useCallback((href) => {
+  const hasAccess = useCallback(_(href) => {
     const adminRoutes = ['/admin', '/users', '/config', '/monitoring'];
     const managerRoutes = ['/forecasting', '/inventory', '/production', '/quality', '/reports', '/ai-analytics'];
 
@@ -164,7 +164,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
   }, [role]);
 
   // Handle keyboard shortcuts
-  useEffect(() => {
+  useEffect(() {
     const handleKeyPress = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
         e.preventDefault();

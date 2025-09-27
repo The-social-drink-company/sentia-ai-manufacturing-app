@@ -91,7 +91,7 @@ const UserPreferences = () => {
   });
 
   // Load user preferences
-  useEffect(() => {
+  useEffect(() {
     if (isLoaded && user) {
       setPreferences(prev => ({
         ...prev,
@@ -113,7 +113,7 @@ const UserPreferences = () => {
   }, [isLoaded, user]);
 
   // Handle preference changes
-  const handlePreferenceChange = (category, field, value) => {
+  const handlePreferenceChange = (_category, _field, _value) => {
     setPreferences(prev => {
       if (category) {
         return {

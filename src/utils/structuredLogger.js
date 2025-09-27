@@ -1,3 +1,4 @@
+/* eslint-env node */
 /**
  * Structured Logger Utility
  *
@@ -12,7 +13,7 @@
  * logError('Critical failure', error);
  */
 
-const LOG_LEVELS = {
+const LOGLEVELS = {
   DEBUG: 0,
   INFO: 1,
   WARN: 2,
@@ -140,7 +141,7 @@ export const logError = (message, errorOrContext) => {
 /**
  * Performance logging utility
  */
-export const logPerformance = (operation, duration, metadata) => {
+export const logPerformance = (_operation, duration, _metadata) => {
   const context = {
     operation,
     duration: `${duration}ms`,
@@ -170,10 +171,10 @@ export const devLog = {
   table: (...args) => {
     if (isDevelopment) console.table(...args);
   },
-  time: (label) => {
+  time: (_label) => {
     if (isDevelopment) console.time(label);
   },
-  timeEnd: (label) => {
+  timeEnd: (_label) => {
     if (isDevelopment) console.timeEnd(label);
   }
 };
@@ -181,7 +182,7 @@ export const devLog = {
 /**
  * Create a scoped logger for specific modules
  */
-export const createLogger = (scope) => {
+export const createLogger = (_scope) => {
   return {
     debug: (message, context) => logDebug(`[${scope}] ${message}`, context),
     info: (message, context) => logInfo(`[${scope}] ${message}`, context),

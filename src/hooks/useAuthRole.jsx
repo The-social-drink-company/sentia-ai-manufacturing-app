@@ -8,7 +8,7 @@ export const useAuthRole = () => {
   const auth = useBulletproofAuth();
   const roleData = useBulletproofRole();
 
-  const authData = useMemo(_() => {
+  const authData = useMemo(() {
     // Extract data from bulletproof auth
     const { user, isLoaded, isSignedIn, mode } = auth;
 

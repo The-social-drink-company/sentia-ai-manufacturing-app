@@ -32,7 +32,7 @@ export class CircuitBreaker {
     try {
       const result = await Promise.race([
         fn(),
-        new Promise((_, reject) => 
+        new Promise((_, _reject) => 
           setTimeout(() => reject(new Error('Operation timeout')), this.timeout)
         )
       ]);
@@ -129,7 +129,7 @@ export class ResilientStorage {
   
   checkLocalStorage() {
     try {
-      const test = '__localStorage_test__';
+      const test = '__localStorage_test_';
       localStorage.setItem(test, test);
       localStorage.removeItem(test);
       return true;
@@ -369,7 +369,7 @@ export class FeatureDetector {
   
   hasLocalStorage() {
     try {
-      const test = '__test__';
+      const test = '__test_';
       localStorage.setItem(test, test);
       localStorage.removeItem(test);
       return true;
@@ -380,7 +380,7 @@ export class FeatureDetector {
   
   hasSessionStorage() {
     try {
-      const test = '__test__';
+      const test = '__test_';
       sessionStorage.setItem(test, test);
       sessionStorage.removeItem(test);
       return true;

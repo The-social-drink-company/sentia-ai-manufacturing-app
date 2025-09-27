@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom'
 
 import { cn } from '../../utils/cn'
 
-const Header = ({ onMenuToggle, isSidebarOpen }) => {
+const Header = ({ _onMenuToggle, isSidebarOpen }) => {
   const { user } = useUser()
   const { signOut } = useClerk()
   const [isDarkMode, setIsDarkMode] = useState(false)

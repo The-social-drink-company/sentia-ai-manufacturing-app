@@ -1,766 +1,536 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../auth/BulletproofClerkProvider';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Progress } from '../ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { useState, useRef } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
+import { Button } from '@/components/ui/button.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
+import { Progress } from '@/components/ui/progress.jsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
+import { Alert, AlertDescription } from '@/components/ui/alert.jsx'
 import { 
   Upload, 
   Download, 
-  AlertTriangle, 
-  CheckCircle, 
-  Info, 
   FileText, 
-  Database,
-  TrendingUp,
-  Users,
-  Package,
-  CreditCard,
-  Calendar,
-  Target,
-  BarChart3,
-  Brain,
+  Database, 
+  CheckCircle, 
+  AlertTriangle,
+  Clock,
+  Trash2,
+  RefreshCw,
+  Settings,
+  FileSpreadsheet,
+  FileImage,
+  Link,
+  Cloud,
+  Shield,
   Zap
-} from 'lucide-react';
-import { useDropzone } from 'react-dropzone';
-import CSVDataImportService from '../../services/data/CSVDataImportService';
-import MCPIntegratedAIService from '../../services/ai/MCPIntegratedAIService';
+} from 'lucide-react'
 
-const DataManagementCenter = ({ onDataUpdate, currentAnalysisType = 'comprehensive' }) => {
-  const { user, isLoaded } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [dataCompleteness, setDataCompleteness] = useState(null);
-  const [availableData, setAvailableData] = useState({});
-  const [uploadResults, setUploadResults] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [userPrompts, setUserPrompts] = useState([]);
-  const [showPromptDialog, setShowPromptDialog] = useState(false);
-  const [currentPrompt, setCurrentPrompt] = useState(null);
-
-  // Initialize services
-  const csvService = new CSVDataImportService();
-  const mcpService = new MCPIntegratedAIService();
-
-  // Data type icons mapping
-  const dataTypeIcons = {
-    financial_metrics: TrendingUp,
-    cash_flow_transactions: CreditCard,
-    receivables_aging: Users,
-    payables_schedule: Calendar,
-    inventory_data: Package,
-    sales_forecast: Target,
-    expense_budget: BarChart3,
-    customer_data: Users,
-    supplier_data: Database,
-    seasonal_patterns: Calendar,
-    industry_benchmarks: BarChart3,
-    growth_scenarios: Brain
-  };
-
-  // Load initial data and assess completeness
-  useEffect(() => {
-    if (isLoaded && user) {
-      loadDataCompleteness();
+const DataManagement = () => {
+  const [uploadedFiles, setUploadedFiles] = useState([
+    {
+      id: 1,
+      name: 'financial_data_q3.xlsx',
+      type: 'Excel',
+      size: '2.4 MB',
+      status: 'processed',
+      uploadDate: '2024-09-20',
+      records: 1247
+    },
+    {
+      id: 2,
+      name: 'inventory_levels.csv',
+      type: 'CSV',
+      size: '856 KB',
+      status: 'processing',
+      uploadDate: '2024-09-22',
+      records: 892
     }
-  }, [isLoaded, user, currentAnalysisType]);
+  ])
 
-  const loadDataCompleteness = async () => {
-    try {
-      setLoading(true);
-      
-      // Check what data is currently available
-      const response = await fetch('/api/data/availability');
-      const availableDataTypes = await response.json();
-      
-      setAvailableData(availableDataTypes);
-      
-      // Assess data completeness for current analysis type
-      const completeness = csvService.validateDataCompleteness(
-        availableDataTypes, 
-        currentAnalysisType
-      );
-      
-      setDataCompleteness(completeness);
-      
-      // Generate user prompts for missing critical data
-      if (completeness.completenessScore < 90) {
-        const prompts = csvService.generateUserPrompts(completeness.requirements);
-        setUserPrompts(prompts);
-        
-        // Show prompt dialog if there are critical missing data types
-        const criticalPrompts = prompts.filter(p => p.priority === 'critical');
-        if (criticalPrompts.length > 0 && !showPromptDialog) {
-          setCurrentPrompt(criticalPrompts[0]);
-          setShowPromptDialog(true);
-        }
-      }
-      
-    } catch (error) {
-      console.error('Error loading data completeness:', error);
-    } finally {
-      setLoading(false);
+  const [integrations, setIntegrations] = useState([
+    {
+      id: 1,
+      name: 'Xero Accounting',
+      type: 'Financial',
+      status: 'connected',
+      lastSync: '2 hours ago',
+      records: 15420,
+      icon: '💰'
+    },
+    {
+      id: 2,
+      name: 'Unleashed Inventory',
+      type: 'Inventory',
+      status: 'connected',
+      lastSync: '1 hour ago',
+      records: 8934,
+      icon: '📦'
+    },
+    {
+      id: 3,
+      name: 'Shopify Store',
+      type: 'E-commerce',
+      status: 'connected',
+      lastSync: '30 minutes ago',
+      records: 3421,
+      icon: '🛒'
+    },
+    {
+      id: 4,
+      name: 'Microsoft Dynamics',
+      type: 'ERP',
+      status: 'pending',
+      lastSync: 'Never',
+      records: 0,
+      icon: '🏢'
     }
-  };
+  ])
 
-  // Handle file upload
-  const onDrop = useCallback(async (acceptedFiles, rejectedFiles, dataType) => {
-    if (rejectedFiles.length > 0) {
-      alert('Please upload only CSV files');
-      return;
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef(null)
+
+  const templates = [
+    {
+      name: 'Financial Data Template',
+      description: 'Standard format for importing financial data including P&L, balance sheet, and cash flow',
+      format: 'Excel (.xlsx)',
+      size: '45 KB',
+      icon: <FileSpreadsheet className="h-6 w-6 text-green-600" />,
+      category: 'Financial'
+    },
+    {
+      name: 'Inventory Management Template',
+      description: 'Template for inventory levels, stock movements, and supplier information',
+      format: 'CSV (.csv)',
+      size: '12 KB',
+      icon: <Database className="h-6 w-6 text-blue-600" />,
+      category: 'Inventory'
+    },
+    {
+      name: 'Production Data Template',
+      description: 'Manufacturing metrics including efficiency, downtime, and quality data',
+      format: 'Excel (.xlsx)',
+      size: '38 KB',
+      icon: <Settings className="h-6 w-6 text-purple-600" />,
+      category: 'Production'
+    },
+    {
+      name: 'Supplier Information Template',
+      description: 'Supplier details, payment terms, and performance metrics',
+      format: 'CSV (.csv)',
+      size: '8 KB',
+      icon: <Link className="h-6 w-6 text-orange-600" />,
+      category: 'Suppliers'
     }
+  ]
 
-    const file = acceptedFiles[0];
-    if (!file) return;
+  const handleFileUpload = (event) => {
+    const files = Array.from(event.target.files)
+    if (files.length === 0) return
 
-    try {
-      setLoading(true);
-      
-      // Validate and parse CSV
-      const result = await csvService.validateAndParseCSV(file, dataType);
-      
-      if (result.success) {
-        // Upload data to backend
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('dataType', dataType);
-        formData.append('validatedData', JSON.stringify(result.data));
+    setIsUploading(true)
+    setUploadProgress(0)
 
-        const uploadResponse = await fetch('/api/data/upload', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (uploadResponse.ok) {
-          const uploadResult = await uploadResponse.json();
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          setIsUploading(false)
           
-          setUploadResults(prev => ({
-            ...prev,
-            [dataType]: {
-              success: true,
-              rowCount: result.rowCount,
-              warnings: result.warnings,
-              uploadedAt: new Date().toISOString()
-            }
-          }));
-
-          // Update available data
-          setAvailableData(prev => ({
-            ...prev,
-            [dataType]: true
-          }));
-
-          // Refresh data completeness
-          await loadDataCompleteness();
+          // Add uploaded files to the list
+          const newFiles = files.map((file, index) => ({
+            id: uploadedFiles.length + index + 1,
+            name: file.name,
+            type: file.name.split('.').pop().toUpperCase(),
+            size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+            status: 'processing',
+            uploadDate: new Date().toISOString().split('T')[0],
+            records: Math.floor(Math.random() * 1000) + 100
+          }))
           
-          // Notify parent component
-          if (onDataUpdate) {
-            onDataUpdate(dataType, result.data);
-          }
-
-          // Close current prompt if this data type was requested
-          if (currentPrompt && currentPrompt.title.toLowerCase().includes(dataType.replace(/_/g, ' '))) {
-            setShowPromptDialog(false);
-            setCurrentPrompt(null);
-          }
-
-        } else {
-          throw new Error('Upload failed');
+          setUploadedFiles(prev => [...prev, ...newFiles])
+          return 100
         }
-      } else {
-        setUploadResults(prev => ({
-          ...prev,
-          [dataType]: {
-            success: false,
-            errors: result.errors,
-            rowCount: result.rowCount
-          }
-        }));
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      setUploadResults(prev => ({
-        ...prev,
-        [dataType]: {
-          success: false,
-          errors: [{ message: error.message }]
-        }
-      }));
-    } finally {
-      setLoading(false);
+        return prev + Math.random() * 15
+      })
+    }, 200)
+  }
+
+  const downloadTemplate = (templateName) => {
+    // Simulate template download
+    const link = document.createElement('a')
+    link.href = '#'
+    link.download = templateName.toLowerCase().replace(/\s+/g, '_') + '.xlsx'
+    link.click()
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'connected': return 'text-green-600 bg-green-50 border-green-200'
+      case 'processing': return 'text-orange-600 bg-orange-50 border-orange-200'
+      case 'processed': return 'text-blue-600 bg-blue-50 border-blue-200'
+      case 'pending': return 'text-gray-600 bg-gray-50 border-gray-200'
+      case 'error': return 'text-red-600 bg-red-50 border-red-200'
+      default: return 'text-gray-600 bg-gray-50 border-gray-200'
     }
-  }, [currentPrompt, onDataUpdate]);
+  }
 
-  // Download CSV template
-  const downloadTemplate = (dataType) => {
-    try {
-      const template = csvService.generateCSVTemplate(dataType);
-      
-      const blob = new Blob([template.content], { type: template.mimeType });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = template.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Template download error:', error);
-      alert('Error downloading template');
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'connected': return <CheckCircle className="h-4 w-4" />
+      case 'processing': return <Clock className="h-4 w-4" />
+      case 'processed': return <CheckCircle className="h-4 w-4" />
+      case 'pending': return <AlertTriangle className="h-4 w-4" />
+      case 'error': return <AlertTriangle className="h-4 w-4" />
+      default: return <Clock className="h-4 w-4" />
     }
-  };
-
-  // Handle prompt actions
-  const handlePromptAction = (action, dataType) => {
-    switch (action.type) {
-      case 'download_template':
-        downloadTemplate(dataType || currentPrompt?.title.toLowerCase().replace(/\s+/g, '_').replace('_data_required', ''));
-        break;
-      case 'upload_data':
-        // This will be handled by the dropzone
-        break;
-      case 'skip':
-        setShowPromptDialog(false);
-        setCurrentPrompt(null);
-        // Show next prompt if available
-        const remainingPrompts = userPrompts.filter(p => p !== currentPrompt);
-        if (remainingPrompts.length > 0) {
-          setTimeout(() => {
-            setCurrentPrompt(remainingPrompts[0]);
-            setShowPromptDialog(true);
-          }, 1000);
-        }
-        break;
-    }
-  };
-
-  // Create dropzone for specific data type
-  const createDropzone = (dataType) => {
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-      onDrop: (accepted, rejected) => onDrop(accepted, rejected, dataType),
-      accept: {
-        'text/csv': ['.csv']
-      },
-      multiple: false
-    });
-
-    return { getRootProps, getInputProps, isDragActive };
-  };
-
-  if (!isLoaded || loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading data management center...</p>
-        </div>
-      </div>
-    );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Data Management Center</h1>
-          <p className="text-gray-600 mt-1">Manage your financial data for comprehensive analysis</p>
-        </div>
-        <div className="flex items-center space-x-4">
-          {dataCompleteness && (
-            <div className="text-right">
-              <p className="text-sm text-gray-500">Data Completeness</p>
-              <div className="flex items-center space-x-2">
-                <Progress value={dataCompleteness.completenessScore} className="w-24" />
-                <span className="text-sm font-medium">{Math.round(dataCompleteness.completenessScore)}%</span>
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          Data Management Center
+        </h2>
+        <p className="text-lg text-slate-600 dark:text-slate-400">
+          Upload data, manage integrations, and download templates
+        </p>
       </div>
 
-      {/* Data Completeness Alert */}
-      {dataCompleteness && dataCompleteness.completenessScore < 75 && (
-        <Alert>
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Incomplete Data Detected</AlertTitle>
-          <AlertDescription>
-            Your current data completeness is {Math.round(dataCompleteness.completenessScore)}%. 
-            For optimal analysis quality, we recommend uploading the missing data types highlighted below.
-          </AlertDescription>
-        </Alert>
-      )}
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600">Total Records</p>
+                <p className="text-2xl font-bold text-blue-600">28,914</p>
+              </div>
+              <Database className="h-8 w-8 text-blue-600" />
+            </div>
+            <p className="text-xs text-slate-500 mt-2">Across all data sources</p>
+          </CardContent>
+        </Card>
 
-      {/* Main Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600">Active Integrations</p>
+                <p className="text-2xl font-bold text-green-600">3</p>
+              </div>
+              <Link className="h-8 w-8 text-green-600" />
+            </div>
+            <p className="text-xs text-slate-500 mt-2">Real-time data sync</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600">Files Uploaded</p>
+                <p className="text-2xl font-bold text-purple-600">{uploadedFiles.length}</p>
+              </div>
+              <Upload className="h-8 w-8 text-purple-600" />
+            </div>
+            <p className="text-xs text-slate-500 mt-2">This month</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600">Data Quality</p>
+                <p className="text-2xl font-bold text-orange-600">96%</p>
+              </div>
+              <Shield className="h-8 w-8 text-orange-600" />
+            </div>
+            <p className="text-xs text-slate-500 mt-2">Validation score</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="upload" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="upload">Upload Data</TabsTrigger>
+          <TabsTrigger value="upload">File Upload</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="status">Status</TabsTrigger>
+          <TabsTrigger value="integrations">Integrations</TabsTrigger>
+          <TabsTrigger value="history">Data History</TabsTrigger>
         </TabsList>
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Data Completeness Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  Analysis Readiness
-                </CardTitle>
-                <CardDescription>
-                  Current data completeness for {currentAnalysisType.replace(/_/g, ' ')} analysis
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {dataCompleteness && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Overall Completeness</span>
-                      <Badge variant={
-                        dataCompleteness.analysisQuality === 'excellent' ? 'success' :
-                        dataCompleteness.analysisQuality === 'good' ? 'default' :
-                        dataCompleteness.analysisQuality === 'fair' ? 'warning' : 'destructive'
-                      }>
-                        {dataCompleteness.analysisQuality.toUpperCase()}
-                      </Badge>
-                    </div>
-                    
-                    <Progress value={dataCompleteness.completenessScore} className="h-3" />
-                    
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-600">Available Data Types</p>
-                        <p className="font-bold text-green-600">
-                          {dataCompleteness.requirements.available.length}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Missing Data Types</p>
-                        <p className="font-bold text-red-600">
-                          {dataCompleteness.requirements.missing.length}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <p className="text-sm text-gray-600 mb-2">Can Proceed with Analysis:</p>
-                      <div className="flex items-center space-x-2">
-                        {dataCompleteness.canProceed ? (
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <AlertTriangle className="h-4 w-4 text-red-600" />
-                        )}
-                        <span className={`text-sm font-medium ${
-                          dataCompleteness.canProceed ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {dataCompleteness.canProceed ? 'Yes' : 'No - More data required'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Missing Data Recommendations */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Info className="h-5 w-5 mr-2" />
-                  Priority Data Needs
-                </CardTitle>
-                <CardDescription>
-                  Critical and high-priority data for better analysis
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {dataCompleteness?.recommendations?.slice(0, 5).map((rec, index) => {
-                    const IconComponent = dataTypeIcons[rec.dataType] || FileText;
-                    return (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <IconComponent className="h-4 w-4 text-gray-600" />
-                          <div>
-                            <p className="font-medium text-sm capitalize">
-                              {rec.dataType.replace(/_/g, ' ')}
-                            </p>
-                            <p className="text-xs text-gray-600">{rec.description}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant={
-                            rec.priority === 'critical' ? 'destructive' :
-                            rec.priority === 'high' ? 'warning' : 'default'
-                          } className="text-xs">
-                            {rec.priority}
-                          </Badge>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => downloadTemplate(rec.dataType)}
-                          >
-                            <Download className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  
-                  {(!dataCompleteness?.recommendations || dataCompleteness.recommendations.length === 0) && (
-                    <div className="text-center py-4">
-                      <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600">All critical data requirements met!</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Actions */}
+        {/* File Upload Tab */}
+        <TabsContent value="upload" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common data management tasks</CardDescription>
+              <CardTitle>Upload Data Files</CardTitle>
+              <CardDescription>
+                Upload Excel, CSV, or JSON files for analysis. Maximum file size: 50MB
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button
-                  variant="outline"
-                  className="h-20 flex flex-col items-center justify-center space-y-2"
-                  onClick={() => setActiveTab('templates')}
+              <div className="space-y-6">
+                {/* Upload Area */}
+                <div 
+                  className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
                 >
-                  <Download className="h-6 w-6" />
-                  <span>Download All Templates</span>
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  className="h-20 flex flex-col items-center justify-center space-y-2"
-                  onClick={() => setActiveTab('upload')}
-                >
-                  <Upload className="h-6 w-6" />
-                  <span>Upload Data Files</span>
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  className="h-20 flex flex-col items-center justify-center space-y-2"
-                  onClick={() => setActiveTab('status')}
-                >
-                  <BarChart3 className="h-6 w-6" />
-                  <span>View Data Status</span>
-                </Button>
+                  <Upload className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">
+                    Drop files here or click to browse
+                  </h3>
+                  <p className="text-slate-600 mb-4">
+                    Supports Excel (.xlsx), CSV (.csv), and JSON (.json) files
+                  </p>
+                  <Button>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Select Files
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept=".xlsx,.csv,.json"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </div>
+
+                {/* Upload Progress */}
+                {isUploading && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Uploading files...</span>
+                      <span>{Math.round(uploadProgress)}%</span>
+                    </div>
+                    <Progress value={uploadProgress} className="h-2" />
+                  </div>
+                )}
+
+                {/* Upload Guidelines */}
+                <Alert>
+                  <FileText className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Upload Guidelines:</strong> Ensure your data includes headers in the first row. 
+                    For best results, use our templates available in the Templates tab.
+                  </AlertDescription>
+                </Alert>
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        {/* Upload Data Tab */}
-        <TabsContent value="upload" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {csvService.getAllTemplates().map((template) => {
-              const IconComponent = dataTypeIcons[template.dataType] || FileText;
-              const dropzone = createDropzone(template.dataType);
-              const uploadResult = uploadResults[template.dataType];
-              const isAvailable = availableData[template.dataType];
-
-              return (
-                <Card key={template.dataType} className="relative">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center text-lg">
-                      <IconComponent className="h-5 w-5 mr-2" />
-                      {template.dataType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </CardTitle>
-                    <CardDescription className="text-sm">
-                      {template.description}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {/* Upload Area */}
-                    <div
-                      {...dropzone.getRootProps()}
-                      className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                        dropzone.isDragActive
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                    >
-                      <input {...dropzone.getInputProps()} />
-                      <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-sm text-gray-600">
-                        {dropzone.isDragActive
-                          ? 'Drop CSV file here'
-                          : 'Drag & drop CSV file or click to browse'
-                        }
-                      </p>
-                    </div>
-
-                    {/* Upload Result */}
-                    {uploadResult && (
-                      <div className={`p-3 rounded-lg ${
-                        uploadResult.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
-                      }`}>
-                        {uploadResult.success ? (
-                          <div className="flex items-center space-x-2">
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                            <span className="text-sm text-green-800">
-                              Successfully uploaded {uploadResult.rowCount} rows
-                            </span>
-                          </div>
-                        ) : (
-                          <div>
-                            <div className="flex items-center space-x-2 mb-2">
-                              <AlertTriangle className="h-4 w-4 text-red-600" />
-                              <span className="text-sm text-red-800 font-medium">Upload failed</span>
-                            </div>
-                            {uploadResult.errors?.slice(0, 3).map((error, idx) => (
-                              <p key={idx} className="text-xs text-red-700">
-                                Row {error.row}: {error.message}
-                              </p>
-                            ))}
-                          </div>
-                        )}
+          {/* Recent Uploads */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Uploads</CardTitle>
+              <CardDescription>Files uploaded in the last 30 days</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {uploadedFiles.map((file) => (
+                  <div key={file.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <FileText className="h-8 w-8 text-blue-600" />
+                      <div>
+                        <h4 className="font-medium">{file.name}</h4>
+                        <p className="text-sm text-slate-600">
+                          {file.size} • {file.records} records • {file.uploadDate}
+                        </p>
                       </div>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex items-center justify-between">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => downloadTemplate(template.dataType)}
-                      >
-                        <Download className="h-3 w-3 mr-1" />
-                        Template
-                      </Button>
-                      
-                      {isAvailable && (
-                        <Badge variant="success" className="text-xs">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Available
-                        </Badge>
-                      )}
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge className={getStatusColor(file.status)}>
+                        {getStatusIcon(file.status)}
+                        <span className="ml-1">{file.status}</span>
+                      </Badge>
+                      <Button size="sm" variant="ghost">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Templates Tab */}
         <TabsContent value="templates" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>CSV Templates</CardTitle>
+              <CardTitle>Data Templates</CardTitle>
               <CardDescription>
-                Download templates for all supported data types
+                Download standardized templates for consistent data formatting
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {csvService.getAllTemplates().map((template) => {
-                  const IconComponent = dataTypeIcons[template.dataType] || FileText;
-                  
-                  return (
-                    <div key={template.dataType} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <IconComponent className="h-5 w-5 text-gray-600" />
-                        <div>
-                          <p className="font-medium capitalize">
-                            {template.dataType.replace(/_/g, ' ')}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {templates.map((template, index) => (
+                  <Card key={index} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0">
+                          {template.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-slate-900 mb-1">
+                            {template.name}
+                          </h3>
+                          <p className="text-sm text-slate-600 mb-3">
+                            {template.description}
                           </p>
-                          <p className="text-sm text-gray-600">{template.description}</p>
-                          <p className="text-xs text-gray-500">
-                            {template.headers.length} columns • {template.sampleRowCount} sample rows
-                          </p>
+                          <div className="flex items-center justify-between">
+                            <div className="text-xs text-slate-500">
+                              {template.format} • {template.size}
+                            </div>
+                            <Button 
+                              size="sm" 
+                              onClick={() => downloadTemplate(template.name)}
+                            >
+                              <Download className="h-3 w-3 mr-1" />
+                              Download
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                      
-                      <Button
-                        variant="outline"
-                        onClick={() => downloadTemplate(template.dataType)}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
-                    </div>
-                  );
-                })}
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Status Tab */}
-        <TabsContent value="status" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Data Availability Status */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Data Availability</CardTitle>
-                <CardDescription>Current status of all data types</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {csvService.getAllTemplates().map((template) => {
-                    const IconComponent = dataTypeIcons[template.dataType] || FileText;
-                    const isAvailable = availableData[template.dataType];
-                    const uploadResult = uploadResults[template.dataType];
-                    
-                    return (
-                      <div key={template.dataType} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <IconComponent className="h-4 w-4 text-gray-600" />
-                          <div>
-                            <p className="font-medium text-sm capitalize">
-                              {template.dataType.replace(/_/g, ' ')}
-                            </p>
-                            {uploadResult?.uploadedAt && (
-                              <p className="text-xs text-gray-500">
-                                Last updated: {new Date(uploadResult.uploadedAt).toLocaleDateString()}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          {isAvailable ? (
-                            <Badge variant="success">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Available
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline">
-                              Missing
-                            </Badge>
-                          )}
-                        </div>
+        {/* Integrations Tab */}
+        <TabsContent value="integrations" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>System Integrations</CardTitle>
+              <CardDescription>
+                Manage connections to external systems and data sources
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {integrations.map((integration) => (
+                  <div key={integration.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="text-2xl">{integration.icon}</div>
+                      <div>
+                        <h4 className="font-medium">{integration.name}</h4>
+                        <p className="text-sm text-slate-600">
+                          {integration.type} • {integration.records.toLocaleString()} records
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Last sync: {integration.lastSync}
+                        </p>
                       </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge className={getStatusColor(integration.status)}>
+                        {getStatusIcon(integration.status)}
+                        <span className="ml-1">{integration.status}</span>
+                      </Badge>
+                      <Button size="sm" variant="outline">
+                        <RefreshCw className="h-4 w-4 mr-1" />
+                        Sync
+                      </Button>
+                      <Button size="sm" variant="ghost">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Analysis Impact */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Analysis Impact</CardTitle>
-                <CardDescription>How missing data affects analysis quality</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {dataCompleteness?.requirements.missing.length > 0 ? (
-                  <div className="space-y-4">
-                    {dataCompleteness.requirements.missing.map((dataType) => {
-                      const rec = dataCompleteness.requirements.recommendations.find(r => r.dataType === dataType);
-                      const IconComponent = dataTypeIcons[dataType] || FileText;
-                      
-                      return (
-                        <div key={dataType} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <div className="flex items-start space-x-3">
-                            <IconComponent className="h-4 w-4 text-yellow-600 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="font-medium text-sm text-yellow-800 capitalize">
-                                {dataType.replace(/_/g, ' ')}
-                              </p>
-                              <p className="text-xs text-yellow-700 mt-1">
-                                {rec?.impact || 'Missing data may reduce analysis accuracy'}
-                              </p>
-                            </div>
-                            <Badge variant="warning" className="text-xs">
-                              {rec?.priority || 'medium'}
-                            </Badge>
-                          </div>
-                        </div>
-                      );
-                    })}
+          {/* Add New Integration */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Add New Integration</CardTitle>
+              <CardDescription>Connect additional data sources</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button variant="outline" className="h-20 flex flex-col">
+                  <Cloud className="h-6 w-6 mb-2" />
+                  <span>Cloud Storage</span>
+                </Button>
+                <Button variant="outline" className="h-20 flex flex-col">
+                  <Database className="h-6 w-6 mb-2" />
+                  <span>Database</span>
+                </Button>
+                <Button variant="outline" className="h-20 flex flex-col">
+                  <Zap className="h-6 w-6 mb-2" />
+                  <span>API Connection</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Data History Tab */}
+        <TabsContent value="history" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Data Processing History</CardTitle>
+              <CardDescription>Track all data operations and transformations</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4 p-4 border rounded-lg">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  <div className="flex-1">
+                    <h4 className="font-medium">Financial data processed</h4>
+                    <p className="text-sm text-slate-600">1,247 records imported from financial_data_q3.xlsx</p>
+                    <p className="text-xs text-slate-500">2 hours ago</p>
                   </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                    <p className="text-lg font-medium text-green-800">All Data Available!</p>
-                    <p className="text-sm text-green-600">
-                      You have all the data needed for comprehensive analysis.
-                    </p>
+                </div>
+                
+                <div className="flex items-center space-x-4 p-4 border rounded-lg">
+                  <Clock className="h-6 w-6 text-orange-600" />
+                  <div className="flex-1">
+                    <h4 className="font-medium">Inventory sync in progress</h4>
+                    <p className="text-sm text-slate-600">Syncing 892 inventory records from Unleashed</p>
+                    <p className="text-xs text-slate-500">1 hour ago</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                </div>
+                
+                <div className="flex items-center space-x-4 p-4 border rounded-lg">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  <div className="flex-1">
+                    <h4 className="font-medium">Xero integration updated</h4>
+                    <p className="text-sm text-slate-600">15,420 financial records synchronized successfully</p>
+                    <p className="text-xs text-slate-500">3 hours ago</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
 
-      {/* User Prompt Dialog */}
-      <Dialog open={showPromptDialog} onOpenChange={setShowPromptDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center">
-              <AlertTriangle className="h-5 w-5 mr-2 text-orange-600" />
-              {currentPrompt?.title}
-            </DialogTitle>
-            <DialogDescription>
-              {currentPrompt?.message}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {currentPrompt && (
-            <div className="space-y-6">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800 font-medium mb-2">Why this data is important:</p>
-                <p className="text-sm text-blue-700">{currentPrompt.impact}</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium mb-2">Potential data sources:</p>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  {currentPrompt.sources?.map((source, idx) => (
-                    <li key={idx} className="flex items-center space-x-2">
-                      <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                      <span>{source}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="flex items-center justify-end space-x-3">
-                {currentPrompt.actions?.map((action, idx) => (
-                  <Button
-                    key={idx}
-                    variant={action.type === 'skip' ? 'outline' : 'default'}
-                    onClick={() => handlePromptAction(action)}
-                    className={action.type === 'skip' ? 'text-gray-600' : ''}
-                  >
-                    {action.type === 'download_template' && <Download className="h-4 w-4 mr-2" />}
-                    {action.type === 'upload_data' && <Upload className="h-4 w-4 mr-2" />}
-                    {action.label}
-                  </Button>
-                ))}
-              </div>
-
-              {currentPrompt.actions?.find(a => a.type === 'skip')?.warning && (
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription className="text-sm">
-                    {currentPrompt.actions.find(a => a.type === 'skip').warning}
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Action Buttons */}
+      <div className="flex flex-wrap gap-4 justify-center">
+        <Button>
+          <Upload className="h-4 w-4 mr-2" />
+          Bulk Upload
+        </Button>
+        <Button variant="outline">
+          <Download className="h-4 w-4 mr-2" />
+          Export All Data
+        </Button>
+        <Button variant="outline">
+          <Settings className="h-4 w-4 mr-2" />
+          Data Settings
+        </Button>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default DataManagementCenter;
+export default DataManagement

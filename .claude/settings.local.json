@@ -122,7 +122,10 @@
       "Bash(xcopy:*)",
       "Bash(robocopy:*)",
       "Bash(xargs sed:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(npx babel:*)"
     ],
     "deny": [],
     "ask": []

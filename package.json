@@ -40,7 +40,7 @@
     "test:setup": "playwright install",
     "test:all": "pnpm run test:run && pnpm run test:e2e",
     "lint": "pnpm dlx eslint src server",
-    "lint:fix": "eslint . --fix",
+    "lint:fix": "pnpm dlx eslint . --fix",
     "monitor": "node monitoring-agent.cjs",
     "monitor:status": "node monitoring-agent.cjs --status",
     "monitor:bg": "node monitoring-agent.cjs &",

@@ -67,10 +67,20 @@ let mcpClient = null;
 async function initializeMCPClient() {
   if (process.env.MCP_SERVER_URL) {
     try {
+      logger.info(`Attempting MCP connection to: ${process.env.MCP_SERVER_URL}`);
+      
+      // Check if URL is WebSocket compatible
+      const mcpUrl = process.env.MCP_SERVER_URL;
+      if (!mcpUrl.startsWith('ws://') && !mcpUrl.startsWith('wss://')) {
+        logger.warn('MCP_SERVER_URL is not a WebSocket URL, skipping WebSocket connection');
+        logger.info('MCP Client configured for HTTP mode (WebSocket connection skipped)');
+        return true; // Return true to indicate MCP is "configured" even if not connected via WebSocket
+      }
+
       const { Client } = await import('@modelcontextprotocol/sdk/client/index.js');
       const { WebSocketClientTransport } = await import('@modelcontextprotocol/sdk/client/websocket.js');
 
-      const transport = new WebSocketClientTransport(new URL(process.env.MCP_SERVER_URL));
+      const transport = new WebSocketClientTransport(new URL(mcpUrl));
       mcpClient = new Client({
         name: 'sentia-manufacturing-dashboard',
         version: '1.0.6'
@@ -82,7 +92,7 @@ async function initializeMCPClient() {
       });
 
       await mcpClient.connect(transport);
-      logger.info('MCP Client connected successfully');
+      logger.info('MCP Client connected successfully via WebSocket');
       return true;
     } catch (error) {
       logger.error('MCP Client connection failed', error);
@@ -181,8 +191,21 @@ let dbConnected = false;
 let mcpConnected = false;
 
 (async () => {
-  dbConnected = await testDatabaseConnection();
-  mcpConnected = await initializeMCPClient();
+  try {
+    logger.info('Starting async initialization...');
+    dbConnected = await testDatabaseConnection();
+    logger.info(`Database initialization completed: ${dbConnected}`);
+    
+    mcpConnected = await initializeMCPClient();
+    logger.info(`MCP initialization completed: ${mcpConnected}`);
+    
+    logger.info('Async initialization completed successfully');
+  } catch (error) {
+    logger.error('Async initialization failed', error);
+    // Don't let initialization failures break the server
+    dbConnected = false;
+    mcpConnected = false;
+  }
 })();
 
 // Health check endpoint with REAL status

@@ -159,10 +159,16 @@ app.get('/health', async (req, res) => {
     }
   };
 
-  // Test database connectivity
+  // Test database connectivity with timeout
   if (dbConnected) {
     try {
-      await prisma.$queryRaw`SELECT 1`;
+      // Add timeout to prevent hanging
+      const dbTest = await Promise.race([
+        prisma.$queryRaw`SELECT 1`,
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Database query timeout')), 2000)
+        )
+      ]);
       health.database.status = 'operational';
     } catch (error) {
       health.database.status = 'error';

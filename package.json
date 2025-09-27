@@ -13,6 +13,8 @@
     "dev:client": "vite --host --port 3000",
     "dev:server": "nodemon server/index.js",
     "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "build:test": "vite build --mode testing",
     "start": "node server/index.js",
     "preview": "vite preview",
     "test": "vitest",

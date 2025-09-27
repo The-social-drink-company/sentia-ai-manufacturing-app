@@ -42,9 +42,9 @@ export const initializeSentry = () => {
         // Monitor performance for key manufacturing operations
         tracePropagationTargets: [
           'localhost',
-          /^https:\/\/sentia-manufacturing-/,
-          /^https:\/\/.*\.onrender\.com/,
-          /^https:\/\/.*\.financeflo\.ai/
+          /^https://sentia-manufacturing-/,
+          /^https:\/\/.*\.onrender\.com$/,
+          /^https:\/\/.*\.financeflo\.ai$/
         ],
       }),
     ],
@@ -133,7 +133,7 @@ export const setSentryContext = (context) => {
 /**
  * Manually capture exception with manufacturing context
  */
-export const captureException = (error, context = {}) => {
+export const captureException = (error, context = _{}) => {
   Sentry.withScope(scope => {
     // Add manufacturing-specific context
     scope.setTag('module', context.module || 'unknown');
@@ -156,7 +156,7 @@ export const captureException = (error, context = {}) => {
 /**
  * Capture custom message for manufacturing events
  */
-export const captureMessage = (message, level = 'info', context = {}) => {
+export const captureMessage = (message, level = 'info', context = _{}) => {
   Sentry.withScope(scope => {
     scope.setLevel(level);
     scope.setTag('module', context.module || 'unknown');
@@ -180,7 +180,7 @@ export const captureMessage = (message, level = 'info', context = {}) => {
 /**
  * Start performance transaction for manufacturing operations
  */
-export const startTransaction = (name, operation = 'manufacturing') => {
+export const startTransaction = (_name, operation = 'manufacturing') => {
   const transaction = Sentry.startTransaction({
     name,
     op: operation,

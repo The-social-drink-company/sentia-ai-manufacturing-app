@@ -117,7 +117,7 @@ export const sentryErrorHandler = () => {
       }
 
       // Capture specific manufacturing errors
-      if (error.code && error.code.startsWith('MFG_')) {
+      if (error.code && error.code.startsWith('MFG')) {
         return true;
       }
 
@@ -147,7 +147,7 @@ export const setSentryOperationContext = (operation, module, metadata = {}) => {
 /**
  * Capture manufacturing-specific exception
  */
-export const captureManufacturingException = (error, context = {}) => {
+export const captureManufacturingException = (error, context = _{}) => {
   Sentry.withScope(scope => {
     // Add manufacturing context
     scope.setTag('manufacturing_module', context.module || 'unknown');
@@ -174,7 +174,7 @@ export const captureManufacturingException = (error, context = {}) => {
 /**
  * Capture manufacturing performance metrics
  */
-export const capturePerformanceMetric = (metricName, value, unit = 'ms', context = {}) => {
+export const capturePerformanceMetric = (_metricName, _value, unit = 'ms', context = _{}) => {
   Sentry.withScope(scope => {
     scope.setTag('metric_type', 'performance');
     scope.setTag('manufacturing_module', context.module || 'unknown');
@@ -197,7 +197,7 @@ export const capturePerformanceMetric = (metricName, value, unit = 'ms', context
 /**
  * Start server transaction for manufacturing API operations
  */
-export const startServerTransaction = (name, operation = 'manufacturing_api') => {
+export const startServerTransaction = (_name, operation = 'manufacturing_api') => {
   const transaction = Sentry.startTransaction({
     name,
     op: operation,
@@ -219,7 +219,7 @@ export const startServerTransaction = (name, operation = 'manufacturing_api') =>
 /**
  * Monitor database operations
  */
-export const monitorDatabaseOperation = (operationName, queryType = 'read') => {
+export const monitorDatabaseOperation = (_operationName, queryType = 'read') => {
   return Sentry.startTransaction({
     name: `db.${operationName}`,
     op: 'db.query',
@@ -234,7 +234,7 @@ export const monitorDatabaseOperation = (operationName, queryType = 'read') => {
 /**
  * Monitor external API calls
  */
-export const monitorExternalAPI = (apiName, endpoint) => {
+export const monitorExternalAPI = (apiName, _endpoint) => {
   return Sentry.startTransaction({
     name: `api.${apiName}`,
     op: 'http.client',

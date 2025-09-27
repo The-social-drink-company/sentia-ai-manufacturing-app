@@ -107,7 +107,10 @@
       "Bash(gh pr create:*)",
       "Bash(git config:*)",
       "Bash(pnpm run lint:*)",
-      "Bash(pnpm run build:*)"
+      "Bash(pnpm run build:*)",
+      "Bash(git stash show:*)",
+      "Bash(git branch:*)",
+      "Bash(git show-branch:*)"
     ],
     "deny": [],
     "ask": []

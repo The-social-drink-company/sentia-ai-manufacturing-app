@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { logWarn, logError } from './observability/structuredLogger.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 dotenv.config();
 
@@ -11,7 +13,7 @@ class UnleashedService {
     this.baseUrl = process.env.UNLEASHED_API_URL || 'https://api.unleashedsoftware.com';
     
     if (!this.apiId || !this.apiKey) {
-      console.warn('Unleashed API credentials not found in environment variables - service will be limited');
+      logWarn('Unleashed API credentials not found in environment variables - service will be limited');
       this.disabled = true;
     }
   }
@@ -74,7 +76,7 @@ class UnleashedService {
       
       return await response.json();
     } catch (error) {
-      console.error('Unleashed API request failed:', error);
+      logError('Unleashed API request failed:', error);
       throw error;
     }
   }

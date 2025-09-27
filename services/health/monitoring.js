@@ -17,16 +17,16 @@ const componentStatus = new Map();
 const healthChecks = new Map();
 
 // Register a health check
-export const registerHealthCheck = (name, checkFn, { critical = false, timeout = 5000 } = {}) => {
+export const registerHealthCheck = (_name, _checkFn, { critical = _false, timeout = 5000 } = _{}) => {
   healthChecks.set(name, { checkFn, critical, timeout });
 };
 
 // Execute health check with timeout
-const executeHealthCheck = async (name, { checkFn, timeout }) => {
+const executeHealthCheck = async (_name, { _checkFn, timeout }) => {
   const start = performance.now();
   
   try {
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise((_, _reject) => 
       setTimeout(() => reject(new Error('Health check timeout')), timeout)
     );
     
@@ -280,7 +280,7 @@ export const checkQueue = async (queueService) => {
 };
 
 // External service check
-export const checkExternalService = async (name, url, expectedStatus = 200) => {
+export const checkExternalService = async (_name, _url, expectedStatus = _200) => {
   try {
     const start = performance.now();
     const response = await fetch(url, { 

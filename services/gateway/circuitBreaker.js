@@ -1,4 +1,6 @@
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Circuit Breaker Pattern Implementation
@@ -52,7 +54,7 @@ export class CircuitBreaker extends EventEmitter {
    * Execute a function with circuit breaker protection
    */
   async execute(fn, ...args) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       if (this.isOpen()) {
         const error = new Error(`Circuit breaker is OPEN for ${this.name}`);
         error.code = 'CIRCUIT_BREAKER_OPEN';
@@ -81,7 +83,7 @@ export class CircuitBreaker extends EventEmitter {
         // Handle both sync and async functions
         if (result && typeof result.then === 'function') {
           result
-            .then((value) => {
+            .then(_(value) => {
               this.onSuccess(Date.now() - startTime);
               resolve(value);
             })
@@ -225,7 +227,7 @@ export class CircuitBreaker extends EventEmitter {
       this.stats.circuitOpenedCount++;
       this.nextAttempt = Date.now() + this.resetTimeout;
       
-      console.log(`🔴 Circuit breaker OPENED for ${this.name} (failures: ${this.failureCount})`);
+      logDebug(`🔴 Circuit breaker OPENED for ${this.name} (failures: ${this.failureCount})`);
       
       this.emit('circuitOpened', {
         name: this.name,
@@ -246,7 +248,7 @@ export class CircuitBreaker extends EventEmitter {
       this.halfOpenCalls = 0;
       this.nextAttempt = null;
       
-      console.log(`🟢 Circuit breaker CLOSED for ${this.name}`);
+      logDebug(`🟢 Circuit breaker CLOSED for ${this.name}`);
       
       this.emit('circuitClosed', {
         name: this.name
@@ -263,7 +265,7 @@ export class CircuitBreaker extends EventEmitter {
       this.halfOpenCalls = 0;
       this.successCount = 0;
       
-      console.log(`🟡 Circuit breaker HALF-OPEN for ${this.name}`);
+      logDebug(`🟡 Circuit breaker HALF-OPEN for ${this.name}`);
       
       this.emit('circuitHalfOpened', {
         name: this.name
@@ -396,7 +398,7 @@ export class CircuitBreaker extends EventEmitter {
       stateHistory: []
     };
     
-    console.log(`🔄 Circuit breaker RESET for ${this.name}`);
+    logDebug(`🔄 Circuit breaker RESET for ${this.name}`);
     
     this.emit('circuitReset', {
       name: this.name

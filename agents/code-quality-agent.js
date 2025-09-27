@@ -9,6 +9,8 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -19,7 +21,7 @@ class CodeQualityAgent {
   }
 
   async run() {
-    console.log(`🔍 Code Quality Agent scanning ${this.branch}...`);
+    logDebug(`🔍 Code Quality Agent scanning ${this.branch}...`);
     
     const issues = await this.detectIssues();
     
@@ -82,7 +84,7 @@ class CodeQualityAgent {
     
     // Check for console statements
     try {
-      const { stdout } = await execAsync('grep -r "console\\." src/ --include="*.js" --include="*.jsx" -l | head -20');
+      const { stdout } = await execAsync('grep -r "console\." src/ --include="*.js" --include="*.jsx" -l | head -20');
       const filesWithConsole = stdout.trim().split('\n').filter(Boolean);
       
       for (const file of filesWithConsole) {
@@ -133,7 +135,7 @@ class CodeQualityAgent {
             break;
         }
       } catch (error) {
-        console.error(`Failed to fix ${issue.type}: ${error.message}`);
+        logError(`Failed to fix ${issue.type}: ${error.message}`);
       }
     }
   }
@@ -148,7 +150,7 @@ class CodeQualityAgent {
       });
     } catch (error) {
       // Some errors might not be auto-fixable
-      console.warn('Some ESLint errors could not be auto-fixed');
+      logWarn('Some ESLint errors could not be auto-fixed');
     }
   }
 
@@ -165,10 +167,10 @@ class CodeQualityAgent {
       
       // Replace console statements
       updatedContent = updatedContent
-        .replace(/console\.log\(/g, 'devLog.log(')
-        .replace(/console\.warn\(/g, 'devLog.warn(')
-        .replace(/console\.error\(/g, 'devLog.error(')
-        .replace(/console\.info\(/g, 'devLog.log(');
+        .replace(/console.log(/g, 'devLog.log(')
+        .replace(/console.warn(/g, 'devLog.warn(')
+        .replace(/console.error(/g, 'devLog.error(')
+        .replace(/console.info(/g, 'devLog.log(');
       
       if (updatedContent !== content) {
         await fs.writeFile(issue.file, updatedContent);
@@ -179,7 +181,7 @@ class CodeQualityAgent {
         });
       }
     } catch (error) {
-      console.error(`Failed to fix console in ${issue.file}: ${error.message}`);
+      logError(`Failed to fix console in ${issue.file}: ${error.message}`);
     }
   }
 
@@ -246,7 +248,7 @@ class CodeQualityAgent {
         }
       }
     } catch (error) {
-      console.error(`Failed to fix unused imports: ${error.message}`);
+      logError(`Failed to fix unused imports: ${error.message}`);
     }
   }
 
@@ -310,10 +312,10 @@ async function main() {
   const result = await agent.run();
   
   // Output JSON result for orchestrator
-  console.log(JSON.stringify(result));
+  logDebug(JSON.stringify(result));
 }
 
 main().catch(error => {
-  console.error(error);
+  logError(error);
   process.exit(1);
 });

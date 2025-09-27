@@ -151,11 +151,11 @@ async function testEmailNotifications() {
 
 // Run the test
 testEmailNotifications()
-  .then(() => {
+  .then(_() => {
     console.log('\n✨ Email notification system is ready for use!');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(_(error) => {
     console.error('💥 Test script failed:', error);
     process.exit(1);
   });

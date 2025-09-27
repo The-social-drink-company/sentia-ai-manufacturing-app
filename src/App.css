@@ -1,92 +1,221 @@
-/* App-level styles - simplified for Tailwind compatibility */
-
-#root {
-  width: 100%;
+.App {
+  text-align: center;
   min-height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
-.header {
-  background: #1a1a1a;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 1rem 0;
-  border-bottom: 1px solid #333;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
 }
 
-.header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-left h1 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.auth-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.auth-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.signin-button {
-  background: transparent;
-  color: white;
-  border: 1px solid white;
-}
-
-.signin-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.signup-button {
-  background: #646cff;
-  color: white;
-}
-
-.signup-button:hover {
-  background: #535bf2;
-}
-
-main {
-  flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
+.App-header {
   padding: 2rem;
-  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.dashboard {
+h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+.status-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-indicator {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  margin: 1rem 0;
+  display: inline-block;
+}
+
+.status-indicator.success {
+  background: rgba(76, 175, 80, 0.8);
+  color: white;
+}
+
+.status-indicator.error {
+  background: rgba(244, 67, 54, 0.8);
+  color: white;
+}
+
+.status-indicator.loading {
+  background: rgba(255, 193, 7, 0.8);
+  color: black;
+}
+
+.server-info {
+  text-align: left;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.server-info p {
+  margin: 0.5rem 0;
+  font-family: 'Courier New', monospace;
+}
+
+.error-info {
+  background: rgba(244, 67, 54, 0.2);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  border: 1px solid rgba(244, 67, 54, 0.5);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 3rem 0;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card h4 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.feature-card p {
+  margin-bottom: 1rem;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+.feature-card button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.deployment-info {
+  background: rgba(76, 175, 80, 0.2);
+  border-radius: 15px;
+  padding: 2rem;
+  margin-top: 3rem;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.deployment-info h3 {
+  margin-bottom: 1rem;
+  color: #4CAF50;
+}
+
+.deployment-info p {
+  margin: 0.5rem 0;
+  font-family: 'Courier New', monospace;
   text-align: left;
 }
 
-.dashboard h1 {
-  margin-bottom: 1rem;
-  color: #333;
+
+/* Navigation styles */
+.app-container {
+  min-height: 100vh;
+  background: #f8fafc;
 }
 
-.dashboard pre {
-  background: #f5f5f5;
-  padding: 1rem;
-  border-radius: 4px;
-  overflow-x: auto;
+.app-nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-button {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.app-nav h3 {
+  margin: 0;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* Active feature button */
+.feature-button {
+  background: rgba(59, 130, 246, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.9);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.feature-button:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.feature-button.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Update disabled button styles */
+.feature-card button:disabled {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transition: all 0.3s ease;
 }

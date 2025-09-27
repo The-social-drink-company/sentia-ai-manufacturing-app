@@ -8,6 +8,8 @@ import fs from 'fs';
 import path from 'path';
 import EventEmitter from 'events';
 import { createRequire } from 'module';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 // ML and data science libraries (would be installed via npm)
 // import * as tf from '@tensorflow/tfjs-node';
@@ -181,7 +183,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
   }
 
   async initialize() {
-    console.log('🧠 INITIALIZING ML TEST INTELLIGENCE ENGINE');
+    logDebug('🧠 INITIALIZING ML TEST INTELLIGENCE ENGINE');
     
     // Setup ML directories
     this.setupMLDirectories();
@@ -198,7 +200,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
     // Setup continuous learning
     this.setupContinuousLearning();
     
-    console.log('✅ ML Test Intelligence Engine initialized successfully');
+    logDebug('✅ ML Test Intelligence Engine initialized successfully');
     this.emit('initialized');
   }
 
@@ -229,11 +231,11 @@ class MLTestIntelligenceEngine extends EventEmitter {
       system: new SystemMetricsCollector(this.config.dataSources)
     };
 
-    console.log('📊 Data collectors initialized');
+    logDebug('📊 Data collectors initialized');
   }
 
   async loadTrainingData() {
-    console.log('📚 Loading historical training data...');
+    logDebug('📚 Loading historical training data...');
     
     // Load existing training data
     for (const [modelName] of Object.entries(this.config.ml.models)) {
@@ -247,9 +249,9 @@ class MLTestIntelligenceEngine extends EventEmitter {
         try {
           const data = JSON.parse(fs.readFileSync(trainingDataPath, 'utf8'));
           this.trainingData.set(modelName, data);
-          console.log(`📈 Loaded training data for ${modelName}: ${data.samples?.length || 0} samples`);
+          logDebug(`📈 Loaded training data for ${modelName}: ${data.samples?.length || 0} samples`);
         } catch (error) {
-          console.warn(`Failed to load training data for ${modelName}: ${error.message}`);
+          logWarn(`Failed to load training data for ${modelName}: ${error.message}`);
         }
       }
     }
@@ -259,7 +261,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
   }
 
   async collectTrainingData() {
-    console.log('🔄 Collecting fresh training data...');
+    logDebug('🔄 Collecting fresh training data...');
     
     const collectors = [
       this.collectTestExecutionData(),
@@ -274,7 +276,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
     // Combine collected data for training
     await this.combineTrainingData(collectedData);
     
-    console.log('✅ Training data collection completed');
+    logDebug('✅ Training data collection completed');
   }
 
   async collectTestExecutionData() {
@@ -371,7 +373,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
     const systemData = collectedData[4]?.value || [];
     
     return {
-      samples: testData.map((test, index) => ({
+      samples: testData.map((test, _index) => ({
         features: [
           test.features.complexity,
           test.features.codeChanges,
@@ -535,7 +537,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
   }
 
   async initializeMLModels() {
-    console.log('🤖 Initializing ML models...');
+    logDebug('🤖 Initializing ML models...');
     
     // Initialize each configured model
     for (const [modelName, modelConfig] of Object.entries(this.config.ml.models)) {
@@ -547,15 +549,15 @@ class MLTestIntelligenceEngine extends EventEmitter {
         const modelPath = path.join(process.cwd(), 'tests/ml/models', `${modelName}.json`);
         if (fs.existsSync(modelPath)) {
           await this.loadModel(modelName, modelPath);
-          console.log(`📥 Loaded pre-trained model: ${modelName}`);
+          logDebug(`📥 Loaded pre-trained model: ${modelName}`);
         } else {
           // Train new model
           await this.trainModel(modelName);
-          console.log(`🎓 Trained new model: ${modelName}`);
+          logDebug(`🎓 Trained new model: ${modelName}`);
         }
         
       } catch (error) {
-        console.error(`❌ Failed to initialize model ${modelName}: ${error.message}`);
+        logError(`❌ Failed to initialize model ${modelName}: ${error.message}`);
       }
     }
   }
@@ -634,7 +636,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
   }
 
   async trainModel(modelName) {
-    console.log(`🎓 Training model: ${modelName}`);
+    logDebug(`🎓 Training model: ${modelName}`);
     
     const model = this.models.get(modelName);
     const trainingData = this.trainingData.get(modelName);
@@ -654,7 +656,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
     // Save trained model
     await this.saveModel(modelName);
     
-    console.log(`✅ Model ${modelName} trained with accuracy: ${trainingResult.accuracy.toFixed(3)}`);
+    logDebug(`✅ Model ${modelName} trained with accuracy: ${trainingResult.accuracy.toFixed(3)}`);
     return trainingResult;
   }
 
@@ -667,7 +669,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
       throw new Error('No training samples available');
     }
 
-    console.log(`📊 Training with ${samples.length} samples...`);
+    logDebug(`📊 Training with ${samples.length} samples...`);
     
     // Split data into training and validation sets
     const splitIndex = Math.floor(samples.length * (1 - this.config.ml.training.validationSplit));
@@ -693,12 +695,12 @@ class MLTestIntelligenceEngine extends EventEmitter {
       
       // Early stopping check
       if (this.config.ml.training.earlyStopping && this.shouldStopEarly(trainingMetrics, epoch)) {
-        console.log(`🛑 Early stopping at epoch ${epoch}`);
+        logDebug(`🛑 Early stopping at epoch ${epoch}`);
         break;
       }
       
       if (epoch % 10 === 0) {
-        console.log(`  Epoch ${epoch}: loss=${epochResult.loss.toFixed(4)}, acc=${epochResult.accuracy.toFixed(3)}`);
+        logDebug(`  Epoch ${epoch}: loss=${epochResult.loss.toFixed(4)}, acc=${epochResult.accuracy.toFixed(3)}`);
       }
     }
 
@@ -761,11 +763,11 @@ class MLTestIntelligenceEngine extends EventEmitter {
 
   setupContinuousLearning() {
     // Setup continuous learning system
-    console.log('🔄 Setting up continuous learning...');
+    logDebug('🔄 Setting up continuous learning...');
     
     // Retrain models periodically
     this.retrainingInterval = setInterval(async () => {
-      console.log('🔄 Starting scheduled model retraining...');
+      logDebug('🔄 Starting scheduled model retraining...');
       
       for (const [modelName, modelConfig] of Object.entries(this.config.ml.models)) {
         const model = this.models.get(modelName);
@@ -776,16 +778,16 @@ class MLTestIntelligenceEngine extends EventEmitter {
             try {
               await this.collectTrainingData();
               await this.trainModel(modelName);
-              console.log(`🎓 Retrained model: ${modelName}`);
+              logDebug(`🎓 Retrained model: ${modelName}`);
             } catch (error) {
-              console.error(`❌ Failed to retrain model ${modelName}: ${error.message}`);
+              logError(`❌ Failed to retrain model ${modelName}: ${error.message}`);
             }
           }
         }
       }
     }, this.config.ml.models.failurePrediction.retrainInterval);
 
-    console.log('✅ Continuous learning system active');
+    logDebug('✅ Continuous learning system active');
   }
 
   // Prediction Methods
@@ -795,7 +797,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
       throw new Error('Failure prediction model not available');
     }
 
-    console.log(`🔮 Predicting failure probability for: ${testName}`);
+    logDebug(`🔮 Predicting failure probability for: ${testName}`);
 
     const features = this.extractFailurePredictionFeatures(testName, contextualData);
     const prediction = await this.makePrediction(model, features);
@@ -813,7 +815,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
     this.predictions.set(`failure_${testName}_${Date.now()}`, result);
     this.analytics.totalPredictions++;
 
-    console.log(`📊 Prediction: ${(prediction.probability * 100).toFixed(1)}% failure probability`);
+    logDebug(`📊 Prediction: ${(prediction.probability * 100).toFixed(1)}% failure probability`);
     return result;
   }
 
@@ -961,11 +963,11 @@ class MLTestIntelligenceEngine extends EventEmitter {
   }
 
   async prioritizeTests(testSuite) {
-    console.log('🎯 Prioritizing test execution order...');
+    logDebug('🎯 Prioritizing test execution order...');
     
     const model = this.models.get('testPrioritization');
     if (!model || !model.trained) {
-      console.warn('Test prioritization model not available, using default ordering');
+      logWarn('Test prioritization model not available, using default ordering');
       return testSuite;
     }
 
@@ -986,7 +988,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
     // Sort by ML priority score (descending)
     prioritizedTests.sort((a, b) => b.mlPriority - a.mlPriority);
     
-    console.log(`✅ Prioritized ${prioritizedTests.length} tests using ML intelligence`);
+    logDebug(`✅ Prioritized ${prioritizedTests.length} tests using ML intelligence`);
     return prioritizedTests;
   }
 
@@ -1002,7 +1004,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
   }
 
   async generateIntelligentTests(codeContext, requirements = {}) {
-    console.log('🧬 Generating intelligent tests...');
+    logDebug('🧬 Generating intelligent tests...');
     
     const model = this.models.get('testGeneration');
     if (!model || !model.trained) {
@@ -1022,7 +1024,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
     // Save generated tests
     await this.saveGeneratedTests(generatedTests);
     
-    console.log(`🧪 Generated ${generatedTests.length} intelligent tests`);
+    logDebug(`🧪 Generated ${generatedTests.length} intelligent tests`);
     return generatedTests;
   }
 
@@ -1066,8 +1068,8 @@ class MLTestIntelligenceEngine extends EventEmitter {
     // Generate actual test code based on template
     const codeTemplates = {
       unit_test_template: `
-describe('${context.codeContext?.module || 'Module'}', () => {
-  test('should handle normal operation', async () => {
+describe('${context.codeContext?.module || _'Module'}', () => {
+  test('should handle normal _operation', async () => {
     // AI-generated test implementation
     const result = await testFunction();
     expect(result).toBeDefined();
@@ -1075,14 +1077,14 @@ describe('${context.codeContext?.module || 'Module'}', () => {
 });`,
       
       api_test_template: `
-test('API endpoint validation', async () => {
+test('API endpoint _validation', async () => {
   const response = await request('/api/${context.codeContext?.endpoint || 'test'}');
   expect(response.status).toBe(200);
   expect(response.body).toHaveProperty('data');
 });`,
       
       integration_test_template: `
-test('Integration workflow', async () => {
+test('Integration _workflow', async () => {
   // AI-generated integration test
   const workflow = new WorkflowTest();
   const result = await workflow.execute();
@@ -1131,7 +1133,7 @@ test('Integration workflow', async () => {
 
   // Analytics and Insights
   async generateInsights() {
-    console.log('💡 Generating ML-driven insights...');
+    logDebug('💡 Generating ML-driven insights...');
     
     const insights = {
       testEfficiency: await this.analyzeTestEfficiency(),
@@ -1152,7 +1154,7 @@ test('Integration workflow', async () => {
     );
     fs.writeFileSync(insightsPath, JSON.stringify(insights, null, 2));
 
-    console.log('✨ ML insights generated successfully');
+    logDebug('✨ ML insights generated successfully');
     return insights;
   }
 
@@ -1342,7 +1344,7 @@ test('Integration workflow', async () => {
 
   // Integration with autonomous testing system
   async integrateWithAutonomousSystem() {
-    console.log('🔗 Integrating ML intelligence with autonomous system...');
+    logDebug('🔗 Integrating ML intelligence with autonomous system...');
     
     const mlScenarios = await this.generateMLTestScenarios();
     
@@ -1351,7 +1353,7 @@ test('Integration workflow', async () => {
       JSON.stringify(mlScenarios, null, 2)
     );
 
-    console.log(`🧠 Generated ${mlScenarios.length} ML-enhanced test scenarios`);
+    logDebug(`🧠 Generated ${mlScenarios.length} ML-enhanced test scenarios`);
     return mlScenarios;
   }
 
@@ -1360,10 +1362,10 @@ test('Integration workflow', async () => {
     
     // ML-driven test selection scenario
     scenarios.push({
-      name: 'ML_INTELLIGENT_TEST_SELECTION',
-      type: 'ml_intelligence',
-      priority: 'high',
-      timeout: 120000,
+      name: _'ML_INTELLIGENT_TEST_SELECTION',
+      type: _'ml_intelligence',
+      priority: _'high',
+      timeout: _120000,
       retries: 1,
       execution: async () => {
         const testSuite = await this.getCurrentTestSuite();
@@ -1373,10 +1375,10 @@ test('Integration workflow', async () => {
 
     // Failure prediction scenario
     scenarios.push({
-      name: 'ML_FAILURE_PREDICTION_ANALYSIS',
-      type: 'ml_intelligence',
-      priority: 'medium',
-      timeout: 60000,
+      name: _'ML_FAILURE_PREDICTION_ANALYSIS',
+      type: _'ml_intelligence',
+      priority: _'medium',
+      timeout: _60000,
       retries: 2,
       execution: async () => {
         const insights = await this.generateInsights();
@@ -1417,7 +1419,7 @@ test('Integration workflow', async () => {
   }
 
   async shutdown() {
-    console.log('🛑 Shutting down ML Test Intelligence Engine...');
+    logDebug('🛑 Shutting down ML Test Intelligence Engine...');
     
     if (this.retrainingInterval) {
       clearInterval(this.retrainingInterval);
@@ -1426,7 +1428,7 @@ test('Integration workflow', async () => {
     // Save final state
     await this.saveAnalytics();
     
-    console.log('✅ ML Test Intelligence Engine shutdown complete');
+    logDebug('✅ ML Test Intelligence Engine shutdown complete');
   }
 
   async saveAnalytics() {

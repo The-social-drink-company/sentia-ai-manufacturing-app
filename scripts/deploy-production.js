@@ -219,7 +219,7 @@ class ProductionDeploymentChecker {
       if (warningCount > 0) {
         console.log('');
         console.log('⚠️  OPTIONAL IMPROVEMENTS:');
-        this.warnings.forEach((warning, index) => {
+        this.warnings.forEach(_(warning, index) => {
           console.log(`  ${index + 1}. ${warning}`);
         });
       }

@@ -78,16 +78,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Critical Production Keys
 ```env
 # Frontend (React/Vite)
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 
 # Backend (Node.js/Express)
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+CLERK_SECRET_KEY=sk_live_REDACTED
 
 # Configuration
 CLERK_ENVIRONMENT=production
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 ```
 
 ### Authentication Implementation
@@ -147,14 +147,14 @@ git push origin production
 ```
 
 ### Render Build Commands (Automated - Do Not Run Locally)
-- `npm run render:build` - Used by Render for building
-- `npm run render:start` - Used by Render for starting
+- `pnpm run render:build` - Used by Render for building
+- `pnpm run render:start` - Used by Render for starting
 - These run automatically on Render after git push
 
 ### ❌ DEPRECATED - DO NOT USE
-- ~~`npm run dev`~~ - No local development
-- ~~`npm run dev:client`~~ - No local frontend
-- ~~`npm run dev:server`~~ - No local backend
+- ~~`pnpm run dev`~~ - No local development
+- ~~`pnpm run dev:client`~~ - No local frontend
+- ~~`pnpm run dev:server`~~ - No local backend
 - ~~`localhost:3000`~~ - Use Render URLs
 - ~~`localhost:5000`~~ - Use Render URLs
 - ~~`.env` files~~ - Use Render environment variables
@@ -175,12 +175,12 @@ git push origin production
 
 ### Prerequisites
 - Node.js (v18+ recommended)
-- npm (comes with Node.js)
+- pnpm (preferred package manager)
 
 ### Development Setup
-1. Install Node.js dependencies: `npm install`
+1. Install Node.js dependencies: `pnpm install`
 2. Copy environment template: `cp .env.template .env` and configure
-3. Start development servers: `npm run dev`
+3. Start development servers: `pnpm run dev`
 
 ### Environment Configuration
 Required environment variables:
@@ -451,12 +451,12 @@ Based on security audit findings:
 #### High Priority Issues
 - **xlsx package**: High severity prototype pollution - no fix available
 - **esbuild**: Development server vulnerability - update to >0.24.2
-- **Dependencies**: Regular `npm audit` checks and fixes
+- **Dependencies**: Regular `pnpm audit` checks and fixes
 
 #### Security Practices
-- Run `npm audit fix` for non-breaking fixes
+- Run `pnpm audit --fix` for non-breaking fixes
 - Document known vulnerabilities that require breaking changes
-- Use `npm audit --audit-level=moderate` for production checks
+- Use `pnpm audit --audit-level=moderate` for production checks
 
 ## Error Handling Standards
 
@@ -682,9 +682,9 @@ Test → Production:
 - **2 Low Severity**: Development dependencies
 
 #### Security Action Plan
-1. **Immediate**: Run `npm audit fix` for non-breaking fixes
+1. **Immediate**: Run `pnpm audit --fix` for non-breaking fixes
 2. **Planning**: Document vulnerabilities requiring breaking changes
-3. **Production**: Use `npm audit --audit-level=moderate` for production checks
+3. **Production**: Use `pnpm audit --audit-level=moderate` for production checks
 4. **Monitoring**: Regular security audits in development workflow
 
 ### Port Management and Development Environment
@@ -698,9 +698,9 @@ Test → Production:
 #### Development Server Management
 ```bash
 # Proper development startup sequence
-npm run dev:client    # Start frontend only on localhost:3000
-npm run dev:server    # Start backend only on localhost:5000  
-npm run dev          # Start both concurrently (preferred)
+pnpm run dev:client    # Start frontend only on localhost:3000
+pnpm run dev:server    # Start backend only on localhost:5000
+pnpm run dev          # Start both concurrently (preferred)
 
 # Port conflict resolution
 taskkill /F /IM node.exe    # Windows process cleanup
@@ -859,3 +859,11 @@ This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase
 - Auto-deployment configured for all three branches via render.yaml
 - Environment variables automatically injected from Render dashboard
 - Health checks configured at `/health` endpoint
+- remember no shorcuts and no emergency pages - I want the full    
+
+    100% working enterprise level software application deployed     
+
+    on Render
+- remember no shortcuts and no emergency pages - I want the full 100% working enterprise level software application deployed on Render
+
+

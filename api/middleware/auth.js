@@ -1,10 +1,12 @@
 import { requireAuth } from '@clerk/express';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Authentication middleware for API routes
  * Uses Clerk's official Express middleware for authentication
  */
-const authenticate = (req, res, next) => {
+const authenticate = (req, res, _next) => {
   // DEVELOPMENT MODE: Bypass authentication for testing
   if ((process.env.NODE_ENV === 'development' && !process.env.CLERK_SECRET_KEY) || process.env.BYPASS_AUTH === 'true') {
     req.auth = {
@@ -26,7 +28,7 @@ const authenticate = (req, res, next) => {
   // In production or when Clerk keys are available, use Clerk's requireAuth middleware
   return requireAuth()(req, res, (err) => {
     if (err) {
-      console.error('Clerk authentication error:', err);
+      logError('Clerk authentication error:', err);
       return res.status(401).json({
         success: false,
         error: 'Authentication required'
@@ -47,7 +49,7 @@ const authenticate = (req, res, next) => {
  * @param {Array<string>} allowedRoles - Array of roles allowed to access the endpoint
  */
 const requireRole = (allowedRoles) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     if (!req.userRole) {
       return res.status(401).json({
         success: false,
@@ -71,7 +73,7 @@ const requireRole = (allowedRoles) => {
  * @param {string} permission - Required permission
  */
 const requirePermission = (permission) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     if (!req.permissions || !req.permissions.includes(permission)) {
       return res.status(403).json({
         success: false,

@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class CacheService {
   constructor(options = {}) {
@@ -218,7 +220,7 @@ class CacheService {
             this.set(key, data);
           }
         } catch (error) {
-          console.error(`Failed to warm cache for key ${key}:`, error);
+          logError(`Failed to warm cache for key ${key}:`, error);
         }
       }
     });

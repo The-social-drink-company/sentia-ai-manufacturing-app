@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 class CFOWorkbenchService {
   constructor(forecastingService, options = {}) {
     this.forecastingService = forecastingService;
@@ -99,18 +101,18 @@ class CFOWorkbenchService {
           );
 
           const baselineTotal = scenarios.scenarios[region]?.base?.forecast
-            ?.reduce((sum, val) => sum + val, 0) || 0;
+            ?.reduce((sum, _val) => sum + val, 0) || 0;
           const upsideTotal = scenarios.scenarios[region]?.stress_up?.forecast
-            ?.reduce((sum, val) => sum + val, 0) || 0;
+            ?.reduce((sum, _val) => sum + val, 0) || 0;
           const downsideTotal = scenarios.scenarios[region]?.stress_down?.forecast
-            ?.reduce((sum, val) => sum + val, 0) || 0;
+            ?.reduce((sum, _val) => sum + val, 0) || 0;
 
           regionBaseline += baselineTotal;
           regionUpside += upsideTotal;
           regionDownside += downsideTotal;
 
         } catch (error) {
-          console.warn(`Failed to process series ${seriesId} for region ${region}:`, error.message);
+          logWarn(`Failed to process series ${seriesId} for region ${region}:`, error.message);
         }
       }
 
@@ -174,7 +176,7 @@ class CFOWorkbenchService {
               currencyMode: 'converted'
             });
 
-            const forecastSum = result.forecasts.Ensemble?.reduce((sum, val) => sum + val, 0) || 0;
+            const forecastSum = result.forecasts.Ensemble?.reduce((sum, _val) => sum + val, 0) || 0;
             totalForecast += forecastSum;
             seriesCount++;
 
@@ -184,7 +186,7 @@ class CFOWorkbenchService {
             }
 
           } catch (error) {
-            console.warn(`Forecast failed for series ${seriesId}, region ${region}, horizon ${horizon}:`, error.message);
+            logWarn(`Forecast failed for series ${seriesId}, region ${region}, horizon ${horizon}:`, error.message);
           }
         }
 
@@ -242,12 +244,12 @@ class CFOWorkbenchService {
               fxScenario: config.type !== 'base' ? config : null
             });
 
-            const revenue = result.forecasts.Ensemble?.reduce((sum, val) => sum + val, 0) || 0;
+            const revenue = result.forecasts.Ensemble?.reduce((sum, _val) => sum + val, 0) || 0;
             totalRevenue += revenue;
             processedSeries++;
 
           } catch (error) {
-            console.warn(`Scenario analysis failed for ${seriesId}:`, error.message);
+            logWarn(`Scenario analysis failed for ${seriesId}:`, error.message);
           }
         }
 
@@ -351,7 +353,7 @@ class CFOWorkbenchService {
       });
     }
 
-    return actions.sort((a, b) => {
+    return actions.sort(_(a, b) => {
       const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
       return priorityOrder[b.priority] - priorityOrder[a.priority];
     });
@@ -466,7 +468,7 @@ class CFOWorkbenchService {
     return {
       overall: 'Medium',
       score: 0.6,
-      byRegion: regions.reduce((acc, region) => {
+      byRegion: regions.reduce(_(acc, region) => {
         acc[region] = Math.random() * 0.5 + 0.3; // Mock: 0.3-0.8 range
         return acc;
       }, {})

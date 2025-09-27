@@ -103,7 +103,7 @@ class PerformanceMonitor {
     const maxResponseTime = Math.max(...responseTimes);
     
     // Calculate 95th percentile
-    const sorted = responseTimes.sort((a, b) => a - b);
+    const sorted = responseTimes.sort((a, _b) => a - b);
     const p95Index = Math.ceil(sorted.length * 0.95) - 1;
     const p95ResponseTime = sorted[p95Index] || avgResponseTime;
     
@@ -362,10 +362,10 @@ performanceMonitor.getMetrics = function() {
 };
 
 // Create middleware
-const performanceMiddleware = (req, res, next) => {
+const performanceMiddleware = (req, res, _next) => {
   const timer = performanceMonitor.startTimer(`${req.method} ${req.path}`);
 
-  res.on('finish', () => {
+  res.on(_'finish', () => {
     const duration = performanceMonitor.endTimer(timer);
     performanceMonitor.recordMetric('request', duration, {
       method: req.method,

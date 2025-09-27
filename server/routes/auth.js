@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { verifyUserCredentials, initializeDefaultUsers } from '../../lib/user-service.js';
 import { logInfo, logError, logWarn } from '../../services/observability/structuredLogger.js';
 

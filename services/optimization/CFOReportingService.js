@@ -5,6 +5,8 @@
 
 import WorkingCapitalService from './WorkingCapitalService.js';
 import DiagnosticsService from './DiagnosticsService.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class CFOReportingService {
   constructor() {
@@ -447,7 +449,7 @@ class CFOReportingService {
   }
 
   simulateOrderPlan(optimizationData) {
-    return optimizationData.map((item, index) => ({
+    return optimizationData.map((item, _index) => ({
       orderId: `ORD-${Date.now()}-${index}`,
       skuId: item.skuId,
       quantity: item.outputs?.recommendedOrderQty || 0,
@@ -473,7 +475,7 @@ class CFOReportingService {
   storeBoardPack(boardPack, period, region) {
     const key = `${period}_${region}_${Date.now()}`;
     // In real implementation, store in database
-    console.log(`Board pack stored: ${key}`);
+    logDebug(`Board pack stored: ${key}`);
   }
 
   /**

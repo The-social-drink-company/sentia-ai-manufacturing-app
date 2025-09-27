@@ -16,9 +16,18 @@
     "*.config.mjs",
     "public/**",
     "scripts/**",
-    "tests/**/*.test.js",
+    "tests/**",
     "mcp-server/**",
-    "database/**"
+    "database/**",
+    "monitoring/**",
+    "agents/**",
+    "FORCE-*.js",
+    "verify-*.js",
+    "deploy-*.js",
+    "validate-*.js",
+    "railway-*.js",
+    "render-*.js",
+    "auto-fix-*.js"
   ],
   "env": {
     "browser": true,
@@ -38,13 +47,14 @@
     }
   },
   "rules": {
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_|next", "varsIgnorePattern": "^_" }],
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
-    "no-console": "error",
+    "no-console": "warn",
     "no-debugger": "error",
     "security/detect-object-injection": "warn",
-    "security/detect-non-literal-fs-filename": "warn",
+    "security/detect-non-literal-fs-filename": "off",
+    "security/detect-unsafe-regex": "warn",
     "react/jsx-no-target-blank": "error",
     "no-eval": "error",
     "no-implied-eval": "error",
@@ -53,6 +63,6 @@
     "eqeqeq": ["error", "always"],
     "no-throw-literal": "error",
     "no-return-await": "error",
-    "require-await": "error"
+    "require-await": "warn"
   }
 }

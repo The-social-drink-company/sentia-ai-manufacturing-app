@@ -507,7 +507,7 @@ class AuthService {
     
     // Extract browser and OS info for comparison
     const extract = (ua) => {
-      const browser = ua.match(/(Chrome|Firefox|Safari|Edge)\/[\d.]+/i)?.[0];
+      const browser = ua.match(/(Chrome|Firefox|Safari|Edge)/[\d.]+/i)?.[0];
       const os = ua.match(/(Windows|Mac|Linux|Android|iOS)/i)?.[0];
       return `${browser}-${os}`;
     };

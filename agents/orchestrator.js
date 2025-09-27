@@ -8,6 +8,8 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -33,17 +35,17 @@ class AutonomousOrchestrator {
       // Git already configured
     }
 
-    console.log('✅ Orchestrator initialized');
+    logDebug('✅ Orchestrator initialized');
   }
 
   async runCycle() {
     this.cycle++;
-    console.log(`\\n🔄 CYCLE #${this.cycle} - ${new Date().toISOString()}`);
+    logDebug(`\\n🔄 CYCLE #${this.cycle} - ${new Date().toISOString()}`);
 
     const branches = ['development', 'test', 'production'];
     
     for (const branch of branches) {
-      console.log(`\\n📌 Processing: ${branch}`);
+      logDebug(`\\n📌 Processing: ${branch}`);
       
       try {
         // Stash any uncommitted changes first
@@ -58,7 +60,7 @@ class AutonomousOrchestrator {
           await execAsync('git stash pop').catch(() => {});
         }
         
-        console.log(`✅ Switched to ${branch}`);
+        logDebug(`✅ Switched to ${branch}`);
 
         // Apply fixes directly
         const fixes = await this.applyFixes(branch);
@@ -74,16 +76,16 @@ class AutonomousOrchestrator {
         }
         
       } catch (error) {
-        console.error(`❌ Error on ${branch}: ${error.message}`);
+        logError(`❌ Error on ${branch}: ${error.message}`);
       }
     }
 
-    console.log(`\\n✅ Cycle #${this.cycle} completed`);
+    logDebug(`\\n✅ Cycle #${this.cycle} completed`);
   }
 
   async applyFixes(branch) {
     const fixes = [];
-    console.log('🔧 Applying autonomous fixes...');
+    logDebug('🔧 Applying autonomous fixes...');
 
     try {
       // Code quality fixes
@@ -106,11 +108,11 @@ class AutonomousOrchestrator {
       fixes.push(`Cycle ${this.cycle} completed on ${branch}`);
 
     } catch (error) {
-      console.warn(`⚠️ Some fixes failed: ${error.message}`);
+      logWarn(`⚠️ Some fixes failed: ${error.message}`);
     }
 
     if (fixes.length > 0) {
-      console.log(`✅ Applied ${fixes.length} fixes`);
+      logDebug(`✅ Applied ${fixes.length} fixes`);
     }
     
     return fixes;
@@ -121,7 +123,7 @@ class AutonomousOrchestrator {
       // Check if there are changes
       const { stdout: status } = await execAsync('git status --porcelain');
       if (!status.trim()) {
-        console.log('📝 No changes to commit');
+        logDebug('📝 No changes to commit');
         return;
       }
 
@@ -139,29 +141,29 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       await execAsync(`git commit -m "${commitMessage.replace(/"/g, '\\"')}"`);
       await execAsync(`git push origin ${branch}`);
       
-      console.log(`✅ Committed and pushed to ${branch}`);
+      logDebug(`✅ Committed and pushed to ${branch}`);
 
       // Trigger Railway deployment
       await this.triggerRailwayDeploy(branch);
       
     } catch (error) {
-      console.error(`❌ Commit failed: ${error.message}`);
+      logError(`❌ Commit failed: ${error.message}`);
     }
   }
 
   async triggerRailwayDeploy(branch) {
     try {
-      console.log(`🚀 Triggering Railway deployment for ${branch}...`);
+      logDebug(`🚀 Triggering Railway deployment for ${branch}...`);
       
       // Use Railway CLI to trigger redeploy
       const serviceName = `sentia-manufacturing-dashboard-${branch}`;
       await execAsync(`railway service ${serviceName}`).catch(() => {});
       await execAsync('railway up --detach').catch(() => {});
       
-      console.log(`✅ Railway deployment triggered for ${branch}`);
+      logDebug(`✅ Railway deployment triggered for ${branch}`);
       
     } catch (error) {
-      console.warn(`⚠️ Railway deployment trigger failed: ${error.message}`);
+      logWarn(`⚠️ Railway deployment trigger failed: ${error.message}`);
     }
   }
 
@@ -185,11 +187,11 @@ ${fixes.map(fix => `• ${fix}`).join('\\n')}
 Co-Authored-By: Claude <noreply@anthropic.com>`;
 
       await execAsync(`gh pr create --title "${title}" --body "${body}" --base ${targetBranch} --head ${sourceBranch}`);
-      console.log(`✅ Created PR: ${sourceBranch} → ${targetBranch}`);
+      logDebug(`✅ Created PR: ${sourceBranch} → ${targetBranch}`);
       
     } catch (error) {
       if (!error.message.includes('already exists')) {
-        console.error(`❌ PR creation failed: ${error.message}`);
+        logError(`❌ PR creation failed: ${error.message}`);
       }
     }
   }
@@ -198,19 +200,19 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     await this.initialize();
     this.isRunning = true;
 
-    console.log('🎯 Starting 24/7 autonomous operation...');
-    console.log('🔄 Running cycles every 5 minutes');
+    logDebug('🎯 Starting 24/7 autonomous operation...');
+    logDebug('🔄 Running cycles every 5 minutes');
 
     while (this.isRunning) {
       try {
         await this.runCycle();
         
         // Wait 5 minutes
-        console.log('⏳ Waiting 5 minutes for next cycle...');
+        logDebug('⏳ Waiting 5 minutes for next cycle...');
         await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
         
       } catch (error) {
-        console.error('❌ Cycle error:', error.message);
+        logError('❌ Cycle error:', error.message);
         
         // Self-recovery
         try {
@@ -227,20 +229,20 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   stop() {
-    console.log('🛑 Stopping orchestrator...');
+    logDebug('🛑 Stopping orchestrator...');
     this.isRunning = false;
   }
 }
 
 // Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\\n📛 Received SIGINT, shutting down...');
+process.on(_'SIGINT', () => {
+  logDebug('\\n📛 Received SIGINT, shutting down...');
   if (orchestrator) orchestrator.stop();
   process.exit(0);
 });
 
-process.on('SIGTERM', () => {
-  console.log('\\n📛 Received SIGTERM, shutting down...');
+process.on(_'SIGTERM', () => {
+  logDebug('\\n📛 Received SIGTERM, shutting down...');
   if (orchestrator) orchestrator.stop();
   process.exit(0);
 });
@@ -248,6 +250,6 @@ process.on('SIGTERM', () => {
 // Start the orchestrator
 const orchestrator = new AutonomousOrchestrator();
 orchestrator.start().catch(error => {
-  console.error('💥 Fatal error:', error);
+  logError('💥 Fatal error:', error);
   process.exit(1);
 });

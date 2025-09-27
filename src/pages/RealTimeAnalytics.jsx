@@ -6,7 +6,7 @@ import {
   ShoppingCartIcon,
   UserGroupIcon,
   ArrowTrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -47,7 +47,7 @@ const RealTimeAnalytics = () => {
 
   // Fetch real-time data from all integrations
   const { data: amazonData, isLoading: amazonLoading, refetch: refetchAmazon } = useQuery({
-    queryKey: ['amazon-metrics', timeRange],
+    queryKey: ['amazon-metrics', _timeRange],
     queryFn: async () => {
       const response = await fetch(`/api/integrations/amazon?endpoint=metrics&range=${timeRange}`);
       if (!response.ok) throw new Error('Failed to fetch Amazon data');
@@ -58,7 +58,7 @@ const RealTimeAnalytics = () => {
   });
 
   const { data: shopifyData, isLoading: shopifyLoading, refetch: refetchShopify } = useQuery({
-    queryKey: ['shopify-analytics', timeRange],
+    queryKey: ['shopify-analytics', _timeRange],
     queryFn: async () => {
       const response = await fetch(`/api/integrations/shopify?endpoint=analytics&period=${timeRange === '24h' ? '1' : timeRange === '7d' ? '7' : '30'}`);
       if (!response.ok) throw new Error('Failed to fetch Shopify data');
@@ -69,7 +69,7 @@ const RealTimeAnalytics = () => {
   });
 
   const { data: unleashedData, isLoading: unleashedLoading, refetch: refetchUnleashed } = useQuery({
-    queryKey: ['unleashed-summary', timeRange],
+    queryKey: ['unleashed-summary', _timeRange],
     queryFn: async () => {
       const response = await fetch(`/api/integrations/unleashed?endpoint=summary`);
       if (!response.ok) throw new Error('Failed to fetch Unleashed data');
@@ -80,7 +80,7 @@ const RealTimeAnalytics = () => {
   });
 
   const { data: xeroData, isLoading: xeroLoading, refetch: refetchXero } = useQuery({
-    queryKey: ['xero-financial', timeRange],
+    queryKey: ['xero-financial', _timeRange],
     queryFn: async () => {
       const response = await fetch(`/api/integrations/xero?endpoint=financial-summary&period=${timeRange === '24h' ? '1' : timeRange === '7d' ? '7' : '30'}`);
       if (!response.ok) throw new Error('Failed to fetch Xero data');

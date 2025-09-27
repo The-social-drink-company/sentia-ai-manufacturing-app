@@ -10,6 +10,8 @@ import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 import EventEmitter from 'events';
 import os from 'os';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -118,7 +120,7 @@ class ChaosEngineeringEngine extends EventEmitter {
   }
 
   async initialize() {
-    console.log('💥 INITIALIZING CHAOS ENGINEERING ENGINE');
+    logDebug('💥 INITIALIZING CHAOS ENGINEERING ENGINE');
     
     // Setup chaos experiment directories
     this.setupChaosDirectories();
@@ -132,7 +134,7 @@ class ChaosEngineeringEngine extends EventEmitter {
     // Setup monitoring
     await this.setupChaosMonitoring();
     
-    console.log('✅ Chaos Engineering Engine initialized successfully');
+    logDebug('✅ Chaos Engineering Engine initialized successfully');
     this.emit('initialized');
   }
 
@@ -169,11 +171,11 @@ class ChaosEngineeringEngine extends EventEmitter {
     // File system chaos tools
     this.chaosTools.set('filesystem', new FileSystemChaosController());
 
-    console.log(`🛠️ Initialized ${this.chaosTools.size} chaos tool controllers`);
+    logDebug(`🛠️ Initialized ${this.chaosTools.size} chaos tool controllers`);
   }
 
   async establishSystemBaseline() {
-    console.log('📊 Establishing system performance baseline...');
+    logDebug('📊 Establishing system performance baseline...');
     
     const baseline = {
       timestamp: new Date().toISOString(),
@@ -194,20 +196,20 @@ class ChaosEngineeringEngine extends EventEmitter {
       JSON.stringify(baseline, null, 2)
     );
 
-    console.log('✅ System baseline established');
+    logDebug('✅ System baseline established');
     return baseline;
   }
 
   async setupChaosMonitoring() {
     // Setup real-time monitoring for chaos experiments
-    this.monitoringInterval = setInterval(async () => {
+    this.monitoringInterval = setInterval(async _() => {
       if (this.activeExperiments.size > 0) {
         await this.collectChaosMetrics();
         await this.checkEmergencyConditions();
       }
     }, this.config.monitoring.healthCheckInterval);
 
-    console.log('📡 Chaos monitoring system activated');
+    logDebug('📡 Chaos monitoring system activated');
   }
 
   // Main chaos experiment execution
@@ -221,7 +223,7 @@ class ChaosEngineeringEngine extends EventEmitter {
     }
 
     const experimentId = this.generateExperimentId(experimentType);
-    console.log(`💥 Starting chaos experiment: ${experimentId} (${experimentType})`);
+    logDebug(`💥 Starting chaos experiment: ${experimentId} (${experimentType})`);
 
     const experiment = {
       id: experimentId,
@@ -241,23 +243,23 @@ class ChaosEngineeringEngine extends EventEmitter {
       await this.performSafetyChecks(experiment);
       
       // Execute experiment phases
-      await this.executeExperimentPhase(experiment, 'preparation', async () => {
+      await this.executeExperimentPhase(experiment, _'preparation', async _() => {
         await this.prepareExperiment(experiment);
       });
 
-      await this.executeExperimentPhase(experiment, 'fault-injection', async () => {
+      await this.executeExperimentPhase(experiment, _'fault-injection', async _() => {
         await this.injectFault(experiment);
       });
 
-      await this.executeExperimentPhase(experiment, 'observation', async () => {
+      await this.executeExperimentPhase(experiment, _'observation', async _() => {
         await this.observeSystemBehavior(experiment);
       });
 
-      await this.executeExperimentPhase(experiment, 'recovery', async () => {
+      await this.executeExperimentPhase(experiment, _'recovery', async _() => {
         await this.recoverFromFault(experiment);
       });
 
-      await this.executeExperimentPhase(experiment, 'validation', async () => {
+      await this.executeExperimentPhase(experiment, _'validation', async _() => {
         await this.validateRecovery(experiment);
       });
 
@@ -265,7 +267,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       experiment.endTime = new Date().toISOString();
       experiment.duration = new Date(experiment.endTime) - new Date(experiment.startTime);
 
-      console.log(`✅ Chaos experiment ${experimentId} completed successfully`);
+      logDebug(`✅ Chaos experiment ${experimentId} completed successfully`);
       this.emit('experimentCompleted', experiment);
 
     } catch (error) {
@@ -273,7 +275,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       experiment.error = error.message;
       experiment.endTime = new Date().toISOString();
       
-      console.error(`❌ Chaos experiment ${experimentId} failed: ${error.message}`);
+      logError(`❌ Chaos experiment ${experimentId} failed: ${error.message}`);
       
       // Emergency recovery
       await this.emergencyRecovery(experiment);
@@ -289,7 +291,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       await this.saveExperimentRecord(experiment);
       
       // Cooldown period
-      setTimeout(() => {
+      setTimeout(_() => {
         this.emit('cooldownComplete');
       }, this.config.safety.cooldownPeriod);
     }
@@ -305,7 +307,7 @@ class ChaosEngineeringEngine extends EventEmitter {
     };
 
     experiment.phases.push(phase);
-    console.log(`🔄 Executing phase: ${phaseName}`);
+    logDebug(`🔄 Executing phase: ${phaseName}`);
 
     try {
       const startTime = Date.now();
@@ -315,19 +317,19 @@ class ChaosEngineeringEngine extends EventEmitter {
       phase.duration = Date.now() - startTime;
       phase.status = 'completed';
       
-      console.log(`✅ Phase ${phaseName} completed in ${phase.duration}ms`);
+      logDebug(`✅ Phase ${phaseName} completed in ${phase.duration}ms`);
     } catch (error) {
       phase.endTime = new Date().toISOString();
       phase.status = 'failed';
       phase.error = error.message;
       
-      console.error(`❌ Phase ${phaseName} failed: ${error.message}`);
+      logError(`❌ Phase ${phaseName} failed: ${error.message}`);
       throw error;
     }
   }
 
   async performSafetyChecks(experiment) {
-    console.log('🛡️ Performing safety checks...');
+    logDebug('🛡️ Performing safety checks...');
     
     // Check system health
     const systemHealth = await this.checkSystemHealth();
@@ -346,11 +348,11 @@ class ChaosEngineeringEngine extends EventEmitter {
       throw new Error(`Experiment duration exceeds safety limit`);
     }
 
-    console.log('✅ Safety checks passed');
+    logDebug('✅ Safety checks passed');
   }
 
   async prepareExperiment(experiment) {
-    console.log('🔧 Preparing chaos experiment...');
+    logDebug('🔧 Preparing chaos experiment...');
     
     // Create experiment snapshots
     experiment.preExperimentSnapshot = {
@@ -366,11 +368,11 @@ class ChaosEngineeringEngine extends EventEmitter {
       await this.setupResourceMonitoring(experiment);
     }
 
-    console.log('✅ Experiment preparation completed');
+    logDebug('✅ Experiment preparation completed');
   }
 
   async injectFault(experiment) {
-    console.log(`💉 Injecting fault: ${experiment.type}`);
+    logDebug(`💉 Injecting fault: ${experiment.type}`);
     
     const chaosController = this.chaosTools.get(this.getChaosControllerType(experiment.type));
     if (!chaosController) {
@@ -379,11 +381,11 @@ class ChaosEngineeringEngine extends EventEmitter {
 
     experiment.faultInjection = await chaosController.injectFault(experiment);
     
-    console.log('✅ Fault injection completed');
+    logDebug('✅ Fault injection completed');
   }
 
   async observeSystemBehavior(experiment) {
-    console.log('👁️ Observing system behavior under chaos...');
+    logDebug('👁️ Observing system behavior under chaos...');
     
     const observationDuration = experiment.config.duration || 30000;
     const metricsInterval = 5000; // Collect metrics every 5 seconds
@@ -406,11 +408,11 @@ class ChaosEngineeringEngine extends EventEmitter {
     experiment.observations = observations;
     experiment.behaviorAnalysis = await this.analyzeSystemBehavior(observations);
     
-    console.log('✅ System behavior observation completed');
+    logDebug('✅ System behavior observation completed');
   }
 
   async recoverFromFault(experiment) {
-    console.log('🔄 Recovering from injected fault...');
+    logDebug('🔄 Recovering from injected fault...');
     
     const chaosController = this.chaosTools.get(this.getChaosControllerType(experiment.type));
     if (chaosController && experiment.faultInjection) {
@@ -426,11 +428,11 @@ class ChaosEngineeringEngine extends EventEmitter {
       await this.resetCircuitBreakers();
     }
 
-    console.log('✅ Fault recovery completed');
+    logDebug('✅ Fault recovery completed');
   }
 
   async validateRecovery(experiment) {
-    console.log('🔍 Validating system recovery...');
+    logDebug('🔍 Validating system recovery...');
     
     // Wait for system stabilization
     await this.sleep(10000);
@@ -447,7 +449,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       throw new Error(`System did not recover properly: ${recoveryValidation.issues.join(', ')}`);
     }
 
-    console.log('✅ Recovery validation passed');
+    logDebug('✅ Recovery validation passed');
   }
 
   // Chaos controller implementations
@@ -502,7 +504,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       .map(result => result.value);
 
     return validMeasurements.length > 0 
-      ? validMeasurements.reduce((a, b) => a + b, 0) / validMeasurements.length
+      ? validMeasurements.reduce((a, _b) => a + b, 0) / validMeasurements.length
       : null;
   }
 
@@ -595,7 +597,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       })
     );
 
-    return healthChecks.map((check, index) => ({
+    return healthChecks.map((check, _index) => ({
       ...services[index],
       ...check.value
     }));
@@ -664,7 +666,7 @@ class ChaosEngineeringEngine extends EventEmitter {
     const responseTimes = observations.map(obs => obs.metrics.responseTime).filter(rt => rt !== null);
     if (responseTimes.length > 0) {
       const baselineResponseTime = this.systemBaseline.metrics.responseTime;
-      const avgResponseTime = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
+      const avgResponseTime = responseTimes.reduce((a, _b) => a + b, 0) / responseTimes.length;
       
       analysis.performanceImpact.responseTime = {
         baseline: baselineResponseTime,
@@ -675,7 +677,7 @@ class ChaosEngineeringEngine extends EventEmitter {
 
     // Analyze error rates
     const errorRates = observations.map(obs => obs.metrics.errorRate);
-    const avgErrorRate = errorRates.reduce((a, b) => a + b, 0) / errorRates.length;
+    const avgErrorRate = errorRates.reduce((a, _b) => a + b, 0) / errorRates.length;
     const baselineErrorRate = this.systemBaseline.metrics.errorRate;
     
     analysis.performanceImpact.errorRate = {
@@ -766,12 +768,12 @@ class ChaosEngineeringEngine extends EventEmitter {
   async triggerEmergencyStop(reason) {
     if (this.emergencyStopActive) return;
     
-    console.error(`🚨 EMERGENCY STOP TRIGGERED: ${reason}`);
+    logError(`🚨 EMERGENCY STOP TRIGGERED: ${reason}`);
     this.emergencyStopActive = true;
     
     // Stop all active experiments
     for (const [experimentId, experiment] of this.activeExperiments) {
-      console.log(`🛑 Emergency stopping experiment: ${experimentId}`);
+      logDebug(`🛑 Emergency stopping experiment: ${experimentId}`);
       await this.emergencyRecovery(experiment);
     }
     
@@ -779,7 +781,7 @@ class ChaosEngineeringEngine extends EventEmitter {
   }
 
   async emergencyRecovery(experiment) {
-    console.log(`🚑 Emergency recovery for experiment: ${experiment.id}`);
+    logDebug(`🚑 Emergency recovery for experiment: ${experiment.id}`);
     
     try {
       // Attempt to recover from any injected faults
@@ -794,16 +796,16 @@ class ChaosEngineeringEngine extends EventEmitter {
       // Reset circuit breakers
       await this.resetCircuitBreakers();
       
-      console.log(`✅ Emergency recovery completed for: ${experiment.id}`);
+      logDebug(`✅ Emergency recovery completed for: ${experiment.id}`);
       
     } catch (error) {
-      console.error(`❌ Emergency recovery failed for ${experiment.id}: ${error.message}`);
+      logError(`❌ Emergency recovery failed for ${experiment.id}: ${error.message}`);
     }
   }
 
   async restartAffectedServices(experiment) {
     // This would typically restart services based on experiment type
-    console.log('🔄 Restarting affected services...');
+    logDebug('🔄 Restarting affected services...');
     
     if (experiment.type === 'serviceFailure') {
       // Restart specific services affected by the experiment
@@ -813,7 +815,7 @@ class ChaosEngineeringEngine extends EventEmitter {
 
   async resetCircuitBreakers() {
     // Reset circuit breakers in the application
-    console.log('🔄 Resetting circuit breakers...');
+    logDebug('🔄 Resetting circuit breakers...');
     
     try {
       // This would call your application's circuit breaker reset endpoint
@@ -822,7 +824,7 @@ class ChaosEngineeringEngine extends EventEmitter {
         timeout: 5000
       });
     } catch (error) {
-      console.warn(`Circuit breaker reset failed: ${error.message}`);
+      logWarn(`Circuit breaker reset failed: ${error.message}`);
     }
   }
 
@@ -849,7 +851,7 @@ class ChaosEngineeringEngine extends EventEmitter {
 
   // Integration methods
   async integrateWithAutonomousSystem() {
-    console.log('🔗 Integrating chaos engineering with autonomous system...');
+    logDebug('🔗 Integrating chaos engineering with autonomous system...');
     
     const chaosScenarios = this.generateChaosTestScenarios();
     
@@ -858,7 +860,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       JSON.stringify(chaosScenarios, null, 2)
     );
 
-    console.log(`💥 Generated ${chaosScenarios.length} chaos test scenarios`);
+    logDebug(`💥 Generated ${chaosScenarios.length} chaos test scenarios`);
     return chaosScenarios;
   }
 
@@ -896,7 +898,7 @@ class ChaosEngineeringEngine extends EventEmitter {
   }
 
   async runAllChaosExperiments() {
-    console.log('💥 Running all enabled chaos experiments...');
+    logDebug('💥 Running all enabled chaos experiments...');
     
     const results = [];
     
@@ -924,14 +926,14 @@ class ChaosEngineeringEngine extends EventEmitter {
 
   resetEmergencyStop() {
     this.emergencyStopActive = false;
-    console.log('🔄 Emergency stop reset - chaos experiments re-enabled');
+    logDebug('🔄 Emergency stop reset - chaos experiments re-enabled');
   }
 }
 
 // Chaos controller classes (simplified implementations)
 class NetworkChaosController {
   async injectFault(experiment) {
-    console.log(`🌐 Injecting network fault: ${experiment.type}`);
+    logDebug(`🌐 Injecting network fault: ${experiment.type}`);
     
     if (experiment.type === 'networkLatency') {
       return this.injectNetworkLatency(experiment.config);
@@ -951,22 +953,22 @@ class NetworkChaosController {
       return { type: 'networkLatency', latency, interface: 'lo' };
     } else {
       // Simplified simulation for other platforms
-      console.log(`Simulating ${config.maxLatency}ms network latency`);
+      logDebug(`Simulating ${config.maxLatency}ms network latency`);
       return { type: 'networkLatency', latency: config.maxLatency, simulated: true };
     }
   }
 
   async injectNetworkPartition(config) {
     // Simulate network partition by blocking specific ports
-    console.log('Simulating network partition');
+    logDebug('Simulating network partition');
     return { type: 'networkPartition', ports: config.targetPorts, simulated: true };
   }
 
   async recoverFault(faultInjection) {
-    console.log(`🔄 Recovering network fault: ${faultInjection.type}`);
+    logDebug(`🔄 Recovering network fault: ${faultInjection.type}`);
     
     if (faultInjection.type === 'networkLatency' && !faultInjection.simulated) {
-      await execAsync('tc qdisc del dev lo root').catch(() => {
+      await execAsync('tc qdisc del dev lo root').catch(_() => {
         // Ignore errors - rule might not exist
       });
     }
@@ -979,12 +981,12 @@ class NetworkChaosController {
 
 class ResourceChaosController {
   async injectFault(experiment) {
-    console.log(`💻 Injecting resource fault: ${experiment.type}`);
+    logDebug(`💻 Injecting resource fault: ${experiment.type}`);
     return { type: 'resourceExhaustion', simulated: true };
   }
 
   async recoverFault(faultInjection) {
-    console.log(`🔄 Recovering resource fault: ${faultInjection.type}`);
+    logDebug(`🔄 Recovering resource fault: ${faultInjection.type}`);
   }
 
   async emergencyRecover(faultInjection) {
@@ -994,12 +996,12 @@ class ResourceChaosController {
 
 class ServiceChaosController {
   async injectFault(experiment) {
-    console.log(`⚙️ Injecting service fault: ${experiment.type}`);
+    logDebug(`⚙️ Injecting service fault: ${experiment.type}`);
     return { type: 'serviceFailure', simulated: true };
   }
 
   async recoverFault(faultInjection) {
-    console.log(`🔄 Recovering service fault: ${faultInjection.type}`);
+    logDebug(`🔄 Recovering service fault: ${faultInjection.type}`);
   }
 
   async emergencyRecover(faultInjection) {
@@ -1009,12 +1011,12 @@ class ServiceChaosController {
 
 class DatabaseChaosController {
   async injectFault(experiment) {
-    console.log(`🗄️ Injecting database fault: ${experiment.type}`);
+    logDebug(`🗄️ Injecting database fault: ${experiment.type}`);
     return { type: 'databaseFailure', simulated: true };
   }
 
   async recoverFault(faultInjection) {
-    console.log(`🔄 Recovering database fault: ${faultInjection.type}`);
+    logDebug(`🔄 Recovering database fault: ${faultInjection.type}`);
   }
 
   async emergencyRecover(faultInjection) {
@@ -1024,12 +1026,12 @@ class DatabaseChaosController {
 
 class FileSystemChaosController {
   async injectFault(experiment) {
-    console.log(`📁 Injecting filesystem fault: ${experiment.type}`);
+    logDebug(`📁 Injecting filesystem fault: ${experiment.type}`);
     return { type: 'fileSystemChaos', simulated: true };
   }
 
   async recoverFault(faultInjection) {
-    console.log(`🔄 Recovering filesystem fault: ${faultInjection.type}`);
+    logDebug(`🔄 Recovering filesystem fault: ${faultInjection.type}`);
   }
 
   async emergencyRecover(faultInjection) {

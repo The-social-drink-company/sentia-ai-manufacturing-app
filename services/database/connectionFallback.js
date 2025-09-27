@@ -72,7 +72,7 @@ class DatabaseConnectionFallback {
     this.lastConnectionAttempt = Date.now();
     this.reconnectionAttempts++;
 
-    setTimeout(async () => {
+    setTimeout(async _() => {
       logInfo('Attempting database reconnection', {
         attempt: this.reconnectionAttempts,
         maxAttempts: this.maxReconnectionAttempts

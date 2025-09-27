@@ -6,6 +6,8 @@ import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
 import OpenAI from 'openai';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 
@@ -65,9 +67,9 @@ const workingCapitalSchemas = {
  * GET /api/working-capital-intelligence/cash-runway
  * Calculate cash runway with advanced forecasting
  */
-router.get('/cash-runway',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/cash-runway',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const validatedQuery = workingCapitalSchemas.cashRunwayAnalysis.parse(req.query);
     const { timeHorizon, includeSeasonality, includeGrowthScenarios, confidenceLevel } = validatedQuery;
@@ -76,7 +78,7 @@ router.get('/cash-runway',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Cash runway analysis');
+      logDebug('[Cache Hit] Cash runway analysis');
       return res.json(cached);
     }
 
@@ -187,9 +189,9 @@ router.get('/cash-runway',
  * POST /api/working-capital-intelligence/funding-requirements
  * Calculate funding requirements for growth scenarios
  */
-router.post('/funding-requirements',
-  requireAuth,
-  rateLimiters.write,
+router.post(_'/funding-requirements',
+  _requireAuth,
+  _rateLimiters.write,
   asyncHandler(async (req, res) => {
     const validatedBody = workingCapitalSchemas.fundingRequirements.parse(req.body);
     const { growthRate, timeframe, fundingType, includeSeasonality } = validatedBody;
@@ -262,9 +264,9 @@ router.post('/funding-requirements',
  * GET /api/working-capital-intelligence/optimization
  * Working capital optimization analysis
  */
-router.get('/optimization',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/optimization',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const validatedQuery = workingCapitalSchemas.workingCapitalOptimization.parse(req.query);
     const { targetDSO, targetDPO, targetInventoryTurns, industryBenchmark, optimizationGoal } = validatedQuery;
@@ -273,7 +275,7 @@ router.get('/optimization',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Working capital optimization');
+      logDebug('[Cache Hit] Working capital optimization');
       return res.json(cached);
     }
 
@@ -348,9 +350,9 @@ router.get('/optimization',
  * POST /api/working-capital-intelligence/scenario-planning
  * Advanced scenario planning and modeling
  */
-router.post('/scenario-planning',
-  requireAuth,
-  rateLimiters.write,
+router.post(_'/scenario-planning',
+  _requireAuth,
+  _rateLimiters.write,
   asyncHandler(async (req, res) => {
     const validatedBody = workingCapitalSchemas.scenarioPlanning.parse(req.body);
     const { scenarios, timeframe } = validatedBody;
@@ -412,9 +414,9 @@ router.post('/scenario-planning',
  * GET /api/working-capital-intelligence/industry-benchmarks
  * AI-powered industry benchmarking
  */
-router.get('/industry-benchmarks',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/industry-benchmarks',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const validatedQuery = workingCapitalSchemas.industryBenchmark.parse(req.query);
     const { industry, revenue, employees, region } = validatedQuery;
@@ -423,7 +425,7 @@ router.get('/industry-benchmarks',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Industry benchmarks');
+      logDebug('[Cache Hit] Industry benchmarks');
       return res.json(cached);
     }
 
@@ -521,7 +523,7 @@ function calculateSeasonalityFactor(transactions) {
     monthlyTotals[month] += transaction.amount;
   });
   
-  const averageMonthly = Object.values(monthlyTotals).reduce((sum, total) => sum + total, 0) / Object.keys(monthlyTotals).length;
+  const averageMonthly = Object.values(monthlyTotals).reduce((sum, _total) => sum + total, 0) / Object.keys(monthlyTotals).length;
   const currentMonthTotal = monthlyTotals[currentMonth] || averageMonthly;
   
   return currentMonthTotal / averageMonthly;
@@ -600,7 +602,7 @@ Provide 3 key insights and 3 actionable recommendations for executive decision-m
 
     return completion.choices[0].message.content;
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    logError('OpenAI API error:', error);
     return generateFallbackInsights(params);
   }
 }
@@ -614,14 +616,16 @@ async function getCurrentFinancialMetrics() {
   return {
     annualRevenue: metrics?.annualRevenue || 0,
     workingCapital: metrics?.workingCapital || 0,
-    dso: metrics?.dso || 30,
-    dpo: metrics?.dpo || 30,
-    inventoryTurns: metrics?.inventoryTurns || 12,
-    cashConversionCycle: metrics?.cashConversionCycle || 30,
-    employeeCount: metrics?.employeeCount || 50,
-    industry: metrics?.industry || 'Manufacturing'
+    dso: metrics?.dso || 0,
+    dpo: metrics?.dpo || 0,
+    inventoryTurns: metrics?.inventoryTurns || 0,
+    cashConversionCycle: metrics?.cashConversionCycle || 0,
+    employeeCount: metrics?.employeeCount || 0,
+    industry: metrics?.industry || null
   };
 }
 
 // Export the router
 export default router;
+
+

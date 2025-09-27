@@ -133,7 +133,7 @@ class SentiaAnalyticsDashboard extends EventEmitter {
       'waste_reduction_rate': { target: 15, unit: '%', current: 0, trend: 'stable' }
     };
 
-    Object.entries(kpis).forEach(([kpi, config]) => {
+    Object.entries(kpis).forEach(_([kpi, _config]) => {
       this.performance.kpis.set(kpi, {
         ...config,
         history: [],
@@ -735,21 +735,21 @@ class SentiaAnalyticsDashboard extends EventEmitter {
    */
   setupEventHandlers() {
     // Handle integration layer events
-    this.integrationLayer.on('unleashedSyncCompleted', (data) => {
+    this.integrationLayer.on(_'unleashedSyncCompleted', _(data) => {
       this.handleUnleashedUpdate(data);
     });
 
-    this.integrationLayer.on('xeroSyncCompleted', (data) => {
+    this.integrationLayer.on(_'xeroSyncCompleted', _(data) => {
       this.handleXeroUpdate(data);
     });
 
     // Handle quality system events
-    this.qualitySystem.on('qualityAlert', (alert) => {
+    this.qualitySystem.on(_'qualityAlert', _(alert) => {
       this.handleQualityAlert(alert);
     });
 
     // Handle supply chain events
-    this.supplyChain.on('riskAlert', (alert) => {
+    this.supplyChain.on(_'riskAlert', _(alert) => {
       this.handleSupplyChainAlert(alert);
     });
   }

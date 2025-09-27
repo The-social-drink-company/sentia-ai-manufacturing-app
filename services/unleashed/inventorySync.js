@@ -33,7 +33,7 @@ class UnleashedInventorySync {
     try {
       // Check if it's Unleashed's /Date(timestamp)/ format
       if (typeof dateString === 'string' && dateString.startsWith('/Date(')) {
-        const match = dateString.match(/\/Date\((\d+)\)\//);
+        const match = dateString.match(//Date((\d+))//);
         if (match) {
           const timestamp = parseInt(match[1], 10);
           const date = new Date(timestamp);
@@ -97,7 +97,7 @@ class UnleashedInventorySync {
       this.cronJob.stop();
     }
 
-    this.cronJob = cron.schedule(this.syncInterval, async () => {
+    this.cronJob = cron.schedule(this.syncInterval, async _() => {
       logInfo('Starting scheduled Unleashed inventory sync');
       await this.performSync();
     });
@@ -204,7 +204,7 @@ class UnleashedInventorySync {
       const inventory = result.data.inventory || [];
 
       // Use transaction for bulk upsert with increased timeout
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async _(tx) => {
         for (const item of inventory) {
           await tx.inventory.upsert({
             where: {
@@ -277,7 +277,7 @@ class UnleashedInventorySync {
       const purchaseOrders = result.data.purchaseOrders || [];
 
       // Store purchase orders in database with increased timeout
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async _(tx) => {
         for (const po of purchaseOrders) {
           // Ensure supplierId is always provided
           const supplierId = po.supplierCode || po.supplierId || `SUPPLIER_${po.orderNumber}`;
@@ -369,7 +369,7 @@ class UnleashedInventorySync {
 
       /*
       // Store sales orders in database with increased timeout
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async _(tx) => {
         for (const so of salesOrders) {
           await tx.salesOrder.upsert({
             where: {
@@ -457,7 +457,7 @@ class UnleashedInventorySync {
       const movements = result.data.stockMovements || [];
 
       // Store stock movements in database with increased timeout
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async _(tx) => {
         for (const movement of movements) {
           const movementId = `${movement.productCode}_${movement.completedDate}_${movement.quantity}`;
 

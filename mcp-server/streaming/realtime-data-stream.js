@@ -104,7 +104,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
       this.wsServer = new WebSocket.Server({ port: 0 }); // Use dynamic port
     }
     
-    this.wsServer.on('connection', (ws, req) => {
+    this.wsServer.on(_'connection', (ws, req) => {
       const connectionId = this.generateConnectionId();
       const clientInfo = this.extractClientInfo(req);
       
@@ -137,7 +137,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
       });
     });
     
-    this.wsServer.on('error', (error) => {
+    this.wsServer.on(_'error', (error) => {
       streamLogger.error('WebSocket server error:', error);
     });
     
@@ -147,7 +147,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
   setupConnectionHandlers(connection) {
     const { ws } = connection;
     
-    ws.on('message', (data) => {
+    ws.on(_'message', (data) => {
       try {
         const message = JSON.parse(data);
         this.handleClientMessage(connection, message);
@@ -158,18 +158,18 @@ export class RealTimeDataStreamEngine extends EventEmitter {
       }
     });
     
-    ws.on('close', () => {
+    ws.on(_'close', () => {
       streamLogger.info(`🔌 WebSocket disconnected: ${connection.id}`);
       this.handleConnectionClose(connection);
     });
     
-    ws.on('error', (error) => {
+    ws.on(_'error', (error) => {
       streamLogger.error(`WebSocket error for ${connection.id}:`, error);
       this.handleConnectionClose(connection);
     });
     
     // Setup ping/pong for connection health
-    ws.on('pong', () => {
+    ws.on(_'pong', () => {
       connection.lastActivity = Date.now();
     });
   }
@@ -382,7 +382,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
     this.sendSSEMessage(sseConnection, 'connected', { connectionId });
     
     // Handle client disconnect
-    req.on('close', () => {
+    req.on(_'close', () => {
       this.sseConnections.delete(connectionId);
       streamLogger.info(`📻 SSE client disconnected: ${connectionId}`);
     });

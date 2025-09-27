@@ -1,6 +1,8 @@
 import EventEmitter from 'events';
 import cluster from 'cluster';
 import os from 'os';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Enterprise Performance Optimization & Scaling Service
@@ -98,7 +100,7 @@ export class PerformanceOptimizerService extends EventEmitter {
       this.initializeLoadBalancer();
     }
     
-    console.log('⚡ Performance Optimizer initialized');
+    logDebug('⚡ Performance Optimizer initialized');
   }
 
   /**
@@ -120,7 +122,7 @@ export class PerformanceOptimizerService extends EventEmitter {
       return { analysis, optimizations };
 
     } catch (error) {
-      console.error('Performance optimization failed:', error);
+      logError('Performance optimization failed:', error);
       this.emit('optimizationError', { error: error.message });
       throw error;
     }
@@ -165,7 +167,7 @@ export class PerformanceOptimizerService extends EventEmitter {
       return scalingDecision;
 
     } catch (error) {
-      console.error('Auto-scaling failed:', error);
+      logError('Auto-scaling failed:', error);
       this.emit('scalingError', { error: error.message });
       throw error;
     }
@@ -255,7 +257,7 @@ export class PerformanceOptimizerService extends EventEmitter {
       return scalingAction;
 
     } catch (error) {
-      console.error('Scaling action execution failed:', error);
+      logError('Scaling action execution failed:', error);
       
       const failedAction = {
         timestamp: new Date().toISOString(),
@@ -300,7 +302,7 @@ export class PerformanceOptimizerService extends EventEmitter {
       return optimizations;
 
     } catch (error) {
-      console.error('Database optimization failed:', error);
+      logError('Database optimization failed:', error);
       throw error;
     }
   }
@@ -330,7 +332,7 @@ export class PerformanceOptimizerService extends EventEmitter {
       return optimizations;
 
     } catch (error) {
-      console.error('Cache optimization failed:', error);
+      logError('Cache optimization failed:', error);
       throw error;
     }
   }
@@ -363,7 +365,7 @@ export class PerformanceOptimizerService extends EventEmitter {
       return loadBalancer;
 
     } catch (error) {
-      console.error('Load balancer implementation failed:', error);
+      logError('Load balancer implementation failed:', error);
       throw error;
     }
   }
@@ -397,33 +399,33 @@ export class PerformanceOptimizerService extends EventEmitter {
    * Start performance monitoring
    */
   startPerformanceMonitoring() {
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.monitorResources();
     }, 30000); // Every 30 seconds
     
-    console.log('📊 Performance monitoring started');
+    logDebug('📊 Performance monitoring started');
   }
 
   /**
    * Initialize auto-scaling
    */
   initializeAutoScaling() {
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.autoScale();
     }, 60000); // Every minute
     
-    console.log('🔄 Auto-scaling initialized');
+    logDebug('🔄 Auto-scaling initialized');
   }
 
   /**
    * Start optimization analysis
    */
   startOptimizationAnalysis() {
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.analyzeAndOptimize();
     }, this.config.optimization.analysisInterval);
     
-    console.log('⚡ Optimization analysis started');
+    logDebug('⚡ Optimization analysis started');
   }
 
   /**
@@ -431,7 +433,7 @@ export class PerformanceOptimizerService extends EventEmitter {
    */
   initializeLoadBalancer() {
     this.implementLoadBalancing();
-    console.log('⚖️ Load balancer initialized');
+    logDebug('⚖️ Load balancer initialized');
   }
 
   /**
@@ -593,7 +595,7 @@ export class PerformanceOptimizerService extends EventEmitter {
   }
   
   async applyOptimization(optimization) {
-    console.log(`Applying optimization: ${optimization.type}`);
+    logDebug(`Applying optimization: ${optimization.type}`);
     
     optimization.applied = true;
     optimization.appliedAt = new Date().toISOString();
@@ -638,7 +640,7 @@ export class PerformanceOptimizerService extends EventEmitter {
       });
     }
     
-    console.log(`Scaled up from ${currentInstances} to ${targetInstances} instances`);
+    logDebug(`Scaled up from ${currentInstances} to ${targetInstances} instances`);
   }
   
   async scaleDown(targetInstances) {
@@ -648,7 +650,7 @@ export class PerformanceOptimizerService extends EventEmitter {
     const instanceIds = Array.from(this.instances.keys()).slice(0, instancesToRemove);
     instanceIds.forEach(id => this.instances.delete(id));
     
-    console.log(`Scaled down from ${currentInstances} to ${targetInstances} instances`);
+    logDebug(`Scaled down from ${currentInstances} to ${targetInstances} instances`);
   }
   
   async optimizeConnectionPool() {
@@ -706,7 +708,7 @@ export class PerformanceOptimizerService extends EventEmitter {
   }
   
   startHealthChecks() {
-    setInterval(() => {
+    setInterval(_() => {
       this.performHealthChecks();
     }, 30000); // Every 30 seconds
   }

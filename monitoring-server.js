@@ -75,7 +75,7 @@ class EnterpriseMonitoringDashboard {
     this.app.use(express.static(path.join(__dirname, 'monitoring-dashboard')));
     
     // CORS for API requests
-    this.app.use((req, res, next) => {
+    this.app.use((req, res, _next) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
       next();
@@ -89,7 +89,7 @@ class EnterpriseMonitoringDashboard {
     });
 
     // API endpoints for monitoring data
-    this.app.get('/api/monitoring/status', (req, res) => {
+    this.app.get(_'/api/monitoring/status', (req, res) => {
       res.json({
         timestamp: new Date().toISOString(),
         systemHealth: this.calculateSystemHealth(),
@@ -98,7 +98,7 @@ class EnterpriseMonitoringDashboard {
       });
     });
 
-    this.app.get('/api/monitoring/logs/:component', async (req, res) => {
+    this.app.get(_'/api/monitoring/logs/:component', async (req, res) => {
       try {
         const component = req.params.component;
         const logPath = path.join(__dirname, 'tests', 'autonomous', 'logs', `${component}.log`);
@@ -109,7 +109,7 @@ class EnterpriseMonitoringDashboard {
       }
     });
 
-    this.app.get('/api/monitoring/performance', (req, res) => {
+    this.app.get(_'/api/monitoring/performance', (req, res) => {
       res.json({
         memory: process.memoryUsage(),
         cpu: process.cpuUsage(),
@@ -118,7 +118,7 @@ class EnterpriseMonitoringDashboard {
     });
 
     // Health check endpoint
-    this.app.get('/health', (req, res) => {
+    this.app.get(_'/health', (req, res) => {
       res.json({ 
         status: 'healthy', 
         timestamp: new Date().toISOString(),
@@ -128,13 +128,13 @@ class EnterpriseMonitoringDashboard {
   }
 
   setupSocketHandlers() {
-    this.io.on('connection', (socket) => {
+    this.io.on(_'connection', (socket) => {
       console.log('Monitoring client connected:', socket.id);
       
       // Send initial data
       socket.emit('system-status', this.systemMetrics);
       
-      socket.on('request-logs', async (component) => {
+      socket.on(_'request-logs', async (component) => {
         try {
           const logs = await this.getComponentLogs(component);
           socket.emit('logs-update', { component, logs });
@@ -143,12 +143,12 @@ class EnterpriseMonitoringDashboard {
         }
       });
 
-      socket.on('trigger-test-run', () => {
+      socket.on(_'trigger-test-run', () => {
         this.triggerTestExecution();
         socket.emit('test-triggered', { timestamp: new Date().toISOString() });
       });
 
-      socket.on('disconnect', () => {
+      socket.on(_'disconnect', () => {
         console.log('Monitoring client disconnected:', socket.id);
       });
     });
@@ -360,7 +360,7 @@ class EnterpriseMonitoringDashboard {
   }
 
   extractTimestamp(logLine) {
-    const match = logLine.match(/\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)\]/);
+    const match = logLine.match(/\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z)\]/);
     return match ? new Date(match[1]).getTime() : null;
   }
 
@@ -381,15 +381,15 @@ class EnterpriseMonitoringDashboard {
         stdio: 'pipe'
       });
       
-      testProcess.stdout.on('data', (data) => {
+      testProcess.stdout.on(_'data', (data) => {
         this.io.emit('test-output', { type: 'stdout', data: data.toString() });
       });
       
-      testProcess.stderr.on('data', (data) => {
+      testProcess.stderr.on(_'data', (data) => {
         this.io.emit('test-output', { type: 'stderr', data: data.toString() });
       });
       
-      testProcess.on('close', (code) => {
+      testProcess.on(_'close', (code) => {
         this.io.emit('test-completed', { exitCode: code, timestamp: new Date().toISOString() });
       });
       
@@ -455,7 +455,7 @@ class EnterpriseMonitoringDashboard {
 const dashboard = new EnterpriseMonitoringDashboard();
 
 // Graceful shutdown
-process.on('SIGINT', () => {
+process.on(_'SIGINT', () => {
   console.log('\\nShutting down Enterprise Monitoring Dashboard...');
   process.exit(0);
 });

@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Enterprise deployment configuration
-const DEPLOYMENT_CONFIG = {
+const DEPLOYMENTCONFIG = {
   branches: {
     development: {
       name: 'development',
@@ -260,7 +260,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     await this.runFullDeploymentCycle();
 
     // Set up recurring deployments
-    setInterval(async () => {
+    setInterval(async _() => {
       console.log(`\n⏰ AUTOMATED CYCLE TRIGGER - ${new Date().toISOString()}`);
       await this.runFullDeploymentCycle();
     }, DEPLOYMENT_CONFIG.intervals.commitCycle);

@@ -16,7 +16,7 @@ export const enterpriseSecurityMiddleware = [
   }),
   rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: process.env.NODE_ENV === 'production' ? 1000 : 10000,
+    max: process.env.NODEENV = == 'production' ? 1000 : 10000,
     message: 'Too many requests, please try again later',
     standardHeaders: true,
     legacyHeaders: false

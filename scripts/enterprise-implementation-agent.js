@@ -604,7 +604,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_jobs_status_priority_created ON jobs
 
 -- Partial indexes for active records only
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_active_jobs ON jobs(created_at DESC) WHERE status IN ('running', 'pending');
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_active_resources ON resources(name, type) WHERE is_active = true;
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_active_resources ON resources(name, type) WHERE isactive = true;
 
 -- Statistics update for query planner optimization
 ANALYZE metrics;

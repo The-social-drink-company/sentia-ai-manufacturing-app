@@ -1,4 +1,6 @@
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Service Registry for Microservices Discovery
@@ -44,7 +46,7 @@ export class ServiceRegistry extends EventEmitter {
     // Set expiration for automatic cleanup
     await this.redis.expire(`service:${serviceName}`, this.serviceTimeout / 1000);
 
-    console.log(`📝 Service registered: ${serviceName} at ${serviceConfig.url}`);
+    logDebug(`📝 Service registered: ${serviceName} at ${serviceConfig.url}`);
     this.emit('serviceRegistered', service);
 
     return service;
@@ -60,7 +62,7 @@ export class ServiceRegistry extends EventEmitter {
       await this.redis.hdel('services:registry', serviceName);
       await this.redis.del(`service:${serviceName}`);
       
-      console.log(`🗑️ Service unregistered: ${serviceName}`);
+      logDebug(`🗑️ Service unregistered: ${serviceName}`);
       this.emit('serviceUnregistered', service);
     }
   }
@@ -184,7 +186,7 @@ export class ServiceRegistry extends EventEmitter {
    * Perform health check for a specific service
    */
   async performHealthCheck(serviceName, service) {
-    const healthCheckPromises = service.instances.map(async (instanceUrl) => {
+    const healthCheckPromises = service.instances.map(async _(instanceUrl) => {
       try {
         const healthCheckUrl = `${instanceUrl}${service.healthCheck || '/health'}`;
         const controller = new AbortController();
@@ -229,7 +231,7 @@ export class ServiceRegistry extends EventEmitter {
       });
 
     } catch (error) {
-      console.error(`Health check failed for ${serviceName}:`, error);
+      logError(`Health check failed for ${serviceName}:`, error);
       await this.updateServiceHealth(serviceName, false);
     }
   }
@@ -264,7 +266,7 @@ export class ServiceRegistry extends EventEmitter {
         JSON.stringify(service)
       );
 
-      console.log(`➕ Instance added to ${serviceName}: ${instanceUrl}`);
+      logDebug(`➕ Instance added to ${serviceName}: ${instanceUrl}`);
       this.emit('instanceAdded', { serviceName, instanceUrl, metadata });
     }
   }
@@ -292,7 +294,7 @@ export class ServiceRegistry extends EventEmitter {
         JSON.stringify(service)
       );
 
-      console.log(`➖ Instance removed from ${serviceName}: ${instanceUrl}`);
+      logDebug(`➖ Instance removed from ${serviceName}: ${instanceUrl}`);
       this.emit('instanceRemoved', { serviceName, instanceUrl });
     }
   }
@@ -305,7 +307,7 @@ export class ServiceRegistry extends EventEmitter {
     const totalServices = services.length;
     const healthyServices = services.filter(s => s.status === 'healthy').length;
     const totalInstances = services.reduce((sum, s) => sum + s.instances.length, 0);
-    const healthyInstances = services.reduce((sum, s) => {
+    const healthyInstances = services.reduce(_(sum, s) => {
       return sum + s.instances.filter(instance => {
         const health = s.instanceHealth?.[instance];
         return health?.status === 'healthy';
@@ -342,7 +344,7 @@ export class ServiceRegistry extends EventEmitter {
 
     for (const [serviceName, service] of this.services) {
       if (service.lastHealthCheck < staleCutoff) {
-        console.log(`🧹 Cleaning up stale service: ${serviceName}`);
+        logDebug(`🧹 Cleaning up stale service: ${serviceName}`);
         await this.unregisterService(serviceName);
       }
     }

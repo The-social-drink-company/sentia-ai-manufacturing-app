@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -67,12 +67,12 @@ const Analytics = () => {
     return 'bg-red-500';
   };
 
-  const getTrendIcon = (trend) => {
+  const getTrendIcon = (_trend) => {
     switch (trend) {
       case 'improving':
         return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
       case 'declining':
-        return <TrendingDownIcon className="h-5 w-5 text-red-500" />;
+        return <ArrowTrendingDownIcon className="h-5 w-5 text-red-500" />;
       default:
         return <div className="h-5 w-5 bg-gray-300 rounded-full"></div>;
     }
@@ -373,7 +373,7 @@ const Analytics = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-1">Recommended Actions:</p>
                       <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                        {rec.actions.map((action, actionIndex) => (
+                        {rec.actions.map((action, _actionIndex) => (
                           <li key={actionIndex}>{action}</li>
                         ))}
                       </ul>

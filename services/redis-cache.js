@@ -1,4 +1,6 @@
 import Redis from 'redis';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class RedisCacheService {
   constructor() {
@@ -21,11 +23,11 @@ class RedisCacheService {
         socket: {
           reconnectStrategy: (retries) => {
             if (retries > this.maxReconnectAttempts) {
-              console.error('REDIS: Max reconnection attempts reached');
+              logError('REDIS: Max reconnection attempts reached');
               return new Error('Redis connection failed after max attempts');
             }
             const delay = Math.min(retries * 50, 500);
-            console.log(`REDIS: Reconnecting in ${delay}ms (attempt ${retries})`);
+            logDebug(`REDIS: Reconnecting in ${delay}ms (attempt ${retries})`);
             return delay;
           },
           connectTimeout: 10000,
@@ -33,7 +35,7 @@ class RedisCacheService {
         },
         retry_strategy: (options) => {
           if (options.error && options.error.code === 'ECONNREFUSED') {
-            console.error('REDIS: Server refused connection');
+            logError('REDIS: Server refused connection');
             return new Error('Redis server connection refused');
           }
           if (options.times_connected > 10) {
@@ -43,36 +45,36 @@ class RedisCacheService {
         }
       });
 
-      this.client.on('connect', () => {
-        console.log('REDIS: Connected to Redis server');
+      this.client.on(_'connect', _() => {
+        logDebug('REDIS: Connected to Redis server');
       });
 
-      this.client.on('ready', () => {
+      this.client.on(_'ready', _() => {
         this.isConnected = true;
         this.reconnectAttempts = 0;
-        console.log('REDIS: Ready for operations');
+        logDebug('REDIS: Ready for operations');
       });
 
-      this.client.on('error', (err) => {
-        console.error('REDIS Error:', err);
+      this.client.on(_'error', _(err) => {
+        logError('REDIS Error:', err);
         this.isConnected = false;
       });
 
-      this.client.on('end', () => {
-        console.log('REDIS: Connection ended');
+      this.client.on(_'end', _() => {
+        logDebug('REDIS: Connection ended');
         this.isConnected = false;
       });
 
-      this.client.on('reconnecting', () => {
+      this.client.on(_'reconnecting', _() => {
         this.reconnectAttempts++;
-        console.log(`REDIS: Reconnecting (attempt ${this.reconnectAttempts})`);
+        logDebug(`REDIS: Reconnecting (attempt ${this.reconnectAttempts})`);
       });
 
       await this.client.connect();
       return true;
 
     } catch (error) {
-      console.error('REDIS: Connection failed:', error);
+      logError('REDIS: Connection failed:', error);
       this.isConnected = false;
       return false;
     }
@@ -84,10 +86,10 @@ class RedisCacheService {
         await this.client.quit();
         this.client = null;
         this.isConnected = false;
-        console.log('REDIS: Disconnected successfully');
+        logDebug('REDIS: Disconnected successfully');
       }
     } catch (error) {
-      console.error('REDIS: Disconnect error:', error);
+      logError('REDIS: Disconnect error:', error);
     }
   }
 
@@ -101,7 +103,7 @@ class RedisCacheService {
       const value = await this.client.get(key);
       return value ? JSON.parse(value) : null;
     } catch (error) {
-      console.error('REDIS: Get error:', error);
+      logError('REDIS: Get error:', error);
       return null;
     }
   }
@@ -117,7 +119,7 @@ class RedisCacheService {
       await this.client.setEx(key, ttlSeconds, serialized);
       return true;
     } catch (error) {
-      console.error('REDIS: Set error:', error);
+      logError('REDIS: Set error:', error);
       return false;
     }
   }
@@ -132,7 +134,7 @@ class RedisCacheService {
       await this.client.del(key);
       return true;
     } catch (error) {
-      console.error('REDIS: Delete error:', error);
+      logError('REDIS: Delete error:', error);
       return false;
     }
   }
@@ -146,7 +148,7 @@ class RedisCacheService {
       const result = await this.client.exists(key);
       return result === 1;
     } catch (error) {
-      console.error('REDIS: Exists check error:', error);
+      logError('REDIS: Exists check error:', error);
       return false;
     }
   }
@@ -159,10 +161,10 @@ class RedisCacheService {
 
     try {
       await this.client.flushAll();
-      console.log('REDIS: All keys flushed');
+      logDebug('REDIS: All keys flushed');
       return true;
     } catch (error) {
-      console.error('REDIS: Flush error:', error);
+      logError('REDIS: Flush error:', error);
       return false;
     }
   }
@@ -175,7 +177,7 @@ class RedisCacheService {
     try {
       return await this.client.keys(pattern);
     } catch (error) {
-      console.error('REDIS: Keys error:', error);
+      logError('REDIS: Keys error:', error);
       return [];
     }
   }
@@ -189,7 +191,7 @@ class RedisCacheService {
       const values = await this.client.mGet(keys);
       return values.map(value => value ? JSON.parse(value) : null);
     } catch (error) {
-      console.error('REDIS: Multi-get error:', error);
+      logError('REDIS: Multi-get error:', error);
       return [];
     }
   }
@@ -210,7 +212,7 @@ class RedisCacheService {
       await pipeline.exec();
       return true;
     } catch (error) {
-      console.error('REDIS: Multi-set error:', error);
+      logError('REDIS: Multi-set error:', error);
       return false;
     }
   }
@@ -223,7 +225,7 @@ class RedisCacheService {
     try {
       return await this.client.incrBy(key, amount);
     } catch (error) {
-      console.error('REDIS: Increment error:', error);
+      logError('REDIS: Increment error:', error);
       return null;
     }
   }
@@ -237,7 +239,7 @@ class RedisCacheService {
       const result = await this.client.expire(key, seconds);
       return result === 1;
     } catch (error) {
-      console.error('REDIS: Expire error:', error);
+      logError('REDIS: Expire error:', error);
       return false;
     }
   }
@@ -259,7 +261,7 @@ class RedisCacheService {
         uptime: await this.client.info('server')
       };
     } catch (error) {
-      console.error('REDIS: Stats error:', error);
+      logError('REDIS: Stats error:', error);
       return null;
     }
   }

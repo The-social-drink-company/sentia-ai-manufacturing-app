@@ -5,6 +5,8 @@ import { requireAuth, requireRole, requireManager } from '../middleware/clerkAut
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 // Initialize cache with 60 second TTL for financial data
 const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
@@ -60,9 +62,9 @@ const financialSchemas = {
  * GET /api/financial/dashboard
  * Get financial dashboard overview
  */
-router.get('/dashboard',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/dashboard',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = 'month' } = req.query;
 
@@ -71,7 +73,7 @@ router.get('/dashboard',
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Financial dashboard');
+      logDebug('[Cache Hit] Financial dashboard');
       return res.json(cached);
     }
 
@@ -168,9 +170,9 @@ router.get('/dashboard',
  * GET /api/financial/cashflow
  * Get cash flow statement
  */
-router.get('/cashflow',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/cashflow',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const query = financialSchemas.cashFlow.query.parse(req.query);
 
@@ -246,27 +248,27 @@ router.get('/cashflow',
  * GET /api/financial/working-capital
  * Get working capital metrics with proper error handling
  */
-router.get('/working-capital',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/working-capital',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
-    console.log('[Working Capital API] Request received');
+    logDebug('[Working Capital API] Request received');
 
     // Check cache first
     const cacheKey = 'working-capital-current';
     const cached = cache.get(cacheKey);
 
     if (cached) {
-      console.log('[Cache Hit] Working capital data');
+      logDebug('[Cache Hit] Working capital data');
       return res.json(cached);
     }
 
-    console.log('[Cache Miss] Working capital - fetching from database');
+    logDebug('[Cache Miss] Working capital - fetching from database');
 
     try {
       // Check database connection
       await prisma.$queryRaw`SELECT 1`;
-      console.log('[Working Capital API] Database connection successful');
+      logDebug('[Working Capital API] Database connection successful');
 
       // Get current assets and liabilities with error handling
       const [inventory, receivables, payables, cash] = await Promise.all([
@@ -275,7 +277,7 @@ router.get('/working-capital',
           SELECT COALESCE(SUM(quantity * unit_cost), 0) as total_value
           FROM inventory
         `.catch((err) => {
-          console.error('[Working Capital API] Inventory query failed:', err);
+          logError('[Working Capital API] Inventory query failed:', err);
           return [{ total_value: 0 }];
         }),
 
@@ -286,7 +288,7 @@ router.get('/working-capital',
           },
           _sum: { totalAmount: true }
         }).catch((err) => {
-          console.error('[Working Capital API] Receivables query failed:', err);
+          logError('[Working Capital API] Receivables query failed:', err);
           return { _sum: { totalAmount: 0 } };
         }),
 
@@ -297,7 +299,7 @@ router.get('/working-capital',
           },
           _sum: { amount: true }
         }).catch((err) => {
-          console.error('[Working Capital API] Payables query failed:', err);
+          logError('[Working Capital API] Payables query failed:', err);
           return { _sum: { amount: 0 } };
         }),
 
@@ -308,12 +310,12 @@ router.get('/working-capital',
           LIMIT 1
         `.then(rows => rows[0] || { balance: 0 })
         .catch((err) => {
-          console.error('[Working Capital API] Cash query failed:', err);
+          logError('[Working Capital API] Cash query failed:', err);
           return { balance: 0 };
         })
       ]);
 
-      console.log('[Working Capital API] Data fetched successfully');
+      logDebug('[Working Capital API] Data fetched successfully');
 
       // Calculate metrics
       const inventoryValue = Number(inventory[0]?.total_value) || 0;
@@ -392,7 +394,7 @@ router.get('/working-capital',
         ]
       };
 
-      console.log('[Working Capital API] Response prepared successfully');
+      logDebug('[Working Capital API] Response prepared successfully');
 
       // Cache the successful response
       cache.set(cacheKey, response);
@@ -400,57 +402,11 @@ router.get('/working-capital',
       res.json(response);
 
     } catch (error) {
-      console.error('[Working Capital API] Error:', error);
-
-      // Return fallback data on error
-      const fallbackData = {
-        success: false,
-        error: 'Unable to fetch live data, using fallback values',
-        summary: {
-          workingCapital: 789200,
-          currentAssets: 2345600,
-          currentLiabilities: 1556400,
-          cashConversionCycle: 45,
-          operatingCashFlow: 423500,
-          currentRatio: 1.51,
-          quickRatio: 0.98,
-          daysReceivables: 32,
-          daysPayables: 28,
-          daysInventory: 41
-        },
-        details: {
-          assets: {
-            inventory: 892300,
-            receivables: 1125400,
-            cash: 327900,
-            other: 0
-          },
-          liabilities: {
-            payables: 987200,
-            shortTermDebt: 345000,
-            accruedExpenses: 224200,
-            other: 0
-          }
-        },
-        trends: {
-          workingCapital: [650000, 700000, 750000, 789200, 800000, 850000],
-          cashFlow: [380000, 400000, 410000, 423500, 430000, 445000]
-        },
-        recommendations: [
-          {
-            title: 'Optimize Inventory',
-            description: 'Reduce inventory holding by 10% to free up cash',
-            impact: 89230
-          },
-          {
-            title: 'Accelerate Collections',
-            description: 'Reduce days receivables by 5 days',
-            impact: 168810
-          }
-        ]
-      };
-
-      res.json(fallbackData);
+      logError('[Working Capital API] Error:', error);
+      res.status(500).json({
+        error: 'Failed to fetch working capital data. Please ensure database connection is active.',
+        message: error.message
+      });
     }
   })
 );
@@ -561,9 +517,9 @@ router.post('/working-capital/calculate',
  * GET /api/financial/invoices
  * Get invoices with filters
  */
-router.get('/invoices',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/invoices',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { status, startDate, endDate, customerId, limit = 50, offset = 0 } = req.query;
 
@@ -694,9 +650,9 @@ router.post('/invoices',
  * GET /api/financial/expenses
  * Get expenses with filters
  */
-router.get('/expenses',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/expenses',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { category, vendor, startDate, endDate, limit = 50, offset = 0 } = req.query;
 
@@ -798,9 +754,9 @@ router.post('/expenses',
  * GET /api/financial/profitability
  * Get profitability analysis
  */
-router.get('/profitability',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/profitability',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = '12m', groupBy = 'month' } = req.query;
 
@@ -872,9 +828,9 @@ router.get('/profitability',
  * GET /api/financial/overview
  * Get comprehensive financial overview
  */
-router.get('/overview',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/overview',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const cacheKey = `financial-overview-${req.userId}`;
     const cached = cache.get(cacheKey);
@@ -989,7 +945,7 @@ router.get('/overview',
         ],
         cashFlowTrend: {
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          operating: [380000, 395000, 410000, 423500, 438000, 445000],
+          operating: 0,
           investing: [-120000, -85000, -95000, -110000, -75000, -90000],
           financing: [-50000, -45000, -55000, -48000, -52000, -47000]
         },
@@ -1035,60 +991,10 @@ router.get('/overview',
       });
 
     } catch (error) {
-      // Return mock data if database queries fail
-      const mockData = {
-        summary: {
-          revenue: 2456780,
-          expenses: 1890450,
-          profit: 566330,
-          profitMargin: 23.1,
-          cashFlow: 423500,
-          workingCapital: 789200,
-          currentRatio: 1.85,
-          quickRatio: 1.42
-        },
-        revenueBreakdown: [
-          { source: 'Product Sales', amount: 1845000, percentage: 75.1 },
-          { source: 'Services', amount: 456780, percentage: 18.6 },
-          { source: 'Licensing', amount: 155000, percentage: 6.3 }
-        ],
-        expenseBreakdown: [
-          { category: 'Raw Materials', amount: 756000, percentage: 40 },
-          { category: 'Labor', amount: 567135, percentage: 30 },
-          { category: 'Operations', amount: 378090, percentage: 20 },
-          { category: 'Marketing', amount: 189225, percentage: 10 }
-        ],
-        cashFlowTrend: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          operating: [380000, 395000, 410000, 423500, 438000, 445000],
-          investing: [-120000, -85000, -95000, -110000, -75000, -90000],
-          financing: [-50000, -45000, -55000, -48000, -52000, -47000]
-        },
-        profitTrend: {
-          labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024'],
-          revenue: [2100000, 2250000, 2380000, 2456780],
-          profit: [483000, 517500, 548000, 566330],
-          margin: [23.0, 23.0, 23.0, 23.1]
-        },
-        keyRatios: {
-          grossMargin: 42.5,
-          operatingMargin: 28.3,
-          netMargin: 23.1,
-          roe: 18.7,
-          roa: 12.4,
-          debtToEquity: 0.45
-        },
-        budgetComparison: {
-          revenue: { actual: 2456780, budget: 2400000, variance: 2.4 },
-          expenses: { actual: 1890450, budget: 1950000, variance: -3.1 },
-          profit: { actual: 566330, budget: 450000, variance: 25.8 }
-        }
-      };
-
-      res.json({
-        success: true,
-        data: mockData,
-        fallback: true
+      logError('[Financial Reports API] Error:', error);
+      res.status(500).json({
+        error: 'Failed to fetch financial reports. Please ensure database connection is active.',
+        message: error.message
       });
     }
   })

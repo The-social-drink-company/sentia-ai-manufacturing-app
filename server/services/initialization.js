@@ -1,7 +1,7 @@
-import xeroService from '../../services/xeroService.js';
 import aiAnalyticsService from '../../services/aiAnalyticsService.js';
 import MCPOrchestrator from '../../services/mcp/mcpOrchestrator.js';
 import { logInfo, logError } from '../../services/observability/structuredLogger.js';
+import xeroService from '../../services/xeroService.js';
 
 // Initialize MCP Orchestrator for Anthropic Model Context Protocol
 const mcpOrchestrator = new MCPOrchestrator();

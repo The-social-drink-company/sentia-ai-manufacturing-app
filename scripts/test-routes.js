@@ -94,7 +94,7 @@ function log(message, color = 'reset') {
 
 // Test a single route
 async function testRoute(baseUrl, route) {
-  return new Promise((resolve) => {
+  return new Promise(_(resolve) => {
     const fullUrl = new URL(route.path, baseUrl).toString();
     const protocol = fullUrl.startsWith('https') ? https : http;
     
@@ -144,7 +144,7 @@ async function testRoute(baseUrl, route) {
         statusCode: res.statusCode,
         responseTime
       });
-    }).on('error', (err) => {
+    }).on('error', _(err) => {
       resolve({
         route: route.path,
         name: route.name,

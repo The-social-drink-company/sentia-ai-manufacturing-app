@@ -8,6 +8,8 @@ import fs from 'fs';
 import path from 'path';
 import EventEmitter from 'events';
 import { Worker } from 'worker_threads';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class PerformanceTestingEngine extends EventEmitter {
   constructor(config = {}) {
@@ -91,13 +93,13 @@ class PerformanceTestingEngine extends EventEmitter {
   }
 
   async initialize() {
-    console.log('⚡ INITIALIZING PERFORMANCE TESTING ENGINE');
+    logDebug('⚡ INITIALIZING PERFORMANCE TESTING ENGINE');
     
     this.setupPerformanceDirectories();
     await this.initializeWorkerPool();
     await this.loadHistoricalBenchmarks();
     
-    console.log('✅ Performance Testing Engine initialized successfully');
+    logDebug('✅ Performance Testing Engine initialized successfully');
     this.emit('initialized');
   }
 
@@ -135,7 +137,7 @@ class PerformanceTestingEngine extends EventEmitter {
 
   // Main Performance Testing Methods
   async runPerformanceTestSuite(target = 'http://localhost:3000') {
-    console.log(`⚡ Starting comprehensive performance test suite for: ${target}`);
+    logDebug(`⚡ Starting comprehensive performance test suite for: ${target}`);
     
     const testSuiteId = this.generateTestId('perf_suite');
     const suite = {
@@ -150,25 +152,25 @@ class PerformanceTestingEngine extends EventEmitter {
     try {
       // Load Testing
       if (this.config.testTypes.load.enabled) {
-        console.log('📈 Running load test...');
+        logDebug('📈 Running load test...');
         suite.tests.set('load', await this.runLoadTest(target));
       }
 
       // Stress Testing
       if (this.config.testTypes.stress.enabled) {
-        console.log('🔥 Running stress test...');
+        logDebug('🔥 Running stress test...');
         suite.tests.set('stress', await this.runStressTest(target));
       }
 
       // Spike Testing
       if (this.config.testTypes.spike.enabled) {
-        console.log('📊 Running spike test...');
+        logDebug('📊 Running spike test...');
         suite.tests.set('spike', await this.runSpikeTest(target));
       }
 
       // Volume Testing
       if (this.config.testTypes.volume.enabled) {
-        console.log('💾 Running volume test...');
+        logDebug('💾 Running volume test...');
         suite.tests.set('volume', await this.runVolumeTest(target));
       }
 
@@ -184,12 +186,12 @@ class PerformanceTestingEngine extends EventEmitter {
       this.testResults.set(testSuiteId, suite);
       await this.generatePerformanceReports(suite);
 
-      console.log(`✅ Performance test suite completed in ${Math.round(suite.duration / 1000)}s`);
+      logDebug(`✅ Performance test suite completed in ${Math.round(suite.duration / 1000)}s`);
       this.emit('testSuiteCompleted', suite);
 
     } catch (error) {
       suite.error = error.message;
-      console.error(`❌ Performance test suite failed: ${error.message}`);
+      logError(`❌ Performance test suite failed: ${error.message}`);
       this.emit('testSuiteFailed', suite);
     }
 
@@ -365,7 +367,7 @@ class PerformanceTestingEngine extends EventEmitter {
   }
 
   async generatePerformanceReports(suite) {
-    console.log('📊 Generating performance reports...');
+    logDebug('📊 Generating performance reports...');
     
     const timestamp = Date.now();
     
@@ -392,7 +394,7 @@ class PerformanceTestingEngine extends EventEmitter {
       htmlReport
     );
 
-    console.log('📄 Performance reports generated');
+    logDebug('📄 Performance reports generated');
   }
 
   generateHtmlPerformanceReport(report) {
@@ -456,7 +458,7 @@ class PerformanceTestingEngine extends EventEmitter {
 
   // Integration with autonomous testing
   async integrateWithAutonomousSystem() {
-    console.log('🔗 Integrating performance testing with autonomous system...');
+    logDebug('🔗 Integrating performance testing with autonomous system...');
     
     const performanceScenarios = [{
       name: 'PERFORMANCE_COMPREHENSIVE_SUITE',
@@ -474,7 +476,7 @@ class PerformanceTestingEngine extends EventEmitter {
       JSON.stringify(performanceScenarios, null, 2)
     );
 
-    console.log(`⚡ Generated ${performanceScenarios.length} performance test scenarios`);
+    logDebug(`⚡ Generated ${performanceScenarios.length} performance test scenarios`);
     return performanceScenarios;
   }
 

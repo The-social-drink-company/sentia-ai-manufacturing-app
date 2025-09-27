@@ -6,13 +6,13 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // Comprehensive health check endpoint
-router.get('/health', async (req, res) => {
+router.get(_'/health', async (req, res) => {
   const startTime = Date.now();
   const healthStatus = {
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
+    version: process.env.npm_package_version || null,
+    environment: process.env.NODE_ENV || null,
     uptime: Math.floor(process.uptime()),
     checks: {
       server: { status: 'healthy', responseTime: 0 },
@@ -88,7 +88,7 @@ router.get('/health', async (req, res) => {
   // MCP Server health check
   try {
     const mcpStart = Date.now();
-    const mcpResponse = await fetch(`http://localhost:${process.env.MCP_PORT || 9001}/health`, {
+    const mcpResponse = await fetch(`http://localhost:${process.env.MCP_PORT 0}/health`, {
       timeout: 5000
     }).catch(() => null);
 
@@ -189,7 +189,7 @@ router.get('/health', async (req, res) => {
 });
 
 // Detailed system metrics endpoint
-router.get('/metrics', async (req, res) => {
+router.get(_'/metrics', async (req, res) => {
   const metrics = {
     timestamp: new Date().toISOString(),
     system: {
@@ -209,8 +209,8 @@ router.get('/metrics', async (req, res) => {
     },
     application: {
       environment: process.env.NODE_ENV,
-      version: process.env.npm_package_version || '1.0.0',
-      port: process.env.PORT || 5000,
+      version: process.env.npm_package_version || null,
+      port: process.env.PORT 0,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     },
     requests: {
@@ -237,7 +237,7 @@ router.get('/metrics', async (req, res) => {
 });
 
 // Readiness probe endpoint
-router.get('/ready', async (req, res) => {
+router.get(_'/ready', async (req, res) => {
   try {
     // Check if all critical services are ready
     await prisma.$queryRaw`SELECT 1`;
@@ -270,7 +270,7 @@ router.get('/ready', async (req, res) => {
 });
 
 // Liveness probe endpoint
-router.get('/live', (req, res) => {
+router.get(_'/live', (req, res) => {
   const liveness = {
     status: 'alive',
     timestamp: new Date().toISOString(),
@@ -282,11 +282,11 @@ router.get('/live', (req, res) => {
 });
 
 // System status dashboard endpoint
-router.get('/status', async (req, res) => {
+router.get(_'/status', async (req, res) => {
   const status = {
     service: 'Sentia Manufacturing Dashboard',
-    version: process.env.npm_package_version || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
+    version: process.env.npm_package_version || null,
+    environment: process.env.NODE_ENV || null,
     status: 'operational',
     last_updated: new Date().toISOString(),
     components: [
@@ -329,7 +329,7 @@ router.get('/status', async (req, res) => {
 });
 
 // Feature flags endpoint
-router.get('/features', (req, res) => {
+router.get(_'/features', (req, res) => {
   const features = {
     ai_copilot: {
       enabled: process.env.ENABLE_AI_FEATURES === 'true',
@@ -384,7 +384,7 @@ router.get('/features', (req, res) => {
 });
 
 // Performance benchmark endpoint
-router.get('/benchmark', async (req, res) => {
+router.get(_'/benchmark', async (req, res) => {
   const startTime = Date.now();
   
   try {

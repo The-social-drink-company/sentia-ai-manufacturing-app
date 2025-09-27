@@ -20,6 +20,8 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class DualAIOrchestrator extends EventEmitter {
     constructor(config = {}) {
@@ -86,10 +88,10 @@ class DualAIOrchestrator extends EventEmitter {
                 timestamp: new Date().toISOString()
             });
             
-            console.log('✅ Dual AI clients initialized successfully');
+            logDebug('✅ Dual AI clients initialized successfully');
             
         } catch (error) {
-            console.error('❌ Failed to initialize AI clients:', error);
+            logError('❌ Failed to initialize AI clients:', error);
             this.emit('initialization_error', error);
             throw error;
         }
@@ -191,7 +193,7 @@ class DualAIOrchestrator extends EventEmitter {
             return enhancedResult;
             
         } catch (error) {
-            console.error('❌ Forecast generation failed:', error);
+            logError('❌ Forecast generation failed:', error);
             this.emit('forecast_error', error);
             throw error;
         }
@@ -236,7 +238,7 @@ class DualAIOrchestrator extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ OpenAI forecast failed:', error);
+            logError('❌ OpenAI forecast failed:', error);
             throw error;
         }
     }
@@ -275,7 +277,7 @@ class DualAIOrchestrator extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Claude forecast failed:', error);
+            logError('❌ Claude forecast failed:', error);
             throw error;
         }
     }
@@ -316,7 +318,7 @@ class DualAIOrchestrator extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Ensemble forecast failed:', error);
+            logError('❌ Ensemble forecast failed:', error);
             throw error;
         }
     }
@@ -439,18 +441,18 @@ class DualAIOrchestrator extends EventEmitter {
             const claudeWeight = 0.5;
             
             // Combine forecast values
-            const combinedValues = openaiResult.forecast.values.map((value, index) => {
+            const combinedValues = openaiResult.forecast.values.map((value, _index) => {
                 const claudeValue = claudeResult.forecast.values[index];
                 return (value * openaiWeight) + (claudeValue * claudeWeight);
             });
             
             // Combine confidence intervals
-            const combinedLower = openaiResult.forecast.confidence_intervals.lower.map((value, index) => {
+            const combinedLower = openaiResult.forecast.confidence_intervals.lower.map((value, _index) => {
                 const claudeValue = claudeResult.forecast.confidence_intervals.lower[index];
                 return Math.min(value, claudeValue); // Take the more conservative lower bound
             });
             
-            const combinedUpper = openaiResult.forecast.confidence_intervals.upper.map((value, index) => {
+            const combinedUpper = openaiResult.forecast.confidence_intervals.upper.map((value, _index) => {
                 const claudeValue = claudeResult.forecast.confidence_intervals.upper[index];
                 return Math.max(value, claudeValue); // Take the more optimistic upper bound
             });
@@ -497,7 +499,7 @@ class DualAIOrchestrator extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Failed to combine forecasts:', error);
+            logError('❌ Failed to combine forecasts:', error);
             throw error;
         }
     }
@@ -537,7 +539,7 @@ class DualAIOrchestrator extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Failed to calculate consensus:', error);
+            logError('❌ Failed to calculate consensus:', error);
             return { score: 0, level: 'unknown' };
         }
     }
@@ -576,7 +578,7 @@ class DualAIOrchestrator extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Failed to calculate model agreement:', error);
+            logError('❌ Failed to calculate model agreement:', error);
             return { score: 0, level: 'unknown' };
         }
     }
@@ -604,7 +606,7 @@ class DualAIOrchestrator extends EventEmitter {
             this.emit('metrics_updated', this.metrics);
             
         } catch (error) {
-            console.error('❌ Failed to update metrics:', error);
+            logError('❌ Failed to update metrics:', error);
         }
     }
     
@@ -640,7 +642,7 @@ class DualAIOrchestrator extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Failed to calculate health score:', error);
+            logError('❌ Failed to calculate health score:', error);
             return { score: 0, status: 'unknown' };
         }
     }
@@ -698,7 +700,7 @@ class DualAIOrchestrator extends EventEmitter {
     
     combineExternalFactors(factors1, factors2) {
         const combined = [...factors1, ...factors2];
-        const unique = combined.reduce((acc, factor) => {
+        const unique = combined.reduce(_(acc, factor) => {
             const existing = acc.find(f => f.factor === factor.factor);
             if (existing) {
                 existing.impact = (existing.impact + factor.impact) / 2;
@@ -740,16 +742,16 @@ class DualAIOrchestrator extends EventEmitter {
     }
     
     handleModelComparison(data) {
-        console.log('🔍 Model comparison completed:', data);
+        logDebug('🔍 Model comparison completed:', data);
     }
     
     handleAccuracyUpdate(data) {
-        console.log('📊 Accuracy updated:', data);
+        logDebug('📊 Accuracy updated:', data);
         this.emit('metrics_updated', this.metrics);
     }
     
     handleError(error) {
-        console.error('❌ Dual AI Orchestrator error:', error);
+        logError('❌ Dual AI Orchestrator error:', error);
         this.metrics.requests.failed++;
         this.metrics.lastUpdated = new Date().toISOString();
     }

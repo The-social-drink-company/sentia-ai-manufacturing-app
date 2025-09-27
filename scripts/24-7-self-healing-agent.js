@@ -30,7 +30,7 @@ import { fileURLToPath } from 'url';
 // Node 18+ has global fetch
 
 const execAsync = promisify(exec);
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
 
 class SelfHealingAgent {
@@ -553,7 +553,7 @@ class SelfHealingAgent {
 
     for (const [apiName, apiInfo] of Object.entries(this.externalAPIs)) {
       try {
-        apiResults[apiName] = await this.executeWithCircuitBreaker(apiName, async () => {
+        apiResults[apiName] = await this.executeWithCircuitBreaker(_apiName, async () => {
           return {
             name: apiInfo.name,
             status: 'healthy', // Placeholder - would check actual API endpoints
@@ -609,7 +609,7 @@ class SelfHealingAgent {
     const recommendations = [];
 
     // Check environment health
-    Object.entries(scanResults.environments).forEach(([envName, envData]) => {
+    Object.entries(scanResults.environments).forEach(_([envName, _envData]) => {
       if (envData.basicHealth?.status === 'unhealthy') {
         recommendations.push({
           type: 'health',
@@ -633,7 +633,7 @@ class SelfHealingAgent {
     }
 
     // Check circuit breakers
-    Object.entries(scanResults.externalAPIs).forEach(([apiName, apiData]) => {
+    Object.entries(scanResults.externalAPIs).forEach(_([apiName, _apiData]) => {
       if (apiData.circuitBreakerState === 'OPEN') {
         recommendations.push({
           type: 'circuit_breaker',
@@ -656,7 +656,7 @@ class SelfHealingAgent {
     const fixResults = [];
 
     // Check specific failure types and attempt fixes
-    Object.entries(healthData.checks).forEach(async ([checkType, checkResult]) => {
+    Object.entries(healthData.checks).forEach(async _([checkType, _checkResult]) => {
       if (checkResult.status === 'error' || checkResult.status === 'unhealthy') {
         const fixResult = await this.executeAutoFix(environment, checkType, checkResult);
         fixResults.push(fixResult);

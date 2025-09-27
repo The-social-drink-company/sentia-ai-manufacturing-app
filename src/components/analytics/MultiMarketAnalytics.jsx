@@ -1,4 +1,4 @@
-import { devLog } from '../lib/devLog.js';
+import { devLog } from '../../lib/devLog.js';
 import React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -638,7 +638,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <Badge variant="outline">{opportunity.product.replace('_', ' ')}</Badge>
+                    <Badge variant="outline">{opportunity.product.replace('', ' ')}</Badge>
                     <span className="text-sm text-gray-600">
                       Transfer from <strong>{opportunity.from}</strong> to <strong>{opportunity.to}</strong>
                     </span>

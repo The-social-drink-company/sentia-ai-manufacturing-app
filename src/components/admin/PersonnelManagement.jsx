@@ -1,532 +1,474 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  UserPlusIcon,
-  PencilIcon,
-  TrashIcon,
-  MagnifyingGlassIcon,
-  FunnelIcon,
   UserGroupIcon,
+  PlusIcon,
+  MagnifyingGlassIcon,
+  PencilIcon,
+  EyeIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ClockIcon,
+  CalendarDaysIcon,
   BriefcaseIcon,
+  AcademicCapIcon,
+  ShieldCheckIcon,
+  ExclamationTriangleIcon,
+  ChartBarIcon,
+  PhoneIcon,
   EnvelopeIcon,
-  PhoneIcon
+  MapPinIcon
 } from '@heroicons/react/24/outline';
 
-const PersonnelManagement = () => {
+export default function PersonnelManagement() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState(null);
-  const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    username: '',
-    email: '',
-    role: 'operator',
-    department: '',
-    display_name: ''
-  });
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedView, setSelectedView] = useState('list');
 
-  const queryClient = useQueryClient();
-
-  // Fetch personnel data
-  const { data: personnel, isLoading } = useQuery({
-    queryKey: ['personnel-admin', selectedRole, selectedDepartment],
-    queryFn: async () => {
-      let url = '/api/personnel';
-      const params = new URLSearchParams();
-      
-      if (selectedRole !== 'all') params.append('role', selectedRole);
-      if (selectedDepartment !== 'all') params.append('department', selectedDepartment);
-      
-      if (params.toString()) url += '?' + params.toString();
-      
-      const response = await fetch(url);
-      if (response.ok) {
-        const result = await response.json();
-        return result.data || [];
-      }
-      throw new Error('Failed to fetch personnel');
+  const personnel = [
+    {
+      id: 'EMP-001',
+      name: 'Sarah Johnson',
+      position: 'Production Manager',
+      department: 'Operations',
+      email: 'sarah.johnson@sentia.com',
+      phone: '+1 (555) 123-4567',
+      location: 'Floor A',
+      status: 'active',
+      shift: 'Day Shift',
+      hired: '2022-03-15',
+      salary: '$75,000',
+      performance: 94,
+      certifications: ['Lean Manufacturing', 'Six Sigma Green Belt'],
+      skills: ['Team Leadership', 'Process Optimization', 'Quality Control']
     },
-    staleTime: 2 * 60 * 1000
-  });
-
-  // Fetch roles and departments for filters
-  const { data: roles } = useQuery({
-    queryKey: ['personnel-roles'],
-    queryFn: async () => {
-      const response = await fetch('/api/personnel/meta/roles');
-      if (response.ok) {
-        const result = await response.json();
-        return result.data || [];
-      }
-      return [];
-    }
-  });
-
-  const { data: departments } = useQuery({
-    queryKey: ['personnel-departments'], 
-    queryFn: async () => {
-      const response = await fetch('/api/personnel/meta/departments');
-      if (response.ok) {
-        const result = await response.json();
-        return result.data || [];
-      }
-      return [];
-    }
-  });
-
-  // Create personnel mutation
-  const createPersonnelMutation = useMutation({
-    mutationFn: async (personnelData) => {
-      const response = await fetch('/api/personnel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(personnelData)
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create personnel');
-      }
-      
-      return response.json();
+    {
+      id: 'EMP-002',
+      name: 'Mike Chen',
+      position: 'Quality Inspector',
+      department: 'Quality',
+      email: 'mike.chen@sentia.com',
+      phone: '+1 (555) 234-5678',
+      location: 'QC Lab',
+      status: 'active',
+      shift: 'Day Shift',
+      hired: '2021-08-22',
+      salary: '$58,000',
+      performance: 97,
+      certifications: ['ISO 9001', 'Statistical Process Control'],
+      skills: ['Inspection', 'Data Analysis', 'Problem Solving']
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['personnel-admin']);
-      setShowAddModal(false);
-      resetForm();
-    }
-  });
-
-  // Update personnel mutation
-  const updatePersonnelMutation = useMutation({
-    mutationFn: async ({ id, updates }) => {
-      const response = await fetch(`/api/personnel/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates)
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to update personnel');
-      }
-      
-      return response.json();
+    {
+      id: 'EMP-003',
+      name: 'Emma Davis',
+      position: 'Machine Operator',
+      department: 'Production',
+      email: 'emma.davis@sentia.com',
+      phone: '+1 (555) 345-6789',
+      location: 'Line 2',
+      status: 'active',
+      shift: 'Night Shift',
+      hired: '2023-01-10',
+      salary: '$45,000',
+      performance: 89,
+      certifications: ['Machine Safety', 'OSHA 10'],
+      skills: ['Equipment Operation', 'Maintenance', 'Safety Protocols']
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['personnel-admin']);
-      setSelectedPerson(null);
-      resetForm();
-    }
-  });
-
-  // Deactivate personnel mutation
-  const deactivatePersonnelMutation = useMutation({
-    mutationFn: async (id) => {
-      const response = await fetch(`/api/personnel/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to deactivate personnel');
-      }
-      
-      return response.json();
+    {
+      id: 'EMP-004',
+      name: 'Tom Wilson',
+      position: 'Maintenance Technician',
+      department: 'Maintenance',
+      email: 'tom.wilson@sentia.com',
+      phone: '+1 (555) 456-7890',
+      location: 'Workshop',
+      status: 'on_leave',
+      shift: 'Day Shift',
+      hired: '2020-05-18',
+      salary: '$62,000',
+      performance: 91,
+      certifications: ['Electrical Safety', 'Hydraulics'],
+      skills: ['Troubleshooting', 'Preventive Maintenance', 'Welding']
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['personnel-admin']);
+    {
+      id: 'EMP-005',
+      name: 'Lisa Wang',
+      position: 'Safety Coordinator',
+      department: 'Safety',
+      email: 'lisa.wang@sentia.com',
+      phone: '+1 (555) 567-8901',
+      location: 'Office B',
+      status: 'active',
+      shift: 'Day Shift',
+      hired: '2019-11-30',
+      salary: '$68,000',
+      performance: 96,
+      certifications: ['OSHA 30', 'Emergency Response'],
+      skills: ['Risk Assessment', 'Training', 'Compliance']
+    },
+    {
+      id: 'EMP-006',
+      name: 'David Brown',
+      position: 'Inventory Clerk',
+      department: 'Logistics',
+      email: 'david.brown@sentia.com',
+      phone: '+1 (555) 678-9012',
+      location: 'Warehouse',
+      status: 'probation',
+      shift: 'Evening Shift',
+      hired: '2024-07-01',
+      salary: '$38,000',
+      performance: 78,
+      certifications: ['Forklift Operation'],
+      skills: ['Inventory Management', 'Data Entry', 'Organization']
     }
+  ];
+
+  const departments = ['Operations', 'Quality', 'Production', 'Maintenance', 'Safety', 'Logistics'];
+  const statusOptions = ['active', 'on_leave', 'probation', 'terminated'];
+
+  const filteredPersonnel = personnel.filter(person => {
+    const matchesSearch = person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         person.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         person.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDepartment = selectedDepartment === 'all' || person.department === selectedDepartment;
+    const matchesStatus = selectedStatus === 'all' || person.status === selectedStatus;
+    return matchesSearch && matchesDepartment && matchesStatus;
   });
 
-  const resetForm = () => {
-    setFormData({
-      first_name: '',
-      last_name: '',
-      username: '',
-      email: '',
-      role: 'operator',
-      department: '',
-      display_name: ''
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (selectedPerson) {
-      updatePersonnelMutation.mutate({ 
-        id: selectedPerson.id, 
-        updates: formData 
-      });
-    } else {
-      createPersonnelMutation.mutate(formData);
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'active': return 'text-green-600 bg-green-100';
+      case 'on_leave': return 'text-blue-600 bg-blue-100';
+      case 'probation': return 'text-yellow-600 bg-yellow-100';
+      case 'terminated': return 'text-red-600 bg-red-100';
+      default: return 'text-gray-600 bg-gray-100';
     }
   };
 
-  const handleEdit = (person) => {
-    setSelectedPerson(person);
-    setFormData({
-      first_name: person.first_name || '',
-      last_name: person.last_name || '',
-      username: person.username || '',
-      email: person.email || '',
-      role: person.role || 'operator',
-      department: person.department || '',
-      display_name: person.display_name || ''
-    });
-    setShowAddModal(true);
-  };
-
-  const handleDeactivate = (person) => {
-    if (window.confirm(`Are you sure you want to deactivate ${person.display_name || person.full_name}?`)) {
-      deactivatePersonnelMutation.mutate(person.id);
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'active': return <CheckCircleIcon className="w-4 h-4" />;
+      case 'on_leave': return <ClockIcon className="w-4 h-4" />;
+      case 'probation': return <ExclamationTriangleIcon className="w-4 h-4" />;
+      case 'terminated': return <XCircleIcon className="w-4 h-4" />;
+      default: return <ClockIcon className="w-4 h-4" />;
     }
   };
 
-  // Filter personnel based on search term
-  const filteredPersonnel = personnel?.filter(person => {
-    const fullName = person.full_name?.toLowerCase() || '';
-    const displayName = person.display_name?.toLowerCase() || '';
-    const email = person.email?.toLowerCase() || '';
-    const searchLower = searchTerm.toLowerCase();
-    
-    return fullName.includes(searchLower) || 
-           displayName.includes(searchLower) || 
-           email.includes(searchLower);
-  }) || [];
-
-  const getRoleBadgeColor = (role) => {
-    switch (role) {
-      case 'admin': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'manager': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'operator': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+  const getPerformanceColor = (score) => {
+    if (score >= 95) return 'text-green-600';
+    if (score >= 85) return 'text-blue-600';
+    if (score >= 75) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
-  if (isLoading) {
-    return (
-      <div className="p-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-300 rounded w-1/3 mb-6"></div>
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-300 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const departmentStats = departments.map(dept => ({
+    name: dept,
+    count: personnel.filter(p => p.department === dept).length,
+    active: personnel.filter(p => p.department === dept && p.status === 'active').length
+  }));
 
   return (
-    <div className="space-y-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <UserGroupIcon className="h-8 w-8 text-blue-600" />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Personnel Management
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Manage staff and personnel information
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => {
-            resetForm();
-            setSelectedPerson(null);
-            setShowAddModal(true);
-          }}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
-        >
-          <UserPlusIcon className="h-4 w-4" />
-          <span>Add Personnel</span>
-        </button>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="relative">
-            <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search personnel..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
-
-          <select
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value)}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          >
-            <option value="all">All Roles</option>
-            {roles?.map(role => (
-              <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1)}</option>
-            ))}
-          </select>
-
-          <select
-            value={selectedDepartment}
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          >
-            <option value="all">All Departments</option>
-            {departments?.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
-            ))}
-          </select>
-
-          <div className="flex items-center text-sm text-gray-500">
-            <FunnelIcon className="h-4 w-4 mr-2" />
-            {filteredPersonnel.length} of {personnel?.length || 0} personnel
-          </div>
-        </div>
-      </div>
-
-      {/* Personnel List */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Department
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredPersonnel.map((person) => (
-                <tr key={person.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <span className="text-sm font-medium text-blue-800">
-                            {person.first_name?.[0] || person.username?.[0] || 'U'}
-                            {person.last_name?.[0] || ''}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {person.display_name || person.full_name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          @{person.username}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRoleBadgeColor(person.role)}`}>
-                      {person.role?.charAt(0).toUpperCase() + person.role?.slice(1) || 'Unknown'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {person.department || 'Not assigned'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    <div className="flex items-center space-x-2">
-                      <EnvelopeIcon className="h-4 w-4 text-gray-400" />
-                      <span>{person.email}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => handleEdit(person)}
-                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                      <PencilIcon className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeactivate(person)}
-                      className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                    >
-                      <TrashIcon className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {filteredPersonnel.length === 0 && (
-            <div className="text-center py-12">
-              <UserGroupIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No personnel found</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                {searchTerm || selectedRole !== 'all' || selectedDepartment !== 'all' 
-                  ? 'Try adjusting your search criteria'
-                  : 'Get started by adding your first team member'
-                }
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <UserGroupIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Personnel Management
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Manage workforce, performance, and employee information
               </p>
             </div>
-          )}
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex rounded-lg border border-gray-300 dark:border-gray-600">
+              <button
+                onClick={() => setSelectedView('list')}
+                className={`px-3 py-2 text-sm font-medium rounded-l-lg ${
+                  selectedView === 'list'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300'
+                }`}
+              >
+                List View
+              </button>
+              <button
+                onClick={() => setSelectedView('cards')}
+                className={`px-3 py-2 text-sm font-medium rounded-r-lg border-l ${
+                  selectedView === 'cards'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                }`}
+              >
+                Card View
+              </button>
+            </div>
+            <button className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors flex items-center space-x-2">
+              <PlusIcon className="w-4 h-4" />
+              <span>Add Employee</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md m-4">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                {selectedPerson ? 'Edit Personnel' : 'Add New Personnel'}
-              </h3>
+      <div className="p-6">
+        {/* Filters and Search */}
+        <div className="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search personnel..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              />
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    First Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.first_name}
-                    onChange={(e) => setFormData({...formData, first_name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Last Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.last_name}
-                    onChange={(e) => setFormData({...formData, last_name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-              </div>
+            <select
+              value={selectedDepartment}
+              onChange={(e) => setSelectedDepartment(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Departments</option>
+              {departments.map(dept => (
+                <option key={dept} value={dept}>{dept}</option>
+              ))}
+            </select>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Username *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.username}
-                  onChange={(e) => setFormData({...formData, username: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-              </div>
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="all">All Status</option>
+              {statusOptions.map(status => (
+                <option key={status} value={status}>
+                  {status.replace('', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </option>
+              ))}
+            </select>
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Display Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.display_name}
-                  onChange={(e) => setFormData({...formData, display_name: e.target.value})}
-                  placeholder="Leave blank to auto-generate"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Role
-                  </label>
-                  <select
-                    value={formData.role}
-                    onChange={(e) => setFormData({...formData, role: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  >
-                    <option value="operator">Operator</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Admin</option>
-                    <option value="viewer">Viewer</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Department
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.department}
-                    onChange={(e) => setFormData({...formData, department: e.target.value})}
-                    placeholder="e.g. Production"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setSelectedPerson(null);
-                    resetForm();
-                  }}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createPersonnelMutation.isPending || updatePersonnelMutation.isPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {createPersonnelMutation.isPending || updatePersonnelMutation.isPending 
-                    ? 'Saving...' 
-                    : selectedPerson 
-                    ? 'Update Personnel' 
-                    : 'Add Personnel'
-                  }
-                </button>
-              </div>
-            </form>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500">
+              {filteredPersonnel.length} of {personnel.length} employees
+            </span>
           </div>
         </div>
-      )}
+
+        {/* Department Statistics */}
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {departmentStats.map((dept) => (
+            <div key={dept.name} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{dept.name}</h4>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dept.count}</p>
+              <p className="text-xs text-gray-500">
+                {dept.active} active, {dept.count - dept.active} other
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Personnel List/Cards */}
+        {selectedView === 'list' ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Employee
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Position & Department
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Performance
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Contact
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredPersonnel.map((person) => (
+                  <tr key={person.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                            <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                              {person.name.split(' ').map(n => n[0]).join('')}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {person.name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {person.id} • {person.shift}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900 dark:text-white">{person.position}</div>
+                      <div className="text-sm text-gray-500">{person.department}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(person.status)}`}>
+                        {getStatusIcon(person.status)}
+                        <span className="ml-1 capitalize">{person.status.replace('', ' ')}</span>
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <span className={`text-sm font-medium ${getPerformanceColor(person.performance)}`}>
+                          {person.performance}%
+                        </span>
+                        <div className="ml-2 w-16 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${
+                              person.performance >= 95 ? 'bg-green-500' :
+                              person.performance >= 85 ? 'bg-blue-500' :
+                              person.performance >= 75 ? 'bg-yellow-500' : 'bg-red-500'
+                            }`}
+                            style={{ width: `${person.performance}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <EnvelopeIcon className="w-3 h-3" />
+                        <span>{person.email}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <PhoneIcon className="w-3 h-3" />
+                        <span>{person.phone}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center space-x-2">
+                        <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                          <EyeIcon className="w-4 h-4" />
+                        </button>
+                        <button className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                          <PencilIcon className="w-4 h-4" />
+                        </button>
+                        <button className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">
+                          <ChartBarIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPersonnel.map((person) => (
+              <div key={person.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                      <span className="text-lg font-medium text-green-600 dark:text-green-400">
+                        {person.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900 dark:text-white">{person.name}</h3>
+                      <p className="text-sm text-gray-500">{person.id}</p>
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(person.status)}`}>
+                    {getStatusIcon(person.status)}
+                    <span className="ml-1 capitalize">{person.status.replace('', ' ')}</span>
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <BriefcaseIcon className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-900 dark:text-white">{person.position}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <UserGroupIcon className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-500">{person.department}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <MapPinIcon className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-500">{person.location}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <ChartBarIcon className="w-4 h-4 text-gray-400" />
+                    <span className={`text-sm font-medium ${getPerformanceColor(person.performance)}`}>
+                      Performance: {person.performance}%
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs text-gray-500">
+                      Hired: {person.hired}
+                    </div>
+                    <div className="flex space-x-2">
+                      <button className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                        <EyeIcon className="w-4 h-4" />
+                      </button>
+                      <button className="p-1 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">
+                        <PencilIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Personnel Actions
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: 'Performance Review', icon: ChartBarIcon, color: 'blue' },
+              { label: 'Training Schedule', icon: AcademicCapIcon, color: 'green' },
+              { label: 'Payroll Report', icon: BriefcaseIcon, color: 'purple' },
+              { label: 'Safety Training', icon: ShieldCheckIcon, color: 'red' }
+            ].map((action, index) => (
+              <button
+                key={index}
+                className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}
+              >
+                <action.icon className={`w-5 h-5 text-${action.color}-600`} />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {action.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default PersonnelManagement;
+}

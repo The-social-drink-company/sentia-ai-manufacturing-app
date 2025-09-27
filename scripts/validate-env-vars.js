@@ -9,7 +9,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Complete list of required environment variables by category
-const ENV_VARIABLES = {
+const ENVVARIABLES = {
   // Core Configuration
   core: {
     required: ['NODE_ENV', 'PORT', 'DATABASE_URL', 'CORS_ORIGINS'],

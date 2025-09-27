@@ -117,19 +117,19 @@ const ProductionFlowChart = ({ data }) => {
         <div className="text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">Avg Output</p>
           <p className="text-lg font-semibold text-gray-900 dark:text-white">
-            {Math.round(chartData.reduce((acc, d) => acc + d.units, 0) / chartData.length)}
+            {chartData.length > 0 ? Math.round(chartData.reduce((acc, d) => acc + d.units, 0) / chartData.length) : 'N/A'}
           </p>
         </div>
         <div className="text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">Peak Hour</p>
           <p className="text-lg font-semibold text-gray-900 dark:text-white">
-            {chartData.reduce((max, d) => d.units > max.units ? d : max, chartData[0]).time}
+            {chartData.length > 0 ? chartData.reduce((max, d) => d.units > max.units ? d : max, chartData[0]).time : 'N/A'}
           </p>
         </div>
         <div className="text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">Efficiency</p>
           <p className="text-lg font-semibold text-gray-900 dark:text-white">
-            {Math.round(chartData.reduce((acc, d) => acc + d.efficiency, 0) / chartData.length)}%
+            {chartData.length > 0 ? Math.round(chartData.reduce((acc, d) => acc + d.efficiency, 0) / chartData.length) : 'N/A'}%
           </p>
         </div>
       </div>

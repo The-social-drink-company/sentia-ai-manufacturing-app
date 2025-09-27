@@ -8,8 +8,8 @@ services:
     env: node
     region: oregon
     plan: starter
-    buildCommand: npm install --production
-    startCommand: npm start
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod
+    startCommand: pnpm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -30,8 +30,8 @@ services:
     env: node
     region: oregon
     plan: starter
-    buildCommand: npm install --production
-    startCommand: npm run start:development
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod
+    startCommand: pnpm start:development
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -52,8 +52,8 @@ services:
     env: node
     region: oregon
     plan: starter
-    buildCommand: npm install --production
-    startCommand: npm start
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod
+    startCommand: pnpm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV

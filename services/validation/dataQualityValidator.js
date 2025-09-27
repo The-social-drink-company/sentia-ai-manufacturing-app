@@ -642,7 +642,7 @@ class DataQualityValidator extends EventEmitter {
       uniqueness: 0.10
     };
 
-    assessment.overallScore = Object.entries(weights).reduce((score, [dimension, weight]) => {
+    assessment.overallScore = Object.entries(weights).reduce(_(score, _[dimension, _weight]) => {
       return score + (assessment[dimension] * weight);
     }, 0);
 
@@ -857,7 +857,7 @@ class DataQualityValidator extends EventEmitter {
     
     dataArray.forEach(record => {
       if (record && typeof record === 'object') {
-        Object.entries(record).forEach(([key, value]) => {
+        Object.entries(record).forEach(_([key, _value]) => {
           if (typeof value === 'number') {
             if (!numericalData[key]) numericalData[key] = [];
             numericalData[key].push(value);
@@ -870,7 +870,7 @@ class DataQualityValidator extends EventEmitter {
   }
 
   calculateFieldStatistics(values) {
-    const sorted = [...values].sort((a, b) => a - b);
+    const sorted = [...values].sort((a, _b) => a - b);
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
     const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
     
@@ -890,7 +890,7 @@ class DataQualityValidator extends EventEmitter {
     const stats = this.calculateFieldStatistics(values);
     const anomalies = [];
     
-    values.forEach((value, index) => {
+    values.forEach((value, _index) => {
       const zScore = Math.abs((value - stats.mean) / (stats.std || 1));
       if (zScore > detector.threshold) {
         anomalies.push({ index, value, zScore });
@@ -1087,7 +1087,7 @@ class DataQualityValidator extends EventEmitter {
       },
       trends: {
         overallTrend: this.calculateTrend(history.map(h => h.overallScore)),
-        dimensionTrends: Object.keys(metrics).reduce((trends, dimension) => {
+        dimensionTrends: Object.keys(metrics).reduce(_(trends, dimension) => {
           if (metrics[dimension].trend) {
             trends[dimension] = this.calculateTrend(metrics[dimension].trend.map(t => t.value));
           }

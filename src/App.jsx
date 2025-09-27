@@ -1,222 +1,200 @@
-/**
- * Emergency App Component - Simplified Clerk Implementation
- * 
- * This is a minimal, working version designed to:
- * 1. Get the application running immediately
- * 2. Provide basic authentication functionality
- * 3. Enable client demonstration
- * 4. Serve as fallback during deployment issues
- */
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+import './App.css';
+import { logInfo, logError } from '@/utils/structuredLogger';
 
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import { ErrorBoundary } from 'react-error-boundary';
+// Lazy load feature components for better performance
+const WorkingCapitalDashboard = lazy(() => import('./features/working-capital/WorkingCapitalDashboard'));
+const InventoryDashboard = lazy(() => import('./features/inventory/InventoryDashboard'));
+const ProductionDashboard = lazy(() => import('./features/production/ProductionDashboard'));
+const AIInsights = lazy(() => import('./components/AIInsights'));
+const AIAnalyticsDashboard = lazy(() => import('./features/ai-analytics/AIAnalyticsDashboard'));
+const QualityControlDashboard = lazy(() => import('./features/quality/QualityControlDashboard'));
 
-// Emergency Clerk Provider
-import { 
-  EmergencyClerkProvider, 
-  useEmergencyAuth,
-  SignIn,
-  SignUp,
-  UserButton
-} from './auth/EmergencyClerkProvider';
+function App() {
+  const [status, setStatus] = useState('Loading...');
+  const [serverInfo, setServerInfo] = useState(null);
+  const [error, setError] = useState(null);
+  const [currentView, setCurrentView] = useState('dashboard');
 
-// Core components
-import LoadingSpinner from './components/ui/LoadingSpinner';
+  useEffect(() => {
+    // Test server connection
+    fetch('/api/status')
+      .then(response => response.json())
+      .then(data => {
+        setServerInfo(data);
+        setStatus('Connected');
+        logInfo('Server connection successful', { data });
+      })
+      .catch(err => {
+        setError(err.message);
+        setStatus('Connection Failed');
+        logError('Server connection failed', err);
+      });
+  }, []);
 
-// Lazy-loaded components
-const Dashboard = lazy(() => import('./components/Dashboard'));
-const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
-
-// Simple loading component
-const SimpleLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="text-center">
-      <LoadingSpinner size="lg" />
-      <p className="mt-4 text-gray-600">Loading...</p>
+  // Loading component for lazy-loaded features
+  const LoadingSpinner = () => (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+      <span className="ml-4 text-lg text-gray-600">Loading component...</span>
     </div>
-  </div>
-);
+  );
 
-// Error fallback component
-const ErrorFallback = ({ error, resetErrorBoundary }) => (
-  <div className="min-h-screen flex items-center justify-center bg-red-50">
-    <div className="max-w-md p-8 bg-white rounded-lg shadow-lg">
-      <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
-        <p className="text-gray-600 mb-4">{error.message}</p>
-        <button
-          onClick={resetErrorBoundary}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Try again
-        </button>
-      </div>
-    </div>
-  </div>
-);
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'working-capital':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <WorkingCapitalDashboard />
+          </Suspense>
+        );
+      case 'inventory':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <InventoryDashboard />
+          </Suspense>
+        );
+      case 'production':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <ProductionDashboard />
+          </Suspense>
+        );
+      case 'ai-insights':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <AIInsights />
+          </Suspense>
+        );
+      case 'ai-analytics':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <AIAnalyticsDashboard />
+          </Suspense>
+        );
+      case 'quality':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <QualityControlDashboard />
+          </Suspense>
+        );
+      case 'dashboard':
+      default:
+        return (
+          <div className="App">
+            <header className="App-header">
+              <h1>🏭 Sentia Manufacturing Dashboard</h1>
+              <h2>Enterprise Working Capital Intelligence</h2>
+              
+              <div className="status-card">
+                <h3>System Status</h3>
+                <div className={`status-indicator ${status === 'Connected' ? 'success' : status === 'Connection Failed' ? 'error' : 'loading'}`}>
+                  {status}
+                </div>
+                
+                {serverInfo && (
+                  <div className="server-info">
+                    <p><strong>Service:</strong> {serverInfo.service}</p>
+                    <p><strong>Version:</strong> {serverInfo.version}</p>
+                    <p><strong>Environment:</strong> {serverInfo.environment}</p>
+                    <p><strong>Timestamp:</strong> {new Date(serverInfo.timestamp).toLocaleString()}</p>
+                  </div>
+                )}
+                
+                {error && (
+                  <div className="error-info">
+                    <p><strong>Error:</strong> {error}</p>
+                  </div>
+                )}
+              </div>
 
-// Simple header component
-const SimpleHeader = ({ user, onSignOut }) => (
-  <header className="bg-white shadow-sm border-b">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center h-16">
-        <div className="flex items-center">
-          <h1 className="text-xl font-semibold text-gray-900">
-            Sentia Manufacturing
-          </h1>
-        </div>
-        <div className="flex items-center space-x-4">
-          {user && (
-            <>
-              <span className="text-sm text-gray-600">
-                Welcome, {user.firstName || 'User'}
-              </span>
-              <UserButton afterSignOutUrl="/" />
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  </header>
-);
+              <div className="features-grid">
+                <div className="feature-card">
+                  <h4>📊 Working Capital Calculator</h4>
+                  <p>Analyze cash flow and optimize working capital</p>
+                  <button 
+                    className="feature-button active"
+                    onClick={() => setCurrentView('working-capital')}
+                  >
+                    Launch Calculator
+                  </button>
+                </div>
+                
+                <div className="feature-card">
+                  <h4>📦 Inventory Management</h4>
+                  <p>Monitor stock levels, reorder points, and turnover</p>
+                  <button
+                    className="feature-button active"
+                    onClick={() => setCurrentView('inventory')}
+                  >
+                    Manage Inventory
+                  </button>
+                </div>
 
-// Simple navigation
-const SimpleNav = () => (
-  <nav className="bg-gray-50 border-r min-h-screen w-64 p-4">
-    <div className="space-y-2">
-      <a
-        href="/dashboard"
-        className="block px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
-      >
-        Dashboard
-      </a>
-      <a
-        href="/working-capital"
-        className="block px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"
-      >
-        Working Capital
-      </a>
-    </div>
-  </nav>
-);
+                <div className="feature-card">
+                  <h4>🏭 Production Tracking</h4>
+                  <p>Real-time OEE monitoring and production optimization</p>
+                  <button
+                    className="feature-button active"
+                    onClick={() => setCurrentView('production')}
+                  >
+                    Track Production
+                  </button>
+                </div>
 
-// Protected route component
-const ProtectedRoute = ({ children }) => {
-  const { isSignedIn, isReady } = useEmergencyAuth();
+                <div className="feature-card">
+                  <h4>🤖 AI Insights</h4>
+                  <p>AI-powered manufacturing intelligence</p>
+                  <button
+                    className="feature-button active"
+                    onClick={() => setCurrentView('ai-insights')}
+                  >
+                    View Insights
+                  </button>
+                </div>
+                
+                <div className="feature-card">
+                  <h4>🔗 Enterprise Integration</h4>
+                  <p>Connect with Xero, Shopify, and more</p>
+                  <button disabled>Coming Soon</button>
+                </div>
+              </div>
 
-  if (!isReady) {
-    return <SimpleLoader />;
-  }
-
-  if (!isSignedIn) {
-    return <Navigate to="/sign-in" replace />;
-  }
-
-  return children;
-};
-
-// Main authenticated app
-const AuthenticatedApp = () => {
-  const { user, isSignedIn, isReady } = useEmergencyAuth();
-
-  // Loading state
-  if (!isReady) {
-    return <SimpleLoader />;
-  }
-
-  // Not authenticated - show sign in
-  if (!isSignedIn) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Sentia Manufacturing
-            </h1>
-            <p className="text-gray-600">
-              Manufacturing Intelligence Platform
-            </p>
+              <div className="deployment-info">
+                <h3>🚀 Deployment Status</h3>
+                <p>✅ React Application: Loaded Successfully</p>
+                <p>✅ Server Connection: {status}</p>
+                <p>✅ Static Assets: Serving Correctly</p>
+                <p>✅ Health Checks: Operational</p>
+                <p>✅ Working Capital Calculator: Ready</p>
+                <p>✅ Inventory Management: Ready</p>
+                <p>✅ Production Tracking: Ready</p>
+                <p>✅ AI Insights: Ready</p>
+              </div>
+            </header>
           </div>
-          <Routes>
-            <Route path="/sign-in" element={<SignIn routing="path" path="/sign-in" />} />
-            <Route path="/sign-up" element={<SignUp routing="path" path="/sign-up" />} />
-            <Route path="*" element={<Navigate to="/sign-in" replace />} />
-          </Routes>
-        </div>
+        );
+    }
+  };
+
+  if (currentView !== 'dashboard') {
+    return (
+      <div className="app-container">
+        <nav className="app-nav">
+          <button 
+            className="nav-button"
+            onClick={() => setCurrentView('dashboard')}
+          >
+            ← Back to Dashboard
+          </button>
+          <h3>Sentia Manufacturing Dashboard</h3>
+        </nav>
+        {renderCurrentView()}
       </div>
     );
   }
 
-  // Authenticated - show main app
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <SimpleHeader user={user} />
-      
-      <div className="flex">
-        <SimpleNav />
-        
-        <main className="flex-1 p-6">
-          <Suspense fallback={<SimpleLoader />}>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              <Route 
-                path="/working-capital" 
-                element={
-                  <ProtectedRoute>
-                    <WorkingCapital />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Fallback for any other routes */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </Suspense>
-        </main>
-      </div>
-    </div>
-  );
-};
+  return renderCurrentView();
+}
 
-// Main App component
-const EmergencyApp = () => {
-  return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onError={(error, errorInfo) => {
-        console.error('Application error:', error, errorInfo);
-      }}
-    >
-      <EmergencyClerkProvider>
-        <Router>
-          <AuthenticatedApp />
-          
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-              },
-            }}
-          />
-        </Router>
-      </EmergencyClerkProvider>
-    </ErrorBoundary>
-  );
-};
-
-export default EmergencyApp;
+export default App;

@@ -23,32 +23,33 @@ console.log('='.repeat(70));
 console.log('SENTIA MANUFACTURING - RENDER PRODUCTION SERVER');
 console.log('='.repeat(70));
 console.log('Starting time:', new Date().toISOString());
-console.log('Environment:', process.env.NODE_ENV || 'production');
-console.log('Port:', process.env.PORT || 5000);
+console.log('Environment:', process.env.NODE_ENV || null);
+console.log('Port:', process.env.PORT 0);
 console.log('Directory:', __dirname);
 console.log('Clerk Key:', process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'CONFIGURED' : 'MISSING');
-console.log('MCP Server:', process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com');
+console.log('MCP Server:', process.env.MCP_SERVER_URL || null);
 console.log('='.repeat(70));
 
 // CRITICAL: Set Clerk key for client
 if (!process.env.VITE_CLERK_PUBLISHABLE_KEY) {
-  process.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+  process.env.VITE_CLERK_PUBLISHABLE_KEY = 'pk_live_REDACTED';
   console.log('WARNING: Using default Clerk publishable key (production)');
 }
 
 // Create Express app
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT 0;
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CRITICAL: Content Security Policy for Clerk Authentication
-app.use((req, res, next) => {
+app.use((req, res, _next) => {
   // Set CSP headers for Clerk to work properly
   const clerkDomains = [
     'https://*.clerk.accounts.dev',
+    'https://robust-snake-50.clerk.accounts.dev',
     'https://clerk.accounts.dev',
     'https://api.clerk.dev',
     'https://*.clerk.com',
@@ -59,7 +60,7 @@ app.use((req, res, next) => {
   const cspHeader = [
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${clerkDomains.join(' ')}`,
-    `connect-src 'self' ${clerkDomains.join(' ')} ${process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'}`,
+    `connect-src 'self' ${clerkDomains.join(' ')} ${process.env.MCP_SERVER_URL || null}`,
     `frame-src 'self' ${clerkDomains.join(' ')}`,
     `img-src 'self' data: blob: ${clerkDomains.join(' ')}`,
     `style-src 'self' 'unsafe-inline' ${clerkDomains.join(' ')}`,
@@ -81,25 +82,25 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint - ALWAYS WORKS
-app.get('/health', (req, res) => {
+app.get(_'/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
     service: 'sentia-manufacturing',
-    environment: process.env.NODE_ENV || 'production',
+    environment: process.env.NODE_ENV || null,
     version: '1.0.5',
     uptime: process.uptime(),
     memory: process.memoryUsage(),
     deployment: {
-      branch: process.env.RENDER_GIT_BRANCH || 'unknown',
-      commit: process.env.RENDER_GIT_COMMIT || 'unknown',
-      service: process.env.RENDER_SERVICE_NAME || 'unknown'
+      branch: process.env.RENDER_GIT_BRANCH || null,
+      commit: process.env.RENDER_GIT_COMMIT || null,
+      service: process.env.RENDER_SERVICE_NAME || null
     }
   });
 });
 
 // API status endpoint
-app.get('/api/status', (req, res) => {
+app.get(_'/api/status', (req, res) => {
   res.json({
     status: 'operational',
     api_version: 'v1',
@@ -133,8 +134,8 @@ const fallbackHTML = `<!DOCTYPE html>
   <title>Sentia Manufacturing Dashboard</title>
   <script>
     // Set Clerk publishable key for client
-    window.VITE_CLERK_PUBLISHABLE_KEY = '${process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ'}';
-    window.VITE_MCP_SERVER_URL = '${process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'}';
+    window.VITE_CLERK_PUBLISHABLE_KEY = '${process.env.VITE_CLERK_PUBLISHABLE_KEY || null}';
+    window.VITE_MCP_SERVER_URL = '${process.env.MCP_SERVER_URL || null}';
   </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -253,15 +254,15 @@ const fallbackHTML = `<!DOCTYPE html>
     <div class="info">
       <div class="info-item">
         <strong>Environment:</strong>
-        <span>${process.env.NODE_ENV || 'production'}</span>
+        <span>${process.env.NODE_ENV || null}</span>
       </div>
       <div class="info-item">
         <strong>Branch:</strong>
-        <span>${process.env.RENDER_GIT_BRANCH || 'main'}</span>
+        <span>${process.env.RENDER_GIT_BRANCH || null}</span>
       </div>
       <div class="info-item">
         <strong>Service:</strong>
-        <span>${process.env.RENDER_SERVICE_NAME || 'sentia-manufacturing'}</span>
+        <span>${process.env.RENDER_SERVICE_NAME || null}</span>
       </div>
       <div class="info-item">
         <strong>Status:</strong>
@@ -282,7 +283,7 @@ const fallbackHTML = `<!DOCTYPE html>
 
   <script>
     // Auto-refresh after 5 seconds if still loading
-    setTimeout(() => {
+    setTimeout(_() => {
       const status = document.getElementById('status');
       const appStatus = document.getElementById('app-status');
       if (status.classList.contains('loading')) {
@@ -299,7 +300,7 @@ const fallbackHTML = `<!DOCTYPE html>
           document.getElementById('app-status').textContent = 'Server Running';
         }
       })
-      .catch(() => {
+      .catch(_() => {
         document.getElementById('app-status').textContent = 'Connection Error';
       });
   </script>
@@ -307,12 +308,12 @@ const fallbackHTML = `<!DOCTYPE html>
 </html>`;
 
 // CRITICAL: Serve clerk-init.js BEFORE static middleware to ensure proper injection
-app.get('/clerk-init.js', (req, res) => {
+app.get(_'/clerk-init.js', (req, res) => {
   console.log('[Clerk Init] Serving dynamically generated clerk-init.js');
 
-  const clerkPublishableKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
-  const mcpServerUrl = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
-  const apiBaseUrl = process.env.VITE_API_BASE_URL || '/api';
+  const clerkPublishableKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || null;
+  const mcpServerUrl = process.env.MCP_SERVER_URL || null;
+  const apiBaseUrl = process.env.VITE_API_BASE_URL || null;
 
   const clerkInitScript = `
 // Clerk Environment Initialization - Server Injected
@@ -385,9 +386,9 @@ if (distExists) {
   }));
 
   // Serve all static files from dist
-  app.use(express.static(distPath, {
-    index: false,
-    maxAge: '1h',
+  app.use(_express.static(distPath, {
+    index: _false,
+    maxAge: _'1h',
     setHeaders: (res, path) => {
       // Set proper MIME types
       if (path.endsWith('.html')) {
@@ -415,24 +416,24 @@ if (distExists) {
 }
 
 // API Routes - Basic functionality
-app.get('/api/health', (req, res) => {
+app.get(_'/api/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
     service: 'sentia-manufacturing',
-    environment: process.env.NODE_ENV || 'production',
+    environment: process.env.NODE_ENV || null,
     version: '1.0.5'
   });
 });
 
-app.get('/api/test-simple', (req, res) => {
+app.get(_'/api/test-simple', (req, res) => {
   res.json({
     message: 'API is working',
     timestamp: new Date().toISOString()
   });
 });
 
-app.get('/api/services/status', (req, res) => {
+app.get(_'/api/services/status', (req, res) => {
   res.json({
     status: 'operational',
     services: {
@@ -444,10 +445,10 @@ app.get('/api/services/status', (req, res) => {
 });
 
 // Mock API endpoints for dashboard
-app.get('/api/dashboard/stats', (req, res) => {
+app.get(_'/api/dashboard/stats', (req, res) => {
   res.json({
     kpis: {
-      revenue: 125000,
+      0,
       orders: 342,
       efficiency: 94.5,
       quality: 98.2
@@ -457,7 +458,7 @@ app.get('/api/dashboard/stats', (req, res) => {
 });
 
 // Catch all route - serve index.html or fallback with Clerk env
-app.get('*', (req, res) => {
+app.get(_'*', (req, res) => {
   // Don't serve HTML for API routes
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });
@@ -469,15 +470,15 @@ app.get('*', (req, res) => {
     let html = fs.readFileSync(indexPath, 'utf-8');
 
     // Inject Clerk key into the HTML
-    const clerkKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk';
-    const mcpServer = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
+    const clerkKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || null;
+    const mcpServer = process.env.MCP_SERVER_URL || null;
 
     const envScript = `
     <script>
       // Critical: Set environment variables for Clerk and other services
       window.VITE_CLERK_PUBLISHABLE_KEY = '${clerkKey}';
       window.VITE_MCP_SERVER_URL = '${mcpServer}';
-      window.VITE_API_BASE_URL = '${process.env.VITE_API_BASE_URL || '/api'}';
+      window.VITE_API_BASE_URL = '${process.env.VITE_API_BASE_URL || null}';
 
       // Ensure import.meta.env is available for Vite modules
       if (!window.import) window.import = {};
@@ -485,7 +486,7 @@ app.get('*', (req, res) => {
       if (!window.import.meta.env) window.import.meta.env = {};
       window.import.meta.env.VITE_CLERK_PUBLISHABLE_KEY = '${clerkKey}';
       window.import.meta.env.VITE_MCP_SERVER_URL = '${mcpServer}';
-      window.import.meta.env.VITE_API_BASE_URL = '${process.env.VITE_API_BASE_URL || '/api'}';
+      window.import.meta.env.VITE_API_BASE_URL = '${process.env.VITE_API_BASE_URL || null}';
     </script>
     `;
 
@@ -506,7 +507,7 @@ app.get('*', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use(_(err, req, res, _next) => {
   console.error('Server error:', err);
   res.status(500).json({
     error: 'Internal server error',
@@ -518,27 +519,27 @@ app.use((err, req, res, next) => {
 const server = createServer(app);
 
 // Start server
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, _'0.0.0.0', _() => {
   console.log('='.repeat(70));
   console.log(`Server running on port ${PORT}`);
-  console.log(`Health check: ${process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`}/health`);
-  console.log(`API status: ${process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`}/api/status`);
-  console.log(`Main app: ${process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`}`);
+  console.log(`Health check: ${process.env.RENDER_EXTERNAL_URL || null}/health`);
+  console.log(`API status: ${process.env.RENDER_EXTERNAL_URL || null}/api/status`);
+  console.log(`Main app: ${process.env.RENDER_EXTERNAL_URL || null}`);
   console.log('='.repeat(70));
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+process.on(_'SIGTERM', _() => {
   console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
+  server.close(_() => {
     console.log('Server closed');
     process.exit(0);
   });
 });
 
-process.on('SIGINT', () => {
+process.on(_'SIGINT', _() => {
   console.log('SIGINT received, shutting down gracefully');
-  server.close(() => {
+  server.close(_() => {
     console.log('Server closed');
     process.exit(0);
   });

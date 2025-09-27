@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 /**
  * AI Agent 24/7 Monitoring System
  * Ensures continuous operation and health monitoring of all AI agents
@@ -21,7 +23,7 @@ class AgentMonitoringService {
    * Initialize 24/7 agent monitoring
    */
   async initialize() {
-    console.log('🤖 Initializing 24/7 AI Agent Monitoring System...');
+    logDebug('🤖 Initializing 24/7 AI Agent Monitoring System...');
     
     // Register all AI agents for monitoring
     this.registerAgents();
@@ -32,7 +34,7 @@ class AgentMonitoringService {
     // Setup automatic restart capabilities
     this.setupAutoRestart();
     
-    console.log('✅ 24/7 AI Agent Monitoring System Active');
+    logDebug('✅ 24/7 AI Agent Monitoring System Active');
     return true;
   }
 
@@ -177,7 +179,7 @@ class AgentMonitoringService {
       });
     });
 
-    console.log(`📋 Registered ${this.agents.size} AI agents for 24/7 monitoring`);
+    logDebug(`📋 Registered ${this.agents.size} AI agents for 24/7 monitoring`);
   }
 
   /**
@@ -185,27 +187,27 @@ class AgentMonitoringService {
    */
   startContinuousMonitoring() {
     if (this.isMonitoring) {
-      console.log('⚠️ Monitoring already active');
+      logDebug('⚠️ Monitoring already active');
       return;
     }
 
     this.isMonitoring = true;
     this.monitoringStartTime = new Date();
 
-    console.log('🔍 Starting 24/7 continuous monitoring...');
+    logDebug('🔍 Starting 24/7 continuous monitoring...');
 
     // Health check all agents every 30 seconds
-    const masterInterval = setInterval(() => {
+    const masterInterval = setInterval(_() => {
       this.performHealthChecks();
     }, this.healthCheckInterval);
 
     // Performance metrics every 5 minutes
-    const metricsInterval = setInterval(() => {
+    const metricsInterval = setInterval(_() => {
       this.collectPerformanceMetrics();
     }, 300000);
 
     // Cleanup and optimization every hour
-    const maintenanceInterval = setInterval(() => {
+    const maintenanceInterval = setInterval(_() => {
       this.performMaintenanceTasks();
     }, 3600000);
 
@@ -214,7 +216,7 @@ class AgentMonitoringService {
     this.monitoringIntervals.set('metrics', metricsInterval);
     this.monitoringIntervals.set('maintenance', maintenanceInterval);
 
-    console.log('✅ 24/7 monitoring active - all agents under continuous surveillance');
+    logDebug('✅ 24/7 monitoring active - all agents under continuous surveillance');
   }
 
   /**
@@ -234,10 +236,10 @@ class AgentMonitoringService {
     const results = await Promise.allSettled(healthPromises);
     
     // Process results and trigger alerts if needed
-    results.forEach((result, index) => {
+    results.forEach((result, _index) => {
       if (result.status === 'rejected') {
         const agentId = Array.from(this.agents.keys())[index];
-        console.error(`❌ Health check failed for agent: ${agentId}`, result.reason);
+        logError(`❌ Health check failed for agent: ${agentId}`, result.reason);
         this.handleAgentFailure(agentId, result.reason);
       }
     });
@@ -330,7 +332,7 @@ class AgentMonitoringService {
    * Handle unhealthy agent
    */
   async handleUnhealthyAgent(agentId, agent, healthStatus) {
-    console.warn(`⚠️ Agent unhealthy: ${agent.name} (${agentId})`);
+    logWarn(`⚠️ Agent unhealthy: ${agent.name} (${agentId})`);
 
     // Check if auto-restart is enabled and thresholds are exceeded
     if (agent.autoRestart && this.shouldRestartAgent(agent)) {
@@ -373,7 +375,7 @@ class AgentMonitoringService {
    */
   async restartAgent(agentId, agent) {
     try {
-      console.log(`🔄 Restarting agent: ${agent.name} (${agentId})`);
+      logDebug(`🔄 Restarting agent: ${agent.name} (${agentId})`);
       
       agent.status = 'restarting';
       agent.restartCount++;
@@ -387,10 +389,10 @@ class AgentMonitoringService {
       agent.status = 'operational';
       agent.isActive = true;
 
-      console.log(`✅ Agent restarted successfully: ${agent.name}`);
+      logDebug(`✅ Agent restarted successfully: ${agent.name}`);
       
     } catch (error) {
-      console.error(`❌ Failed to restart agent: ${agentId}`, error);
+      logError(`❌ Failed to restart agent: ${agentId}`, error);
       agent.status = 'restart_failed';
       this.sendCriticalAlert(agentId, agent, { error: 'Restart failed: ' + error.message });
     }
@@ -404,7 +406,7 @@ class AgentMonitoringService {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     // Simulate initialization
-    console.log(`🔧 Reinitializing ${agent.name}...`);
+    logDebug(`🔧 Reinitializing ${agent.name}...`);
     await new Promise(resolve => setTimeout(resolve, 3000));
     
     return true;
@@ -428,7 +430,7 @@ class AgentMonitoringService {
       recommendedAction: agent.autoRestart ? 'Auto-restart initiated' : 'Manual intervention required'
     };
 
-    console.error('🚨 CRITICAL ALERT:', alert);
+    logError('🚨 CRITICAL ALERT:', alert);
     
     // Store alert (could send to monitoring service, email, Slack, etc.)
     this.storeAlert(alert);
@@ -439,14 +441,14 @@ class AgentMonitoringService {
    */
   storeAlert(alert) {
     // In a real implementation, this would store to database or send to monitoring service
-    console.log('📝 Alert stored:', alert.severity, alert.agentName, alert.issue);
+    logDebug('📝 Alert stored:', alert.severity, alert.agentName, alert.issue);
   }
 
   /**
    * Collect performance metrics from all agents
    */
   async collectPerformanceMetrics() {
-    console.log('📊 Collecting 24/7 performance metrics...');
+    logDebug('📊 Collecting 24/7 performance metrics...');
     
     const metrics = {
       timestamp: new Date(),
@@ -489,7 +491,7 @@ class AgentMonitoringService {
     }
 
     // Log system health summary
-    console.log(`📈 System Health: ${metrics.activeAgents}/${metrics.totalAgents} agents active, ${metrics.unhealthyAgents} unhealthy`);
+    logDebug(`📈 System Health: ${metrics.activeAgents}/${metrics.totalAgents} agents active, ${metrics.unhealthyAgents} unhealthy`);
     
     return metrics;
   }
@@ -498,7 +500,7 @@ class AgentMonitoringService {
    * Perform maintenance tasks
    */
   async performMaintenanceTasks() {
-    console.log('🔧 Performing 24/7 system maintenance...');
+    logDebug('🔧 Performing 24/7 system maintenance...');
     
     // Clean up old error logs
     for (const [agentId, agent] of this.agents) {
@@ -511,12 +513,12 @@ class AgentMonitoringService {
     // Check for agents needing proactive maintenance
     for (const [agentId, agent] of this.agents) {
       if (this.needsProactiveMaintenance(agent)) {
-        console.log(`🔄 Proactive maintenance for: ${agent.name}`);
+        logDebug(`🔄 Proactive maintenance for: ${agent.name}`);
         await this.performProactiveMaintenance(agentId, agent);
       }
     }
 
-    console.log('✅ Maintenance tasks completed');
+    logDebug('✅ Maintenance tasks completed');
   }
 
   /**
@@ -543,13 +545,13 @@ class AgentMonitoringService {
    * Perform proactive maintenance on an agent
    */
   async performProactiveMaintenance(agentId, agent) {
-    console.log(`🔧 Proactive maintenance: ${agent.name}`);
+    logDebug(`🔧 Proactive maintenance: ${agent.name}`);
     
     // Clear caches, reload models, refresh connections, etc.
     // This would be agent-specific maintenance tasks
     
     // For now, just log the maintenance
-    console.log(`✅ Proactive maintenance completed: ${agent.name}`);
+    logDebug(`✅ Proactive maintenance completed: ${agent.name}`);
   }
 
   /**
@@ -588,7 +590,7 @@ class AgentMonitoringService {
    * Stop monitoring (for graceful shutdown)
    */
   stopMonitoring() {
-    console.log('🛑 Stopping 24/7 agent monitoring...');
+    logDebug('🛑 Stopping 24/7 agent monitoring...');
     
     this.isMonitoring = false;
     
@@ -598,28 +600,28 @@ class AgentMonitoringService {
     }
     
     this.monitoringIntervals.clear();
-    console.log('✅ Monitoring stopped');
+    logDebug('✅ Monitoring stopped');
   }
 
   /**
    * Setup automatic restart capabilities
    */
   setupAutoRestart() {
-    console.log('🔄 Setting up automatic restart capabilities...');
+    logDebug('🔄 Setting up automatic restart capabilities...');
     
     // Handle process signals for graceful shutdown/restart
     process.on('SIGTERM', () => this.gracefulShutdown());
     process.on('SIGINT', () => this.gracefulShutdown());
     
     // Handle uncaught exceptions
-    process.on('uncaughtException', (error) => {
-      console.error('🚨 Uncaught Exception:', error);
+    process.on(_'uncaughtException', (error) => {
+      logError('🚨 Uncaught Exception:', error);
       this.handleCriticalError(error);
     });
 
     // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason, promise) => {
-      console.error('🚨 Unhandled Rejection:', reason);
+    process.on(_'unhandledRejection', _(reason, promise) => {
+      logError('🚨 Unhandled Rejection:', reason);
       this.handleCriticalError(reason);
     });
   }
@@ -628,15 +630,15 @@ class AgentMonitoringService {
    * Handle critical system errors
    */
   async handleCriticalError(error) {
-    console.error('🚨 CRITICAL SYSTEM ERROR:', error);
+    logError('🚨 CRITICAL SYSTEM ERROR:', error);
     
     // Attempt to save current state
     try {
       const status = this.getMonitoringStatus();
-      console.log('💾 Saving monitoring state before potential restart...');
+      logDebug('💾 Saving monitoring state before potential restart...');
       // In real implementation, would save to persistent storage
     } catch (saveError) {
-      console.error('❌ Failed to save monitoring state:', saveError);
+      logError('❌ Failed to save monitoring state:', saveError);
     }
 
     // Send critical alert
@@ -652,15 +654,15 @@ class AgentMonitoringService {
    * Graceful shutdown
    */
   async gracefulShutdown() {
-    console.log('🔄 Initiating graceful shutdown of 24/7 monitoring...');
+    logDebug('🔄 Initiating graceful shutdown of 24/7 monitoring...');
     
     this.stopMonitoring();
     
     // Save final state
     const finalStatus = this.getMonitoringStatus();
-    console.log('💾 Final monitoring state saved');
+    logDebug('💾 Final monitoring state saved');
     
-    console.log('✅ Graceful shutdown completed');
+    logDebug('✅ Graceful shutdown completed');
   }
 }
 

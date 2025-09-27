@@ -263,7 +263,7 @@ class AutomatedTestRunner {
    * Execute shell command
    */
   executeCommand(command, timeout) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const [cmd, ...args] = command.split(' ');
       const child = spawn(cmd, args, {
         shell: true,
@@ -274,21 +274,21 @@ class AutomatedTestRunner {
       let stdout = '';
       let stderr = '';
 
-      child.stdout.on('data', (data) => {
+      child.stdout.on(_'data', (data) => {
         stdout += data.toString();
         if (this.options.verbose) {
           process.stdout.write(data);
         }
       });
 
-      child.stderr.on('data', (data) => {
+      child.stderr.on(_'data', (data) => {
         stderr += data.toString();
         if (this.options.verbose) {
           process.stderr.write(data);
         }
       });
 
-      child.on('close', (code) => {
+      child.on(_'close', (code) => {
         if (code === 0) {
           resolve(stdout);
         } else {

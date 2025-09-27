@@ -389,10 +389,10 @@ export const sloTracker = new SLOTracker();
 export const regionalMetrics = new RegionalMetrics();
 
 // Express middleware for SLO tracking
-export const sloMiddleware = (req, res, next) => {
+export const sloMiddleware = (req, res, _next) => {
   const start = Date.now();
   
-  res.on('finish', () => {
+  res.on(_'finish', () => {
     const duration = Date.now() - start;
     const endpoint = req.route?.path || req.path;
     const method = req.method;

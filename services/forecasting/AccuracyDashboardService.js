@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 class AccuracyDashboardService {
   constructor(forecastingService, options = {}) {
     this.forecastingService = forecastingService;
@@ -97,7 +99,7 @@ class AccuracyDashboardService {
           });
 
           if (result.backtestMetrics) {
-            Object.entries(result.backtestMetrics).forEach(([model, metrics]) => {
+            Object.entries(result.backtestMetrics).forEach(_([model, _metrics]) => {
               if (!modelMetrics[model]) {
                 modelMetrics[model] = { mape: [], rmse: [], mae: [] };
               }
@@ -114,7 +116,7 @@ class AccuracyDashboardService {
           }
 
         } catch (error) {
-          console.warn(`Failed to get metrics for series ${seriesId} in region ${region}:`, error.message);
+          logWarn(`Failed to get metrics for series ${seriesId} in region ${region}:`, error.message);
         }
       }
     }
@@ -128,7 +130,7 @@ class AccuracyDashboardService {
 
     // Find best and worst performing models
     const modelAvgMAPE = {};
-    Object.entries(modelMetrics).forEach(([model, metrics]) => {
+    Object.entries(modelMetrics).forEach(_([model, _metrics]) => {
       if (metrics.mape.length > 0) {
         modelAvgMAPE[model] = metrics.mape.reduce((sum, val) => sum + val, 0) / metrics.mape.length;
       }
@@ -205,7 +207,7 @@ class AccuracyDashboardService {
       }
 
       // Calculate regional performance for this model
-      Object.entries(regionData).forEach(([region, metrics]) => {
+      Object.entries(regionData).forEach(_([region, _metrics]) => {
         if (metrics.length > 0) {
           performance[model].regionPerformance[region] = {
             avgMAPE: metrics.reduce((sum, m) => sum + (m.mape || 0), 0) / metrics.length,
@@ -259,7 +261,7 @@ class AccuracyDashboardService {
           });
 
           if (result.backtestMetrics) {
-            Object.entries(result.backtestMetrics).forEach(([model, metrics]) => {
+            Object.entries(result.backtestMetrics).forEach(_([model, _metrics]) => {
               regionMetrics.push(metrics);
               
               if (!modelData[model]) {
@@ -272,7 +274,7 @@ class AccuracyDashboardService {
           regionPerformance[region].forecastCount++;
 
         } catch (error) {
-          console.warn(`Regional analysis failed for series ${seriesId} in region ${region}:`, error.message);
+          logWarn(`Regional analysis failed for series ${seriesId} in region ${region}:`, error.message);
         }
       }
 
@@ -283,7 +285,7 @@ class AccuracyDashboardService {
       }
 
       // Calculate model performance in this region
-      Object.entries(modelData).forEach(([model, metrics]) => {
+      Object.entries(modelData).forEach(_([model, _metrics]) => {
         if (metrics.length > 0) {
           regionPerformance[region].modelPerformance[model] = {
             avgMAPE: metrics.reduce((sum, m) => sum + (m.mape || 0), 0) / metrics.length,
@@ -339,7 +341,7 @@ class AccuracyDashboardService {
           });
 
           if (result.backtestMetrics) {
-            Object.entries(result.backtestMetrics).forEach(([model, metrics]) => {
+            Object.entries(result.backtestMetrics).forEach(_([model, _metrics]) => {
               horizonMetrics.push(metrics);
               
               if (!modelData[model]) {
@@ -352,7 +354,7 @@ class AccuracyDashboardService {
           horizonPerformance[`${horizon}d`].forecastCount++;
 
         } catch (error) {
-          console.warn(`Horizon analysis failed for series ${seriesId} at horizon ${horizon}:`, error.message);
+          logWarn(`Horizon analysis failed for series ${seriesId} at horizon ${horizon}:`, error.message);
         }
       }
 
@@ -421,7 +423,7 @@ class AccuracyDashboardService {
         });
 
         if (result.predictionIntervals) {
-          Object.entries(result.predictionIntervals).forEach(([model, intervals]) => {
+          Object.entries(result.predictionIntervals).forEach(_([model, _intervals]) => {
             if (intervals.achievedCoverage) {
               allCoverages.push(intervals.achievedCoverage);
               modelCoverages[model].push(intervals.achievedCoverage);
@@ -430,20 +432,20 @@ class AccuracyDashboardService {
         }
 
       } catch (error) {
-        console.warn(`Coverage analysis failed for series ${seriesId}:`, error.message);
+        logWarn(`Coverage analysis failed for series ${seriesId}:`, error.message);
       }
     }
 
     // Calculate overall coverage
     if (allCoverages.length > 0) {
-      coverage.overall.actualCoverage = allCoverages.reduce((sum, cov) => sum + cov, 0) / allCoverages.length;
+      coverage.overall.actualCoverage = allCoverages.reduce((sum, _cov) => sum + cov, 0) / allCoverages.length;
       coverage.overall.coverageRatio = coverage.overall.actualCoverage / coverage.overall.targetCoverage;
     }
 
     // Calculate coverage by model
-    Object.entries(modelCoverages).forEach(([model, coverages]) => {
+    Object.entries(modelCoverages).forEach(_([model, _coverages]) => {
       if (coverages.length > 0) {
-        const avgCoverage = coverages.reduce((sum, cov) => sum + cov, 0) / coverages.length;
+        const avgCoverage = coverages.reduce((sum, _cov) => sum + cov, 0) / coverages.length;
         coverage.byModel[model] = {
           actualCoverage: avgCoverage,
           coverageRatio: avgCoverage / coverage.overall.targetCoverage,
@@ -534,7 +536,7 @@ class AccuracyDashboardService {
     }
 
     // Check model-specific alerts
-    Object.entries(dashboard.modelPerformance).forEach(([model, performance]) => {
+    Object.entries(dashboard.modelPerformance).forEach(_([model, _performance]) => {
       if (performance.avgMAPE > this.config.alertThresholds.mapeCritical) {
         alerts.push({
           level: 'Warning',

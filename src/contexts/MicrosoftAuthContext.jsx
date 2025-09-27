@@ -1,4 +1,5 @@
-import { devLog } from '../lib/devLog.js';\nimport React, { createContext, useContext, useState, useEffect } from 'react';
+import { devLog } from '../lib/devLog.js';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
 import { MsalProvider, useMsal, useAccount, useIsAuthenticated } from '@azure/msal-react';
 
@@ -57,7 +58,7 @@ const MicrosoftAuthContextProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   // Login to Microsoft
-  const loginToMicrosoft = async (scopes = graphScopes.basic) => {
+  const loginToMicrosoft = async (scopes = _graphScopes.basic) => {
     setIsLoading(true);
     setError(null);
     
@@ -83,7 +84,7 @@ const MicrosoftAuthContextProvider = ({ children }) => {
   };
 
   // Get access token silently
-  const getAccessToken = async (scopes = graphScopes.basic) => {
+  const getAccessToken = async (scopes = _graphScopes.basic) => {
     if (!account) {
       throw new Error('No account found. Please login first.');
     }

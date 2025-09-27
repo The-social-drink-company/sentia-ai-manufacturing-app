@@ -7,6 +7,8 @@
 import axios from 'axios';
 import WebSocket from 'ws';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class MCPServerClient extends EventEmitter {
   constructor() {
@@ -44,7 +46,7 @@ class MCPServerClient extends EventEmitter {
       // Check MCP Server health
       const healthCheck = await this.checkHealth();
       if (healthCheck.status === 'healthy') {
-        console.log('MCP Server connection established:', this.baseURL);
+        logDebug('MCP Server connection established:', this.baseURL);
 
         // Initialize WebSocket for real-time updates
         if (process.env.MCP_ENABLE_WEBSOCKET === 'true') {
@@ -52,7 +54,7 @@ class MCPServerClient extends EventEmitter {
         }
       }
     } catch (error) {
-      console.error('Failed to initialize MCP Server connection:', error.message);
+      logError('Failed to initialize MCP Server connection:', error.message);
       this.scheduleReconnect();
     }
   }
@@ -66,35 +68,35 @@ class MCPServerClient extends EventEmitter {
         }
       });
 
-      this.ws.on('open', () => {
-        console.log('WebSocket connection established with MCP Server');
+      this.ws.on(_'open', _() => {
+        logDebug('WebSocket connection established with MCP Server');
         this.isConnected = true;
         this.reconnectAttempts = 0;
         this.emit('connected');
       });
 
-      this.ws.on('message', (data) => {
+      this.ws.on(_'message', _(data) => {
         try {
           const message = JSON.parse(data);
           this.handleWebSocketMessage(message);
         } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
+          logError('Error parsing WebSocket message:', error);
         }
       });
 
-      this.ws.on('close', () => {
-        console.log('WebSocket connection closed');
+      this.ws.on(_'close', _() => {
+        logDebug('WebSocket connection closed');
         this.isConnected = false;
         this.emit('disconnected');
         this.scheduleReconnect();
       });
 
-      this.ws.on('error', (error) => {
-        console.error('WebSocket error:', error);
+      this.ws.on(_'error', _(error) => {
+        logError('WebSocket error:', error);
         this.emit('error', error);
       });
     } catch (error) {
-      console.error('Failed to initialize WebSocket:', error);
+      logError('Failed to initialize WebSocket:', error);
       this.scheduleReconnect();
     }
   }
@@ -123,13 +125,13 @@ class MCPServerClient extends EventEmitter {
   scheduleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Scheduling reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
+      logDebug(`Scheduling reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
 
-      setTimeout(() => {
+      setTimeout(_() => {
         this.initialize();
       }, this.reconnectInterval * this.reconnectAttempts);
     } else {
-      console.error('Max reconnection attempts reached. MCP Server unavailable.');
+      logError('Max reconnection attempts reached. MCP Server unavailable.');
       this.emit('max-reconnect-exceeded');
     }
   }
@@ -374,7 +376,7 @@ class MCPServerClient extends EventEmitter {
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to log event:', error);
+      logError('Failed to log event:', error);
     }
   }
 

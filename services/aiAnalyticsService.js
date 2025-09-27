@@ -4,6 +4,8 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class AIAnalyticsService {
   constructor() {
@@ -17,9 +19,9 @@ class AIAnalyticsService {
       // Test database connection
       await this.prisma.$connect();
       this.isConnected = true;
-      console.log('✅ AI Analytics Service connected to Neon PostgreSQL');
+      logDebug('✅ AI Analytics Service connected to Neon PostgreSQL');
     } catch (error) {
-      console.error('❌ Failed to connect to Neon database:', error.message);
+      logError('❌ Failed to connect to Neon database:', error.message);
       this.isConnected = false;
     }
   }
@@ -50,7 +52,7 @@ class AIAnalyticsService {
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
-      console.error('❌ Production data analysis failed:', error);
+      logError('❌ Production data analysis failed:', error);
       return this.generateFallbackProductionAnalysis();
     }
   }
@@ -83,7 +85,7 @@ class AIAnalyticsService {
     const efficiencyValues = data.map(d => parseFloat(d.efficiency || d.Efficiency || 0));
     const trend = efficiencyValues.length > 1 ? 
       (efficiencyValues[efficiencyValues.length - 1] > efficiencyValues[0] ? 'improving' : 'declining') : 'stable';
-    const mean = efficiencyValues.reduce((a, b) => a + b, 0) / efficiencyValues.length;
+    const mean = efficiencyValues.reduce((a, _b) => a + b, 0) / efficiencyValues.length;
     const variance = Math.sqrt(efficiencyValues.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / efficiencyValues.length);
     
     return { trend, variance: Math.round(variance * 100) / 100 };
@@ -187,7 +189,7 @@ class AIAnalyticsService {
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
-      console.error('❌ Financial analysis failed:', error);
+      logError('❌ Financial analysis failed:', error);
       return this.generateFallbackFinancialAnalysis();
     }
   }
@@ -245,7 +247,7 @@ class AIAnalyticsService {
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
-      console.error('❌ Demand forecasting failed:', error);
+      logError('❌ Demand forecasting failed:', error);
       return this.generateFallbackDemandForecast();
     }
   }
@@ -299,7 +301,7 @@ class AIAnalyticsService {
         vectorScore: projection.confidence
       }));
     } catch (error) {
-      console.error('❌ Cash flow forecasting failed:', error);
+      logError('❌ Cash flow forecasting failed:', error);
       return this.generateFallbackCashFlow();
     }
   }
@@ -345,7 +347,7 @@ class AIAnalyticsService {
     // Simple linear regression for next value prediction
     const n = values.length;
     const sumX = (n * (n + 1)) / 2;
-    const sumY = values.reduce((a, b) => a + b, 0);
+    const sumY = values.reduce((a, _b) => a + b, 0);
     const sumXY = values.reduce((sum, y, x) => sum + (x + 1) * y, 0);
     const sumXX = (n * (n + 1) * (2 * n + 1)) / 6;
     
@@ -506,7 +508,7 @@ class AIAnalyticsService {
     if (this.prisma) {
       await this.prisma.$disconnect();
       this.isConnected = false;
-      console.log('🔌 AI Analytics Service disconnected from Neon');
+      logDebug('🔌 AI Analytics Service disconnected from Neon');
     }
   }
 }

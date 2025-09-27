@@ -7,6 +7,8 @@
 
 import express from 'express';
 import cors from 'cors';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const app = express();
 const port = process.env.PORT || 9000;
@@ -16,13 +18,13 @@ app.use(cors());
 app.use(express.json());
 
 // Basic middleware
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+app.use((req, res, _next) => {
+  logDebug(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
 // Root endpoint
-app.get('/', (req, res) => {
+app.get(_'/', (req, res) => {
   res.json({
     name: 'Sentia MCP Server',
     version: '2.0.0-simple',
@@ -35,7 +37,7 @@ app.get('/', (req, res) => {
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get(_'/health', (req, res) => {
   res.json({
     status: 'healthy',
     server: 'sentia-mcp-server-simple',
@@ -50,7 +52,7 @@ app.get('/health', (req, res) => {
 });
 
 // MCP info endpoint
-app.get('/mcp/info', (req, res) => {
+app.get(_'/mcp/info', (req, res) => {
   res.json({
     server: {
       name: 'Sentia MCP Server',
@@ -71,7 +73,7 @@ app.get('/mcp/info', (req, res) => {
 });
 
 // MCP status endpoint
-app.get('/mcp/status', (req, res) => {
+app.get(_'/mcp/status', (req, res) => {
   res.json({
     status: 'operational',
     services: {
@@ -85,8 +87,8 @@ app.get('/mcp/status', (req, res) => {
 });
 
 // Error handling middleware
-app.use((error, req, res, next) => {
-  console.error('Server error:', error);
+app.use((error, req, res, _next) => {
+  logError('Server error:', error);
   res.status(500).json({
     status: 'error',
     message: error.message,
@@ -95,7 +97,7 @@ app.use((error, req, res, next) => {
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use(_'*', (req, res) => {
   res.status(404).json({
     status: 'not_found',
     message: `Endpoint ${req.originalUrl} not found`,
@@ -105,38 +107,38 @@ app.use('*', (req, res) => {
 });
 
 // Start server
-const server = app.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 Sentia MCP Server (Simple) running on port ${port}`);
-  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🚂 Railway: ${process.env.RAILWAY_ENVIRONMENT ? 'Yes' : 'No'}`);
-  console.log(`🔗 Health check: http://localhost:${port}/health`);
-  console.log(`📋 MCP info: http://localhost:${port}/mcp/info`);
+const server = app.listen(port, _'0.0.0.0', () => {
+  logDebug(`🚀 Sentia MCP Server (Simple) running on port ${port}`);
+  logDebug(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logDebug(`🚂 Railway: ${process.env.RAILWAY_ENVIRONMENT ? 'Yes' : 'No'}`);
+  logDebug(`🔗 Health check: http://localhost:${port}/health`);
+  logDebug(`📋 MCP info: http://localhost:${port}/mcp/info`);
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully');
+process.on(_'SIGTERM', () => {
+  logDebug('Received SIGTERM, shutting down gracefully');
   server.close(() => {
-    console.log('Server closed');
+    logDebug('Server closed');
     process.exit(0);
   });
 });
 
-process.on('SIGINT', () => {
-  console.log('Received SIGINT, shutting down gracefully');
+process.on(_'SIGINT', () => {
+  logDebug('Received SIGINT, shutting down gracefully');
   server.close(() => {
-    console.log('Server closed');
+    logDebug('Server closed');
     process.exit(0);
   });
 });
 
 // Error handling
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error);
+process.on(_'uncaughtException', (error) => {
+  logError('Uncaught exception:', error);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled rejection at:', promise, 'reason:', reason);
+process.on(_'unhandledRejection', (reason, _promise) => {
+  logError('Unhandled rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });

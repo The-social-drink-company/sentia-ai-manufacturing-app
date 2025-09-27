@@ -1,18 +1,16 @@
 import SellingPartnerAPI from 'amazon-sp-api';
 import crypto from 'crypto';
 
-// Mock database for Amazon data (replace with actual database when ready)
-const mockDatabase = {
-  salesOrders: [],
-  inventory: [],
-  integrationLogs: [],
-  productReturns: []
-};
+// Import Prisma for database access
+import { PrismaClient } from '@prisma/client';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
+const prisma = new PrismaClient();
 
 class AmazonIntegration {
   constructor() {
     this.spApi = new SellingPartnerAPI({
-      region: process.env.AMAZON_REGION || 'na', // na (North America), eu (Europe), fe (Far East)
+      region: process.env.AMAZON_REGION || null, // na (North America), eu (Europe), fe (Far East)
       refresh_token: process.env.AMAZON_SP_API_REFRESH_TOKEN,
       access_token: process.env.AMAZON_SP_API_ACCESS_TOKEN,
       role_arn: process.env.AMAZON_ROLE_ARN,
@@ -22,11 +20,11 @@ class AmazonIntegration {
 
     // Store marketplace IDs
     this.marketplaceIds = {
-      uk: process.env.AMAZON_UK_MARKETPLACE_ID || 'A1F83G8C2ARO7P',
-      usa: process.env.AMAZON_USA_MARKETPLACE_ID || 'ATVPDKIKX0DER'
+      uk: process.env.AMAZON_UK_MARKETPLACE_ID || null,
+      usa: process.env.AMAZON_USA_MARKETPLACE_ID || null
     };
 
-    this.currentMarketplace = process.env.AMAZON_DEFAULT_MARKETPLACE || 'uk';
+    this.currentMarketplace = process.env.AMAZON_DEFAULT_MARKETPLACE || null;
   }
 
   async syncSalesData(marketplace = this.currentMarketplace) {
@@ -54,10 +52,10 @@ class AmazonIntegration {
           path: { orderId: order.AmazonOrderId }
         });
 
-        // Store in mock database (replace with actual database when ready)
-        const existingOrderIndex = mockDatabase.salesOrders.findIndex(
-          o => o.externalId === `amazon_${order.AmazonOrderId}`
-        );
+        // Check if order exists in database
+        const existingOrder = await prisma.salesOrder.findUnique({
+          where: { externalId: `amazon_${order.AmazonOrderId}` }
+        });
 
         const orderData = {
           externalId: `amazon_${order.AmazonOrderId}`,
@@ -87,11 +85,12 @@ class AmazonIntegration {
           updatedAt: new Date()
         };
 
-        if (existingOrderIndex >= 0) {
-          mockDatabase.salesOrders[existingOrderIndex] = orderData;
-        } else {
-          mockDatabase.salesOrders.push(orderData);
-        }
+        // Store order in database
+        await prisma.salesOrder.upsert({
+          where: { externalId: orderData.externalId },
+          update: orderData,
+          create: orderData
+        });
       }
 
       // Get FBA inventory
@@ -101,7 +100,8 @@ class AmazonIntegration {
       const metrics = await this.calculateAmazonMetrics(orders);
 
       // Store sync log
-      mockDatabase.integrationLogs.push({
+      await prisma.integrationLog.create({
+        data: {
         integration: 'amazon',
         marketplace: marketplace,
         action: 'sync_sales_data',
@@ -109,6 +109,7 @@ class AmazonIntegration {
         recordsProcessed: orders.length,
         metadata: metrics,
         timestamp: new Date()
+        }
       });
 
       return {
@@ -119,10 +120,11 @@ class AmazonIntegration {
         fbaInventory: inventoryResponse
       };
     } catch (error) {
-      console.error('Amazon sync error:', error);
+      logError('Amazon sync error:', error);
 
       // Log error to mock database
-      mockDatabase.integrationLogs.push({
+      await prisma.integrationLog.create({
+        data: {
         integration: 'amazon',
         marketplace: marketplace,
         action: 'sync_sales_data',
@@ -151,9 +153,12 @@ class AmazonIntegration {
       for (const item of inventory.inventorySummaries || []) {
         // Store inventory in mock database
         const inventoryKey = `${item.sellerSku}_${marketplace}`;
-        const existingIndex = mockDatabase.inventory.findIndex(
-          i => `${i.sku}_${i.marketplace}` === inventoryKey
-        );
+        const existingInventory = await prisma.inventory.findFirst({
+          where: {
+            sku: item.sellerSku,
+            marketplace: marketplace
+          }
+        });
 
         const inventoryData = {
           sku: item.sellerSku,
@@ -170,16 +175,18 @@ class AmazonIntegration {
           updatedAt: new Date()
         };
 
-        if (existingIndex >= 0) {
-          mockDatabase.inventory[existingIndex] = inventoryData;
-        } else {
-          mockDatabase.inventory.push(inventoryData);
-        }
+        await prisma.inventory.upsert({
+          where: {
+            id: existingInventory?.id || 0
+          },
+          update: inventoryData,
+          create: inventoryData
+        });
       }
 
       return inventory.inventorySummaries;
     } catch (error) {
-      console.error('FBA inventory error:', error);
+      logError('FBA inventory error:', error);
       throw error;
     }
   }
@@ -246,7 +253,7 @@ class AmazonIntegration {
 
       return response;
     } catch (error) {
-      console.error('Product performance error:', error);
+      logError('Product performance error:', error);
       throw error;
     }
   }
@@ -315,7 +322,7 @@ class AmazonIntegration {
         }
       };
     } catch (error) {
-      console.error('Financial events error:', error);
+      logError('Financial events error:', error);
       throw error;
     }
   }
@@ -345,7 +352,7 @@ class AmazonIntegration {
 
       return response;
     } catch (error) {
-      console.error('FBA shipment creation error:', error);
+      logError('FBA shipment creation error:', error);
       throw error;
     }
   }
@@ -369,7 +376,8 @@ class AmazonIntegration {
       // Process returns
       for (const returnItem of returns) {
         // Store return in mock database
-        mockDatabase.productReturns.push({
+        await prisma.productReturn.create({
+          data: {
           externalId: `amazon_${returnItem.ReturnId}`,
           marketplace: marketplace,
           orderId: returnItem.AmazonOrderId,
@@ -390,7 +398,7 @@ class AmazonIntegration {
         returns: returns
       };
     } catch (error) {
-      console.error('Returns fetch error:', error);
+      logError('Returns fetch error:', error);
       throw error;
     }
   }

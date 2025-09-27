@@ -1,6 +1,8 @@
 import EventEmitter from 'events';
 import { createCanvas } from 'canvas';
 import Chart from 'chart.js/auto';
+import { logDebug, logInfo, logWarn, logError } from '../../../src/utils/logger';
+
 
 /**
  * Advanced Reporting & Analytics Dashboard Service
@@ -82,7 +84,7 @@ export class AdvancedReportingService extends EventEmitter {
       this.scheduleAutomatedReports();
     }
     
-    console.log('📊 Advanced Reporting System initialized');
+    logDebug('📊 Advanced Reporting System initialized');
   }
 
   /**
@@ -142,7 +144,7 @@ export class AdvancedReportingService extends EventEmitter {
 
     } catch (error) {
       this.metrics.reports.errors++;
-      console.error('Report generation failed:', error);
+      logError('Report generation failed:', error);
       this.emit('reportError', { type, error: error.message });
       throw error;
     }
@@ -186,7 +188,7 @@ export class AdvancedReportingService extends EventEmitter {
       return dashboard;
 
     } catch (error) {
-      console.error('Dashboard creation failed:', error);
+      logError('Dashboard creation failed:', error);
       this.emit('dashboardError', { config: dashboardConfig, error: error.message });
       throw error;
     }
@@ -233,7 +235,7 @@ export class AdvancedReportingService extends EventEmitter {
       return analytics;
 
     } catch (error) {
-      console.error('Real-time analytics generation failed:', error);
+      logError('Real-time analytics generation failed:', error);
       this.emit('analyticsError', { config: metricsConfig, error: error.message });
       throw error;
     }
@@ -424,7 +426,7 @@ export class AdvancedReportingService extends EventEmitter {
       };
 
     } catch (error) {
-      console.error('Visualization creation failed:', error);
+      logError('Visualization creation failed:', error);
       throw error;
     }
   }
@@ -519,7 +521,7 @@ export class AdvancedReportingService extends EventEmitter {
         const metricsConfig = this.getDefaultMetricsConfig();
         await this.generateRealTimeAnalytics(metricsConfig);
       } catch (error) {
-        console.error('Real-time analytics update failed:', error);
+        logError('Real-time analytics update failed:', error);
       }
     }, this.config.analytics.updateInterval);
   }
@@ -544,7 +546,7 @@ export class AdvancedReportingService extends EventEmitter {
    */
   scheduleReport(frequency, cronExpression, reportType) {
     // In a real implementation, you'd use a proper cron scheduler
-    console.log(`Scheduled ${frequency} ${reportType} report: ${cronExpression}`);
+    logDebug(`Scheduled ${frequency} ${reportType} report: ${cronExpression}`);
   }
 
   /**

@@ -58,7 +58,7 @@ class HealthMonitorService {
     const checkResults = await Promise.allSettled(checks);
     
     // Process results
-    checkResults.forEach((result, index) => {
+    checkResults.forEach((result, _index) => {
       if (result.status === 'fulfilled') {
         const [componentName, componentHealth] = result.value;
         results.components[componentName] = componentHealth;
@@ -105,7 +105,7 @@ class HealthMonitorService {
     try {
       const health = await Promise.race([
         checkFunction(),
-        new Promise((_, reject) => 
+        new Promise((_, _reject) => 
           setTimeout(() => reject(new Error('Health check timeout')), this.checkTimeout)
         )
       ]);

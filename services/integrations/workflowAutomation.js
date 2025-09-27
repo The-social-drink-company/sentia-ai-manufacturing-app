@@ -1,5 +1,7 @@
 import EventEmitter from 'events';
 import cron from 'node-cron';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Advanced Integration Hub & Workflow Automation Service
@@ -125,7 +127,7 @@ export class WorkflowAutomationService extends EventEmitter {
     // Setup automated workflows
     this.setupAutomatedWorkflows();
     
-    console.log('🔄 Workflow Automation System initialized');
+    logDebug('🔄 Workflow Automation System initialized');
   }
 
   /**
@@ -179,7 +181,7 @@ export class WorkflowAutomationService extends EventEmitter {
       return { workflowId, workflow };
 
     } catch (error) {
-      console.error('Workflow creation failed:', error);
+      logError('Workflow creation failed:', error);
       this.emit('workflowCreationError', { workflowData, error: error.message });
       throw error;
     }
@@ -279,7 +281,7 @@ export class WorkflowAutomationService extends EventEmitter {
         
         // Retry if configured
         if (execution.metadata.retryCount < workflow.settings.retryAttempts) {
-          setTimeout(() => {
+          setTimeout(_() => {
             execution.metadata.retryCount++;
             this.executeWorkflow(workflowId, inputData, { ...options, retry: true });
           }, workflow.settings.retryDelay);
@@ -302,7 +304,7 @@ export class WorkflowAutomationService extends EventEmitter {
       }
 
     } catch (error) {
-      console.error('Workflow execution failed:', error);
+      logError('Workflow execution failed:', error);
       this.emit('workflowExecutionError', { workflowId, inputData, error: error.message });
       throw error;
     }
@@ -362,7 +364,7 @@ export class WorkflowAutomationService extends EventEmitter {
         
         // Handle step failure based on configuration
         if (step.continueOnError) {
-          console.warn(`Step ${step.name} failed but continuing: ${error.message}`);
+          logWarn(`Step ${step.name} failed but continuing: ${error.message}`);
           continue;
         } else {
           throw error;
@@ -487,14 +489,14 @@ export class WorkflowAutomationService extends EventEmitter {
     this.workflows.set(workflow.id, workflow);
     
     // Setup cron job
-    const cronJob = cron.schedule(workflowConfig.schedule, () => {
+    const cronJob = cron.schedule(_workflowConfig.schedule, _() => {
       this.executeWorkflow(workflow.id, {}, { triggeredBy: 'schedule' });
     }, { scheduled: false });
     
     this.cronJobs.set(workflow.id, cronJob);
     cronJob.start();
     
-    console.log(`📅 Scheduled workflow: ${workflow.name} (${workflowConfig.schedule})`);
+    logDebug(`📅 Scheduled workflow: ${workflow.name} (${workflowConfig.schedule})`);
   }
 
   /**
@@ -511,11 +513,11 @@ export class WorkflowAutomationService extends EventEmitter {
     this.workflows.set(workflow.id, workflow);
     
     // Setup event listener
-    this.on(workflowConfig.trigger.event, (eventData) => {
+    this.on(_workflowConfig.trigger.event, _(eventData) => {
       this.executeWorkflow(workflow.id, eventData, { triggeredBy: 'event' });
     });
     
-    console.log(`📡 Event workflow: ${workflow.name} (${workflowConfig.trigger.event})`);
+    logDebug(`📡 Event workflow: ${workflow.name} (${workflowConfig.trigger.event})`);
   }
 
   /**
@@ -538,7 +540,7 @@ export class WorkflowAutomationService extends EventEmitter {
           this.metrics.integrations.connected++;
         }
       } catch (error) {
-        console.error(`Failed to initialize ${integration.name}:`, error);
+        logError(`Failed to initialize ${integration.name}:`, error);
         this.metrics.integrations.errors++;
       }
     }
@@ -570,7 +572,7 @@ export class WorkflowAutomationService extends EventEmitter {
         this.setupPeriodicSync(name, config.syncInterval);
       }
       
-      console.log(`✅ ${name} integration initialized`);
+      logDebug(`✅ ${name} integration initialized`);
       
     } catch (error) {
       integration.status = 'error';
@@ -610,11 +612,11 @@ export class WorkflowAutomationService extends EventEmitter {
    * Setup periodic sync for integration
    */
   setupPeriodicSync(integrationName, interval) {
-    const syncJob = setInterval(async () => {
+    const syncJob = setInterval(async _() => {
       try {
         await this.syncIntegration(integrationName);
       } catch (error) {
-        console.error(`Periodic sync failed for ${integrationName}:`, error);
+        logError(`Periodic sync failed for ${integrationName}:`, error);
       }
     }, interval);
     
@@ -660,7 +662,7 @@ export class WorkflowAutomationService extends EventEmitter {
       
       this.metrics.integrations.errors++;
       
-      console.error(`Integration sync failed for ${integrationName}:`, error);
+      logError(`Integration sync failed for ${integrationName}:`, error);
       this.emit('integrationSyncError', { integration: integrationName, error: error.message });
       throw error;
     }
@@ -670,7 +672,7 @@ export class WorkflowAutomationService extends EventEmitter {
    * Start event processing
    */
   startEventProcessing() {
-    setInterval(() => {
+    setInterval(_() => {
       this.processEventQueue();
     }, 1000); // Process every second
   }
@@ -687,7 +689,7 @@ export class WorkflowAutomationService extends EventEmitter {
       try {
         await this.processEvent(event);
       } catch (error) {
-        console.error('Event processing failed:', error);
+        logError('Event processing failed:', error);
       }
     }
   }
@@ -704,7 +706,7 @@ export class WorkflowAutomationService extends EventEmitter {
       try {
         await this.executeWorkflow(workflow.id, event.data, { triggeredBy: 'event' });
       } catch (error) {
-        console.error(`Event-triggered workflow failed: ${workflow.name}`, error);
+        logError(`Event-triggered workflow failed: ${workflow.name}`, error);
       }
     }
   }
@@ -794,7 +796,7 @@ export class WorkflowAutomationService extends EventEmitter {
   setupWorkflowTriggers(workflow) {
     if (workflow.trigger?.type === 'schedule') {
       // Setup cron job for scheduled workflows
-      const cronJob = cron.schedule(workflow.trigger.schedule, () => {
+      const cronJob = cron.schedule(_workflow.trigger.schedule, _() => {
         this.executeWorkflow(workflow.id, {}, { triggeredBy: 'schedule' });
       }, { scheduled: false });
       

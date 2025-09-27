@@ -52,24 +52,24 @@ Model Context Protocol (MCP) server providing cross-branch access to Xero, OpenA
    node monitor-health.js
    ```
 
-## NPM Scripts
+## PNPM Scripts
 
 ```bash
 # Deployment
-npm run deploy:production
-npm run deploy:test
-npm run deploy:development
+pnpm run deploy:production
+pnpm run deploy:test
+pnpm run deploy:development
 
 # Monitoring
-npm run monitor              # Check all environments
-npm run monitor:production   # Check production only
-npm run monitor:test         # Check test only
-npm run monitor:development  # Check development only
+pnpm run monitor              # Check all environments
+pnpm run monitor:production   # Check production only
+pnpm run monitor:test         # Check test only
+pnpm run monitor:development  # Check development only
 
 # Logs
-npm run logs:production
-npm run logs:test
-npm run logs:development
+pnpm run logs:production
+pnpm run logs:test
+pnpm run logs:development
 ```
 
 ## Environment URLs

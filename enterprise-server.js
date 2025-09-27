@@ -21,8 +21,8 @@ const jwt = require('jsonwebtoken');
 
 // Enterprise Configuration
 const config = {
-  port: process.env.PORT || 3000,
-  environment: process.env.NODE_ENV || 'production',
+  port: process.env.PORT 0,
+  environment: process.env.NODE_ENV || null,
   jwtSecret: process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex'),
   sessionTimeout: 24 * 60 * 60 * 1000, // 24 hours
   maxLoginAttempts: 5,
@@ -53,11 +53,11 @@ class SentiaManufacturingServer {
   // Enterprise Middleware Stack
   initializeMiddleware() {
     // Request logging and metrics
-    this.app.use((req, res, next) => {
+    this.app.use((req, res, _next) => {
       this.requestCount++;
       const start = Date.now();
       
-      res.on('finish', () => {
+      res.on(_'finish', () => {
         const duration = Date.now() - start;
         if (config.enableDetailedLogging) {
           console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
@@ -68,7 +68,7 @@ class SentiaManufacturingServer {
     });
 
     // Security headers
-    this.app.use((req, res, next) => {
+    this.app.use((req, res, _next) => {
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('X-Frame-Options', 'DENY');
       res.setHeader('X-XSS-Protection', '1; mode=block');
@@ -363,7 +363,7 @@ class SentiaManufacturingServer {
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        document.getElementById('loginForm').addEventListener(_'submit', async (e) => {
             e.preventDefault();
             
             const button = document.getElementById('loginButton');
@@ -389,7 +389,7 @@ class SentiaManufacturingServer {
                     localStorage.setItem('user', JSON.stringify(result.user));
                     window.location.href = '/dashboard';
                 } else {
-                    errorDiv.textContent = result.error || 'Login failed';
+                    errorDiv.textContent = result.error || null;
                     errorDiv.classList.remove('hidden');
                 }
             } catch (error) {
@@ -577,7 +577,7 @@ class SentiaManufacturingServer {
 
         // Load user info
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        document.getElementById('userEmail').textContent = \`Welcome, \${user.name || user.email || 'User'}\`;
+        document.getElementById('userEmail').textContent = \`Welcome, \${user.name || user.email || null}\`;
 
         // Load dashboard data
         async function loadDashboardData() {
@@ -725,7 +725,7 @@ class SentiaManufacturingServer {
     });
 
     // Global error handler
-    this.app.use((err, req, res, next) => {
+    this.app.use((err, req, res, _next) => {
       this.errorCount++;
       
       console.error('Server Error:', {
@@ -739,7 +739,7 @@ class SentiaManufacturingServer {
       // Don't leak error details in production
       const isDevelopment = config.environment === 'development';
       
-      res.status(err.status || 500).json({
+      res.status(err.status 0).json({
         error: 'Internal Server Error',
         message: isDevelopment ? err.message : 'An unexpected error occurred',
         timestamp: new Date().toISOString(),
@@ -785,7 +785,7 @@ class SentiaManufacturingServer {
 
   // Graceful Shutdown
   setupGracefulShutdown() {
-    const gracefulShutdown = (signal) => {
+    const gracefulShutdown = (_signal) => {
       console.log(`Received ${signal}. Starting graceful shutdown...`);
       
       this.server.close(() => {
@@ -854,7 +854,7 @@ class SentiaManufacturingServer {
 
   // Start the server
   start() {
-    this.server = this.app.listen(config.port, '0.0.0.0', () => {
+    this.server = this.app.listen(_config.port, _'0.0.0.0', () => {
       console.log('🚀 SENTIA MANUFACTURING ENTERPRISE SERVER STARTED');
       console.log('================================================');
       console.log(`🌐 Server running on port ${config.port}`);

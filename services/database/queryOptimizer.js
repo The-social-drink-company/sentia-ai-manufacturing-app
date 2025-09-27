@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Enterprise Database Query Optimizer
@@ -71,11 +73,11 @@ export class DatabaseQueryOptimizer extends EventEmitter {
     if (!this.config.monitoring.enabled) return;
 
     // Monitor query events
-    this.prisma.$on('query', (event) => {
+    this.prisma.$on('query', _(event) => {
       this.handleQueryEvent(event);
     });
 
-    this.prisma.$on('error', (event) => {
+    this.prisma.$on('error', _(event) => {
       this.handleErrorEvent(event);
     });
 
@@ -126,7 +128,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
    * Handle database error events
    */
   handleErrorEvent(event) {
-    console.error('Database error:', event);
+    logError('Database error:', event);
     this.emit('databaseError', event);
   }
 
@@ -176,7 +178,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
 
     this.emit('slowQuery', queryInfo);
     
-    console.warn(`Slow query detected (${queryInfo.duration}ms):`, queryInfo.query);
+    logWarn(`Slow query detected (${queryInfo.duration}ms):`, queryInfo.query);
   }
 
   /**
@@ -245,7 +247,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
         }
       }
     } catch (error) {
-      console.error('Error suggesting index:', error);
+      logError('Error suggesting index:', error);
     }
   }
 
@@ -260,10 +262,10 @@ export class DatabaseQueryOptimizer extends EventEmitter {
     // In a real implementation, you'd use a proper SQL parser
 
     // WHERE clause patterns
-    const whereMatches = normalizedQuery.match(/where\s+(\w+)\.(\w+)\s*[=<>]/g);
+    const whereMatches = normalizedQuery.match(/where\s+(\w+).(\w+)\s*[=<>]/g);
     if (whereMatches) {
       whereMatches.forEach(match => {
-        const parts = match.match(/(\w+)\.(\w+)/);
+        const parts = match.match(/(\w+).(\w+)/);
         if (parts) {
           suggestions.push({
             table: parts[1],
@@ -276,10 +278,10 @@ export class DatabaseQueryOptimizer extends EventEmitter {
     }
 
     // JOIN patterns
-    const joinMatches = normalizedQuery.match(/join\s+(\w+)\s+on\s+\w+\.(\w+)\s*=\s*\w+\.(\w+)/g);
+    const joinMatches = normalizedQuery.match(/join\s+(\w+)\s+on\s+\w+.(\w+)\s*=\s*\w+.(\w+)/g);
     if (joinMatches) {
       joinMatches.forEach(match => {
-        const parts = match.match(/join\s+(\w+)\s+on\s+\w+\.(\w+)\s*=\s*\w+\.(\w+)/);
+        const parts = match.match(/join\s+(\w+)\s+on\s+\w+.(\w+)\s*=\s*\w+.(\w+)/);
         if (parts) {
           suggestions.push({
             table: parts[1],
@@ -292,10 +294,10 @@ export class DatabaseQueryOptimizer extends EventEmitter {
     }
 
     // ORDER BY patterns
-    const orderMatches = normalizedQuery.match(/order\s+by\s+(\w+)\.(\w+)/g);
+    const orderMatches = normalizedQuery.match(/order\s+by\s+(\w+).(\w+)/g);
     if (orderMatches) {
       orderMatches.forEach(match => {
-        const parts = match.match(/(\w+)\.(\w+)/);
+        const parts = match.match(/(\w+).(\w+)/);
         if (parts) {
           suggestions.push({
             table: parts[1],
@@ -321,9 +323,9 @@ export class DatabaseQueryOptimizer extends EventEmitter {
         this.indexSuggestions.delete(key); // Remove after creation
         
         this.emit('indexCreated', suggestion);
-        console.log(`Auto-created index on ${suggestion.table}(${suggestion.columns.join(', ')})`);
+        logDebug(`Auto-created index on ${suggestion.table}(${suggestion.columns.join(', ')})`);
       } catch (error) {
-        console.error('Failed to auto-create index:', error);
+        logError('Failed to auto-create index:', error);
       }
     }
   }
@@ -343,7 +345,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
 
     // Check index limit per table
     if (existingIndexes.length >= this.config.indexing.maxIndexesPerTable) {
-      console.warn(`Index limit reached for table ${table}`);
+      logWarn(`Index limit reached for table ${table}`);
       return;
     }
 
@@ -368,7 +370,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
       
       return result;
     } catch (error) {
-      console.error('Error fetching table indexes:', error);
+      logError('Error fetching table indexes:', error);
       return [];
     }
   }
@@ -509,7 +511,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
 
       this.emit('metricsCollected', this.metrics);
     } catch (error) {
-      console.error('Error collecting metrics:', error);
+      logError('Error collecting metrics:', error);
     }
   }
 
@@ -528,7 +530,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
       
       return stats[0] || {};
     } catch (error) {
-      console.error('Error getting database statistics:', error);
+      logError('Error getting database statistics:', error);
       return {};
     }
   }
@@ -574,7 +576,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
       
       return statsMap;
     } catch (error) {
-      console.error('Error getting index statistics:', error);
+      logError('Error getting index statistics:', error);
       return new Map();
     }
   }
@@ -604,7 +606,7 @@ export class DatabaseQueryOptimizer extends EventEmitter {
       
       this.emit('indexMaintenanceCompleted');
     } catch (error) {
-      console.error('Index maintenance error:', error);
+      logError('Index maintenance error:', error);
       this.emit('indexMaintenanceError', error);
     }
   }
@@ -615,9 +617,9 @@ export class DatabaseQueryOptimizer extends EventEmitter {
   async updateTableStatistics() {
     try {
       await this.prisma.$executeRaw`ANALYZE`;
-      console.log('Table statistics updated');
+      logDebug('Table statistics updated');
     } catch (error) {
-      console.error('Error updating table statistics:', error);
+      logError('Error updating table statistics:', error);
     }
   }
 
@@ -640,10 +642,10 @@ export class DatabaseQueryOptimizer extends EventEmitter {
       
       if (unusedIndexes.length > 0) {
         this.emit('unusedIndexesFound', unusedIndexes);
-        console.log(`Found ${unusedIndexes.length} unused indexes`);
+        logDebug(`Found ${unusedIndexes.length} unused indexes`);
       }
     } catch (error) {
-      console.error('Error identifying unused indexes:', error);
+      logError('Error identifying unused indexes:', error);
     }
   }
 
@@ -657,10 +659,10 @@ export class DatabaseQueryOptimizer extends EventEmitter {
       
       for (const index of fragmentedIndexes) {
         await this.prisma.$executeRawUnsafe(`REINDEX INDEX CONCURRENTLY ${index.indexname}`);
-        console.log(`Reindexed ${index.indexname}`);
+        logDebug(`Reindexed ${index.indexname}`);
       }
     } catch (error) {
-      console.error('Error performing reindexing:', error);
+      logError('Error performing reindexing:', error);
     }
   }
 

@@ -11,8 +11,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(__filename);
 
 class EnterpriseDeploymentMonitor {
   constructor() {
@@ -129,12 +129,12 @@ class EnterpriseDeploymentMonitor {
   }
 
   async testEndpoint(url, method = 'GET') {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const request = https.request(url, { method, timeout: this.monitoring.timeout }, (res) => {
         const chunks = [];
         
         res.on('data', (chunk) => chunks.push(chunk));
-        res.on('end', () => {
+        res.on('end', _() => {
           const body = Buffer.concat(chunks).toString();
           
           if (res.statusCode >= 200 && res.statusCode < 400) {
@@ -150,7 +150,7 @@ class EnterpriseDeploymentMonitor {
         });
       });
       
-      request.on('timeout', () => {
+      request.on('timeout', _() => {
         request.destroy();
         reject(new Error(`Request timeout after ${this.monitoring.timeout}ms`));
       });
@@ -291,7 +291,7 @@ class EnterpriseDeploymentMonitor {
     await this.generateHealthReport();
     
     // Continuous monitoring
-    setInterval(async () => {
+    setInterval(async _() => {
       try {
         await this.generateHealthReport();
       } catch (error) {

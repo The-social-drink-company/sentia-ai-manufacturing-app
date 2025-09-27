@@ -1,13 +1,14 @@
 import express from 'express';
-import { upload, handleUploadError } from '../middleware/upload.js';
-import { authMiddleware } from '../middleware/auth.js';
-import { sendSSEEvent } from './sse.js';
+
 import { logInfo, logError } from '../../services/observability/structuredLogger.js';
+import { upload, handleUploadError } from '../middleware/upload.js';
+
+import { sendSSEEvent } from './sse.js';
 
 const router = express.Router();
 
 // In-memory data storage (replace with database in production)
-let manufacturingData = {
+const manufacturingData = {
   production: [],
   quality: [],
   inventory: [],
@@ -230,7 +231,7 @@ function convertToCSV(data) {
           typeof val === 'string' && val.includes(',') ? `"${val}"` : val
         ).join(',')
       ).join('\n');
-      csvContent += headers + '\n' + rows + '\n\n';
+      csvContent += `${headers  }\n${  rows  }\n\n`;
     }
   }
   

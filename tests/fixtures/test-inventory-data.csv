@@ -1,0 +1,11 @@
+product_sku,product_name,stock_level,unit_price,category,supplier,reorder_point
+SKU001,Premium Widget A,150,25.99,Electronics,Supplier Corp,50
+SKU002,Standard Widget B,75,15.50,Electronics,Supplier Corp,30
+SKU003,Basic Component C,200,8.75,Components,Parts Ltd,75
+SKU004,Advanced Module D,45,125.00,Modules,Tech Solutions,20
+SKU005,Standard Bracket E,300,3.25,Hardware,Metal Works,100
+SKU006,Custom Assembly F,25,89.99,Assemblies,Custom Parts,15
+SKU007,Basic Sensor G,180,12.50,Sensors,Sensor Tech,60
+SKU008,Premium Display H,35,199.99,Displays,Display Corp,10
+SKU009,Standard Cable I,500,2.75,Cables,Cable Co,200
+SKU010,Advanced Processor J,15,299.99,Processors,Chip Maker,8

@@ -732,7 +732,7 @@ export class ProductionDataIntegrator {
     if (qualityMetrics) scores.push(2);
     if (resourceUtilization) scores.push(2);
     
-    const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    const averageScore = scores.reduce((sum, _score) => sum + score, 0) / scores.length;
     
     if (averageScore >= 2.5) return 'excellent';
     if (averageScore >= 2) return 'good';

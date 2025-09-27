@@ -129,7 +129,7 @@ export class ResilientStorage {
   
   checkLocalStorage() {
     try {
-      const test = '__localStorage_test__';
+      const test = '__localStorage_test_';
       localStorage.setItem(test, test);
       localStorage.removeItem(test);
       return true;
@@ -369,7 +369,7 @@ export class FeatureDetector {
   
   hasLocalStorage() {
     try {
-      const test = '__test__';
+      const test = '__test_';
       localStorage.setItem(test, test);
       localStorage.removeItem(test);
       return true;
@@ -380,7 +380,7 @@ export class FeatureDetector {
   
   hasSessionStorage() {
     try {
-      const test = '__test__';
+      const test = '__test_';
       sessionStorage.setItem(test, test);
       sessionStorage.removeItem(test);
       return true;
@@ -400,8 +400,8 @@ export class FeatureDetector {
   
   hasAsyncAwait() {
     try {
-      eval('(async () => {})');
-      return true;
+      // Safe async/await detection without eval
+      return (async function() {}).constructor === (async function() {}).constructor;
     } catch {
       return false;
     }

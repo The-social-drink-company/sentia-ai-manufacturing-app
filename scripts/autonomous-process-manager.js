@@ -11,8 +11,8 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 
 class AutonomousProcessManager {
   constructor() {
@@ -99,16 +99,16 @@ class AutonomousProcessManager {
       processConfig.startTime = Date.now();
 
       // Handle process output
-      process.stdout.on('data', (data) => {
+      process.stdout.on('data', _(data) => {
         this.log(`[${processConfig.name}] ${data.toString().trim()}`);
       });
 
-      process.stderr.on('data', (data) => {
+      process.stderr.on('data', _(data) => {
         this.log(`[${processConfig.name}] ERROR: ${data.toString().trim()}`);
       });
 
       // Handle process exit
-      process.on('exit', async (code, signal) => {
+      process.on('exit', async _(code, signal) => {
         await this.log(`${processConfig.name} exited with code ${code}, signal ${signal}`);
         processConfig.process = null;
         processConfig.pid = null;
@@ -119,7 +119,7 @@ class AutonomousProcessManager {
         }
       });
 
-      process.on('error', async (error) => {
+      process.on('error', async _(error) => {
         await this.log(`${processConfig.name} error: ${error.message}`);
         await this.handleProcessExit(processId, -1);
       });
@@ -148,7 +148,7 @@ class AutonomousProcessManager {
     if (processConfig.restarts <= 5) {
       await this.log(`Restarting ${processConfig.name} in ${delayMs}ms...`);
       
-      setTimeout(async () => {
+      setTimeout(async _() => {
         const success = await this.startProcess(processId);
         if (!success && processConfig.critical) {
           await this.log(`Critical process ${processConfig.name} failed to restart!`, 'ERROR');
@@ -162,17 +162,17 @@ class AutonomousProcessManager {
 
   startMonitoring() {
     // Check process health every 30 seconds
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.monitorProcesses();
     }, 30000);
 
     // Detailed health report every 5 minutes
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.generateHealthReport();
     }, 300000);
 
     // Memory monitoring every 2 minutes
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.monitorMemoryUsage();
     }, 120000);
   }
@@ -217,8 +217,8 @@ class AutonomousProcessManager {
   }
 
   async getProcessMemoryUsage(pid) {
-    return new Promise((resolve, reject) => {
-      exec(`tasklist /FI "PID eq ${pid}" /FO CSV`, (error, stdout) => {
+    return new Promise((resolve, _reject) => {
+      exec(`tasklist /FI "PID eq ${pid}" /FO _CSV`, _(error, stdout) => {
         if (error) {
           reject(error);
           return;
@@ -295,7 +295,7 @@ class AutonomousProcessManager {
             processConfig.process.kill('SIGTERM');
             
             // Force kill after 5 seconds
-            setTimeout(() => {
+            setTimeout(_() => {
               if (processConfig.process) {
                 processConfig.process.kill('SIGKILL');
               }
@@ -324,7 +324,7 @@ class AutonomousProcessManager {
 
   keepAlive() {
     // Keep the process alive and responsive
-    setInterval(() => {
+    setInterval(_() => {
       // Heartbeat - just to keep event loop active
     }, 10000);
   }

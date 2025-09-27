@@ -1,0 +1,3 @@
+{"timestamp":"2025-09-05T11:29:09.240Z","level":"INFO","message":"Starting deployment cycle 2","cycle":2}
+{"timestamp":"2025-09-05T11:29:11.074Z","level":"ERROR","message":"Failed to ensure internal branch","cycle":2,"error":"Command failed: git pull origin production --no-edit\nFrom https://github.com/The-social-drink-company/sentia-manufacturing-dashboard\n * branch            production -> FETCH_HEAD\n"}
+{"timestamp":"2025-09-05T11:29:11.117Z","level":"ERROR","message":"Deployment cycle 2 failed","cycle":2,"error":"Failed to setup internal branch"}

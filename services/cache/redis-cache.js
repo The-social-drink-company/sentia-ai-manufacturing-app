@@ -3,6 +3,8 @@
 
 import Redis from 'ioredis';
 import NodeCache from 'node-cache';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class RedisCacheService {
   constructor() {
@@ -16,16 +18,16 @@ class RedisCacheService {
     const redisUrl = process.env.REDIS_URL;
 
     if (!redisUrl) {
-      console.log('Redis URL not configured, using in-memory cache only');
+      logDebug('Redis URL not configured, using in-memory cache only');
       return;
     }
 
     try {
       this.redis = new Redis(redisUrl, {
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: _3,
         retryStrategy: (times) => {
           if (times > 3) {
-            console.error('Redis connection failed, falling back to memory cache');
+            logError('Redis connection failed, falling back to memory cache');
             this.isConnected = false;
             return null;
           }
@@ -40,13 +42,13 @@ class RedisCacheService {
         }
       });
 
-      this.redis.on('connect', () => {
-        console.log('Redis connected successfully');
+      this.redis.on(_'connect', () => {
+        logDebug('Redis connected successfully');
         this.isConnected = true;
       });
 
-      this.redis.on('error', (err) => {
-        console.error('Redis error:', err.message);
+      this.redis.on(_'error', (err) => {
+        logError('Redis error:', err.message);
         this.isConnected = false;
       });
 
@@ -54,7 +56,7 @@ class RedisCacheService {
       await this.redis.ping();
       this.isConnected = true;
     } catch (error) {
-      console.error('Failed to connect to Redis:', error.message);
+      logError('Failed to connect to Redis:', error.message);
       this.isConnected = false;
     }
   }
@@ -68,7 +70,7 @@ class RedisCacheService {
         }
       }
     } catch (error) {
-      console.error('Redis get error:', error.message);
+      logError('Redis get error:', error.message);
     }
 
     // Fallback to memory cache
@@ -86,7 +88,7 @@ class RedisCacheService {
       // Always set in fallback cache
       this.fallbackCache.set(key, value, ttl);
     } catch (error) {
-      console.error('Redis set error:', error.message);
+      logError('Redis set error:', error.message);
       // Still set in fallback cache
       this.fallbackCache.set(key, value, ttl);
     }
@@ -99,7 +101,7 @@ class RedisCacheService {
       }
       this.fallbackCache.del(key);
     } catch (error) {
-      console.error('Redis del error:', error.message);
+      logError('Redis del error:', error.message);
       this.fallbackCache.del(key);
     }
   }
@@ -128,7 +130,7 @@ class RedisCacheService {
         });
       }
     } catch (error) {
-      console.error('Redis flush error:', error.message);
+      logError('Redis flush error:', error.message);
       this.fallbackCache.flushAll();
     }
   }
@@ -139,14 +141,14 @@ class RedisCacheService {
     try {
       if (this.isConnected && this.redis) {
         const values = await this.redis.mget(...keys);
-        keys.forEach((key, index) => {
+        keys.forEach((key, _index) => {
           if (values[index]) {
             results[key] = JSON.parse(values[index]);
           }
         });
       }
     } catch (error) {
-      console.error('Redis mget error:', error.message);
+      logError('Redis mget error:', error.message);
     }
 
     // Fill missing values from fallback cache
@@ -166,20 +168,20 @@ class RedisCacheService {
     try {
       if (this.isConnected && this.redis) {
         const pipeline = this.redis.pipeline();
-        Object.entries(keyValuePairs).forEach(([key, value]) => {
+        Object.entries(keyValuePairs).forEach(_([key, _value]) => {
           pipeline.set(key, JSON.stringify(value), 'EX', ttl);
         });
         await pipeline.exec();
       }
 
       // Always set in fallback cache
-      Object.entries(keyValuePairs).forEach(([key, value]) => {
+      Object.entries(keyValuePairs).forEach(_([key, _value]) => {
         this.fallbackCache.set(key, value, ttl);
       });
     } catch (error) {
-      console.error('Redis mset error:', error.message);
+      logError('Redis mset error:', error.message);
       // Still set in fallback cache
-      Object.entries(keyValuePairs).forEach(([key, value]) => {
+      Object.entries(keyValuePairs).forEach(_([key, _value]) => {
         this.fallbackCache.set(key, value, ttl);
       });
     }
@@ -192,7 +194,7 @@ class RedisCacheService {
         return exists === 1;
       }
     } catch (error) {
-      console.error('Redis exists error:', error.message);
+      logError('Redis exists error:', error.message);
     }
 
     return this.fallbackCache.has(key);
@@ -204,7 +206,7 @@ class RedisCacheService {
         return await this.redis.ttl(key);
       }
     } catch (error) {
-      console.error('Redis ttl error:', error.message);
+      logError('Redis ttl error:', error.message);
     }
 
     return this.fallbackCache.getTtl(key);
@@ -216,7 +218,7 @@ class RedisCacheService {
         return await this.redis.incrby(key, amount);
       }
     } catch (error) {
-      console.error('Redis incr error:', error.message);
+      logError('Redis incr error:', error.message);
     }
 
     // Fallback increment

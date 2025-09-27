@@ -9,6 +9,8 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -19,7 +21,7 @@ class PerformanceOptimizationAgent {
   }
 
   async run() {
-    console.log(`⚡ Performance Optimization Agent analyzing ${this.branch}...`);
+    logDebug(`⚡ Performance Optimization Agent analyzing ${this.branch}...`);
     
     const issues = await this.detectPerformanceIssues();
     
@@ -39,7 +41,7 @@ class PerformanceOptimizationAgent {
       const { stdout } = await execAsync('npm run build 2>&1');
       
       // Extract bundle sizes
-      const sizeRegex = /(\\d+\\.\\d+)\\s*(kB|MB)/g;
+      const sizeRegex = /(\\d+\.\\d+)\\s*(kB|MB)/g;
       let match;
       const bundles = [];
       
@@ -62,7 +64,7 @@ class PerformanceOptimizationAgent {
       }
       
       // Check build time
-      const timeMatch = stdout.match(/built in (\\d+\\.\\d+)s/);
+      const timeMatch = stdout.match(/built in (\\d+\.\\d+)s/);
       if (timeMatch) {
         const buildTime = parseFloat(timeMatch[1]);
         if (buildTime > 10) {
@@ -74,13 +76,13 @@ class PerformanceOptimizationAgent {
         }
       }
     } catch (error) {
-      console.error('Build analysis failed:', error.message);
+      logError('Build analysis failed:', error.message);
     }
     
     // Check for unoptimized images
     try {
       const { stdout } = await execAsync(
-        'find public src -type f \\( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \\) -size +100k 2>/dev/null | head -10 || true'
+        'find public src -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) -size +100k 2>/dev/null | head -10 || true'
       );
       
       const largeImages = stdout.trim().split('\\n').filter(Boolean);
@@ -163,7 +165,7 @@ class PerformanceOptimizationAgent {
             break;
         }
       } catch (error) {
-        console.error(`Failed to optimize ${issue.type}: ${error.message}`);
+        logError(`Failed to optimize ${issue.type}: ${error.message}`);
       }
     }
   }
@@ -197,7 +199,7 @@ class PerformanceOptimizationAgent {
         });
       }
     } catch (error) {
-      console.error('Failed to optimize bundles:', error.message);
+      logError('Failed to optimize bundles:', error.message);
     }
   }
 
@@ -230,7 +232,7 @@ class PerformanceOptimizationAgent {
         });
       }
     } catch (error) {
-      console.error('Failed to optimize build config:', error.message);
+      logError('Failed to optimize build config:', error.message);
     }
   }
 
@@ -251,7 +253,7 @@ class PerformanceOptimizationAgent {
           const content = await fs.readFile(file, 'utf-8');
           const updated = content.replace(
             /<img([^>]+)src=["']([^"']*${imageName}[^"']*)["']([^>]*)>/g,
-            (match, before, src, after) => {
+            (match, _before, src, after) => {
               if (!match.includes('loading=')) {
                 return `<img${before}src="${src}"${after} loading="lazy">`;
               }
@@ -269,7 +271,7 @@ class PerformanceOptimizationAgent {
           }
         }
       } catch (error) {
-        console.error(`Failed to optimize image ${imagePath}: ${error.message}`);
+        logError(`Failed to optimize image ${imagePath}: ${error.message}`);
       }
     }
   }
@@ -285,7 +287,7 @@ class PerformanceOptimizationAgent {
           let updated = content;
           
           // Convert static imports to lazy imports for routes
-          const importRegex = /import (\w+) from ['"](.+\/pages\/.+)['"]/g;
+          const importRegex = /import (\w+) from ['"](.+/pages/.+)['"]/g;
           const lazyImports = [];
           
           updated = updated.replace(importRegex, (match, component, path) => {
@@ -324,11 +326,11 @@ class PerformanceOptimizationAgent {
             });
           }
         } catch (error) {
-          console.error(`Failed to add lazy loading to ${file}: ${error.message}`);
+          logError(`Failed to add lazy loading to ${file}: ${error.message}`);
         }
       }
     } catch (error) {
-      console.error('Failed to add lazy loading:', error.message);
+      logError('Failed to add lazy loading:', error.message);
     }
   }
 
@@ -339,9 +341,9 @@ class PerformanceOptimizationAgent {
         let updated = content;
         
         // Add React.memo to functional components
-        const componentRegex = /export (default )?function (\w+)\s*\(/g;
+        const componentRegex = /export (default )?function (\w+)\s*(/g;
         
-        updated = updated.replace(componentRegex, (match, exportDefault, name) => {
+        updated = _updated.replace(componentRegex, (match, exportDefault, name) => {
           if (!content.includes(`React.memo(${name})`)) {
             return `${match}\\n\\nexport ${exportDefault || ''}React.memo(${name})`;
           }
@@ -374,7 +376,7 @@ class PerformanceOptimizationAgent {
           });
         }
       } catch (error) {
-        console.error(`Failed to optimize ${file}: ${error.message}`);
+        logError(`Failed to optimize ${file}: ${error.message}`);
       }
     }
   }
@@ -428,10 +430,10 @@ async function main() {
   const result = await agent.run();
   
   // Output JSON result for orchestrator
-  console.log(JSON.stringify(result));
+  logDebug(JSON.stringify(result));
 }
 
 main().catch(error => {
-  console.error(error);
+  logError(error);
   process.exit(1);
 });

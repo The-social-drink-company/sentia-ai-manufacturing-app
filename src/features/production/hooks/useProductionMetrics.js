@@ -11,7 +11,7 @@ export function useProductionMetrics({ line = 'all', shift = 'current', timeRang
   // Try to get real-time IoT data first
   const iotMetrics = useIoTProductionMetrics()
 
-  const fetchData = useCallback(async _() => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
 
@@ -54,7 +54,7 @@ export function useProductionMetrics({ line = 'all', shift = 'current', timeRang
     fetchData()
   }, [fetchData])
 
-  const exportData = useCallback(async _(format) => {
+  const exportData = useCallback(async (format) => {
     try {
       await exportProductionData(format, timeRange, line, shift)
     } catch (err) {

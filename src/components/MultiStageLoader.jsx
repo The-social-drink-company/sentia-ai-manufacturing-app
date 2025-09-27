@@ -14,10 +14,13 @@ const LOADING_STAGES = [
   { id: 10, name: 'Final Optimization', description: 'Optimizing performance...', duration: 600 }
 ];
 
-const MultiStageLoader = ({ onComplete }) => {
+const MultiStageLoader = ({ onComplete, progress: externalProgress }) => {
   const [currentStage, setCurrentStage] = useState(0);
   const [progress, setProgress] = useState(0);
   const [stageProgress, setStageProgress] = useState(0);
+
+  // Use external progress if provided, otherwise use internal progress
+  const displayProgress = externalProgress !== undefined ? externalProgress : progress;
 
   useEffect(() => {
     if (currentStage >= LOADING_STAGES.length) {
@@ -102,10 +105,14 @@ const MultiStageLoader = ({ onComplete }) => {
 
           {/* Overall Progress Bar */}
           <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-400">Overall Progress</span>
+              <span className="text-sm text-blue-300">{Math.round(displayProgress)}%</span>
+            </div>
             <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-green-500 to-green-400"
-                animate={{ width: `${progress}%` }}
+                animate={{ width: `${displayProgress}%` }}
                 transition={{ duration: 0.3 }}
               />
             </div>

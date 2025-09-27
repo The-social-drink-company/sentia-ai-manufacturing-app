@@ -103,7 +103,7 @@ export default function ProductionSchedule({ data }) {
   }
 
   const TimelineView = () => {
-    const groupedJobs = filteredJobs.reduce(_(groups, job) => {
+    const groupedJobs = filteredJobs.reduce((groups, job) => {
       const date = new Date(job.plannedStart).toDateString()
       if (!groups[date]) groups[date] = []
       groups[date].push(job)
@@ -128,7 +128,7 @@ export default function ProductionSchedule({ data }) {
 
               {dateJobs
                 .sort((a, b) => new Date(a.plannedStart) - new Date(b.plannedStart))
-                .map((job, _index) => {
+                .map((job, index) => {
                   const statusConfig = getStatusConfig(job.status)
                   const priorityConfig = getPriorityConfig(job.priority)
                   const scheduleVariance = calculateVariance(job.plannedStart, job.actualStart)
@@ -241,7 +241,7 @@ export default function ProductionSchedule({ data }) {
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-            _{filteredJobs.map((job) => {
+            {filteredJobs.map((job) => {
               const statusConfig = getStatusConfig(job.status)
               const priorityConfig = getPriorityConfig(job.priority)
               const variance = calculateVariance(job.plannedStart, job.actualStart)

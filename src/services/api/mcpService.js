@@ -20,7 +20,7 @@ const mcpClient = axios.create({
 });
 
 // Add auth token to requests
-mcpClient.interceptors.request.use(_(config) => {
+mcpClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -168,7 +168,7 @@ export const mcpService = {
       eventSource.close();
     };
 
-    eventSource.addEventListener('complete', _() => {
+    eventSource.addEventListener('complete', () => {
       onComplete();
       eventSource.close();
     });

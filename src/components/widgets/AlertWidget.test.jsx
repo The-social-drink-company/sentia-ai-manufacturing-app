@@ -129,7 +129,7 @@ describe('AlertWidget', () {
     expect(screen.getByText('Success Alert')).toBeInTheDocument();
   });
 
-  it('allows dismissing alerts when showDismiss is _true', async () {
+  it('allows dismissing alerts when showDismiss is true', async () {
     const alerts = [
       {
         id: 'dismissible-alert',

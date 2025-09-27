@@ -111,7 +111,7 @@ const Mobile = () => {
       {/* Quick Actions */}
       <div className="px-4 py-4">
         <div className="grid grid-cols-4 gap-2">
-          {quickActions.map(_(action) => {
+          {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <button

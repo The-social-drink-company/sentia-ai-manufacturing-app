@@ -206,7 +206,7 @@ describe('Cash Flow _Forecaster', () => {
       })
     })
 
-    it('handles custom iterations and _periods', () => {
+    it('handles custom iterations and periods', () => {
       const customForecaster = new CashFlowForecaster(mockHistoricalData, {
         forecastPeriods: 6
       })
@@ -485,7 +485,7 @@ describe('Forecasting _Utilities', () => {
       expect(result.summary.volatility).toBeGreaterThan(0)
     })
 
-    it('uses custom _thresholds', () => {
+    it('uses custom thresholds', () => {
       const forecastData = [{ cumulativeCash: 30000 }]
       const customThresholds = { criticalCash: 50000 }
 
@@ -541,7 +541,7 @@ describe('Forecasting _Utilities', () => {
       })
     })
 
-    it('includes scenario _metadata', () => {
+    it('includes scenario metadata', () => {
       const baseData = [{ dso: 40 }]
 
       const result = createScenarioModels(baseData)

@@ -6,7 +6,7 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // Comprehensive health check endpoint
-router.get(_'/health', async _(req, res) => {
+router.get(_'/health', async (req, res) => {
   const startTime = Date.now();
   const healthStatus = {
     status: 'healthy',
@@ -189,7 +189,7 @@ router.get(_'/health', async _(req, res) => {
 });
 
 // Detailed system metrics endpoint
-router.get(_'/metrics', async _(req, res) => {
+router.get(_'/metrics', async (req, res) => {
   const metrics = {
     timestamp: new Date().toISOString(),
     system: {
@@ -237,7 +237,7 @@ router.get(_'/metrics', async _(req, res) => {
 });
 
 // Readiness probe endpoint
-router.get(_'/ready', async _(req, res) => {
+router.get(_'/ready', async (req, res) => {
   try {
     // Check if all critical services are ready
     await prisma.$queryRaw`SELECT 1`;
@@ -270,7 +270,7 @@ router.get(_'/ready', async _(req, res) => {
 });
 
 // Liveness probe endpoint
-router.get(_'/live', _(req, res) => {
+router.get(_'/live', (req, res) => {
   const liveness = {
     status: 'alive',
     timestamp: new Date().toISOString(),
@@ -282,7 +282,7 @@ router.get(_'/live', _(req, res) => {
 });
 
 // System status dashboard endpoint
-router.get(_'/status', async _(req, res) => {
+router.get(_'/status', async (req, res) => {
   const status = {
     service: 'Sentia Manufacturing Dashboard',
     version: process.env.npm_package_version || null,
@@ -329,7 +329,7 @@ router.get(_'/status', async _(req, res) => {
 });
 
 // Feature flags endpoint
-router.get(_'/features', _(req, res) => {
+router.get(_'/features', (req, res) => {
   const features = {
     ai_copilot: {
       enabled: process.env.ENABLE_AI_FEATURES === 'true',
@@ -384,7 +384,7 @@ router.get(_'/features', _(req, res) => {
 });
 
 // Performance benchmark endpoint
-router.get(_'/benchmark', async _(req, res) => {
+router.get(_'/benchmark', async (req, res) => {
   const startTime = Date.now();
   
   try {

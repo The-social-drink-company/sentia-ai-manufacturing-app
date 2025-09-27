@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { cn } from '../../utils/cn'
 
 const DataTableWidget = ({
-  _title,
-  columns = _[],
-  data = _[],
-  searchable = _true,
-  sortable = _true,
-  pagination = _true,
+  title,
+  columns = [],
+  data = [],
+  searchable = true,
+  sortable = true,
+  pagination = true,
   pageSize = 10,
-  loading = _false,
+  loading = false,
   className = ''
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -28,7 +28,7 @@ const DataTableWidget = ({
 
   // Sort data
   const sortedData = sortable && sortColumn
-    ? [...filteredData].sort(_(a, b) => {
+    ? [...filteredData].sort((a, b) => {
         const aVal = a[sortColumn]
         const bVal = b[sortColumn]
         if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1

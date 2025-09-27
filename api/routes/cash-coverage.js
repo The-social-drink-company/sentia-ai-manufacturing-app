@@ -15,7 +15,7 @@ const monteCarloEngine = new MonteCarloSimulationEngine();
 const aiPredictionService = new AIFinancialPredictionService();
 
 // Initialize services on startup
-(async _() => {
+(async () => {
   try {
     await financialIntegration.initialize();
     await aiPredictionService.initialize();
@@ -496,7 +496,7 @@ router.post('/scenario', requireAuth(), async (req, res) => {
  * GET /api/cash-coverage/health-check
  * Check health of cash coverage services
  */
-router.get(_'/health-check', async _(req, res) => {
+router.get(_'/health-check', async (req, res) => {
   try {
     const health = {
       cashCoverageEngine: 'healthy',

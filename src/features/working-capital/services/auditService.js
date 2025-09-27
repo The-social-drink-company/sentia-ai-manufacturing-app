@@ -77,7 +77,7 @@ class AuditLogger {
 
     // Set up beforeunload to flush remaining logs
     if (typeof window !== 'undefined') {
-      window.addEventListener('beforeunload', _() => {
+      window.addEventListener('beforeunload', () => {
         this.flush(true) // Synchronous flush on page unload
       })
     }

@@ -18,7 +18,7 @@ const CommandPalette = ({ onClose }) => {
     cmd.name.toLowerCase().includes(query.toLowerCase())
   );
 
-  React.useEffect(() {
+  React.useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === 'Escape') onClose();
     };

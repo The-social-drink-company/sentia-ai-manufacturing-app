@@ -281,7 +281,7 @@ export function useWorkingCapitalMetrics(period = 'current') {
   }, [fetchData, xeroData])
 
   // Export data function
-  const exportData = useCallback(async _(format) => {
+  const exportData = useCallback(async (format) => {
     if (!data) return
 
     const exportPayload = {

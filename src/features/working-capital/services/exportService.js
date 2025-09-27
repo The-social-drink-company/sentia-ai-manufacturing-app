@@ -560,7 +560,7 @@ export class WorkingCapitalExporter {
       yPosition += 10
 
       if (this.data.risks.risks.length > 0) {
-        this.data.risks.risks.slice(0, 3).forEach(_(risk, index) => {
+        this.data.risks.risks.slice(0, 3).forEach((risk, index) => {
           doc.text(`${index + 1}. ${risk.type} (${risk.severity.toUpperCase()})`, 25, yPosition)
           yPosition += 5
           doc.text(`   ${risk.description.substring(0, 80)}...`, 25, yPosition)

@@ -469,7 +469,7 @@ const AdvancedAnalyticsDashboard = () => {
     return () => clearInterval(interval);
   }, [analyticsEngine]);
 
-  const handleRunPrediction = useCallback(async _(modelKey) => {
+  const handleRunPrediction = useCallback(async (modelKey) => {
     setActivePrediction({ model: modelKey, status: 'running' });
     
     try {

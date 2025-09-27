@@ -568,7 +568,7 @@ export class MLModelTrainingPipeline {
 
     // Calculate R²
     const meanActual = sumActual / n
-    const totalSumSquares = data.reduce(_(sum, point) => {
+    const totalSumSquares = data.reduce((sum, point) => {
       return sum + Math.pow(point.normalizedValue - meanActual, 2)
     }, 0)
 
@@ -584,7 +584,7 @@ export class MLModelTrainingPipeline {
     let bestModel = null
     let bestScore = Infinity
 
-    Object.entries(models).forEach(_([modelType, _result]) => {
+    Object.entries(models).forEach(([modelType, _result]) => {
       if (result.trained && result.metrics) {
         // Use weighted score combining MAE, RMSE, and R²
         const score = (

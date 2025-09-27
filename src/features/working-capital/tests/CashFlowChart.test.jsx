@@ -46,14 +46,14 @@ describe('CashFlowChart', () => {
     )
   })
 
-  it('displays no data message when data is _null', () => {
+  it('displays no data message when data is null', () => {
     render(<CashFlowChart data={null} />)
 
     expect(screen.getByText('No cash flow data available')).toBeInTheDocument()
     expect(screen.queryByTestId('cash-flow-chart')).not.toBeInTheDocument()
   })
 
-  it('displays no data message when data is _undefined', () => {
+  it('displays no data message when data is undefined', () => {
     render(<CashFlowChart />)
 
     expect(screen.getByText('No cash flow data available')).toBeInTheDocument()
@@ -72,7 +72,7 @@ describe('CashFlowChart', () => {
     expect(datasets.find(d => d.label === 'Net Cash Flow')).toBeDefined()
   })
 
-  it('configures chart with proper time series _options', () => {
+  it('configures chart with proper time series options', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')
@@ -114,7 +114,7 @@ describe('CashFlowChart', () => {
     expect(screen.getByTestId('chart-labels')).toHaveTextContent(JSON.stringify([]))
   })
 
-  it('formats y-axis with currency _values', () => {
+  it('formats y-axis with currency values', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')
@@ -133,7 +133,7 @@ describe('CashFlowChart', () => {
     // Chart should have distinct datasets for different cash flow components
   })
 
-  it('handles negative cash flow _values', () => {
+  it('handles negative cash flow values', () => {
     const negativeFlowData = {
       labels: ['Jan', 'Feb'],
       cashInflow: [50000, 60000],

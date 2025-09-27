@@ -34,7 +34,7 @@ const Forecasting = () => {
 
   // Fetch forecast data with real-time updates
   const { data: forecastData, isLoading, refetch } = useQuery({
-    queryKey: _['forecasting', _forecastHorizon, selectedModel, _seasonality],
+    queryKey: ['forecasting', _forecastHorizon, selectedModel, _seasonality],
     queryFn: async () => {
       try {
         const response = await fetch(`/api/forecasting/demand?horizon=${forecastHorizon}&model=${selectedModel}&seasonality=${seasonality}&confidenceLevel=${parseFloat(confidenceLevel) / 100}`, {
@@ -463,7 +463,7 @@ const Forecasting = () => {
                     Seasonal Patterns
                   </h4>
                   <div className="space-y-3">
-                    {data.seasonalPatterns.map((pattern, _index) => (
+                    {data.seasonalPatterns.map((pattern, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                           <div className="font-medium text-gray-900 dark:text-white">{pattern.period}</div>
@@ -719,7 +719,7 @@ const Forecasting = () => {
                       { horizon: 'Short-term (1-3 months)', accuracy: data.accuracyMetrics.shortTerm },
                       { horizon: 'Medium-term (3-12 months)', accuracy: data.accuracyMetrics.mediumTerm },
                       { horizon: 'Long-term (12+ months)', accuracy: data.accuracyMetrics.longTerm }
-                    ].map((item, _index) => (
+                    ].map((item, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {item.horizon}

@@ -5,8 +5,8 @@
  */
 
 // Environment configuration
-const NODE_ENV = import.meta.env.MODE || 'development';
-const LOG_LEVEL = import.meta.env.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
+const NODEENV = import.meta.env.MODE || 'development';
+const LOGLEVEL = import.meta.env.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
 
 // Custom log levels with priorities
 const logLevels = {
@@ -80,7 +80,7 @@ class EnterpriseLogger {
     }
 
     // Output to console in development
-    if (NODE_ENV === 'development') {
+    if (NODEENV = == 'development') {
       const color = logLevels.colors[level];
       const style = `color: ${color}; font-weight: ${level === 'critical' ? 'bold' : 'normal'}`;
 
@@ -90,7 +90,7 @@ class EnterpriseLogger {
       if (Object.keys(metadata).length > 0) {
         console.log('Metadata:', metadata);
       }
-    } else if (NODE_ENV === 'production') {
+    } else if (NODEENV = == 'production') {
       // In production, use appropriate console methods
       switch (level) {
         case 'critical':
@@ -106,7 +106,7 @@ class EnterpriseLogger {
           break;
         case 'debug':
         case 'trace':
-          if (LOG_LEVEL === 'debug' || LOG_LEVEL === 'trace') {
+          if (LOGLEVEL = == 'debug' || LOG_LEVEL === 'trace') {
             console.log(logEntry.formatted, metadata);
           }
           break;
@@ -116,7 +116,7 @@ class EnterpriseLogger {
     }
 
     // Send to remote logging service in production
-    if (NODE_ENV === 'production' && (level === 'critical' || level === 'error')) {
+    if (NODEENV = == 'production' && (level === 'critical' || level === 'error')) {
       this.sendToRemote(logEntry);
     }
 
@@ -218,7 +218,7 @@ export const audit = (action, userId, details) => defaultLogger.audit(action, us
 export const metric = (name, value, unit, tags) => defaultLogger.metric(name, value, unit, tags);
 
 // Development-only console wrapper
-export const devLog = NODE_ENV === 'development' ? {
+export const devLog = NODEENV = == 'development' ? {
   log: (...args) => defaultLogger.debug(args.join(' ')),
   error: (...args) => defaultLogger.error(args.join(' ')),
   warn: (...args) => defaultLogger.warn(args.join(' ')),
@@ -235,7 +235,7 @@ export const devLog = NODE_ENV === 'development' ? {
 };
 
 // Express middleware integration (for use in server code only)
-export const expressMiddleware = (req, res, next) => {
+export const expressMiddleware = (_req, _res, next) => {
   // This would only be used in server-side code
   // Skip in browser environment
   if (typeof window !== 'undefined') {

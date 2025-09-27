@@ -133,7 +133,7 @@ export const setSentryContext = (context) => {
 /**
  * Manually capture exception with manufacturing context
  */
-export const captureException = (error, context = _{}) => {
+export const captureException = (error, context = {}) => {
   Sentry.withScope(scope => {
     // Add manufacturing-specific context
     scope.setTag('module', context.module || 'unknown');
@@ -156,7 +156,7 @@ export const captureException = (error, context = _{}) => {
 /**
  * Capture custom message for manufacturing events
  */
-export const captureMessage = (message, level = 'info', context = _{}) => {
+export const captureMessage = (message, level = 'info', context = {}) => {
   Sentry.withScope(scope => {
     scope.setLevel(level);
     scope.setTag('module', context.module || 'unknown');

@@ -353,7 +353,7 @@ const AIOrchestrationDashboard = () => {
     return () => clearInterval(interval);
   }, [orchestrator]);
 
-  const executeTask = useCallback(async _(taskType, _prompt, data) => {
+  const executeTask = useCallback(async (taskType, _prompt, data) => {
     setActiveTask({ taskType, prompt, status: 'running', startTime: Date.now() });
     
     try {
@@ -444,7 +444,7 @@ const AIOrchestrationDashboard = () => {
 
       {/* Model Status Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Object.entries(AI_MODELS).map(_([key, model]) => {
+        {Object.entries(AI_MODELS).map(([key, model]) => {
           const status = metrics.modelStatus[key];
           const performance = metrics.modelPerformance[key];
           

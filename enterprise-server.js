@@ -57,7 +57,7 @@ class SentiaManufacturingServer {
       this.requestCount++;
       const start = Date.now();
       
-      res.on(_'finish', _() => {
+      res.on(_'finish', () => {
         const duration = Date.now() - start;
         if (config.enableDetailedLogging) {
           console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
@@ -363,7 +363,7 @@ class SentiaManufacturingServer {
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener(_'submit', async _(e) => {
+        document.getElementById('loginForm').addEventListener(_'submit', async (e) => {
             e.preventDefault();
             
             const button = document.getElementById('loginButton');
@@ -750,12 +750,12 @@ class SentiaManufacturingServer {
 
   // Health Monitoring System
   initializeHealthMonitoring() {
-    setInterval(_() => {
+    setInterval(() => {
       this.performHealthCheck();
     }, config.healthCheckInterval);
 
     // Memory monitoring
-    setInterval(_() => {
+    setInterval(() => {
       const memUsage = process.memoryUsage();
       const memUsageMB = memUsage.heapUsed / 1024 / 1024;
       
@@ -788,13 +788,13 @@ class SentiaManufacturingServer {
     const gracefulShutdown = (_signal) => {
       console.log(`Received ${signal}. Starting graceful shutdown...`);
       
-      this.server.close(_() => {
+      this.server.close(() => {
         console.log('HTTP server closed.');
         process.exit(0);
       });
 
       // Force close after 30 seconds
-      setTimeout(_() => {
+      setTimeout(() => {
         console.error('Could not close connections in time, forcefully shutting down');
         process.exit(1);
       }, 30000);
@@ -854,7 +854,7 @@ class SentiaManufacturingServer {
 
   // Start the server
   start() {
-    this.server = this.app.listen(_config.port, _'0.0.0.0', _() => {
+    this.server = this.app.listen(_config.port, _'0.0.0.0', () => {
       console.log('🚀 SENTIA MANUFACTURING ENTERPRISE SERVER STARTED');
       console.log('================================================');
       console.log(`🌐 Server running on port ${config.port}`);

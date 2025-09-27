@@ -113,7 +113,15 @@
       "Bash(git show-branch:*)",
       "Bash(git rm:*)",
       "Bash(git stash push:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(npx prisma:*)",
+      "Bash(powershell:*)",
+      "WebFetch(domain:dashboard.render.com)",
+      "Bash(timeout:*)",
+      "Bash(dir)",
+      "Bash(xcopy:*)",
+      "Bash(robocopy:*)",
+      "Bash(xargs sed:*)"
     ],
     "deny": [],
     "ask": []

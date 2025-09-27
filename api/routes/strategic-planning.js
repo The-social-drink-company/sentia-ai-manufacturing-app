@@ -33,7 +33,7 @@ const requireExecutive = (req, res, _next) => {
  * GET /api/strategic-planning/health
  * Check strategic AI service health
  */
-router.get(_'/health', async _(req, res) => {
+router.get(_'/health', async (req, res) => {
   try {
     const health = {
       status: 'operational',

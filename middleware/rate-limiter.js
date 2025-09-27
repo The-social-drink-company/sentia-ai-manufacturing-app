@@ -34,7 +34,7 @@ class RateLimiterService {
           }
         });
 
-        this.redisClient.on(_'error', _(err) => {
+        this.redisClient.on('error', (err) => {
           console.error('Redis Client Error:', err);
         });
 
@@ -275,7 +275,7 @@ class RateLimiterService {
         await limiter.middleware(req, res, next);
 
         // Update metrics
-        res.on(_'finish', () => {
+        res.on('finish', () => {
           metrics.responseTime.push(Date.now() - req.startTime);
           if (metrics.responseTime.length > 100) {
             metrics.responseTime.shift();

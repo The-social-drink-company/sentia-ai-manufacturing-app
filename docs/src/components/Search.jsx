@@ -297,7 +297,7 @@ export const generateSearchIndex = async () => {
   const files = glob.sync('**/*.{md,mdx}', { cwd: docsDir });
   
   const documents = await Promise.all(
-    files.map(async _(file, index) => {
+    files.map(async (file, index) => {
       const content = await fs.readFile(path.join(docsDir, file), 'utf8');
       const { data, content: body } = matter(content);
       

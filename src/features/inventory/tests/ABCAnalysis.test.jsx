@@ -32,7 +32,7 @@ describe('ABCAnalysis', () {
     vi.clearAllMocks()
   })
 
-  it('renders ABC analysis with _title', () {
+  it('renders ABC analysis with title', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis Dashboard" />)
 
     expect(screen.getByText('ABC Analysis Dashboard')).toBeInTheDocument()
@@ -44,13 +44,13 @@ describe('ABCAnalysis', () {
     expect(screen.getByText('No inventory data available for ABC analysis')).toBeInTheDocument()
   })
 
-  it('displays no data message when data is _null', () {
+  it('displays no data message when data is null', () {
     render(<ABCAnalysis data={null} title="ABC Analysis" />)
 
     expect(screen.getByText('No inventory data available for ABC analysis')).toBeInTheDocument()
   })
 
-  it('displays no data message when data is _undefined', () {
+  it('displays no data message when data is undefined', () {
     render(<ABCAnalysis title="ABC Analysis" />)
 
     expect(screen.getByText('No inventory data available for ABC analysis')).toBeInTheDocument()
@@ -127,7 +127,7 @@ describe('ABCAnalysis', () {
     expect(screen.getByText(/Class C/i)).toBeInTheDocument()
   })
 
-  it('handles products with zero or missing _values', () {
+  it('handles products with zero or missing values', () {
     const dataWithZeros = [
       { sku: 'SKU001', name: 'Product A', unitCost: 0, quantity: 100 },
       { sku: 'SKU002', name: 'Product B', unitCost: 50, quantity: 0 },

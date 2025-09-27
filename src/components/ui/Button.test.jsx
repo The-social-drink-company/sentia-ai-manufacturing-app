@@ -43,7 +43,7 @@ describe('Button _Component', () {
     expect(handleClick).toHaveBeenCalledTimes(1)
   })
 
-  it('disables button when disabled prop is _true', () {
+  it('disables button when disabled prop is true', () {
     const handleClick = vi.fn()
     render(<Button disabled onClick={handleClick}>Disabled</Button>)
 
@@ -54,7 +54,7 @@ describe('Button _Component', () {
     expect(handleClick).not.toHaveBeenCalled()
   })
 
-  it('shows loading spinner when loading prop is _true', () {
+  it('shows loading spinner when loading prop is true', () {
     render(<Button loading>Loading</Button>)
 
     const button = screen.getByRole('button')

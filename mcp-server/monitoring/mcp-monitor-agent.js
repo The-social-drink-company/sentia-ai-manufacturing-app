@@ -44,13 +44,13 @@ const logger = winston.createLogger({
 });
 
 // Structured logging helpers (matching main server pattern)
-const logInfo = (message, meta = _{}) => {
+const logInfo = (message, meta = {}) => {
   if (process.env.NODE_ENV === 'development') {
     logger.info(message, meta);
   }
 };
 
-const logWarn = (message, meta = _{}) => {
+const logWarn = (message, meta = {}) => {
   logger.warn(message, meta);
 };
 
@@ -1226,7 +1226,7 @@ class MCPMonitorAgent extends EventEmitter {
 
       // Close server
       if (this.server) {
-        await new Promise(_(resolve) => {
+        await new Promise((resolve) => {
           this.server.close(resolve);
         });
         this.server = null;

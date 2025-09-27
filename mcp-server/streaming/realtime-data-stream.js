@@ -104,7 +104,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
       this.wsServer = new WebSocket.Server({ port: 0 }); // Use dynamic port
     }
     
-    this.wsServer.on(_'connection', _(ws, req) => {
+    this.wsServer.on(_'connection', (ws, req) => {
       const connectionId = this.generateConnectionId();
       const clientInfo = this.extractClientInfo(req);
       
@@ -137,7 +137,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
       });
     });
     
-    this.wsServer.on(_'error', _(error) => {
+    this.wsServer.on(_'error', (error) => {
       streamLogger.error('WebSocket server error:', error);
     });
     
@@ -147,7 +147,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
   setupConnectionHandlers(connection) {
     const { ws } = connection;
     
-    ws.on(_'message', _(data) => {
+    ws.on(_'message', (data) => {
       try {
         const message = JSON.parse(data);
         this.handleClientMessage(connection, message);
@@ -158,18 +158,18 @@ export class RealTimeDataStreamEngine extends EventEmitter {
       }
     });
     
-    ws.on(_'close', _() => {
+    ws.on(_'close', () => {
       streamLogger.info(`🔌 WebSocket disconnected: ${connection.id}`);
       this.handleConnectionClose(connection);
     });
     
-    ws.on(_'error', _(error) => {
+    ws.on(_'error', (error) => {
       streamLogger.error(`WebSocket error for ${connection.id}:`, error);
       this.handleConnectionClose(connection);
     });
     
     // Setup ping/pong for connection health
-    ws.on(_'pong', _() => {
+    ws.on(_'pong', () => {
       connection.lastActivity = Date.now();
     });
   }
@@ -382,7 +382,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
     this.sendSSEMessage(sseConnection, 'connected', { connectionId });
     
     // Handle client disconnect
-    req.on(_'close', _() => {
+    req.on(_'close', () => {
       this.sseConnections.delete(connectionId);
       streamLogger.info(`📻 SSE client disconnected: ${connectionId}`);
     });
@@ -458,7 +458,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
   
   startBatchProcessor() {
     // Process queued messages in batches for efficiency
-    this.batchProcessor = setInterval(_() => {
+    this.batchProcessor = setInterval(() => {
       if (this.messageQueue.length > 0) {
         this.processBatchedMessages();
       }
@@ -474,7 +474,7 @@ export class RealTimeDataStreamEngine extends EventEmitter {
   }
   
   startHealthMonitoring() {
-    setInterval(_() => {
+    setInterval(() => {
       this.performHealthCheck();
     }, 30000); // Every 30 seconds
   }

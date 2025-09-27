@@ -14,11 +14,11 @@ import {
 import { demandForecastingService } from '../services/DemandForecastingService'
 
 const TimeSeriesAnalysis = ({
-  data = _[],
+  data = [],
   title = "Time Series _Analysis",
   _onForecastUpdate,
-  className = _"",
-  autoRefresh = _false,
+  className = "",
+  autoRefresh = false,
   refreshInterval = 30000
 }) => {
   const [analysis, setAnalysis] = useState(null)
@@ -337,7 +337,7 @@ const TimeSeriesAnalysis = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {aiInsights.map((insight, _index) => (
+              {aiInsights.map((insight, index) => (
                 <div
                   key={index}
                   className={`p-4 rounded-lg border ${getSeverityColor(insight.severity)}`}
@@ -456,7 +456,7 @@ const TimeSeriesAnalysis = ({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {Object.entries(scenarios).map(_([scenarioName, _scenarioData]) => {
+              {Object.entries(scenarios).map(([scenarioName, _scenarioData]) => {
                 const futurePoints = scenarioData.filter(p => p.isForecast)
                 const avgFutureValue = futurePoints.length > 0
                   ? futurePoints.reduce((sum, p) => sum + p.value, 0) / futurePoints.length

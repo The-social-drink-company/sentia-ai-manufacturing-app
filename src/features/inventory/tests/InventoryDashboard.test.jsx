@@ -293,7 +293,7 @@ describe('InventoryDashboard', () {
     expect(screen.getByTestId('abc-analysis')).toHaveTextContent('with data')
   })
 
-  it('handles retry on _error', async () {
+  it('handles retry on error', async () {
     const mockRefetch = vi.fn()
     const mockError = new Error('Network error')
 

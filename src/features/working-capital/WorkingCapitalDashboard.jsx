@@ -38,7 +38,7 @@ export default function WorkingCapitalDashboard() {
   const audit = useDashboardAudit()
 
   // Track dashboard load performance
-  useEffect(() {
+  useEffect(() => {
     const loadStartTime = performance.now()
 
     if (metrics && !loading) {
@@ -54,8 +54,8 @@ export default function WorkingCapitalDashboard() {
   }
 
   // Auto-refresh every 15 minutes for critical metrics
-  useEffect(() {
-    const interval = setInterval(() {
+  useEffect(() => {
+    const interval = setInterval(() => {
       audit.logMetricRefresh('auto_refresh', 'periodic')
       refetch()
     }, 15 * 60 * 1000) // 15 minutes
@@ -264,7 +264,7 @@ export default function WorkingCapitalDashboard() {
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Alerts</h2>
             <div className="space-y-3">
-              {alerts.map((alert, _index) => (
+              {alerts.map((alert, index) => (
                 <div
                   key={index}
                   className={`p-4 rounded-lg border flex items-start ${

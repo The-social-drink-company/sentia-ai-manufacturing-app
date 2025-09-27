@@ -87,7 +87,7 @@ class OptimizedDatabaseClient {
     };
 
     // Add parameters to URL
-    Object.entries(poolParams).forEach(_([key, _value]) => {
+    Object.entries(poolParams).forEach(([key, value]) => {
       if (!url.searchParams.has(key)) {
         url.searchParams.set(key, value);
       }

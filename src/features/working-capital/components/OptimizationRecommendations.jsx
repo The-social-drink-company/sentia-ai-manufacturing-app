@@ -122,7 +122,7 @@ export default function OptimizationRecommendations({ recommendations, onActionC
     }
   }
 
-  const formatCurrency = (_value) => {
+  const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -132,7 +132,7 @@ export default function OptimizationRecommendations({ recommendations, onActionC
   }
 
   // Sort by priority and ROI
-  const sortedRecommendations = [...defaultRecommendations].sort(_(a, b) => {
+  const sortedRecommendations = [...defaultRecommendations].sort((a, b) => {
     const priorityOrder = { high: 3, medium: 2, low: 1 }
     if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
       return priorityOrder[b.priority] - priorityOrder[a.priority]
@@ -239,7 +239,7 @@ export default function OptimizationRecommendations({ recommendations, onActionC
             <div className="mb-4">
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Action Items:</p>
               <ul className="space-y-1">
-                {rec.actions.map((action, _index) => (
+                {rec.actions.map((action, index) => (
                   <li key={index} className="flex items-start text-sm text-gray-700 dark:text-gray-300">
                     <span className="text-gray-400 dark:text-gray-500 mr-2">•</span>
                     <span>{action}</span>

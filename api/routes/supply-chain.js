@@ -19,7 +19,7 @@ const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
 router.get(_'/overview',
   _requireAuth,
   _rateLimiters.read,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const cacheKey = `supply-chain-overview-${req.userId}`;
     const cached = cache.get(cacheKey);
 

@@ -95,13 +95,13 @@ async function checkDatabaseConnection() {
 }
 
 function checkProviderStatus() {
-  return Object.entries(providers).reduce(_(acc, _[key, _client]) => {
+  return Object.entries(providers).reduce((acc, [key, _client]) => {
     acc[key] = client ? 'ready' : 'unconfigured';
     return acc;
   }, {});
 }
 
-app.get(_'/health', async _(_req, res) => {
+app.get(_'/health', async (_req, res) => {
   const database = await checkDatabaseConnection();
   res.json({
     status: 'healthy',
@@ -292,7 +292,7 @@ function computeInventoryInsights(rows) {
     };
   }
 
-  const aggregates = rows.reduce(_(acc, _item) => {
+  const aggregates = rows.reduce((acc, _item) => {
     const quantity = toNumber(getValue(item, 'quantity'));
     const unitCost = toNumber(getValue(item, 'unitCost'));
     const totalValue = toNumber(getValue(item, 'totalValue'), quantity * unitCost);
@@ -413,7 +413,7 @@ function assessQualityRisk(rows) {
     };
   }
 
-  const aggregates = rows.reduce(_(acc, job) => {
+  const aggregates = rows.reduce((acc, job) => {
     const qualityScore = toNumber(getValue(job, 'qualityScore'), 0);
     const defectRate = toNumber(getValue(job, 'defectRate'), 0);
     acc.totalQuality += qualityScore;

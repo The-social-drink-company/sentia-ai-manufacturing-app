@@ -20,7 +20,7 @@ export default function AgingChart({ receivables, payables, title }) {
   const arData = receivables || defaultAgingData.receivables
   const apData = payables || defaultAgingData.payables
 
-  const formatCurrency = (_value) => {
+  const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -73,7 +73,7 @@ export default function AgingChart({ receivables, payables, title }) {
 
       {/* Aging Buckets */}
       <div className="space-y-6">
-        _{agingBuckets.map((bucket) => {
+        {agingBuckets.map((bucket) => {
           const arValue = arData[bucket] || 0
           const apValue = apData[bucket] || 0
           const arPercentage = arTotal > 0 ? (arValue / arTotal) * 100 : 0

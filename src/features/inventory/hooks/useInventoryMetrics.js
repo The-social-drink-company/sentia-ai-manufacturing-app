@@ -233,7 +233,7 @@ export function useInventoryMetrics(filters = {}) {
     fetchData()
   }, [fetchData])
 
-  const exportData = useCallback(async _(format) => {
+  const exportData = useCallback(async (format) => {
     if (!data) return
 
     try {

@@ -312,7 +312,7 @@ describe('ForecastingDashboard Integration _Tests', () {
       })
     })
 
-    it('should show forecast visualization _title', async () {
+    it('should show forecast visualization title', async () {
       renderWithRouter(<ForecastingDashboard />)
 
       await waitFor(() {
@@ -480,7 +480,7 @@ describe('ForecastingDashboard Integration _Tests', () {
   })
 
   describe('Integration with Forecasting _Service', () {
-    it('should call forecasting service with correct _parameters', async () {
+    it('should call forecasting service with correct parameters', async () {
       renderWithRouter(<ForecastingDashboard />)
 
       await waitFor(() {

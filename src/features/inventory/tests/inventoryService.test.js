@@ -23,7 +23,7 @@ global.Blob = vi.fn((content, options) => ({
   type: options.type
 }))
 
-document.createElement = vi.fn(_(tagName) => {
+document.createElement = vi.fn((tagName) => {
   const element = {
     tagName,
     href: '',
@@ -279,7 +279,7 @@ describe('Inventory _Service', () => {
       )
     })
 
-    it('includes correct filename with _parameters', async () => {
+    it('includes correct filename with parameters', async () => {
       const mockElement = {
         href: '',
         download: '',
@@ -362,7 +362,7 @@ describe('Inventory _Service', () => {
       expect(result.source).toBe('mock')
     })
 
-    it('handles timeout _errors', async () => {
+    it('handles timeout errors', async () => {
       fetch.mockRejectedValue(new Error('The operation was aborted'))
 
       const result = await fetchInventoryMetrics()

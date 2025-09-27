@@ -416,7 +416,7 @@ router.get(_'/metrics/dashboard', (req, res) => {
 const setupWebSocket = (_server) => {
   const wss = new WebSocket.Server({ server, path: '/monitoring/ws' });
   
-  wss.on(_'connection', _(ws) => {
+  wss.on(_'connection', (ws) => {
     console.log('Monitoring WebSocket connected');
     
     // Send current metrics immediately

@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 router.get(_'/dashboard-layout',
   _requireAuth,
   _rateLimiters.read,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const { userId } = req.auth;
 
     try {
@@ -53,7 +53,7 @@ router.get(_'/dashboard-layout',
 router.post(_'/dashboard-layout',
   _requireAuth,
   _rateLimiters.write,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const { userId } = req.auth;
     const { layouts, widgets } = req.body;
 
@@ -92,7 +92,7 @@ router.post(_'/dashboard-layout',
 router.get(_'/preferences',
   _requireAuth,
   _rateLimiters.read,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const { userId } = req.auth;
 
     try {
@@ -123,7 +123,7 @@ router.get(_'/preferences',
 router.put(_'/preferences',
   _requireAuth,
   _rateLimiters.write,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const { userId } = req.auth;
     const { theme, notifications, language, timezone } = req.body;
 

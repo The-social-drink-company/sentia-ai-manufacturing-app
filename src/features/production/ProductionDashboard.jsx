@@ -51,8 +51,8 @@ export default function ProductionDashboard() {
   }
 
   // Auto-refresh every 10 seconds for real-time production data
-  useEffect(() {
-    const interval = setInterval(() {
+  useEffect(() => {
+    const interval = setInterval(() => {
       refetch()
     }, 10 * 1000) // 10 seconds for real-time production monitoring
     return () => clearInterval(interval)
@@ -265,7 +265,7 @@ export default function ProductionDashboard() {
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Critical Production Alerts</h2>
             <div className="space-y-3">
-              {alerts.map((alert, _index) => (
+              {alerts.map((alert, index) => (
                 <div
                   key={index}
                   className={`p-4 rounded-lg border flex items-start ${

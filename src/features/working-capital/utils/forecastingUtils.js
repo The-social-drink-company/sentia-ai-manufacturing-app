@@ -6,7 +6,7 @@
 import { TimeSeriesForecaster, CashFlowForecaster, WorkingCapitalOptimizer } from '../models/FinancialForecastModels.js'
 
 // Cash flow forecasting utilities
-export const generateCashFlowForecast = (_historicalData, options = _{}) => {
+export const generateCashFlowForecast = (_historicalData, options = {}) => {
   const forecaster = new CashFlowForecaster(historicalData, options)
   const scenarios = ['base', 'optimistic', 'pessimistic']
 
@@ -28,7 +28,7 @@ export const generateCashFlowForecast = (_historicalData, options = _{}) => {
 }
 
 // Working Capital metrics forecasting
-export const forecastWorkingCapitalMetrics = (historicalMetrics, options = _{}) => {
+export const forecastWorkingCapitalMetrics = (historicalMetrics, options = {}) => {
   const dsoForecaster = new TimeSeriesForecaster(
     historicalMetrics.map(m => ({ date: m.date, value: m.dso, period: m.period })),
     { smoothingFactor: 0.3 }
@@ -74,7 +74,7 @@ export const forecastWorkingCapitalMetrics = (historicalMetrics, options = _{}) 
 }
 
 // Generate optimization recommendations
-export const generateOptimizationRecommendations = (_currentMetrics, industryBenchmarks = _{}) => {
+export const generateOptimizationRecommendations = (_currentMetrics, industryBenchmarks = {}) => {
   const optimizer = new WorkingCapitalOptimizer(currentMetrics, industryBenchmarks)
   const opportunities = optimizer.calculateOptimizationOpportunities()
   const impact = optimizer.calculateOptimizationImpact(opportunities)
@@ -93,7 +93,7 @@ export const generateOptimizationRecommendations = (_currentMetrics, industryBen
 }
 
 // Risk assessment utilities
-export const assessCashFlowRisk = (forecastData, thresholds = _{}) => {
+export const assessCashFlowRisk = (forecastData, thresholds = {}) => {
   const defaultThresholds = {
     criticalCash: 25000,
     lowCash: 75000,
@@ -201,7 +201,7 @@ export const assessCashFlowRisk = (forecastData, thresholds = _{}) => {
 }
 
 // Scenario modeling utilities
-export const createScenarioModels = (baseData, scenarioDefinitions = _{}) => {
+export const createScenarioModels = (baseData, scenarioDefinitions = {}) => {
   const defaultScenarios = {
     optimistic: {
       name: 'Optimistic',
@@ -241,7 +241,7 @@ export const createScenarioModels = (baseData, scenarioDefinitions = _{}) => {
   const scenarios = { ...defaultScenarios, ...scenarioDefinitions }
   const results = {}
 
-  Object.entries(scenarios).forEach(_([key, scenario]) => {
+  Object.entries(scenarios).forEach(([key, scenario]) => {
     results[key] = applyScenarioAdjustments(baseData, scenario.adjustments)
     results[key].scenarioInfo = {
       name: scenario.name,

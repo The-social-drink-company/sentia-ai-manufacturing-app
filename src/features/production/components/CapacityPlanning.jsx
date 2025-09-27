@@ -140,7 +140,7 @@ export default function CapacityPlanning({ data }) {
               Identified Bottlenecks
             </h4>
             <div className="space-y-3">
-              _{capacityData.bottlenecks.map((bottleneck, _index) => {
+              {capacityData.bottlenecks.map((bottleneck, index) => {
                 const impactConfig = getImpactConfig(bottleneck.impact)
                 const bottleneckStatus = getUtilizationStatus(bottleneck.utilizationRate)
 
@@ -183,7 +183,7 @@ export default function CapacityPlanning({ data }) {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                {capacityData.forecast.map((day, _index) => {
+                {capacityData.forecast.map((day, index) => {
                   const utilizationStatus = getUtilizationStatus(day.plannedUtilization)
                   const isOvercapacity = day.forecastDemand > day.capacity
                   const remainingCapacity = day.capacity - day.forecastDemand
@@ -241,7 +241,7 @@ export default function CapacityPlanning({ data }) {
         <div>
           <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Capacity Constraints</h4>
           <div className="space-y-3">
-            {capacityData.constraints.map((constraint, _index) => {
+            {capacityData.constraints.map((constraint, index) => {
               const constraintConfig = getConstraintConfig(constraint.type)
               const impactConfig = getImpactConfig(constraint.impact)
               const ConstraintIcon = constraintConfig.icon

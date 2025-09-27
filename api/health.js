@@ -26,7 +26,7 @@ const HealthStatus = {
  * Basic health check endpoint
  * Returns 200 if service is running
  */
-router.get(_'/health', _(req, res) => {
+router.get(_'/health', (req, res) => {
   res.status(200).json({
     status: HealthStatus.HEALTHY,
     timestamp: new Date().toISOString(),
@@ -40,7 +40,7 @@ router.get(_'/health', _(req, res) => {
  * Liveness probe for Kubernetes/Container orchestration
  * Checks if the application is running
  */
-router.get(_'/health/live', _(req, res) => {
+router.get(_'/health/live', (req, res) => {
   res.status(200).json({
     status: 'alive',
     timestamp: new Date().toISOString()
@@ -51,7 +51,7 @@ router.get(_'/health/live', _(req, res) => {
  * Readiness probe
  * Checks if the application is ready to serve traffic
  */
-router.get(_'/health/ready', async _(req, res) => {
+router.get(_'/health/ready', async (req, res) => {
   const checks = await performReadinessChecks();
   const isReady = checks.every(check => check.status === 'ready');
   
@@ -66,7 +66,7 @@ router.get(_'/health/ready', async _(req, res) => {
  * Comprehensive health check
  * Returns detailed system health information
  */
-router.get(_'/health/detailed', async _(req, res) => {
+router.get(_'/health/detailed', async (req, res) => {
   try {
     const healthData = {
       status: HealthStatus.HEALTHY,
@@ -106,7 +106,7 @@ router.get(_'/health/detailed', async _(req, res) => {
 /**
  * Metrics endpoint for Prometheus/Grafana
  */
-router.get(_'/metrics', _(req, res) => {
+router.get(_'/metrics', (req, res) => {
   const metrics = generatePrometheusMetrics();
   res.set('Content-Type', 'text/plain');
   res.send(metrics);
@@ -115,7 +115,7 @@ router.get(_'/metrics', _(req, res) => {
 /**
  * System status endpoint
  */
-router.get(_'/status', async _(req, res) => {
+router.get(_'/status', async (req, res) => {
   const status = {
     operational: true,
     timestamp: new Date().toISOString(),
@@ -527,7 +527,7 @@ function calculateCPUUsage() {
  */
 function measureEventLoopDelay() {
   const start = process.hrtime();
-  setImmediate(_() => {
+  setImmediate(() => {
     const delta = process.hrtime(start);
     return delta[0] * 1000 + delta[1] / 1000000;
   });

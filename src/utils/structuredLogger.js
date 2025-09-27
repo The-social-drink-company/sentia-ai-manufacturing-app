@@ -27,13 +27,13 @@ const getCurrentLogLevel = () => {
 
   switch (env) {
     case 'production':
-      return LOG_LEVELS.WARN; // Only warnings and errors in production
+      return LOGLEVELS.WARN; // Only warnings and errors in production
     case 'test':
     case 'testing':
-      return LOG_LEVELS.ERROR; // Only errors in test
+      return LOGLEVELS.ERROR; // Only errors in test
     case 'development':
     default:
-      return LOG_LEVELS.DEBUG; // Everything in development
+      return LOGLEVELS.DEBUG; // Everything in development
   }
 };
 
@@ -45,7 +45,7 @@ const isDevelopment = import.meta.env?.DEV || process?.env?.NODE_ENV === 'develo
  */
 const formatMessage = (level, message, context) => {
   const timestamp = new Date().toISOString();
-  const levelName = Object.keys(LOG_LEVELS).find(key => LOG_LEVELS[key] === level);
+  const levelName = Object.keys(LOGLEVELS).find(key => LOGLEVELS[key] === level);
 
   return {
     timestamp,
@@ -87,10 +87,10 @@ const log = (level, message, context) => {
   const logData = formatMessage(level, message, context);
 
   // Console output in development
-  if (isDevelopment || level >= LOG_LEVELS.WARN) {
-    const consoleMethod = level === LOG_LEVELS.ERROR ? 'error' :
-                         level === LOG_LEVELS.WARN ? 'warn' :
-                         level === LOG_LEVELS.DEBUG ? 'debug' : 'log';
+  if (isDevelopment || level >= LOGLEVELS.WARN) {
+    const consoleMethod = level === LOGLEVELS.ERROR ? 'error' :
+                         level === LOGLEVELS.WARN ? 'warn' :
+                         level === LOGLEVELS.DEBUG ? 'debug' : 'log';
 
     // Use structured output in development
     if (isDevelopment) {
@@ -102,7 +102,7 @@ const log = (level, message, context) => {
   }
 
   // Send errors and warnings to monitoring
-  if (level >= LOG_LEVELS.WARN) {
+  if (level >= LOGLEVELS.WARN) {
     sendToMonitoring(logData);
   }
 };
@@ -111,15 +111,15 @@ const log = (level, message, context) => {
  * Public logging functions
  */
 export const logDebug = (message, context) => {
-  log(LOG_LEVELS.DEBUG, message, context);
+  log(LOGLEVELS.DEBUG, message, context);
 };
 
 export const logInfo = (message, context) => {
-  log(LOG_LEVELS.INFO, message, context);
+  log(LOGLEVELS.INFO, message, context);
 };
 
 export const logWarn = (message, context) => {
-  log(LOG_LEVELS.WARN, message, context);
+  log(LOGLEVELS.WARN, message, context);
 };
 
 export const logError = (message, errorOrContext) => {
@@ -135,13 +135,13 @@ export const logError = (message, errorOrContext) => {
     };
   }
 
-  log(LOG_LEVELS.ERROR, message, context);
+  log(LOGLEVELS.ERROR, message, context);
 };
 
 /**
  * Performance logging utility
  */
-export const logPerformance = (_operation, duration, _metadata) => {
+export const logPerformance = (operation, duration, metadata) => {
   const context = {
     operation,
     duration: `${duration}ms`,

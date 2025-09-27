@@ -50,7 +50,7 @@ export default function StockLevelChart({ data, title, timeRange }) {
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4">
           <p className="text-gray-900 dark:text-white font-medium mb-2">{label}</p>
-          {payload.map((entry, _index) => (
+          {payload.map((entry, index) => (
             <div key={index} className="flex items-center justify-between min-w-32">
               <div className="flex items-center">
                 <div

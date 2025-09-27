@@ -503,7 +503,7 @@ router.post('/movements',
     }
 
     // Create movement in transaction
-    const movement = await prisma.$transaction(async _(tx) => {
+    const movement = await prisma.$transaction(async (tx) => {
       // Create movement record
       const mov = await tx.inventoryMovement.create({
         data: {
@@ -566,7 +566,7 @@ router.post('/stocktake',
     const data = stockTakeSchema.create.parse(req.body);
 
     // Process stock take in transaction
-    const result = await prisma.$transaction(async _(tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       // Create stock take record
       const stockTake = await tx.stockTake.create({
         data: {

@@ -61,7 +61,7 @@ describe('MetricCard', () {
       expect(screen.getByText('--')).toBeInTheDocument();
     });
 
-    it('handles zero _values', () {
+    it('handles zero values', () {
       render(<MetricCard {...defaultProps} value={0} format="currency" />);
       expect(screen.getByText('$0')).toBeInTheDocument();
     });
@@ -208,13 +208,13 @@ describe('MetricCard', () {
   });
 
   describe('Loading _State', () {
-    it('shows loading skeleton when loading prop is _true', () {
+    it('shows loading skeleton when loading prop is true', () {
       render(<MetricCard {...defaultProps} loading={true} />);
       expect(screen.getByText('Working Capital')).toBeInTheDocument();
       expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
     });
 
-    it('shows actual data when loading is _false', () {
+    it('shows actual data when loading is false', () {
       render(<MetricCard {...defaultProps} loading={false} />);
       expect(screen.getByText('$1,500,000')).toBeInTheDocument();
       expect(document.querySelector('.animate-pulse')).not.toBeInTheDocument();
@@ -232,7 +232,7 @@ describe('MetricCard', () {
       expect(screen.getByText('$0.01')).toBeInTheDocument();
     });
 
-    it('handles negative _values', () {
+    it('handles negative values', () {
       render(<MetricCard {...defaultProps} value={-500000} format="currency" />);
       expect(screen.getByText('-$500,000')).toBeInTheDocument();
     });

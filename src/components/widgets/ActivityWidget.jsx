@@ -167,7 +167,7 @@ export default function ActivityWidget({ activities = [], maxItems = 10 }) {
 
         {recentActivities.length > 0 ? (
           <div className="space-y-3">
-            _{recentActivities.map((activity) => {
+            {recentActivities.map((activity) => {
               const Icon = getIcon(activity.type);
               const colors = getColorClasses(activity.type);
 

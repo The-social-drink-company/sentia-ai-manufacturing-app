@@ -322,7 +322,7 @@ const EnterpriseDataLakeDashboard = () => {
     return () => clearInterval(interval);
   }, [dataLake]);
 
-  const handleSourceSync = useCallback(async _(sourceKey) => {
+  const handleSourceSync = useCallback(async (sourceKey) => {
     setActiveSource({ key: sourceKey, status: 'syncing' });
     
     try {
@@ -333,7 +333,7 @@ const EnterpriseDataLakeDashboard = () => {
     }
   }, [dataLake]);
 
-  const handlePipelineRun = useCallback(async _(pipelineKey) => {
+  const handlePipelineRun = useCallback(async (pipelineKey) => {
     setActivePipeline({ key: pipelineKey, status: 'running' });
     
     try {
@@ -344,7 +344,7 @@ const EnterpriseDataLakeDashboard = () => {
     }
   }, [dataLake]);
 
-  const handleQuery = useCallback(async _(query) => {
+  const handleQuery = useCallback(async (query) => {
     setQueryResult({ status: 'running', query });
     
     try {
@@ -462,7 +462,7 @@ const EnterpriseDataLakeDashboard = () => {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(DATA_SOURCES).map(_([key, source]) => {
+          {Object.entries(DATA_SOURCES).map(([key, source]) => {
             const status = metrics.dataSources[key];
             const IconComponent = source.icon;
             
@@ -528,7 +528,7 @@ const EnterpriseDataLakeDashboard = () => {
         </h2>
         
         <div className="space-y-6">
-          {Object.entries(PROCESSING_PIPELINES).map(_([key, _pipeline]) => {
+          {Object.entries(PROCESSING_PIPELINES).map(([key, _pipeline]) => {
             const status = metrics.pipelines[key];
             
             return (
@@ -548,7 +548,7 @@ const EnterpriseDataLakeDashboard = () => {
                 </div>
                 
                 <div className="grid grid-cols-5 gap-2 mb-4">
-                  {pipeline.stages.map(_(stage, index) => {
+                  {pipeline.stages.map((stage, index) => {
                     const isActive = status?.currentStage === index;
                     const isCompleted = status?.currentStage > index || status?.status === 'completed';
                     

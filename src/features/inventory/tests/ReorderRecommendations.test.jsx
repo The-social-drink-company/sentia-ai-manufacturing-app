@@ -47,7 +47,7 @@ describe('ReorderRecommendations', () {
     vi.clearAllMocks()
   })
 
-  it('renders reorder recommendations _title', () {
+  it('renders reorder recommendations title', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText(/Reorder Recommendations/i)).toBeInTheDocument()
@@ -59,13 +59,13 @@ describe('ReorderRecommendations', () {
     expect(screen.getByText(/No reorder recommendations at this time/i)).toBeInTheDocument()
   })
 
-  it('displays no data message when data is _null', () {
+  it('displays no data message when data is null', () {
     render(<ReorderRecommendations data={null} />)
 
     expect(screen.getByText(/No reorder recommendations at this time/i)).toBeInTheDocument()
   })
 
-  it('displays no data message when data is _undefined', () {
+  it('displays no data message when data is undefined', () {
     render(<ReorderRecommendations />)
 
     expect(screen.getByText(/No reorder recommendations at this time/i)).toBeInTheDocument()
@@ -171,7 +171,7 @@ describe('ReorderRecommendations', () {
     expect(items[0]).toHaveTextContent('Product A') // high urgency
   })
 
-  it('provides filtering _options', () {
+  it('provides filtering options', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     const urgencyFilter = screen.getByDisplayValue(/all urgency/i)
@@ -189,7 +189,7 @@ describe('ReorderRecommendations', () {
     expect(screen.queryByText('Product C')).not.toBeInTheDocument()
   })
 
-  it('displays total recommended order _value', () {
+  it('displays total recommended order value', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     // Should show sum of all recommendation costs

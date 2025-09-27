@@ -22,7 +22,7 @@ const checkFeatureEnabled = (req, res, _next) => {
 };
 
 // POST /dq/run - Run DQ checks for a dataset
-router.post(_'/dq/run', checkFeatureEnabled, async _(req, res) => {
+router.post(_'/dq/run', checkFeatureEnabled, async (req, res) => {
   try {
     const { dataset } = req.body;
     
@@ -52,7 +52,7 @@ router.post(_'/dq/run', checkFeatureEnabled, async _(req, res) => {
 });
 
 // GET /dq/runs - Get DQ runs for a dataset
-router.get(_'/dq/runs', checkFeatureEnabled, async _(req, res) => {
+router.get(_'/dq/runs', checkFeatureEnabled, async (req, res) => {
   try {
     const { dataset, limit = 10 } = req.query;
     
@@ -77,7 +77,7 @@ router.get(_'/dq/runs', checkFeatureEnabled, async _(req, res) => {
 });
 
 // GET /dq/findings - Get DQ findings
-router.get(_'/dq/findings', checkFeatureEnabled, async _(req, res) => {
+router.get(_'/dq/findings', checkFeatureEnabled, async (req, res) => {
   try {
     const { dataset, runId, limit = 10, severity } = req.query;
     
@@ -122,7 +122,7 @@ router.get(_'/dq/findings', checkFeatureEnabled, async _(req, res) => {
 });
 
 // GET /dq/freshness - Get freshness status
-router.get(_'/dq/freshness', checkFeatureEnabled, async _(req, res) => {
+router.get(_'/dq/freshness', checkFeatureEnabled, async (req, res) => {
   try {
     const status = await dqEngine.getFreshnessStatus();
     
@@ -141,7 +141,7 @@ router.get(_'/dq/freshness', checkFeatureEnabled, async _(req, res) => {
 });
 
 // GET /dq/lineage - Get lineage information
-router.get(_'/dq/lineage', checkFeatureEnabled, async _(req, res) => {
+router.get(_'/dq/lineage', checkFeatureEnabled, async (req, res) => {
   try {
     const { importJobId, limit = 10 } = req.query;
     
@@ -171,7 +171,7 @@ router.get(_'/dq/lineage', checkFeatureEnabled, async _(req, res) => {
 });
 
 // GET /dq/rules - Get DQ rules
-router.get(_'/dq/rules', checkFeatureEnabled, async _(req, res) => {
+router.get(_'/dq/rules', checkFeatureEnabled, async (req, res) => {
   try {
     const { dataset, active = true } = req.query;
     
@@ -200,7 +200,7 @@ router.get(_'/dq/rules', checkFeatureEnabled, async _(req, res) => {
 });
 
 // POST /dq/rules - Create or update DQ rule
-router.post(_'/dq/rules', checkFeatureEnabled, async _(req, res) => {
+router.post(_'/dq/rules', checkFeatureEnabled, async (req, res) => {
   try {
     if (!req.user || req.user.role !== 'admin') {
       return res.status(403).json({
@@ -254,7 +254,7 @@ router.post(_'/dq/rules', checkFeatureEnabled, async _(req, res) => {
 });
 
 // GET /dq/export/brief - Export DQ daily brief
-router.get(_'/dq/export/brief', checkFeatureEnabled, async _(req, res) => {
+router.get(_'/dq/export/brief', checkFeatureEnabled, async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

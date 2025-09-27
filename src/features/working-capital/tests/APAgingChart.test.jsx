@@ -49,14 +49,14 @@ describe('APAgingChart', () => {
     )
   })
 
-  it('displays no data message when data is _null', () => {
+  it('displays no data message when data is null', () => {
     render(<APAgingChart data={null} />)
 
     expect(screen.getByText('No payables data available')).toBeInTheDocument()
     expect(screen.queryByTestId('ap-aging-chart')).not.toBeInTheDocument()
   })
 
-  it('displays no data message when data is _undefined', () => {
+  it('displays no data message when data is undefined', () => {
     render(<APAgingChart />)
 
     expect(screen.getByText('No payables data available')).toBeInTheDocument()
@@ -113,7 +113,7 @@ describe('APAgingChart', () => {
     )
   })
 
-  it('formats y-axis with currency _values', () => {
+  it('formats y-axis with currency values', () => {
     render(<APAgingChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')

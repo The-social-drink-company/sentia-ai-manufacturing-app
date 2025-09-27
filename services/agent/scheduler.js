@@ -172,8 +172,8 @@ export class AutopilotScheduler {
     }
 
     const job = new CronJob(
-      schedule.cron,
-      async () => {
+      _schedule.cron,
+      async _() => {
         await this.executeSchedule(schedule);
       },
       null,
@@ -498,7 +498,7 @@ export class AutopilotScheduler {
    */
   validateCron(cron) {
     try {
-      new CronJob(cron, () => {});
+      new CronJob(cron, _() => {});
       return true;
     } catch {
       return false;

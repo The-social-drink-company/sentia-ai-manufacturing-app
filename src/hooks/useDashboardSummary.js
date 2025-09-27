@@ -11,7 +11,7 @@ const initialState = {
 export function useDashboardSummary() {
   const [state, setState] = useState(initialState)
 
-  useEffect(_() => {
+  useEffect(() => {
     let isMounted = true
 
     setState(prev => ({ ...prev, status: 'loading' }))

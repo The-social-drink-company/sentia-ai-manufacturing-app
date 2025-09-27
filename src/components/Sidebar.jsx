@@ -71,7 +71,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
               {section.title}
             </h3>
             <nav className="space-y-1">
-              _{section.items.map((item) => {
+              {section.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
                 

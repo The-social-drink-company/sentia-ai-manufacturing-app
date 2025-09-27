@@ -11,13 +11,13 @@ export const Modal = ({
   _children,
   size = 'md',
   className,
-  closeOnOverlayClick = _true,
-  closeOnEscape = _true,
+  closeOnOverlayClick = true,
+  closeOnEscape = true,
   showCloseButton = true
 }) => {
   const modalRef = useRef(null)
 
-  useEffect(() {
+  useEffect(() => {
     const handleEscape = (e) => {
       if (closeOnEscape && e.key === 'Escape') {
         onClose()

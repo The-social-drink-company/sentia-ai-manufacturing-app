@@ -20,11 +20,11 @@ const generateMockInventory = () => {
 }
 
 export function InventoryHeatmap({ data, onCellClick }) {
-  const inventoryData = useMemo(() {
+  const inventoryData = useMemo(() => {
     return data || generateMockInventory()
   }, [data])
 
-  const locations = useMemo(() {
+  const locations = useMemo(() => {
     if (inventoryData.length > 0) {
       return inventoryData[0].locations.map(l => l.location)
     }

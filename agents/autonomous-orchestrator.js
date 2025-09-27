@@ -284,11 +284,11 @@ class AutonomousOrchestrator {
       let output = '';
       let error = '';
 
-      child.stdout.on(_'data', _(data) => {
+      child.stdout.on(_'data', (data) => {
         output += data.toString();
       });
 
-      child.stderr.on(_'data', _(data) => {
+      child.stderr.on(_'data', (data) => {
         error += data.toString();
       });
 

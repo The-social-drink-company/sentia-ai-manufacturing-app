@@ -32,7 +32,7 @@ export class CircuitBreaker {
     try {
       const result = await Promise.race([
         fn(),
-        new Promise((_, _reject) => 
+        new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Operation timeout')), this.timeout)
         )
       ]);

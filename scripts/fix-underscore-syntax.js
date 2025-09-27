@@ -19,9 +19,14 @@ const fixes = [
   { pattern: /\.on\(_'/g, replacement: ".on('" },
   { pattern: /\.addEventListener\(_'/g, replacement: ".addEventListener('" },
 
-  // Fix malformed arrow functions
+  // Fix malformed arrow functions with parameters
+  { pattern: /\_\(([^)]*)\)\s*=>/g, replacement: "($1) =>" },
   { pattern: /_\(\s*([^)]*)\s*\)\s*=>/g, replacement: "($1) =>" },
   { pattern: /_\(\)/g, replacement: "()" },
+
+  // Fix malformed forEach with underscore parameters
+  { pattern: /\.forEach\(_\(([^,)]+),\s*_([^)]+)\)\s*=>/g, replacement: ".forEach(($1, $2) =>" },
+  { pattern: /\.forEach\(_\(([^)]+)\)\s*=>/g, replacement: ".forEach(($1) =>" },
 
   // Fix malformed string literals
   { pattern: /_'/g, replacement: "'" },
@@ -59,7 +64,9 @@ async function main() {
 
   const files = [
     'server.js',
-    'src/main.jsx'
+    'src/main.jsx',
+    'middleware/rate-limiter.js',
+    'src/services/cache/redisCacheService.js'
   ];
 
   let totalFixed = 0;

@@ -104,7 +104,7 @@ export class InteractionLearningSystem {
     let detectedTopic = 'general';
 
     for (const [topic, keywords] of Object.entries(topicKeywords)) {
-      const score = keywords.reduce(_(count, _keyword) => {
+      const score = keywords.reduce((count, _keyword) => {
         return count + (lowerMessage.includes(keyword) ? 1 : 0);
       }, 0);
       
@@ -165,7 +165,7 @@ export class InteractionLearningSystem {
     ];
 
     const lowerMessage = message.toLowerCase();
-    return technicalTerms.reduce(_(count, _term) => {
+    return technicalTerms.reduce((count, _term) => {
       return count + (lowerMessage.includes(term) ? 1 : 0);
     }, 0);
   }

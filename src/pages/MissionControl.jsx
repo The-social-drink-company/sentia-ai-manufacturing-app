@@ -172,7 +172,7 @@ export default function MissionControl() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {criticalSystems.map((system, _index) => (
+                {criticalSystems.map((system, index) => (
                   <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className={`w-3 h-3 rounded-full ${
@@ -315,7 +315,7 @@ export default function MissionControl() {
               { label: 'System Logs', icon: CommandLineIcon, color: 'gray' },
               { label: 'Configuration', icon: Cog6ToothIcon, color: 'purple' },
               { label: 'Maintenance', icon: ServerIcon, color: 'red' }
-            ].map((action, _index) => (
+            ].map((action, index) => (
               <button
                 key={index}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}

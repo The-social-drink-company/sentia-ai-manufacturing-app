@@ -52,7 +52,7 @@ export function ScenarioBuilder({ onScenarioChange }) {
   const [activeScenario, setActiveScenario] = useState('base')
   const [isEditing, setIsEditing] = useState(false)
 
-  const handleVariableChange = (_scenarioId, _variable, _value) => {
+  const handleVariableChange = (_scenarioId, _variable, value) => {
     setScenarios(prev =>
       prev.map(scenario =>
         scenario.id === scenarioId

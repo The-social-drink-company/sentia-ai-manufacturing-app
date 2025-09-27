@@ -276,7 +276,7 @@ router.get(_'/working-capital',
         prisma.$queryRaw`
           SELECT COALESCE(SUM(quantity * unit_cost), 0) as total_value
           FROM inventory
-        `.catch(_(err) => {
+        `.catch((err) => {
           logError('[Working Capital API] Inventory query failed:', err);
           return [{ total_value: 0 }];
         }),
@@ -287,7 +287,7 @@ router.get(_'/working-capital',
             status: { in: ['pending', 'overdue'] }
           },
           _sum: { totalAmount: true }
-        }).catch(_(err) => {
+        }).catch((err) => {
           logError('[Working Capital API] Receivables query failed:', err);
           return { _sum: { totalAmount: 0 } };
         }),
@@ -298,7 +298,7 @@ router.get(_'/working-capital',
             status: { in: ['pending', 'approved'] }
           },
           _sum: { amount: true }
-        }).catch(_(err) => {
+        }).catch((err) => {
           logError('[Working Capital API] Payables query failed:', err);
           return { _sum: { amount: 0 } };
         }),
@@ -309,7 +309,7 @@ router.get(_'/working-capital',
           WHERE is_primary = true
           LIMIT 1
         `.then(rows => rows[0] || { balance: 0 })
-        .catch(_(err) => {
+        .catch((err) => {
           logError('[Working Capital API] Cash query failed:', err);
           return { balance: 0 };
         })

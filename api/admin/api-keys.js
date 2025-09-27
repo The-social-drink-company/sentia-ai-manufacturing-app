@@ -34,7 +34,7 @@ const decrypt = (encryptedData) => {
 };
 
 // Get all API keys for the current organization
-router.get(_'/', async _(req, res) => {
+router.get(_'/', async (req, res) => {
   try {
     const apiKeys = await dbFallback.execute(
       async (prisma) => await prisma.apiKey.findMany({
@@ -47,7 +47,7 @@ router.get(_'/', async _(req, res) => {
     );
 
     // Decrypt and format keys for frontend
-    const formattedKeys = apiKeys.reduce(_(acc, key) => {
+    const formattedKeys = apiKeys.reduce((acc, key) => {
       if (!acc[key.service]) acc[key.service] = {};
       
       try {
@@ -70,7 +70,7 @@ router.get(_'/', async _(req, res) => {
 });
 
 // Save or update an API key
-router.post(_'/', async _(req, res) => {
+router.post(_'/', async (req, res) => {
   try {
     const { service, key, value } = req.body;
     const organizationId = req.user?.organizationId || 'default';
@@ -125,7 +125,7 @@ router.post(_'/', async _(req, res) => {
 });
 
 // Get connection status for all services
-router.get(_'/status', async _(req, res) => {
+router.get(_'/status', async (req, res) => {
   try {
     const organizationId = req.user?.organizationId || 'default';
     
@@ -139,7 +139,7 @@ router.get(_'/status', async _(req, res) => {
     );
 
     // Group by service
-    const serviceKeys = apiKeys.reduce(_(acc, key) => {
+    const serviceKeys = apiKeys.reduce((acc, key) => {
       if (!acc[key.service]) acc[key.service] = {};
       acc[key.service][key.keyName] = key.value;
       return acc;
@@ -168,7 +168,7 @@ router.get(_'/status', async _(req, res) => {
 });
 
 // Test individual service connection
-router.post(_'/test/:service', async _(req, res) => {
+router.post(_'/test/:service', async (req, res) => {
   try {
     const { service } = req.params;
     const organizationId = req.user?.organizationId || 'default';
@@ -182,7 +182,7 @@ router.post(_'/test/:service', async _(req, res) => {
       `api-keys-${service}-${organizationId}`
     );
 
-    const keys = apiKeys.reduce(_(acc, key) => {
+    const keys = apiKeys.reduce((acc, key) => {
       acc[key.keyName] = key.value;
       return acc;
     }, {});
@@ -379,7 +379,7 @@ async function syncWithMCPServer() {
     );
     
     // Format for MCP server
-    const envVars = apiKeys.reduce(_(acc, key) => {
+    const envVars = apiKeys.reduce((acc, key) => {
       acc[key.keyName] = key.value;
       return acc;
     }, {});

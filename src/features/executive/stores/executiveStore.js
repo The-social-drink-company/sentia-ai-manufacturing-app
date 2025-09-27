@@ -7,12 +7,12 @@ const useExecutiveStore = create(
     persist(
       (set, get) => ({
         // State
-        metrics: _{},
+        metrics: {},
         trends: {
-          financial: _[],
+          financial: [],
           operational: []
         },
-        alerts: _[],
+        alerts: [],
         preferences: {
           layout: 'default',
           kpiSelection: []
@@ -22,7 +22,7 @@ const useExecutiveStore = create(
         lastUpdated: null,
 
         // Actions
-        fetchExecutiveMetrics: async _() => {
+        fetchExecutiveMetrics: async () => {
           set({ loading: true, error: null });
           try {
             const response = await axios.get('/api/executive/metrics');
@@ -53,7 +53,7 @@ const useExecutiveStore = create(
           }));
         },
 
-        addAlert: (_alert) => {
+        addAlert: (alert) => {
           set(state => ({
             alerts: [...state.alerts, {
               ...alert,
@@ -63,13 +63,13 @@ const useExecutiveStore = create(
           }));
         },
 
-        dismissAlert: (_alertId) => {
+        dismissAlert: (alertId) => {
           set(state => ({
             alerts: state.alerts.filter(a => a.id !== alertId)
           }));
         },
 
-        updatePreferences: (_newPreferences) => {
+        updatePreferences: (newPreferences) => {
           set(state => ({
             preferences: {
               ...state.preferences,

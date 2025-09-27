@@ -12,7 +12,7 @@ global.URL = {
   revokeObjectURL: vi.fn()
 }
 
-global.Blob = vi.fn((content, _options) => ({
+global.Blob = vi.fn((content, options) => ({
   content,
   options,
   size: content[0]?.length || 0
@@ -227,7 +227,7 @@ describe('Production _Service', () => {
       expect(endTime - startTime).toBeGreaterThanOrEqual(500)
     })
 
-    it('should occasionally simulate _errors', async () => {
+    it('should occasionally simulate errors', async () => {
       // Mock Math.random to force error condition
       const originalRandom = Math.random
       Math.random = vi.fn(() => 0.02) // Force error condition (< 0.03)

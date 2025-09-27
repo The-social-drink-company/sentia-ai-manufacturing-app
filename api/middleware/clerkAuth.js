@@ -40,7 +40,7 @@ const clerkAuth = clerkMiddleware({
  */
 const requireAuthMiddleware = requireAuth({
   // Custom error handling
-  onError: _(error, req, res, _next) => {
+  onError: (error, req, res, _next) => {
     logError('Authentication required', {
       error: error.message,
       path: req.path,

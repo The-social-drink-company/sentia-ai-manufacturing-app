@@ -36,8 +36,8 @@ const Quality = () => {
 
   // Fetch quality data with real-time updates
   const { data: qualityData, isLoading, refetch } = useQuery({
-    queryKey: _['quality', _timeRange, _productFilter],
-    queryFn: async () {
+    queryKey: ['quality', timeRange, productFilter],
+    queryFn: async () => {
       try {
         const response = await fetch(`/api/quality/overview?timeRange=${timeRange}&productFilter=${productFilter}`, {
           method: 'GET',
@@ -57,8 +57,8 @@ const Quality = () => {
 
   // Fetch personnel data
   const { data: personnel } = useQuery({
-    queryKey: _['personnel-quality-control'],
-    queryFn: async () {
+    queryKey: ['personnel-quality-control'],
+    queryFn: async () => {
       try {
         const response = await fetch('/api/personnel/for-task/quality_control');
         if (response.ok) {

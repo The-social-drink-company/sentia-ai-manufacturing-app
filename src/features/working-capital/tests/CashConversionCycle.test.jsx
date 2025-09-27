@@ -60,13 +60,13 @@ describe('CashConversionCycle', () {
     expect(screen.getByText('-1.2')).toBeInTheDocument() // CCC trend
   })
 
-  it('displays no data message when data is _null', () {
+  it('displays no data message when data is null', () {
     render(<CashConversionCycle data={null} />)
 
     expect(screen.getByText(/No cash conversion cycle data available/i)).toBeInTheDocument()
   })
 
-  it('displays no data message when data is _undefined', () {
+  it('displays no data message when data is undefined', () {
     render(<CashConversionCycle />)
 
     expect(screen.getByText(/No cash conversion cycle data available/i)).toBeInTheDocument()
@@ -152,7 +152,7 @@ describe('CashConversionCycle', () {
     expect(screen.getByText('-6.0')).toBeInTheDocument()
   })
 
-  it('handles very large cycle _values', () {
+  it('handles very large cycle values', () {
     const largeCycleData = {
       dso: 120,
       dio: 90,

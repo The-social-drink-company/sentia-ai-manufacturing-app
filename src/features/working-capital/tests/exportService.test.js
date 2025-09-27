@@ -436,7 +436,7 @@ describe('Export Service _Functions', () => {
       expect(result.success).toBe(true)
     })
 
-    it('handles unsupported format _error', async () => {
+    it('handles unsupported format error', async () => {
       const mockData = { summary: { workingCapital: 1000000 } }
 
       await expect(exportWorkingCapitalData(mockData, 'unsupported')).rejects.toThrow(
@@ -478,7 +478,7 @@ describe('Export Service _Functions', () => {
       expect(result.success).toBe(true)
     })
 
-    it('all quick export functions accept _options', async () => {
+    it('all quick export functions accept options', async () => {
       const options = { includeForecasts: false }
 
       await expect(quickExportCSV(mockData, options)).resolves.toBeDefined()
@@ -490,7 +490,7 @@ describe('Export Service _Functions', () => {
 })
 
 describe('Error _Handling', () => {
-  it('handles Blob creation _errors', async () => {
+  it('handles Blob creation errors', async () => {
     global.Blob.mockImplementation(() => {
       throw new Error('Blob error')
     })
@@ -502,7 +502,7 @@ describe('Error _Handling', () => {
     expect(result.error).toContain('Blob error')
   })
 
-  it('handles DOM manipulation _errors', () => {
+  it('handles DOM manipulation errors', () => {
     mockDocument.createElement.mockImplementation(() => {
       throw new Error('DOM error')
     })

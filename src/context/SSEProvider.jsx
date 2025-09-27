@@ -42,7 +42,7 @@ export const SSEProvider = ({ children }) => {
       // Global event handlers that affect multiple components
       handleGlobalSSEEvent(eventType, data, queryClient);
     },
-    onError: (_error) => {
+    onError: (error) => {
       devLog.error('Global SSE connection error:', error);
     }
   });

@@ -1,7 +1,7 @@
 export default function WorkingCapitalChart({ data, period }) {
   if (!data) return null
 
-  const formatCurrency = (_value) => {
+  const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -18,7 +18,7 @@ export default function WorkingCapitalChart({ data, period }) {
 
       {/* Working Capital Bars */}
       <div className="space-y-4">
-        _{data.labels?.map((label, index) => {
+        {data.labels?.map((label, index) => {
           const current = data.current?.[index] || 0
           const optimal = data.optimal?.[index] || 0
           const isNegative = current < 0

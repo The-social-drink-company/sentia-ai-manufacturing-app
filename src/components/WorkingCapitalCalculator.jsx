@@ -299,7 +299,7 @@ const WorkingCapitalCalculator = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {workingCapitalLevers.map((lever, _index) => (
+                {workingCapitalLevers.map((lever, index) => (
                   <div key={index} className="flex items-start space-x-2">
                     <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-slate-700 dark:text-slate-300">{lever}</p>
@@ -319,7 +319,7 @@ const WorkingCapitalCalculator = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {boardTalkingPoints.map((point, _index) => (
+                {boardTalkingPoints.map((point, index) => (
                   <div key={index} className="flex items-start space-x-2">
                     <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-slate-700 dark:text-slate-300">{point}</p>

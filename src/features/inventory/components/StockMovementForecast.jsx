@@ -65,7 +65,7 @@ export default function StockMovementForecast({ data, period = 'current' }) {
   const forecastData = data || generateForecastData(forecastPeriod)
 
   // Aggregate by date for summary view
-  const dailyTotals = forecastData.reduce(_(acc, item) => {
+  const dailyTotals = forecastData.reduce((acc, item) => {
     if (!acc[item.date]) {
       acc[item.date] = {
         date: item.date,
@@ -99,7 +99,7 @@ export default function StockMovementForecast({ data, period = 'current' }) {
   const trend = ((lastWeekAvg - firstWeekAvg) / firstWeekAvg) * 100
 
   // Get top moving SKUs
-  const skuTotals = forecastData.reduce(_(acc, item) => {
+  const skuTotals = forecastData.reduce((acc, item) => {
     if (!acc[item.sku]) {
       acc[item.sku] = { sku: item.sku, totalMovement: 0, pattern: item.pattern }
     }

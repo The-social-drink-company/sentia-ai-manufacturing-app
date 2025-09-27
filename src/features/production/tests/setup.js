@@ -72,7 +72,7 @@ global.URL = {
   revokeObjectURL: vi.fn(),
 }
 
-global.Blob = vi.fn((content, _options) => ({
+global.Blob = vi.fn((content, options) => ({
   content,
   options,
   size: content?.[0]?.length || 0,
@@ -149,7 +149,7 @@ global.WebSocket = MockWebSocket
 vi.useFakeTimers()
 
 // Clean up after each test
-afterEach(_() => {
+afterEach(() => {
   vi.clearAllMocks()
   vi.clearAllTimers()
   localStorage.clear()
@@ -157,7 +157,7 @@ afterEach(_() => {
 })
 
 // Clean up after all tests
-afterAll(_() => {
+afterAll(() => {
   vi.useRealTimers()
 })
 

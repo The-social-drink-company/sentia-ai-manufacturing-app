@@ -170,7 +170,7 @@ export class AutonomousAIMonitoringSystem extends EventEmitter {
   
   async startRealTimeMonitoring() {
     for (const [targetId, target] of this.monitoringTargets.entries()) {
-      const interval = setInterval(async _() => {
+      const interval = setInterval(async () => {
         await this.monitorTarget(targetId);
       }, target.checkInterval);
       
@@ -179,12 +179,12 @@ export class AutonomousAIMonitoringSystem extends EventEmitter {
     }
     
     // Start system-wide health monitoring
-    setInterval(async _() => {
+    setInterval(async () => {
       await this.performSystemHealthCheck();
     }, 30000); // Every 30 seconds
     
     // Periodic pattern learning
-    setInterval(async _() => {
+    setInterval(async () => {
       await this.learnFromPatterns();
     }, 300000); // Every 5 minutes
     
@@ -558,7 +558,7 @@ export class AutonomousAIMonitoringSystem extends EventEmitter {
   async suppressAlert(alertId, duration, reason) {
     this.suppressedAlerts.add(alertId);
     
-    setTimeout(_() => {
+    setTimeout(() => {
       this.suppressedAlerts.delete(alertId);
     }, duration);
     
@@ -701,7 +701,7 @@ export class AutonomousAIMonitoringSystem extends EventEmitter {
     }
     
     // Try to recover after a delay
-    setTimeout(async _() => {
+    setTimeout(async () => {
       await this.attemptTargetRecovery(targetId);
     }, 30000); // 30 seconds
   }

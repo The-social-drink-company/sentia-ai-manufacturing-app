@@ -26,7 +26,7 @@ const authenticate = (req, res, _next) => {
   }
 
   // In production or when Clerk keys are available, use Clerk's requireAuth middleware
-  return requireAuth()(req, res, _(err) => {
+  return requireAuth()(req, res, (err) => {
     if (err) {
       logError('Clerk authentication error:', err);
       return res.status(401).json({

@@ -32,13 +32,13 @@ ChartJS.register(
 )
 
 const ChartWidget = ({
-  _title,
+  title,
   type = 'line', // 'line', 'bar', 'doughnut', 'pie'
   data,
-  options = _{},
-  height = _300,
-  loading = _false,
-  className = _'',
+  options = {},
+  height = 300,
+  loading = false,
+  className = '',
   fullscreenable = true
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false)

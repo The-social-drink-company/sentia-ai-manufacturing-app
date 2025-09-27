@@ -130,7 +130,7 @@ describe('WorkingCapitalDashboard', () {
     expect(screen.getByText('Inventory')).toBeInTheDocument()
   })
 
-  it('displays correct metric _values', () {
+  it('displays correct metric values', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     // Check formatted currency values

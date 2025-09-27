@@ -60,7 +60,7 @@ describe('ExecutiveStore', () => {
     expect(state.lastUpdated).toBeTruthy();
   });
 
-  it('handles fetch _errors', async () => {
+  it('handles fetch errors', async () => {
     const errorMessage = 'Network Error';
     mockedAxios.get.mockRejectedValueOnce(new Error(errorMessage));
 

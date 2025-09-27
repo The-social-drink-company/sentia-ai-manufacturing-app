@@ -40,7 +40,7 @@ export default function ABCAnalysis({ data, title }) {
   }
 
   // Perform ABC classification
-  const abcData = useMemo(() {
+  const abcData = useMemo(() => {
     // Sort items by value (price * quantity) descending
     const sortedItems = [...data].sort((a, b) => {
       const valueA = (a.unitCost || 0) * (a.quantity || 0)
@@ -80,7 +80,7 @@ export default function ABCAnalysis({ data, title }) {
   }, [data])
 
   // Calculate summary statistics
-  const summaryStats = useMemo(() {
+  const summaryStats = useMemo(() => {
     const categoryStats = {
       A: { count: 0, value: 0, percentage: 0 },
       B: { count: 0, value: 0, percentage: 0 },

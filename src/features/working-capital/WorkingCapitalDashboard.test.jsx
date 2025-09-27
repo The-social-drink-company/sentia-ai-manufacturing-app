@@ -311,7 +311,7 @@ describe('WorkingCapitalDashboard', () {
   });
 
   describe('Export _Functionality', () {
-    it('renders export dropdown with _options', () {
+    it('renders export dropdown with options', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByRole('button', { name: /export/i })).toBeInTheDocument();

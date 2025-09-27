@@ -17,7 +17,7 @@ const router = express.Router();
 router.get(_'/stats',
   _requireAuth,
   requireAdmin,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const prismaStats = prismaEnhanced.getPerformanceStats();
     const optimizerInsights = queryOptimizer.getOptimizationInsights();
     const redisStats = redisCache.getStats();
@@ -54,7 +54,7 @@ router.get(_'/stats',
 router.get(_'/cache',
   _requireAuth,
   requireAdmin,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const cacheStats = prismaEnhanced.cache.getStats();
     const redisStats = redisCache.getStats();
 
@@ -89,7 +89,7 @@ router.get(_'/cache',
 router.post(_'/cache/clear',
   _requireAuth,
   requireAdmin,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const { tier } = req.body;
 
     if (tier === 'all' || !tier) {
@@ -119,7 +119,7 @@ router.post(_'/cache/clear',
 router.get(_'/queries',
   _requireAuth,
   requireAdmin,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const insights = queryOptimizer.getOptimizationInsights();
 
     res.json({
@@ -140,7 +140,7 @@ router.get(_'/queries',
 router.post(_'/prefetch',
   _requireAuth,
   requireAdmin,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const results = await queryOptimizer.prefetchCommonData();
 
     res.json({
@@ -158,7 +158,7 @@ router.post(_'/prefetch',
 router.post(_'/analyze',
   _requireAuth,
   requireAdmin,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const { model, operation, query } = req.body;
 
     if (!model || !operation) {
@@ -204,7 +204,7 @@ router.post(_'/analyze',
  * Get database and cache health status
  */
 router.get(_'/health',
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     const health = {
       database: 'unknown',
       cache: 'unknown',
@@ -249,7 +249,7 @@ router.get(_'/health',
 router.post(_'/reset',
   _requireAuth,
   requireAdmin,
-  asyncHandler(async _(req, res) => {
+  asyncHandler(async (req, res) => {
     queryOptimizer.resetMetrics();
 
     res.json({

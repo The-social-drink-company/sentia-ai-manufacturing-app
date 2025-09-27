@@ -113,7 +113,7 @@ export const useIoTIntegration = () => {
   }, [audit])
 
   // Send machine command
-  const sendCommand = useCallback((machineId, command, parameters = _{}) => {
+  const sendCommand = useCallback((machineId, command, parameters = {}) => {
     const success = iotService.sendMachineCommand(machineId, command, parameters)
 
     if (success) {
@@ -139,12 +139,12 @@ export const useIoTIntegration = () => {
 }
 
 // Hook for machine sensor data
-export const useIoTSensorData = (machineId = _null) => {
+export const useIoTSensorData = (machineId = null) => {
   const { realTimeData, connectionStatus } = useIoTIntegration()
   const audit = useAuditTrail('IoTSensorData')
 
   return useQuery({
-    queryKey: _['production', 'sensors', machineId],
+    queryKey: ['production', 'sensors', machineId],
     queryFn: () => {
       audit.logDataAccess('sensor_data', {
         source: 'iot_service',
@@ -174,12 +174,12 @@ export const useIoTSensorData = (machineId = _null) => {
 }
 
 // Hook for machine states
-export const useIoTMachineStates = (machineId = _null) => {
+export const useIoTMachineStates = (machineId = null) => {
   const { connectionStatus } = useIoTIntegration()
   const audit = useAuditTrail('IoTMachineStates')
 
   return useQuery({
-    queryKey: _['production', 'machines', machineId],
+    queryKey: ['production', 'machines', machineId],
     queryFn: () => {
       audit.logDataAccess('machine_states', {
         source: 'iot_service',
@@ -220,12 +220,12 @@ export const useIoTMachineStates = (machineId = _null) => {
 }
 
 // Hook for OEE data
-export const useIoTOEEData = (machineId = _null) => {
+export const useIoTOEEData = (machineId = null) => {
   const { connectionStatus } = useIoTIntegration()
   const audit = useAuditTrail('IoTOEEData')
 
   return useQuery({
-    queryKey: _['production', 'oee', machineId],
+    queryKey: ['production', 'oee', machineId],
     queryFn: () => {
       audit.logDataAccess('oee_data', {
         source: 'iot_service',
@@ -265,7 +265,7 @@ export const useIoTOEEData = (machineId = _null) => {
 }
 
 // Hook for real-time alarms
-export const useIoTAlarms = (machineId = _null) => {
+export const useIoTAlarms = (machineId = null) => {
   const { alarms, acknowledgeAlarm } = useIoTIntegration()
   const audit = useAuditTrail('IoTAlarms')
 
@@ -384,7 +384,7 @@ export const useIoTMachineControl = (machineId) => {
   const { sendCommand, connectionStatus } = useIoTIntegration()
   const audit = useAuditTrail('IoTMachineControl')
 
-  const executeCommand = useCallback(async _(command, parameters = _{}) => {
+  const executeCommand = useCallback(async (command, parameters = {}) => {
     if (!connectionStatus.isConnected) {
       throw new Error('IoT system not connected')
     }

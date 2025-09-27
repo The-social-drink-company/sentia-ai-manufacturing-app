@@ -44,25 +44,45 @@ const LoadingScreen = () => (
   </div>
 );
 
-// Error display component
+// Enhanced error display component
 const AuthError = ({ error, onRetry }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-    <div className="max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold text-red-600 mb-4">Authentication Error</h2>
-      <p className="text-gray-700 dark:text-gray-300 mb-6">{error}</p>
-      <div className="flex gap-4">
+  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="max-w-md w-full p-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
+      <div className="text-center mb-6">
+        <div className="w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+          <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Authentication Issue</h2>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+          We're having trouble connecting to our authentication service.
+        </p>
+      </div>
+
+      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+        <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">{error}</p>
+      </div>
+
+      <div className="space-y-3">
         <button
           onClick={onRetry}
-          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
         >
-          Retry
+          Try Again
         </button>
         <button
-          onClick={() => window.location.reload()}
-          className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
+          onClick={() => window.location.href = '/'}
+          className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
         >
-          Reload Page
+          Return to Home
         </button>
+      </div>
+
+      <div className="mt-6 text-center">
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          If this issue persists, please contact support or try refreshing the page.
+        </p>
       </div>
     </div>
   </div>

@@ -34,7 +34,7 @@ const Production = () => {
 
   // Fetch production data with real-time updates
   const { data: productionData, isLoading, refetch } = useQuery({
-    queryKey: _['production', _selectedLine, _timeRange],
+    queryKey: ['production', _selectedLine, _timeRange],
     queryFn: async () => {
       try {
         const response = await fetch(`/api/production/overview?line=${selectedLine}&range=${timeRange}`, {
@@ -55,7 +55,7 @@ const Production = () => {
 
   // Fetch personnel data for production
   const { data: personnel } = useQuery({
-    queryKey: _['personnel-production'],
+    queryKey: ['personnel-production'],
     queryFn: async () => {
       try {
         const response = await fetch('/api/personnel/for-task/production_operator');

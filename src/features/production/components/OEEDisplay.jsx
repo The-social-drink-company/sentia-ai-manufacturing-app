@@ -52,7 +52,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
     )
   }
 
-  const CircularProgress = ({ value, size = _120, strokeWidth = _8, color = 'blue' }) => {
+  const CircularProgress = ({ value, size = 120, strokeWidth = _8, color = 'blue' }) => {
     const radius = (size - strokeWidth) / 2
     const circumference = radius * 2 * Math.PI
     const offset = circumference - (value / 100) * circumference
@@ -264,7 +264,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                  _{oeeData.lineBreakdown.map((line) => {
+                  {oeeData.lineBreakdown.map((line) => {
                     const lineStatus = getOEEStatus(line.overall)
                     const statusConfig = {
                       'running': { color: 'green', label: 'Running' },

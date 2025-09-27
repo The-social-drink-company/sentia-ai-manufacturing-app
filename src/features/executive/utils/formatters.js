@@ -56,7 +56,7 @@ export const calculateTrend = (current, previous) => {
   return ((current - previous) / previous) * 100;
 };
 
-export const getStatusColor = (value, _target, inverse = _false) => {
+export const getStatusColor = (value, _target, inverse = false) => {
   const ratio = value / target;
 
   if (inverse) {

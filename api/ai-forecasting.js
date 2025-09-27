@@ -14,7 +14,7 @@ const router = express.Router();
  * Generate AI-powered demand forecast
  * POST /api/ai-forecasting/generate
  */
-router.post(_'/generate', async _(req, res) => {
+router.post(_'/generate', async (req, res) => {
   try {
     const {
       market,
@@ -65,7 +65,7 @@ router.post(_'/generate', async _(req, res) => {
  * Generate bulk forecasts
  * POST /api/ai-forecasting/bulk
  */
-router.post(_'/bulk', async _(req, res) => {
+router.post(_'/bulk', async (req, res) => {
   try {
     const { market, products, timeHorizon = 30 } = req.body;
 
@@ -77,7 +77,7 @@ router.post(_'/bulk', async _(req, res) => {
     }
 
     const forecasts = await Promise.all(
-      products.map(async _(product) => {
+      products.map(async (product) => {
         const historicalData = await getHistoricalData(market, product);
         return forecastingService.generateForecast({
           market,
@@ -109,7 +109,7 @@ router.post(_'/bulk', async _(req, res) => {
  * Get AI market insights
  * GET /api/ai-forecasting/insights/:market
  */
-router.get(_'/insights/:market', async _(req, res) => {
+router.get(_'/insights/:market', async (req, res) => {
   try {
     const { market } = req.params;
     const { includeAllProducts } = req.query;
@@ -137,7 +137,7 @@ router.get(_'/insights/:market', async _(req, res) => {
  * Detect anomalies using AI
  * GET /api/ai-forecasting/anomalies/:market
  */
-router.get(_'/anomalies/:market', async _(req, res) => {
+router.get(_'/anomalies/:market', async (req, res) => {
   try {
     const { market } = req.params;
     
@@ -164,7 +164,7 @@ router.get(_'/anomalies/:market', async _(req, res) => {
  * Update forecast accuracy
  * POST /api/ai-forecasting/accuracy
  */
-router.post(_'/accuracy', async _(req, res) => {
+router.post(_'/accuracy', async (req, res) => {
   try {
     const { market, product, date, actualValue } = req.body;
 
@@ -198,7 +198,7 @@ router.post(_'/accuracy', async _(req, res) => {
  * Get cost optimization report
  * GET /api/ai-forecasting/cost-report
  */
-router.get(_'/cost-report', async _(req, res) => {
+router.get(_'/cost-report', async (req, res) => {
   try {
     const report = forecastingService.getCostReport();
 
@@ -221,7 +221,7 @@ router.get(_'/cost-report', async _(req, res) => {
  * Stream real-time AI insights (SSE)
  * GET /api/ai-forecasting/stream/:market
  */
-router.get(_'/stream/:market', async _(req, res) => {
+router.get(_'/stream/:market', async (req, res) => {
   const { market } = req.params;
   const { updateInterval = 5000 } = req.query;
 
@@ -278,7 +278,7 @@ router.get(_'/stream/:market', async _(req, res) => {
  * Compare AI forecasts across markets
  * POST /api/ai-forecasting/compare
  */
-router.post(_'/compare', async _(req, res) => {
+router.post(_'/compare', async (req, res) => {
   try {
     const { markets, product, timeHorizon = 30 } = req.body;
 
@@ -290,7 +290,7 @@ router.post(_'/compare', async _(req, res) => {
     }
 
     const comparisons = await Promise.all(
-      markets.map(async _(market) => {
+      markets.map(async (market) => {
         const historicalData = await getHistoricalData(market, product);
         const forecast = await forecastingService.generateForecast({
           market,
@@ -337,7 +337,7 @@ router.post(_'/compare', async _(req, res) => {
  * Get all-markets dashboard data
  * GET /api/ai-forecasting/dashboard
  */
-router.get(_'/dashboard', async _(req, res) => {
+router.get(_'/dashboard', async (req, res) => {
   try {
     const markets = ['UK', 'USA', 'EU', 'ASIA'];
     const products = ['GABA Spirit', 'Social Blend', 'Focus Mix'];
@@ -479,7 +479,7 @@ function calculateOptimizationScore(report) {
 function identifyOpportunities(marketsData) {
   const opportunities = [];
   
-  Object.entries(marketsData).forEach(_([market, _data]) => {
+  Object.entries(marketsData).forEach(([market, _data]) => {
     // Check for low anomalies and high confidence
     if (data.anomalies.length === 0 && Object.values(data.forecasts)[0]?.confidence > 0.8) {
       opportunities.push({
@@ -496,7 +496,7 @@ function identifyOpportunities(marketsData) {
 function identifyRisks(marketsData) {
   const risks = [];
   
-  Object.entries(marketsData).forEach(_([market, _data]) => {
+  Object.entries(marketsData).forEach(([market, _data]) => {
     // Check for anomalies
     if (data.anomalies.length > 2) {
       risks.push({

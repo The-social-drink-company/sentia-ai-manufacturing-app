@@ -362,7 +362,7 @@ router.post(_'/scenario-planning',
     
     // Model each scenario
     const scenarioResults = await Promise.all(
-      scenarios.map(async _(scenario) => {
+      scenarios.map(async (scenario) => {
         const modeledResults = await modelScenario({
           scenario,
           baselineMetrics,

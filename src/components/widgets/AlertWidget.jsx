@@ -200,7 +200,7 @@ export default function AlertWidget({
 
         {visibleAlerts.length > 0 ? (
           <div className="space-y-3">
-            _{visibleAlerts.map((alert) => {
+            {visibleAlerts.map((alert) => {
               const Icon = alertIcons[alert.severity] || alertIcons.info;
               const styles = alertStyles[alert.severity] || alertStyles.info;
 

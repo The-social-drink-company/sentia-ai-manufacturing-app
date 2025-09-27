@@ -78,7 +78,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline' }) {
   }
 
   const renderTimelineView = () => {
-    const groupedJobs = productionJobs.reduce(_(acc, job) => {
+    const groupedJobs = productionJobs.reduce((acc, job) => {
       const date = formatDate(job.startTime)
       if (!acc[date]) acc[date] = []
       acc[date].push(job)

@@ -183,7 +183,7 @@ async function createMinimalBuild() {
 
         <script>
             // Auto-refresh every 30 seconds to check for full deployment
-            setTimeout(_() => {
+            setTimeout(() => {
                 console.log('Checking for full deployment...');
                 window.location.reload();
             }, 30000);

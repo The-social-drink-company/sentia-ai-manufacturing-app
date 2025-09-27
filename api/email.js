@@ -25,7 +25,7 @@ async function initializeServices() {
 /**
  * Test email configuration
  */
-router.get(_'/test', async _(req, res) => {
+router.get(_'/test', async (req, res) => {
   try {
     const result = await emailService.testConfiguration();
     res.json(result);
@@ -42,7 +42,7 @@ router.get(_'/test', async _(req, res) => {
 /**
  * Send custom email
  */
-router.post(_'/send', async _(req, res) => {
+router.post(_'/send', async (req, res) => {
   try {
     const { to, subject, body, isHtml = true, attachments = [] } = req.body;
     
@@ -75,7 +75,7 @@ router.post(_'/send', async _(req, res) => {
 /**
  * Send admin notification
  */
-router.post(_'/admin', async _(req, res) => {
+router.post(_'/admin', async (req, res) => {
   try {
     const { subject, body, attachments = [] } = req.body;
     
@@ -101,7 +101,7 @@ router.post(_'/admin', async _(req, res) => {
 /**
  * Send data upload notification
  */
-router.post(_'/data', async _(req, res) => {
+router.post(_'/data', async (req, res) => {
   try {
     const { subject, body, attachments = [] } = req.body;
     
@@ -127,7 +127,7 @@ router.post(_'/data', async _(req, res) => {
 /**
  * Send system alert
  */
-router.post(_'/system-alert', async _(req, res) => {
+router.post(_'/system-alert', async (req, res) => {
   try {
     const { alertType, message, context = {} } = req.body;
     
@@ -153,7 +153,7 @@ router.post(_'/system-alert', async _(req, res) => {
 /**
  * Send data processing notification
  */
-router.post(_'/data-processing', async _(req, res) => {
+router.post(_'/data-processing', async (req, res) => {
   try {
     const { processType, status, details = {} } = req.body;
     
@@ -179,7 +179,7 @@ router.post(_'/data-processing', async _(req, res) => {
 /**
  * Send system health alert
  */
-router.post(_'/health-alert', async _(req, res) => {
+router.post(_'/health-alert', async (req, res) => {
   try {
     const { level, component, message, metrics = {} } = req.body;
     
@@ -205,7 +205,7 @@ router.post(_'/health-alert', async _(req, res) => {
 /**
  * Send data import notification
  */
-router.post(_'/data-import', async _(req, res) => {
+router.post(_'/data-import', async (req, res) => {
   try {
     const { status, details = {} } = req.body;
     
@@ -231,7 +231,7 @@ router.post(_'/data-import', async _(req, res) => {
 /**
  * Send user action notification
  */
-router.post(_'/user-action', async _(req, res) => {
+router.post(_'/user-action', async (req, res) => {
   try {
     const { action, user, details = {} } = req.body;
     
@@ -257,7 +257,7 @@ router.post(_'/user-action', async _(req, res) => {
 /**
  * Send performance alert
  */
-router.post(_'/performance-alert', async _(req, res) => {
+router.post(_'/performance-alert', async (req, res) => {
   try {
     const { metric, value, threshold, unit = '' } = req.body;
     
@@ -283,7 +283,7 @@ router.post(_'/performance-alert', async _(req, res) => {
 /**
  * Send data quality alert
  */
-router.post(_'/data-quality', async _(req, res) => {
+router.post(_'/data-quality', async (req, res) => {
   try {
     const { dataset, qualityIssues = {} } = req.body;
     
@@ -309,7 +309,7 @@ router.post(_'/data-quality', async _(req, res) => {
 /**
  * Send Excel upload notification
  */
-router.post(_'/excel-upload', async _(req, res) => {
+router.post(_'/excel-upload', async (req, res) => {
   try {
     const { filename, recordCount, processingResults = {} } = req.body;
     
@@ -335,7 +335,7 @@ router.post(_'/excel-upload', async _(req, res) => {
 /**
  * Test notification service
  */
-router.get(_'/test-notifications', async _(req, res) => {
+router.get(_'/test-notifications', async (req, res) => {
   try {
     const result = await notificationService.testService();
     res.json(result);

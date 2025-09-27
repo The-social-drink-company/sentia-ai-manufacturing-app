@@ -45,7 +45,7 @@ const generateMockMetrics = (period) => {
     },
 
     cashFlow: {
-      labels: Array.from({ length: 12 }, _(_, _i) => {
+      labels: Array.from({ length: 12 }, (_, _i) => {
         const date = new Date()
         date.setMonth(date.getMonth() - (11 - i))
         return date.toLocaleDateString('en-US', { month: 'short' })
@@ -117,7 +117,7 @@ export function useExecutiveMetrics(period = 'month') {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchMetrics = useCallback(async _() => {
+  const fetchMetrics = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)

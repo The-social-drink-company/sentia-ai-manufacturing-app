@@ -25,7 +25,7 @@ const ProductionFlowChart = ({ data }) => {
       return (
         <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
           <p className="text-sm font-semibold text-gray-900 dark:text-white">{label}</p>
-          {payload.map((entry, _index) => (
+          {payload.map((entry, index) => (
             <p key={index} className="text-xs" style={{ color: entry.color }}>
               {entry.name}: {entry.value}
               {entry.name === 'Efficiency' ? '%' : ' units'}

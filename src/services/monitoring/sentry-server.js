@@ -130,7 +130,7 @@ export const sentryErrorHandler = () => {
  * Set manufacturing operation context
  */
 export const setSentryOperationContext = (operation, module, metadata = {}) => {
-  Sentry.setContext('manufacturing_operation', {
+  Sentry.setContext('manufacturingoperation', {
     operation,
     module,
     timestamp: new Date().toISOString(),
@@ -147,7 +147,7 @@ export const setSentryOperationContext = (operation, module, metadata = {}) => {
 /**
  * Capture manufacturing-specific exception
  */
-export const captureManufacturingException = (error, context = _{}) => {
+export const captureManufacturingException = (error, context = {}) => {
   Sentry.withScope(scope => {
     // Add manufacturing context
     scope.setTag('manufacturing_module', context.module || 'unknown');
@@ -174,13 +174,13 @@ export const captureManufacturingException = (error, context = _{}) => {
 /**
  * Capture manufacturing performance metrics
  */
-export const capturePerformanceMetric = (_metricName, _value, unit = 'ms', context = _{}) => {
+export const capturePerformanceMetric = (_metricName, value, unit = 'ms', context = {}) => {
   Sentry.withScope(scope => {
     scope.setTag('metric_type', 'performance');
     scope.setTag('manufacturing_module', context.module || 'unknown');
 
     scope.setExtra('metric_name', metricName);
-    scope.setExtra('metric_value', value);
+    scope.setExtra('metricvalue', value);
     scope.setExtra('metric_unit', unit);
 
     Sentry.captureMessage(`Performance Metric: ${metricName}`, 'info');
@@ -219,7 +219,7 @@ export const startServerTransaction = (_name, operation = 'manufacturing_api') =
 /**
  * Monitor database operations
  */
-export const monitorDatabaseOperation = (_operationName, queryType = 'read') => {
+export const monitorDatabaseOperation = (operationName, queryType = 'read') => {
   return Sentry.startTransaction({
     name: `db.${operationName}`,
     op: 'db.query',

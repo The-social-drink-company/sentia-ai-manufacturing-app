@@ -157,7 +157,7 @@ export default function ShiftHandover({ shifts, currentShift = 'shift-2' }) {
                       Handover Items
                     </h4>
                     <div className="space-y-2">
-                      {shift.handoverItems.map((item, _index) => (
+                      {shift.handoverItems.map((item, index) => (
                         <div key={index} className="flex items-start p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                           <CheckCircleIcon className="h-4 w-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
                           <span className="text-sm text-blue-800 dark:text-blue-200">{item}</span>
@@ -229,7 +229,7 @@ export default function ShiftHandover({ shifts, currentShift = 'shift-2' }) {
                       Critical Tasks
                     </h4>
                     <div className="space-y-2">
-                      {shift.criticalTasks.map((task, _index) => (
+                      {shift.criticalTasks.map((task, index) => (
                         <div key={index} className="flex items-start p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                           <ClipboardDocumentListIcon className="h-4 w-4 text-orange-600 mt-0.5 mr-2 flex-shrink-0" />
                           <span className="text-sm text-orange-800 dark:text-orange-200">{task}</span>

@@ -283,7 +283,7 @@ describe('IoT _Service', () => {
       expect(sentMessage.payload.command).toBe('start')
     })
 
-    it('should send commands with _parameters', () => {
+    it('should send commands with parameters', () => {
       const parameters = { rpm: 1500, feedRate: 0.2 }
       const success = iotService.sendMachineCommand('CNC_001', 'set_speed', parameters)
 

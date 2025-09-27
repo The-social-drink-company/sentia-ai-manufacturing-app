@@ -26,7 +26,7 @@ const upload = multer({
   limits: {
     fileSize: 100 * 1024 * 1024 // 100MB max file size
   },
-  fileFilter: _(req, file, _cb) => {
+  fileFilter: (req, file, _cb) => {
     const allowedMimes = [
       'text/csv',
       'application/csv',
@@ -46,7 +46,7 @@ const upload = multer({
  * GET /api/data-pipeline/health
  * Check pipeline health status
  */
-router.get(_'/health', async _(req, res) => {
+router.get(_'/health', async (req, res) => {
   try {
     const health = await pipeline.healthCheck();
 
@@ -149,7 +149,7 @@ router.post('/upload/csv', requireAuth(), upload.single('file'), async (req, res
  * POST /api/data-pipeline/webhook/:source
  * Receive webhook data from external sources
  */
-router.post(_'/webhook/:source', async _(req, res) => {
+router.post(_'/webhook/:source', async (req, res) => {
   try {
     const { source } = req.params;
     const data = req.body;

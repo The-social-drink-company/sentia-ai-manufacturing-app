@@ -49,14 +49,14 @@ describe('ARAgingChart', () => {
     )
   })
 
-  it('displays no data message when data is _null', () => {
+  it('displays no data message when data is null', () => {
     render(<ARAgingChart data={null} />)
 
     expect(screen.getByText('No receivables data available')).toBeInTheDocument()
     expect(screen.queryByTestId('ar-aging-chart')).not.toBeInTheDocument()
   })
 
-  it('displays no data message when data is _undefined', () => {
+  it('displays no data message when data is undefined', () => {
     render(<ARAgingChart />)
 
     expect(screen.getByText('No receivables data available')).toBeInTheDocument()
@@ -84,7 +84,7 @@ describe('ARAgingChart', () => {
     expect(chartElement).toBeInTheDocument()
   })
 
-  it('configures chart with proper _options', () => {
+  it('configures chart with proper options', () => {
     render(<ARAgingChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')
@@ -96,7 +96,7 @@ describe('ARAgingChart', () => {
     expect(options.plugins.title).toHaveProperty('text', 'Accounts Receivable Aging')
   })
 
-  it('formats y-axis with currency _values', () => {
+  it('formats y-axis with currency values', () => {
     render(<ARAgingChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')

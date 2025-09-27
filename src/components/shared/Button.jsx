@@ -24,9 +24,9 @@ const Button = forwardRef(({
   _className,
   variant = 'primary',
   size = 'md',
-  disabled = _false,
-  loading = _false,
-  fullWidth = _false,
+  disabled = false,
+  loading = false,
+  fullWidth = false,
   _children,
   ...props
 }, _ref) => {

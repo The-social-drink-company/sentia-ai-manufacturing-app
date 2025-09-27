@@ -84,7 +84,7 @@ describe('useIoTIntegration', () => {
     ])
 
     // Mock addEventListener to capture the listener function
-    mockIoTService.addEventListener.mockImplementation(_(listener) => {
+    mockIoTService.addEventListener.mockImplementation((listener) => {
       mockEventListener = listener
       return () => {} // cleanup function
     })

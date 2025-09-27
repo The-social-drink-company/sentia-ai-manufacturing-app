@@ -11,7 +11,7 @@ export function useSSE(eventTypes = [], options = {}) {
   const [isConnected, setIsConnected] = useState(false)
   const [lastUpdate, setLastUpdate] = useState(null)
 
-  useEffect(_() => {
+  useEffect(() => {
     // Connect to SSE if not already connected
     if (!sseClient.isConnected) {
       sseClient.connect()
@@ -24,7 +24,7 @@ export function useSSE(eventTypes = [], options = {}) {
 
     // Subscribe to specified event types
     const unsubscribers = eventTypes.map(eventType => {
-      return _sseClient.subscribe(eventType, _(eventData) => {
+      return sseClient.subscribe(eventType, (eventData) => {
         setData(prevData => ({
           ...prevData,
           [eventType]: eventData
@@ -53,11 +53,11 @@ export function useSSE(eventTypes = [], options = {}) {
     }
   }, [eventTypes.join(','), options.disconnectOnUnmount])
 
-  const reconnect = useCallback(_() => {
+  const reconnect = useCallback(() => {
     sseClient.connect()
   }, [])
 
-  const disconnect = useCallback(_() => {
+  const disconnect = useCallback(() => {
     sseClient.disconnect()
   }, [])
 
@@ -76,7 +76,7 @@ export function useSSE(eventTypes = [], options = {}) {
 export function useSSEEvent(eventType, handler) {
   const [lastData, setLastData] = useState(null)
 
-  useEffect(_() => {
+  useEffect(() => {
     if (!eventType || !handler) return
 
     // Connect to SSE if not already connected
@@ -85,7 +85,7 @@ export function useSSEEvent(eventType, handler) {
     }
 
     // Subscribe to the event
-    const unsubscribe = sseClient.subscribe(eventType, _(data) => {
+    const unsubscribe = sseClient.subscribe(eventType, (data) => {
       setLastData(data)
       handler(data)
     })

@@ -16,7 +16,7 @@ import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from 
 const AuthContext = createContext(null);
 
 // Default fallback authentication state
-const FALLBACKAUTH_STATE = {
+const FALLBACK_AUTH_STATE = {
   isLoaded: true,
   isSignedIn: false,
   userId: 'guest_user',
@@ -111,7 +111,7 @@ function ClerkAuthIntegration({ children }) {
 // This provides basic auth functionality when Clerk is not available
 function FallbackAuthProvider({ children }) {
   return (
-    <AuthContext.Provider value={FALLBACKAUTH_STATE}>
+    <AuthContext.Provider value={FALLBACK_AUTH_STATE}>
       {children}
     </AuthContext.Provider>
   );
@@ -219,7 +219,7 @@ export function BulletproofAuthProvider({ children }) {
 
   // Fallback mode - always works
   return (
-    <AuthContext.Provider value={FALLBACKAUTH_STATE}>
+    <AuthContext.Provider value={FALLBACK_AUTH_STATE}>
       <div data-auth-mode="fallback" className="w-full h-full">
         {children}
       </div>
@@ -240,7 +240,7 @@ export function useBulletproofAuth() {
   // Note: Removed direct Clerk hook usage to prevent context errors
 
   // Ultimate fallback - always return valid auth state
-  return FALLBACKAUTH_STATE;
+  return FALLBACK_AUTH_STATE;
 }
 
 // Helper hook to check auth mode

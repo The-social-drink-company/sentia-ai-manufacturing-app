@@ -170,7 +170,7 @@ export const mockLocalStorage = localStorageMock
 
 export const mockWebSocket = MockWebSocket
 
-export const mockElement
+export { mockElement }
 
 // Helper to create mock IoT data
 export const createMockSensorData = (machineId = 'CNC_001') => ({

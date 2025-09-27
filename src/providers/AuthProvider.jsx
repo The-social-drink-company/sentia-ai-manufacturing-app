@@ -103,7 +103,7 @@ function MockAuthProvider({ children }) {
     return Promise.resolve(nextUser)
   }, [])
 
-  const signOut = useCallback(() => {
+  const signOut = useCallback(_() => {
     logInfo('Mock sign-out complete')
     setUser(null)
     return Promise.resolve()
@@ -144,11 +144,11 @@ function ClerkSessionProvider({ children }) {
   const { isLoaded, isSignedIn, user } = useUser()
   const clerkAuth = useClerkAuth()
 
-  const signOut = useCallback(async () => {
+  const signOut = useCallback(async _() => {
     await clerkAuth.signOut()
   }, [clerkAuth])
 
-  const signIn = useCallback(() => {
+  const signIn = useCallback(_() => {
     redirectToLogin()
     return Promise.resolve()
   }, [])

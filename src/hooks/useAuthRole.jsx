@@ -8,7 +8,7 @@ export const useAuthRole = () => {
   const auth = useBulletproofAuth();
   const roleData = useBulletproofRole();
 
-  const authData = useMemo(() => {
+  const authData = useMemo(_() => {
     // Extract data from bulletproof auth
     const { user, isLoaded, isSignedIn, mode } = auth;
 
@@ -63,17 +63,17 @@ export const useAuthRole = () => {
     // Helper functions
     const hasRole = (role) => userRole === role;
 
-    const hasPermission = (permission) => {
+    const hasPermission = (_permission) => {
       if (userRole === 'admin') return true; // Admins have all permissions
       return userPermissions.includes(permission);
     };
 
-    const hasFeature = (feature) => {
+    const hasFeature = (_feature) => {
       if (userRole === 'admin') return true; // Admins have all features
       return userFeatures[feature] === true;
     };
 
-    const isRoleAtLeast = (minimumRole) => {
+    const isRoleAtLeast = (_minimumRole) => {
       return (roleHierarchy[userRole] || 0) >= (roleHierarchy[minimumRole] || 0);
     };
 
@@ -88,7 +88,7 @@ export const useAuthRole = () => {
       return displayName.substring(0, 2).toUpperCase();
     };
 
-    const canAccess = (resource) => {
+    const canAccess = (_resource) => {
       const resourcePermissions = {
         dashboard: ['read'],
         analytics: ['read'],

@@ -16,10 +16,10 @@ $headers = @{
 
 # Environment variables to set
 $envVars = @(
-    @{key="VITE_CLERK_PUBLISHABLE_KEY"; value="pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"},
-    @{key="CLERK_SECRET_KEY"; value="sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"},
-    @{key="CLERK_PUBLISHABLE_KEY"; value="pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"},
-    @{key="NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"; value="pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"},
+    @{key="VITE_CLERK_PUBLISHABLE_KEY"; value="pk_live_REDACTED"},
+    @{key="CLERK_SECRET_KEY"; value="sk_live_REDACTED"},
+    @{key="CLERK_PUBLISHABLE_KEY"; value="pk_live_REDACTED"},
+    @{key="NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"; value="pk_live_REDACTED"},
     @{key="VITE_CLERK_DOMAIN"; value="clerk.financeflo.ai"},
     @{key="VITE_CLERK_SIGN_IN_URL"; value="/sign-in"},
     @{key="VITE_CLERK_SIGN_UP_URL"; value="/sign-up"},
@@ -28,7 +28,7 @@ $envVars = @(
     @{key="CLERK_ENVIRONMENT"; value="production"},
     @{key="VITE_FORCE_CLERK_AUTH"; value="true"},
     @{key="VITE_DISABLE_AUTH_FALLBACK"; value="true"},
-    @{key="CLERK_WEBHOOK_SECRET"; value="whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j"},
+    @{key="CLERK_WEBHOOK_SECRET"; value="whsec_REDACTED"},
     @{key="NODE_ENV"; value="production"},
     @{key="PORT"; value="5000"},
     @{key="VITE_API_BASE_URL"; value="/api"},

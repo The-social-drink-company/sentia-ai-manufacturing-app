@@ -12,7 +12,7 @@ services:
     plan: free # Use free for development
     branch: development
 
-    buildCommand: npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma db push --skip-generate
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && pnpm dlx prisma generate && pnpm dlx prisma db push --skip-generate
     startCommand: node server.js
     healthCheckPath: /health
 
@@ -54,7 +54,7 @@ services:
     plan: starter # $7/month for testing
     branch: test
 
-    buildCommand: npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma db push --skip-generate
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && pnpm dlx prisma generate && pnpm dlx prisma db push --skip-generate
     startCommand: node server.js
     healthCheckPath: /health
 
@@ -96,7 +96,7 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma migrate deploy
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && pnpm dlx prisma generate && pnpm dlx prisma migrate deploy
     startCommand: node server.js
     healthCheckPath: /health
 

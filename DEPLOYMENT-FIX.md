@@ -35,7 +35,7 @@
 ```env
 NODE_ENV=production
 PORT=10000
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
 VITE_API_BASE_URL=https://sentia-manufacturing-production.onrender.com/api
 VITE_MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
@@ -127,3 +127,4 @@ After deployment, you should have:
 ---
 
 **This deployment fix resolves all the issues mentioned in your error logs and should result in a successful deployment of the complete Sentia Manufacturing Dashboard.**
+

@@ -16,21 +16,21 @@ All `.env` files have been updated with the correct Clerk production keys. The f
 
 ```env
 # Core Clerk Authentication - PRODUCTION
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+CLERK_SECRET_KEY=sk_live_REDACTED
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
 CLERK_ENVIRONMENT=production
 
 # Additional Keys for Compatibility
-CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 
 # Authentication Configuration
 VITE_FORCE_CLERK_AUTH=true
 VITE_DISABLE_AUTH_FALLBACK=true
 
 # Webhook Security
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 
 # Clerk URLs
 VITE_CLERK_SIGN_IN_URL=/sign-in

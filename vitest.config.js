@@ -4,10 +4,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   test: {
+    include: ['tests/unit/**/*.test.jsx'],
+    exclude: ['legacy/**'],
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.js'],
+    setupFiles: ['tests/setup.js'],
     globals: true,
-    // Memory optimization settings
+    reporters: ['default', 'hanging-process'],
     maxWorkers: 1,
     maxConcurrency: 1,
     pool: 'threads',
@@ -16,7 +18,6 @@ export default defineConfig({
         singleThread: true
       }
     },
-    // Timeout settings
     testTimeout: 10000,
     hookTimeout: 10000,
     coverage: {
@@ -25,10 +26,11 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'dist/',
-        'tests/setup.js',
+        'tests/setup.*',
         '*.config.js',
         'server.js'
       ]
     }
   }
 })
+

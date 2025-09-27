@@ -1,464 +1,349 @@
 import React, { useState, useEffect } from 'react';
 import {
-  KeyIcon,
-  CogIcon,
-  LockClosedIcon,
-  DocumentTextIcon,
-  ChartBarIcon,
+  Cog6ToothIcon,
   ServerIcon,
+  ShieldCheckIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ClockIcon
+  ClockIcon,
+  ArrowPathIcon,
+  CloudIcon,
+  CpuChipIcon,
+  CircleStackIcon,
+  WifiIcon,
+  BoltIcon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
-import ApiKeyManagement from './ApiKeyManagement';
-import { hasPermission, PERMISSIONS } from '../../utils/rolePermissions';
-import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
+export default function SystemAdminPanel() {
+  const [systemStatus, setSystemStatus] = useState({
+    database: { status: 'healthy', latency: '12ms', connections: 23 },
+    apiServer: { status: 'healthy', uptime: '99.97%', requests: 15420 },
+    mcpServer: { status: 'healthy', load: '68%', memory: '2.1GB' },
+    storage: { status: 'warning', usage: '87%', available: '2.3TB' },
+    security: { status: 'healthy', threats: 0, lastScan: '2 hours ago' }
+  });
 
-const SystemAdminPanel = () => {
-  const { getToken } = useAuth();
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
-  const [activeTab, setActiveTab] = useState('api-keys');
-  const [systemHealth, setSystemHealth] = useState(null);
-  const [systemLogs, setSystemLogs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [logs, setLogs] = useState([
+    { id: 1, level: 'info', message: 'System backup completed successfully', timestamp: '2024-09-26 10:15:32', service: 'backup' },
+    { id: 2, level: 'warning', message: 'High memory usage detected on server-02', timestamp: '2024-09-26 10:08:15', service: 'monitoring' },
+    { id: 3, level: 'info', message: 'Database optimization completed', timestamp: '2024-09-26 09:45:22', service: 'database' },
+    { id: 4, level: 'error', message: 'Failed to connect to external API endpoint', timestamp: '2024-09-26 09:30:11', service: 'api' },
+    { id: 5, level: 'info', message: 'Security scan completed - no threats detected', timestamp: '2024-09-26 08:15:43', service: 'security' }
+  ]);
 
-  const userRole = user?.publicMetadata?.role;
+  // Simulate real-time updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSystemStatus(prev => ({
+        ...prev,
+        database: { ...prev.database, connections: Math.max(10, prev.database.connections + Math.floor(Math.random() * 3) - 1) },
+        apiServer: { ...prev.apiServer, requests: prev.apiServer.requests + Math.floor(Math.random() * 50) },
+        mcpServer: { ...prev.mcpServer, load: `${Math.max(50, Math.min(90, parseInt(prev.mcpServer.load) + Math.floor(Math.random() * 6) - 3))}%` }
+      }));
+    }, 5000);
 
-  const tabs = [
-    { 
-      id: 'api-keys', 
-      name: 'API Integrations', 
-      icon: KeyIcon,
-      permission: PERMISSIONS.API_KEYS_MANAGE 
+    return () => clearInterval(interval);
+  }, []);
+
+  const systemServices = [
+    {
+      name: 'Web Application',
+      status: 'running',
+      port: '3000',
+      uptime: '7d 14h 23m',
+      memory: '512MB',
+      cpu: '15%'
     },
-    { 
-      id: 'system-config', 
-      name: 'System Settings', 
-      icon: CogIcon,
-      permission: PERMISSIONS.SYSTEM_CONFIG 
+    {
+      name: 'API Server',
+      status: 'running',
+      port: '5000',
+      uptime: '7d 14h 23m',
+      memory: '1.2GB',
+      cpu: '32%'
     },
-    { 
-      id: 'security', 
-      name: 'Security', 
-      icon: LockClosedIcon,
-      permission: PERMISSIONS.SYSTEM_SECURITY 
+    {
+      name: 'MCP Server',
+      status: 'running',
+      port: '3001',
+      uptime: '5d 8h 45m',
+      memory: '2.1GB',
+      cpu: '68%'
     },
-    { 
-      id: 'logs', 
-      name: 'System Logs', 
-      icon: DocumentTextIcon,
-      permission: PERMISSIONS.SYSTEM_LOGS 
+    {
+      name: 'Database',
+      status: 'running',
+      port: '5432',
+      uptime: '15d 6h 12m',
+      memory: '4.8GB',
+      cpu: '22%'
     },
-    { 
-      id: 'monitoring', 
-      name: 'Monitoring', 
-      icon: ChartBarIcon,
-      permission: PERMISSIONS.SYSTEM_MONITORING 
+    {
+      name: 'Redis Cache',
+      status: 'running',
+      port: '6379',
+      uptime: '15d 6h 12m',
+      memory: '256MB',
+      cpu: '8%'
+    },
+    {
+      name: 'Load Balancer',
+      status: 'maintenance',
+      port: '80/443',
+      uptime: '0m',
+      memory: '0MB',
+      cpu: '0%'
     }
   ];
 
-  useEffect(() => {
-    if (user) {
-      fetchSystemHealth();
-      if (hasPermission(userRole, PERMISSIONS.SYSTEM_LOGS)) {
-        fetchSystemLogs();
-      }
-    }
-  }, [user, userRole]);
+  const configurationSettings = [
+    { category: 'Security', key: 'SSL Certificate', value: 'Valid until 2025-03-15', status: 'good' },
+    { category: 'Security', key: 'API Rate Limiting', value: '1000 req/hour', status: 'good' },
+    { category: 'Performance', key: 'Cache Expiration', value: '24 hours', status: 'good' },
+    { category: 'Performance', key: 'Connection Pool', value: '50 connections', status: 'warning' },
+    { category: 'Monitoring', key: 'Log Retention', value: '30 days', status: 'good' },
+    { category: 'Monitoring', key: 'Alert Thresholds', value: 'CPU >80%, Memory >90%', status: 'good' },
+    { category: 'Backup', key: 'Backup Schedule', value: 'Daily at 2:00 AM', status: 'good' },
+    { category: 'Backup', key: 'Backup Retention', value: '7 days local, 30 days cloud', status: 'good' }
+  ];
 
-  const fetchSystemHealth = async () => {
-    try {
-      const response = await fetch('/health');
-      if (response.ok) {
-        const health = await response.json();
-        setSystemHealth(health);
-      }
-    } catch (err) {
-      logError('Failed to fetch system health:', err);
-    }
-  };
-
-  const fetchSystemLogs = async () => {
-    try {
-      const token = await getToken();
-      const response = await fetch('/api/admin/logs', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const logs = await response.json();
-        setSystemLogs(logs.slice(0, 100)); // Last 100 logs
-      }
-    } catch (err) {
-      logError('Failed to fetch system logs:', err);
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'healthy':
+      case 'running':
+      case 'good': return 'text-green-600 bg-green-100';
+      case 'warning': return 'text-yellow-600 bg-yellow-100';
+      case 'error':
+      case 'critical':
+      case 'stopped': return 'text-red-600 bg-red-100';
+      case 'maintenance': return 'text-blue-600 bg-blue-100';
+      default: return 'text-gray-600 bg-gray-100';
     }
   };
 
-  const renderSystemConfigTab = () => (
-    <div className="space-y-6">
-      {/* System Health Overview */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">System Health Overview</h3>
-        {systemHealth ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <CheckCircleIcon className="h-8 w-8 text-green-500" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-green-800">Status</p>
-                  <p className="text-lg font-semibold text-green-900">{systemHealth.status}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <ClockIcon className="h-8 w-8 text-blue-500" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-blue-800">Uptime</p>
-                  <p className="text-lg font-semibold text-blue-900">
-                    {Math.floor(systemHealth.uptime / 3600)}h {Math.floor((systemHealth.uptime % 3600) / 60)}m
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <ServerIcon className="h-8 w-8 text-purple-500" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-purple-800">Environment</p>
-                  <p className="text-lg font-semibold text-purple-900">{systemHealth.environment}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <ChartBarIcon className="h-8 w-8 text-gray-500" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-800">Version</p>
-                  <p className="text-lg font-semibold text-gray-900">{systemHealth.version}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center p-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span className="ml-2 text-gray-600">Loading system health...</span>
-          </div>
-        )}
-      </div>
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'healthy':
+      case 'running':
+      case 'good': return <CheckCircleIcon className="w-4 h-4" />;
+      case 'warning': return <ExclamationTriangleIcon className="w-4 h-4" />;
+      case 'error':
+      case 'critical':
+      case 'stopped': return <XCircleIcon className="w-4 h-4" />;
+      case 'maintenance': return <ClockIcon className="w-4 h-4" />;
+      default: return <ClockIcon className="w-4 h-4" />;
+    }
+  };
 
-      {/* System Configuration */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">System Configuration</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Default User Role
-            </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="user">User</option>
-              <option value="viewer">Viewer</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Session Timeout (minutes)
-            </label>
-            <input
-              type="number"
-              defaultValue={480}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Maximum Upload Size (MB)
-            </label>
-            <input
-              type="number"
-              defaultValue={10}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              API Rate Limit (requests/minute)
-            </label>
-            <input
-              type="number"
-              defaultValue={100}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-        <div className="mt-6">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            Save Configuration
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderSecurityTab = () => (
-    <div className="space-y-6">
-      {/* Security Settings */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Security Settings</h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div>
-              <h4 className="font-medium text-gray-900">Two-Factor Authentication</h4>
-              <p className="text-sm text-gray-600">Require 2FA for all admin accounts</p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-          
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div>
-              <h4 className="font-medium text-gray-900">IP Whitelist</h4>
-              <p className="text-sm text-gray-600">Restrict admin access by IP address</p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div>
-              <h4 className="font-medium text-gray-900">Audit Logging</h4>
-              <p className="text-sm text-gray-600">Log all administrative actions</p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" defaultChecked className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Security Alerts */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Security Events</h3>
-        <div className="space-y-3">
-          <div className="flex items-center p-3 bg-green-50 border border-green-200 rounded-lg">
-            <CheckCircleIcon className="h-5 w-5 text-green-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">System scan completed</p>
-              <p className="text-xs text-green-600">No vulnerabilities detected - 2 hours ago</p>
-            </div>
-          </div>
-          <div className="flex items-center p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-yellow-800">Failed login attempt</p>
-              <p className="text-xs text-yellow-600">IP: 192.168.1.100 - 4 hours ago</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderLogsTab = () => (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-900">System Logs</h3>
-          <button
-            onClick={fetchSystemLogs}
-            className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700"
-          >
-            Refresh
-          </button>
-        </div>
-        <div className="max-h-96 overflow-y-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 sticky top-0">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Message</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {systemLogs.map((log, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-3 text-xs text-gray-500">
-                    {new Date(log.timestamp).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      log.level === 'error' ? 'bg-red-100 text-red-800' :
-                      log.level === 'warn' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      {log.level}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3 text-sm text-gray-900">{log.message}</td>
-                  <td className="px-6 py-3 text-sm text-gray-500">{log.service}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderMonitoringTab = () => (
-    <div className="space-y-6">
-      {/* Performance Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h4 className="text-sm font-medium text-gray-500">CPU Usage</h4>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-2xl font-semibold text-gray-900">32%</p>
-          </div>
-          <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '32%' }}></div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h4 className="text-sm font-medium text-gray-500">Memory Usage</h4>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-2xl font-semibold text-gray-900">256MB</p>
-          </div>
-          <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-green-600 h-2 rounded-full" style={{ width: '45%' }}></div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h4 className="text-sm font-medium text-gray-500">Active Users</h4>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-2xl font-semibold text-gray-900">12</p>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h4 className="text-sm font-medium text-gray-500">API Requests/min</h4>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-2xl font-semibold text-gray-900">847</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Service Status */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Service Status</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex items-center">
-              <CheckCircleIcon className="h-5 w-5 text-green-500" />
-              <span className="ml-2 font-medium text-green-800">Database</span>
-            </div>
-            <span className="text-green-600 text-sm">Connected</span>
-          </div>
-          
-          <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex items-center">
-              <CheckCircleIcon className="h-5 w-5 text-green-500" />
-              <span className="ml-2 font-medium text-green-800">API Server</span>
-            </div>
-            <span className="text-green-600 text-sm">Running</span>
-          </div>
-          
-          <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <div className="flex items-center">
-              <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
-              <span className="ml-2 font-medium text-yellow-800">MCP Server</span>
-            </div>
-            <span className="text-yellow-600 text-sm">Connecting</span>
-          </div>
-          
-          <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
-            <div className="flex items-center">
-              <XCircleIcon className="h-5 w-5 text-red-500" />
-              <span className="ml-2 font-medium text-red-800">Email Service</span>
-            </div>
-            <span className="text-red-600 text-sm">Disconnected</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'api-keys':
-        return <ApiKeyManagement />;
-      case 'system-config':
-        return renderSystemConfigTab();
-      case 'security':
-        return renderSecurityTab();
-      case 'logs':
-        return renderLogsTab();
-      case 'monitoring':
-        return renderMonitoringTab();
-      default:
-        return <ApiKeyManagement />;
+  const getLogLevelColor = (level) => {
+    switch (level) {
+      case 'info': return 'text-blue-600 bg-blue-100';
+      case 'warning': return 'text-yellow-600 bg-yellow-100';
+      case 'error': return 'text-red-600 bg-red-100';
+      default: return 'text-gray-600 bg-gray-100';
     }
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">System Administration</h2>
-        <p className="text-gray-600">System configuration, security, and monitoring</p>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+              <Cog6ToothIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                System Administration
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Monitor and manage system infrastructure
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors flex items-center space-x-2">
+              <ArrowPathIcon className="w-4 h-4" />
+              <span>Refresh Status</span>
+            </button>
+          </div>
+        </div>
       </div>
 
-      {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-          <div className="flex">
-            <ExclamationTriangleIcon className="h-5 w-5 text-red-400" />
-            <div className="ml-3">
-              <p className="text-sm text-red-700">{error}</p>
+      <div className="p-6">
+        {/* System Health Overview */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            System Health Overview
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {Object.entries(systemStatus).map(([key, data]) => (
+              <div key={key} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+                    {key.replace(/([A-Z])/g, ' $1')}
+                  </h4>
+                  <div className={`px-2 py-1 rounded-full flex items-center space-x-1 ${getStatusColor(data.status)}`}>
+                    {getStatusIcon(data.status)}
+                    <span className="text-xs font-medium capitalize">{data.status}</span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {Object.entries(data).slice(1).map(([metric, value]) => (
+                    <div key={metric} className="flex justify-between text-xs">
+                      <span className="text-gray-500 capitalize">{metric.replace(/([A-Z])/g, ' $1')}:</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* System Services */}
+          <div className="lg:col-span-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              System Services
+            </h3>
+            <div className="space-y-3">
+              {systemServices.map((service, index) => (
+                <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className={`px-3 py-1 rounded-full flex items-center space-x-2 ${getStatusColor(service.status)}`}>
+                        {getStatusIcon(service.status)}
+                        <span className="text-sm font-medium capitalize">{service.status}</span>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">{service.name}</h4>
+                        <p className="text-sm text-gray-500">Port: {service.port} • Uptime: {service.uptime}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-6">
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{service.memory}</p>
+                        <p className="text-xs text-gray-500">Memory</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{service.cpu}</p>
+                        <p className="text-xs text-gray-500">CPU</p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                          <ArrowPathIcon className="w-4 h-4" />
+                        </button>
+                        <button className="p-1 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300">
+                          <ClockIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* System Logs */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Recent System Logs
+            </h3>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {logs.map((log) => (
+                <div key={log.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                  <div className="flex items-start justify-between mb-2">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getLogLevelColor(log.level)}`}>
+                      {log.level.toUpperCase()}
+                    </span>
+                    <span className="text-xs text-gray-500">{log.timestamp}</span>
+                  </div>
+                  <p className="text-sm text-gray-900 dark:text-white mb-1">{log.message}</p>
+                  <p className="text-xs text-gray-500">Service: {log.service}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      )}
 
-      {/* Tab Navigation */}
-      <div className="mb-6">
-        <nav className="flex space-x-8 border-b border-gray-200">
-          {tabs.filter(tab => hasPermission(userRole, tab.permission)).map((tab) => {
-            const Icon = tab.icon;
-            return (
+        {/* Configuration Settings */}
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Configuration Settings
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Category
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Setting
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Value
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {configurationSettings.map((setting, index) => (
+                  <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      {setting.category}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {setting.key}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {setting.value}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(setting.status)}`}>
+                        {getStatusIcon(setting.status)}
+                        <span className="ml-1 capitalize">{setting.status}</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            System Actions
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: 'System Backup', icon: CircleStackIcon, color: 'blue' },
+              { label: 'Performance Monitor', icon: CpuChipIcon, color: 'green' },
+              { label: 'Security Scan', icon: ShieldCheckIcon, color: 'red' },
+              { label: 'System Logs', icon: DocumentTextIcon, color: 'purple' }
+            ].map((action, index) => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                key={index}
+                className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}
               >
-                <Icon className="h-5 w-5" />
-                <span>{tab.name}</span>
+                <action.icon className={`w-5 h-5 text-${action.color}-600`} />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {action.label}
+                </span>
               </button>
-            );
-          })}
-        </nav>
+            ))}
+          </div>
+        </div>
       </div>
-
-      {/* Tab Content */}
-      {renderTabContent()}
     </div>
   );
-};
-
-export default SystemAdminPanel;
+}

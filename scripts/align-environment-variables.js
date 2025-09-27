@@ -16,10 +16,10 @@ const __dirname = path.dirname(__filename);
 // Critical environment variables that must be aligned
 const CRITICAL_ENV_VARS = {
   // Clerk Authentication - Use Production Keys for ALL environments
-  VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
-  CLERK_SECRET_KEY: 'sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq',
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
-  CLERK_WEBHOOK_SECRET: 'whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j',
+  VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_REDACTED',
+  CLERK_SECRET_KEY: 'sk_live_REDACTED',
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_live_REDACTED',
+  CLERK_WEBHOOK_SECRET: 'whsec_REDACTED',
   CLERK_ENVIRONMENT: 'production',
   VITE_CLERK_DOMAIN: 'clerk.financeflo.ai',
   VITE_CLERK_SIGN_IN_URL: '/sign-in',
@@ -185,3 +185,5 @@ function main() {
 
 // Run main function
 main();
+
+

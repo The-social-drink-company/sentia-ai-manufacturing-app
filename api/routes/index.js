@@ -17,9 +17,13 @@ import supplyChainRoutes from './supply-chain.js';
 import userRoutes from './user.js';
 import workingCapitalExpertRoutes from './working-capital-expert.js';
 import workingCapitalIntelligenceRoutes from './working-capital-intelligence.js';
+import amazonRoutes from './amazon.js';
+import unleashedRoutes from './unleashed.js';
 import { logDebug, logError } from '../../src/utils/logger';
 
 const ROUTE_REGISTRY = [
+  { path: '/api/amazon', name: 'Amazon SP-API', router: amazonRoutes },
+  { path: '/api/unleashed', name: 'Unleashed Inventory', router: unleashedRoutes },
   { path: '/api/cash-coverage', name: 'Cash Coverage', router: cashCoverageRoutes },
   { path: '/api/data-pipeline', name: 'Data Pipeline', router: dataPipelineRoutes },
   { path: '/api/financial', name: 'Financial', router: financialRoutes },

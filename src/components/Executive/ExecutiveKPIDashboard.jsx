@@ -1,539 +1,301 @@
-/**
- * Executive-Level KPI Dashboard with Drill-Down Analytics
- * Enterprise-grade executive dashboard for C-suite and senior management
- */
-
-import React, { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  BarChart3,
-  PieChart,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Users,
-  Package,
-  Target,
-  Zap,
-  ArrowUpRight,
-  ArrowDownRight,
-  Filter,
-  RefreshCw,
-  Download,
-  Share,
-  Settings,
-  ChevronRight,
-  ChevronDown
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Progress } from '../ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart as RechartsPieChart,
-  Cell
-} from 'recharts';
-
-// Executive KPI Configuration
-const EXECUTIVE_KPIS = {
-  financial: {
-    title: 'Financial Performance',
-    icon: DollarSign,
-    color: '#10B981',
-    metrics: [
-      {
-        id: 'revenue',
-        name: 'Revenue',
-        format: 'currency',
-        target: 50000000,
-        critical: 40000000,
-        drillDown: ['monthly', 'product', 'region', 'customer']
-      },
-      {
-        id: 'ebitda',
-        name: 'EBITDA',
-        format: 'currency',
-        target: 12500000,
-        critical: 8000000,
-        drillDown: ['monthly', 'segment', 'cost_center']
-      },
-      {
-        id: 'cash_flow',
-        name: 'Operating Cash Flow',
-        format: 'currency',
-        target: 8000000,
-        critical: 5000000,
-        drillDown: ['weekly', 'source', 'forecast']
-      },
-      {
-        id: 'working_capital',
-        name: 'Working Capital',
-        format: 'currency',
-        target: 15000000,
-        critical: 10000000,
-        drillDown: ['components', 'aging', 'trends']
-      }
-    ]
-  },
-  operational: {
-    title: 'Operational Excellence',
-    icon: BarChart3,
-    color: '#3B82F6',
-    metrics: [
-      {
-        id: 'production_efficiency',
-        name: 'Production Efficiency',
-        format: 'percentage',
-        target: 0.95,
-        critical: 0.85,
-        drillDown: ['line', 'shift', 'product', 'downtime']
-      },
-      {
-        id: 'quality_rate',
-        name: 'Quality Rate',
-        format: 'percentage',
-        target: 0.99,
-        critical: 0.95,
-        drillDown: ['defect_type', 'line', 'supplier', 'root_cause']
-      },
-      {
-        id: 'inventory_turnover',
-        name: 'Inventory Turnover',
-        format: 'number',
-        target: 8,
-        critical: 4,
-        drillDown: ['category', 'aging', 'velocity', 'obsolescence']
-      },
-      {
-        id: 'on_time_delivery',
-        name: 'On-Time Delivery',
-        format: 'percentage',
-        target: 0.98,
-        critical: 0.92,
-        drillDown: ['customer', 'product', 'region', 'delays']
-      }
-    ]
-  },
-  strategic: {
-    title: 'Strategic Objectives',
-    icon: Target,
-    color: '#8B5CF6',
-    metrics: [
-      {
-        id: 'market_share',
-        name: 'Market Share',
-        format: 'percentage',
-        target: 0.15,
-        critical: 0.12,
-        drillDown: ['segment', 'competitor', 'trends', 'opportunities']
-      },
-      {
-        id: 'customer_satisfaction',
-        name: 'Customer Satisfaction',
-        format: 'score',
-        target: 4.5,
-        critical: 3.8,
-        drillDown: ['segment', 'touchpoint', 'feedback', 'actions']
-      },
-      {
-        id: 'employee_engagement',
-        name: 'Employee Engagement',
-        format: 'score',
-        target: 4.2,
-        critical: 3.5,
-        drillDown: ['department', 'level', 'drivers', 'initiatives']
-      },
-      {
-        id: 'innovation_index',
-        name: 'Innovation Index',
-        format: 'score',
-        target: 4.0,
-        critical: 3.0,
-        drillDown: ['projects', 'pipeline', 'investment', 'outcomes']
-      }
-    ]
-  }
-};
-
-const CHART_COLORS = ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#06B6D4'];
+  BanknotesIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  ChartBarIcon,
+  ClockIcon,
+  CogIcon,
+  UserGroupIcon,
+  TruckIcon,
+  BeakerIcon,
+  CalendarDaysIcon,
+  PresentationChartLineIcon,
+  DocumentChartBarIcon,
+  ExclamationTriangleIcon
+} from '@heroicons/react/24/outline';
+import ChartErrorBoundary from '../charts/ChartErrorBoundary';
 
 export default function ExecutiveKPIDashboard() {
-  const [selectedCategory, setSelectedCategory] = useState('financial');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('monthly');
-  const [selectedMetric, setSelectedMetric] = useState(null);
-  const [drillDownLevel, setDrillDownLevel] = useState(0);
-  const [isRealTime, setIsRealTime] = useState(true);
+  const [selectedPeriod, setSelectedPeriod] = useState('month');
+  const [lastUpdate, setLastUpdate] = useState(new Date());
 
-  // Fetch executive KPI data
-  const { data: kpiData, isLoading, refetch } = useQuery({
-    queryKey: ['executive-kpis', selectedCategory, selectedTimeframe],
-    queryFn: async () => {
-      const response = await fetch(`/api/analytics/executive-kpis?category=${selectedCategory}&timeframe=${selectedTimeframe}`);
-      if (!response.ok) throw new Error('Failed to fetch KPI data');
-      return response.json();
+  // Simulate real-time updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastUpdate(new Date());
+    }, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const kpiData = {
+    financial: {
+      revenue: { value: 4250000, change: 12.5, target: 4000000 },
+      profit: { value: 890000, change: 8.7, target: 850000 },
+      cashFlow: { value: 1240000, change: -2.3, target: 1300000 },
+      workingCapital: { value: 2850000, change: 5.4, target: 2700000 }
     },
-    refetchInterval: isRealTime ? 60000 : false, // Refresh every minute if real-time
-    staleTime: 30000
-  });
-
-  // Calculate overall performance score
-  const performanceScore = useMemo(() => {
-    if (!kpiData?.metrics) return 0;
-    
-    const scores = Object.values(kpiData.metrics).map(metric => {
-      const target = EXECUTIVE_KPIS[selectedCategory]?.metrics.find(m => m.id === metric.id)?.target || 1;
-      return Math.min((metric.current / target) * 100, 150); // Cap at 150%
-    });
-    
-    return scores.reduce((sum, score) => sum + score, 0) / scores.length;
-  }, [kpiData, selectedCategory]);
-
-  // Get performance status
-  const getPerformanceStatus = (current, target, critical) => {
-    const ratio = current / target;
-    if (ratio >= 1) return { status: 'excellent', color: '#10B981', icon: CheckCircle };
-    if (ratio >= 0.9) return { status: 'good', color: '#3B82F6', icon: TrendingUp };
-    if (ratio >= (critical / target)) return { status: 'warning', color: '#F59E0B', icon: Clock };
-    return { status: 'critical', color: '#EF4444', icon: AlertTriangle };
-  };
-
-  // Format values based on type
-  const formatValue = (value, format) => {
-    switch (format) {
-      case 'currency':
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(value);
-      case 'percentage':
-        return `${(value * 100).toFixed(1)}%`;
-      case 'score':
-        return value.toFixed(1);
-      case 'number':
-        return value.toLocaleString();
-      default:
-        return value.toString();
+    operational: {
+      production: { value: 2847, change: 6.2, target: 2800, unit: 'units' },
+      efficiency: { value: 94.2, change: 1.8, target: 95, unit: '%' },
+      quality: { value: 99.2, change: 0.5, target: 99.5, unit: '%' },
+      onTimeDelivery: { value: 97.8, change: 2.1, target: 98, unit: '%' }
+    },
+    workforce: {
+      headcount: { value: 187, change: 3.2, target: 185, unit: 'employees' },
+      productivity: { value: 15.2, change: 4.7, target: 15, unit: 'units/hr' },
+      safety: { value: 0, change: -100, target: 0, unit: 'incidents' },
+      retention: { value: 94.5, change: 1.2, target: 95, unit: '%' }
     }
   };
 
-  // Handle drill-down navigation
-  const handleDrillDown = (metric, dimension = null) => {
-    setSelectedMetric(metric);
-    if (dimension) {
-      setDrillDownLevel(prev => prev + 1);
-    } else {
-      setDrillDownLevel(0);
+  const executiveSummary = [
+    {
+      title: 'Revenue Growth',
+      status: 'excellent',
+      summary: '12.5% above target, driven by increased demand and new product launches.',
+      action: 'Maintain momentum with Q4 expansion plans.'
+    },
+    {
+      title: 'Operational Efficiency',
+      status: 'good',
+      summary: 'Production slightly below target but quality metrics exceeding expectations.',
+      action: 'Focus on optimizing Line 3 to meet production targets.'
+    },
+    {
+      title: 'Cash Flow',
+      status: 'warning',
+      summary: 'Slight decline due to increased inventory investment for Q4 demand.',
+      action: 'Monitor AR collection and optimize inventory levels.'
+    },
+    {
+      title: 'Workforce Metrics',
+      status: 'excellent',
+      summary: 'Strong productivity gains and excellent safety record maintained.',
+      action: 'Continue investing in employee development programs.'
+    }
+  ];
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'excellent': return 'text-green-600 bg-green-100 border-green-200';
+      case 'good': return 'text-blue-600 bg-blue-100 border-blue-200';
+      case 'warning': return 'text-yellow-600 bg-yellow-100 border-yellow-200';
+      case 'critical': return 'text-red-600 bg-red-100 border-red-200';
+      default: return 'text-gray-600 bg-gray-100 border-gray-200';
     }
   };
 
-  if (isLoading) {
+  const getChangeIcon = (change) => {
+    if (change > 0) return <ArrowTrendingUpIcon className="w-4 h-4 text-green-500" />;
+    if (change < 0) return <ArrowTrendingDownIcon className="w-4 h-4 text-red-500" />;
+    return <div className="w-4 h-4"></div>;
+  };
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0
+    }).format(value);
+  };
+
+  const formatNumber = (value, unit = '') => {
+    const formatted = new Intl.NumberFormat('en-US').format(value);
+    return unit ? `${formatted} ${unit}` : formatted;
+  };
+
+  const renderKPICard = (title, data, icon, isCurrency = false) => {
+    const isPositive = data.change >= 0;
+    const progressPercentage = (data.value / data.target) * 100;
+
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="flex items-center space-x-2">
-          <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
-          <span className="text-lg font-medium">Loading executive dashboard...</span>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            {icon}
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</h3>
+          </div>
+          <div className="flex items-center space-x-1">
+            {getChangeIcon(data.change)}
+            <span className={`text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+              {isPositive ? '+' : ''}{data.change.toFixed(1)}%
+            </span>
+          </div>
         </div>
+
+        <div className="mb-3">
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            {isCurrency ? formatCurrency(data.value) : formatNumber(data.value, data.unit)}
+          </p>
+          <p className="text-sm text-gray-500">
+            Target: {isCurrency ? formatCurrency(data.target) : formatNumber(data.target, data.unit)}
+          </p>
+        </div>
+
+        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+          <div
+            className={`h-2 rounded-full transition-all duration-300 ${
+              progressPercentage >= 100 ? 'bg-green-500' :
+              progressPercentage >= 90 ? 'bg-blue-500' :
+              progressPercentage >= 75 ? 'bg-yellow-500' : 'bg-red-500'
+            }`}
+            style={{ width: `${Math.min(100, progressPercentage)}%` }}
+          ></div>
+        </div>
+        <p className="text-xs text-gray-500 mt-1">
+          {progressPercentage.toFixed(1)}% of target
+        </p>
       </div>
     );
-  }
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Executive Dashboard</h1>
-          <p className="text-gray-600 mt-1">Real-time business intelligence for strategic decision making</p>
-        </div>
-        
-        <div className="flex items-center space-x-4 mt-4 lg:mt-0">
-          <Badge 
-            variant={performanceScore >= 100 ? 'default' : performanceScore >= 80 ? 'secondary' : 'destructive'}
-            className="px-3 py-1"
-          >
-            Performance: {performanceScore.toFixed(0)}%
-          </Badge>
-          
-          <div className="flex items-center space-x-2">
-            <Button
-              variant={isRealTime ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setIsRealTime(!isRealTime)}
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <PresentationChartLineIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Executive KPI Dashboard
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Key performance indicators and business metrics
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <select
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="rounded-md border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <Zap className="w-4 h-4 mr-1" />
-              Real-time
-            </Button>
-            
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
-              <RefreshCw className="w-4 h-4" />
-            </Button>
-            
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4" />
-            </Button>
-            
-            <Button variant="outline" size="sm">
-              <Share className="w-4 h-4" />
-            </Button>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
+              <option value="year">This Year</option>
+            </select>
+            <div className="text-right">
+              <p className="text-sm text-gray-500">Last updated</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                {lastUpdate.toLocaleTimeString()}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Category Navigation */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-        <TabsList className="grid w-full grid-cols-3">
-          {Object.entries(EXECUTIVE_KPIS).map(([key, category]) => {
-            const IconComponent = category.icon;
-            return (
-              <TabsTrigger key={key} value={key} className="flex items-center space-x-2">
-                <IconComponent className="w-4 h-4" />
-                <span>{category.title}</span>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+      <div className="p-6">
+        {/* Financial KPIs */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+            <BanknotesIcon className="w-5 h-5 text-green-600" />
+            <span>Financial Performance</span>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {renderKPICard('Revenue', kpiData.financial.revenue, <BanknotesIcon className="w-5 h-5 text-green-600" />, true)}
+            {renderKPICard('Profit', kpiData.financial.profit, <ArrowTrendingUpIcon className="w-5 h-5 text-blue-600" />, true)}
+            {renderKPICard('Cash Flow', kpiData.financial.cashFlow, <BanknotesIcon className="w-5 h-5 text-purple-600" />, true)}
+            {renderKPICard('Working Capital', kpiData.financial.workingCapital, <ChartBarIcon className="w-5 h-5 text-orange-600" />, true)}
+          </div>
+        </div>
 
-        {Object.entries(EXECUTIVE_KPIS).map(([key, category]) => (
-          <TabsContent key={key} value={key} className="space-y-6">
-            {/* KPI Overview Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {category.metrics.map((metric) => {
-                const currentValue = kpiData?.metrics?.[metric.id]?.current || 0;
-                const previousValue = kpiData?.metrics?.[metric.id]?.previous || 0;
-                const change = previousValue ? ((currentValue - previousValue) / previousValue) * 100 : 0;
-                const status = getPerformanceStatus(currentValue, metric.target, metric.critical);
-                const IconComponent = status.icon;
-                
-                return (
-                  <motion.div
-                    key={metric.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: category.metrics.indexOf(metric) * 0.1 }}
-                  >
-                    <Card 
-                      className="cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4"
-                      style={{ borderLeftColor: status.color }}
-                      onClick={() => handleDrillDown(metric)}
-                    >
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-sm font-medium text-gray-600">
-                            {metric.name}
-                          </CardTitle>
-                          <IconComponent 
-                            className="w-5 h-5" 
-                            style={{ color: status.color }}
-                          />
-                        </div>
-                      </CardHeader>
-                      
-                      <CardContent>
-                        <div className="space-y-3">
-                          <div className="flex items-baseline justify-between">
-                            <div className="text-2xl font-bold text-gray-900">
-                              {formatValue(currentValue, metric.format)}
-                            </div>
-                            <div className={`flex items-center text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                              {change >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-                              {Math.abs(change).toFixed(1)}%
-                            </div>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-xs text-gray-500">
-                              <span>vs Target</span>
-                              <span>{formatValue(metric.target, metric.format)}</span>
-                            </div>
-                            <Progress 
-                              value={Math.min((currentValue / metric.target) * 100, 100)} 
-                              className="h-2"
-                            />
-                          </div>
-                          
-                          <div className="flex items-center justify-between text-xs">
-                            <Badge variant="outline" className="text-xs">
-                              {status.status.toUpperCase()}
-                            </Badge>
-                            <span className="text-gray-500">
-                              Click for details
-                            </span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
+        {/* Operational KPIs */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+            <CogIcon className="w-5 h-5 text-blue-600" />
+            <span>Operational Excellence</span>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {renderKPICard('Production Output', kpiData.operational.production, <TruckIcon className="w-5 h-5 text-blue-600" />)}
+            {renderKPICard('Efficiency', kpiData.operational.efficiency, <CogIcon className="w-5 h-5 text-green-600" />)}
+            {renderKPICard('Quality Rate', kpiData.operational.quality, <BeakerIcon className="w-5 h-5 text-purple-600" />)}
+            {renderKPICard('On-Time Delivery', kpiData.operational.onTimeDelivery, <ClockIcon className="w-5 h-5 text-orange-600" />)}
+          </div>
+        </div>
+
+        {/* Workforce KPIs */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+            <UserGroupIcon className="w-5 h-5 text-purple-600" />
+            <span>Workforce Metrics</span>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {renderKPICard('Headcount', kpiData.workforce.headcount, <UserGroupIcon className="w-5 h-5 text-purple-600" />)}
+            {renderKPICard('Productivity', kpiData.workforce.productivity, <ArrowTrendingUpIcon className="w-5 h-5 text-green-600" />)}
+            {renderKPICard('Safety Incidents', kpiData.workforce.safety, <ExclamationTriangleIcon className="w-5 h-5 text-red-600" />)}
+            {renderKPICard('Retention Rate', kpiData.workforce.retention, <UserGroupIcon className="w-5 h-5 text-blue-600" />)}
+          </div>
+        </div>
+
+        {/* Executive Summary */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+              <DocumentChartBarIcon className="w-5 h-5 text-gray-600" />
+              <span>Executive Summary</span>
+            </h3>
+            <div className="space-y-4">
+              {executiveSummary.map((item, index) => (
+                <div key={index} className={`border rounded-lg p-4 ${getStatusColor(item.status)}`}>
+                  <h4 className="font-semibold mb-2">{item.title}</h4>
+                  <p className="text-sm mb-2">{item.summary}</p>
+                  <p className="text-sm font-medium">Action: {item.action}</p>
+                </div>
+              ))}
             </div>
+          </div>
 
-            {/* Trend Analysis Chart */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Performance Trends</CardTitle>
-                  <div className="flex items-center space-x-2">
-                    <select
-                      value={selectedTimeframe}
-                      onChange={(e) => setSelectedTimeframe(e.target.value)}
-                      className="px-3 py-1 border rounded-md text-sm"
-                    >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="quarterly">Quarterly</option>
-                    </select>
-                    <Filter className="w-4 h-4 text-gray-400" />
+          {/* Performance Trends Chart */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+              <ChartBarIcon className="w-5 h-5 text-gray-600" />
+              <span>Performance Trends</span>
+            </h3>
+            <ChartErrorBoundary title="Performance Trends Chart Error">
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                <div className="h-64 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-600 dark:to-gray-500 rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <ChartBarIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500">Executive performance trends chart</p>
+                    <p className="text-sm text-gray-400 mt-1">Revenue, profit, and operational metrics</p>
                   </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={kpiData?.trends || []}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="period" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      {category.metrics.map((metric, index) => (
-                        <Line
-                          key={metric.id}
-                          type="monotone"
-                          dataKey={metric.id}
-                          stroke={CHART_COLORS[index % CHART_COLORS.length]}
-                          strokeWidth={2}
-                          dot={{ r: 4 }}
-                        />
-                      ))}
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Insights and Recommendations */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Key Insights */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <PieChart className="w-5 h-5 mr-2" />
-                    Key Insights
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {kpiData?.insights?.slice(0, 3).map((insight, index) => (
-                      <div key={index} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div className={`p-1 rounded-full ${
-                          insight.type === 'positive' ? 'bg-green-100 text-green-600' :
-                          insight.type === 'negative' ? 'bg-red-100 text-red-600' :
-                          'bg-blue-100 text-blue-600'
-                        }`}>
-                          {insight.type === 'positive' ? <TrendingUp className="w-4 h-4" /> :
-                           insight.type === 'negative' ? <TrendingDown className="w-4 h-4" /> :
-                           <BarChart3 className="w-4 h-4" />}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{insight.title}</p>
-                          <p className="text-xs text-gray-600 mt-1">{insight.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Action Items */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Target className="w-5 h-5 mr-2" />
-                    Recommended Actions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {kpiData?.recommendations?.slice(0, 4).map((recommendation, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                        <div className={`p-1 rounded-full ${
-                          recommendation.priority === 'high' ? 'bg-red-100 text-red-600' :
-                          recommendation.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' :
-                          'bg-green-100 text-green-600'
-                        }`}>
-                          <AlertTriangle className="w-4 h-4" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{recommendation.action}</p>
-                          <p className="text-xs text-gray-500">
-                            {recommendation.impact} • {recommendation.timeframe}
-                          </p>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
-
-      {/* Drill-Down Modal */}
-      <AnimatePresence>
-        {selectedMetric && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={() => setSelectedMetric(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {selectedMetric.name} - Detailed Analysis
-                  </h2>
-                  <Button variant="outline" onClick={() => setSelectedMetric(null)}>
-                    Close
-                  </Button>
-                </div>
-                
-                {/* Drill-down content would go here */}
-                <div className="text-center py-12 text-gray-500">
-                  Detailed drill-down analytics for {selectedMetric.name}
-                  <br />
-                  <small>Integration with detailed analytics engine coming soon</small>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </ChartErrorBoundary>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Executive Actions
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: 'Financial Report', icon: BanknotesIcon, color: 'green' },
+              { label: 'Board Presentation', icon: PresentationChartLineIcon, color: 'blue' },
+              { label: 'Quarterly Review', icon: CalendarDaysIcon, color: 'purple' },
+              { label: 'Strategic Planning', icon: DocumentChartBarIcon, color: 'orange' }
+            ].map((action, index) => (
+              <button
+                key={index}
+                className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}
+              >
+                <action.icon className={`w-5 h-5 text-${action.color}-600`} />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {action.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

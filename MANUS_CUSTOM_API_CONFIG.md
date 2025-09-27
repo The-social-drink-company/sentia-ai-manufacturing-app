@@ -101,13 +101,13 @@ endpoints:
 ### Required Secrets:
 ```yaml
 # Production Clerk Keys (ACTIVE IN ALL ENVIRONMENTS)
-CLERK_SECRET_KEY: "sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"
-CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"
-VITE_CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"
+CLERK_SECRET_KEY: "sk_live_REDACTED"
+CLERK_PUBLISHABLE_KEY: "pk_live_REDACTED"
+VITE_CLERK_PUBLISHABLE_KEY: "pk_live_REDACTED"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_REDACTED"
 
 # Clerk Webhook & Configuration
-CLERK_WEBHOOK_SECRET: "whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j"
+CLERK_WEBHOOK_SECRET: "whsec_REDACTED"
 CLERK_ENVIRONMENT: "production"
 CLERK_DOMAIN: "financeflo.ai"
 VITE_CLERK_DOMAIN: "clerk.financeflo.ai"
@@ -641,8 +641,8 @@ MCP_SERVER_URL: "https://mcp-server-tkyu.onrender.com" # ✅ HEALTHY - Uptime: 2
 MCP_DEPLOY_HOOK: "https://api.render.com/deploy/srv-d34fefur433s73cifuv0?key=ANE5o0AJZjg"
 
 # Already Configured
-CLERK_SECRET_KEY: "sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"
-CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"
+CLERK_SECRET_KEY: "sk_live_REDACTED"
+CLERK_PUBLISHABLE_KEY: "pk_live_REDACTED"
 DATABASE_URL_PROD: "postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a/sentia_manufacturing_prod"
 XERO_CLIENT_ID: "9C0CAB921C134476A249E48BBECB8C4B"
 XERO_CLIENT_SECRET: "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5"
@@ -655,3 +655,5 @@ ANTHROPIC_API_KEY: "sk-ant-api03-_lQzRhrFvw2JeSPoZzlA34DxZvbmrM8H5uC7yya6zsD_86y
 **Configuration Version:** 2.0.0
 **Contact:** admin@financeflo.ai
 **Security Review Required:** YES - API keys may be exposed
+
+

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 import { AlertCircle, Shield, Clock, Loader2 } from 'lucide-react'
 
 export default function ProtectedRoute({ 
@@ -70,7 +71,7 @@ export default function ProtectedRoute({
       reason="Admin access required" 
       userRole={role}
       requiredRole="admin or master_admin"
-      0
+      fallback={fallback}
     />
   }
 
@@ -80,7 +81,7 @@ export default function ProtectedRoute({
       reason="Specific role required" 
       userRole={role}
       requiredRole={requiredRole}
-      0
+      fallback={fallback}
     />
   }
 
@@ -90,7 +91,7 @@ export default function ProtectedRoute({
       reason="Insufficient role level" 
       userRole={role}
       requiredRole={`${requiredRoleAtLeast} or higher`}
-      0
+      fallback={fallback}
     />
   }
 
@@ -100,7 +101,7 @@ export default function ProtectedRoute({
       reason="Missing required permission" 
       userRole={role}
       requiredPermission={requiredPermission}
-      0
+      fallback={fallback}
     />
   }
 
@@ -110,7 +111,7 @@ export default function ProtectedRoute({
       reason="Feature not available" 
       userRole={role}
       requiredFeature={requiredFeature}
-      0
+      fallback={fallback}
     />
   }
 
@@ -149,7 +150,7 @@ function UnauthorizedAccess({
             <div className="text-sm space-y-2">
               <div className="flex justify-between">
                 <span className="font-medium text-gray-700 dark:text-gray-300">Your Role:</span>
-                <span className="text-gray-900 dark:text-white capitalize">{userRole || null}</span>
+                <span className="text-gray-900 dark:text-white capitalize">{userRole || 'Unknown'}</span>
               </div>
               
               {requiredRole && (

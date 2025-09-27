@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
+import { useBulletproofAuth, useAuthRole as useBulletproofRole } from '../auth/BulletproofAuthProvider';
 
-// Mock Authentication Hook for development
-// This hook provides a simple auth interface without real authentication
-// Fixed: Syntax errors corrected
+// Authentication Hook with Bulletproof System
+// This hook will NEVER fail and always returns valid auth data
 export const useAuthRole = () => {
-  // Mock auth data for development
-  const auth = { user: { name: 'Admin User' }, isLoaded: true, isSignedIn: true, mode: 'mock' };
-  const roleData = { role: 'admin', permissions: ['read', 'write', 'delete', 'admin'] };
+  // Use the bulletproof auth system
+  const auth = useBulletproofAuth();
+  const roleData = useBulletproofRole();
 
   const authData = useMemo(() => {
     // Extract data from bulletproof auth
@@ -46,11 +46,10 @@ export const useAuthRole = () => {
 
     // Get user display information
     const displayName = user?.fullName ||
-                       user?.name ||
+                       user?.firstName ||
                        (mode === 'fallback' ? 'Guest User' : 'User');
 
     const userEmail = user?.emailAddresses?.[0]?.emailAddress ||
-                     user?.email ||
                      (mode === 'fallback' ? 'guest@sentia.local' : 'user@sentia.local');
 
     // Role hierarchy for comparisons

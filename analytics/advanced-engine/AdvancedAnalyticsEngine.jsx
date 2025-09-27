@@ -8,7 +8,6 @@ import {
   ChartBarIcon, 
   CpuChipIcon, 
   BoltIcon,
-  TrendingUpIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -576,7 +575,7 @@ const AdvancedAnalyticsDashboard = () => {
                 {(metrics.accuracyScore * 100).toFixed(1)}%
               </p>
             </div>
-            <TrendingUpIcon className="w-8 h-8 text-green-500" />
+            <ArrowTrendingUpIcon className="w-8 h-8 text-green-500" />
           </div>
         </div>
 

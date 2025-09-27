@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { UserButton, useUser } from '@clerk/clerk-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -30,10 +31,7 @@ const DashboardLayout = ({ children }) => {
   const [chatOpen, setChatOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  // Authentication removed
-  const user = { name: "User" };
-  const isSignedIn = true;
-  const isLoaded = true;
+  const { user } = useUser()
 
   const navigationSections = [
     {
@@ -234,7 +232,7 @@ const DashboardLayout = ({ children }) => {
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">
-                    {user?.fullName || "user@example.com"es?.[0]?.emailAddress}
+                    {user?.fullName || user?.emailAddresses?.[0]?.emailAddress}
                   </p>
                   <p className="text-xs text-slate-400">Enterprise User</p>
                 </div>

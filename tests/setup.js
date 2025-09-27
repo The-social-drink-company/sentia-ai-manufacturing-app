@@ -1,14 +1,12 @@
-import '@testing-library/jest-dom'
-import React from 'react'
-import { vi, beforeEach } from 'vitest'
+import '@testing-library/jest-dom';
+import React from 'react';
+import { vi, beforeEach } from 'vitest';
 
-// Mock environment variables for tests
-process.env.NODE_ENV = 'test'
-process.env.VITE_API_URL = 'http://localhost:5000/api'
-process.env.VITE_CLERK_PUBLISHABLE_KEY = 'test-key'
+process.env.NODE_ENV = 'test';
+process.env.VITE_API_URL = 'http://localhost:5000/api';
+process.env.VITE_CLERK_PUBLISHABLE_KEY = 'test-key';
 
-// Mock Clerk for tests
-vi.mock('@clerk/react', () => ({
+vi.mock('@clerk/clerk-react', () => ({
   useUser: vi.fn(() => ({
     user: {
       id: 'test-user',
@@ -22,15 +20,21 @@ vi.mock('@clerk/react', () => ({
   })),
   useAuth: vi.fn(() => ({
     isSignedIn: true,
+    isLoaded: true,
     getToken: vi.fn(() => Promise.resolve('test-token')),
     signOut: vi.fn()
+  })),
+  useClerk: vi.fn(() => ({
+    openSignIn: vi.fn(),
+    openSignUp: vi.fn(),
+    closeSignIn: vi.fn(),
+    closeSignUp: vi.fn()
   })),
   ClerkProvider: ({ children }) => children,
   SignIn: () => '<div>Sign In</div>',
   SignUp: () => '<div>Sign Up</div>'
-}))
+}));
 
-// Mock TanStack Query
 vi.mock('@tanstack/react-query', () => ({
   useQuery: vi.fn(() => ({
     data: {},
@@ -43,9 +47,8 @@ vi.mock('@tanstack/react-query', () => ({
   })),
   QueryClient: vi.fn(),
   QueryClientProvider: ({ children }) => children
-}))
+}));
 
-// Mock react-hot-toast
 vi.mock('react-hot-toast', () => ({
   toast: {
     success: vi.fn(),
@@ -53,30 +56,33 @@ vi.mock('react-hot-toast', () => ({
     loading: vi.fn()
   },
   Toaster: () => React.createElement('div', { 'data-testid': 'toaster' })
-}))
+}));
 
-// Mock react-router-dom
 vi.mock('react-router-dom', () => ({
+  __esModule: true,
   BrowserRouter: ({ children }) => children,
   Routes: ({ children }) => children,
   Route: ({ children }) => children,
+  RouterProvider: ({ router }) =>
+    React.createElement('div', { 'data-testid': 'router-provider', 'data-router-loaded': Boolean(router) }),
+  createBrowserRouter: vi.fn((routes) => ({ routes })),
+  createMemoryRouter: vi.fn((routes, options = {}) => ({ routes, options })),
+  Navigate: ({ children }) => React.createElement(React.Fragment, null, children ?? null),
+  Outlet: ({ children }) => React.createElement('div', { 'data-testid': 'outlet' }, children ?? null),
   useNavigate: vi.fn(() => vi.fn()),
   useLocation: vi.fn(() => ({ pathname: '/' }))
-}))
+}));
 
-// Mock fetch for API calls
-global.fetch = vi.fn()
+global.fetch = vi.fn();
 
-// Setup fetch mock helper
 export const mockFetch = (response) => {
   fetch.mockResolvedValueOnce({
     ok: true,
     json: async () => response,
     text: async () => JSON.stringify(response)
-  })
-}
+  });
+};
 
-// Reset mocks between tests
 beforeEach(() => {
-  fetch.mockClear()
-})
+  fetch.mockClear();
+});

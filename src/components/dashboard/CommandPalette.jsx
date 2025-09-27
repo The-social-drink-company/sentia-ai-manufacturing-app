@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
-
+import { devLog } from '../../utils/structuredLogger.js';
 
 const CommandPalette = ({ onClose }) => {
   const [query, setQuery] = React.useState('');
@@ -10,7 +9,7 @@ const CommandPalette = ({ onClose }) => {
     { id: 1, name: 'Go to Dashboard', action: () => { window.location.href = '/dashboard'; onClose(); } },
     { id: 2, name: 'View Working Capital', action: () => { window.location.href = '/working-capital'; onClose(); } },
     { id: 3, name: 'Open What-If Analysis', action: () => { window.location.href = '/what-if'; onClose(); } },
-    { id: 4, name: 'Export Data', action: () => { logDebug('Exporting...'); onClose(); } },
+    { id: 4, name: 'Export Data', action: () => { devLog.log('Exporting...'); onClose(); } },
     { id: 5, name: 'Toggle Theme', action: () => { document.documentElement.classList.toggle('dark'); onClose(); } },
     { id: 6, name: 'Settings', action: () => { window.location.href = '/settings'; onClose(); } },
   ];

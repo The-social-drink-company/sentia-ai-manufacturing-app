@@ -16,6 +16,7 @@ import Sidebar from './components/layout/Sidebar';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { logError } from './utils/structuredLogger';
 
 // Stage 1 Pages (Essential)
 const EnterpriseDashboard = lazy(() => import('./pages/Dashboard/EnterpriseDashboard'));
@@ -167,7 +168,7 @@ const AppStage2 = () => {
   const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
   if (!clerkPublishableKey) {
-    console.error('Missing Clerk publishable key');
+    logError('Missing Clerk publishable key - configuration error', { env: import.meta.env.MODE });
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -183,7 +184,7 @@ const AppStage2 = () => {
       <ErrorBoundary
         FallbackComponent={ErrorFallback}
         onError={(error) => {
-          console.error('Application error:', error);
+          logError('Application error in stage 2 app', error);
         }}
       >
         <QueryClientProvider client={queryClient}>

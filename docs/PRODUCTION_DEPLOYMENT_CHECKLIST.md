@@ -99,7 +99,7 @@ JWT_SECRET=sentia-mcp-production-secret-key
 - [ ] **Audit Logging**: User action tracking implementation needed
 
 ### Vulnerability Management
-- [ ] **Dependency Scan**: Final npm audit before production deployment
+- [ ] **Dependency Scan**: Final pnpm audit before production deployment
 - [ ] **Security Monitoring**: Production security alerting setup
 - [ ] **Incident Response**: Security incident procedures documented
 - [ ] **Backup Verification**: Database backup and restore testing

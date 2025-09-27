@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TrendingUpIcon } from '@heroicons/react/24/outline';
+import { ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
 import KPIWidget from './KPIWidget';
 
 describe('KPIWidget', () => {
@@ -10,7 +10,7 @@ describe('KPIWidget', () => {
     value: 1250000,
     target: 1500000,
     trend: 8.5,
-    icon: TrendingUpIcon,
+    icon: ArrowTrendingUpIcon,
     formatter: (val) => `$${(val / 1000000).toFixed(1)}M`,
     color: 'blue',
     onClick: vi.fn()

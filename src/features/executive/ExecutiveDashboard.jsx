@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import {
   CurrencyDollarIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   ChartBarIcon,
   ExclamationTriangleIcon,
   ArrowUpIcon,
@@ -16,6 +16,7 @@ import TrendChart from './components/TrendChart';
 import AlertPanel from './components/AlertPanel';
 import { useSSE } from '../../hooks/useSSE';
 import { formatCurrency, formatPercentage } from './utils/formatters';
+import { logInfo, logError, devLog } from '../../utils/structuredLogger';
 
 const ExecutiveDashboard = () => {
   const { user } = useAuth();
@@ -53,10 +54,10 @@ const ExecutiveDashboard = () => {
           break;
         case 'system-status':
           // Handle system status updates
-          console.log('System status update:', eventData);
+          devLog.log('System status update:', eventData);
           break;
         default:
-          console.log('Unhandled SSE event:', eventType, eventData);
+          devLog.log('Unhandled SSE event:', eventType, eventData);
       }
     }
   });
@@ -67,7 +68,7 @@ const ExecutiveDashboard = () => {
       try {
         await fetchExecutiveMetrics();
       } catch (error) {
-        console.error('Failed to load executive metrics:', error);
+        logError('Failed to load executive metrics', error);
       } finally {
         setLoading(false);
       }
@@ -127,7 +128,7 @@ const ExecutiveDashboard = () => {
       value: metrics?.oee?.value || 0,
       target: metrics?.oee?.target || 85,
       trend: metrics?.oee?.trend || 0,
-      icon: TrendingUpIcon,
+      icon: ArrowTrendingUpIcon,
       formatter: formatPercentage,
       color: 'yellow'
     },
@@ -147,7 +148,7 @@ const ExecutiveDashboard = () => {
       value: metrics?.marketShare?.value || 0,
       target: metrics?.marketShare?.target || 0,
       trend: metrics?.marketShare?.trend || 0,
-      icon: TrendingUpIcon,
+      icon: ArrowTrendingUpIcon,
       formatter: formatPercentage,
       color: 'pink'
     },
@@ -157,7 +158,7 @@ const ExecutiveDashboard = () => {
       value: metrics?.customerSatisfaction?.value || 0,
       target: metrics?.customerSatisfaction?.target || 90,
       trend: metrics?.customerSatisfaction?.trend || 0,
-      icon: TrendingUpIcon,
+      icon: ArrowTrendingUpIcon,
       formatter: formatPercentage,
       color: 'orange'
     }
@@ -260,7 +261,7 @@ const ExecutiveDashboard = () => {
         <div className="space-y-3">
           {alerts?.filter(a => a.type === 'opportunity').map(alert => (
             <div key={alert.id} className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
-              <TrendingUpIcon className="h-5 w-5 text-green-600 mt-0.5" />
+              <ArrowTrendingUpIcon className="h-5 w-5 text-green-600 mt-0.5" />
               <div>
                 <p className="font-medium text-gray-900">{alert.title}</p>
                 <p className="text-sm text-gray-600">{alert.description}</p>

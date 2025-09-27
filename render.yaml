@@ -12,7 +12,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=1024' npm ci --omit=dev && NODE_OPTIONS='--max-old-space-size=3072' npm install -D vite @vitejs/plugin-react && DEPLOYMENT_STAGE=2 NODE_OPTIONS='--max-old-space-size=4096' node build-minimal.js && npx prisma generate"
+    buildCommand: "corepack enable && pnpm install --frozen-lockfile --prod && pnpm add -D vite @vitejs/plugin-react && DEPLOYMENT_STAGE=2 NODE_OPTIONS='--max-old-space-size=4096' node build-minimal.js && pnpm dlx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -48,7 +48,7 @@ services:
     plan: starter
     region: oregon
     branch: test
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --include=dev && DEPLOYMENT_STAGE=1 NODE_OPTIONS='--max-old-space-size=4096' node build-staged.js && npx prisma generate"
+    buildCommand: "corepack enable && pnpm install --frozen-lockfile && DEPLOYMENT_STAGE=1 NODE_OPTIONS='--max-old-space-size=4096' node build-staged.js && pnpm dlx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -77,7 +77,7 @@ services:
     plan: starter
     region: oregon
     branch: production
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --omit=dev && DEPLOYMENT_STAGE=1 NODE_OPTIONS='--max-old-space-size=4096' node build-staged.js && npx prisma generate"
+    buildCommand: "corepack enable && pnpm install --frozen-lockfile --prod && DEPLOYMENT_STAGE=1 NODE_OPTIONS='--max-old-space-size=4096' node build-staged.js && pnpm dlx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true

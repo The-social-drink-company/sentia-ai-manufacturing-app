@@ -7,6 +7,7 @@ import {
   BanknotesIcon,
   ArrowTrendingUpIcon
 } from '@heroicons/react/24/outline';
+import { logError } from '../../utils/structuredLogger.js';
 
 const activityIcons = {
   login: UserIcon,
@@ -101,7 +102,7 @@ export default function ActivityWidget({ activities = [], maxItems = 10 }) {
           setRecentActivities(mockActivities.slice(0, maxItems));
         }
       } catch (error) {
-        console.error('Failed to load activities:', error);
+        logError('Failed to load activities', error);
         setRecentActivities([]);
       } finally {
         setLoading(false);

@@ -4,6 +4,7 @@
  */
 
 import { createClient } from 'redis';
+import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
 
 class RedisCacheService {
   constructor() {
@@ -39,7 +40,7 @@ class RedisCacheService {
             connectTimeout: 10000,
             lazyConnect: true,
             reconnectStrategy: (retries) => {
-              console.log(`Redis reconnection attempt ${retries}`);
+              logInfo('Redis reconnection attempt', { retries });
               // Exponential backoff with max 3 seconds
               return Math.min(retries * 100, 3000);
             }
@@ -55,21 +56,21 @@ class RedisCacheService {
 
         // Event handlers
         this.client.on('connect', () => {
-          console.log('🔴 Redis: Connection established');
+          logInfo('Redis connection established');
         });
 
         this.client.on('ready', () => {
           this.isConnected = true;
-          console.log('✅ Redis: Client ready');
+          logInfo('Redis client ready');
         });
 
         this.client.on('error', (err) => {
-          console.error('❌ Redis: Connection error:', err.message);
+          logError('Redis connection error', { error: err.message });
           this.isConnected = false;
         });
 
         this.client.on('end', () => {
-          console.log('🔴 Redis: Connection closed');
+          logInfo('Redis connection closed');
           this.isConnected = false;
         });
 
@@ -78,18 +79,18 @@ class RedisCacheService {
 
         // Test connection
         await this.client.ping();
-        console.log('🚀 Redis Cache Service initialized');
+        logInfo('Redis Cache Service initialized');
 
         // Set up periodic cleanup
         this.startPeriodicCleanup();
 
         return true;
       } else {
-        console.log('⚠️  Redis URL not configured, using memory fallback');
+        logWarn('Redis URL not configured, using memory fallback');
         return false;
       }
     } catch (error) {
-      console.error('Failed to initialize Redis cache:', error);
+      logError('Failed to initialize Redis cache', error);
       this.isConnected = false;
       return false;
     }
@@ -123,7 +124,7 @@ class RedisCacheService {
       this.recordCacheMiss(key);
       return null;
     } catch (error) {
-      console.error(`Cache GET error for key ${fullKey}:`, error);
+      logError('Cache GET error', { key: fullKey, error });
       return null;
     }
   }
@@ -160,7 +161,7 @@ class RedisCacheService {
 
       return true;
     } catch (error) {
-      console.error(`Cache SET error for key ${fullKey}:`, error);
+      logError('Cache SET error', { key: fullKey, error });
       return false;
     }
   }
@@ -180,7 +181,7 @@ class RedisCacheService {
       }
       return true;
     } catch (error) {
-      console.error(`Cache DELETE error for key ${fullKey}:`, error);
+      logError('Cache DELETE error', { key: fullKey, error });
       return false;
     }
   }
@@ -212,7 +213,7 @@ class RedisCacheService {
 
       return data;
     } catch (error) {
-      console.error(`Error in getOrSet for key ${key}:`, error);
+      logError('Error in getOrSet', { key, error });
       throw error;
     }
   }
@@ -230,10 +231,10 @@ class RedisCacheService {
       if (keys.length > 0) {
         await this.client.del(...keys);
         await this.client.del(tagKey);
-        console.log(`Invalidated ${keys.length} keys for tag: ${tag}`);
+        logInfo('Invalidated keys for tag', { tag, count: keys.length });
       }
     } catch (error) {
-      console.error(`Error invalidating tag ${tag}:`, error);
+      logError('Error invalidating tag', { tag, error });
     }
   }
 
@@ -275,7 +276,7 @@ class RedisCacheService {
 
       return result;
     } catch (error) {
-      console.error('Multi-get error:', error);
+      logError('Multi-get error', error);
       return {};
     }
   }
@@ -308,7 +309,7 @@ class RedisCacheService {
     // TODO: Add compression for large data
     if (jsonString.length > this.compressionThreshold) {
       // Would implement compression here if needed
-      console.debug(`Large cache entry (${jsonString.length} bytes):`, jsonString.substring(0, 100) + '...');
+      logDebug('Large cache entry detected', { size: `${jsonString.length} bytes`, preview: jsonString.substring(0, 100) + '...' });
     }
 
     return jsonString;
@@ -321,7 +322,7 @@ class RedisCacheService {
     try {
       return JSON.parse(serialized);
     } catch (error) {
-      console.error('Failed to deserialize cached data:', error);
+      logError('Failed to deserialize cached data', error);
       return null;
     }
   }
@@ -339,7 +340,7 @@ class RedisCacheService {
         await this.client.expire(tagKey, 86400); // Tags expire after 24 hours
       }
     } catch (error) {
-      console.error('Error setting cache tags:', error);
+      logError('Error setting cache tags', error);
     }
   }
 
@@ -355,7 +356,7 @@ class RedisCacheService {
         await this.client.sRem(tagKey, key);
       }
     } catch (error) {
-      console.error('Error deleting cache tags:', error);
+      logError('Error deleting cache tags', error);
     }
   }
 
@@ -399,17 +400,17 @@ class RedisCacheService {
    */
   recordCacheHit(key) {
     // Could send to monitoring service
-    console.debug(`Cache HIT: ${key}`);
+    logDebug('Cache HIT', { key });
   }
 
   recordCacheMiss(key) {
     // Could send to monitoring service
-    console.debug(`Cache MISS: ${key}`);
+    logDebug('Cache MISS', { key });
   }
 
   recordFetchTime(key, time) {
     // Could send to monitoring service
-    console.debug(`Fetch time for ${key}: ${time.toFixed(2)}ms`);
+    logDebug('Fetch time recorded', { key, time: `${time.toFixed(2)}ms` });
   }
 
   /**
@@ -427,7 +428,7 @@ class RedisCacheService {
         const info = await this.client.info('memory');
         stats.redisInfo = info;
       } catch (error) {
-        console.error('Error getting Redis stats:', error);
+        logError('Error getting Redis stats', error);
       }
     }
 
@@ -443,14 +444,14 @@ class RedisCacheService {
         const keys = await this.client.keys(`sentia:${pattern}`);
         if (keys.length > 0) {
           await this.client.del(...keys);
-          console.log(`Cleared ${keys.length} cache entries`);
+          logInfo('Cleared cache entries', { count: keys.length });
         }
       } else {
         this.fallbackCache.clear();
-        console.log('Cleared memory cache');
+        logInfo('Cleared memory cache');
       }
     } catch (error) {
-      console.error('Error clearing cache:', error);
+      logError('Error clearing cache', error);
     }
   }
 
@@ -463,9 +464,9 @@ class RedisCacheService {
         await this.client.quit();
       }
       this.fallbackCache.clear();
-      console.log('Redis cache service shutdown complete');
+      logInfo('Redis cache service shutdown complete');
     } catch (error) {
-      console.error('Error shutting down cache:', error);
+      logError('Error shutting down cache', error);
     }
   }
 }

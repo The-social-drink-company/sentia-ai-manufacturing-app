@@ -1,310 +1,261 @@
+import { memo } from 'react'
 import {
   CheckCircleIcon,
   XCircleIcon,
   ExclamationTriangleIcon,
-  ChartBarIcon
-} from '@heroicons/react/24/outline'
-import { useState, useMemo } from 'react'
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadialBarChart,
-  RadialBar,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts'
+  ClipboardDocumentCheckIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon
+} from '@heroicons/react/24/solid'
 
-import { Card, CardContent, CardHeader, CardTitle , Alert, AlertDescription } from '../../../components/ui'
-
-const generateMockQualityData = () => {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
-  return {
-    defectRate: days.map(day => ({
-      day,
-      rate: Math.random() * 5 + 0.5,
-      target: 2
-    })),
-    qualityScore: [
-      { name: 'Quality Score', value: 94, fill: '#10b981' }
-    ],
-    defectTypes: [
-      { type: 'Packaging', count: 23, percentage: 35 },
-      { type: 'Labeling', count: 18, percentage: 27 },
-      { type: 'Fill Level', count: 15, percentage: 23 },
-      { type: 'Cap Issues', count: 10, percentage: 15 }
-    ],
-    batchResults: [
-      { batch: 'B-001', passed: 485, failed: 15, passRate: 97 },
-      { batch: 'B-002', passed: 492, failed: 8, passRate: 98.4 },
-      { batch: 'B-003', passed: 478, failed: 22, passRate: 95.6 },
-      { batch: 'B-004', passed: 495, failed: 5, passRate: 99 },
-      { batch: 'B-005', passed: 480, failed: 20, passRate: 96 }
-    ],
-    alerts: [
-      {
-        id: 1,
-        severity: 'warning',
-        message: 'Defect rate trending above target on Line 2',
-        timestamp: new Date(Date.now() - 3600000).toISOString()
-      },
-      {
-        id: 2,
-        severity: 'success',
-        message: 'Batch B-004 achieved 99% pass rate',
-        timestamp: new Date(Date.now() - 7200000).toISOString()
-      }
-    ]
-  }
-}
-
-export function QualityMetrics({ data, onAlertClick }) {
-  const [selectedMetric, setSelectedMetric] = useState('defectRate')
-  const qualityData = useMemo(() => data || generateMockQualityData(), [data])
-
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
-
-  const renderDefectRateChart = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Defect Rate Trend</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={qualityData.defectRate}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="day" />
-            <YAxis tickFormatter={(value) => `${value}%`} />
-            <Tooltip formatter={(value) => `${value}%`} />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="rate"
-              stroke="#3b82f6"
-              name="Actual"
-              strokeWidth={2}
-            />
-            <Line
-              type="monotone"
-              dataKey="target"
-              stroke="#ef4444"
-              name="Target"
-              strokeDasharray="5 5"
-              strokeWidth={2}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
-  )
-
-  const renderQualityScore = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Overall Quality Score</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <RadialBarChart
-            cx="50%"
-            cy="50%"
-            innerRadius="60%"
-            outerRadius="90%"
-            data={qualityData.qualityScore}
-            startAngle={180}
-            endAngle={0}
-          >
-            <RadialBar
-              dataKey="value"
-              cornerRadius={10}
-              fill="#10b981"
-            />
-            <text
-              x="50%"
-              y="50%"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="text-3xl font-bold"
-            >
-              {qualityData.qualityScore[0].value}%
-            </text>
-            <text
-              x="50%"
-              y="60%"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="text-sm text-gray-600"
-            >
-              Excellent
-            </text>
-          </RadialBarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
-  )
-
-  const renderDefectTypes = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Defect Categories</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={qualityData.defectTypes}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ type, percentage }) => `${type} (${percentage}%)`}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="count"
-            >
-              {qualityData.defectTypes.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
-  )
-
-  const renderBatchResults = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Batch Quality Results</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={qualityData.batchResults}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="batch" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="passed" stackId="a" fill="#10b981" name="Passed" />
-            <Bar dataKey="failed" stackId="a" fill="#ef4444" name="Failed" />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
-  )
-
-  const renderAlerts = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Quality Alerts</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {qualityData.alerts.map(alert => (
-            <Alert
-              key={alert.id}
-              variant={alert.severity}
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => onAlertClick && onAlertClick(alert)}
-            >
-              <AlertDescription className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {alert.severity === 'warning' && <ExclamationTriangleIcon className="h-4 w-4" />}
-                  {alert.severity === 'success' && <CheckCircleIcon className="h-4 w-4" />}
-                  {alert.severity === 'error' && <XCircleIcon className="h-4 w-4" />}
-                  <span>{alert.message}</span>
-                </div>
-                <span className="text-xs text-gray-500">
-                  {new Date(alert.timestamp).toLocaleTimeString()}
-                </span>
-              </AlertDescription>
-            </Alert>
-          ))}
+const QualityMetrics = memo(function QualityMetrics({ data }) {
+  if (!data) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            ))}
+          </div>
         </div>
-      </CardContent>
-    </Card>
-  )
+      </div>
+    )
+  }
 
-  const renderSummaryMetrics = () => (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Pass Rate</p>
-              <p className="text-2xl font-bold">96.8%</p>
-              <p className="text-xs text-green-600">+2.3% vs last week</p>
-            </div>
-            <CheckCircleIcon className="h-8 w-8 text-green-600" />
-          </div>
-        </CardContent>
-      </Card>
+  const getQualityStatus = (percentage) => {
+    if (percentage >= 99) return { color: 'green', icon: CheckCircleIcon }
+    if (percentage >= 95) return { color: 'blue', icon: CheckCircleIcon }
+    if (percentage >= 90) return { color: 'yellow', icon: ExclamationTriangleIcon }
+    return { color: 'red', icon: XCircleIcon }
+  }
 
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Defect Rate</p>
-              <p className="text-2xl font-bold">3.2%</p>
-              <p className="text-xs text-red-600">+0.5% vs target</p>
-            </div>
-            <XCircleIcon className="h-8 w-8 text-red-600" />
-          </div>
-        </CardContent>
-      </Card>
+  const formatPercentage = (value) => `${(value || 0).toFixed(1)}%`
+  const formatNumber = (value) => (value || 0).toLocaleString()
 
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Inspections</p>
-              <p className="text-2xl font-bold">2,450</p>
-              <p className="text-xs text-gray-600">Today</p>
-            </div>
-            <ChartBarIcon className="h-8 w-8 text-blue-600" />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Rework Rate</p>
-              <p className="text-2xl font-bold">1.8%</p>
-              <p className="text-xs text-green-600">-0.3% vs last week</p>
-            </div>
-            <ExclamationTriangleIcon className="h-8 w-8 text-amber-600" />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+  const summary = data.summary || {}
 
   return (
     <div className="space-y-6">
-      {renderSummaryMetrics()}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Key Quality Metrics
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+            <div className="flex items-center">
+              <CheckCircleIcon className="h-8 w-8 text-green-600 mr-3" />
+              <div>
+                <p className="text-sm text-green-600 dark:text-green-400">Overall Quality</p>
+                <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+                  {formatPercentage(summary.overallQuality)}
+                </p>
+              </div>
+            </div>
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {renderDefectRateChart()}
-        {renderQualityScore()}
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="flex items-center">
+              <ClipboardDocumentCheckIcon className="h-8 w-8 text-blue-600 mr-3" />
+              <div>
+                <p className="text-sm text-blue-600 dark:text-blue-400">First Pass Yield</p>
+                <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                  {formatPercentage(summary.firstPassYield)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <div className="flex items-center">
+              <XCircleIcon className="h-8 w-8 text-red-600 mr-3" />
+              <div>
+                <p className="text-sm text-red-600 dark:text-red-400">Defect Rate</p>
+                <p className="text-2xl font-bold text-red-900 dark:text-red-100">
+                  {formatPercentage(summary.defectRate)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {renderDefectTypes()}
-        {renderBatchResults()}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Detailed Quality Metrics
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Total Inspected</span>
+              <ArrowTrendingUpIcon className="h-4 w-4 text-green-500" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
+              {formatNumber(summary.totalInspected)}
+            </p>
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Total Defects</span>
+              <ArrowTrendingDownIcon className="h-4 w-4 text-red-500" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
+              {formatNumber(summary.totalDefects)}
+            </p>
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Pass Rate</span>
+              <CheckCircleIcon className="h-4 w-4 text-green-500" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
+              {formatPercentage(summary.passRate)}
+            </p>
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Rework Rate</span>
+              <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
+              {formatPercentage(summary.reworkRate)}
+            </p>
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Critical Defects</span>
+              <XCircleIcon className="h-4 w-4 text-red-500" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
+              {formatNumber(summary.criticalDefects)}
+            </p>
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Major Defects</span>
+              <ExclamationTriangleIcon className="h-4 w-4 text-orange-500" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
+              {formatNumber(summary.majorDefects)}
+            </p>
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Minor Defects</span>
+              <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
+              {formatNumber(summary.minorDefects)}
+            </p>
+          </div>
+
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Scrap Rate</span>
+              <XCircleIcon className="h-4 w-4 text-red-500" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
+              {formatPercentage(summary.scrapRate)}
+            </p>
+          </div>
+        </div>
       </div>
 
-      {renderAlerts()}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Inspection Points Status
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Inspection Point
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Quality
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Inspected
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Defects
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Last Inspection
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {data.inspectionPoints?.map((point) => {
+                const qualityStatus = getQualityStatus(point.quality)
+                const StatusIcon = qualityStatus.icon
+
+                return (
+                  <tr key={point.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {point.name}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {point.id}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <StatusIcon className={`h-4 w-4 mr-2 ${
+                          qualityStatus.color === 'green' ? 'text-green-500' :
+                          qualityStatus.color === 'blue' ? 'text-blue-500' :
+                          qualityStatus.color === 'yellow' ? 'text-yellow-500' : 'text-red-500'
+                        }`} />
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {formatPercentage(point.quality)}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {formatNumber(point.inspected)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {formatNumber(point.defects)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        point.status === 'active'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                      }`}>
+                        {point.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {new Date(point.lastInspection).toLocaleTimeString()}
+                    </td>
+                  </tr>
+                )
+              }) || (
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                    No inspection points data available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   )
-}
+})
+
+export { QualityMetrics }

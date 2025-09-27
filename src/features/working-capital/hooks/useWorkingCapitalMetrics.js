@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useXeroWorkingCapitalData } from './useXeroIntegration'
+import { logWarn } from '../../../utils/structuredLogger.js'
 
 export function useWorkingCapitalMetrics(period = 'current') {
   const [data, setData] = useState(null)
@@ -271,7 +272,7 @@ export function useWorkingCapitalMetrics(period = 'current') {
       try {
         await xeroData.refetch()
       } catch (err) {
-        console.warn('Failed to refresh Xero data:', err)
+        logWarn('Failed to refresh Xero data', err)
       }
     }
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { logWarn, logError } from '../../../utils/structuredLogger.js'
 
 // Mock data for executive metrics
 const mockExecutiveData = {
@@ -111,7 +112,7 @@ const fetchExecutiveMetrics = async (period) => {
     const data = await response.json()
     return data
   } catch (error) {
-    console.warn('Falling back to mock executive data:', error.message)
+    logWarn('Falling back to mock executive data', { error: error.message })
     // Return mock data with slight variations based on period
     return {
       ...mockExecutiveData,
@@ -177,7 +178,7 @@ export const useExecutiveMetrics = (period = 'month') => {
         if (!isMounted) return
 
         setError(err)
-        console.error('Error loading executive metrics:', err)
+        logError('Error loading executive metrics', err)
       } finally {
         if (isMounted) {
           setLoading(false)

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { fetchProductionMetrics, exportProductionData } from '../services/productionService'
 import { useIoTProductionMetrics } from './useIoTIntegration'
+import { logError } from '../../../utils/structuredLogger.js'
 
 export function useProductionMetrics({ line = 'all', shift = 'current', timeRange = '24h' } = {}) {
   const [data, setData] = useState(null)
@@ -42,7 +43,7 @@ export function useProductionMetrics({ line = 'all', shift = 'current', timeRang
       setError(err)
       // Log error in development only
       if (import.meta.env.DEV) {
-        console.error('Failed to fetch production metrics:', err)
+        logError('Failed to fetch production metrics', err)
       }
     } finally {
       setLoading(false)

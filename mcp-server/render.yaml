@@ -10,8 +10,8 @@
     branch: development
     rootDir: mcp-server
 
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
+    startCommand: pnpm start
 
     healthCheckPath: /health
 

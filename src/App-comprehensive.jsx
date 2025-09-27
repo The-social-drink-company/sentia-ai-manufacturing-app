@@ -14,6 +14,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 // Using bulletproof auth system instead of direct Clerk imports
 import { useAuthRole } from './hooks/useAuthRole.jsx';
 import { ThemeProvider } from './components/ui/ThemeProvider';
+import { logInfo, logError, devLog } from './utils/structuredLogger';
 
 // Core Layout Components
 import Header from './components/layout/Header';
@@ -36,13 +37,13 @@ const NewExecutiveDashboard = lazy(() => import('./features/executive/ExecutiveD
 // Financial Management
 const WorkingCapital = lazy(() => import('./pages/WorkingCapital'));
 const WorkingCapitalDashboard = lazy(() => import('./features/working-capital/WorkingCapitalDashboard'));
-const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
+const WhatIfAnalysis = lazy(() => import('./components/WhatIfAnalysis'));
 const FinancialReports = lazy(() => import('./pages/Financial/FinancialReports'));
 
 // Manufacturing Operations
 const Production = lazy(() => import('./pages/Production'));
 const Quality = lazy(() => import('./pages/Quality'));
-const QualityControlDashboard = lazy(() => import('./components/quality/QualityControlDashboard'));
+const QualityControl = lazy(() => import('./components/QualityControl.jsx'));
 const Inventory = lazy(() => import('./pages/Inventory'));
 const AdvancedInventoryManagement = lazy(() => import('./components/inventory/AdvancedInventoryManagement'));
 const Forecasting = lazy(() => import('./pages/Forecasting'));
@@ -118,8 +119,8 @@ const AuthenticatedApp = () => {
   const location = useLocation();
   
   // DEBUG: Add extensive logging
-  console.log('[AuthenticatedApp] Current location:', location.pathname);
-  console.log('[AuthenticatedApp] Auth state:', { isAuthenticated, isLoading, isSignedIn });
+  devLog.log('[AuthenticatedApp] Current location:', location.pathname);
+  devLog.log('[AuthenticatedApp] Auth state:', { isAuthenticated, isLoading, isSignedIn });
   
   // Compatibility with Clerk's isLoaded - bulletproof auth is always loaded
   const isLoaded = !isLoading;
@@ -141,17 +142,17 @@ const AuthenticatedApp = () => {
 
   // Show loading while auth is checking
   if (!isLoaded) {
-    console.log('[AuthenticatedApp] Auth still loading, showing PageLoader');
+    devLog.log('[AuthenticatedApp] Auth still loading, showing PageLoader');
     return <PageLoader />;
   }
 
   // Check if it's a fullscreen page first
   const isFullscreenPage = ['/sign-in', '/sign-up', '/landing'].includes(location.pathname);
-  console.log('[AuthenticatedApp] Is fullscreen page?', isFullscreenPage, 'for path:', location.pathname);
+  devLog.log('[AuthenticatedApp] Is fullscreen page?', isFullscreenPage, 'for path:', location.pathname);
 
   // Handle fullscreen pages (like sign-in) regardless of auth status
   if (isFullscreenPage) {
-    console.log('[AuthenticatedApp] Rendering fullscreen page routes');
+    devLog.log('[AuthenticatedApp] Rendering fullscreen page routes');
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -165,7 +166,7 @@ const AuthenticatedApp = () => {
 
   // Redirect to sign-in if not authenticated (only in Clerk mode)
   if (!isAuthenticated) {
-    console.log('[AuthenticatedApp] User not authenticated, redirecting to /sign-in');
+    logInfo('User not authenticated, redirecting to sign-in', { from: location.pathname });
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
@@ -244,7 +245,7 @@ const AuthenticatedApp = () => {
                 } />
                 <Route path="/quality" element={
                   <Fragment>
-                    <QualityControlDashboard />
+                    <QualityControl />
                   </Fragment>
                 } />
                 <Route path="/inventory" element={
@@ -392,7 +393,7 @@ const AppComprehensive = () => {
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
       onError={(error, errorInfo) => {
-        console.error('Application error:', error, errorInfo);
+        logError('Application error in comprehensive app', { error: error.message, stack: error.stack, errorInfo });
         // Send to error tracking service
         if (import.meta.env.VITE_SENTRY_DSN) {
           // Sentry error reporting would go here

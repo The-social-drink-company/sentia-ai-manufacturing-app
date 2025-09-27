@@ -18,6 +18,7 @@ import CashConversionCycle from './components/CashConversionCycle'
 import CashFlowForecast from './components/CashFlowForecast'
 import OptimizationRecommendations from './components/OptimizationRecommendations'
 import XeroConnection from './components/XeroConnection'
+import { logError, devLog } from '../../utils/structuredLogger'
 
 export default function WorkingCapitalDashboard() {
   const { user } = useAuth()
@@ -127,7 +128,7 @@ export default function WorkingCapitalDashboard() {
         period: selectedPeriod,
         duration: performance.now() - startTime
       })
-      console.error('Export failed:', err)
+      logError('Export failed', err)
     }
   }
 
@@ -444,7 +445,7 @@ export default function WorkingCapitalDashboard() {
         {/* Optimization Recommendations */}
         <OptimizationRecommendations
           recommendations={recommendations}
-          onActionClick={(action) => console.log('Action clicked:', action)}
+          onActionClick={(action) => devLog.log('Action clicked:', action)}
         />
       </div>
     </div>

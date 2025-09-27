@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import iotService from '../services/iotService'
 import { useAuditTrail } from '../../working-capital/hooks/useAuditTrail'
+import { devLog } from '../../../utils/structuredLogger.js'
 
 // Main IoT integration hook
 export const useIoTIntegration = () => {
@@ -52,7 +53,7 @@ export const useIoTIntegration = () => {
         default:
           // Log unhandled events in development only
           if (import.meta.env.DEV) {
-            console.log('Unhandled IoT event:', eventType, data)
+            devLog.log('Unhandled IoT event:', eventType, data)
           }
       }
 

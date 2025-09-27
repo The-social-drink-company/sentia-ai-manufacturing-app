@@ -4,8 +4,8 @@ import {
   ClockIcon,
   CogIcon,
   CheckCircleIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline'
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui'
@@ -46,7 +46,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
     const isPositive = change >= 0
     return (
       <span className={`flex items-center ml-2 text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-        {isPositive ? <TrendingUpIcon className="h-4 w-4 mr-1" /> : <TrendingDownIcon className="h-4 w-4 mr-1" />}
+        {isPositive ? <ArrowTrendingUpIcon className="h-4 w-4 mr-1" /> : <ArrowTrendingDownIcon className="h-4 w-4 mr-1" />}
         {Math.abs(change).toFixed(1)}%
       </span>
     )
@@ -141,7 +141,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
           </div>
           {percentage > 100 && (
             <div className="flex items-center text-xs text-green-600">
-              <TrendingUpIcon className="h-3 w-3 mr-1" />
+              <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />
               Exceeding target by {(percentage - 100).toFixed(1)}%
             </div>
           )}

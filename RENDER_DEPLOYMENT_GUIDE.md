@@ -25,7 +25,7 @@ This guide walks you through migrating from Railway to Render for hosting your t
 ### Option B: Deploy via Render CLI
 ```bash
 # Install Render CLI
-npm install -g @render/cli
+pnpm dlx @render/cli
 
 # Login to Render
 render login
@@ -80,7 +80,7 @@ psql $RENDER_DATABASE_URL < railway_backup.sql
 export DATABASE_URL="your-render-database-url"
 
 # Run migrations
-npx prisma migrate deploy
+pnpm dlx prisma migrate deploy
 ```
 
 ## Step 5: Update Your Local Development

@@ -11,6 +11,7 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline'
 import { useXeroIntegration } from '../hooks/useXeroIntegration'
+import { logError } from '../../../utils/structuredLogger.js'
 
 export default function XeroConnection({ onConnectionChange }) {
   const {
@@ -40,7 +41,7 @@ export default function XeroConnection({ onConnectionChange }) {
     const error = urlParams.get('error')
 
     if (error) {
-      console.error('Xero OAuth error:', error)
+      logError('Xero OAuth error', error)
       return
     }
 

@@ -4,6 +4,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
 
 class OptimizedDatabaseClient {
   constructor() {
@@ -55,11 +56,11 @@ class OptimizedDatabaseClient {
       // Optimize connection settings
       await this.optimizeConnection();
 
-      console.log('✅ Optimized database client initialized');
+      logInfo('Optimized database client initialized');
       return true;
 
     } catch (error) {
-      console.error('Failed to initialize database client:', error);
+      logError('Failed to initialize database client', error);
       this.isConnected = false;
       return false;
     }
@@ -106,7 +107,7 @@ class OptimizedDatabaseClient {
 
       // Log slow queries
       if (duration > this.slowQueryThreshold) {
-        console.warn(`🐌 Slow query detected (${duration}ms):`, query.substring(0, 100) + '...');
+        logWarn('Slow query detected', { duration: `${duration}ms`, queryPreview: query.substring(0, 100) + '...' });
       }
 
       // Track query metrics
@@ -115,12 +116,12 @@ class OptimizedDatabaseClient {
 
     // Error monitoring
     this.client.$on('error', (e) => {
-      console.error('💥 Database error:', e);
+      logError('Database error', e);
     });
 
     // Warning monitoring
     this.client.$on('warn', (e) => {
-      console.warn('⚠️  Database warning:', e);
+      logWarn('Database warning', e);
     });
   }
 
@@ -136,9 +137,9 @@ class OptimizedDatabaseClient {
       await this.client.$executeRaw`SET effective_cache_size = '256MB'`;
       await this.client.$executeRaw`SET random_page_cost = 1.1`; // SSD optimization
 
-      console.log('🔧 Database connection optimized');
+      logInfo('Database connection optimized');
     } catch (error) {
-      console.warn('Failed to optimize database connection:', error.message);
+      logWarn('Failed to optimize database connection', { error: error.message });
     }
   }
 
@@ -158,7 +159,7 @@ class OptimizedDatabaseClient {
       return result;
     } catch (error) {
       const duration = performance.now() - startTime;
-      console.error(`Query failed after ${duration.toFixed(2)}ms:`, error);
+      logError('Query failed', { duration: `${duration.toFixed(2)}ms`, error });
       throw error;
     }
   }
@@ -180,12 +181,12 @@ class OptimizedDatabaseClient {
       const result = await this.client.$transaction(operations, config);
       const duration = performance.now() - startTime;
 
-      console.debug(`Transaction completed in ${duration.toFixed(2)}ms`);
+      logDebug('Transaction completed', { duration: `${duration.toFixed(2)}ms` });
       return result;
 
     } catch (error) {
       const duration = performance.now() - startTime;
-      console.error(`Transaction failed after ${duration.toFixed(2)}ms:`, error);
+      logError('Transaction failed', { duration: `${duration.toFixed(2)}ms`, error });
       throw error;
     }
   }
@@ -208,7 +209,7 @@ class OptimizedDatabaseClient {
         });
         results.push(result);
       } catch (error) {
-        console.error(`Bulk insert batch failed for ${model}:`, error);
+        logError('Bulk insert batch failed', { model, error });
         throw error;
       }
     }
@@ -263,7 +264,7 @@ class OptimizedDatabaseClient {
       `;
       stats.connectionPool = poolInfo;
     } catch (error) {
-      console.debug('Could not fetch connection pool stats:', error.message);
+      logDebug('Could not fetch connection pool stats', { error: error.message });
     }
 
     return stats;
@@ -301,9 +302,9 @@ class OptimizedDatabaseClient {
         await this.client.$disconnect();
       }
       this.isConnected = false;
-      console.log('🔌 Database client disconnected');
+      logInfo('Database client disconnected');
     } catch (error) {
-      console.error('Error during database shutdown:', error);
+      logError('Error during database shutdown', error);
     }
   }
 
@@ -329,7 +330,7 @@ class OptimizedDatabaseClient {
 
     } catch (error) {
       const duration = performance.now() - startTime;
-      console.error(`Raw query failed after ${duration.toFixed(2)}ms:`, error);
+      logError('Raw query failed', { duration: `${duration.toFixed(2)}ms`, error });
       throw error;
     }
   }

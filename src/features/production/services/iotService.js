@@ -4,6 +4,7 @@
  */
 
 import { auditService } from '../../working-capital/services/auditService'
+import { logInfo, logWarn } from '../../../utils/structuredLogger.js'
 
 // IoT Configuration
 const IOT_CONFIG = {
@@ -186,7 +187,7 @@ class IoTSensorService {
     try {
       // Note: In a real implementation, you would use a library like mqtt.js
       // For now, we'll simulate MQTT connection
-      console.log('MQTT connection simulated for:', IOT_CONFIG.mqttBroker)
+      logInfo('MQTT connection simulated for', { broker: IOT_CONFIG.mqttBroker })
 
       auditService.logEvent('iot_mqtt_connected', {
         broker: IOT_CONFIG.mqttBroker,
@@ -217,7 +218,7 @@ class IoTSensorService {
           this.processOEEUpdate(data.payload)
           break
         default:
-          console.warn('Unknown IoT message type:', data.type)
+          logWarn('Unknown IoT message type', { type: data.type })
       }
 
       // Notify all listeners
@@ -482,7 +483,7 @@ class IoTSensorService {
       try {
         listener(eventType, data)
       } catch (error) {
-        console.warn('Error in IoT event listener:', error)
+        logWarn('Error in IoT event listener', error)
       }
     })
   }
@@ -512,7 +513,7 @@ class IoTSensorService {
     })
 
     if (!isHealthy && this.isConnected) {
-      console.warn('IoT connection appears unhealthy, attempting reconnection')
+      logWarn('IoT connection appears unhealthy, attempting reconnection')
       this.handleConnectionFailure()
     }
   }

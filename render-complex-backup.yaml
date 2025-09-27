@@ -12,7 +12,7 @@ services:
     plan: free # Free for development
     branch: development
 
-    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && node verify-build.js
     startCommand: node production-server-simple.js
     healthCheckPath: /health
 
@@ -202,7 +202,7 @@ services:
     plan: starter # $7/month for reliable testing
     branch: test
 
-    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && node verify-build.js
     startCommand: node production-server-simple.js
     healthCheckPath: /health
 
@@ -394,7 +394,7 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && node verify-build.js
     startCommand: node production-server-simple.js
     healthCheckPath: /health
 
@@ -615,7 +615,7 @@ databases:
     branch: development
     rootDir: mcp-server
 
-    buildCommand: npm install
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
     startCommand: node production-server.js
     healthCheckPath: /health
 
@@ -731,7 +731,7 @@ databases:
     branch: production
     rootDir: render-monitor
 
-    buildCommand: npm install
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
     startCommand: node production-server.js
     healthCheckPath: /health
 

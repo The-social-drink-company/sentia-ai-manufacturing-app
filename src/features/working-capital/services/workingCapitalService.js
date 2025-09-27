@@ -7,6 +7,9 @@ import { forecastingUtils } from '../utils/forecastingUtils.js'
 // Import caching service for performance optimization
 import { cacheService } from '../../../services/cache/redisCacheService.js'
 
+// Import structured logger
+import { logWarn, logError } from '../../../utils/structuredLogger.js'
+
 // Mock data for development/fallback
 const generateMockData = (period = 'month') => {
   const now = new Date()
@@ -167,7 +170,7 @@ async function _fetchWorkingCapitalMetricsInternal(period = 'month') {
       }
     }
   } catch (error) {
-    console.warn('MCP server unavailable, falling back to API:', error.message)
+    logWarn('MCP server unavailable, falling back to API', { error: error.message })
   }
 
   // Try main API
@@ -189,7 +192,7 @@ async function _fetchWorkingCapitalMetricsInternal(period = 'month') {
       }
     }
   } catch (error) {
-    console.warn('API unavailable, using mock data:', error.message)
+    logWarn('API unavailable, using mock data', { error: error.message })
   }
 
   // Return mock data
@@ -231,7 +234,7 @@ export async function exportWorkingCapitalData(format = 'csv', period = 'month',
           data.forecasts = forecastResult.forecast
         }
       } catch (error) {
-        console.warn('Could not include forecasts in export:', error)
+        logWarn('Could not include forecasts in export', error)
       }
     }
 
@@ -243,7 +246,7 @@ export async function exportWorkingCapitalData(format = 'csv', period = 'month',
           data.recommendations = recsResult.opportunities
         }
       } catch (error) {
-        console.warn('Could not include recommendations in export:', error)
+        logWarn('Could not include recommendations in export', error)
       }
     }
 
@@ -255,7 +258,7 @@ export async function exportWorkingCapitalData(format = 'csv', period = 'month',
           data.risks = riskResult
         }
       } catch (error) {
-        console.warn('Could not include risk assessment in export:', error)
+        logWarn('Could not include risk assessment in export', error)
       }
     }
 
@@ -270,7 +273,7 @@ export async function exportWorkingCapitalData(format = 'csv', period = 'month',
 
     return result
   } catch (error) {
-    console.error('Enhanced export failed, falling back to simple export:', error)
+    logError('Enhanced export failed, falling back to simple export', error)
 
     // Fallback to simple export for compatibility
     const data = await fetchWorkingCapitalMetrics(period)
@@ -344,7 +347,7 @@ export async function generateCashFlowForecast(options = {}) {
         historicalData = await response.json()
       }
     } catch (error) {
-      console.warn('Could not fetch historical cash flow data, using mock data')
+      logWarn('Could not fetch historical cash flow data, using mock data')
     }
 
     // Use mock data if no real data available
@@ -370,7 +373,7 @@ export async function generateCashFlowForecast(options = {}) {
       }
     }
   } catch (error) {
-    console.error('Error generating cash flow forecast:', error)
+    logError('Error generating cash flow forecast', error)
     return {
       success: false,
       error: 'Failed to generate cash flow forecast'
@@ -388,7 +391,7 @@ export async function generateWorkingCapitalForecast(options = {}) {
         historicalMetrics = await response.json()
       }
     } catch (error) {
-      console.warn('Could not fetch historical metrics, using mock data')
+      logWarn('Could not fetch historical metrics, using mock data')
     }
 
     // Use mock data if no real data available
@@ -411,7 +414,7 @@ export async function generateWorkingCapitalForecast(options = {}) {
       }
     }
   } catch (error) {
-    console.error('Error generating working capital forecast:', error)
+    logError('Error generating working capital forecast', error)
     return {
       success: false,
       error: 'Failed to generate working capital forecast'
@@ -445,7 +448,7 @@ export async function generateOptimizationRecommendations(currentMetrics, option
       }
     }
   } catch (error) {
-    console.error('Error generating optimization recommendations:', error)
+    logError('Error generating optimization recommendations', error)
     return {
       success: false,
       error: 'Failed to generate optimization recommendations'
@@ -466,7 +469,7 @@ export async function assessCashFlowRisk(forecastData, options = {}) {
       }
     }
   } catch (error) {
-    console.error('Error assessing cash flow risk:', error)
+    logError('Error assessing cash flow risk', error)
     return {
       success: false,
       error: 'Failed to assess cash flow risk'
@@ -488,7 +491,7 @@ export async function createScenarioAnalysis(baseData, scenarioDefinitions = {})
       }
     }
   } catch (error) {
-    console.error('Error creating scenario analysis:', error)
+    logError('Error creating scenario analysis', error)
     return {
       success: false,
       error: 'Failed to create scenario analysis'

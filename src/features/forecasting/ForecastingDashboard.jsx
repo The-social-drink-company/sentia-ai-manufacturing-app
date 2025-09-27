@@ -15,6 +15,7 @@ import TimeSeriesAnalysis from './components/TimeSeriesAnalysis'
 import ForecastChart from './components/ForecastChart'
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui'
 import { demandForecastingService } from './services/DemandForecastingService'
+import { logError } from '../../utils/structuredLogger'
 
 export default function ForecastingDashboard() {
   const { user } = useAuth()
@@ -93,7 +94,7 @@ export default function ForecastingDashboard() {
 
       URL.revokeObjectURL(url)
     } catch (err) {
-      console.error('Export failed:', err)
+      logError('Export failed', err)
       setError(err.message)
     }
   }

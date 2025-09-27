@@ -1,11 +1,14 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import './App.css';
+import { logInfo, logError } from '@/utils/structuredLogger';
 
 // Lazy load feature components for better performance
 const WorkingCapitalDashboard = lazy(() => import('./features/working-capital/WorkingCapitalDashboard'));
 const InventoryDashboard = lazy(() => import('./features/inventory/InventoryDashboard'));
 const ProductionDashboard = lazy(() => import('./features/production/ProductionDashboard'));
 const AIInsights = lazy(() => import('./components/AIInsights'));
+const AIAnalyticsDashboard = lazy(() => import('./features/ai-analytics/AIAnalyticsDashboard'));
+const QualityControlDashboard = lazy(() => import('./features/quality/QualityControlDashboard'));
 
 function App() {
   const [status, setStatus] = useState('Loading...');
@@ -20,12 +23,12 @@ function App() {
       .then(data => {
         setServerInfo(data);
         setStatus('Connected');
-        console.log('✅ Server connection successful:', data);
+        logInfo('Server connection successful', { data });
       })
       .catch(err => {
         setError(err.message);
         setStatus('Connection Failed');
-        console.error('❌ Server connection failed:', err);
+        logError('Server connection failed', err);
       });
   }, []);
 
@@ -61,6 +64,18 @@ function App() {
         return (
           <Suspense fallback={<LoadingSpinner />}>
             <AIInsights />
+          </Suspense>
+        );
+      case 'ai-analytics':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <AIAnalyticsDashboard />
+          </Suspense>
+        );
+      case 'quality':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <QualityControlDashboard />
           </Suspense>
         );
       case 'dashboard':

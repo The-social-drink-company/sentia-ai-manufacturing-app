@@ -1,3 +1,5 @@
+import { logInfo, logError, logWarn, logDebug, devLog } from '../utils/structuredLogger.js';
+
 const DEFAULT_MCP_BASE_URL = 'https://mcp-server-tkyu.onrender.com'
 const DASHBOARD_SUMMARY_PATH = '/v1/dashboard/summary'
 
@@ -66,7 +68,7 @@ export async function fetchDashboardSummary({ signal } = {}) {
       payload,
     }
   } catch (error) {
-    console.warn('[dashboardService] Falling back to mock summary', error)
+    logWarn('Dashboard service falling back to mock summary', error)
     return {
       source: 'mock',
       payload: MOCK_DASHBOARD_SUMMARY,

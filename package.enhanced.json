@@ -4,10 +4,10 @@
   "description": "Enterprise Manufacturing Dashboard with React/Vite frontend and Node.js backend",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "concurrently \"pnpm dev:server\" \"pnpm dev:client\"",
     "dev:client": "vite",
     "dev:server": "nodemon server.js",
-    "dev:internal": "concurrently \"npm run dev:server\" \"npm run dev:client\" --names \"server,client\" --prefix-colors \"blue,green\"",
+    "dev:internal": "concurrently \"pnpm dev:server\" \"pnpm dev:client\" --names \"server,client\" --prefix-colors \"blue,green\"",
     
     "prebuild": "rimraf dist",
     "build": "vite build",
@@ -43,7 +43,7 @@
     "test:quick": "vitest run --config vitest.config.enhanced.js --reporter=basic tests/unit tests/security",
     "test:uat": "vitest run --config vitest.config.enhanced.js tests/uat",
     "test:performance": "k6 run tests/performance/load-test.js",
-    "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:all": "pnpm test:unit && pnpm test:integration && pnpm test:e2e",
     "test:ci": "vitest run --config vitest.config.enhanced.js --coverage --reporter=json --reporter=html",
     
     "lint": "eslint . --config eslint.config.enhanced.js",
@@ -57,13 +57,13 @@
     "typecheck": "tsc --noEmit",
     "type-check": "tsc --noEmit",
     
-    "quality": "npm run lint && npm run format:check && npm run typecheck",
-    "quality:fix": "npm run lint:fix && npm run format",
-    "quality:report": "npm run lint:report && npm run test:coverage",
+    "quality": "pnpm lint && pnpm format:check && pnpm typecheck",
+    "quality:fix": "pnpm lint:fix && pnpm format",
+    "quality:report": "pnpm lint:report && pnpm test:coverage",
     
-    "security:audit": "npm audit --audit-level=moderate",
-    "security:fix": "npm audit fix",
-    "security:scan": "npm run lint:security && npm run security:audit",
+    "security:audit": "pnpm audit --audit-level=moderate",
+    "security:fix": "pnpm audit fix",
+    "security:scan": "pnpm lint:security && pnpm security:audit",
     
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
@@ -94,9 +94,9 @@
     "deploy:single": "node scripts/enterprise-deployment-automation.js --single",
     "deploy:auto": "node scripts/enterprise-deployment-automation.js --auto",
     "deploy:pipeline": "node scripts/enterprise-deployment-automation.js",
-    "deploy:dev": "npm run build && npm run railway:deploy:dev",
-    "deploy:test": "npm run build && npm run railway:deploy:test",
-    "deploy:prod": "npm run build && npm run railway:deploy:prod",
+    "deploy:dev": "pnpm build && pnpm railway:deploy:dev",
+    "deploy:test": "pnpm build && pnpm railway:deploy:test",
+    "deploy:prod": "pnpm build && pnpm railway:deploy:prod",
     
     "env:validate": "node scripts/validate-environment.js",
     "env:setup": "node scripts/setup-environment.js",
@@ -105,19 +105,19 @@
     "docs:serve": "http-server docs -p 8080",
     
     "clean": "rimraf dist coverage test-results reports node_modules/.cache",
-    "clean:all": "npm run clean && rimraf node_modules",
-    "reset": "npm run clean:all && npm install",
+    "clean:all": "pnpm clean && rimraf node_modules",
+    "reset": "pnpm clean:all && pnpm install"
     
-    "precommit": "npm run quality && npm run test:quick",
-    "prepush": "npm run test:all",
+    "precommit": "pnpm quality && pnpm test:quick",
+    "prepush": "pnpm test:all",
     "prepare": "husky install",
     
-    "ci:install": "npm ci",
-    "ci:build": "npm run build:production",
-    "ci:test": "npm run test:ci",
-    "ci:quality": "npm run quality:report",
-    "ci:security": "npm run security:scan",
-    "ci:deploy": "npm run deploy:pipeline"
+    "ci:install": "pnpm install --frozen-lockfile",
+    "ci:build": "pnpm build:production",
+    "ci:test": "pnpm test:ci",
+    "ci:quality": "pnpm quality:report",
+    "ci:security": "pnpm security:scan",
+    "ci:deploy": "pnpm deploy:pipeline"
   },
   "dependencies": {
     "@clerk/clerk-react": "^4.30.0",

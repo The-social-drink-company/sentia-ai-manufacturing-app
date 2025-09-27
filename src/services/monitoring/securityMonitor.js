@@ -4,6 +4,8 @@
  * Monitors for suspicious activity, CSP violations, and security best practices
  */
 
+import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
+
 export class SecurityMonitor {
   constructor(config = {}) {
     this.config = {
@@ -41,7 +43,7 @@ export class SecurityMonitor {
     if (this.isMonitoring) return
 
     this.isMonitoring = true
-    console.log('Security monitor started')
+    logInfo('Security monitor started')
 
     // Set up CSP violation reporting
     if (this.config.enableCSPReporting) {
@@ -83,7 +85,7 @@ export class SecurityMonitor {
       this.reportingInterval = null
     }
 
-    console.log('Security monitor stopped')
+    logInfo('Security monitor stopped')
   }
 
   /**
@@ -95,7 +97,7 @@ export class SecurityMonitor {
     // Listen for CSP violations
     document.addEventListener('securitypolicyviolation', this.handleCSPViolation)
 
-    console.log('CSP violation reporting enabled')
+    logInfo('CSP violation reporting enabled')
   }
 
   /**
@@ -183,7 +185,7 @@ export class SecurityMonitor {
       return null
     })
 
-    console.log('Authentication monitoring enabled')
+    logInfo('Authentication monitoring enabled')
   }
 
   /**
@@ -355,7 +357,7 @@ export class SecurityMonitor {
    */
   registerThreatDetector(name, detectorFunction) {
     this.threatDetectors.set(name, detectorFunction)
-    console.log(`Registered threat detector: ${name}`)
+    logInfo('Registered threat detector', { name })
   }
 
   /**
@@ -395,7 +397,7 @@ export class SecurityMonitor {
           this.handleThreatDetection(name, threat)
         }
       } catch (error) {
-        console.error(`Threat detector ${name} failed:`, error)
+        logError('Threat detector failed', { name, error })
       }
     }
   }
@@ -462,14 +464,14 @@ export class SecurityMonitor {
       userAgent: navigator.userAgent
     }
 
-    console.warn('Security Alert:', alert)
+    logWarn('Security Alert', alert)
 
     // Notify all alert handlers
     for (const handler of this.alertHandlers) {
       try {
         handler(alert)
       } catch (error) {
-        console.error('Security alert handler failed:', error)
+        logError('Security alert handler failed', error)
       }
     }
 
@@ -509,7 +511,7 @@ export class SecurityMonitor {
       recommendations: this.generateSecurityRecommendations()
     }
 
-    console.log('Security Report:', report)
+    logInfo('Security Report', report)
     this.reportSecurityData(report)
 
     return report
@@ -731,12 +733,12 @@ export class SecurityMonitor {
 
   reportSecurityAlert(alert) {
     // Report to external security services
-    console.log('Reporting security alert to external services:', alert)
+    logInfo('Reporting security alert to external services', alert)
   }
 
   reportSecurityData(report) {
     // Report security metrics to monitoring services
-    console.log('Reporting security data to monitoring services:', report)
+    logInfo('Reporting security data to monitoring services', report)
   }
 }
 

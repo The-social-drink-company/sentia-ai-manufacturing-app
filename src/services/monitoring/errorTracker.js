@@ -4,6 +4,8 @@
  * Integrates with external services like Sentry, DataDog, etc.
  */
 
+import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
+
 export class ErrorTracker {
   constructor(config = {}) {
     this.config = {
@@ -48,7 +50,7 @@ export class ErrorTracker {
     // Start periodic analysis
     this.startPeriodicAnalysis()
 
-    console.log('Error tracker started')
+    logInfo('Error tracker started')
   }
 
   /**
@@ -65,7 +67,7 @@ export class ErrorTracker {
       window.removeEventListener('unhandledrejection', this.handleUnhandledRejection)
     }
 
-    console.log('Error tracker stopped')
+    logInfo('Error tracker stopped')
   }
 
   /**
@@ -159,7 +161,7 @@ export class ErrorTracker {
 
     // Log to console if enabled
     if (this.config.enableConsoleLogging) {
-      console.error('Error tracked:', processedError)
+      logError('Error tracked', processedError)
     }
 
     // Check for immediate alerts
@@ -394,14 +396,14 @@ export class ErrorTracker {
       ...details
     }
 
-    console.warn('Error Alert:', alert)
+    logWarn('Error Alert', alert)
 
     // Notify all alert handlers
     for (const handler of this.alertHandlers) {
       try {
         handler(alert)
       } catch (error) {
-        console.error('Alert handler failed:', error)
+        logError('Alert handler failed', error)
       }
     }
   }
@@ -432,7 +434,7 @@ export class ErrorTracker {
       errorTrends: this.getErrorTrends()
     }
 
-    console.log('Error Pattern Analysis:', analysis)
+    logInfo('Error Pattern Analysis', analysis)
     return analysis
   }
 
@@ -616,7 +618,7 @@ export class ErrorTracker {
           }
         })
       }).catch(reportingError => {
-        console.warn('Failed to report error to external service:', reportingError)
+        logWarn('Failed to report error to external service', reportingError)
       })
     }
   }

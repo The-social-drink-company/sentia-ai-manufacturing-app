@@ -3,7 +3,7 @@ import {
   LightBulbIcon,
   CurrencyDollarIcon,
   ClockIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
@@ -110,7 +110,7 @@ export default function OptimizationRecommendations({ recommendations, onActionC
   const getTypeIcon = (type) => {
     switch (type) {
       case 'receivables':
-        return <TrendingUpIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+        return <ArrowTrendingUpIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
       case 'payables':
         return <ClockIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
       case 'inventory':

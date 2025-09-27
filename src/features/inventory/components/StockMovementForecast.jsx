@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ChartBarIcon, TrendingUpIcon, TrendingDownIcon } from '@heroicons/react/24/solid'
+import { ChartBarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/solid'
 
 export default function StockMovementForecast({ data, period = 'current' }) {
   const [forecastPeriod, setForecastPeriod] = useState('30')
@@ -128,9 +128,9 @@ export default function StockMovementForecast({ data, period = 'current' }) {
   const getPatternIcon = (pattern) => {
     switch (pattern) {
       case 'growing':
-        return <TrendingUpIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+        return <ArrowTrendingUpIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
       case 'declining':
-        return <TrendingDownIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
+        return <ArrowTrendingDownIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
       default:
         return <ChartBarIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
     }

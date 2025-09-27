@@ -18,6 +18,7 @@ import DemandForecast from './components/DemandForecast'
 import SupplierPerformance from './components/SupplierPerformance'
 import ReorderRecommendations from './components/ReorderRecommendations'
 import ABCAnalysis from './components/ABCAnalysis'
+import { logError, devLog } from '../../utils/structuredLogger'
 
 export default function InventoryDashboard() {
   const { user } = useAuth()
@@ -82,7 +83,7 @@ export default function InventoryDashboard() {
     try {
       await exportData(format)
     } catch (err) {
-      console.error('Export failed:', err)
+      logError('Export failed', err)
     }
   }
 
@@ -292,7 +293,7 @@ export default function InventoryDashboard() {
           <ReorderRecommendations
             data={reorders}
             title="Reorder Recommendations"
-            onReorderAction={(item) => console.log('Reorder action:', item)}
+            onReorderAction={(item) => devLog.log('Reorder action:', item)}
           />
         </div>
 

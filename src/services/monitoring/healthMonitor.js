@@ -4,6 +4,8 @@
  * Integrates with external monitoring services and provides real-time status
  */
 
+import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
+
 export class HealthMonitor {
   constructor(config = {}) {
     this.config = {
@@ -35,7 +37,7 @@ export class HealthMonitor {
    */
   start() {
     if (this.isMonitoring) {
-      console.warn('Health monitor is already running')
+      logWarn('Health monitor is already running')
       return
     }
 
@@ -53,7 +55,7 @@ export class HealthMonitor {
     // Initial health check
     this.performHealthChecks()
 
-    console.log('Health monitor started with', this.healthChecks.size, 'checks')
+    logInfo('Health monitor started', { checksCount: this.healthChecks.size })
   }
 
   /**
@@ -69,7 +71,7 @@ export class HealthMonitor {
       this.monitoringInterval = null
     }
 
-    console.log('Health monitor stopped')
+    logInfo('Health monitor stopped')
   }
 
   /**
@@ -94,7 +96,7 @@ export class HealthMonitor {
       successCount: 0
     })
 
-    console.log(`Registered health check: ${name}`)
+    logInfo('Registered health check', { name })
   }
 
   /**
@@ -102,7 +104,7 @@ export class HealthMonitor {
    */
   unregisterHealthCheck(name) {
     this.healthChecks.delete(name)
-    console.log(`Unregistered health check: ${name}`)
+    logInfo('Unregistered health check', { name })
   }
 
   /**
@@ -456,13 +458,13 @@ export class HealthMonitor {
    * Trigger alert to all registered handlers
    */
   triggerAlert(alert) {
-    console.warn('Health Monitor Alert:', alert)
+    logWarn('Health Monitor Alert', alert)
 
     for (const handler of this.alertHandlers) {
       try {
         handler(alert)
       } catch (error) {
-        console.error('Alert handler failed:', error)
+        logError('Alert handler failed', error)
       }
     }
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { logError } from '../../utils/structuredLogger.js'
 import {
   ChartBarIcon,
   ShieldCheckIcon,
@@ -54,7 +55,7 @@ const MonitoringDashboard = () => {
       setLoading(false)
 
     } catch (error) {
-      console.error('Failed to refresh monitoring data:', error)
+      logError('Failed to refresh monitoring data', error)
     }
   }, [])
 

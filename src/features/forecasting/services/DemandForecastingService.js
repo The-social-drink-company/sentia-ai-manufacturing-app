@@ -5,6 +5,7 @@
  */
 
 import { TimeSeriesForecaster } from '../../working-capital/models/FinancialForecastModels.js'
+import { logError } from '../../../utils/structuredLogger.js'
 
 export class DemandForecastingService {
   constructor(options = {}) {
@@ -84,7 +85,7 @@ export class DemandForecastingService {
       }
 
     } catch (error) {
-      console.error('Demand forecasting failed:', error)
+      logError('Demand forecasting failed', error)
       throw new Error(`Demand forecasting failed: ${error.message}`)
     }
   }

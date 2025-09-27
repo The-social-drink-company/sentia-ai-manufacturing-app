@@ -12,7 +12,7 @@ import {
   Area,
   ComposedChart
 } from 'recharts'
-import { CalendarIcon, TrendingUpIcon, TrendingDownIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid'
+import { CalendarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid'
 
 export default function DemandForecast({ data, title, period = '30d' }) {
   const [selectedItem, setSelectedItem] = useState('all')
@@ -126,9 +126,9 @@ export default function DemandForecast({ data, title, period = '30d' }) {
   const getTrendIcon = (trend) => {
     switch (trend) {
       case 'improving':
-        return <TrendingUpIcon className="h-5 w-5 text-green-600" />
+        return <ArrowTrendingUpIcon className="h-5 w-5 text-green-600" />
       case 'declining':
-        return <TrendingDownIcon className="h-5 w-5 text-red-600" />
+        return <ArrowTrendingDownIcon className="h-5 w-5 text-red-600" />
       default:
         return <ExclamationCircleIcon className="h-5 w-5 text-yellow-600" />
     }

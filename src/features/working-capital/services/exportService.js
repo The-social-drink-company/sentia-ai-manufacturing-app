@@ -3,6 +3,9 @@
  * Provides comprehensive export capabilities in multiple formats
  */
 
+// Import structured logger
+import { logError } from '../../../utils/structuredLogger.js'
+
 // PDF export utilities
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
@@ -35,7 +38,7 @@ export class WorkingCapitalExporter {
       this.downloadFile(csvContent, filename, 'text/csv')
       return { success: true, filename }
     } catch (error) {
-      console.error('CSV export failed:', error)
+      logError('CSV export failed', error)
       return { success: false, error: error.message }
     }
   }
@@ -85,7 +88,7 @@ export class WorkingCapitalExporter {
       XLSX.writeFile(workbook, filename)
       return { success: true, filename }
     } catch (error) {
-      console.error('Excel export failed:', error)
+      logError('Excel export failed', error)
       return { success: false, error: error.message }
     }
   }
@@ -135,7 +138,7 @@ export class WorkingCapitalExporter {
       doc.save(filename)
       return { success: true, filename }
     } catch (error) {
-      console.error('PDF export failed:', error)
+      logError('PDF export failed', error)
       return { success: false, error: error.message }
     }
   }
@@ -161,7 +164,7 @@ export class WorkingCapitalExporter {
       )
       return { success: true, filename }
     } catch (error) {
-      console.error('JSON export failed:', error)
+      logError('JSON export failed', error)
       return { success: false, error: error.message }
     }
   }

@@ -5,12 +5,13 @@
   "description": "Manufacturing Dashboard with React/Vite frontend and Node.js backend",
   "type": "module",
   "engines": {
-    "node": ">=24.0.0 <25.0.0"
+    "node": ">=20.0.0 <25.0.0"
   },
+  "packageManager": "pnpm@9.12.0",
   "scripts": {
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev": "concurrently \"pnpm run dev:client\" \"pnpm run dev:server\"",
     "dev:client": "vite --host --port 3000",
-    "dev:server": "nodemon server-fixed.js",
+    "dev:server": "nodemon server.js",
     "dev:mcp": "node mcp-server/enterprise-server-simple.js",
     "build": "vite build",
     "build:staged": "node build-staged.js",
@@ -19,9 +20,9 @@
     "build:stage3": "DEPLOYMENT_STAGE=3 node build-staged.js",
     "build:full": "DEPLOYMENT_STAGE=4 node build-staged.js",
     "render:build": "node build-staged.js",
-    "start": "node server-integrated-mcp.js",
-    "start:enterprise": "node server-integrated-mcp.js",
-    "start:render": "node server-integrated-mcp.js",
+    "start": "node server-enterprise-complete.js",
+    "start:enterprise": "node server-enterprise-complete.js",
+    "start:render": "node server-enterprise-complete.js",
     "start:development": "cross-env BRANCH=development node --expose-gc server.js",
     "start:testing": "cross-env BRANCH=test node --expose-gc server.js",
     "start:production": "cross-env BRANCH=production node --expose-gc server.js",
@@ -37,8 +38,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:setup": "playwright install",
-    "test:all": "npm run test:run && npm run test:e2e",
-    "lint": "npx eslint src server",
+    "test:all": "pnpm run test:run && pnpm run test:e2e",
+    "lint": "pnpm dlx eslint src server",
     "lint:fix": "eslint . --fix",
     "monitor": "node monitoring-agent.cjs",
     "monitor:status": "node monitoring-agent.cjs --status",
@@ -50,14 +51,14 @@
     "deploy:single": "node scripts/enterprise-deployment-automation.js --single",
     "deploy:auto": "node scripts/enterprise-deployment-automation.js --auto",
     "deploy:pipeline": "node scripts/enterprise-deployment-automation.js",
-    "typecheck": "echo 'TypeScript check: Skipping due to installation issues - production builds will handle type checking'",
-    "quality": "npm run lint && npm run format:check && npm run typecheck",
+    "typecheck": "tsc --noEmit",
+    "quality": "pnpm run lint && pnpm run format:check && pnpm run typecheck",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
-    "lint:check": "npx eslint src server --max-warnings 0",
+    "lint:check": "pnpm dlx eslint src server --max-warnings 0",
     "prepare": "husky"
   },
   "dependencies": {
@@ -206,7 +207,8 @@
     "xero-node": "^13.0.0",
     "xss": "^1.0.15",
     "zod": "^3.24.4",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.8",
+    "std-env": "^3.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

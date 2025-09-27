@@ -2,6 +2,7 @@ import React, { useState, lazy, Suspense } from 'react';
 import LandingPage from './LandingPage';
 import MultiStageLoader from './components/MultiStageLoader';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
+import { devLog } from './utils/structuredLogger';
 
 // Lazy load the COMPREHENSIVE enterprise app only when needed
 // This is the FULL version with ALL features, not the emergency cut-down version
@@ -14,10 +15,10 @@ const AppMultiStage = () => {
   const [appState, setAppState] = useState('loading'); // Skip landing page, go straight to loading
   const [clerkLoaded, setClerkLoaded] = useState(true); // Start with Clerk loaded
 
-  console.log('[AppMultiStage] Current state:', { appState, clerkLoaded });
+  devLog.log('[AppMultiStage] Current state:', { appState, clerkLoaded });
 
   const handleGetStarted = () => {
-    console.log('[AppMultiStage] Get started clicked');
+    devLog.log('[AppMultiStage] Get started clicked');
     // Start loading Clerk and show multi-stage loader
     setAppState('loading');
 
@@ -29,7 +30,7 @@ const AppMultiStage = () => {
   };
 
   const handleLoadingComplete = () => {
-    console.log('[AppMultiStage] Loading complete, moving to authenticated');
+    devLog.log('[AppMultiStage] Loading complete, moving to authenticated');
     setAppState('authenticated');
   };
 
@@ -45,19 +46,19 @@ const AppMultiStage = () => {
 
   // Landing page - no Clerk loaded yet
   if (appState === 'landing') {
-    console.log('[AppMultiStage] Rendering landing page');
+    devLog.log('[AppMultiStage] Rendering landing page');
     return <LandingPage onGetStarted={handleGetStarted} />;
   }
 
   // Multi-stage loading
   if (appState === 'loading') {
-    console.log('[AppMultiStage] Rendering loading stage');
+    devLog.log('[AppMultiStage] Rendering loading stage');
     return <MultiStageLoader onComplete={handleLoadingComplete} />;
   }
 
   // Authenticated app with bulletproof auth
   if (appState === 'authenticated' && clerkLoaded) {
-    console.log('[AppMultiStage] Rendering authenticated app');
+    devLog.log('[AppMultiStage] Rendering authenticated app');
     return (
       <BulletproofAuthProvider>
         <Suspense fallback={

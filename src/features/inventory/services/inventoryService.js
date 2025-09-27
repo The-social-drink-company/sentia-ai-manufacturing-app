@@ -1,6 +1,9 @@
 const API_BASE = import.meta.env?.VITE_API_BASE_URL || '/api'
 const MCP_BASE = import.meta.env?.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'
 
+// Import structured logger
+import { logWarn } from '../../../utils/structuredLogger.js'
+
 // Mock data for development/fallback
 const generateMockInventoryData = (period = 'current', category = 'all', location = 'all') => {
   const now = new Date()
@@ -174,7 +177,7 @@ export async function fetchInventoryMetrics(period = 'current', category = 'all'
       }
     }
   } catch (error) {
-    console.warn('MCP server unavailable, falling back to mock data:', error.message)
+    logWarn('MCP server unavailable, falling back to mock data', { error: error.message })
   }
 
   // Try main API
@@ -196,7 +199,7 @@ export async function fetchInventoryMetrics(period = 'current', category = 'all'
       }
     }
   } catch (error) {
-    console.warn('API unavailable, using mock data:', error.message)
+    logWarn('API unavailable, using mock data', { error: error.message })
   }
 
   // Return mock data

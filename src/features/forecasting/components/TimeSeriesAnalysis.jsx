@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '../../../components/ui'
+import { logError } from '../../../utils/structuredLogger.js'
 import {
   ChartBarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
   CogIcon,
@@ -88,7 +89,7 @@ const TimeSeriesAnalysis = ({
       }
 
     } catch (err) {
-      console.error('Time series analysis failed:', err)
+      logError('Time series analysis failed', err)
       setError(err.message || 'Analysis generation failed')
     } finally {
       setLoading(false)
@@ -118,9 +119,9 @@ const TimeSeriesAnalysis = ({
   const getTrendIcon = (trendType) => {
     switch (trendType) {
       case 'increasing':
-        return <TrendingUpIcon className="h-5 w-5 text-green-600" />
+        return <ArrowTrendingUpIcon className="h-5 w-5 text-green-600" />
       case 'decreasing':
-        return <TrendingDownIcon className="h-5 w-5 text-red-600" />
+        return <ArrowTrendingDownIcon className="h-5 w-5 text-red-600" />
       default:
         return <ChartBarIcon className="h-5 w-5 text-gray-600" />
     }

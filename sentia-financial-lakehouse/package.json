@@ -4,11 +4,11 @@
   "description": "Enterprise Financial Intelligence Platform - Data Lakehouse & AI Orchestration",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:lakehouse\" \"npm run dev:metrics\" \"npm run dev:ui\"",
+    "dev": "concurrently \"pnpm dev:lakehouse\" \"pnpm dev:metrics\" \"pnpm dev:ui\"",
     "dev:lakehouse": "node --watch services/lakehouse/index.js",
     "dev:metrics": "node --watch services/metrics/index.js",
     "dev:ui": "vite",
-    "build": "npm run build:ui && npm run build:services",
+    "build": "pnpm build:ui && pnpm build:services",
     "build:ui": "vite build",
     "build:services": "node scripts/build-services.js",
     "test": "vitest",
@@ -16,7 +16,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "validate": "npm run lint && npm run typecheck && npm run test:run",
+    "validate": "pnpm lint && pnpm typecheck && pnpm test:run",
     "test:run": "vitest run"
   },
   "dependencies": {

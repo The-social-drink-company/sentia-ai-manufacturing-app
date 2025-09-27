@@ -1,6 +1,9 @@
 const API_BASE = import.meta.env?.VITE_API_BASE_URL || '/api'
 const MCP_BASE = import.meta.env?.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'
 
+// Import structured logger
+import { logWarn } from '../../../utils/structuredLogger.js'
+
 // Mock data generator for production metrics
 const generateMockProductionData = (timeRange = '24h', line = 'all', shift = 'current') => {
   const now = new Date()
@@ -318,7 +321,7 @@ export async function fetchProductionMetrics(timeRange = '24h', line = 'all', sh
   } catch (error) {
     // Log MCP server fallback in development only
     if (import.meta.env.DEV) {
-      console.warn('MCP server unavailable, falling back to mock data:', error.message)
+      logWarn('MCP server unavailable, falling back to mock data', { error: error.message })
     }
   }
 
@@ -343,7 +346,7 @@ export async function fetchProductionMetrics(timeRange = '24h', line = 'all', sh
   } catch (error) {
     // Log API fallback in development only
     if (import.meta.env.DEV) {
-      console.warn('API unavailable, using mock data:', error.message)
+      logWarn('API unavailable, using mock data', { error: error.message })
     }
   }
 

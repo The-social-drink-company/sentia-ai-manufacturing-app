@@ -28,7 +28,7 @@ The Sentia Manufacturing Dashboard has successfully implemented comprehensive en
 
 #### Assessment Results
 ```bash
-npm audit --audit-level=moderate
+pnpm audit --audit-level=moderate
 # Result: found 0 vulnerabilities
 ```
 

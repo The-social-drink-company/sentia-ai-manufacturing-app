@@ -4,6 +4,8 @@
  * Monitors Core Web Vitals, React performance, and API response times
  */
 
+import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
+
 export class PerformanceMonitor {
   constructor(config = {}) {
     this.config = {
@@ -40,7 +42,7 @@ export class PerformanceMonitor {
     if (this.isMonitoring) return
 
     this.isMonitoring = true
-    console.log('Performance monitor started')
+    logInfo('Performance monitor started')
 
     // Set up performance observers
     this.setupPerformanceObservers()
@@ -77,7 +79,7 @@ export class PerformanceMonitor {
       this.reportingInterval = null
     }
 
-    console.log('Performance monitor stopped')
+    logInfo('Performance monitor stopped')
   }
 
   /**
@@ -91,7 +93,7 @@ export class PerformanceMonitor {
         navObserver.observe({ type: 'navigation', buffered: true })
         this.observers.set('navigation', navObserver)
       } catch (error) {
-        console.warn('Navigation observer setup failed:', error)
+        logWarn('Navigation observer setup failed', error)
       }
 
       // Paint timing (FCP, LCP)
@@ -100,7 +102,7 @@ export class PerformanceMonitor {
         paintObserver.observe({ type: 'paint', buffered: true })
         this.observers.set('paint', paintObserver)
       } catch (error) {
-        console.warn('Paint observer setup failed:', error)
+        logWarn('Paint observer setup failed', error)
       }
 
       // Layout shift (CLS)
@@ -109,7 +111,7 @@ export class PerformanceMonitor {
         layoutObserver.observe({ type: 'layout-shift', buffered: true })
         this.observers.set('layout-shift', layoutObserver)
       } catch (error) {
-        console.warn('Layout shift observer setup failed:', error)
+        logWarn('Layout shift observer setup failed', error)
       }
 
       // First Input Delay (FID)
@@ -118,7 +120,7 @@ export class PerformanceMonitor {
         fidObserver.observe({ type: 'first-input', buffered: true })
         this.observers.set('first-input', fidObserver)
       } catch (error) {
-        console.warn('First input observer setup failed:', error)
+        logWarn('First input observer setup failed', error)
       }
 
       // Largest Contentful Paint (LCP)
@@ -127,7 +129,7 @@ export class PerformanceMonitor {
         lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true })
         this.observers.set('largest-contentful-paint', lcpObserver)
       } catch (error) {
-        console.warn('LCP observer setup failed:', error)
+        logWarn('LCP observer setup failed', error)
       }
 
       // Resource timing
@@ -136,7 +138,7 @@ export class PerformanceMonitor {
         resourceObserver.observe({ type: 'resource', buffered: true })
         this.observers.set('resource', resourceObserver)
       } catch (error) {
-        console.warn('Resource observer setup failed:', error)
+        logWarn('Resource observer setup failed', error)
       }
     }
   }
@@ -353,7 +355,7 @@ export class PerformanceMonitor {
     // Check if React DevTools profiling is available
     if (typeof window !== 'undefined' && window.React) {
       // Mock React profiling for demonstration
-      console.log('React performance profiling enabled')
+      logInfo('React performance profiling enabled')
 
       // In a real implementation, this would integrate with React DevTools
       this.startReactProfiling()
@@ -477,7 +479,7 @@ export class PerformanceMonitor {
       details
     }
 
-    console.warn('Performance Alert:', alert)
+    logWarn('Performance Alert', alert)
     this.addMetric('alerts', alert)
 
     // Report to external services
@@ -545,7 +547,7 @@ export class PerformanceMonitor {
       recommendations: this.generateRecommendations()
     }
 
-    console.log('Performance Report:', report)
+    logInfo('Performance Report', report)
     return report
   }
 
@@ -805,7 +807,7 @@ export class PerformanceMonitor {
     // Report to external monitoring services
     if (this.config.enableExternalReporting) {
       // This would send to DataDog, Sentry, etc.
-      console.log('Reporting alert to external services:', alert)
+      logInfo('Reporting alert to external services', alert)
     }
   }
 }

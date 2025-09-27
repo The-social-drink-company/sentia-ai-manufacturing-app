@@ -22,6 +22,7 @@ import QualityMetrics from './components/QualityMetrics'
 import CapacityPlanning from './components/CapacityPlanning'
 import ShiftHandover from './components/ShiftHandover'
 import IoTStatusDisplay from './components/IoTStatusDisplay'
+import { logError } from '../../utils/structuredLogger'
 
 export default function ProductionDashboard() {
   const { user } = useAuth()
@@ -96,7 +97,7 @@ export default function ProductionDashboard() {
     try {
       await exportData(format)
     } catch (err) {
-      console.error('Export failed:', err)
+      logError('Export failed', err)
     }
   }
 

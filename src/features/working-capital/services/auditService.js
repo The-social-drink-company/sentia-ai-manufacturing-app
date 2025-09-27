@@ -3,6 +3,9 @@
  * Provides comprehensive logging and tracking of all user actions
  */
 
+// Import structured logger
+import { logInfo, logError } from '../../../utils/structuredLogger.js'
+
 // Audit event types
 export const AUDIT_EVENTS = {
   // Data Access
@@ -121,7 +124,7 @@ class AuditLogger {
 
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[AUDIT] ${eventType}:`, auditEntry)
+      logInfo(`[AUDIT] ${eventType}`, auditEntry)
     }
 
     // Check if we need to flush
@@ -211,7 +214,7 @@ class AuditLogger {
         await this.sendAuditBatch(payload)
       }
     } catch (error) {
-      console.error('Failed to flush audit logs:', error)
+      logError('Failed to flush audit logs', error)
 
       // Re-queue failed items with retry count
       batch.forEach(entry => {

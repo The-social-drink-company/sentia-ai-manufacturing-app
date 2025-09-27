@@ -4,6 +4,9 @@
  * Integrates with AI Central Nervous System for enhanced model training
  */
 
+// Import structured logger
+import { logInfo, logWarn, logError } from '../../../utils/structuredLogger.js'
+
 export class MLModelTrainingPipeline {
   constructor(options = {}) {
     this.options = {
@@ -75,12 +78,12 @@ export class MLModelTrainingPipeline {
 
       for (const modelType of modelTypes) {
         try {
-          console.log(`Training ${modelType} model...`)
+          logInfo(`Training ${modelType} model`, { modelType })
           const modelResult = await this.trainModel(modelType, dataSplits, config)
           trainingResults.models[modelType] = modelResult
           this.models.set(modelType, modelResult.model)
         } catch (error) {
-          console.warn(`Failed to train ${modelType}:`, error.message)
+          logWarn(`Failed to train ${modelType}`, { modelType, error: error.message })
           trainingResults.models[modelType] = {
             error: error.message,
             trained: false
@@ -100,7 +103,7 @@ export class MLModelTrainingPipeline {
       return trainingResults
 
     } catch (error) {
-      console.error('ML training pipeline failed:', error)
+      logError('ML training pipeline failed', error)
       throw error
     } finally {
       this.isTraining = false

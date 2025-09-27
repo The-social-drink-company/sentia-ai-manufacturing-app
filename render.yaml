@@ -33,7 +33,7 @@ services:
           name: sentia-db-development
           property: connectionString
       - key: MCP_SERVER_URL
-        value: http://localhost:3001
+        value: https://mcp-server-tkyu.onrender.com
       - key: IS_PULL_REQUEST
         generateValue: true
       - key: STAGED_DEPLOYMENT
@@ -47,7 +47,7 @@ services:
     env: node
     plan: starter
     region: oregon
-    branch: test
+    branch: testing
     buildCommand: "corepack enable && pnpm install --frozen-lockfile && NODE_OPTIONS='--max-old-space-size=4096' pnpm run build && pnpm dlx prisma generate"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
@@ -68,7 +68,7 @@ services:
           name: sentia-db-testing
           property: connectionString
       - key: MCP_SERVER_URL
-        value: http://localhost:3001
+        value: https://mcp-server-tkyu.onrender.com
 
   # Production Environment with Database
   - type: web
@@ -97,4 +97,4 @@ services:
           name: sentia-db-production
           property: connectionString
       - key: MCP_SERVER_URL
-        value: http://localhost:3001
+        value: https://mcp-server-tkyu.onrender.com

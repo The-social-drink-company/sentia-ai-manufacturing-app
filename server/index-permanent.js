@@ -1,14 +1,9 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import cors from 'cors';
-import helmet from 'helmet';
-import compression from 'compression';
-import { PrismaClient } from '@prisma/client';
-
-// ES module compatibility
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const path = require('path');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const { PrismaClient } = require('@prisma/client');
 
 // Initialize Express app
 const app = express();
@@ -501,4 +496,4 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🛡️ Bulletproof design - no more blank screens!`);
 });
 
-export default app;
+module.exports = app;

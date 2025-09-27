@@ -17,7 +17,7 @@ export class EnterpriseErrorHandler {
 
   setupGlobalHandlers() {
     // Handle uncaught exceptions
-    process.on('uncaughtException', (error) => {
+    process.on(_'uncaughtException', (error) => {
       logError('Uncaught Exception', {
         error: error.message,
         stack: error.stack,
@@ -30,7 +30,7 @@ export class EnterpriseErrorHandler {
     });
 
     // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on(_'unhandledRejection', _(reason, promise) => {
       logError('Unhandled Promise Rejection', {
         reason: reason?.message || reason,
         promise: promise.toString(),
@@ -43,7 +43,7 @@ export class EnterpriseErrorHandler {
     });
 
     // Handle warnings
-    process.on('warning', (warning) => {
+    process.on(_'warning', _(warning) => {
       // Filter out known safe warnings
       if (this.isKnownSafeWarning(warning)) {
         return;
@@ -58,13 +58,13 @@ export class EnterpriseErrorHandler {
     });
 
     // Handle SIGTERM for graceful shutdown
-    process.on('SIGTERM', () => {
+    process.on(_'SIGTERM', () => {
       logInfo('Received SIGTERM, initiating graceful shutdown');
       this.gracefulShutdown(null, 'SIGTERM');
     });
 
     // Handle SIGINT for graceful shutdown
-    process.on('SIGINT', () => {
+    process.on(_'SIGINT', () => {
       logInfo('Received SIGINT, initiating graceful shutdown');
       this.gracefulShutdown(null, 'SIGINT');
     });
@@ -84,7 +84,7 @@ export class EnterpriseErrorHandler {
 
   // Express error handling middleware
   expressErrorHandler() {
-    return (error, req, res, next) => {
+    return (error, req, res, _next) => {
       const correlationId = req.headers['x-correlation-id'] || `error_${Date.now()}`;
       
       logError('Express Error Handler', {
@@ -325,7 +325,7 @@ export class EnterpriseErrorHandler {
       .length;
 
     const circuitBreakerStatus = Array.from(this.circuitBreakers.entries())
-      .reduce((acc, [service, breaker]) => {
+      .reduce(_(acc, _[service, _breaker]) => {
         acc[service] = breaker.state;
         return acc;
       }, {});
@@ -342,7 +342,7 @@ export class EnterpriseErrorHandler {
 
   // Async error wrapper for better error boundaries
   asyncHandler(fn) {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       Promise.resolve(fn(req, res, next)).catch(next);
     };
   }

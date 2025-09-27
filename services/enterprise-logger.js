@@ -90,7 +90,7 @@ class EnterpriseLogger {
     const { combine, timestamp, errors, json, printf, colorize, metadata } = winston.format;
 
     // Custom format for different environments
-    const devFormat = printf(({ level, message, timestamp, ...metadata }) => {
+    const devFormat = printf(({ level, _message, timestamp, ...metadata }) => {
       const meta = Object.keys(metadata).length ? JSON.stringify(metadata, null, 2) : '';
       return `${timestamp} [${level}]: ${message} ${meta}`;
     });
@@ -368,7 +368,7 @@ class EnterpriseLogger {
     const buffer = [...this.logBuffer];
     this.logBuffer = [];
 
-    buffer.forEach(({ level, message, meta }) => {
+    buffer.forEach(({ level, _message, meta }) => {
       this.log(level, message, meta);
     });
   }
@@ -377,7 +377,7 @@ class EnterpriseLogger {
    * Start buffer flush interval
    */
   startBufferFlush() {
-    setInterval(() => {
+    setInterval(_() => {
       this.flushBuffer();
     }, 5000); // Flush every 5 seconds
   }
@@ -511,7 +511,7 @@ class EnterpriseLogger {
   }
 
   async queryLogs(options = {}) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const queryOptions = {
         from: options.from || new Date(Date.now() - 24 * 60 * 60 * 1000),
         until: options.until || new Date(),
@@ -521,7 +521,7 @@ class EnterpriseLogger {
         fields: options.fields
       };
 
-      this.logger.query(queryOptions, (err, results) => {
+      this.logger.query(queryOptions, _(err, _results) => {
         if (err) {
           reject(err);
         } else {
@@ -582,7 +582,7 @@ class EnterpriseLogger {
    * Express middleware
    */
   middleware() {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       req.id = crypto.randomUUID();
       const startTime = Date.now();
 
@@ -614,7 +614,7 @@ class EnterpriseLogger {
    * Error middleware
    */
   errorMiddleware() {
-    return (err, req, res, next) => {
+    return (err, req, res, _next) => {
       this.error('Express error', {
         error: err.message,
         stack: err.stack,
@@ -646,8 +646,8 @@ class EnterpriseLogger {
     this.flushBuffer();
 
     // Close transports
-    return new Promise((resolve) => {
-      this.logger.end(() => {
+    return new Promise(_(resolve) => {
+      this.logger.end(_() => {
         resolve();
       });
     });

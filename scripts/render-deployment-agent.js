@@ -20,9 +20,9 @@ import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const ROOT_DIR = path.join(__dirname, '..');
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
+const ROOTDIR = path.join(__dirname, '..');
 
 // Configuration for 24/7 Autonomous Operation
 const CONFIG = {
@@ -40,7 +40,7 @@ const CONFIG = {
 };
 
 // Error patterns and their fixes
-const ERROR_PATTERNS = [
+const ERRORPATTERNS = [
   {
     pattern: /require is not defined/i,
     type: 'ES_MODULE_ERROR',
@@ -66,7 +66,7 @@ const ERROR_PATTERNS = [
     ]
   },
   {
-    pattern: /ENOENT: no such file or directory.*\/dist/i,
+    pattern: /ENOENT: no such file or directory.*/dist/i,
     type: 'MISSING_BUILD',
     description: 'Build artifacts missing',
     fixes: [
@@ -220,13 +220,13 @@ class RenderMonitorAgent {
 
   // Fetch endpoint
   async fetchEndpoint(path) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const url = new URL(path, CONFIG.renderUrl);
       
       https.get(url.toString(), (res) => {
         let data = '';
         
-        res.on('data', (chunk) => {
+        res.on('data', _(chunk) => {
           data += chunk;
         });
         
@@ -560,7 +560,7 @@ process.on('uncaughtException', (error) => {
   );
 });
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', _(reason, _promise) => {
   console.error('[CRITICAL] Unhandled rejection at:', promise, 'reason:', reason);
   fs.appendFileSync(
     path.join(__dirname, 'render-monitor-errors.log'),

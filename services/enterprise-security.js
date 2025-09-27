@@ -563,7 +563,7 @@ class EnterpriseSecurityService {
   }
 
   startSecurityMonitoring() {
-    setInterval(() => {
+    setInterval(_() => {
       this.cleanupExpiredTokens();
       this.analyzeSecurityTrends();
     }, 60000); // Every minute

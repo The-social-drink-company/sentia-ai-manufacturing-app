@@ -12,8 +12,8 @@ import { spawn, execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 // import EnterpriseDeploymentErrorHandler from './deployment-error-handler.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 class DeploymentMasterControl {
@@ -74,15 +74,15 @@ class DeploymentMasterControl {
         stdio: ['ignore', 'pipe', 'pipe']
       });
 
-      this.agentProcess.stdout.on('data', (data) => {
+      this.agentProcess.stdout.on('data', _(data) => {
         console.log(`[AGENT-OUTPUT] ${data.toString().trim()}`);
       });
 
-      this.agentProcess.stderr.on('data', (data) => {
+      this.agentProcess.stderr.on('data', _(data) => {
         console.error(`[AGENT-ERROR] ${data.toString().trim()}`);
       });
 
-      this.agentProcess.on('exit', (code) => {
+      this.agentProcess.on('exit', _(code) => {
         this.log('info', `Agent process exited with code ${code}`);
       });
 

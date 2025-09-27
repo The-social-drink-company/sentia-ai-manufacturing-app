@@ -291,7 +291,7 @@ class XeroAPIService {
     localStorage.removeItem('xero_tenant_name')
 
     auditService.logEvent('xero_tokens_cleared', {
-      reason: 'user_logout_or_error'
+      reason: 'user_logout_orerror'
     })
   }
 

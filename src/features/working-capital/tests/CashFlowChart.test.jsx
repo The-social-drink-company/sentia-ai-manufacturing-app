@@ -37,7 +37,7 @@ describe('CashFlowChart', () => {
     vi.clearAllMocks()
   })
 
-  it('renders chart with provided cash flow data', () => {
+  it('renders chart with provided cash flow _data', () => {
     render(<CashFlowChart data={mockData} />)
 
     expect(screen.getByTestId('cash-flow-chart')).toBeInTheDocument()
@@ -60,7 +60,7 @@ describe('CashFlowChart', () => {
     expect(screen.queryByTestId('cash-flow-chart')).not.toBeInTheDocument()
   })
 
-  it('renders three datasets for inflow, outflow, and net cash flow', () => {
+  it('renders three datasets for _inflow, _outflow, and net cash _flow', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartDatasets = screen.getByTestId('chart-datasets')
@@ -84,7 +84,7 @@ describe('CashFlowChart', () => {
     expect(options.plugins.title).toHaveProperty('text', 'Cash Flow Analysis')
   })
 
-  it('handles partial data gracefully', () => {
+  it('handles partial data _gracefully', () => {
     const partialData = {
       labels: ['Jan', 'Feb'],
       cashInflow: [100000, 120000],
@@ -100,7 +100,7 @@ describe('CashFlowChart', () => {
     )
   })
 
-  it('handles empty arrays', () => {
+  it('handles empty _arrays', () => {
     const emptyData = {
       labels: [],
       cashInflow: [],
@@ -123,7 +123,7 @@ describe('CashFlowChart', () => {
     expect(options.scales.y.ticks).toHaveProperty('callback')
   })
 
-  it('uses proper colors for different cash flow types', () => {
+  it('uses proper colors for different cash flow _types', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartDatasets = screen.getByTestId('chart-datasets')
@@ -151,14 +151,14 @@ describe('CashFlowChart', () => {
     expect(netFlowDataset.data).toEqual([-20000, -20000])
   })
 
-  it('provides proper accessibility attributes', () => {
+  it('provides proper accessibility _attributes', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartElement = screen.getByRole('img')
     expect(chartElement).toHaveAttribute('data-testid', 'cash-flow-chart')
   })
 
-  it('handles very large cash flow amounts', () => {
+  it('handles very large cash flow _amounts', () => {
     const largeAmountData = {
       labels: ['Q1', 'Q2'],
       cashInflow: [10000000, 12000000],
@@ -175,7 +175,7 @@ describe('CashFlowChart', () => {
     expect(datasets.find(d => d.label === 'Cash Inflow').data).toEqual([10000000, 12000000])
   })
 
-  it('configures legend and tooltips appropriately', () => {
+  it('configures legend and tooltips _appropriately', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')

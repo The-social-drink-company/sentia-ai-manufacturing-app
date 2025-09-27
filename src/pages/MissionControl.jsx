@@ -136,7 +136,7 @@ export default function MissionControl() {
             <div key={key} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
-                  {key.replace('_', ' ')}
+                  {key.replace('', ' ')}
                 </h3>
                 <div className={`px-2 py-1 rounded-full flex items-center space-x-1 ${getStatusColor(metrics.status)}`}>
                   {getStatusIcon(metrics.status)}
@@ -146,7 +146,7 @@ export default function MissionControl() {
               <div className="space-y-1">
                 {Object.entries(metrics).slice(1).map(([metric, value]) => (
                   <div key={metric} className="flex justify-between text-xs">
-                    <span className="text-gray-500 capitalize">{metric.replace('_', ' ')}:</span>
+                    <span className="text-gray-500 capitalize">{metric.replace('', ' ')}:</span>
                     <span className="font-medium text-gray-900 dark:text-white">{value}</span>
                   </div>
                 ))}

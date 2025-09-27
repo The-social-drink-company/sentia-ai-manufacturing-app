@@ -10,40 +10,40 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const ROOT_DIR = path.join(__dirname, '..');
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
+const ROOTDIR = path.join(__dirname, '..');
 
 // Patterns to fix
 const CONVERSIONS = [
   // Convert require to import
   {
-    pattern: /const\s+(\w+)\s*=\s*require\(['"]([^'"]+)['"]\)/g,
+    pattern: /const\s+(\w+)\s*=\s*require(['"]([^'"]+)['"])/g,
     replacement: 'import $1 from "$2"'
   },
   {
-    pattern: /const\s+{([^}]+)}\s*=\s*require\(['"]([^'"]+)['"]\)/g,
+    pattern: /const\s+{([^}]+)}\s*=\s*require(['"]([^'"]+)['"])/g,
     replacement: 'import { $1 } from "$2"'
   },
   {
-    pattern: /let\s+(\w+)\s*=\s*require\(['"]([^'"]+)['"]\)/g,
+    pattern: /let\s+(\w+)\s*=\s*require(['"]([^'"]+)['"])/g,
     replacement: 'import $1 from "$2"'
   },
   {
-    pattern: /var\s+(\w+)\s*=\s*require\(['"]([^'"]+)['"]\)/g,
+    pattern: /var\s+(\w+)\s*=\s*require(['"]([^'"]+)['"])/g,
     replacement: 'import $1 from "$2"'
   },
   // Convert module.exports to export
   {
-    pattern: /module\.exports\s*=\s*{/g,
+    pattern: /module.exports\s*=\s*{/g,
     replacement: 'export {'
   },
   {
-    pattern: /module\.exports\s*=\s*(\w+)/g,
+    pattern: /module.exports\s*=\s*(\w+)/g,
     replacement: 'export default $1'
   },
   {
-    pattern: /exports\.(\w+)\s*=\s*/g,
+    pattern: /exports.(\w+)\s*=\s*/g,
     replacement: 'export const $1 = '
   },
   // Add __dirname and __filename for ES modules
@@ -54,8 +54,8 @@ const CONVERSIONS = [
     imports: [
       "import { fileURLToPath } from 'url';",
       "import { dirname } from 'path';",
-      "const __filename = fileURLToPath(import.meta.url);",
-      "const __dirname = dirname(__filename);"
+      "const _filename = fileURLToPath(import.meta.url);",
+      "const _dirname = dirname(__filename);"
     ]
   }
 ];

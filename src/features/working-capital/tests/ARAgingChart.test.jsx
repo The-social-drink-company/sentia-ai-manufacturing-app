@@ -37,7 +37,7 @@ describe('ARAgingChart', () => {
     vi.clearAllMocks()
   })
 
-  it('renders chart with provided data', () => {
+  it('renders chart with provided _data', () => {
     render(<ARAgingChart data={mockData} />)
 
     expect(screen.getByTestId('ar-aging-chart')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('ARAgingChart', () => {
     expect(screen.queryByTestId('ar-aging-chart')).not.toBeInTheDocument()
   })
 
-  it('handles partial data gracefully', () => {
+  it('handles partial data _gracefully', () => {
     const partialData = {
       current: 100000,
       '1-30': 50000
@@ -78,7 +78,7 @@ describe('ARAgingChart', () => {
     )
   })
 
-  it('applies correct color scheme to chart data', () => {
+  it('applies correct color scheme to chart _data', () => {
     const { container } = render(<ARAgingChart data={mockData} />)
     const chartElement = container.querySelector('[data-testid="ar-aging-chart"]')
     expect(chartElement).toBeInTheDocument()
@@ -105,7 +105,7 @@ describe('ARAgingChart', () => {
     expect(options.scales.y.ticks).toHaveProperty('callback')
   })
 
-  it('handles zero values in aging buckets', () => {
+  it('handles zero values in aging _buckets', () => {
     const dataWithZeros = {
       current: 0,
       '1-30': 0,
@@ -122,7 +122,7 @@ describe('ARAgingChart', () => {
     )
   })
 
-  it('handles very large numbers correctly', () => {
+  it('handles very large numbers _correctly', () => {
     const largeNumberData = {
       current: 1500000000,
       '1-30': 850000000,
@@ -139,14 +139,14 @@ describe('ARAgingChart', () => {
     )
   })
 
-  it('applies proper accessibility attributes', () => {
+  it('applies proper accessibility _attributes', () => {
     render(<ARAgingChart data={mockData} />)
 
     const chartElement = screen.getByRole('img')
     expect(chartElement).toHaveAttribute('data-testid', 'ar-aging-chart')
   })
 
-  it('renders with responsive design', () => {
+  it('renders with responsive _design', () => {
     render(<ARAgingChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')

@@ -83,7 +83,7 @@ export class ErrorTracker {
         lineno: event.lineno,
         colno: event.colno,
         stack: event.error?.stack,
-        type: 'javascript_error',
+        type: 'javascripterror',
         severity: this.categorizeError(event.error || event.message)
       }
 
@@ -104,7 +104,7 @@ export class ErrorTracker {
       const errorInfo = {
         message: reason?.message || String(reason),
         stack: reason?.stack,
-        type: 'unhandled_promise_rejection',
+        type: 'unhandled_promiserejection',
         severity: this.categorizeError(reason),
         promise: event.promise
       }
@@ -121,7 +121,7 @@ export class ErrorTracker {
   setupReactErrorHandling() {
     // This would integrate with React Error Boundaries
     // For now, provide a manual reporting method
-    window.__errorTracker = this
+    window.errorTracker = this
   }
 
   /**
@@ -182,7 +182,7 @@ export class ErrorTracker {
     const errorDetails = {
       message: error.message,
       stack: error.stack,
-      type: 'react_error',
+      type: 'reacterror',
       severity: 'high',
       componentStack,
       errorInfo,
@@ -204,7 +204,7 @@ export class ErrorTracker {
   trackApiError(response, request, context = {}) {
     const errorDetails = {
       message: `API Error: ${response.status} ${response.statusText}`,
-      type: 'api_error',
+      type: 'apierror',
       severity: response.status >= 500 ? 'high' : 'medium',
       apiEndpoint: request.url,
       httpMethod: request.method,
@@ -354,7 +354,7 @@ export class ErrorTracker {
   checkAlertConditions(error) {
     // Critical error alert
     if (error.severity === 'critical') {
-      this.triggerAlert('critical_error', {
+      this.triggerAlert('criticalerror', {
         error,
         message: `Critical error detected: ${error.message}`,
         severity: 'critical'
@@ -364,7 +364,7 @@ export class ErrorTracker {
     // Repeating error alert
     const errorCount = this.errorCounts.get(error.fingerprint)
     if (errorCount >= this.config.alertThresholds.repeatingErrors) {
-      this.triggerAlert('repeating_error', {
+      this.triggerAlert('repeatingerror', {
         error,
         count: errorCount,
         message: `Error repeated ${errorCount} times: ${error.message}`,
@@ -375,7 +375,7 @@ export class ErrorTracker {
     // Error rate alert
     const recentErrors = this.getRecentErrors(60000) // Last minute
     if (recentErrors.length >= this.config.alertThresholds.errorRate) {
-      this.triggerAlert('high_error_rate', {
+      this.triggerAlert('higherror_rate', {
         count: recentErrors.length,
         timeWindow: '1 minute',
         message: `High error rate: ${recentErrors.length} errors in 1 minute`,
@@ -483,7 +483,7 @@ export class ErrorTracker {
     return Array.from(this.errorCounts.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit)
-      .map(([fingerprint, count]) => {
+      .map(([fingerprint, _count]) => {
         const error = this.errors.find(e => e.fingerprint === fingerprint)
         return {
           fingerprint,
@@ -625,11 +625,11 @@ export class ErrorTracker {
 
   // Utility methods
   generateSessionId() {
-    return 'err_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    return 'err' + Date.now() + '' + Math.random().toString(36).substr(2, 9)
   }
 
   generateErrorId() {
-    return 'error_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5)
+    return 'error' + Date.now() + '' + Math.random().toString(36).substr(2, 5)
   }
 
   getReactVersion() {

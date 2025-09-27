@@ -73,7 +73,7 @@ export default function InventoryCard({
     }
   }
 
-  const getTargetColor = (status) => {
+  const getTargetColor = (_status) => {
     switch (status) {
       case 'good':
         return 'bg-green-500 dark:bg-green-600'

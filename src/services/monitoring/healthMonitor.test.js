@@ -37,22 +37,22 @@ describe('HealthMonitor', () => {
   })
 
   describe('Initialization', () => {
-    it('should create health monitor with default config', () => {
+    it('should create health monitor with default _config', () => {
       const defaultMonitor = new HealthMonitor()
       expect(defaultMonitor.config.checkInterval).toBe(30000)
       expect(defaultMonitor.config.criticalThreshold).toBe(2000)
       expect(defaultMonitor.isMonitoring).toBe(false)
     })
 
-    it('should create health monitor with custom config', () => {
+    it('should create health monitor with custom _config', () => {
       expect(monitor.config.checkInterval).toBe(1000)
       expect(monitor.config.criticalThreshold).toBe(2000)
       expect(monitor.healthChecks.size).toBe(0)
     })
   })
 
-  describe('Health Check Registration', () => {
-    it('should register a health check', () => {
+  describe('Health Check _Registration', () => {
+    it('should register a health _check', () => {
       const checkFunction = vi.fn(() => ({ healthy: true }))
 
       monitor.registerHealthCheck('test-check', checkFunction, {
@@ -64,7 +64,7 @@ describe('HealthMonitor', () => {
       expect(monitor.healthChecks.has('test-check')).toBe(true)
     })
 
-    it('should unregister a health check', () => {
+    it('should unregister a health _check', () => {
       const checkFunction = vi.fn(() => ({ healthy: true }))
 
       monitor.registerHealthCheck('test-check', checkFunction)
@@ -74,7 +74,7 @@ describe('HealthMonitor', () => {
       expect(monitor.healthChecks.size).toBe(0)
     })
 
-    it('should register core health checks on start', () => {
+    it('should register core health checks on _start', () => {
       monitor.start()
 
       // Should register database, api, memory, external_services, performance checks
@@ -85,8 +85,8 @@ describe('HealthMonitor', () => {
     })
   })
 
-  describe('Health Check Execution', () => {
-    it('should execute a successful health check', async () => {
+  describe('Health Check _Execution', () => {
+    it('should execute a successful health _check', async () => {
       const checkFunction = vi.fn(() => Promise.resolve({
         healthy: true,
         status: 'good',
@@ -104,7 +104,7 @@ describe('HealthMonitor', () => {
       expect(checkFunction).toHaveBeenCalledTimes(1)
     })
 
-    it('should handle failed health check', async () => {
+    it('should handle failed health _check', async () => {
       const checkFunction = vi.fn(() => Promise.reject(new Error('Check failed')))
 
       monitor.registerHealthCheck('test-check', checkFunction)
@@ -117,7 +117,7 @@ describe('HealthMonitor', () => {
       expect(result.status).toBe('error')
     })
 
-    it('should handle health check timeout', async () => {
+    it('should handle health check _timeout', async () => {
       const checkFunction = vi.fn(() => new Promise(resolve => {
         setTimeout(() => resolve({ healthy: true }), 10000) // 10 seconds
       }))
@@ -132,8 +132,8 @@ describe('HealthMonitor', () => {
     })
   })
 
-  describe('Database Health Check', () => {
-    it('should check database connectivity successfully', async () => {
+  describe('Database Health _Check', () => {
+    it('should check database connectivity _successfully', async () => {
       fetch.mockResolvedValueOnce({
         ok: true,
         status: 200
@@ -165,8 +165,8 @@ describe('HealthMonitor', () => {
     })
   })
 
-  describe('Memory Health Check', () => {
-    it('should check memory usage successfully', async () => {
+  describe('Memory Health _Check', () => {
+    it('should check memory usage _successfully', async () => {
       monitor.start()
       const memoryCheck = monitor.healthChecks.get('memory')
       const result = await memoryCheck.checkFunction()
@@ -179,7 +179,7 @@ describe('HealthMonitor', () => {
       expect(result.status).toBe('good')
     })
 
-    it('should alert on high memory usage', async () => {
+    it('should alert on high memory _usage', async () => {
       // Mock high memory usage
       global.performance.memory.usedJSHeapSize = 1024 * 1024 * 180 // 180MB
       global.performance.memory.jsHeapSizeLimit = 1024 * 1024 * 200 // 200MB
@@ -194,8 +194,8 @@ describe('HealthMonitor', () => {
     })
   })
 
-  describe('External Services Health Check', () => {
-    it('should check external services successfully', async () => {
+  describe('External Services Health _Check', () => {
+    it('should check external services _successfully', async () => {
       // Mock successful responses
       fetch
         .mockResolvedValueOnce({ ok: true, status: 200 }) // Xero
@@ -213,7 +213,7 @@ describe('HealthMonitor', () => {
       expect(result.status).toBe('all_healthy')
     })
 
-    it('should handle partial service failures', async () => {
+    it('should handle partial service _failures', async () => {
       // Mock mixed responses
       fetch
         .mockResolvedValueOnce({ ok: true, status: 200 }) // Xero - success
@@ -230,7 +230,7 @@ describe('HealthMonitor', () => {
       expect(result.status).toBe('mostly_healthy')
     })
 
-    it('should fail when too many services are down', async () => {
+    it('should fail when too many services are _down', async () => {
       // Mock all failures
       fetch
         .mockResolvedValueOnce({ ok: false, status: 500 })
@@ -247,8 +247,8 @@ describe('HealthMonitor', () => {
     })
   })
 
-  describe('System Metrics', () => {
-    it('should calculate system health metrics', async () => {
+  describe('System _Metrics', () => {
+    it('should calculate system health _metrics', async () => {
       // Register test checks
       monitor.registerHealthCheck('test1', () => ({ healthy: true }), { critical: true })
       monitor.registerHealthCheck('test2', () => ({ healthy: false }))
@@ -271,7 +271,7 @@ describe('HealthMonitor', () => {
       expect(systemHealth.overall.healthy).toBe(true) // All critical checks healthy
     })
 
-    it('should fail system health when critical checks fail', async () => {
+    it('should fail system health when critical checks _fail', async () => {
       monitor.registerHealthCheck('critical1', () => ({ healthy: false }), { critical: true })
       monitor.registerHealthCheck('normal1', () => ({ healthy: true }))
 
@@ -287,8 +287,8 @@ describe('HealthMonitor', () => {
     })
   })
 
-  describe('Alert Handling', () => {
-    it('should trigger alert for failed critical check', () => {
+  describe('Alert _Handling', () => {
+    it('should trigger alert for failed critical _check', () => {
       const alertHandler = vi.fn()
       monitor.onAlert(alertHandler)
 
@@ -312,7 +312,7 @@ describe('HealthMonitor', () => {
       )
     })
 
-    it('should trigger performance alert for slow responses', () => {
+    it('should trigger performance alert for slow _responses', () => {
       const alertHandler = vi.fn()
       monitor.onAlert(alertHandler)
 
@@ -330,7 +330,7 @@ describe('HealthMonitor', () => {
       )
     })
 
-    it('should manage alert handlers correctly', () => {
+    it('should manage alert handlers _correctly', () => {
       const handler1 = vi.fn()
       const handler2 = vi.fn()
 
@@ -343,8 +343,8 @@ describe('HealthMonitor', () => {
     })
   })
 
-  describe('Monitoring Lifecycle', () => {
-    it('should start and stop monitoring correctly', () => {
+  describe('Monitoring _Lifecycle', () => {
+    it('should start and stop monitoring _correctly', () => {
       expect(monitor.isMonitoring).toBe(false)
       expect(monitor.monitoringInterval).toBeNull()
 
@@ -357,7 +357,7 @@ describe('HealthMonitor', () => {
       expect(monitor.monitoringInterval).toBeNull()
     })
 
-    it('should not start monitoring twice', () => {
+    it('should not start monitoring _twice', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
       monitor.start()
@@ -367,13 +367,13 @@ describe('HealthMonitor', () => {
       consoleSpy.mockRestore()
     })
 
-    it('should handle stop when not running', () => {
+    it('should handle stop when not _running', () => {
       expect(() => monitor.stop()).not.toThrow()
     })
   })
 
-  describe('Metrics Management', () => {
-    it('should add and retrieve metrics correctly', () => {
+  describe('Metrics _Management', () => {
+    it('should add and retrieve metrics _correctly', () => {
       const testMetric = { timestamp: Date.now(), value: 100 }
 
       monitor.addMetric('test', 'cpu_usage', testMetric)
@@ -383,7 +383,7 @@ describe('HealthMonitor', () => {
       expect(metrics[0]).toEqual({ timestamp: testMetric.timestamp, value: testMetric })
     })
 
-    it('should limit metric buffer size', () => {
+    it('should limit metric buffer _size', () => {
       // Set small buffer for testing
       monitor.config.maxMetricsBuffer = 3
 
@@ -397,7 +397,7 @@ describe('HealthMonitor', () => {
       expect(metrics[2].value.value).toBe(4)
     })
 
-    it('should export health data correctly', () => {
+    it('should export health data _correctly', () => {
       monitor.addMetric('system', 'test', { value: 'test-data' })
 
       const exportData = monitor.exportHealthData()
@@ -409,7 +409,7 @@ describe('HealthMonitor', () => {
       expect(exportData.metrics).toBeDefined()
     })
 
-    it('should clear old metrics', () => {
+    it('should clear old _metrics', () => {
       const now = Date.now()
       const oldTimestamp = now - (25 * 60 * 60 * 1000) // 25 hours ago
       const recentTimestamp = now - (1 * 60 * 60 * 1000) // 1 hour ago

@@ -1101,22 +1101,22 @@ class SentiaManufacturingExecution extends EventEmitter {
    */
   setupEventHandlers() {
     // Handle digital twin updates
-    this.digitalTwin.on('batchStarted', (data) => {
+    this.digitalTwin.on(_'batchStarted', _(data) => {
       this.handleBatchStarted(data);
     });
 
     // Handle quality system alerts
-    this.qualitySystem.on('qualityAlert', (alert) => {
+    this.qualitySystem.on(_'qualityAlert', _(alert) => {
       this.handleQualityAlert(alert);
     });
 
     // Handle supply chain issues
-    this.supplyChain.on('riskAlert', (alert) => {
+    this.supplyChain.on(_'riskAlert', _(alert) => {
       this.handleSupplyChainRisk(alert);
     });
 
     // Handle MCP data updates
-    this.mcpServers.orchestrator.on('dataUpdated', (data) => {
+    this.mcpServers.orchestrator.on(_'dataUpdated', _(data) => {
       this.handleMCPDataUpdate(data);
     });
   }

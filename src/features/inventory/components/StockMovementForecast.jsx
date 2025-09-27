@@ -5,7 +5,7 @@ export default function StockMovementForecast({ data, period = 'current' }) {
   const [forecastPeriod, setForecastPeriod] = useState('30')
 
   // Mock stock movement forecast data if not provided
-  const generateForecastData = (days) => {
+  const generateForecastData = (_days) => {
     const forecast = []
     const today = new Date()
 

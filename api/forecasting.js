@@ -17,7 +17,7 @@ const accuracyDashboardService = new AccuracyDashboardService(forecastingService
 const sseClients = new Set();
 
 // Setup SSE endpoint
-router.get('/events', (req, res) => {
+router.get(_'/events', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -31,7 +31,7 @@ router.get('/events', (req, res) => {
   
   sseClients.add(res);
   
-  req.on('close', () => {
+  req.on(_'close', () => {
     sseClients.delete(res);
   });
 });
@@ -50,16 +50,16 @@ function broadcastSSE(eventType, data) {
 }
 
 // Setup forecasting service event listeners
-forecastingService.on('jobStatusChanged', (data) => {
+forecastingService.on(_'jobStatusChanged', (data) => {
   broadcastSSE('job.forecast.statusChanged', data);
 });
 
-forecastingService.on('jobProgress', (data) => {
+forecastingService.on(_'jobProgress', (data) => {
   broadcastSSE('job.forecast.progress', data);
 });
 
 // Enhanced forecast endpoint with idempotency
-router.post('/forecast', async (req, res) => {
+router.post(_'/forecast', async (req, res) => {
   try {
     const {
       series_filter,
@@ -117,7 +117,7 @@ router.post('/forecast', async (req, res) => {
 });
 
 // Get forecast job status
-router.get('/forecast/jobs/:jobId', async (req, res) => {
+router.get(_'/forecast/jobs/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params;
     const jobStatus = forecastingService.getJobStatus(jobId);
@@ -144,7 +144,7 @@ router.get('/forecast/jobs/:jobId', async (req, res) => {
 });
 
 // Get forecast job results
-router.get('/forecast/jobs/:jobId/results', async (req, res) => {
+router.get(_'/forecast/jobs/:jobId/results', async (req, res) => {
   try {
     const { jobId } = req.params;
     const jobStatus = forecastingService.getJobStatus(jobId);
@@ -183,7 +183,7 @@ router.get('/forecast/jobs/:jobId/results', async (req, res) => {
 });
 
 // Cancel forecast job
-router.post('/forecast/jobs/:jobId/cancel', async (req, res) => {
+router.post(_'/forecast/jobs/:jobId/cancel', async (req, res) => {
   try {
     const { jobId } = req.params;
     const cancelled = forecastingService.cancelJob(jobId);
@@ -222,7 +222,7 @@ router.post('/forecast/jobs/:jobId/cancel', async (req, res) => {
 });
 
 // Get forecast diagnostics for a series
-router.get('/forecast/series/:seriesId/diagnostics', async (req, res) => {
+router.get(_'/forecast/series/:seriesId/diagnostics', async (req, res) => {
   try {
     const { seriesId } = req.params;
     // Extract seriesId from params
@@ -277,7 +277,7 @@ router.get('/forecast/series/:seriesId/diagnostics', async (req, res) => {
 });
 
 // Data quality endpoint
-router.post('/forecast/data-quality', async (req, res) => {
+router.post(_'/forecast/data-quality', async (req, res) => {
   try {
     const { series_ids } = req.body;
 
@@ -330,7 +330,7 @@ router.post('/forecast/data-quality', async (req, res) => {
 });
 
 // Model diagnostics endpoint  
-router.get('/forecast/models/:modelType/diagnostics', async (req, res) => {
+router.get(_'/forecast/models/:modelType/diagnostics', async (req, res) => {
   try {
     const { modelType } = req.params;
     const { seriesId } = req.query;
@@ -511,7 +511,7 @@ function pearsonCorrelation(x, y) {
 }
 
 // CFO Workbench endpoints
-router.post('/cfo/board-pack', async (req, res) => {
+router.post(_'/cfo/board-pack', async (req, res) => {
   try {
     const {
       series_ids,
@@ -556,7 +556,7 @@ router.post('/cfo/board-pack', async (req, res) => {
 });
 
 // Scenario analysis endpoint
-router.post('/cfo/scenario-analysis', async (req, res) => {
+router.post(_'/cfo/scenario-analysis', async (req, res) => {
   try {
     const {
       series_id,
@@ -594,7 +594,7 @@ router.post('/cfo/scenario-analysis', async (req, res) => {
 });
 
 // FX rates and scenarios endpoint
-router.get('/cfo/fx-rates', async (req, res) => {
+router.get(_'/cfo/fx-rates', async (req, res) => {
   try {
     const {
       base_currency = 'GBP',
@@ -628,7 +628,7 @@ router.get('/cfo/fx-rates', async (req, res) => {
 });
 
 // Regional events endpoint
-router.get('/cfo/regional-events', async (req, res) => {
+router.get(_'/cfo/regional-events', async (req, res) => {
   try {
     const {
       region = 'UK',
@@ -669,7 +669,7 @@ router.get('/cfo/regional-events', async (req, res) => {
 });
 
 // Accuracy Dashboard endpoints
-router.post('/accuracy/dashboard', async (req, res) => {
+router.post(_'/accuracy/dashboard', async (req, res) => {
   try {
     const {
       series_ids,
@@ -709,7 +709,7 @@ router.post('/accuracy/dashboard', async (req, res) => {
 });
 
 // Model performance comparison endpoint
-router.get('/accuracy/model-performance', async (req, res) => {
+router.get(_'/accuracy/model-performance', async (req, res) => {
   try {
     const {
       series_ids,
@@ -753,7 +753,7 @@ router.get('/accuracy/model-performance', async (req, res) => {
 });
 
 // Accuracy trends endpoint
-router.get('/accuracy/trends', async (req, res) => {
+router.get(_'/accuracy/trends', async (req, res) => {
   try {
     const { days = 90 } = req.query;
 
@@ -775,7 +775,7 @@ router.get('/accuracy/trends', async (req, res) => {
 });
 
 // Update accuracy history endpoint (for real-time accuracy tracking)
-router.post('/accuracy/update', async (req, res) => {
+router.post(_'/accuracy/update', async (req, res) => {
   try {
     const {
       series_id,

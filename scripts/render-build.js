@@ -4,8 +4,8 @@ import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 
 console.log('==> Render Build Script Starting...');

@@ -49,7 +49,7 @@ class APIGateway {
 
     // CORS with enterprise configuration
     this.app.use(cors({
-      origin: (origin, callback) => {
+      origin: _(origin, _callback) => {
         const allowedOrigins = [
           'http://localhost:3000',
           'http://localhost:5000',
@@ -75,8 +75,8 @@ class APIGateway {
 
     // Compression
     this.app.use(compression({
-      level: 6,
-      threshold: 1024,
+      level: _6,
+      threshold: _1024,
       filter: (req, res) => {
         if (req.headers['x-no-compression']) return false;
         return compression.filter(req, res);
@@ -140,14 +140,14 @@ class APIGateway {
 
   setupLogging() {
     // Request logging middleware
-    this.app.use((req, res, next) => {
+    this.app.use((req, res, _next) => {
       const requestId = this.generateRequestId();
       req.requestId = requestId;
       res.setHeader('X-Request-ID', requestId);
 
       const start = Date.now();
       
-      res.on('finish', () => {
+      res.on(_'finish', _() => {
         const duration = Date.now() - start;
         this.logRequest(req, res, duration);
       });
@@ -164,7 +164,7 @@ class APIGateway {
     });
 
     // Service-specific health endpoints
-    this.app.get('/health/:service', async (req, res) => {
+    this.app.get(_'/health/:service', async (req, res) => {
       const { service } = req.params;
       const health = await this.getServiceHealth(service);
       
@@ -177,7 +177,7 @@ class APIGateway {
   }
 
   // Authentication middleware
-  authenticateRequest = async (req, res, next) => {
+  authenticateRequest = async (req, res, _next) => {
     try {
       const token = this.extractToken(req);
       
@@ -202,7 +202,7 @@ class APIGateway {
   };
 
   // API Key authentication
-  authenticateAPIKey = async (req, res, next) => {
+  authenticateAPIKey = async (req, res, _next) => {
     try {
       const apiKey = req.headers['x-api-key'];
       
@@ -276,7 +276,7 @@ class APIGateway {
   }
 
   // Service request handler
-  handleServiceRequest = (route) => async (req, res, next) => {
+  handleServiceRequest = (route) => async (req, res, _next) => {
     try {
       const service = this.services.get(route.service);
       

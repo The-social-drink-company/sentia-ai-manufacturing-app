@@ -134,7 +134,7 @@ export class MonteCarloSimulationEngine {
     if (!this.correlationMatrix || this.correlationMatrix.length === 0) {
       // No correlations, return independent variables
       const result = {};
-      variableNames.forEach((name, i) => {
+      variableNames.forEach(_(name, i) => {
         result[name] = independent[i];
       });
       return result;
@@ -146,7 +146,7 @@ export class MonteCarloSimulationEngine {
 
     // Map back to variable names
     const result = {};
-    variableNames.forEach((name, i) => {
+    variableNames.forEach(_(name, i) => {
       result[name] = correlated[i];
     });
 
@@ -408,7 +408,7 @@ export class MonteCarloSimulationEngine {
     const stdDev = this.calculateStdDev(values);
     const n = values.length;
 
-    const skew = values.reduce((sum, val) => {
+    const skew = values.reduce(_(sum, val) => {
       return sum + Math.pow((val - mean) / stdDev, 3);
     }, 0);
 
@@ -420,7 +420,7 @@ export class MonteCarloSimulationEngine {
     const stdDev = this.calculateStdDev(values);
     const n = values.length;
 
-    const kurt = values.reduce((sum, val) => {
+    const kurt = values.reduce(_(sum, val) => {
       return sum + Math.pow((val - mean) / stdDev, 4);
     }, 0);
 

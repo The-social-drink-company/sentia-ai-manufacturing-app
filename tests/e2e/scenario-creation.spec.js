@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('What-If Scenario Creation', () => {
+test.describe('What-If Scenario _Creation', () => {
   test.beforeEach(async ({ page, context }) => {
     // Mock authentication
     await context.addCookies([
@@ -14,7 +14,7 @@ test.describe('What-If Scenario Creation', () => {
     await page.goto('/what-if');
   });
 
-  test('should display scenario builder interface', async ({ page }) => {
+  test('should display scenario builder _interface', async ({ page }) => {
     // Check for main scenario builder elements
     const scenarioTitle = page.locator('h1, h2').filter({ hasText: /what-if|scenario/i }).first();
     await expect(scenarioTitle).toBeVisible();
@@ -28,7 +28,7 @@ test.describe('What-If Scenario Creation', () => {
     await expect(resultsPanel).toBeVisible();
   });
 
-  test('should create a new revenue growth scenario', async ({ page }) => {
+  test('should create a new revenue growth _scenario', async ({ page }) => {
     // Find revenue growth slider
     const revenueSlider = page.locator('input[type="range"]').filter({ has: page.locator('text=/revenue/i') }).first();
 
@@ -49,7 +49,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should adjust multiple scenario parameters', async ({ page }) => {
+  test('should adjust multiple scenario _parameters', async ({ page }) => {
     // Find all sliders
     const sliders = await page.locator('input[type="range"]').all();
 
@@ -73,7 +73,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should save a scenario', async ({ page }) => {
+  test('should save a _scenario', async ({ page }) => {
     // Adjust a slider
     const firstSlider = page.locator('input[type="range"]').first();
     if (await firstSlider.isVisible()) {
@@ -107,7 +107,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should load a saved scenario', async ({ page }) => {
+  test('should load a saved _scenario', async ({ page }) => {
     // Look for load/scenarios button
     const loadButton = page.locator('button:has-text("Load"), button:has-text("Scenarios"), button:has-text("History")').first();
 
@@ -131,7 +131,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should reset scenario to baseline', async ({ page }) => {
+  test('should reset scenario to _baseline', async ({ page }) => {
     // Adjust multiple sliders
     const sliders = await page.locator('input[type="range"]').all();
 
@@ -154,7 +154,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should export scenario results', async ({ page }) => {
+  test('should export scenario _results', async ({ page }) => {
     // Adjust scenario parameters
     const firstSlider = page.locator('input[type="range"]').first();
     if (await firstSlider.isVisible()) {
@@ -178,7 +178,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should show real-time impact calculations', async ({ page }) => {
+  test('should show real-time impact _calculations', async ({ page }) => {
     // Get initial metric value
     const metricElement = page.locator('.metric-value, .kpi-value, .impact-value').first();
     let initialValue = '';
@@ -203,7 +203,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should display scenario comparison', async ({ page }) => {
+  test('should display scenario _comparison', async ({ page }) => {
     // Look for comparison button
     const compareButton = page.locator('button:has-text("Compare"), button:has-text("Comparison")').first();
 
@@ -218,7 +218,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should validate scenario constraints', async ({ page }) => {
+  test('should validate scenario _constraints', async ({ page }) => {
     // Try to set invalid value
     const slider = page.locator('input[type="range"]').first();
 
@@ -234,7 +234,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should show help tooltips for parameters', async ({ page }) => {
+  test('should show help tooltips for _parameters', async ({ page }) => {
     // Look for help icons or info buttons
     const helpIcon = page.locator('[aria-label*="help"], [aria-label*="info"], .help-icon, .info-icon').first();
 
@@ -250,7 +250,7 @@ test.describe('What-If Scenario Creation', () => {
     }
   });
 
-  test('should handle scenario sharing', async ({ page }) => {
+  test('should handle scenario _sharing', async ({ page }) => {
     // Adjust scenario
     const slider = page.locator('input[type="range"]').first();
     if (await slider.isVisible()) {

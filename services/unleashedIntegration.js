@@ -475,7 +475,7 @@ class UnleashedIntegrationService {
     }
 
     // Schedule sync every 15 minutes
-    this.syncJob = cron.schedule('*/15 * * * *', async () => {
+    this.syncJob = cron.schedule('*/15 * * * _*', async _() => {
       logInfo('Running automated Unleashed sync');
       try {
         await this.syncAllData();

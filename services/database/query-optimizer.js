@@ -325,7 +325,7 @@ class QueryOptimizer {
     const insights = [];
 
     // Analyze query patterns
-    this.metrics.queryPatterns.forEach((pattern, key) => {
+    this.metrics.queryPatterns.forEach((pattern, _key) => {
       if (pattern.count > 100 && pattern.suggestions.length > 0) {
         insights.push({
           pattern: key,

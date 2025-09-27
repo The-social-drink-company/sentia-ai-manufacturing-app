@@ -8,7 +8,7 @@
 // Node 18+ has global fetch
 import { execSync } from 'child_process';
 
-const RENDER_API_KEY = process.env.RENDER_API_KEY || 'rnd_mYUAytWRkb2Pj5GJROqNYubYt25J';
+const RENDERAPI_KEY = process.env.RENDER_API_KEY || 'rnd_mYUAytWRkb2Pj5GJROqNYubYt25J';
 const environment = process.argv[2] || 'development';
 
 const services = {

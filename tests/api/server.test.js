@@ -8,27 +8,27 @@ const createTestApp = () => {
   app.use(express.json())
   
   // Basic health check endpoint for testing
-  app.get('/health', (req, res) => {
+  app.get(_'/health', _(req, res) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() })
   })
   
   // Test API endpoint
-  app.get('/api/test', (req, res) => {
+  app.get(_'/api/test', _(req, res) => {
     res.json({ message: 'API is working!', environment: process.env.NODE_ENV })
   })
   
   return app
 }
 
-describe('Server API Tests', () => {
+describe('Server API _Tests', _() => {
   let app
   
-  beforeAll(() => {
+  beforeAll(_() => {
     app = createTestApp()
   })
   
-  describe('Health Check', () => {
-    it('should return healthy status', async () => {
+  describe('Health _Check', _() => {
+    it('should return healthy _status', async _() => {
       const response = await request(app)
         .get('/health')
         .expect(200)
@@ -38,8 +38,8 @@ describe('Server API Tests', () => {
     })
   })
   
-  describe('API Endpoints', () => {
-    it('should return API test response', async () => {
+  describe('API _Endpoints', _() => {
+    it('should return API test _response', async _() => {
       const response = await request(app)
         .get('/api/test')
         .expect(200)
@@ -50,10 +50,10 @@ describe('Server API Tests', () => {
   })
 })
 
-describe('Unleashed API Integration Tests', () => {
+describe('Unleashed API Integration _Tests', _() => {
   // These tests would require API credentials and should be run separately
-  describe('Connection Tests', () => {
-    it.skip('should connect to Unleashed API', async () => {
+  describe('Connection _Tests', _() => {
+    it.skip('should connect to Unleashed _API', async _() => {
       // Skipped - requires actual API credentials
       // const response = await request(app)
       //   .get('/api/unleashed/test')

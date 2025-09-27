@@ -43,8 +43,8 @@ export const initializeSentry = () => {
         tracePropagationTargets: [
           'localhost',
           /^https:\/\/sentia-manufacturing-/,
-          /^https:\/\/.*\.onrender\.com/,
-          /^https:\/\/.*\.financeflo\.ai/
+          /^https:\/\/.*\.onrender\.com$/,
+          /^https:\/\/.*\.financeflo\.ai$/
         ],
       }),
     ],
@@ -180,7 +180,7 @@ export const captureMessage = (message, level = 'info', context = {}) => {
 /**
  * Start performance transaction for manufacturing operations
  */
-export const startTransaction = (name, operation = 'manufacturing') => {
+export const startTransaction = (_name, operation = 'manufacturing') => {
   const transaction = Sentry.startTransaction({
     name,
     op: operation,

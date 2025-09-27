@@ -34,7 +34,7 @@ const Forecasting = () => {
 
   // Fetch forecast data with real-time updates
   const { data: forecastData, isLoading, refetch } = useQuery({
-    queryKey: ['forecasting', forecastHorizon, selectedModel, seasonality],
+    queryKey: ['forecasting', _forecastHorizon, selectedModel, _seasonality],
     queryFn: async () => {
       try {
         const response = await fetch(`/api/forecasting/demand?horizon=${forecastHorizon}&model=${selectedModel}&seasonality=${seasonality}&confidenceLevel=${parseFloat(confidenceLevel) / 100}`, {
@@ -167,7 +167,7 @@ const Forecasting = () => {
     });
   };
 
-  const getTrendIcon = (trend) => {
+  const getTrendIcon = (_trend) => {
     switch (trend) {
       case 'increasing':
         return <ArrowTrendingUpIcon className="h-4 w-4 text-green-600" />;
@@ -178,7 +178,7 @@ const Forecasting = () => {
     }
   };
 
-  const getRiskColor = (risk) => {
+  const getRiskColor = (_risk) => {
     switch (risk) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
       case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -193,7 +193,7 @@ const Forecasting = () => {
         <div className="animate-pulse">
           <div className="h-8 bg-gray-300 rounded w-1/3 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
+            {[...Array(6)].map((_, _i) => (
               <div key={i} className="h-64 bg-gray-300 rounded"></div>
             ))}
           </div>

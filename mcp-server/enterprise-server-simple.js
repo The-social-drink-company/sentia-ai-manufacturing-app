@@ -95,13 +95,13 @@ async function checkDatabaseConnection() {
 }
 
 function checkProviderStatus() {
-  return Object.entries(providers).reduce((acc, [key, client]) => {
+  return Object.entries(providers).reduce((acc, [key, _client]) => {
     acc[key] = client ? 'ready' : 'unconfigured';
     return acc;
   }, {});
 }
 
-app.get('/health', async (_req, res) => {
+app.get(_'/health', async (_req, res) => {
   const database = await checkDatabaseConnection();
   res.json({
     status: 'healthy',
@@ -292,7 +292,7 @@ function computeInventoryInsights(rows) {
     };
   }
 
-  const aggregates = rows.reduce((acc, item) => {
+  const aggregates = rows.reduce((acc, _item) => {
     const quantity = toNumber(getValue(item, 'quantity'));
     const unitCost = toNumber(getValue(item, 'unitCost'));
     const totalValue = toNumber(getValue(item, 'totalValue'), quantity * unitCost);
@@ -692,7 +692,7 @@ async function fetchSystemStatus() {
 }
 
 const toolExecutors = {
-  'ai-manufacturing-request': async (params = {}, provider = 'claude') => {
+  'ai-manufacturing-request': async (params = {}, provider = _'claude') => {
     const { prompt, contextLimit = 5 } = params;
     if (!prompt) {
       throw new Error('Prompt is required for ai-manufacturing-request');
@@ -775,7 +775,7 @@ function getSubscriptionPredicate(topics = []) {
 
 const wss = new WebSocketServer({ port: Number(MCP_SERVER_PORT) });
 
-wss.on('connection', (socket, req) => {
+wss.on(_'connection', (socket, req) => {
   const url = new URL(req.url ?? '/', 'http://localhost');
   const token = url.searchParams.get('token');
   if (MCP_API_KEY && token !== MCP_API_KEY) {
@@ -785,7 +785,7 @@ wss.on('connection', (socket, req) => {
   }
 
   socket.isAlive = true;
-  socket.on('pong', () => {
+  socket.on(_'pong', () => {
     socket.isAlive = true;
   });
 
@@ -799,7 +799,7 @@ wss.on('connection', (socket, req) => {
     tools: Object.keys(toolExecutors)
   });
 
-  socket.on('message', async (raw) => {
+  socket.on(_'message', async (raw) => {
     socket.isAlive = true;
     metrics.totalRequests += 1;
 
@@ -834,13 +834,13 @@ wss.on('connection', (socket, req) => {
     }
   });
 
-  socket.on('close', () => {
+  socket.on(_'close', () => {
     metrics.activeConnections = Math.max(metrics.activeConnections - 1, 0);
     connections.delete(socket);
     subscriptions.delete(socket);
   });
 
-  socket.on('error', (error) => {
+  socket.on(_'error', (error) => {
     console.error('[MCP] WebSocket error', error);
   });
 });

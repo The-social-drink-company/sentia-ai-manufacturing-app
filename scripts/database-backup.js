@@ -12,8 +12,8 @@ import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 
 class DatabaseBackupSystem {
   constructor() {
@@ -482,7 +482,7 @@ class DatabaseBackupSystem {
     try {
       // Check table count
       const tableCountResult = execSync(
-        `psql "${databaseUrl}" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';"`,
+        `psql "${databaseUrl}" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE tableschema = 'public';"`,
         { encoding: 'utf8' }
       ).trim();
 
@@ -499,7 +499,7 @@ class DatabaseBackupSystem {
 
       for (const table of criticalTables) {
         const exists = execSync(
-          `psql "${databaseUrl}" -t -c "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '${table}');"`,
+          `psql "${databaseUrl}" -t -c "SELECT EXISTS (SELECT FROM information_schema.tables WHERE tablename = '${table}');"`,
           { encoding: 'utf8' }
         ).trim();
 

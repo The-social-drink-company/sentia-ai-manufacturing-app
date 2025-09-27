@@ -43,7 +43,7 @@ export const testSentryIntegration = () => {
 
   // Test 3: Performance monitoring
   try {
-    const transaction = startTransaction('test_operation', 'test');
+    const transaction = startTransaction('testoperation', 'test');
 
     // Simulate some work
     setTimeout(() => {
@@ -78,7 +78,7 @@ export const testSentryManufacturingIntegration = () => {
     });
 
     // Test performance metric
-    capturePerformanceMetric('test_operation_time', 250, 'ms', {
+    capturePerformanceMetric('testoperation_time', 250, 'ms', {
       module: 'production'
     });
 

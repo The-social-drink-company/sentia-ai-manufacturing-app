@@ -2,22 +2,22 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import AlertWidget from './AlertWidget';
 
-describe('AlertWidget', () => {
-  beforeEach(() => {
+describe('AlertWidget', () {
+  beforeEach(() {
     vi.useFakeTimers();
   });
 
-  afterEach(() => {
+  afterEach(() {
     vi.useRealTimers();
     vi.clearAllMocks();
   });
 
-  it('renders the widget title correctly', () => {
+  it('renders the widget title _correctly', () {
     render(<AlertWidget />);
     expect(screen.getByText('System Alerts')).toBeInTheDocument();
   });
 
-  it('shows loading state initially', () => {
+  it('shows loading state _initially', () {
     render(<AlertWidget />);
     expect(screen.getByText('System Alerts')).toBeInTheDocument();
 
@@ -26,12 +26,12 @@ describe('AlertWidget', () => {
     expect(loadingElements.length).toBeGreaterThan(0);
   });
 
-  it('displays mock alerts when no alerts prop provided', async () => {
+  it('displays mock alerts when no alerts prop _provided', async () {
     render(<AlertWidget />);
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Production Line Stopped')).toBeInTheDocument();
     });
 
@@ -40,7 +40,7 @@ describe('AlertWidget', () => {
     expect(screen.getByText('Raw material stock for Product A is below reorder point.')).toBeInTheDocument();
   });
 
-  it('displays provided alerts when alerts prop is passed', async () => {
+  it('displays provided alerts when alerts prop is _passed', async () {
     const customAlerts = [
       {
         id: 'test-alert-1',
@@ -55,14 +55,14 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Test Alert')).toBeInTheDocument();
     });
 
     expect(screen.getByText('This is a test alert message')).toBeInTheDocument();
   });
 
-  it('respects maxAlerts prop', async () => {
+  it('respects maxAlerts _prop', async () {
     const manyAlerts = Array.from({ length: 10 }, (_, i) => ({
       id: `alert-${i}`,
       severity: 'info',
@@ -75,7 +75,7 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Alert 0')).toBeInTheDocument();
     });
 
@@ -84,7 +84,7 @@ describe('AlertWidget', () => {
     expect(screen.queryByText('Alert 3')).not.toBeInTheDocument();
   });
 
-  it('displays different severity levels correctly', async () => {
+  it('displays different severity levels _correctly', async () {
     const alerts = [
       {
         id: 'critical-1',
@@ -120,7 +120,7 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Critical Alert')).toBeInTheDocument();
     });
 
@@ -129,7 +129,7 @@ describe('AlertWidget', () => {
     expect(screen.getByText('Success Alert')).toBeInTheDocument();
   });
 
-  it('allows dismissing alerts when showDismiss is true', async () => {
+  it('allows dismissing alerts when showDismiss is true', async () {
     const alerts = [
       {
         id: 'dismissible-alert',
@@ -146,7 +146,7 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Dismissible Alert')).toBeInTheDocument();
     });
 
@@ -159,7 +159,7 @@ describe('AlertWidget', () => {
     expect(onDismiss).toHaveBeenCalledWith('dismissible-alert');
   });
 
-  it('shows no alerts message when all alerts are dismissed', async () => {
+  it('shows no alerts message when all alerts are _dismissed', async () {
     const alerts = [
       {
         id: 'only-alert',
@@ -174,7 +174,7 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Only Alert')).toBeInTheDocument();
     });
 
@@ -187,7 +187,7 @@ describe('AlertWidget', () => {
     expect(screen.getByText('System operating normally')).toBeInTheDocument();
   });
 
-  it('shows active alert count', async () => {
+  it('shows active alert _count', async () {
     const alerts = Array.from({ length: 3 }, (_, i) => ({
       id: `alert-${i}`,
       severity: 'info',
@@ -200,12 +200,12 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('3 Active')).toBeInTheDocument();
     });
   });
 
-  it('displays action buttons when alerts have actions', async () => {
+  it('displays action buttons when alerts have _actions', async () {
     const alerts = [
       {
         id: 'actionable-alert',
@@ -224,12 +224,12 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Fix Issue →')).toBeInTheDocument();
     });
   });
 
-  it('formats timestamps correctly', async () => {
+  it('formats timestamps _correctly', async () {
     const now = new Date();
     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
 
@@ -247,12 +247,12 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('5 minutes ago')).toBeInTheDocument();
     });
   });
 
-  it('shows "View all alerts" link when there are alerts', async () => {
+  it('shows "View all alerts" link when there are _alerts', async () {
     const alerts = [
       {
         id: 'single-alert',
@@ -267,12 +267,12 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('View all alerts →')).toBeInTheDocument();
     });
   });
 
-  it('handles auto-hide functionality', async () => {
+  it('handles auto-hide _functionality', async () {
     const alerts = [
       {
         id: 'auto-hide-alert',
@@ -287,14 +287,14 @@ describe('AlertWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Auto Hide Alert')).toBeInTheDocument();
     });
 
     // Fast forward past auto-hide delay
     vi.advanceTimersByTime(1100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.queryByText('Auto Hide Alert')).not.toBeInTheDocument();
     });
   });

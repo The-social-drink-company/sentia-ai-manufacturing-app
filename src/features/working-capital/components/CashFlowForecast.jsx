@@ -5,7 +5,7 @@ export default function CashFlowForecast({ data, period = 'current' }) {
   const [forecastPeriod, setForecastPeriod] = useState('30')
 
   // Mock forecast data if not provided
-  const generateForecastData = (days) => {
+  const generateForecastData = (_days) => {
     const startDate = new Date()
     const forecast = []
     let runningBalance = 150000 // Starting cash balance

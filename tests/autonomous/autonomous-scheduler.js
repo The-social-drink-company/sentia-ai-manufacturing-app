@@ -78,7 +78,7 @@ class AutonomousScheduler {
     app.use(express.json());
 
     // Health check endpoint for Railway
-    app.get('/health', async (req, res) => {
+    app.get(_'/health', async _(req, res) => {
       const status = await this.reportHealthStatus();
       const httpStatus = status.healthy ? 200 : 503;
       
@@ -95,7 +95,7 @@ class AutonomousScheduler {
     });
 
     // Status endpoint with detailed metrics
-    app.get('/status', async (req, res) => {
+    app.get(_'/status', async _(req, res) => {
       const status = await this.reportHealthStatus();
       res.json({
         ...status,
@@ -106,7 +106,7 @@ class AutonomousScheduler {
     });
 
     // Logs endpoint
-    app.get('/logs', async (req, res) => {
+    app.get(_'/logs', async _(req, res) => {
       try {
         const logContent = await fs.readFile(this.logFile, 'utf8');
         const lines = logContent.split('\\n').slice(-100); // Last 100 lines
@@ -117,7 +117,7 @@ class AutonomousScheduler {
     });
 
     const port = process.env.TEST_AGENT_PORT || 6001;
-    this.healthServer = app.listen(port, '0.0.0.0', () => {
+    this.healthServer = app.listen(port, _'0.0.0.0', () => {
       this.log(`Health endpoint server running on port ${port}`);
     });
   }
@@ -126,7 +126,7 @@ class AutonomousScheduler {
     this.log('Autonomous Testing Scheduler starting...');
     
     // Schedule to run every 5 minutes (more aggressive for 24/7 operation)
-    cron.schedule('*/5 * * * *', async () => {
+    cron.schedule('*/5 * * * _*', async () => {
       if (!this.isInBackoffPeriod()) {
         await this.executeTestCycle();
       } else {
@@ -223,7 +223,7 @@ class AutonomousScheduler {
   async runTestSuite() {
     this.log('Executing master test suite...');
     
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       // Use consistent npm command with proper Windows handling
       const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
       const testProcess = spawn(npmCmd, ['run', 'test:autonomous'], {
@@ -236,19 +236,19 @@ class AutonomousScheduler {
       let output = '';
       let errorOutput = '';
 
-      testProcess.stdout.on('data', (data) => {
+      testProcess.stdout.on(_'data', _(data) => {
         const chunk = data.toString();
         output += chunk;
         this.log(`[TEST] ${chunk.trim()}`);
       });
 
-      testProcess.stderr.on('data', (data) => {
+      testProcess.stderr.on(_'data', _(data) => {
         const chunk = data.toString();
         errorOutput += chunk;
         this.log(`[TEST-ERROR] ${chunk.trim()}`, 'WARN');
       });
 
-      testProcess.on('close', async (code) => {
+      testProcess.on(_'close', async (code) => {
         try {
           await this.saveTestResults(output, errorOutput, code);
           
@@ -265,7 +265,7 @@ class AutonomousScheduler {
         }
       });
 
-      testProcess.on('error', (error) => {
+      testProcess.on(_'error', (error) => {
         this.log(`Failed to start test process: ${error.message}`, 'ERROR');
         reject(error);
       });
@@ -467,12 +467,12 @@ class AutonomousScheduler {
     this.log('Restarting application services...');
     
     // Kill existing Node processes (except this scheduler)
-    return new Promise((resolve) => {
+    return new Promise(_(resolve) => {
       const killProcess = spawn('taskkill', ['/F', '/IM', 'node.exe'], {
         stdio: 'pipe'
       });
       
-      killProcess.on('close', () => {
+      killProcess.on(_'close', () => {
         // Wait a moment, then restart main application
         setTimeout(async () => {
           this.log('Restarting main application...');
@@ -727,7 +727,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
         stdio: 'pipe'
       });
       
-      await new Promise((resolve) => {
+      await new Promise(_(resolve) => {
         killProcess.on('close', resolve);
       });
       
@@ -777,7 +777,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async runCommand(args, cwd) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const process = spawn(args[0], args.slice(1), {
         cwd,
         stdio: 'pipe',
@@ -787,15 +787,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       let output = '';
       let errorOutput = '';
       
-      process.stdout.on('data', (data) => {
+      process.stdout.on(_'data', _(data) => {
         output += data.toString();
       });
       
-      process.stderr.on('data', (data) => {
+      process.stderr.on(_'data', _(data) => {
         errorOutput += data.toString();
       });
       
-      process.on('close', (code) => {
+      process.on(_'close', (code) => {
         if (code === 0) {
           resolve(output.trim());
         } else {
@@ -806,7 +806,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async runGHCommand(args, cwd) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const ghProcess = spawn('gh', args, {
         cwd,
         stdio: 'pipe',
@@ -816,15 +816,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       let output = '';
       let errorOutput = '';
       
-      ghProcess.stdout.on('data', (data) => {
+      ghProcess.stdout.on(_'data', _(data) => {
         output += data.toString();
       });
       
-      ghProcess.stderr.on('data', (data) => {
+      ghProcess.stderr.on(_'data', _(data) => {
         errorOutput += data.toString();
       });
       
-      ghProcess.on('close', (code) => {
+      ghProcess.on(_'close', (code) => {
         if (code === 0) {
           resolve(output.trim());
         } else {
@@ -835,7 +835,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async runGitCommand(args, cwd) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const gitProcess = spawn('git', args, {
         cwd,
         stdio: 'pipe',
@@ -845,15 +845,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       let output = '';
       let errorOutput = '';
       
-      gitProcess.stdout.on('data', (data) => {
+      gitProcess.stdout.on(_'data', _(data) => {
         output += data.toString();
       });
       
-      gitProcess.stderr.on('data', (data) => {
+      gitProcess.stderr.on(_'data', _(data) => {
         errorOutput += data.toString();
       });
       
-      gitProcess.on('close', (code) => {
+      gitProcess.on(_'close', (code) => {
         if (code === 0) {
           resolve(output.trim());
         } else {
@@ -885,7 +885,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
 const scheduler = new AutonomousScheduler();
 
 // Handle graceful shutdown
-process.on('SIGINT', async () => {
+process.on(_'SIGINT', async () => {
   console.log('\\nShutting down Autonomous Scheduler...');
   await scheduler.log('Scheduler shutdown requested');
   
@@ -898,7 +898,7 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
+process.on(_'SIGTERM', async () => {
   await scheduler.log('Scheduler terminated');
   
   if (scheduler.healthCheckInterval) {

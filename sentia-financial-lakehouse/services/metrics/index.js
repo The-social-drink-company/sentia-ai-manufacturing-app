@@ -118,7 +118,7 @@ const updateBusinessMetrics = async () => {
 setInterval(updateBusinessMetrics, 60000);
 
 // Health check
-app.get('/health', (req, res) => {
+app.get(_'/health', _(req, res) => {
   res.json({
     status: 'healthy',
     service: 'metrics',
@@ -127,7 +127,7 @@ app.get('/health', (req, res) => {
 });
 
 // Prometheus metrics endpoint
-app.get('/metrics', async (req, res) => {
+app.get(_'/metrics', async _(req, res) => {
   try {
     res.set('Content-Type', register.contentType);
     const metrics = await register.metrics();
@@ -139,7 +139,7 @@ app.get('/metrics', async (req, res) => {
 });
 
 // Record metric endpoint
-app.post('/record', async (req, res) => {
+app.post(_'/record', async _(req, res) => {
   try {
     const { metric, value, labels = {} } = req.body;
     
@@ -170,7 +170,7 @@ app.post('/record', async (req, res) => {
 });
 
 // Query metrics endpoint
-app.get('/query/:metric', async (req, res) => {
+app.get(_'/query/:metric', async _(req, res) => {
   try {
     const { metric } = req.params;
     const { start, end } = req.query;
@@ -207,7 +207,7 @@ app.get('/query/:metric', async (req, res) => {
 });
 
 // Alerts endpoint
-app.post('/alert', async (req, res) => {
+app.post(_'/alert', async _(req, res) => {
   try {
     const { severity, type, message, data } = req.body;
     
@@ -237,7 +237,7 @@ app.post('/alert', async (req, res) => {
 });
 
 const PORT = process.env.METRICS_PORT || 8101;
-app.listen(PORT, () => {
+app.listen(PORT, _() => {
   logger.info(`Metrics service running on port ${PORT}`);
   updateBusinessMetrics(); // Initial update
 });

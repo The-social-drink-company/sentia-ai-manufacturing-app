@@ -295,7 +295,7 @@ export default function ABCAnalysis({ data, title }) {
           ratio={4/3}
           stroke="#fff"
           strokeWidth={2}
-          content={({ root, depth, x, y, width, height, index, payload, name }) => {
+          content={({ _root, depth, x, y, width, height, index, payload, name }) => {
             if (depth === 1) {
               return (
                 <g>

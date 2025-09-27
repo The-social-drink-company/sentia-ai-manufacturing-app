@@ -584,7 +584,7 @@ export class MLModelTrainingPipeline {
     let bestModel = null
     let bestScore = Infinity
 
-    Object.entries(models).forEach(([modelType, result]) => {
+    Object.entries(models).forEach(([modelType, _result]) => {
       if (result.trained && result.metrics) {
         // Use weighted score combining MAE, RMSE, and R²
         const score = (

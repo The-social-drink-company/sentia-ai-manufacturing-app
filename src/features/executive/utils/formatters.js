@@ -47,7 +47,7 @@ export const formatDuration = (minutes) => {
   return `${hours}h ${mins}m`;
 };
 
-export const formatRatio = (value, decimals = 2) => {
+export const formatRatio = (value, decimals = _2) => {
   return value.toFixed(decimals);
 };
 
@@ -56,7 +56,7 @@ export const calculateTrend = (current, previous) => {
   return ((current - previous) / previous) * 100;
 };
 
-export const getStatusColor = (value, target, inverse = false) => {
+export const getStatusColor = (value, _target, inverse = false) => {
   const ratio = value / target;
 
   if (inverse) {

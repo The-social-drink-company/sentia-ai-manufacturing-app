@@ -16,7 +16,7 @@ const configPath = path.resolve(__dirname, '..', 'spec.config.js');
 async function loadConfig() {
   try {
     // Convert to file:// URL for Windows compatibility
-    const configUrl = new URL(`file:///${configPath.replace(/\\/g, '/')}`);
+    const configUrl = new URL(`file:///${configPath.replace(/\/g, '/')}`);
     const configModule = await import(configUrl.href);
     return configModule.default || configModule || {};
   } catch (error) {
@@ -65,7 +65,7 @@ async function runScan() {
 
     // Import and run the validation
     try {
-      const validationUrl = new URL(`file:///${validationScript.replace(/\\/g, '/')}`);
+      const validationUrl = new URL(`file:///${validationScript.replace(/\/g, '/')}`);
       await import(validationUrl.href);
     } catch (error) {
       console.error('[SpecKit] Validation failed:', error.message);

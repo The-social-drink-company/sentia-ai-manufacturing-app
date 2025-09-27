@@ -25,7 +25,7 @@ const autoSyncManager = getAutoSyncManager();
  * GET /api/mcp/health
  * Check MCP Server connection health
  */
-router.get('/health', async (req, res) => {
+router.get(_'/health', async (req, res) => {
   try {
     const health = await mcpClient.checkHealth();
     res.json({
@@ -50,7 +50,7 @@ router.get('/health', async (req, res) => {
  * GET /api/mcp/status
  * Get comprehensive MCP system status
  */
-router.get('/status', async (req, res) => {
+router.get(_'/status', async (req, res) => {
   try {
     const [mcpStatus, wsStatus, syncStatus] = await Promise.all([
       mcpClient.getSystemStatus(),
@@ -100,7 +100,7 @@ router.get('/websocket/history', wsMonitor.getHistoryEndpoint());
  * POST /api/mcp/websocket/reconnect
  * Force WebSocket reconnection
  */
-router.post('/websocket/reconnect', (req, res) => {
+router.post(_'/websocket/reconnect', (req, res) => {
   wsMonitor.reconnect();
   res.json({
     status: 'ok',
@@ -134,7 +134,7 @@ router.post('/sync/full', autoSyncManager.getFullSyncEndpoint());
  * POST /api/mcp/sync/enable
  * Enable auto-sync
  */
-router.post('/sync/enable', async (req, res) => {
+router.post(_'/sync/enable', async (req, res) => {
   await autoSyncManager.enable();
   res.json({
     status: 'ok',
@@ -147,7 +147,7 @@ router.post('/sync/enable', async (req, res) => {
  * POST /api/mcp/sync/disable
  * Disable auto-sync
  */
-router.post('/sync/disable', async (req, res) => {
+router.post(_'/sync/disable', async (req, res) => {
   await autoSyncManager.disable();
   res.json({
     status: 'ok',
@@ -164,7 +164,7 @@ router.post('/sync/disable', async (req, res) => {
  * POST /api/mcp/ai/manufacturing-request
  * Process manufacturing request through AI
  */
-router.post('/ai/manufacturing-request', async (req, res) => {
+router.post(_'/ai/manufacturing-request', async (req, res) => {
   try {
     const { request } = req.body;
 
@@ -193,7 +193,7 @@ router.post('/ai/manufacturing-request', async (req, res) => {
  * POST /api/mcp/ai/optimize-inventory
  * Optimize inventory using AI
  */
-router.post('/ai/optimize-inventory', async (req, res) => {
+router.post(_'/ai/optimize-inventory', async (req, res) => {
   try {
     const parameters = req.body;
     const result = await mcpClient.optimizeInventory(parameters);
@@ -214,7 +214,7 @@ router.post('/ai/optimize-inventory', async (req, res) => {
  * POST /api/mcp/ai/forecast-demand
  * Forecast demand using AI
  */
-router.post('/ai/forecast-demand', async (req, res) => {
+router.post(_'/ai/forecast-demand', async (req, res) => {
   try {
     const parameters = req.body;
     const result = await mcpClient.forecastDemand(parameters);
@@ -235,7 +235,7 @@ router.post('/ai/forecast-demand', async (req, res) => {
  * POST /api/mcp/ai/analyze-quality
  * Analyze quality data using AI
  */
-router.post('/ai/analyze-quality', async (req, res) => {
+router.post(_'/ai/analyze-quality', async (req, res) => {
   try {
     const { data } = req.body;
 
@@ -268,7 +268,7 @@ router.post('/ai/analyze-quality', async (req, res) => {
  * GET /api/mcp/xero/invoices
  * Get Xero invoices
  */
-router.get('/xero/invoices', async (req, res) => {
+router.get(_'/xero/invoices', async (req, res) => {
   try {
     const invoices = await apiService.getXeroInvoices(req.query);
     res.json({
@@ -288,7 +288,7 @@ router.get('/xero/invoices', async (req, res) => {
  * GET /api/mcp/xero/contacts
  * Get Xero contacts
  */
-router.get('/xero/contacts', async (req, res) => {
+router.get(_'/xero/contacts', async (req, res) => {
   try {
     const contacts = await apiService.getXeroContacts(req.query);
     res.json({
@@ -308,7 +308,7 @@ router.get('/xero/contacts', async (req, res) => {
  * GET /api/mcp/shopify/orders
  * Get Shopify orders
  */
-router.get('/shopify/orders', async (req, res) => {
+router.get(_'/shopify/orders', async (req, res) => {
   try {
     const orders = await apiService.getShopifyOrders(req.query);
     res.json({
@@ -328,7 +328,7 @@ router.get('/shopify/orders', async (req, res) => {
  * GET /api/mcp/shopify/products
  * Get Shopify products
  */
-router.get('/shopify/products', async (req, res) => {
+router.get(_'/shopify/products', async (req, res) => {
   try {
     const products = await apiService.getShopifyProducts(req.query);
     res.json({
@@ -348,7 +348,7 @@ router.get('/shopify/products', async (req, res) => {
  * GET /api/mcp/shopify/inventory
  * Get Shopify inventory
  */
-router.get('/shopify/inventory', async (req, res) => {
+router.get(_'/shopify/inventory', async (req, res) => {
   try {
     const { locationId } = req.query;
     const inventory = await apiService.getShopifyInventory(locationId);
@@ -369,7 +369,7 @@ router.get('/shopify/inventory', async (req, res) => {
  * GET /api/mcp/amazon/orders
  * Get Amazon orders
  */
-router.get('/amazon/orders', async (req, res) => {
+router.get(_'/amazon/orders', async (req, res) => {
   try {
     const orders = await apiService.getAmazonOrders(req.query);
     res.json({
@@ -389,7 +389,7 @@ router.get('/amazon/orders', async (req, res) => {
  * GET /api/mcp/amazon/inventory
  * Get Amazon inventory
  */
-router.get('/amazon/inventory', async (req, res) => {
+router.get(_'/amazon/inventory', async (req, res) => {
   try {
     const inventory = await apiService.getAmazonInventory(req.query);
     res.json({
@@ -413,7 +413,7 @@ router.get('/amazon/inventory', async (req, res) => {
  * POST /api/mcp/vector/search
  * Search vector database
  */
-router.post('/vector/search', async (req, res) => {
+router.post(_'/vector/search', async (req, res) => {
   try {
     const { query, category } = req.body;
 
@@ -442,7 +442,7 @@ router.post('/vector/search', async (req, res) => {
  * POST /api/mcp/vector/store
  * Store data in vector database
  */
-router.post('/vector/store', async (req, res) => {
+router.post(_'/vector/store', async (req, res) => {
   try {
     const { data, category } = req.body;
 
@@ -475,7 +475,7 @@ router.post('/vector/store', async (req, res) => {
  * POST /api/mcp/decision/execute
  * Execute decision rule
  */
-router.post('/decision/execute', async (req, res) => {
+router.post(_'/decision/execute', async (req, res) => {
   try {
     const { rule, context } = req.body;
 
@@ -504,7 +504,7 @@ router.post('/decision/execute', async (req, res) => {
  * POST /api/mcp/decision/recommend
  * Get AI recommendations
  */
-router.post('/decision/recommend', async (req, res) => {
+router.post(_'/decision/recommend', async (req, res) => {
   try {
     const { type, parameters } = req.body;
 
@@ -537,7 +537,7 @@ router.post('/decision/recommend', async (req, res) => {
  * GET /api/mcp/metrics
  * Get MCP Server metrics
  */
-router.get('/metrics', async (req, res) => {
+router.get(_'/metrics', async (req, res) => {
   try {
     const metrics = await mcpClient.getMetrics();
     res.json({
@@ -557,7 +557,7 @@ router.get('/metrics', async (req, res) => {
  * POST /api/mcp/events
  * Log event to MCP Server
  */
-router.post('/events', async (req, res) => {
+router.post(_'/events', async (req, res) => {
   try {
     const { event, data } = req.body;
 

@@ -21,7 +21,7 @@ const unleashedRateLimit = rateLimit({
 router.use(unleashedRateLimit);
 
 // Get consolidated manufacturing data
-router.get('/manufacturing', async (req, res) => {
+router.get(_'/manufacturing', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
 
@@ -101,7 +101,7 @@ router.get('/manufacturing', async (req, res) => {
 });
 
 // Get production metrics only
-router.get('/production', async (req, res) => {
+router.get(_'/production', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
 
@@ -126,7 +126,7 @@ router.get('/production', async (req, res) => {
 });
 
 // Get resource status and utilization
-router.get('/resources', async (req, res) => {
+router.get(_'/resources', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
 
@@ -151,7 +151,7 @@ router.get('/resources', async (req, res) => {
 });
 
 // Get production schedule
-router.get('/schedule', async (req, res) => {
+router.get(_'/schedule', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
 
@@ -181,7 +181,7 @@ router.get('/schedule', async (req, res) => {
 });
 
 // Get inventory data
-router.get('/inventory', async (req, res) => {
+router.get(_'/inventory', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
 
@@ -271,7 +271,7 @@ router.get('/inventory', async (req, res) => {
 });
 
 // Get quality alerts and issues
-router.get('/quality-alerts', async (req, res) => {
+router.get(_'/quality-alerts', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
 
@@ -301,7 +301,7 @@ router.get('/quality-alerts', async (req, res) => {
 });
 
 // Get inventory status from ERP
-router.get('/inventory', async (req, res) => {
+router.get(_'/inventory', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
     
@@ -327,7 +327,7 @@ router.get('/inventory', async (req, res) => {
 });
 
 // Get manufacturing KPIs
-router.get('/kpis', async (req, res) => {
+router.get(_'/kpis', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
     
@@ -373,7 +373,7 @@ router.get('/kpis', async (req, res) => {
 });
 
 // Get connection status
-router.get('/status', async (req, res) => {
+router.get(_'/status', async (req, res) => {
   try {
     const status = unleashedERPService.getConnectionStatus();
     res.json(status);
@@ -387,7 +387,7 @@ router.get('/status', async (req, res) => {
 });
 
 // Trigger manual sync
-router.post('/sync', async (req, res) => {
+router.post(_'/sync', async (req, res) => {
   try {
     logDebug('UNLEASHED API: Manual sync triggered');
     const data = await unleashedERPService.syncAllData();
@@ -407,7 +407,7 @@ router.post('/sync', async (req, res) => {
 });
 
 // Get production analytics
-router.get('/analytics', async (req, res) => {
+router.get(_'/analytics', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
     
@@ -462,7 +462,7 @@ router.get('/analytics', async (req, res) => {
 });
 
 // Get batch tracking information
-router.get('/batches/:batchId?', async (req, res) => {
+router.get(_'/batches/:batchId?', async (req, res) => {
   try {
     const data = await unleashedERPService.getConsolidatedData();
     

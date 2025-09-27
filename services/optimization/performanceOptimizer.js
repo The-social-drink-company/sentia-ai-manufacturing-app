@@ -399,7 +399,7 @@ export class PerformanceOptimizerService extends EventEmitter {
    * Start performance monitoring
    */
   startPerformanceMonitoring() {
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.monitorResources();
     }, 30000); // Every 30 seconds
     
@@ -410,7 +410,7 @@ export class PerformanceOptimizerService extends EventEmitter {
    * Initialize auto-scaling
    */
   initializeAutoScaling() {
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.autoScale();
     }, 60000); // Every minute
     
@@ -421,7 +421,7 @@ export class PerformanceOptimizerService extends EventEmitter {
    * Start optimization analysis
    */
   startOptimizationAnalysis() {
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.analyzeAndOptimize();
     }, this.config.optimization.analysisInterval);
     
@@ -708,7 +708,7 @@ export class PerformanceOptimizerService extends EventEmitter {
   }
   
   startHealthChecks() {
-    setInterval(() => {
+    setInterval(_() => {
       this.performHealthChecks();
     }, 30000); // Every 30 seconds
   }

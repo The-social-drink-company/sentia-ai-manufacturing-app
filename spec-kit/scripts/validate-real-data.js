@@ -96,7 +96,7 @@ function scanFile(filePath) {
   const violations = [];
   const lines = content.split(/\r?\n/);
 
-  lines.forEach((line, index) => {
+  lines.forEach(_(line, index) => {
     PATTERNS.forEach((rule) => {
       if (rule.regex.test(line)) {
         violations.push({
@@ -120,7 +120,7 @@ function main() {
   const files = collectFiles(ROOT);
   const findings = [];
 
-  files.forEach((file) => {
+  files.forEach(_(file) => {
     try {
       const violations = scanFile(file);
       if (violations.length > 0) {
@@ -133,7 +133,7 @@ function main() {
 
   if (findings.length > 0) {
     console.error('\n[SpecKit] REAL DATA ONLY validation failed:');
-    findings.forEach((violation) => {
+    findings.forEach(_(violation) => {
       console.error(`- ${violation.file}:${violation.line} -> ${violation.message}`);
       console.error(`  snippet: ${violation.snippet}`);
     });

@@ -130,13 +130,13 @@ app.use(loggingMiddleware);
 let dbConnected = false;
 let mcpConnected = false;
 
-(async () => {
+(async _() => {
   dbConnected = await testDatabaseConnection();
   mcpConnected = await initializeMCPClient();
 })();
 
 // Health check endpoint with REAL status
-app.get('/health', async (req, res) => {
+app.get(_'/health', async _(req, res) => {
   const health = {
     status: 'healthy',
     service: 'sentia-manufacturing-dashboard',
@@ -174,7 +174,7 @@ app.get('/health', async (req, res) => {
 });
 
 // API Status endpoint
-app.get('/api/status', (req, res) => {
+app.get(_'/api/status', _(req, res) => {
   res.json({
     service: 'Sentia Manufacturing API',
     version: '1.0.6',
@@ -202,7 +202,7 @@ app.get('/api/status', (req, res) => {
 });
 
 // Authentication endpoints
-app.get('/api/auth/me', async (req, res) => {
+app.get(_'/api/auth/me', async _(req, res) => {
   // This would integrate with Clerk in production
   res.json({
     user: {
@@ -215,7 +215,7 @@ app.get('/api/auth/me', async (req, res) => {
 });
 
 // Working Capital API endpoints
-app.get('/api/working-capital/overview', async (req, res) => {
+app.get(_'/api/working-capital/overview', async _(req, res) => {
   try {
     // Real database query would go here
     const data = {
@@ -248,7 +248,7 @@ app.get('/api/working-capital/overview', async (req, res) => {
 });
 
 // What-If Analysis API endpoints
-app.post('/api/what-if/scenario', async (req, res) => {
+app.post(_'/api/what-if/scenario', async _(req, res) => {
   try {
     const { parameters } = req.body;
     // Process scenario analysis
@@ -272,7 +272,7 @@ app.post('/api/what-if/scenario', async (req, res) => {
 });
 
 // Production API endpoints
-app.get('/api/production/jobs', async (req, res) => {
+app.get(_'/api/production/jobs', async _(req, res) => {
   try {
     // In production, this would query the actual database
     const jobs = [
@@ -299,7 +299,7 @@ app.get('/api/production/jobs', async (req, res) => {
 });
 
 // Quality Control API endpoints
-app.get('/api/quality/metrics', async (req, res) => {
+app.get(_'/api/quality/metrics', async _(req, res) => {
   try {
     const metrics = {
       defectRate: 0.018,
@@ -316,7 +316,7 @@ app.get('/api/quality/metrics', async (req, res) => {
 });
 
 // Inventory API endpoints
-app.get('/api/inventory/levels', async (req, res) => {
+app.get(_'/api/inventory/levels', async _(req, res) => {
   try {
     const inventory = {
       totalValue: 3200000,
@@ -347,7 +347,7 @@ app.get('/api/inventory/levels', async (req, res) => {
 });
 
 // Forecasting API endpoints
-app.get('/api/forecasting/demand', async (req, res) => {
+app.get(_'/api/forecasting/demand', async _(req, res) => {
   try {
     const forecast = {
       nextMonth: 12500,
@@ -368,7 +368,7 @@ app.get('/api/forecasting/demand', async (req, res) => {
 });
 
 // Analytics API endpoints
-app.get('/api/analytics/kpis', async (req, res) => {
+app.get(_'/api/analytics/kpis', async _(req, res) => {
   try {
     const kpis = {
       revenue: {
@@ -395,7 +395,7 @@ app.get('/api/analytics/kpis', async (req, res) => {
 });
 
 // AI Analytics endpoints (integrated with MCP)
-app.post('/api/ai/analyze', async (req, res) => {
+app.post(_'/api/ai/analyze', async _(req, res) => {
   try {
     const { query, context } = req.body;
 
@@ -422,7 +422,7 @@ app.post('/api/ai/analyze', async (req, res) => {
 });
 
 // MCP Tools API endpoints
-app.get('/api/mcp/tools', async (req, res) => {
+app.get(_'/api/mcp/tools', async _(req, res) => {
   try {
     if (mcpClient) {
       const tools = await mcpClient.listTools();
@@ -437,21 +437,21 @@ app.get('/api/mcp/tools', async (req, res) => {
 });
 
 // WebSocket for real-time updates
-io.on('connection', (socket) => {
+io.on(_'connection', _(socket) => {
   console.log('Client connected:', socket.id);
 
-  socket.on('subscribe', (channel) => {
+  socket.on(_'subscribe', _(channel) => {
     socket.join(channel);
     logger.info(`Client ${socket.id} subscribed to ${channel}`);
   });
 
-  socket.on('disconnect', () => {
+  socket.on(_'disconnect', _() => {
     console.log('Client disconnected:', socket.id);
   });
 });
 
 // Server-Sent Events for real-time updates
-app.get('/api/sse/events', (req, res) => {
+app.get(_'/api/sse/events', _(req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -462,7 +462,7 @@ app.get('/api/sse/events', (req, res) => {
   res.write(`data: ${JSON.stringify({ type: 'connected', timestamp: new Date().toISOString() })}\n\n`);
 
   // Send periodic updates
-  const interval = setInterval(() => {
+  const interval = setInterval(_() => {
     res.write(`data: ${JSON.stringify({
       type: 'heartbeat',
       timestamp: new Date().toISOString(),
@@ -473,7 +473,7 @@ app.get('/api/sse/events', (req, res) => {
     })}\n\n`);
   }, 30000);
 
-  req.on('close', () => {
+  req.on(_'close', _() => {
     clearInterval(interval);
   });
 });
@@ -481,7 +481,7 @@ app.get('/api/sse/events', (req, res) => {
 // Global SSE endpoint at /api/events (frontend expects this endpoint)
 const sseClients = new Set();
 
-app.get('/api/events', (req, res) => {
+app.get(_'/api/events', _(req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -499,11 +499,11 @@ app.get('/api/events', (req, res) => {
   
   sseClients.add(res);
   
-  req.on('close', () => {
+  req.on(_'close', _() => {
     sseClients.delete(res);
   });
 
-  req.on('error', () => {
+  req.on(_'error', _() => {
     sseClients.delete(res);
   });
 });
@@ -534,7 +534,7 @@ if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 
   // SPA fallback - must be last
-  app.get('*', (req, res) => {
+  app.get(_'*', _(req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 } else {
@@ -542,7 +542,7 @@ if (fs.existsSync(distPath)) {
 }
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use(_(err, req, res, _next) => {
   logger.error('Server error', err);
   res.status(500).json({
     error: 'Internal server error',
@@ -551,7 +551,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, _() => {
   logger.info(`
 ========================================
 SERVER STARTED SUCCESSFULLY
@@ -568,7 +568,7 @@ MCP: ${mcpConnected ? 'Connected' : 'Not connected'}
 });
 
 // Graceful shutdown
-process.on('SIGTERM', async () => {
+process.on(_'SIGTERM', async _() => {
   console.log('SIGTERM received, shutting down gracefully...');
 
   // Close database connection
@@ -580,19 +580,19 @@ process.on('SIGTERM', async () => {
   }
 
   // Close HTTP server
-  httpServer.close(() => {
+  httpServer.close(_() => {
     console.log('Server closed');
     process.exit(0);
   });
 });
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
+process.on(_'uncaughtException', _(error) => {
   logger.critical('Uncaught exception', error);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (error) => {
+process.on(_'unhandledRejection', _(error) => {
   logger.critical('Unhandled rejection', error);
   process.exit(1);
 });

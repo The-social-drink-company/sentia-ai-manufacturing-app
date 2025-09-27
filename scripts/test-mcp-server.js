@@ -8,8 +8,8 @@
 import fetch from 'node-fetch';
 import chalk from 'chalk';
 
-const MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
-const TEST_RESULTS = {
+const MCPSERVER_URL = 'https://mcp-server-tkyu.onrender.com';
+const TESTRESULTS = {
   passed: [],
   failed: [],
   warnings: []
@@ -99,7 +99,7 @@ async function runTests() {
   if (aiStatus.success && aiStatus.data) {
     if (aiStatus.data.providers) {
       info('AI Providers Configured:');
-      Object.entries(aiStatus.data.providers).forEach(([key, value]) => {
+      Object.entries(aiStatus.data.providers).forEach(_([key, _value]) => {
         if (value.status === 'active') {
           success(`  ${key}: ${value.name} - ACTIVE`);
         } else {
@@ -117,7 +117,7 @@ async function runTests() {
   if (apiStatus.success && apiStatus.data) {
     if (apiStatus.data.services) {
       info('External Services:');
-      Object.entries(apiStatus.data.services).forEach(([key, value]) => {
+      Object.entries(apiStatus.data.services).forEach(_([key, _value]) => {
         const status = value.status || 'unknown';
         if (status === 'connected' || status === 'configured') {
           success(`  ${key}: ${value.name} - ${status.toUpperCase()}`);

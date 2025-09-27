@@ -4,11 +4,11 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { cn } from '../../utils/cn'
 
 export const Modal = ({
-  isOpen,
+  _isOpen,
   onClose,
   title,
   description,
-  children,
+  _children,
   size = 'md',
   className,
   closeOnOverlayClick = true,

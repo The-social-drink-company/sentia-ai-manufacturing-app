@@ -108,7 +108,7 @@ class UnleashedERPService {
     await this.syncAllData();
 
     // Schedule regular syncs
-    this.syncInterval = setInterval(async () => {
+    this.syncInterval = setInterval(async _() => {
       try {
         await this.syncAllData();
       } catch (error) {

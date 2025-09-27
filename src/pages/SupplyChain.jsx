@@ -58,7 +58,7 @@ export default function SupplyChain() {
   const [selectedTimeframe, setSelectedTimeframe] = useState('7d');
   const [selectedView, setSelectedView] = useState('overview');
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (_status) => {
     switch (status) {
       case 'excellent':
         return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
@@ -73,7 +73,7 @@ export default function SupplyChain() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'excellent':
         return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200';
@@ -213,7 +213,7 @@ export default function SupplyChain() {
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
                   labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                  formatter={(value, name) => [`${value}%`, name]}
+                  formatter={(value, _name) => [`${value}%`, name]}
                 />
                 <Legend />
                 <Line type="monotone" dataKey="onTime" stroke="#10b981" strokeWidth={2} name="On Time" />

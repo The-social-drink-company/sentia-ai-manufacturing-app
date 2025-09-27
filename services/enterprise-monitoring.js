@@ -177,26 +177,26 @@ class EnterpriseMonitoringService extends EventEmitter {
     this.isMonitoring = true;
     
     // High-frequency monitoring (every 30 seconds)
-    this.systemMonitoringInterval = setInterval(() => {
+    this.systemMonitoringInterval = setInterval(_() => {
       this.collectSystemMetrics();
       this.collectApplicationMetrics();
     }, 30000);
 
     // Medium-frequency monitoring (every 2 minutes)
-    this.businessMonitoringInterval = setInterval(() => {
+    this.businessMonitoringInterval = setInterval(_() => {
       this.collectBusinessMetrics();
       this.checkAlerts();
     }, 120000);
 
     // Low-frequency monitoring (every 10 minutes)
-    this.analyticsInterval = setInterval(() => {
+    this.analyticsInterval = setInterval(_() => {
       this.performAnomalyDetection();
       this.generateInsights();
       this.updateBaselines();
     }, 600000);
 
     // Reporting (every hour)
-    this.reportingInterval = setInterval(() => {
+    this.reportingInterval = setInterval(_() => {
       this.generateHourlyReport();
       this.cleanupOldMetrics();
     }, 3600000);

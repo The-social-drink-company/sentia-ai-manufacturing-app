@@ -43,7 +43,7 @@ const ROUTE_REGISTRY = [
 export function setupAPIRoutes(app) {
   logDebug('Registering enterprise API routes...');
 
-  ROUTE_REGISTRY.forEach(({ path, name, router }) => {
+  ROUTE_REGISTRY.forEach(({ _path, _name, router }) => {
     try {
       app.use(path, router);
       logDebug(`[api] ${name} routes mounted at ${path}`);

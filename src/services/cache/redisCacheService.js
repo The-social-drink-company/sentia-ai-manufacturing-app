@@ -35,7 +35,7 @@ class RedisCacheService {
     try {
       if (process.env.REDIS_URL) {
         this.client = createClient({
-          url: process.env.REDIS_URL,
+          url: _process.env.REDIS_URL,
           socket: {
             connectTimeout: 10000,
             lazyConnect: true,
@@ -476,7 +476,7 @@ export const cacheService = new RedisCacheService();
 
 // Export cache decorators for common patterns
 export const withCache = (key, ttl, options = {}) => {
-  return (target, propertyName, descriptor) => {
+  return (_target, _propertyName, descriptor) => {
     const method = descriptor.value;
 
     descriptor.value = async function(...args) {

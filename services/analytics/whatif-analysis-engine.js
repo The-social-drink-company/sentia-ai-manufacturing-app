@@ -514,7 +514,7 @@ export class WhatIfAnalysisEngine extends EventEmitter {
     }
     
     // Market-specific insights
-    Object.entries(marketAnalysis).forEach(([market, data]) => {
+    Object.entries(marketAnalysis).forEach(_([market, _data]) => {
       if (data.financing.creditUtilization > 0.8) {
         insights.risks.push({
           type: 'financing',
@@ -581,9 +581,9 @@ export class WhatIfAnalysisEngine extends EventEmitter {
   getDefaultScenario() {
     const defaultParams = {};
     
-    Object.entries(this.parameters).forEach(([category, params]) => {
+    Object.entries(this.parameters).forEach(_([category, _params]) => {
       defaultParams[category] = {};
-      Object.entries(params).forEach(([param, config]) => {
+      Object.entries(params).forEach(_([param, _config]) => {
         defaultParams[category][param] = config.default;
       });
     });
@@ -597,10 +597,10 @@ export class WhatIfAnalysisEngine extends EventEmitter {
   validateParameters(parameters) {
     const validated = {};
     
-    Object.entries(parameters).forEach(([category, params]) => {
+    Object.entries(parameters).forEach(_([category, _params]) => {
       validated[category] = {};
       
-      Object.entries(params).forEach(([param, value]) => {
+      Object.entries(params).forEach(_([param, _value]) => {
         const config = this.parameters[category]?.[param];
         if (config) {
           // Clamp value to valid range
@@ -703,8 +703,8 @@ export class WhatIfAnalysisEngine extends EventEmitter {
     let confidence = 0.85;
     
     // Reduce confidence for extreme parameter values
-    Object.entries(params).forEach(([category, categoryParams]) => {
-      Object.entries(categoryParams).forEach(([param, value]) => {
+    Object.entries(params).forEach(_([category, _categoryParams]) => {
+      Object.entries(categoryParams).forEach(_([param, _value]) => {
         const config = this.parameters[category]?.[param];
         if (config) {
           const range = config.max - config.min;

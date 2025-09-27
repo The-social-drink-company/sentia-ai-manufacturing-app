@@ -97,14 +97,14 @@ class ThreatDetector {
   detectSQLInjection(req) {
     const sqlPatterns = [
       /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE)\b)/gi,
-      /(--|\#|\/\*|\*\/)/g,
+      /(--|\#|/*|*/)/g,
       /(\bOR\b\s*\d+\s*=\s*\d+)/gi,
       /(\bAND\b\s*\d+\s*=\s*\d+)/gi,
       /(\'|\"|;|\\x00|\\n|\\r|\\x1a)/g,
       /(\bEXEC\b|\bEXECUTE\b|\bCAST\b|\bDECLARE\b)/gi
     ];
 
-    const checkString = (str) => {
+    const checkString = (_str) => {
       if (!str) return false;
       const decoded = decodeURIComponent(str);
       return sqlPatterns.some(pattern => pattern.test(decoded));
@@ -133,21 +133,21 @@ class ThreatDetector {
    */
   detectXSS(req) {
     const xssPatterns = [
-      /<script[^>]*>.*?<\/script>/gi,
-      /<iframe[^>]*>.*?<\/iframe>/gi,
+      /<script[^>]*>.*?</script>/gi,
+      /<iframe[^>]*>.*?</iframe>/gi,
       /javascript:/gi,
       /on\w+\s*=/gi, // Event handlers
       /<img[^>]*onerror=/gi,
       /<svg[^>]*onload=/gi,
-      /eval\s*\(/gi,
-      /expression\s*\(/gi,
+      /eval\s*(/gi,
+      /expression\s*(/gi,
       /<object[^>]*>/gi,
       /<embed[^>]*>/gi,
-      /document\.(cookie|write|domain)/gi,
-      /window\.(location|open)/gi
+      /document.(cookie|write|domain)/gi,
+      /window.(location|open)/gi
     ];
 
-    const checkString = (str) => {
+    const checkString = (_str) => {
       if (!str) return false;
       const decoded = decodeURIComponent(str);
       return xssPatterns.some(pattern => pattern.test(decoded));
@@ -175,11 +175,11 @@ class ThreatDetector {
    */
   detectPathTraversal(req) {
     const traversalPatterns = [
-      /\.\.\//g,
-      /\.\.\\\/g,
+      /..//g,
+      /..\\/g,
       /%2e%2e%2f/gi,
       /%252e%252e%252f/gi,
-      /\.\./g
+      /../g
     ];
 
     const checkPath = (path) => {
@@ -221,12 +221,12 @@ class ThreatDetector {
       /;\s*(ls|dir|cat|type|more|less|head|tail|pwd|whoami|id|uname)/gi,
       /\|\s*(ls|dir|cat|type|more|less|head|tail|pwd|whoami|id|uname)/gi,
       /`[^`]*`/g,
-      /\$\([^)]*\)/g,
+      /\$([^)]*)/g,
       /&&\s*\w+/g,
       /\|\|\s*\w+/g
     ];
 
-    const checkString = (str) => {
+    const checkString = (_str) => {
       if (!str) return false;
       return cmdPatterns.some(pattern => pattern.test(str));
     };
@@ -384,7 +384,7 @@ class ThreatDetector {
     const userId = req.user?.id;
 
     // Calculate threat score
-    const threatScore = threats.reduce((score, threat) => {
+    const threatScore = threats.reduce(_(score, threat) => {
       const severityScores = {
         CRITICAL: 20,
         HIGH: 10,

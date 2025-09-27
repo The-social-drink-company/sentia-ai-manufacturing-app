@@ -22,9 +22,9 @@ const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
  * GET /api/production/metrics
  * Get production metrics with filters
  */
-router.get('/metrics',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/metrics',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { timeRange = '24h', line = 'all', shift = 'current' } = req.query;
 
@@ -96,9 +96,9 @@ router.post('/metrics',
  * GET /api/production/schedule
  * Get production schedule
  */
-router.get('/schedule',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/schedule',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { daysAhead = 30 } = req.query;
 
@@ -225,9 +225,9 @@ router.put('/schedule/:id',
  * GET /api/production/lines
  * Get all production lines
  */
-router.get('/lines',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/lines',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const lines = await prisma.productionLine.findMany({
       include: {
@@ -287,9 +287,9 @@ router.post('/lines',
  * GET /api/production/efficiency
  * Get efficiency analytics
  */
-router.get('/efficiency',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/efficiency',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = '7d' } = req.query;
 
@@ -375,9 +375,9 @@ router.post('/batch',
  * GET /api/production/downtime
  * Get downtime analysis
  */
-router.get('/downtime',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/downtime',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { lineId, startDate, endDate } = req.query;
 
@@ -432,9 +432,9 @@ router.get('/downtime',
  * GET /api/production/machines
  * Get machine metrics and status
  */
-router.get('/machines',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/machines',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const cacheKey = 'production-machines';
     const cached = cache.get(cacheKey);
@@ -528,9 +528,9 @@ router.put('/jobs/:id',
  * GET /api/production/quality
  * Get quality metrics for production
  */
-router.get('/quality',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/quality',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { timeRange = '7d' } = req.query;
 

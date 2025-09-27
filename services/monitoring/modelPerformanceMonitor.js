@@ -185,7 +185,7 @@ class ModelPerformanceMonitor extends EventEmitter {
 
     this.isMonitoring = true;
     
-    this.monitoringInterval = setInterval(() => {
+    this.monitoringInterval = setInterval(_() => {
       this.performPeriodicChecks();
     }, this.config.monitoringInterval);
 
@@ -301,10 +301,10 @@ class ModelPerformanceMonitor extends EventEmitter {
     recentLatencies.push(latency);
 
     // Calculate average latency
-    metrics.averageLatency = recentLatencies.reduce((sum, lat) => sum + lat, 0) / recentLatencies.length;
+    metrics.averageLatency = recentLatencies.reduce((sum, _lat) => sum + lat, 0) / recentLatencies.length;
     
     // Calculate P95 latency
-    const sortedLatencies = [...recentLatencies].sort((a, b) => a - b);
+    const sortedLatencies = [...recentLatencies].sort((a, _b) => a - b);
     const p95Index = Math.floor(sortedLatencies.length * 0.95);
     metrics.p95Latency = sortedLatencies[p95Index] || latency;
     
@@ -352,32 +352,32 @@ class ModelPerformanceMonitor extends EventEmitter {
     if (recentPredictions.length === 0) return;
 
     // Calculate MAPE (Mean Absolute Percentage Error)
-    const mapeSum = recentPredictions.reduce((sum, pred) => {
+    const mapeSum = recentPredictions.reduce(_(sum, pred) => {
       const error = Math.abs(pred.actualValue - pred.output) / Math.abs(pred.actualValue);
       return sum + (isFinite(error) ? error : 0);
     }, 0);
     metrics.mape = (mapeSum / recentPredictions.length) * 100;
 
     // Calculate RMSE (Root Mean Square Error)
-    const mseSum = recentPredictions.reduce((sum, pred) => {
+    const mseSum = recentPredictions.reduce(_(sum, pred) => {
       const error = pred.actualValue - pred.output;
       return sum + (error * error);
     }, 0);
     metrics.rmse = Math.sqrt(mseSum / recentPredictions.length);
 
     // Calculate MAE (Mean Absolute Error)
-    const maeSum = recentPredictions.reduce((sum, pred) => {
+    const maeSum = recentPredictions.reduce(_(sum, pred) => {
       return sum + Math.abs(pred.actualValue - pred.output);
     }, 0);
     metrics.mae = maeSum / recentPredictions.length;
 
     // Calculate R-squared
     const actualMean = recentPredictions.reduce((sum, pred) => sum + pred.actualValue, 0) / recentPredictions.length;
-    const ssRes = recentPredictions.reduce((sum, pred) => {
+    const ssRes = recentPredictions.reduce(_(sum, pred) => {
       const error = pred.actualValue - pred.output;
       return sum + (error * error);
     }, 0);
-    const ssTot = recentPredictions.reduce((sum, pred) => {
+    const ssTot = recentPredictions.reduce(_(sum, pred) => {
       const error = pred.actualValue - actualMean;
       return sum + (error * error);
     }, 0);
@@ -391,7 +391,7 @@ class ModelPerformanceMonitor extends EventEmitter {
       const confidencePredictions = recentPredictions.filter(p => p.confidence !== null);
       if (confidencePredictions.length > 0) {
         // Simple confidence accuracy: average of whether prediction was within confidence interval
-        metrics.confidenceAccuracy = confidencePredictions.reduce((sum, pred) => {
+        metrics.confidenceAccuracy = confidencePredictions.reduce(_(sum, pred) => {
           const error = Math.abs(pred.actualValue - pred.output) / Math.abs(pred.actualValue);
           const withinConfidence = error <= (1 - (pred.confidence || 0.85));
           return sum + (withinConfidence ? 1 : 0);

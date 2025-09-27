@@ -76,9 +76,9 @@ const qualitySchemas = {
  * GET /api/quality/dashboard
  * Get quality dashboard metrics using quality service
  */
-router.get('/dashboard',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/dashboard',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { timeRange = '7d' } = req.query;
 
@@ -95,9 +95,9 @@ router.get('/dashboard',
  * GET /api/quality/inspections
  * Get quality inspections with filters
  */
-router.get('/inspections',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/inspections',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const query = qualitySchemas.inspection.query.parse(req.query);
 
@@ -232,9 +232,9 @@ router.post('/inspections',
  * GET /api/quality/defects
  * Get quality defects
  */
-router.get('/defects',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/defects',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { productId, category, status, startDate, endDate, limit = 50, offset = 0 } = req.query;
 
@@ -375,9 +375,9 @@ router.put('/defects/:id',
  * GET /api/quality/metrics
  * Get quality metrics and KPIs
  */
-router.get('/metrics',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/metrics',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const query = qualitySchemas.metrics.query.parse(req.query);
 
@@ -572,9 +572,9 @@ router.post('/checks',
  * GET /api/quality/checks/:productionId
  * Get quality checks for a specific production job
  */
-router.get('/checks/:productionId',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/checks/:productionId',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { productionId } = req.params;
 
@@ -591,9 +591,9 @@ router.get('/checks/:productionId',
  * GET /api/quality/checklists
  * Get quality control checklist templates
  */
-router.get('/checklists',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/checklists',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const checklists = await qualityService.getQualityChecklists();
 
@@ -648,9 +648,9 @@ router.get('/export',
  * GET /api/quality/certifications
  * Get quality certifications and compliance
  */
-router.get('/certifications',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/certifications',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const certifications = await prisma.qualityCertification.findMany({
       orderBy: { expiryDate: 'asc' }

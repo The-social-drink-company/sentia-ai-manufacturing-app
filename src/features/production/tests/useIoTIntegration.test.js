@@ -94,7 +94,7 @@ describe('useIoTIntegration', () => {
     vi.resetAllMocks()
   })
 
-  it('should initialize with connection status', () => {
+  it('should initialize with connection _status', () => {
     const { result } = renderHook(() => useIoTIntegration(), {
       wrapper: createWrapper()
     })
@@ -104,7 +104,7 @@ describe('useIoTIntegration', () => {
     expect(result.current.connectionStatus.onlineMachines).toBe(3)
   })
 
-  it('should set up event listener on mount', () => {
+  it('should set up event listener on _mount', () => {
     renderHook(() => useIoTIntegration(), {
       wrapper: createWrapper()
     })
@@ -114,7 +114,7 @@ describe('useIoTIntegration', () => {
     )
   })
 
-  it('should update real-time data when receiving sensor events', async () => {
+  it('should update real-time data when receiving sensor _events', async () => {
     const { result } = renderHook(() => useIoTIntegration(), {
       wrapper: createWrapper()
     })
@@ -132,7 +132,7 @@ describe('useIoTIntegration', () => {
     })
   })
 
-  it('should handle alarm events', async () => {
+  it('should handle alarm _events', async () => {
     const { result } = renderHook(() => useIoTIntegration(), {
       wrapper: createWrapper()
     })
@@ -153,7 +153,7 @@ describe('useIoTIntegration', () => {
     })
   })
 
-  it('should acknowledge alarms', async () => {
+  it('should acknowledge _alarms', async () => {
     mockIoTService.acknowledgeAlarm.mockReturnValue(true)
 
     const { result } = renderHook(() => useIoTIntegration(), {
@@ -166,7 +166,7 @@ describe('useIoTIntegration', () => {
     expect(mockIoTService.acknowledgeAlarm).toHaveBeenCalledWith('CNC_001', 'alarm_001')
   })
 
-  it('should send machine commands', async () => {
+  it('should send machine _commands', async () => {
     mockIoTService.sendMachineCommand.mockReturnValue(true)
 
     const { result } = renderHook(() => useIoTIntegration(), {
@@ -189,7 +189,7 @@ describe('useIoTSensorData', () => {
     })
   })
 
-  it('should fetch all sensor data when no machineId specified', async () => {
+  it('should fetch all sensor data when no machineId _specified', async () => {
     const mockSensorData = [
       { machineId: 'CNC_001', sensors: { temperature: { value: 75 } } },
       { machineId: 'CNC_002', sensors: { temperature: { value: 78 } } }
@@ -209,7 +209,7 @@ describe('useIoTSensorData', () => {
     expect(mockIoTService.getAllSensorData).toHaveBeenCalled()
   })
 
-  it('should fetch specific machine data when machineId provided', async () => {
+  it('should fetch specific machine data when machineId _provided', async () => {
     const mockMachineData = {
       machineId: 'CNC_001',
       sensors: { temperature: { value: 75 } }
@@ -228,7 +228,7 @@ describe('useIoTSensorData', () => {
     expect(mockIoTService.getMachineSensorData).toHaveBeenCalledWith('CNC_001')
   })
 
-  it('should handle error when machine not found', async () => {
+  it('should handle error when machine not _found', async () => {
     mockIoTService.getMachineSensorData.mockReturnValue(null)
 
     const { result } = renderHook(() => useIoTSensorData('NON_EXISTENT'), {
@@ -251,7 +251,7 @@ describe('useIoTMachineStates', () => {
     })
   })
 
-  it('should fetch machine state for specific machine', async () => {
+  it('should fetch machine state for specific _machine', async () => {
     const mockMachineState = {
       currentState: 'running',
       cycleTime: 120000,
@@ -271,7 +271,7 @@ describe('useIoTMachineStates', () => {
     expect(mockIoTService.getMachineState).toHaveBeenCalledWith('CNC_001')
   })
 
-  it('should fetch all machine states when no machineId specified', async () => {
+  it('should fetch all machine states when no machineId _specified', async () => {
     const mockSensorData = [
       { machineId: 'CNC_001' },
       { machineId: 'CNC_002' }
@@ -304,7 +304,7 @@ describe('useIoTOEEData', () => {
     })
   })
 
-  it('should fetch OEE data for specific machine', async () => {
+  it('should fetch OEE data for specific _machine', async () => {
     const mockMachineData = {
       machineId: 'CNC_001',
       timestamp: new Date().toISOString(),
@@ -329,7 +329,7 @@ describe('useIoTOEEData', () => {
     })
   })
 
-  it('should fetch OEE data for all machines', async () => {
+  it('should fetch OEE data for all _machines', async () => {
     const mockSensorData = [
       {
         machineId: 'CNC_001',
@@ -358,7 +358,7 @@ describe('useIoTOEEData', () => {
 })
 
 describe('useIoTAlarms', () => {
-  it('should filter alarms by machine when specified', () => {
+  it('should filter alarms by machine when _specified', () => {
     const mockAlarms = [
       { machineId: 'CNC_001', id: 'alarm_001', severity: 'critical' },
       { machineId: 'CNC_002', id: 'alarm_002', severity: 'high' },
@@ -385,7 +385,7 @@ describe('useIoTAlarms', () => {
     expect(result.current.allAlarms.every(alarm => alarm.machineId === 'CNC_001')).toBe(true)
   })
 
-  it('should group alarms by severity', () => {
+  it('should group alarms by _severity', () => {
     const mockAlarms = [
       { machineId: 'CNC_001', severity: 'critical', acknowledged: false },
       { machineId: 'CNC_001', severity: 'high', acknowledged: false },
@@ -414,7 +414,7 @@ describe('useIoTAlarms', () => {
     expect(result.current.criticalCount).toBe(2)
   })
 
-  it('should identify unacknowledged alarms', () => {
+  it('should identify unacknowledged _alarms', () => {
     const mockAlarms = [
       { machineId: 'CNC_001', acknowledged: false },
       { machineId: 'CNC_001', acknowledged: true },
@@ -445,7 +445,7 @@ describe('useIoTProductionMetrics', () => {
     vi.clearAllMocks()
   })
 
-  it('should calculate production metrics from IoT data', async () => {
+  it('should calculate production metrics from IoT _data', async () => {
     const mockSensorData = [
       {
         machineId: 'CNC_001',
@@ -510,7 +510,7 @@ describe('useIoTMachineControl', () => {
     })
   })
 
-  it('should execute commands when connected', async () => {
+  it('should execute commands when _connected', async () => {
     mockIoTService.sendMachineCommand.mockReturnValue(true)
 
     const { result } = renderHook(() => useIoTMachineControl('CNC_001'), {
@@ -525,7 +525,7 @@ describe('useIoTMachineControl', () => {
     expect(mockIoTService.sendMachineCommand).toHaveBeenCalledWith('CNC_001', 'start', {})
   })
 
-  it('should provide convenience methods for common commands', async () => {
+  it('should provide convenience methods for common _commands', async () => {
     mockIoTService.sendMachineCommand.mockReturnValue(true)
 
     const { result } = renderHook(() => useIoTMachineControl('CNC_001'), {
@@ -545,7 +545,7 @@ describe('useIoTMachineControl', () => {
     expect(mockIoTService.sendMachineCommand).toHaveBeenCalledWith('CNC_001', 'stop', {})
   })
 
-  it('should throw error when not connected', async () => {
+  it('should throw error when not _connected', async () => {
     mockIoTService.getConnectionStatus.mockReturnValue({
       isConnected: false
     })
@@ -561,7 +561,7 @@ describe('useIoTMachineControl', () => {
     ).rejects.toThrow('IoT system not connected')
   })
 
-  it('should handle command failures', async () => {
+  it('should handle command _failures', async () => {
     mockIoTService.sendMachineCommand.mockReturnValue(false)
 
     const { result } = renderHook(() => useIoTMachineControl('CNC_001'), {

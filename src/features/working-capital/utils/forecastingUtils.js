@@ -6,7 +6,7 @@
 import { TimeSeriesForecaster, CashFlowForecaster, WorkingCapitalOptimizer } from '../models/FinancialForecastModels.js'
 
 // Cash flow forecasting utilities
-export const generateCashFlowForecast = (historicalData, options = {}) => {
+export const generateCashFlowForecast = (_historicalData, options = {}) => {
   const forecaster = new CashFlowForecaster(historicalData, options)
   const scenarios = ['base', 'optimistic', 'pessimistic']
 
@@ -74,7 +74,7 @@ export const forecastWorkingCapitalMetrics = (historicalMetrics, options = {}) =
 }
 
 // Generate optimization recommendations
-export const generateOptimizationRecommendations = (currentMetrics, industryBenchmarks = {}) => {
+export const generateOptimizationRecommendations = (_currentMetrics, industryBenchmarks = {}) => {
   const optimizer = new WorkingCapitalOptimizer(currentMetrics, industryBenchmarks)
   const opportunities = optimizer.calculateOptimizationOpportunities()
   const impact = optimizer.calculateOptimizationImpact(opportunities)
@@ -147,7 +147,7 @@ export const assessCashFlowRisk = (forecastData, thresholds = {}) => {
     .map(f => f.netCashFlow)
 
   if (cashFlows.length > 1) {
-    const mean = cashFlows.reduce((a, b) => a + b, 0) / cashFlows.length
+    const mean = cashFlows.reduce((a, _b) => a + b, 0) / cashFlows.length
     const variance = cashFlows.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / cashFlows.length
     const volatility = Math.sqrt(variance) / Math.abs(mean)
 
@@ -194,8 +194,8 @@ export const assessCashFlowRisk = (forecastData, thresholds = {}) => {
       criticalRisks: risks.filter(r => r.severity === 'critical').length,
       warningRisks: risks.filter(r => r.severity === 'warning').length,
       volatility: cashFlows.length > 1 ? Math.sqrt(
-        cashFlows.reduce((sum, value) => sum + Math.pow(value - (cashFlows.reduce((a, b) => a + b, 0) / cashFlows.length), 2), 0) / cashFlows.length
-      ) / Math.abs(cashFlows.reduce((a, b) => a + b, 0) / cashFlows.length) : 0
+        cashFlows.reduce((sum, value) => sum + Math.pow(value - (cashFlows.reduce((a, _b) => a + b, 0) / cashFlows.length), 2), 0) / cashFlows.length
+      ) / Math.abs(cashFlows.reduce((a, _b) => a + b, 0) / cashFlows.length) : 0
     }
   }
 }

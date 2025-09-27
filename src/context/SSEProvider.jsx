@@ -71,7 +71,7 @@ export const SSEProvider = ({ children }) => {
 };
 
 // Global event handler for cross-component updates
-const handleGlobalSSEEvent = (eventType, data, queryClient) => {
+const handleGlobalSSEEvent = (_eventType, data, queryClient) => {
   switch (eventType) {
     case 'system.maintenance.start':
       // Show maintenance banner across all components
@@ -133,7 +133,7 @@ const handleGlobalSSEEvent = (eventType, data, queryClient) => {
 
     default:
       // Log unknown events for debugging
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODEENV = == 'development') {
         devLog.log('Unhandled SSE event:', eventType, data);
       }
       break;

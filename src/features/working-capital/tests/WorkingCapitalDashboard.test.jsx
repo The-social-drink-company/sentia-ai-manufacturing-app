@@ -96,22 +96,22 @@ const renderWithRouter = (component) => {
   )
 }
 
-describe('WorkingCapitalDashboard', () => {
+describe('WorkingCapitalDashboard', () {
   const mockRefetch = vi.fn()
   const mockExportData = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(() {
     vi.clearAllMocks()
 
     // Mock successful export
     mockExportData.mockResolvedValue({ success: true, filename: 'test.csv' })
   })
 
-  afterEach(() => {
+  afterEach(() {
     vi.restoreAllMocks()
   })
 
-  it('renders the dashboard with all main sections', () => {
+  it('renders the dashboard with all main _sections', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     // Check header
@@ -130,7 +130,7 @@ describe('WorkingCapitalDashboard', () => {
     expect(screen.getByText('Inventory')).toBeInTheDocument()
   })
 
-  it('displays correct metric values', () => {
+  it('displays correct metric values', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     // Check formatted currency values
@@ -155,7 +155,7 @@ describe('WorkingCapitalDashboard', () => {
     expect(screen.getByText('13.1x')).toBeInTheDocument() // Turnover Ratio
   })
 
-  it('displays alerts when present', () => {
+  it('displays alerts when _present', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     expect(screen.getByText('Active Alerts')).toBeInTheDocument()
@@ -164,7 +164,7 @@ describe('WorkingCapitalDashboard', () => {
     expect(screen.getByText('Review Collections')).toBeInTheDocument()
   })
 
-  it('handles period selection changes', () => {
+  it('handles period selection _changes', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     const periodSelector = screen.getByDisplayValue('Current')
@@ -174,7 +174,7 @@ describe('WorkingCapitalDashboard', () => {
     expect(periodSelector.value).toBe('mtd')
   })
 
-  it('handles currency selection changes', () => {
+  it('handles currency selection _changes', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     const currencySelector = screen.getByDisplayValue('USD')
@@ -183,14 +183,14 @@ describe('WorkingCapitalDashboard', () => {
     expect(currencySelector.value).toBe('EUR')
   })
 
-  it('handles export functionality', async () => {
+  it('handles export _functionality', async () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     // Find and hover over the export menu
     const exportMenu = screen.getByText('Export').closest('.relative')
     fireEvent.mouseEnter(exportMenu)
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Export as PDF')).toBeInTheDocument()
     })
 
@@ -198,12 +198,12 @@ describe('WorkingCapitalDashboard', () => {
     const pdfExport = screen.getByText('Export as PDF')
     fireEvent.click(pdfExport)
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(mockExportData).toHaveBeenCalledWith('pdf')
     })
   })
 
-  it('handles refresh button click', () => {
+  it('handles refresh button _click', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     const refreshButton = screen.getByText('Refresh')
@@ -212,7 +212,7 @@ describe('WorkingCapitalDashboard', () => {
     expect(mockRefetch).toHaveBeenCalledTimes(1)
   })
 
-  it('renders chart components', () => {
+  it('renders chart _components', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     expect(screen.getByTestId('aging-chart')).toBeInTheDocument()
@@ -221,8 +221,8 @@ describe('WorkingCapitalDashboard', () => {
     expect(screen.getByTestId('optimization-recommendations')).toBeInTheDocument()
   })
 
-  it('handles optimization recommendation actions', () => {
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+  it('handles optimization recommendation _actions', () {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() {})
 
     renderWithRouter(<WorkingCapitalDashboard />)
 
@@ -234,7 +234,7 @@ describe('WorkingCapitalDashboard', () => {
     consoleSpy.restore()
   })
 
-  it('handles role-based access control', () => {
+  it('handles role-based access _control', () {
     // Test with viewer role (should redirect)
     const { useAuth } = require('../../../hooks/useAuth')
     useAuth.mockReturnValue({ user: { role: 'viewer' } })
@@ -245,7 +245,7 @@ describe('WorkingCapitalDashboard', () => {
     // In a real test, you'd check for navigation or redirect
   })
 
-  it('auto-refreshes data every 15 minutes', () => {
+  it('auto-refreshes data every 15 _minutes', () {
     vi.useFakeTimers()
 
     renderWithRouter(<WorkingCapitalDashboard />)
@@ -258,7 +258,7 @@ describe('WorkingCapitalDashboard', () => {
     vi.useRealTimers()
   })
 
-  it('renders loading state correctly', () => {
+  it('renders loading state _correctly', () {
     const { useWorkingCapitalMetrics } = require('../hooks/useWorkingCapitalMetrics')
     useWorkingCapitalMetrics.mockReturnValue({
       data: null,
@@ -274,7 +274,7 @@ describe('WorkingCapitalDashboard', () => {
     expect(screen.getByRole('status')).toHaveClass('animate-spin')
   })
 
-  it('renders error state correctly', () => {
+  it('renders error state _correctly', () {
     const { useWorkingCapitalMetrics } = require('../hooks/useWorkingCapitalMetrics')
     useWorkingCapitalMetrics.mockReturnValue({
       data: null,
@@ -296,7 +296,7 @@ describe('WorkingCapitalDashboard', () => {
     expect(mockRefetch).toHaveBeenCalledTimes(1)
   })
 
-  it('formats currency values correctly', () => {
+  it('formats currency values _correctly', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     // Check that large numbers are formatted with commas
@@ -306,7 +306,7 @@ describe('WorkingCapitalDashboard', () => {
     expect(screen.getByText('$650,000')).toBeInTheDocument()
   })
 
-  it('passes correct props to chart components', () => {
+  it('passes correct props to chart _components', () {
     renderWithRouter(<WorkingCapitalDashboard />)
 
     const cccChart = screen.getByTestId('ccc-chart')

@@ -130,7 +130,7 @@ export class EnterpriseProcessManager {
       // Ensure port is available
       const port = await this.ensurePortAvailable(preferredPort, host, true);
       
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve, _reject) => {
         const timeout = setTimeout(() => {
           reject(new Error(`Server ${serviceName} failed to start within 30 seconds`));
         }, 30000);
@@ -148,7 +148,7 @@ export class EnterpriseProcessManager {
           resolve({ port, host });
         });
         
-        server.on('error', (error) => {
+        server.on(_'error', (error) => {
           clearTimeout(timeout);
           
           if (error.code === 'EADDRINUSE') {
@@ -161,7 +161,7 @@ export class EnterpriseProcessManager {
             // Try with a different port
             this.findAvailablePort(port + 1, host)
               .then(newPort => {
-                server.listen(newPort, host, () => {
+                _server.listen(newPort, host, () => {
                   this.portBindings.set(serviceName, { port: newPort, host, server });
                   resolve({ port: newPort, host });
                 });
@@ -218,7 +218,7 @@ export class EnterpriseProcessManager {
       // Wait for all shutdowns to complete (with timeout)
       await Promise.race([
         Promise.all(shutdownPromises),
-        new Promise((_, reject) => 
+        new Promise((_, _reject) => 
           setTimeout(() => reject(new Error('Shutdown timeout')), 30000)
         )
       ]);
@@ -260,17 +260,17 @@ export class EnterpriseProcessManager {
 
   // Setup process event handlers
   setupProcessHandlers() {
-    process.on('SIGTERM', () => {
+    process.on(_'SIGTERM', () => {
       logInfo('Received SIGTERM');
       this.gracefulShutdown('SIGTERM');
     });
     
-    process.on('SIGINT', () => {
+    process.on(_'SIGINT', () => {
       logInfo('Received SIGINT (Ctrl+C)');
       this.gracefulShutdown('SIGINT');
     });
     
-    process.on('uncaughtException', (error) => {
+    process.on(_'uncaughtException', (error) => {
       logError('Uncaught exception', {
         error: error.message,
         stack: error.stack
@@ -278,7 +278,7 @@ export class EnterpriseProcessManager {
       this.gracefulShutdown('uncaught_exception');
     });
     
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on(_'unhandledRejection', (reason, promise) => {
       logError('Unhandled rejection', {
         reason: reason?.message || reason,
         promise: promise.toString()
@@ -349,7 +349,7 @@ export class EnterpriseProcessManager {
     }, 60000); // Check every minute
     
     // Clean up interval on shutdown
-    this.addShutdownHandler('resource-monitor', () => {
+    this.addShutdownHandler(_'resource-monitor', () => {
       clearInterval(interval);
     });
   }

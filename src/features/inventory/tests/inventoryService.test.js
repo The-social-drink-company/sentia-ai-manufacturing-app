@@ -39,7 +39,7 @@ document.body = {
   removeChild: vi.fn()
 }
 
-describe('Inventory Service', () => {
+describe('Inventory _Service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     fetch.mockClear()
@@ -50,7 +50,7 @@ describe('Inventory Service', () => {
   })
 
   describe('fetchInventoryMetrics', () => {
-    it('fetches inventory metrics successfully from MCP server', async () => {
+    it('fetches inventory metrics successfully from MCP _server', async () => {
       const mockData = {
         summary: {
           totalItems: 1250,
@@ -94,7 +94,7 @@ describe('Inventory Service', () => {
       })
     })
 
-    it('falls back to main API when MCP server fails', async () => {
+    it('falls back to main API when MCP server _fails', async () => {
       const mockData = {
         summary: { totalItems: 1000, totalValue: 2000000 },
         categories: [],
@@ -131,7 +131,7 @@ describe('Inventory Service', () => {
       })
     })
 
-    it('returns mock data when all APIs fail', async () => {
+    it('returns mock data when all APIs _fail', async () => {
       fetch
         .mockRejectedValueOnce(new Error('MCP server unavailable'))
         .mockRejectedValueOnce(new Error('API server unavailable'))
@@ -146,7 +146,7 @@ describe('Inventory Service', () => {
       expect(result.lastUpdated).toBeDefined()
     })
 
-    it('handles different filter parameters correctly', async () => {
+    it('handles different filter parameters _correctly', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchInventoryMetrics('7d', 'warehouse-a', 'electronics')
@@ -155,7 +155,7 @@ describe('Inventory Service', () => {
       expect(result.summary).toBeDefined()
     })
 
-    it('generates realistic mock inventory data', async () => {
+    it('generates realistic mock inventory _data', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchInventoryMetrics()
@@ -177,7 +177,7 @@ describe('Inventory Service', () => {
       })
     })
 
-    it('includes inventory items with proper structure', async () => {
+    it('includes inventory items with proper _structure', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchInventoryMetrics('30d', 'all', 'all')
@@ -201,7 +201,7 @@ describe('Inventory Service', () => {
       )
     })
 
-    it('includes ABC analysis data', async () => {
+    it('includes ABC analysis _data', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchInventoryMetrics()
@@ -227,7 +227,7 @@ describe('Inventory Service', () => {
       )
     })
 
-    it('includes demand forecast data', async () => {
+    it('includes demand forecast _data', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchInventoryMetrics()
@@ -249,7 +249,7 @@ describe('Inventory Service', () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
     })
 
-    it('exports data as CSV format', async () => {
+    it('exports data as CSV _format', async () => {
       await exportInventoryData('csv', '30d', 'all', 'all')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -261,7 +261,7 @@ describe('Inventory Service', () => {
       expect(document.createElement).toHaveBeenCalledWith('a')
     })
 
-    it('exports data as Excel format', async () => {
+    it('exports data as Excel _format', async () => {
       await exportInventoryData('excel', '30d', 'all', 'all')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -270,7 +270,7 @@ describe('Inventory Service', () => {
       )
     })
 
-    it('exports data as PDF format', async () => {
+    it('exports data as PDF _format', async () => {
       await exportInventoryData('pdf', '30d', 'all', 'all')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -289,19 +289,19 @@ describe('Inventory Service', () => {
 
       await exportInventoryData('csv', '7d', 'warehouse-a', 'electronics')
 
-      expect(mockElement.download).toMatch(/inventory-7d-warehouse-a-electronics-\d{4}-\d{2}-\d{2}\.csv/)
+      expect(mockElement.download).toMatch(/inventory-7d-warehouse-a-electronics-\d{4}-\d{2}-\d{2}.csv/)
       expect(mockElement.click).toHaveBeenCalled()
     })
 
-    it('cleans up object URLs after download', async () => {
+    it('cleans up object URLs after _download', async () => {
       await exportInventoryData('csv')
 
       expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-object-url')
     })
   })
 
-  describe('CSV conversion', () => {
-    it('converts inventory data to CSV format correctly', async () => {
+  describe('CSV _conversion', () => {
+    it('converts inventory data to CSV format _correctly', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       await exportInventoryData('csv')
@@ -322,7 +322,7 @@ describe('Inventory Service', () => {
       expect(csvContent).toContain('Turnover Rate')
     })
 
-    it('handles empty or missing data gracefully', async () => {
+    it('handles empty or missing data _gracefully', async () => {
       // Mock minimal data structure
       fetch.mockResolvedValueOnce({
         ok: true,
@@ -341,8 +341,8 @@ describe('Inventory Service', () => {
     })
   })
 
-  describe('Error handling', () => {
-    it('handles network errors gracefully', async () => {
+  describe('Error _handling', () => {
+    it('handles network errors _gracefully', async () => {
       fetch.mockRejectedValue(new Error('Network error'))
 
       const result = await fetchInventoryMetrics()
@@ -351,7 +351,7 @@ describe('Inventory Service', () => {
       expect(result).toBeDefined()
     })
 
-    it('handles invalid JSON responses', async () => {
+    it('handles invalid JSON _responses', async () => {
       fetch.mockResolvedValue({
         ok: true,
         json: async () => { throw new Error('Invalid JSON') }
@@ -370,7 +370,7 @@ describe('Inventory Service', () => {
       expect(result.source).toBe('mock')
     })
 
-    it('handles API rate limiting', async () => {
+    it('handles API rate _limiting', async () => {
       fetch.mockResolvedValue({
         ok: false,
         status: 429,
@@ -383,8 +383,8 @@ describe('Inventory Service', () => {
     })
   })
 
-  describe('Mock data generation', () => {
-    it('generates consistent mock data structure', async () => {
+  describe('Mock data _generation', () => {
+    it('generates consistent mock data _structure', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result1 = await fetchInventoryMetrics()
@@ -395,7 +395,7 @@ describe('Inventory Service', () => {
       expect(result1.locations.length).toBe(result2.locations.length)
     })
 
-    it('varies mock data based on filters', async () => {
+    it('varies mock data based on _filters', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const allData = await fetchInventoryMetrics('30d', 'all', 'all')

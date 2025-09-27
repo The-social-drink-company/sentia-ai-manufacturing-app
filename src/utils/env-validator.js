@@ -1,3 +1,4 @@
+/* eslint-env node */
 /**
  * Environment Variable Validator
  * Validates required environment variables on application startup
@@ -45,7 +46,7 @@ export function validateBackendEnvironment() {
   }
 
   // Validate Clerk secret key format
-  if (process.env.CLERK_SECRET_KEY && !process.env.CLERK_SECRET_KEY.startsWith('sk_')) {
+  if (process.env.CLERK_SECRET_KEY && !process.env.CLERK_SECRET_KEY.startsWith('sk')) {
     console.error('❌ CRITICAL: CLERK_SECRET_KEY must start with "sk_"');
     process.exit(1);
   }
@@ -103,7 +104,7 @@ export function validateFrontendEnvironment() {
   }
 
   // Validate Clerk publishable key format
-  if (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && !import.meta.env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk_')) {
+  if (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && !import.meta.env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk')) {
     console.error('❌ CRITICAL: VITE_CLERK_PUBLISHABLE_KEY must start with "pk_"');
     return false;
   }

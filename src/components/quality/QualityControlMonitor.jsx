@@ -145,7 +145,7 @@ export default function QualityControlMonitor() {
     }
   ];
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'active': return 'text-green-600 bg-green-100';
       case 'idle': return 'text-yellow-600 bg-yellow-100';
@@ -155,7 +155,7 @@ export default function QualityControlMonitor() {
     }
   };
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = (_severity) => {
     switch (severity) {
       case 'Critical': return 'text-red-600 bg-red-100';
       case 'Major': return 'text-orange-600 bg-orange-100';
@@ -164,7 +164,7 @@ export default function QualityControlMonitor() {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (_status) => {
     switch (status) {
       case 'active': return <CheckCircleIcon className="w-4 h-4" />;
       case 'idle': return <ClockIcon className="w-4 h-4" />;

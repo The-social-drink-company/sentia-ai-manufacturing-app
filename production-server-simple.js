@@ -48,7 +48,7 @@ app.use(cors({
 }));
 
 // Security headers
-app.use((req, res, next) => {
+app.use(_(req, res, _next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
@@ -57,7 +57,7 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get(_'/health', _(req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -68,7 +68,7 @@ app.get('/health', (req, res) => {
 });
 
 // API status endpoint
-app.get('/api/status', (req, res) => {
+app.get(_'/api/status', _(req, res) => {
   res.json({
     status: 'operational',
     timestamp: new Date().toISOString(),
@@ -78,7 +78,7 @@ app.get('/api/status', (req, res) => {
 });
 
 // Basic API endpoints for testing
-app.get('/api/test', (req, res) => {
+app.get(_'/api/test', _(req, res) => {
   res.json({
     message: 'API is working',
     timestamp: new Date().toISOString(),
@@ -87,7 +87,7 @@ app.get('/api/test', (req, res) => {
 });
 
 // MCP Server proxy endpoint
-app.get('/api/mcp/health', async (req, res) => {
+app.get(_'/api/mcp/health', async _(req, res) => {
   try {
     const mcpUrl = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
     const response = await fetch(`${mcpUrl}/health`);
@@ -115,7 +115,7 @@ if (fs.existsSync(distPath)) {
 }
 
 // Catch-all handler for SPA routing
-app.get('*', (req, res) => {
+app.get(_'*', _(req, res) => {
   const indexPath = path.join(distPath, 'index.html');
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
@@ -128,7 +128,7 @@ app.get('*', (req, res) => {
 });
 
 // Error handling middleware
-app.use((error, req, res, next) => {
+app.use((error, _req, res, _next) => {
   console.error('Server error:', error);
   res.status(500).json({
     error: 'Internal server error',
@@ -137,18 +137,18 @@ app.use((error, req, res, next) => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+process.on(_'SIGTERM', _() => {
   console.log('SIGTERM received, shutting down gracefully');
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
+process.on(_'SIGINT', _() => {
   console.log('SIGINT received, shutting down gracefully');
   process.exit(0);
 });
 
 // Start server
-const server = app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, _'0.0.0.0', _() => {
   console.log('='.repeat(70));
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
@@ -158,7 +158,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 });
 
 // Handle server errors
-server.on('error', (error) => {
+server.on(_'error', (error) => {
   if (error.code === 'EADDRINUSE') {
     console.error(`❌ Port ${PORT} is already in use`);
     process.exit(1);

@@ -27,7 +27,7 @@ export default function CashFlowChart({ data, period }) {
         <div>
           <p className="text-sm text-gray-600 dark:text-gray-400">Net Cash Flow</p>
           <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-            +${(data.net?.reduce((a, b) => a + b, 0) / data.net?.length || 0).toLocaleString()}
+            +${(data.net?.reduce((a, _b) => a + b, 0) / data.net?.length || 0).toLocaleString()}
           </p>
         </div>
         <div>

@@ -160,34 +160,34 @@ class DeploymentOrchestrator extends EventEmitter {
     
     try {
       // Stage 1: Pre-deployment validation
-      await this.executeStage(deployment, 'pre-validation', async () => {
+      await this.executeStage(deployment, _'pre-validation', async _() => {
         await this.preDeploymentValidation(deployment);
       });
 
       // Stage 2: Build and test
-      await this.executeStage(deployment, 'build-test', async () => {
+      await this.executeStage(deployment, _'build-test', async _() => {
         await this.buildAndTest(deployment);
       });
 
       // Stage 3: Commit changes
-      await this.executeStage(deployment, 'commit', async () => {
+      await this.executeStage(deployment, _'commit', async _() => {
         await this.commitChanges(deployment);
       });
 
       // Stage 4: Deploy to environments
       for (const env of deployment.options.environments) {
-        await this.executeStage(deployment, `deploy-${env}`, async () => {
+        await this.executeStage(deployment, _`deploy-${env}`, async _() => {
           await this.deployToEnvironment(deployment, env);
         });
       }
 
       // Stage 5: Post-deployment validation
-      await this.executeStage(deployment, 'post-validation', async () => {
+      await this.executeStage(deployment, _'post-validation', async _() => {
         await this.postDeploymentValidation(deployment);
       });
 
       // Stage 6: Cleanup and notification
-      await this.executeStage(deployment, 'cleanup', async () => {
+      await this.executeStage(deployment, _'cleanup', async _() => {
         await this.cleanupDeployment(deployment);
       });
 

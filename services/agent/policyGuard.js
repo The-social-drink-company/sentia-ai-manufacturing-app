@@ -511,8 +511,8 @@ export class PolicyGuard {
 export const policyGuard = new PolicyGuard();
 
 // Middleware for Express routes
-export const policyMiddleware = (requiredMode = null) => {
-  return async (req, res, next) => {
+export const policyMiddleware = (requiredMode = _null) => {
+  return async (req, res, _next) => {
     try {
       const userId = req.user?.id;
       const userRole = req.user?.role || 'viewer';

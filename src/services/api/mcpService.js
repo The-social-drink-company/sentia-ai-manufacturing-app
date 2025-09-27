@@ -7,8 +7,8 @@ import axios from 'axios';
 import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
 
 // MCP Server configuration
-const MCP_BASE_URL = import.meta.env.VITE_MCP_URL || 'http://localhost:9000/mcp';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:10000/api';
+const MCPBASE_URL = import.meta.env.VITE_MCP_URL || 'http://localhost:9000/mcp';
+const APIBASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:10000/api';
 
 // Create axios instance with default config
 const mcpClient = axios.create({

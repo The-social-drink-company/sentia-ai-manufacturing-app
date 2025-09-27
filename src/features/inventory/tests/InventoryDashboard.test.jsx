@@ -102,23 +102,23 @@ const renderWithRouter = (component) => {
   )
 }
 
-describe('InventoryDashboard', () => {
-  beforeEach(() => {
+describe('InventoryDashboard', () {
+  beforeEach(() {
     vi.clearAllMocks()
   })
 
-  afterEach(() => {
+  afterEach(() {
     vi.clearAllTimers()
   })
 
-  it('renders inventory dashboard header', () => {
+  it('renders inventory dashboard _header', () {
     renderWithRouter(<InventoryDashboard />)
 
     expect(screen.getByText('Inventory Management')).toBeInTheDocument()
     expect(screen.getByText(/Real-time inventory tracking/i)).toBeInTheDocument()
   })
 
-  it('displays filter controls', () => {
+  it('displays filter _controls', () {
     renderWithRouter(<InventoryDashboard />)
 
     expect(screen.getByDisplayValue('All Locations')).toBeInTheDocument()
@@ -126,7 +126,7 @@ describe('InventoryDashboard', () => {
     expect(screen.getByDisplayValue('30 Days')).toBeInTheDocument()
   })
 
-  it('renders inventory summary cards', () => {
+  it('renders inventory summary _cards', () {
     renderWithRouter(<InventoryDashboard />)
 
     expect(screen.getByTestId('inventory-card-total-items')).toBeInTheDocument()
@@ -135,7 +135,7 @@ describe('InventoryDashboard', () => {
     expect(screen.getByTestId('inventory-card-turnover-rate')).toBeInTheDocument()
   })
 
-  it('renders all dashboard components', () => {
+  it('renders all dashboard _components', () {
     renderWithRouter(<InventoryDashboard />)
 
     expect(screen.getByTestId('stock-level-chart')).toBeInTheDocument()
@@ -145,7 +145,7 @@ describe('InventoryDashboard', () => {
     expect(screen.getByTestId('abc-analysis')).toBeInTheDocument()
   })
 
-  it('handles location filter changes', async () => {
+  it('handles location filter _changes', async () {
     const mockRefetch = vi.fn()
     const { useInventoryMetrics } = await import('../hooks/useInventoryMetrics')
     useInventoryMetrics.mockReturnValue({
@@ -161,34 +161,34 @@ describe('InventoryDashboard', () => {
     const locationSelect = screen.getByDisplayValue('All Locations')
     fireEvent.change(locationSelect, { target: { value: 'warehouse-a' } })
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(locationSelect.value).toBe('warehouse-a')
     })
   })
 
-  it('handles category filter changes', async () => {
+  it('handles category filter _changes', async () {
     renderWithRouter(<InventoryDashboard />)
 
     const categorySelect = screen.getByDisplayValue('All Categories')
     fireEvent.change(categorySelect, { target: { value: 'raw-materials' } })
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(categorySelect.value).toBe('raw-materials')
     })
   })
 
-  it('handles time range filter changes', async () => {
+  it('handles time range filter _changes', async () {
     renderWithRouter(<InventoryDashboard />)
 
     const timeRangeSelect = screen.getByDisplayValue('30 Days')
     fireEvent.change(timeRangeSelect, { target: { value: '7d' } })
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(timeRangeSelect.value).toBe('7d')
     })
   })
 
-  it('shows loading state', () => {
+  it('shows loading _state', () {
     const { useInventoryMetrics } = require('../hooks/useInventoryMetrics')
     useInventoryMetrics.mockReturnValue({
       data: null,
@@ -204,7 +204,7 @@ describe('InventoryDashboard', () => {
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
-  it('shows error state', () => {
+  it('shows error _state', () {
     const mockError = new Error('Failed to load inventory data')
     const { useInventoryMetrics } = require('../hooks/useInventoryMetrics')
     useInventoryMetrics.mockReturnValue({
@@ -222,7 +222,7 @@ describe('InventoryDashboard', () => {
     expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument()
   })
 
-  it('handles export functionality', async () => {
+  it('handles export _functionality', async () {
     const mockExportData = vi.fn()
     const { useInventoryMetrics } = require('../hooks/useInventoryMetrics')
     useInventoryMetrics.mockReturnValue({
@@ -238,12 +238,12 @@ describe('InventoryDashboard', () => {
     const exportButton = screen.getByRole('button', { name: /export/i })
     fireEvent.click(exportButton)
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(mockExportData).toHaveBeenCalledWith('csv')
     })
   })
 
-  it('redirects viewers to dashboard', () => {
+  it('redirects viewers to _dashboard', () {
     const { useAuth } = require('../../../hooks/useAuth')
     useAuth.mockReturnValue({
       user: { role: 'viewer', id: 'viewer123' }
@@ -255,7 +255,7 @@ describe('InventoryDashboard', () => {
     expect(screen.queryByText('Inventory Management')).not.toBeInTheDocument()
   })
 
-  it('sets up auto-refresh interval', () => {
+  it('sets up auto-refresh _interval', () {
     vi.useFakeTimers()
     const mockRefetch = vi.fn()
 
@@ -283,7 +283,7 @@ describe('InventoryDashboard', () => {
     vi.useRealTimers()
   })
 
-  it('passes correct props to child components', () => {
+  it('passes correct props to child _components', () {
     renderWithRouter(<InventoryDashboard />)
 
     expect(screen.getByTestId('stock-level-chart')).toHaveTextContent('with data')
@@ -293,7 +293,7 @@ describe('InventoryDashboard', () => {
     expect(screen.getByTestId('abc-analysis')).toHaveTextContent('with data')
   })
 
-  it('handles retry on error', async () => {
+  it('handles retry on error', async () {
     const mockRefetch = vi.fn()
     const mockError = new Error('Network error')
 
@@ -314,7 +314,7 @@ describe('InventoryDashboard', () => {
     expect(mockRefetch).toHaveBeenCalledTimes(1)
   })
 
-  it('cleans up interval on unmount', () => {
+  it('cleans up interval on _unmount', () {
     vi.useFakeTimers()
     const clearIntervalSpy = vi.spyOn(global, 'clearInterval')
 

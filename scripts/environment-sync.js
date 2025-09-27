@@ -10,8 +10,8 @@ import path from 'path';
 import https from 'https';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 
 class EnvironmentSynchronizer {
   constructor() {
@@ -297,8 +297,8 @@ class EnvironmentSynchronizer {
   }
 
   async checkDomain(url) {
-    return new Promise((resolve) => {
-      const request = https.get(url, { timeout: 10000 }, (res) => {
+    return new Promise(_(resolve) => {
+      const request = https.get(url, { timeout: 10000 }, _(res) => {
         resolve({
           accessible: true,
           statusCode: res.statusCode,
@@ -307,7 +307,7 @@ class EnvironmentSynchronizer {
         res.resume(); // Consume response
       });
 
-      request.on('error', (error) => {
+      request.on('error', _(error) => {
         resolve({
           accessible: false,
           error: error.message

@@ -86,7 +86,7 @@ class QualityControlAgent {
 const agent = new QualityControlAgent();
 agent.start().catch(console.error);
 
-process.on('SIGINT', () => {
+process.on('SIGINT', _() => {
   agent.stop();
   process.exit(0);
 });

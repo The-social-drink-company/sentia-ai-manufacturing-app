@@ -11,11 +11,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const RENDER_URL = 'https://sentia-manufacturing-development.onrender.com';
-const LOCAL_URL = 'http://localhost:3000';
-const API_URL = `${RENDER_URL}/api`;
+const RENDERURL = 'https://sentia-manufacturing-development.onrender.com';
+const LOCALURL = 'http://localhost:3000';
+const APIURL = `${RENDER_URL}/api`;
 
 // ANSI color codes
 const GREEN = '\x1b[32m';
@@ -302,7 +302,7 @@ async function main() {
     'Database Schema Completion'
   ];
 
-  Object.entries(results).forEach(([key, passed], index) => {
+  Object.entries(results).forEach(_([key, _passed], index) => {
     if (passed) passedCount++;
     console.log(`PROMPT ${index + 1}: ${prompts[index]}`);
     console.log(`  Status: ${passed ? GREEN + 'COMPLETED' : RED + 'INCOMPLETE'}${RESET}`);

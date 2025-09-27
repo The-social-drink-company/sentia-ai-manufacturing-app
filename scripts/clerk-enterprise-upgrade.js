@@ -13,7 +13,7 @@ import path from 'path';
 console.log('🚀 Clerk Enterprise Implementation Upgrade Starting...\n');
 
 // Latest Clerk package versions
-const CLERK_PACKAGES = {
+const CLERKPACKAGES = {
   '@clerk/clerk-react': '^5.47.0',
   '@clerk/backend': '^2.14.0',
   '@clerk/express': '^1.7.31',
@@ -25,7 +25,7 @@ const CLERK_PACKAGES = {
 };
 
 // Environment configuration template
-const ENTERPRISE_CLERK_CONFIG = `
+const ENTERPRISECLERK_CONFIG = `
 # Full Clerk Enterprise Configuration
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 CLERK_SECRET_KEY=sk_live_REDACTED
@@ -88,8 +88,8 @@ async function verifyClerkImplementation() {
         return envFiles.every(file => {
           if (!fs.existsSync(file)) return false;
           const content = fs.readFileSync(file, 'utf8');
-          return content.includes('VITE_CLERK_PUBLISHABLE_KEY=pk_live_') && 
-                 content.includes('CLERK_SECRET_KEY=sk_live_');
+          return content.includes('VITECLERK_PUBLISHABLE_KEY = pk_live') && 
+                 content.includes('CLERK_SECRET_KEY=sk_live');
         });
       }
     },

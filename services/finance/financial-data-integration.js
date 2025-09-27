@@ -50,21 +50,21 @@ export class FinancialDataIntegrationService {
    * Xero Accounting Integration
    */
   async registerXeroIntegration() {
-    this.integrations.set('xero', {
-      name: 'Xero Accounting',
-      type: 'accounting',
+    this.integrations.set(_'xero', {
+      name: 'Xero _Accounting',
+      type: _'accounting',
       endpoints: {
-        balanceSheet: '/api/integrations/xero/reports/balance-sheet',
-        profitLoss: '/api/integrations/xero/reports/profit-loss',
-        cashFlow: '/api/integrations/xero/reports/cash-flow',
-        agedReceivables: '/api/integrations/xero/reports/aged-receivables',
-        agedPayables: '/api/integrations/xero/reports/aged-payables',
-        bankAccounts: '/api/integrations/xero/bank-accounts',
-        invoices: '/api/integrations/xero/invoices',
-        bills: '/api/integrations/xero/bills',
+        balanceSheet: _'/api/integrations/xero/reports/balance-sheet',
+        profitLoss: _'/api/integrations/xero/reports/profit-loss',
+        cashFlow: _'/api/integrations/xero/reports/cash-flow',
+        agedReceivables: _'/api/integrations/xero/reports/aged-receivables',
+        agedPayables: _'/api/integrations/xero/reports/aged-payables',
+        bankAccounts: _'/api/integrations/xero/bank-accounts',
+        invoices: _'/api/integrations/xero/invoices',
+        bills: _'/api/integrations/xero/bills',
         bankTransactions: '/api/integrations/xero/bank-transactions'
       },
-      fetchData: async (companyId, dataType) => {
+      fetchData: async _(companyId, dataType) => {
         return this.fetchXeroData(companyId, dataType);
       }
     });
@@ -105,19 +105,19 @@ export class FinancialDataIntegrationService {
    * QuickBooks Integration
    */
   async registerQuickBooksIntegration() {
-    this.integrations.set('quickbooks', {
-      name: 'QuickBooks',
-      type: 'accounting',
+    this.integrations.set(_'quickbooks', {
+      name: _'QuickBooks',
+      type: _'accounting',
       endpoints: {
-        company: '/api/integrations/quickbooks/company',
-        balanceSheet: '/api/integrations/quickbooks/reports/balance-sheet',
-        profitLoss: '/api/integrations/quickbooks/reports/profit-loss',
-        cashFlow: '/api/integrations/quickbooks/reports/cash-flow',
-        customers: '/api/integrations/quickbooks/customers',
-        vendors: '/api/integrations/quickbooks/vendors',
+        company: _'/api/integrations/quickbooks/company',
+        balanceSheet: _'/api/integrations/quickbooks/reports/balance-sheet',
+        profitLoss: _'/api/integrations/quickbooks/reports/profit-loss',
+        cashFlow: _'/api/integrations/quickbooks/reports/cash-flow',
+        customers: _'/api/integrations/quickbooks/customers',
+        vendors: _'/api/integrations/quickbooks/vendors',
         accounts: '/api/integrations/quickbooks/accounts'
       },
-      fetchData: async (companyId, dataType) => {
+      fetchData: async _(companyId, dataType) => {
         return this.fetchQuickBooksData(companyId, dataType);
       }
     });
@@ -127,17 +127,17 @@ export class FinancialDataIntegrationService {
    * Banking Integration via Plaid
    */
   async registerPlaidIntegration() {
-    this.integrations.set('plaid', {
-      name: 'Plaid Banking',
-      type: 'banking',
+    this.integrations.set(_'plaid', {
+      name: 'Plaid _Banking',
+      type: _'banking',
       endpoints: {
-        accounts: '/api/integrations/plaid/accounts',
-        balances: '/api/integrations/plaid/balances',
-        transactions: '/api/integrations/plaid/transactions',
-        identity: '/api/integrations/plaid/identity',
+        accounts: _'/api/integrations/plaid/accounts',
+        balances: _'/api/integrations/plaid/balances',
+        transactions: _'/api/integrations/plaid/transactions',
+        identity: _'/api/integrations/plaid/identity',
         cashFlow: '/api/integrations/plaid/cash-flow'
       },
-      fetchData: async (companyId, dataType) => {
+      fetchData: async _(companyId, dataType) => {
         return this.fetchPlaidData(companyId, dataType);
       }
     });
@@ -172,17 +172,17 @@ export class FinancialDataIntegrationService {
    * SAP ERP Integration
    */
   async registerSAPIntegration() {
-    this.integrations.set('sap', {
-      name: 'SAP ERP',
-      type: 'erp',
+    this.integrations.set(_'sap', {
+      name: 'SAP _ERP',
+      type: _'erp',
       endpoints: {
-        financialPosition: '/api/integrations/sap/financial-position',
-        cashPosition: '/api/integrations/sap/cash-position',
-        workingCapital: '/api/integrations/sap/working-capital',
-        costCenters: '/api/integrations/sap/cost-centers',
+        financialPosition: _'/api/integrations/sap/financial-position',
+        cashPosition: _'/api/integrations/sap/cash-position',
+        workingCapital: _'/api/integrations/sap/working-capital',
+        costCenters: _'/api/integrations/sap/cost-centers',
         profitCenters: '/api/integrations/sap/profit-centers'
       },
-      fetchData: async (companyId, dataType) => {
+      fetchData: async _(companyId, dataType) => {
         return this.fetchSAPData(companyId, dataType);
       }
     });
@@ -654,11 +654,11 @@ export class FinancialDataIntegrationService {
    * Market Data Integration
    */
   async registerMarketDataProviders() {
-    this.integrations.set('market-data', {
-      name: 'Market Data Providers',
-      type: 'market',
-      providers: ['bloomberg', 'refinitiv', 'alphavantage'],
-      fetchData: async (symbol, dataType) => {
+    this.integrations.set(_'market-data', {
+      name: 'Market Data _Providers',
+      type: _'market',
+      providers: _['bloomberg', _'refinitiv', _'alphavantage'],
+      fetchData: async _(symbol, dataType) => {
         return this.fetchMarketData(symbol, dataType);
       }
     });

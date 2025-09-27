@@ -80,12 +80,12 @@ export default function ProductionSchedule({ data }) {
     return configs[priority] || configs['medium']
   }
 
-  const calculateVariance = (planned, actual) => {
+  const calculateVariance = (planned, _actual) => {
     if (!planned || !actual) return 0
     return ((new Date(actual) - new Date(planned)) / (1000 * 60 * 60)) // Hours difference
   }
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = (_dateString) => {
     if (!dateString) return 'Not set'
     const date = new Date(dateString)
     return date.toLocaleString('en-US', {

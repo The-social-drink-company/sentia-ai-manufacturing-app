@@ -28,14 +28,15 @@ const commonRules = {
 }
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', '_archive', 'backup*', 'node_modules'] },
   {
     files: ['src/**/*.{js,jsx}', 'tests/**/*.{js,jsx}'],
     languageOptions: {
       ...commonLanguageOptions,
       globals: {
         ...globals.browser,
-        ...globals.es2021
+        ...globals.es2021,
+        process: 'readonly'
       }
     },
     plugins: commonPlugins,

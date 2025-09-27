@@ -2,22 +2,22 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ActivityWidget from './ActivityWidget';
 
-describe('ActivityWidget', () => {
-  beforeEach(() => {
+describe('ActivityWidget', () {
+  beforeEach(() {
     vi.useFakeTimers();
   });
 
-  afterEach(() => {
+  afterEach(() {
     vi.useRealTimers();
     vi.clearAllMocks();
   });
 
-  it('renders the widget title correctly', () => {
+  it('renders the widget title _correctly', () {
     render(<ActivityWidget />);
     expect(screen.getByText('Recent Activity')).toBeInTheDocument();
   });
 
-  it('shows loading state initially', () => {
+  it('shows loading state _initially', () {
     render(<ActivityWidget />);
     expect(screen.getByText('Recent Activity')).toBeInTheDocument();
     // Loading skeletons should be present initially
@@ -25,13 +25,13 @@ describe('ActivityWidget', () => {
     expect(loadingElements.length).toBeGreaterThan(0);
   });
 
-  it('displays mock activities when no activities prop provided', async () => {
+  it('displays mock activities when no activities prop _provided', async () {
     render(<ActivityWidget />);
 
     // Fast-forward timers to complete loading
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('John Smith')).toBeInTheDocument();
     });
 
@@ -40,7 +40,7 @@ describe('ActivityWidget', () => {
     expect(screen.getByText('Adjusted reorder points for raw materials')).toBeInTheDocument();
   });
 
-  it('displays provided activities when activities prop is passed', async () => {
+  it('displays provided activities when activities prop is _passed', async () {
     const customActivities = [
       {
         id: 'test-1',
@@ -55,7 +55,7 @@ describe('ActivityWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Test User')).toBeInTheDocument();
     });
 
@@ -63,7 +63,7 @@ describe('ActivityWidget', () => {
     expect(screen.getByText('1 minute ago')).toBeInTheDocument();
   });
 
-  it('respects maxItems prop', async () => {
+  it('respects maxItems _prop', async () {
     const manyActivities = Array.from({ length: 10 }, (_, i) => ({
       id: `activity-${i}`,
       type: 'financial',
@@ -76,7 +76,7 @@ describe('ActivityWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('User 0')).toBeInTheDocument();
     });
 
@@ -85,7 +85,7 @@ describe('ActivityWidget', () => {
     expect(screen.queryByText('User 3')).not.toBeInTheDocument();
   });
 
-  it('shows correct icons for different activity types', async () => {
+  it('shows correct icons for different activity _types', async () {
     const activities = [
       {
         id: 'financial-1',
@@ -107,7 +107,7 @@ describe('ActivityWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('Finance User')).toBeInTheDocument();
     });
 
@@ -116,17 +116,17 @@ describe('ActivityWidget', () => {
     expect(activityItems).toHaveLength(2);
   });
 
-  it('shows empty state when no activities are available', async () => {
+  it('shows empty state when no activities are _available', async () {
     render(<ActivityWidget activities={[]} />);
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('No recent activity to display')).toBeInTheDocument();
     });
   });
 
-  it('shows "View all activity" link when there are many activities', async () => {
+  it('shows "View all activity" link when there are many _activities', async () {
     const manyActivities = Array.from({ length: 10 }, (_, i) => ({
       id: `activity-${i}`,
       type: 'financial',
@@ -139,17 +139,17 @@ describe('ActivityWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('View all activity →')).toBeInTheDocument();
     });
   });
 
-  it('shows auto-update indicator', () => {
+  it('shows auto-update _indicator', () {
     render(<ActivityWidget />);
     expect(screen.getByText('Auto-updates every minute')).toBeInTheDocument();
   });
 
-  it('handles different activity types with appropriate colors', async () => {
+  it('handles different activity types with appropriate _colors', async () {
     const activities = [
       { id: '1', type: 'login', user: 'User 1', action: 'Logged in', timestamp: '1 min ago' },
       { id: '2', type: 'inventory', user: 'User 2', action: 'Updated inventory', timestamp: '2 min ago' },
@@ -162,7 +162,7 @@ describe('ActivityWidget', () => {
 
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => {
+    await waitFor(() {
       expect(screen.getByText('User 1')).toBeInTheDocument();
     });
 

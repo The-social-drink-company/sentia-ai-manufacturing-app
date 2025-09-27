@@ -5,7 +5,7 @@ import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
 /**
  * Global error handler middleware
  */
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   // Log error for debugging
   logError('Error:', err);
 
@@ -72,8 +72,8 @@ const errorHandler = (err, req, res, next) => {
 /**
  * Async error wrapper for route handlers
  */
-const asyncHandler = (fn) => {
-  return (req, res, next) => {
+const asyncHandler = (_fn) => {
+  return (req, res, _next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 };
@@ -93,7 +93,7 @@ class AppError extends Error {
 /**
  * Not found error handler
  */
-const notFound = (req, res, next) => {
+const notFound = (req, res, _next) => {
   const error = new AppError(`Not found - ${req.originalUrl}`, 404);
   next(error);
 };

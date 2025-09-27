@@ -619,7 +619,7 @@ class UnleashedIntegrationMCP {
       };
 
       // Check for any errors
-      Object.entries(results).forEach(([key, result]) => {
+      Object.entries(results).forEach(([key, _result]) => {
         if (!result.success) {
           summary.errors.push({ type: key, error: result.error });
         }

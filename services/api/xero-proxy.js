@@ -15,7 +15,7 @@ const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.on
 /**
  * Initiate Xero OAuth flow
  */
-router.get('/auth', async (req, res) => {
+router.get(_'/auth', async _(req, res) => {
   try {
     logInfo('Initiating Xero OAuth flow via MCP server');
 
@@ -34,7 +34,7 @@ router.get('/auth', async (req, res) => {
 /**
  * Handle Xero OAuth callback
  */
-router.get('/callback', async (req, res) => {
+router.get(_'/callback', async _(req, res) => {
   try {
     logInfo('Processing Xero OAuth callback');
 
@@ -65,7 +65,7 @@ router.get('/callback', async (req, res) => {
 /**
  * Get Xero connection status
  */
-router.get('/status', async (req, res) => {
+router.get(_'/status', async _(req, res) => {
   try {
     const response = await axios.get(`${MCP_SERVER_URL}/api/xero/status`);
 
@@ -84,7 +84,7 @@ router.get('/status', async (req, res) => {
 /**
  * Trigger manual Xero sync
  */
-router.post('/sync', async (req, res) => {
+router.post(_'/sync', async _(req, res) => {
   try {
     logInfo('Triggering manual Xero sync via MCP server');
 
@@ -103,7 +103,7 @@ router.post('/sync', async (req, res) => {
 /**
  * Get financial data from Xero (via MCP)
  */
-router.get('/financial-data', async (req, res) => {
+router.get(_'/financial-data', async _(req, res) => {
   try {
     // Get cached financial data from MCP server
     const response = await axios.post(`${MCP_SERVER_URL}/mcp/tools/execute`, {
@@ -152,7 +152,7 @@ router.get('/financial-data', async (req, res) => {
 /**
  * Get working capital metrics
  */
-router.get('/working-capital', async (req, res) => {
+router.get(_'/working-capital', async _(req, res) => {
   try {
     const response = await axios.post(`${MCP_SERVER_URL}/mcp/tools/execute`, {
       tool: 'getWorkingCapitalMetrics',

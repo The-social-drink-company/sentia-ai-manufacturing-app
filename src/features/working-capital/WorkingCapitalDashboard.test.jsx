@@ -124,11 +124,11 @@ const renderWithRouter = (component) => {
   );
 };
 
-describe('WorkingCapitalDashboard', () => {
+describe('WorkingCapitalDashboard', () {
   const mockRefetch = vi.fn();
   const mockExportData = vi.fn();
 
-  beforeEach(() => {
+  beforeEach(() {
     vi.clearAllMocks();
     useWorkingCapitalMetrics.mockReturnValue({
       data: mockMetricsData,
@@ -139,8 +139,8 @@ describe('WorkingCapitalDashboard', () => {
     });
   });
 
-  describe('Access Control', () => {
-    it('redirects viewer users to dashboard', () => {
+  describe('Access _Control', () {
+    it('redirects viewer users to _dashboard', () {
       useAuth.mockReturnValue({
         user: { id: '1', name: 'Test User', role: 'viewer' }
       });
@@ -151,15 +151,15 @@ describe('WorkingCapitalDashboard', () => {
       expect(screen.queryByText('Working Capital Management')).not.toBeInTheDocument();
     });
 
-    it('allows manager users to access the dashboard', () => {
+    it('allows manager users to access the _dashboard', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByText('Working Capital Management')).toBeInTheDocument();
     });
   });
 
-  describe('Loading States', () => {
-    it('displays loading state when data is being fetched', () => {
+  describe('Loading _States', () {
+    it('displays loading state when data is being _fetched', () {
       useWorkingCapitalMetrics.mockReturnValue({
         data: null,
         loading: true,
@@ -175,8 +175,8 @@ describe('WorkingCapitalDashboard', () => {
     });
   });
 
-  describe('Error States', () => {
-    it('displays error message when data fetch fails', () => {
+  describe('Error _States', () {
+    it('displays error message when data fetch _fails', () {
       const mockError = new Error('Failed to fetch data');
       useWorkingCapitalMetrics.mockReturnValue({
         data: null,
@@ -193,7 +193,7 @@ describe('WorkingCapitalDashboard', () => {
       expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
     });
 
-    it('calls refetch when retry button is clicked', async () => {
+    it('calls refetch when retry button is _clicked', async () {
       const mockError = new Error('Network error');
       useWorkingCapitalMetrics.mockReturnValue({
         data: null,
@@ -212,15 +212,15 @@ describe('WorkingCapitalDashboard', () => {
     });
   });
 
-  describe('Dashboard Content', () => {
-    it('renders header with correct title and description', () => {
+  describe('Dashboard _Content', () {
+    it('renders header with correct title and _description', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByText('Working Capital Management')).toBeInTheDocument();
       expect(screen.getByText('Optimize cash flow and improve financial efficiency')).toBeInTheDocument();
     });
 
-    it('displays summary metric cards', () => {
+    it('displays summary metric _cards', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByTestId('metric-card-working-capital')).toBeInTheDocument();
@@ -229,7 +229,7 @@ describe('WorkingCapitalDashboard', () => {
       expect(screen.getByTestId('metric-card-quick-ratio')).toBeInTheDocument();
     });
 
-    it('displays working capital components', () => {
+    it('displays working capital _components', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByText('Accounts Receivable')).toBeInTheDocument();
@@ -241,14 +241,14 @@ describe('WorkingCapitalDashboard', () => {
       expect(screen.getByText('$850,000')).toBeInTheDocument(); // Inventory total
     });
 
-    it('displays aging chart and cash conversion cycle', () => {
+    it('displays aging chart and cash conversion _cycle', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByTestId('aging-chart')).toBeInTheDocument();
       expect(screen.getByTestId('cash-conversion-cycle')).toBeInTheDocument();
     });
 
-    it('displays cash flow forecast and optimization recommendations', () => {
+    it('displays cash flow forecast and optimization _recommendations', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByTestId('cash-flow-forecast')).toBeInTheDocument();
@@ -256,8 +256,8 @@ describe('WorkingCapitalDashboard', () => {
     });
   });
 
-  describe('Alerts', () => {
-    it('displays active alerts when present', () => {
+  describe('Alerts', () {
+    it('displays active alerts when _present', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByText('Active Alerts')).toBeInTheDocument();
@@ -265,7 +265,7 @@ describe('WorkingCapitalDashboard', () => {
       expect(screen.getByText('DSO above target')).toBeInTheDocument();
     });
 
-    it('does not display alerts section when no alerts', () => {
+    it('does not display alerts section when no _alerts', () {
       useWorkingCapitalMetrics.mockReturnValue({
         data: { ...mockMetricsData, alerts: [] },
         loading: false,
@@ -280,8 +280,8 @@ describe('WorkingCapitalDashboard', () => {
     });
   });
 
-  describe('Controls', () => {
-    it('renders currency selector with default USD', () => {
+  describe('Controls', () {
+    it('renders currency selector with default _USD', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       const currencySelect = screen.getByDisplayValue('USD');
@@ -290,7 +290,7 @@ describe('WorkingCapitalDashboard', () => {
       expect(screen.getByRole('option', { name: 'EUR' })).toBeInTheDocument();
     });
 
-    it('renders period selector with default Current', () => {
+    it('renders period selector with default _Current', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       const periodSelect = screen.getByDisplayValue('Current');
@@ -300,7 +300,7 @@ describe('WorkingCapitalDashboard', () => {
       expect(screen.getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
     });
 
-    it('calls refetch when refresh button is clicked', async () => {
+    it('calls refetch when refresh button is _clicked', async () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       const refreshButton = screen.getByRole('button', { name: /refresh/i });
@@ -310,8 +310,8 @@ describe('WorkingCapitalDashboard', () => {
     });
   });
 
-  describe('Export Functionality', () => {
-    it('renders export dropdown with options', () => {
+  describe('Export _Functionality', () {
+    it('renders export dropdown with options', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       expect(screen.getByRole('button', { name: /export/i })).toBeInTheDocument();
@@ -320,41 +320,41 @@ describe('WorkingCapitalDashboard', () => {
       expect(screen.getByText('Export as CSV')).toBeInTheDocument();
     });
 
-    it('calls exportData when CSV export is clicked', async () => {
+    it('calls exportData when CSV export is _clicked', async () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       const csvExportButton = screen.getByText('Export as CSV');
       fireEvent.click(csvExportButton);
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(mockExportData).toHaveBeenCalledWith('csv');
       });
     });
 
-    it('calls exportData when PDF export is clicked', async () => {
+    it('calls exportData when PDF export is _clicked', async () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       const pdfExportButton = screen.getByText('Export as PDF');
       fireEvent.click(pdfExportButton);
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(mockExportData).toHaveBeenCalledWith('pdf');
       });
     });
 
-    it('calls exportData when Excel export is clicked', async () => {
+    it('calls exportData when Excel export is _clicked', async () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       const excelExportButton = screen.getByText('Export as Excel');
       fireEvent.click(excelExportButton);
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(mockExportData).toHaveBeenCalledWith('excel');
       });
     });
 
-    it('handles export errors gracefully', async () => {
-      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    it('handles export errors _gracefully', async () {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() {});
       mockExportData.mockRejectedValueOnce(new Error('Export failed'));
 
       renderWithRouter(<WorkingCapitalDashboard />);
@@ -362,7 +362,7 @@ describe('WorkingCapitalDashboard', () => {
       const csvExportButton = screen.getByText('Export as CSV');
       fireEvent.click(csvExportButton);
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(consoleError).toHaveBeenCalledWith('Export failed:', expect.any(Error));
       });
 
@@ -370,8 +370,8 @@ describe('WorkingCapitalDashboard', () => {
     });
   });
 
-  describe('Responsive Behavior', () => {
-    it('renders correctly on different screen sizes', () => {
+  describe('Responsive _Behavior', () {
+    it('renders correctly on different screen _sizes', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       // Test that grid classes are applied correctly
@@ -380,16 +380,16 @@ describe('WorkingCapitalDashboard', () => {
     });
   });
 
-  describe('Auto-refresh', () => {
-    beforeEach(() => {
+  describe('Auto-refresh', () {
+    beforeEach(() {
       vi.useFakeTimers();
     });
 
-    afterEach(() => {
+    afterEach(() {
       vi.useRealTimers();
     });
 
-    it('sets up auto-refresh interval', () => {
+    it('sets up auto-refresh _interval', () {
       renderWithRouter(<WorkingCapitalDashboard />);
 
       // Fast forward 15 minutes
@@ -398,7 +398,7 @@ describe('WorkingCapitalDashboard', () => {
       expect(mockRefetch).toHaveBeenCalledTimes(1);
     });
 
-    it('clears interval on unmount', () => {
+    it('clears interval on _unmount', () {
       const { unmount } = renderWithRouter(<WorkingCapitalDashboard />);
 
       unmount();

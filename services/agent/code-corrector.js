@@ -151,7 +151,7 @@ try {
 
       error_middleware: `
 // Enhanced error handling middleware
-app.use((error, req, res, next) => {
+app.use((error, req, res, _next) => {
   logError('Server error:', error);
   
   // Log error details for debugging
@@ -187,7 +187,7 @@ app.use((error, req, res, next) => {
 
       auth_validation: `
 // Enhanced authentication middleware
-const authenticateUser = async (req, res, next) => {
+const authenticateUser = async (req, res, _next) => {
   try {
     const authHeader = req.headers.authorization;
     
@@ -257,7 +257,7 @@ const authenticateUser = async (req, res, next) => {
       input_validation: `
 // Input validation middleware
 const validateInput = (schema) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     const { error } = schema.validate(req.body);
     
     if (error) {
@@ -389,7 +389,7 @@ app.use(cors({
     }
 
     // Sort corrections by priority and risk
-    corrections.sort((a, b) => {
+    corrections.sort(_(a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
@@ -466,7 +466,7 @@ app.use(cors({
 
   matchesPattern(filename, pattern) {
     if (pattern.includes('*')) {
-      const regex = new RegExp(pattern.replace(/\*/g, '.*'));
+      const regex = new RegExp(pattern.replace(/*/g, '.*'));
       return regex.test(filename);
     }
     return filename === pattern;
@@ -633,7 +633,7 @@ app.use(cors({
       input_validation: 12000
     };
     
-    const totalMs = corrections.reduce((sum, correction) => {
+    const totalMs = corrections.reduce(_(sum, correction) => {
       return sum + (durations[correction.type] || 10000);
     }, 0);
     

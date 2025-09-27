@@ -73,20 +73,20 @@ describe('PerformanceMonitor', () => {
   })
 
   describe('Initialization', () => {
-    it('should create performance monitor with default config', () => {
+    it('should create performance monitor with default _config', () => {
       const defaultMonitor = new PerformanceMonitor()
       expect(defaultMonitor.config.sampleRate).toBe(1.0)
       expect(defaultMonitor.config.bufferSize).toBe(1000)
       expect(defaultMonitor.isMonitoring).toBe(false)
     })
 
-    it('should create performance monitor with custom config', () => {
+    it('should create performance monitor with custom _config', () => {
       expect(monitor.config.sampleRate).toBe(1.0)
       expect(monitor.config.bufferSize).toBe(100)
       expect(monitor.config.thresholds.fcp).toBe(1800)
     })
 
-    it('should generate unique session ID', () => {
+    it('should generate unique session _ID', () => {
       const sessionId1 = monitor.sessionId
       const monitor2 = new PerformanceMonitor()
       const sessionId2 = monitor2.sessionId
@@ -97,8 +97,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Performance Observer Setup', () => {
-    it('should set up performance observers on start', () => {
+  describe('Performance Observer _Setup', () => {
+    it('should set up performance observers on _start', () => {
       monitor.start()
 
       expect(global.PerformanceObserver).toHaveBeenCalledTimes(6) // 6 observer types
@@ -110,7 +110,7 @@ describe('PerformanceMonitor', () => {
       expect(mockObserver.observe).toHaveBeenCalledWith({ type: 'resource', buffered: true })
     })
 
-    it('should handle observer setup failures gracefully', () => {
+    it('should handle observer setup failures _gracefully', () => {
       global.PerformanceObserver.mockImplementation(() => {
         throw new Error('Observer not supported')
       })
@@ -125,7 +125,7 @@ describe('PerformanceMonitor', () => {
       consoleSpy.mockRestore()
     })
 
-    it('should disconnect observers on stop', () => {
+    it('should disconnect observers on _stop', () => {
       monitor.start()
       monitor.stop()
 
@@ -134,8 +134,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Navigation Timing', () => {
-    it('should track navigation timing metrics', () => {
+  describe('Navigation _Timing', () => {
+    it('should track navigation timing _metrics', () => {
       const navigationEntry = {
         entryType: 'navigation',
         responseStart: 100,
@@ -195,8 +195,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Paint Timing', () => {
-    it('should track First Contentful Paint', () => {
+  describe('Paint _Timing', () => {
+    it('should track First Contentful _Paint', () => {
       const paintEntry = {
         entryType: 'paint',
         name: 'first-contentful-paint',
@@ -238,8 +238,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Layout Shift Tracking', () => {
-    it('should track layout shift without user input', () => {
+  describe('Layout Shift _Tracking', () => {
+    it('should track layout shift without user _input', () => {
       const layoutShiftEntry = {
         entryType: 'layout-shift',
         value: 0.15,
@@ -264,7 +264,7 @@ describe('PerformanceMonitor', () => {
       expect(metric.sources[0].node).toBe('DIV')
     })
 
-    it('should ignore layout shifts with recent user input', () => {
+    it('should ignore layout shifts with recent user _input', () => {
       const layoutShiftEntry = {
         entryType: 'layout-shift',
         value: 0.15,
@@ -301,8 +301,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('First Input Delay', () => {
-    it('should track first input delay', () => {
+  describe('First Input _Delay', () => {
+    it('should track first input _delay', () => {
       const fidEntry = {
         entryType: 'first-input',
         startTime: 1000,
@@ -347,8 +347,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Largest Contentful Paint', () => {
-    it('should track LCP metrics', () => {
+  describe('Largest Contentful _Paint', () => {
+    it('should track LCP _metrics', () => {
       const lcpEntry = {
         entryType: 'largest-contentful-paint',
         startTime: 2000,
@@ -392,8 +392,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Resource Timing', () => {
-    it('should track API resource performance', () => {
+  describe('Resource _Timing', () => {
+    it('should track API resource _performance', () => {
       const resourceEntry = {
         entryType: 'resource',
         name: 'https://api.example.com/data',
@@ -418,7 +418,7 @@ describe('PerformanceMonitor', () => {
       expect(metric.transferSize).toBe(1024)
     })
 
-    it('should alert on slow API calls', () => {
+    it('should alert on slow API _calls', () => {
       const alertSpy = vi.spyOn(monitor, 'triggerPerformanceAlert')
 
       const slowApiEntry = {
@@ -443,7 +443,7 @@ describe('PerformanceMonitor', () => {
       alertSpy.mockRestore()
     })
 
-    it('should filter irrelevant resources', () => {
+    it('should filter irrelevant _resources', () => {
       const irrelevantEntry = {
         entryType: 'resource',
         name: 'https://external.com/ad.js',
@@ -464,8 +464,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('React Performance', () => {
-    it('should track React metrics', () => {
+  describe('React _Performance', () => {
+    it('should track React _metrics', () => {
       monitor.trackReactMetrics()
 
       const metrics = monitor.metrics.get('react')
@@ -478,7 +478,7 @@ describe('PerformanceMonitor', () => {
       expect(metric.memoryUsage).toBeDefined()
     })
 
-    it('should alert on excessive re-renders', () => {
+    it('should alert on excessive _re-renders', () => {
       const alertSpy = vi.spyOn(monitor, 'triggerPerformanceAlert')
 
       // Mock excessive re-renders
@@ -502,7 +502,7 @@ describe('PerformanceMonitor', () => {
       vi.restoreAllMocks()
     })
 
-    it('should handle React render notifications', () => {
+    it('should handle React render _notifications', () => {
       monitor.handleReactRender('TestComponent', 'mount', 25.5)
 
       const metrics = monitor.metrics.get('react-render')
@@ -516,8 +516,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Core Web Vitals Calculation', () => {
-    it('should calculate core web vitals correctly', () => {
+  describe('Core Web Vitals _Calculation', () => {
+    it('should calculate core web vitals _correctly', () => {
       // Add sample metrics
       monitor.addMetric('paint', { name: 'first-contentful-paint', startTime: 1500 })
       monitor.addMetric('lcp', { startTime: 2200 })
@@ -532,7 +532,7 @@ describe('PerformanceMonitor', () => {
       expect(vitals.cls).toBe(0.08)
     })
 
-    it('should handle missing vital metrics', () => {
+    it('should handle missing vital _metrics', () => {
       const vitals = monitor.getCoreWebVitals()
 
       expect(vitals.fcp).toBeNull()
@@ -542,8 +542,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Performance Report Generation', () => {
-    it('should generate comprehensive performance report', () => {
+  describe('Performance Report _Generation', () => {
+    it('should generate comprehensive performance _report', () => {
       // Add some test metrics
       monitor.addMetric('paint', { name: 'first-contentful-paint', startTime: 1500 })
       monitor.addMetric('api', { duration: 200, endpoint: '/api/test' })
@@ -557,7 +557,7 @@ describe('PerformanceMonitor', () => {
       expect(report.recommendations).toBeInstanceOf(Array)
     })
 
-    it('should generate performance recommendations', () => {
+    it('should generate performance _recommendations', () => {
       // Mock poor performance metrics
       monitor.addMetric('paint', { name: 'first-contentful-paint', startTime: 2000 })
       monitor.addMetric('lcp', { startTime: 3000 })
@@ -573,8 +573,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Utility Methods', () => {
-    it('should calculate median correctly', () => {
+  describe('Utility _Methods', () => {
+    it('should calculate median _correctly', () => {
       const values = [1, 3, 2, 5, 4]
       const median = monitor.calculateMedian(values)
       expect(median).toBe(3)
@@ -584,7 +584,7 @@ describe('PerformanceMonitor', () => {
       expect(evenMedian).toBe(2.5)
     })
 
-    it('should calculate percentiles correctly', () => {
+    it('should calculate percentiles _correctly', () => {
       const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       const p95 = monitor.calculatePercentile(values, 95)
       expect(p95).toBe(10) // 95th percentile
@@ -593,7 +593,7 @@ describe('PerformanceMonitor', () => {
       expect(p50).toBe(5) // 50th percentile (median)
     })
 
-    it('should get connection info when available', () => {
+    it('should get connection info when _available', () => {
       const connectionInfo = monitor.getConnectionInfo()
 
       expect(connectionInfo.effectiveType).toBe('4g')
@@ -601,7 +601,7 @@ describe('PerformanceMonitor', () => {
       expect(connectionInfo.rtt).toBe(50)
     })
 
-    it('should get memory usage when available', () => {
+    it('should get memory usage when _available', () => {
       const memoryInfo = monitor.getMemoryUsage()
 
       expect(memoryInfo.used).toBe(30) // 30MB
@@ -610,8 +610,8 @@ describe('PerformanceMonitor', () => {
     })
   })
 
-  describe('Alert System', () => {
-    it('should determine correct alert severity', () => {
+  describe('Alert _System', () => {
+    it('should determine correct alert _severity', () => {
       expect(monitor.getAlertSeverity('threshold_exceeded', { metric: 'cls', value: 0.3 }))
         .toBe('critical')
 
@@ -622,7 +622,7 @@ describe('PerformanceMonitor', () => {
         .toBe('critical')
     })
 
-    it('should report alerts to external services', () => {
+    it('should report alerts to external _services', () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
       const alert = {

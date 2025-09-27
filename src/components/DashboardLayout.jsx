@@ -178,7 +178,7 @@ const DashboardLayout = ({ children }) => {
                       {section.title}
                     </h3>
                     <div className="space-y-1">
-                      {section.items.map((item, itemIndex) => (
+                      {section.items.map((item, _itemIndex) => (
                         <motion.button
                           key={item.path}
                           onClick={() => handleNavigation(item.path)}

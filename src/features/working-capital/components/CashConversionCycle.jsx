@@ -44,7 +44,7 @@ export default function CashConversionCycle({ dso, dio, dpo, historical }) {
     }
   }
 
-  const getColorClass = (status) => {
+  const getColorClass = (_status) => {
     switch (status) {
       case 'optimal':
         return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20'

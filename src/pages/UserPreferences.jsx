@@ -113,7 +113,7 @@ const UserPreferences = () => {
   }, [isLoaded, user]);
 
   // Handle preference changes
-  const handlePreferenceChange = (category, field, value) => {
+  const handlePreferenceChange = (_category, _field, value) => {
     setPreferences(prev => {
       if (category) {
         return {

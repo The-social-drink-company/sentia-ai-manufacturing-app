@@ -21,7 +21,7 @@ class BatchProcessor extends EventEmitter {
 
   // Add request to batch processing queue
   async addRequest(requestId, processor, data, priority = 0) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const request = {
         id: requestId,
         processor,
@@ -110,7 +110,7 @@ class BatchProcessor extends EventEmitter {
     
     // Process each processor group in parallel
     const groupPromises = Array.from(batch.processorGroups.entries()).map(
-      async ([processorKey, requests]) => {
+      async _([processorKey, _requests]) => {
         return this.processProcessorGroup(processorKey, requests, results);
       }
     );
@@ -273,7 +273,7 @@ class BatchProcessor extends EventEmitter {
 
   // Wait for all pending requests to complete
   async drain() {
-    return new Promise((resolve) => {
+    return new Promise(_(resolve) => {
       const checkEmpty = () => {
         if (this.pendingRequests.size === 0 && this.activeBatches.size === 0) {
           resolve();

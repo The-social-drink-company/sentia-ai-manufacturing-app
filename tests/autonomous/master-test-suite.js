@@ -161,7 +161,7 @@ class EnterpriseTest {
 }
 
 // API ENDPOINT TESTING SUITE
-test.describe('🔌 API Endpoints Testing', () => {
+test.describe('🔌 API Endpoints _Testing', () => {
   const apiEndpoints = [
     // Authentication & Users
     { method: 'GET', path: '/api/health', auth: false, critical: true },
@@ -213,8 +213,8 @@ test.describe('🔌 API Endpoints Testing', () => {
   ];
 
   for (const endpoint of apiEndpoints) {
-    test(`API ${endpoint.method} ${endpoint.path}`, async ({ request }) => {
-      await EnterpriseTest.runTest(`API_${endpoint.method}_${endpoint.path.replace(/\//g, '_')}`, async () => {
+    test(`API ${endpoint.method} _${endpoint.path}`, async ({ request }) => {
+      await EnterpriseTest.runTest(`API_${endpoint.method}_${endpoint.path.replace(///g, '_')}`, async () => {
         const headers = endpoint.auth ? { 'Authorization': 'Bearer test-token' } : {};
         
         const response = await request.fetch(`${TEST_CONFIG.apiURL}${endpoint.path}`, {
@@ -241,7 +241,7 @@ test.describe('🔌 API Endpoints Testing', () => {
 });
 
 // UI COMPONENT TESTING SUITE
-test.describe('🖥️ UI Components & Interactions', () => {
+test.describe('🖥️ UI Components & _Interactions', () => {
   
   test.beforeEach(async ({ page }) => {
     global.currentPage = page;
@@ -259,7 +259,7 @@ test.describe('🖥️ UI Components & Interactions', () => {
   ];
 
   for (const nav of navigationTests) {
-    test(`Navigation - ${nav.name}`, async ({ page }) => {
+    test(`Navigation - _${nav.name}`, async ({ page }) => {
       await EnterpriseTest.runTest(`UI_NAV_${nav.name.replace(/ /g, '_')}`, async () => {
         await page.goto(`${TEST_CONFIG.baseURL}${nav.path}`);
         
@@ -285,7 +285,7 @@ test.describe('🖥️ UI Components & Interactions', () => {
   ];
 
   for (const btnTest of buttonTests) {
-    test(`Button - ${btnTest.selector}`, async ({ page }) => {
+    test(`Button - _${btnTest.selector}`, async ({ page }) => {
       await EnterpriseTest.runTest(`UI_BTN_${btnTest.selector.replace(/[^a-zA-Z0-9]/g, '_')}`, async () => {
         // Navigate to appropriate page
         if (btnTest.page !== 'auth') {
@@ -306,8 +306,8 @@ test.describe('🖥️ UI Components & Interactions', () => {
   }
 
   // Form Validation Tests
-  test('Forms - Data Upload Validation', async ({ page }) => {
-    await EnterpriseTest.runTest('UI_FORM_DATA_UPLOAD', async () => {
+  test('Forms - Data Upload _Validation', async ({ page }) => {
+    await EnterpriseTest.runTest(_'UI_FORM_DATA_UPLOAD', async () => {
       await page.goto(`${TEST_CONFIG.baseURL}/data-import`);
       
       // Test file upload
@@ -332,8 +332,8 @@ test.describe('🖥️ UI Components & Interactions', () => {
   ];
 
   for (const viewport of viewports) {
-    test(`Responsive - ${viewport.name}`, async ({ page }) => {
-      await EnterpriseTest.runTest(`UI_RESPONSIVE_${viewport.name}`, async () => {
+    test(`Responsive - _${viewport.name}`, async ({ page }) => {
+      await EnterpriseTest.runTest(_`UI_RESPONSIVE_${viewport.name}`, async () => {
         await page.setViewportSize(viewport);
         await page.goto(TEST_CONFIG.baseURL);
         
@@ -353,10 +353,10 @@ test.describe('🖥️ UI Components & Interactions', () => {
 });
 
 // REAL-TIME FEATURES TESTING
-test.describe('⚡ Real-time Features', () => {
+test.describe('⚡ Real-time _Features', () => {
   
-  test('SSE Connection Stability', async ({ page }) => {
-    await EnterpriseTest.runTest('REALTIME_SSE_CONNECTION', async () => {
+  test('SSE Connection _Stability', async ({ page }) => {
+    await EnterpriseTest.runTest(_'REALTIME_SSE_CONNECTION', async () => {
       await page.goto(TEST_CONFIG.baseURL);
       
       // Monitor SSE connection
@@ -375,8 +375,8 @@ test.describe('⚡ Real-time Features', () => {
     });
   });
 
-  test('Real-time Data Updates', async ({ page }) => {
-    await EnterpriseTest.runTest('REALTIME_DATA_UPDATES', async () => {
+  test('Real-time Data _Updates', async ({ page }) => {
+    await EnterpriseTest.runTest(_'REALTIME_DATA_UPDATES', async () => {
       await page.goto(`${TEST_CONFIG.baseURL}/dashboard`);
       
       // Get initial KPI values
@@ -394,10 +394,10 @@ test.describe('⚡ Real-time Features', () => {
 });
 
 // PERFORMANCE TESTING
-test.describe('🚀 Performance Testing', () => {
+test.describe('🚀 Performance _Testing', () => {
   
-  test('Page Load Performance', async ({ page }) => {
-    await EnterpriseTest.runTest('PERFORMANCE_PAGE_LOAD', async () => {
+  test('Page Load _Performance', async ({ page }) => {
+    await EnterpriseTest.runTest(_'PERFORMANCE_PAGE_LOAD', async () => {
       const startTime = performance.now();
       
       await page.goto(TEST_CONFIG.baseURL);
@@ -414,8 +414,8 @@ test.describe('🚀 Performance Testing', () => {
     });
   });
 
-  test('API Response Times', async ({ request }) => {
-    await EnterpriseTest.runTest('PERFORMANCE_API_RESPONSE', async () => {
+  test('API Response _Times', async ({ request }) => {
+    await EnterpriseTest.runTest(_'PERFORMANCE_API_RESPONSE', async () => {
       const criticalEndpoints = [
         '/api/health',
         '/api/production/status',
@@ -442,10 +442,10 @@ test.describe('🚀 Performance Testing', () => {
 });
 
 // SECURITY TESTING
-test.describe('🔒 Security Testing', () => {
+test.describe('🔒 Security _Testing', () => {
   
-  test('Authentication Required', async ({ request }) => {
-    await EnterpriseTest.runTest('SECURITY_AUTH_REQUIRED', async () => {
+  test('Authentication _Required', async ({ request }) => {
+    await EnterpriseTest.runTest(_'SECURITY_AUTH_REQUIRED', async () => {
       const protectedEndpoints = [
         '/api/admin/users',
         '/api/production/control',
@@ -459,8 +459,8 @@ test.describe('🔒 Security Testing', () => {
     });
   });
 
-  test('XSS Protection', async ({ page }) => {
-    await EnterpriseTest.runTest('SECURITY_XSS_PROTECTION', async () => {
+  test('XSS _Protection', async ({ page }) => {
+    await EnterpriseTest.runTest(_'SECURITY_XSS_PROTECTION', async () => {
       await page.goto(TEST_CONFIG.baseURL);
       
       // Try to inject script
@@ -481,11 +481,11 @@ test.describe('🔒 Security Testing', () => {
 });
 
 // Critical Client Requirements - What-If Analysis Tests
-test.describe('Critical Client Requirements - What-If Analysis', () => {
-  test('What-If Analysis slider functionality and working capital calculations', async ({ request }) => {
+test.describe('Critical Client Requirements - What-If _Analysis', () => {
+  test('What-If Analysis slider functionality and working capital _calculations', async ({ request }) => {
     const whatifTracker = new WhatIfAnalysisTestTracker();
     
-    await EnterpriseTest.runTest('WHATIF_ANALYSIS_COMPREHENSIVE', async () => {
+    await EnterpriseTest.runTest(_'WHATIF_ANALYSIS_COMPREHENSIVE', async () => {
       console.log('=== CRITICAL CLIENT REQUIREMENT TEST: WHAT-IF ANALYSIS ===');
       
       // Test 1: Initialize What-If Analysis system

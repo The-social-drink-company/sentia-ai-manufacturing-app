@@ -107,12 +107,12 @@ const renderWithRouter = (component) => {
   )
 }
 
-describe('ProductionDashboard', () => {
+describe(_'ProductionDashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders production dashboard with main components', () => {
+  it('renders production dashboard with main _components', () => {
     renderWithRouter(<ProductionDashboard />)
 
     expect(screen.getByText('Production Tracking')).toBeInTheDocument()
@@ -121,7 +121,7 @@ describe('ProductionDashboard', () => {
     expect(screen.getByTestId('machine-status-grid')).toBeInTheDocument()
   })
 
-  it('displays OEE summary cards with correct values', () => {
+  it('displays OEE summary cards with correct _values', () => {
     renderWithRouter(<ProductionDashboard />)
 
     expect(screen.getByText('Overall OEE')).toBeInTheDocument()
@@ -131,7 +131,7 @@ describe('ProductionDashboard', () => {
     expect(screen.getByText('95.8%')).toBeInTheDocument() // Quality
   })
 
-  it('displays production alerts when present', () => {
+  it('displays production alerts when _present', () => {
     renderWithRouter(<ProductionDashboard />)
 
     expect(screen.getByText('Critical Production Alerts')).toBeInTheDocument()
@@ -140,7 +140,7 @@ describe('ProductionDashboard', () => {
     expect(screen.getByText('Check Cooling System')).toBeInTheDocument()
   })
 
-  it('handles line filter changes', () => {
+  it('handles line filter _changes', () => {
     renderWithRouter(<ProductionDashboard />)
 
     const lineFilter = screen.getByDisplayValue('All Lines')
@@ -149,7 +149,7 @@ describe('ProductionDashboard', () => {
     expect(lineFilter.value).toBe('line-1')
   })
 
-  it('handles shift filter changes', () => {
+  it('handles shift filter _changes', () => {
     renderWithRouter(<ProductionDashboard />)
 
     const shiftFilter = screen.getByDisplayValue('Current Shift')
@@ -158,7 +158,7 @@ describe('ProductionDashboard', () => {
     expect(shiftFilter.value).toBe('shift-1')
   })
 
-  it('handles time range filter changes', () => {
+  it('handles time range filter _changes', () => {
     renderWithRouter(<ProductionDashboard />)
 
     const timeRangeFilter = screen.getByDisplayValue('Last 24 Hours')
@@ -167,7 +167,7 @@ describe('ProductionDashboard', () => {
     expect(timeRangeFilter.value).toBe('7d')
   })
 
-  it('displays view toggle buttons', () => {
+  it('displays view toggle _buttons', () => {
     renderWithRouter(<ProductionDashboard />)
 
     expect(screen.getByText('Overview')).toBeInTheDocument()
@@ -175,7 +175,7 @@ describe('ProductionDashboard', () => {
     expect(screen.getByText('Quality')).toBeInTheDocument()
   })
 
-  it('switches between different views', () => {
+  it('switches between different _views', () => {
     renderWithRouter(<ProductionDashboard />)
 
     // Default view should show OEE display
@@ -190,7 +190,7 @@ describe('ProductionDashboard', () => {
     expect(screen.getByTestId('quality-metrics')).toBeInTheDocument()
   })
 
-  it('displays export menu and handles export actions', async () => {
+  it('displays export menu and handles export _actions', async () => {
     const mockExportData = vi.fn()
     const { useProductionMetrics } = await import('../../../src/features/production/hooks/useProductionMetrics')
     useProductionMetrics.mockReturnValue({
@@ -211,7 +211,7 @@ describe('ProductionDashboard', () => {
     })
   })
 
-  it('displays quick actions panel', () => {
+  it('displays quick actions _panel', () => {
     renderWithRouter(<ProductionDashboard />)
 
     expect(screen.getByText('Quick Actions')).toBeInTheDocument()
@@ -221,7 +221,7 @@ describe('ProductionDashboard', () => {
     expect(screen.getByText('View Reports')).toBeInTheDocument()
   })
 
-  it('handles refresh button click', async () => {
+  it('handles refresh button _click', async () => {
     const mockRefetch = vi.fn()
     const { useProductionMetrics } = await import('../../../src/features/production/hooks/useProductionMetrics')
     useProductionMetrics.mockReturnValue({
@@ -237,7 +237,7 @@ describe('ProductionDashboard', () => {
     expect(mockRefetch).toHaveBeenCalled()
   })
 
-  it('shows loading state', async () => {
+  it('shows loading _state', async () => {
     const { useProductionMetrics } = await import('../../../src/features/production/hooks/useProductionMetrics')
     useProductionMetrics.mockReturnValue({
       data: null,
@@ -252,7 +252,7 @@ describe('ProductionDashboard', () => {
     expect(screen.getByText('Loading production data...')).toBeInTheDocument()
   })
 
-  it('shows error state with retry option', async () => {
+  it('shows error state with retry _option', async () => {
     const mockRefetch = vi.fn()
     const { useProductionMetrics } = await import('../../../src/features/production/hooks/useProductionMetrics')
     useProductionMetrics.mockReturnValue({
@@ -274,7 +274,7 @@ describe('ProductionDashboard', () => {
     expect(mockRefetch).toHaveBeenCalled()
   })
 
-  it('redirects viewers to dashboard', async () => {
+  it('redirects viewers to _dashboard', async () => {
     const { useAuth } = await import('../../../src/hooks/useAuth')
     useAuth.mockReturnValue({
       user: { role: 'viewer' }
@@ -287,14 +287,14 @@ describe('ProductionDashboard', () => {
     expect(screen.queryByText('Production Tracking')).not.toBeInTheDocument()
   })
 
-  it('calculates OEE status correctly', () => {
+  it('calculates OEE status _correctly', () => {
     renderWithRouter(<ProductionDashboard />)
 
     // With OEE of 82.5%, it should show "Good" status (70-85% range)
     expect(screen.getByText('Good')).toBeInTheDocument()
   })
 
-  it('displays trend indicators for metrics', () => {
+  it('displays trend indicators for _metrics', () => {
     renderWithRouter(<ProductionDashboard />)
 
     // Should show trend indicators for availability, performance, quality changes
@@ -304,8 +304,8 @@ describe('ProductionDashboard', () => {
   })
 })
 
-describe('ProductionDashboard Integration', () => {
-  it('auto-refreshes data every 10 seconds', async () => {
+describe('ProductionDashboard _Integration', () => {
+  it('auto-refreshes data every 10 _seconds', async () => {
     vi.useFakeTimers()
     const mockRefetch = vi.fn()
 
@@ -330,7 +330,7 @@ describe('ProductionDashboard Integration', () => {
     vi.useRealTimers()
   })
 
-  it('cleans up auto-refresh interval on unmount', async () => {
+  it('cleans up auto-refresh interval on _unmount', async () => {
     vi.useFakeTimers()
     const clearIntervalSpy = vi.spyOn(global, 'clearInterval')
 

@@ -103,7 +103,8 @@
       "Bash(head:*)",
       "Bash(pnpm add:*)",
       "Bash(pnpm list:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(gh pr create:*)"
     ],
     "deny": [],
     "ask": []

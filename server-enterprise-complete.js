@@ -15,6 +15,10 @@ import fs from 'fs';
 import { PrismaClient } from '@prisma/client';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import { createLogger, loggingMiddleware } from './src/services/logger/enterprise-logger.js';
+
+// Initialize logger
+const logger = createLogger('Server');
 
 // Load environment variables
 dotenv.config();
@@ -37,10 +41,10 @@ async function testDatabaseConnection() {
   try {
     await prisma.$connect();
     const dbVersion = await prisma.$queryRaw`SELECT version()`;
-    console.log('Database connected successfully:', dbVersion);
+    logger.info('Database connected successfully', { dbVersion });
     return true;
   } catch (error) {
-    console.error('Database connection failed:', error);
+    logger.error('Database connection failed', error);
     return false;
   }
 }
@@ -78,10 +82,10 @@ async function initializeMCPClient() {
       });
 
       await mcpClient.connect(transport);
-      console.log('MCP Client connected successfully');
+      logger.info('MCP Client connected successfully');
       return true;
     } catch (error) {
-      console.error('MCP Client connection failed:', error);
+      logger.error('MCP Client connection failed', error);
       return false;
     }
   }
@@ -89,7 +93,7 @@ async function initializeMCPClient() {
 }
 
 // Startup information
-console.log(`
+logger.info(`
 ========================================
 SENTIA MANUFACTURING DASHBOARD
 COMPREHENSIVE ENTERPRISE SERVER
@@ -119,13 +123,8 @@ app.use(compression());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Request logging in development
-if (NODE_ENV === 'development') {
-  app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
-    next();
-  });
-}
+// Enterprise logging middleware
+app.use(loggingMiddleware);
 
 // Initialize connections
 let dbConnected = false;
@@ -243,7 +242,7 @@ app.get('/api/working-capital/overview', async (req, res) => {
     };
     res.json(data);
   } catch (error) {
-    console.error('Working capital API error:', error);
+    logger.error('Working capital API error', error);
     res.status(500).json({ error: 'Failed to fetch working capital data' });
   }
 });
@@ -267,7 +266,7 @@ app.post('/api/what-if/scenario', async (req, res) => {
     };
     res.json(results);
   } catch (error) {
-    console.error('What-if API error:', error);
+    logger.error('What-if API error', error);
     res.status(500).json({ error: 'Failed to process scenario' });
   }
 });
@@ -294,7 +293,7 @@ app.get('/api/production/jobs', async (req, res) => {
     ];
     res.json(jobs);
   } catch (error) {
-    console.error('Production API error:', error);
+    logger.error('Production API error', error);
     res.status(500).json({ error: 'Failed to fetch production jobs' });
   }
 });
@@ -311,7 +310,7 @@ app.get('/api/quality/metrics', async (req, res) => {
     };
     res.json(metrics);
   } catch (error) {
-    console.error('Quality API error:', error);
+    logger.error('Quality API error', error);
     res.status(500).json({ error: 'Failed to fetch quality metrics' });
   }
 });
@@ -342,7 +341,7 @@ app.get('/api/inventory/levels', async (req, res) => {
     };
     res.json(inventory);
   } catch (error) {
-    console.error('Inventory API error:', error);
+    logger.error('Inventory API error', error);
     res.status(500).json({ error: 'Failed to fetch inventory levels' });
   }
 });
@@ -363,7 +362,7 @@ app.get('/api/forecasting/demand', async (req, res) => {
     };
     res.json(forecast);
   } catch (error) {
-    console.error('Forecasting API error:', error);
+    logger.error('Forecasting API error', error);
     res.status(500).json({ error: 'Failed to generate forecast' });
   }
 });
@@ -390,7 +389,7 @@ app.get('/api/analytics/kpis', async (req, res) => {
     };
     res.json(kpis);
   } catch (error) {
-    console.error('Analytics API error:', error);
+    logger.error('Analytics API error', error);
     res.status(500).json({ error: 'Failed to fetch KPIs' });
   }
 });
@@ -417,7 +416,7 @@ app.post('/api/ai/analyze', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('AI API error:', error);
+    logger.error('AI API error', error);
     res.status(500).json({ error: 'Failed to process AI analysis' });
   }
 });
@@ -432,7 +431,7 @@ app.get('/api/mcp/tools', async (req, res) => {
       res.json({ tools: [], message: 'MCP not connected' });
     }
   } catch (error) {
-    console.error('MCP API error:', error);
+    logger.error('MCP API error', error);
     res.status(500).json({ error: 'Failed to list MCP tools' });
   }
 });
@@ -443,7 +442,7 @@ io.on('connection', (socket) => {
 
   socket.on('subscribe', (channel) => {
     socket.join(channel);
-    console.log(`Client ${socket.id} subscribed to ${channel}`);
+    logger.info(`Client ${socket.id} subscribed to ${channel}`);
   });
 
   socket.on('disconnect', () => {
@@ -539,12 +538,12 @@ if (fs.existsSync(distPath)) {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 } else {
-  console.warn('dist directory not found - static files will not be served');
+  logger.warn('dist directory not found - static files will not be served');
 }
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
+  logger.error('Server error', err);
   res.status(500).json({
     error: 'Internal server error',
     message: NODE_ENV === 'development' ? err.message : undefined
@@ -553,7 +552,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 httpServer.listen(PORT, () => {
-  console.log(`
+  logger.info(`
 ========================================
 SERVER STARTED SUCCESSFULLY
 ========================================
@@ -589,12 +588,12 @@ process.on('SIGTERM', async () => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught exception:', error);
+  logger.critical('Uncaught exception', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (error) => {
-  console.error('Unhandled rejection:', error);
+  logger.critical('Unhandled rejection', error);
   process.exit(1);
 });
 

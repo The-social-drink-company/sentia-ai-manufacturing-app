@@ -5,8 +5,8 @@
  */
 
 // Environment configuration
-const NODEENV = import.meta.env.MODE || 'development';
-const LOGLEVEL = import.meta.env.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const LOG_LEVEL = process.env.LOG_LEVEL || process.env.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
 
 // Custom log levels with priorities
 const logLevels = {
@@ -80,7 +80,7 @@ class EnterpriseLogger {
     }
 
     // Output to console in development
-    if (NODEENV = == 'development') {
+    if (NODE_ENV === 'development') {
       const color = logLevels.colors[level];
       const style = `color: ${color}; font-weight: ${level === 'critical' ? 'bold' : 'normal'}`;
 
@@ -90,7 +90,7 @@ class EnterpriseLogger {
       if (Object.keys(metadata).length > 0) {
         console.log('Metadata:', metadata);
       }
-    } else if (NODEENV = == 'production') {
+    } else if (NODE_ENV === 'production') {
       // In production, use appropriate console methods
       switch (level) {
         case 'critical':
@@ -106,7 +106,7 @@ class EnterpriseLogger {
           break;
         case 'debug':
         case 'trace':
-          if (LOGLEVEL = == 'debug' || LOG_LEVEL === 'trace') {
+          if (LOG_LEVEL === 'debug' || LOG_LEVEL === 'trace') {
             console.log(logEntry.formatted, metadata);
           }
           break;
@@ -116,7 +116,7 @@ class EnterpriseLogger {
     }
 
     // Send to remote logging service in production
-    if (NODEENV = == 'production' && (level === 'critical' || level === 'error')) {
+    if (NODE_ENV === 'production' && (level === 'critical' || level === 'error')) {
       this.sendToRemote(logEntry);
     }
 
@@ -218,7 +218,7 @@ export const audit = (action, userId, details) => defaultLogger.audit(action, us
 export const metric = (name, value, unit, tags) => defaultLogger.metric(name, value, unit, tags);
 
 // Development-only console wrapper
-export const devLog = NODEENV = == 'development' ? {
+export const devLog = NODE_ENV === 'development' ? {
   log: (...args) => defaultLogger.debug(args.join(' ')),
   error: (...args) => defaultLogger.error(args.join(' ')),
   warn: (...args) => defaultLogger.warn(args.join(' ')),

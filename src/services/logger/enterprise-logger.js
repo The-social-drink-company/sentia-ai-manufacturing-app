@@ -1,21 +1,12 @@
 /**
- * Enterprise Logging System
- * Centralized, structured logging with Winston
+ * Enterprise Logging System - Browser Compatible
+ * Structured logging for React application
  * Replaces all console.log/error/warn statements
  */
 
-import winston from 'winston';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // Environment configuration
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const LOG_LEVEL = process.env.LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
-const LOG_TO_FILE = process.env.LOG_TO_FILE !== 'false';
-const LOG_DIR = process.env.LOG_DIR || path.join(process.cwd(), 'logs');
+const NODE_ENV = import.meta.env.MODE || 'development';
+const LOG_LEVEL = import.meta.env.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
 
 // Custom log levels with priorities
 const logLevels = {
@@ -29,253 +20,183 @@ const logLevels = {
     trace: 6
   },
   colors: {
-    critical: 'red bold',
-    error: 'red',
-    warn: 'yellow',
-    info: 'green',
-    http: 'magenta',
-    debug: 'blue',
-    trace: 'grey'
+    critical: '#ff0000',
+    error: '#ff4444',
+    warn: '#ffaa00',
+    info: '#00aa00',
+    http: '#aa00aa',
+    debug: '#0066cc',
+    trace: '#888888'
   }
 };
 
-// Add colors to Winston
-winston.addColors(logLevels.colors);
+// Determine if a log level should be displayed
+const shouldLog = (level) => {
+  const currentLevel = logLevels.levels[LOG_LEVEL] || logLevels.levels.info;
+  const messageLevel = logLevels.levels[level] || logLevels.levels.info;
+  return messageLevel <= currentLevel;
+};
 
-// Custom format for structured logging
-const structuredFormat = winston.format.combine(
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
-  winston.format.errors({ stack: true }),
-  winston.format.metadata({ fillExcept: ['message', 'level', 'timestamp'] }),
-  winston.format.json()
-);
+// Format timestamp
+const formatTimestamp = () => {
+  const now = new Date();
+  return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+};
 
-// Console format for development
-const consoleFormat = winston.format.combine(
-  winston.format.colorize({ all: true }),
-  winston.format.timestamp({ format: 'HH:mm:ss.SSS' }),
-  winston.format.printf(({ timestamp, level, message, metadata }) => {
-    const meta = metadata && Object.keys(metadata).length
-      ? `\n${JSON.stringify(metadata, null, 2)}`
-      : '';
-    return `[${timestamp}] ${level}: ${message}${meta}`;
-  })
-);
+// Format log message
+const formatMessage = (level, message, metadata = {}) => {
+  const timestamp = formatTimestamp();
+  const metaStr = Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : '';
+  return {
+    timestamp,
+    level,
+    message,
+    metadata,
+    formatted: `[${timestamp}] ${level.toUpperCase()}: ${message} ${metaStr}`
+  };
+};
 
-// Create transports array
-const transports = [];
-
-// Console transport (always enabled in development)
-if (NODE_ENV !== 'production' || process.env.LOG_TO_CONSOLE === 'true') {
-  transports.push(
-    new winston.transports.Console({
-      format: NODE_ENV === 'production' ? structuredFormat : consoleFormat,
-      level: LOG_LEVEL
-    })
-  );
-}
-
-// File transports (production and when explicitly enabled)
-if (LOG_TO_FILE && NODE_ENV === 'production') {
-  // Error log file
-  transports.push(
-    new winston.transports.File({
-      filename: path.join(LOG_DIR, 'error.log'),
-      level: 'error',
-      format: structuredFormat,
-      maxsize: 10485760, // 10MB
-      maxFiles: 10,
-      tailable: true
-    })
-  );
-
-  // Combined log file
-  transports.push(
-    new winston.transports.File({
-      filename: path.join(LOG_DIR, 'combined.log'),
-      format: structuredFormat,
-      maxsize: 10485760, // 10MB
-      maxFiles: 30,
-      tailable: true
-    })
-  );
-}
-
-// Create the logger instance
-const logger = winston.createLogger({
-  levels: logLevels.levels,
-  level: LOG_LEVEL,
-  format: structuredFormat,
-  transports,
-  exitOnError: false,
-  silent: process.env.SILENT === 'true'
-});
-
-// Add request ID and correlation tracking
+// Enterprise Logger Class
 class EnterpriseLogger {
   constructor(component = 'App') {
     this.component = component;
-    this.requestId = null;
+    this.logs = [];
+    this.maxLogs = 1000; // Keep last 1000 logs in memory
   }
 
-  setRequestId(requestId) {
-    this.requestId = requestId;
-  }
+  // Core logging method
+  log(level, message, metadata = {}) {
+    if (!shouldLog(level)) return;
 
-  setComponent(component) {
-    this.component = component;
-  }
-
-  _log(level, message, meta = {}) {
-    const metadata = {
-      component: this.component,
-      requestId: this.requestId,
-      ...meta,
-      env: NODE_ENV,
-      timestamp: new Date().toISOString()
-    };
-
-    // Filter sensitive data
-    const sanitizedMeta = this._sanitizeMeta(metadata);
-
-    logger.log(level, message, sanitizedMeta);
-  }
-
-  _sanitizeMeta(meta) {
-    const sensitive = ['password', 'token', 'secret', 'api_key', 'apiKey', 'authorization'];
-    const sanitized = { ...meta };
-
-    Object.keys(sanitized).forEach(key => {
-      if (sensitive.some(s => key.toLowerCase().includes(s))) {
-        sanitized[key] = '[REDACTED]';
-      } else if (typeof sanitized[key] === 'object' && sanitized[key] !== null) {
-        sanitized[key] = this._sanitizeMeta(sanitized[key]);
-      }
+    const logEntry = formatMessage(level, message, {
+      ...metadata,
+      component: this.component
     });
 
-    return sanitized;
+    // Store in memory
+    this.logs.push(logEntry);
+    if (this.logs.length > this.maxLogs) {
+      this.logs.shift();
+    }
+
+    // Output to console in development
+    if (NODE_ENV === 'development') {
+      const color = logLevels.colors[level];
+      const style = `color: ${color}; font-weight: ${level === 'critical' ? 'bold' : 'normal'}`;
+
+      console.log(`%c${logEntry.formatted}`, style);
+
+      // Also log metadata if present
+      if (Object.keys(metadata).length > 0) {
+        console.log('Metadata:', metadata);
+      }
+    } else if (NODE_ENV === 'production') {
+      // In production, use appropriate console methods
+      switch (level) {
+        case 'critical':
+        case 'error':
+          console.error(logEntry.formatted, metadata);
+          break;
+        case 'warn':
+          console.warn(logEntry.formatted, metadata);
+          break;
+        case 'info':
+        case 'http':
+          console.info(logEntry.formatted, metadata);
+          break;
+        case 'debug':
+        case 'trace':
+          if (LOG_LEVEL === 'debug' || LOG_LEVEL === 'trace') {
+            console.log(logEntry.formatted, metadata);
+          }
+          break;
+        default:
+          console.log(logEntry.formatted, metadata);
+      }
+    }
+
+    // Send to remote logging service in production
+    if (NODE_ENV === 'production' && (level === 'critical' || level === 'error')) {
+      this.sendToRemote(logEntry);
+    }
+
+    return logEntry;
+  }
+
+  // Send logs to remote service
+  async sendToRemote(logEntry) {
+    try {
+      // This would be replaced with actual remote logging service
+      // e.g., Sentry, LogRocket, DataDog, etc.
+      if (window.REMOTE_LOGGING_ENABLED) {
+        await fetch('/api/logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(logEntry)
+        });
+      }
+    } catch (err) {
+      // Silently fail remote logging to avoid infinite loops
+    }
   }
 
   // Log level methods
-  critical(message, meta) {
-    this._log('critical', message, meta);
+  critical(message, metadata) {
+    return this.log('critical', message, metadata);
   }
 
-  error(message, error, meta = {}) {
+  error(message, error, metadata = {}) {
     const errorMeta = error instanceof Error ? {
-      error: {
-        message: error.message,
-        stack: error.stack,
-        code: error.code,
-        name: error.name
-      },
-      ...meta
-    } : { error, ...meta };
-
-    this._log('error', message, errorMeta);
+      ...metadata,
+      error: error.message,
+      stack: error.stack
+    } : metadata;
+    return this.log('error', message, errorMeta);
   }
 
-  warn(message, meta) {
-    this._log('warn', message, meta);
+  warn(message, metadata) {
+    return this.log('warn', message, metadata);
   }
 
-  info(message, meta) {
-    this._log('info', message, meta);
+  info(message, metadata) {
+    return this.log('info', message, metadata);
   }
 
-  http(message, meta) {
-    this._log('http', message, meta);
+  http(message, metadata) {
+    return this.log('http', message, metadata);
   }
 
-  debug(message, meta) {
-    this._log('debug', message, meta);
+  debug(message, metadata) {
+    return this.log('debug', message, metadata);
   }
 
-  trace(message, meta) {
-    this._log('trace', message, meta);
+  trace(message, metadata) {
+    return this.log('trace', message, metadata);
   }
 
-  // Performance logging
-  startTimer(label) {
-    const start = Date.now();
-    return {
-      end: (message, meta = {}) => {
-        const duration = Date.now() - start;
-        this.info(message || `Timer ${label} completed`, {
-          ...meta,
-          label,
-          duration,
-          durationMs: duration
-        });
-      }
-    };
+  // Special logging methods
+  audit(action, userId, details) {
+    return this.log('info', `AUDIT: ${action}`, { userId, details, type: 'audit' });
   }
 
-  // Audit logging for security events
-  audit(action, userId, details = {}) {
-    this.info('AUDIT', {
-      action,
-      userId,
-      ...details,
-      timestamp: new Date().toISOString(),
-      ip: details.ip || 'unknown'
-    });
+  metric(name, value, unit = '', tags = {}) {
+    return this.log('info', `METRIC: ${name}`, { value, unit, tags, type: 'metric' });
   }
 
-  // Metrics logging for monitoring
-  metric(name, value, unit = 'count', tags = {}) {
-    this.info('METRIC', {
-      metric: name,
-      value,
-      unit,
-      tags,
-      timestamp: Date.now()
-    });
+  // Get logs for debugging
+  getLogs(level = null) {
+    if (!level) return this.logs;
+    return this.logs.filter(log => log.level === level);
+  }
+
+  // Clear logs
+  clearLogs() {
+    this.logs = [];
   }
 }
 
-// Create singleton instance for default export
-const defaultLogger = new EnterpriseLogger('System');
-
-// Middleware for Express
-export const loggingMiddleware = (req, res, next) => {
-  const requestId = req.headers['x-request-id'] ||
-    `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-  req.requestId = requestId;
-  req.logger = new EnterpriseLogger('HTTP');
-  req.logger.setRequestId(requestId);
-
-  const timer = req.logger.startTimer('request');
-
-  req.logger.http('Incoming request', {
-    method: req.method,
-    url: req.url,
-    ip: req.ip,
-    userAgent: req.headers['user-agent']
-  });
-
-  // Log response
-  const originalSend = res.send;
-  res.send = function(data) {
-    timer.end('Request completed', {
-      method: req.method,
-      url: req.url,
-      statusCode: res.statusCode,
-      contentLength: res.get('content-length')
-    });
-    return originalSend.call(this, data);
-  };
-
-  next();
-};
-
-// Stream for Morgan HTTP logger integration
-export const stream = {
-  write: (message) => {
-    defaultLogger.http(message.trim());
-  }
-};
+// Create default logger instance
+const defaultLogger = new EnterpriseLogger('Default');
 
 // Factory function to create component-specific loggers
 export const createLogger = (component) => {
@@ -296,7 +217,7 @@ export const trace = (msg, meta) => defaultLogger.trace(msg, meta);
 export const audit = (action, userId, details) => defaultLogger.audit(action, userId, details);
 export const metric = (name, value, unit, tags) => defaultLogger.metric(name, value, unit, tags);
 
-// Development-only console wrapper (will be removed in production build)
+// Development-only console wrapper
 export const devLog = NODE_ENV === 'development' ? {
   log: (...args) => defaultLogger.debug(args.join(' ')),
   error: (...args) => defaultLogger.error(args.join(' ')),
@@ -311,4 +232,22 @@ export const devLog = NODE_ENV === 'development' ? {
   info: () => {},
   debug: () => {},
   trace: () => {}
+};
+
+// Express middleware integration (for use in server code only)
+export const expressMiddleware = (req, res, next) => {
+  // This would only be used in server-side code
+  // Skip in browser environment
+  if (typeof window !== 'undefined') {
+    return next ? next() : undefined;
+  }
+};
+
+// Stream for Morgan HTTP logger integration (server only)
+export const stream = {
+  write: (message) => {
+    if (typeof window === 'undefined') {
+      defaultLogger.http(message.trim());
+    }
+  }
 };

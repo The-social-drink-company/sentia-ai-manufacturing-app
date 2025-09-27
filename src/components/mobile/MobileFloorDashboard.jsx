@@ -112,7 +112,7 @@ const realtimeData = [
 const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#6b7280'];
 
 export default function MobileFloorDashboard() {
-  const [selectedLine, setSelectedLine] = useState(null);
+  const [selectedLine] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
 
   const getStatusIcon = (status) => {
@@ -268,7 +268,7 @@ export default function MobileFloorDashboard() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {statusData.map((entry, index) => (
+                    {statusData.map((entry, __index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -277,7 +277,7 @@ export default function MobileFloorDashboard() {
               </ResponsiveContainer>
             </div>
             <div className="grid grid-cols-2 gap-2 mt-3">
-              {statusData.filter(d => d.value > 0).map((status, index) => (
+              {statusData.filter(d => d.value > 0).map((status, __index) => (
                 <div key={status.name} className="flex items-center">
                   <div
                     className="w-3 h-3 rounded mr-2"

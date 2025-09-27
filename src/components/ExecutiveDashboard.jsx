@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState,  } from 'react';
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,20 +19,20 @@ import {
 } from 'lucide-react'
 
 const ExecutiveDashboard = () => {
-  const [metrics, setMetrics] = useState({
+  const [metrics] = useState({
     totalRevenue: { value: '£2.5M', change: '+15.2%', trend: 'up' },
     activeOrders: { value: '1,250', change: '+8.5%', trend: 'up' },
     inventoryValue: { value: '£0.8M', change: '-2.1%', trend: 'down' },
     activeCustomers: { value: '850', change: '+12.3%', trend: 'up' }
   })
 
-  const [workingCapital, setWorkingCapital] = useState({
+  const [workingCapital] = useState({
     current: '£1.9M',
     projection: '£2.1M',
     change: '+19.5%'
   })
 
-  const [kpis, setKpis] = useState([
+  const [kpis] = useState([
     { label: 'Revenue Growth', value: '+15.2%', target: 85 },
     { label: 'Order Fulfillment', value: '94.8%', target: 95 },
     { label: 'Customer Satisfaction', value: '4.7/5', target: 90 },
@@ -170,7 +170,7 @@ const ExecutiveDashboard = () => {
               <CardTitle>Key Performance Metrics</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {kpis.map((kpi, index) => (
+              {kpis.map((kpi, __index) => (
                 <div key={kpi.label} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{kpi.label}</span>
@@ -197,7 +197,7 @@ const ExecutiveDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {quickActions.map((action, index) => (
+              {quickActions.map((action, __index) => (
                 <Button
                   key={action.title}
                   variant="outline"

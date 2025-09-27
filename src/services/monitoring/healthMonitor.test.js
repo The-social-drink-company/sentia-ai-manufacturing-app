@@ -7,8 +7,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { HealthMonitor } from './healthMonitor'
 
 // Mock global APIs
-global.fetch = vi.fn()
-global.performance = {
+globalThis.fetch = vi.fn()
+globalThis.performance = {
   now: vi.fn(() => Date.now()),
   getEntriesByType: vi.fn(() => []),
   memory: {

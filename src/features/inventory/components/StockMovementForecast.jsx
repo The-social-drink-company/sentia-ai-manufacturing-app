@@ -236,7 +236,7 @@ export default function StockMovementForecast({ data, period = 'current' }) {
         </h4>
         <div className="relative h-24 bg-gray-50 dark:bg-gray-900 rounded-lg p-2">
           <div className="flex h-full items-end justify-between">
-            {sortedDailyTotals.slice(0, 14).map((day, index) => {
+            {sortedDailyTotals.slice(0, 14).map((day, __index) => {
               const maxMovement = Math.max(...sortedDailyTotals.map(d => d.totalMovement))
               const height = (day.totalMovement / maxMovement) * 100
 
@@ -274,7 +274,7 @@ export default function StockMovementForecast({ data, period = 'current' }) {
         </div>
         <div className="flex items-center">
           <div className="w-3 h-3 bg-red-500 rounded mr-1"></div>
-          <span className="text-gray-600 dark:text-gray-400">Low (<85%)</span>
+          <span className="text-gray-600 dark:text-gray-400">Low (&lt;85%)</span>
         </div>
       </div>
 

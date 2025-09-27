@@ -337,7 +337,7 @@ const TimeSeriesAnalysis = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {aiInsights.map((insight, index) => (
+              {aiInsights.map((insight, __index) => (
                 <div
                   key={index}
                   className={`p-4 rounded-lg border ${getSeverityColor(insight.severity)}`}

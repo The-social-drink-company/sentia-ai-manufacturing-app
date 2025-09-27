@@ -455,7 +455,7 @@ export default function PersonnelManagement() {
               { label: 'Training Schedule', icon: AcademicCapIcon, color: 'green' },
               { label: 'Payroll Report', icon: BriefcaseIcon, color: 'purple' },
               { label: 'Safety Training', icon: ShieldCheckIcon, color: 'red' }
-            ].map((action, index) => (
+            ].map((action, __index) => (
               <button
                 key={index}
                 className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}

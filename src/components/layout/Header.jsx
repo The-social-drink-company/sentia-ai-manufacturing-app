@@ -19,7 +19,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
   const { signOut } = useClerk()
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [notifications, setNotifications] = useState([])
+  const [notifications] = useState([])
 
   useEffect(() => {
     // Load theme preference

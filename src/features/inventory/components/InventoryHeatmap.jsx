@@ -81,7 +81,7 @@ export function InventoryHeatmap({ data, onCellClick }) {
             </div>
 
             {/* Data Rows */}
-            {inventoryData.map((item, index) => {
+            {inventoryData.map((item, __index) => {
               const totalQuantity = item.locations.reduce((sum, loc) => sum + loc.quantity, 0)
 
               return (

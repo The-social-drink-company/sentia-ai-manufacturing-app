@@ -21,7 +21,7 @@ export default function ForecastingDashboard() {
   const { user } = useAuth()
   const [data, setData] = useState([])
   const [analysis, setAnalysis] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading] = useState(false)
   const [error, setError] = useState(null)
   const [selectedDataSource, setSelectedDataSource] = useState('demand')
   const [selectedPeriod, setSelectedPeriod] = useState(12)

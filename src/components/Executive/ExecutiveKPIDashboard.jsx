@@ -241,7 +241,7 @@ export default function ExecutiveKPIDashboard() {
               <span>Executive Summary</span>
             </h3>
             <div className="space-y-4">
-              {executiveSummary.map((item, index) => (
+              {executiveSummary.map((item, __index) => (
                 <div key={index} className={`border rounded-lg p-4 ${getStatusColor(item.status)}`}>
                   <h4 className="font-semibold mb-2">{item.title}</h4>
                   <p className="text-sm mb-2">{item.summary}</p>
@@ -282,7 +282,7 @@ export default function ExecutiveKPIDashboard() {
               { label: 'Board Presentation', icon: PresentationChartLineIcon, color: 'blue' },
               { label: 'Quarterly Review', icon: CalendarDaysIcon, color: 'purple' },
               { label: 'Strategic Planning', icon: DocumentChartBarIcon, color: 'orange' }
-            ].map((action, index) => (
+            ].map((action, __index) => (
               <button
                 key={index}
                 className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}

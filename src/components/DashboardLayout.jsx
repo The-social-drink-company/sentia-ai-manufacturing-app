@@ -172,13 +172,13 @@ const DashboardLayout = ({ children }) => {
             {/* Navigation */}
             <ScrollArea className="flex-1 px-4 py-6">
               <nav className="space-y-6">
-                {navigationSections.map((section, sectionIndex) => (
+                {navigationSections.map((section, __sectionIndex) => (
                   <div key={section.title}>
                     <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-2">
                       {section.title}
                     </h3>
                     <div className="space-y-1">
-                      {section.items.map((item, itemIndex) => (
+                      {section.items.map((item, __itemIndex) => (
                         <motion.button
                           key={item.path}
                           onClick={() => handleNavigation(item.path)}

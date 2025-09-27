@@ -20,7 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import MobileFloorDashboard from '@/components/mobile/MobileFloorDashboard';
 
 const Mobile = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab] = useState('dashboard');
   const [scanMode, setScanMode] = useState(false);
   const [notifications] = useState([
     { id: 1, type: 'alert', message: 'Machine M-102 requires maintenance', time: '5 min ago' },

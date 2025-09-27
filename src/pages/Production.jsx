@@ -29,7 +29,7 @@ import RealTimeProductionMonitor from '../components/production/RealTimeProducti
 
 const Production = () => {
   const [activeTab, setActiveTab] = useState('realtime');
-  const [selectedLine, setSelectedLine] = useState('all');
+  const [selectedLine] = useState('all');
   const [timeRange, setTimeRange] = useState('today');
 
   // Fetch production data with real-time updates
@@ -528,7 +528,7 @@ const Production = () => {
                     OEE Breakdown
                   </h4>
                   <div className="space-y-4">
-                    {data.oeeBreakdown.map((metric, index) => (
+                    {data.oeeBreakdown.map((metric, __index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                           <div className="font-medium text-gray-900 dark:text-white">{metric.metric}</div>
@@ -723,7 +723,7 @@ const Production = () => {
                       { action: 'Calibrate Line 4 sensors', priority: 'High', due: 'Today', status: 'In Progress' },
                       { action: 'Train operators on new QC procedures', priority: 'Medium', due: 'This Week', status: 'Pending' },
                       { action: 'Review supplier quality specs', priority: 'Low', due: 'Next Week', status: 'Scheduled' }
-                    ].map((item, index) => (
+                    ].map((item, __index) => (
                       <div key={index} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div className="flex justify-between items-start">
                           <div>
@@ -866,7 +866,7 @@ const Production = () => {
               </h3>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {data.shifts.map((shift, index) => (
+                {data.shifts.map((shift, __index) => (
                   <div key={index} className={`rounded-lg p-6 border-2 ${
                     shift.status === 'active' ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20' :
                     shift.status === 'completed' ? 'bg-green-50 border-green-200 dark:bg-green-900/20' :

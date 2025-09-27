@@ -180,7 +180,7 @@ export default function CashFlowForecast({ data, period = 'current' }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {forecastData.slice(0, 30).map((day, index) => (
+              {forecastData.slice(0, 30).map((day, __index) => (
                 <tr key={day.date} className={`${
                   day.runningBalance < 50000 ? 'bg-red-50 dark:bg-red-900/10' : ''
                 }`}>

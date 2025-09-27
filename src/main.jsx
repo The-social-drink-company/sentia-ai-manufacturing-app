@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { AuthProvider } from './providers/AuthProvider.jsx'
 import { logInfo, logError, logDebug } from './utils/logger.js'
-import { devLog } from '@/utils/structuredLogger.js'
+import { devLog } from './utils/structuredLogger.js'
 
 // Simplified initialization
 devLog.log('Initializing Sentia Manufacturing Dashboard...');

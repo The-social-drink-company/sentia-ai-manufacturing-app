@@ -125,7 +125,7 @@ export default function CashConversionCycle({ dso, dio, dpo, historical }) {
         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">6-Month Trend</h4>
         <div className="relative h-24 bg-gray-50 dark:bg-gray-900 rounded-lg p-2">
           <div className="flex h-full items-end justify-between">
-            {defaultHistorical.map((period, index) => {
+            {defaultHistorical.map((period, __index) => {
               const maxCCC = Math.max(...defaultHistorical.map(p => p.ccc))
               const height = (period.ccc / maxCCC) * 100
 

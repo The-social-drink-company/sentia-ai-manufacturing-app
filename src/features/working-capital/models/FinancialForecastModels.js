@@ -97,7 +97,7 @@ export class TimeSeriesForecaster {
     const seasonalIndices = this.calculateSeasonalIndices()
 
     // Deseasonalize data and apply trend
-    const deseasonalized = this.data.map((point, index) => ({
+    const deseasonalized = this.data.map((point, __index) => ({
       ...point,
       value: point.value / seasonalIndices[index % this.seasonalityPeriod]
     }))
@@ -107,7 +107,7 @@ export class TimeSeriesForecaster {
     const trendForecast = trendForecaster.linearTrend(periodsToForecast)
 
     // Reapply seasonality to forecast
-    return trendForecast.map((point, index) => {
+    return trendForecast.map((point, __index) => {
       const seasonalIndex = seasonalIndices[index % this.seasonalityPeriod]
       return {
         ...point,
@@ -122,13 +122,13 @@ export class TimeSeriesForecaster {
     const seasonalCounts = new Array(this.seasonalityPeriod).fill(0)
 
     // Calculate averages for each seasonal period
-    this.data.forEach((point, index) => {
+    this.data.forEach((point, _index) => {
       const seasonIndex = index % this.seasonalityPeriod
       seasonalSums[seasonIndex] += point.value
       seasonalCounts[seasonIndex]++
     })
 
-    const seasonalAverages = seasonalSums.map((sum, index) =>
+    const seasonalAverages = seasonalSums.map((sum, __index) =>
       seasonalCounts[index] > 0 ? sum / seasonalCounts[index] : 1
     )
 

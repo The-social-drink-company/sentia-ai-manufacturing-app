@@ -75,7 +75,7 @@ export default function SupplierPerformance({ data, title }) {
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4">
           <p className="text-gray-900 dark:text-white font-medium mb-2">{label}</p>
-          {payload.map((entry, index) => (
+          {payload.map((entry, __index) => (
             <div key={index} className="flex items-center justify-between min-w-40">
               <div className="flex items-center">
                 <div
@@ -110,7 +110,7 @@ export default function SupplierPerformance({ data, title }) {
 
   const renderOverview = () => (
     <div className="space-y-4">
-      {data.map((supplier, index) => {
+      {data.map((supplier, __index) => {
         const score = getPerformanceScore(supplier)
         const { grade, color, bg } = getPerformanceGrade(score)
 

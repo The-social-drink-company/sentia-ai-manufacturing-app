@@ -81,7 +81,7 @@ export default function InventoryTurnoverChart({ data, period = 'current' }) {
           Turnover by Category
         </h4>
 
-        {mockData.map((item, index) => (
+        {mockData.map((item, __index) => (
           <div key={item.category} className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex-1">

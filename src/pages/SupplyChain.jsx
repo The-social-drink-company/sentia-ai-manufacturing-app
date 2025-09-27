@@ -240,7 +240,7 @@ export default function SupplyChain() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {transportData.map((entry, index) => (
+                  {transportData.map((entry, __index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -249,7 +249,7 @@ export default function SupplyChain() {
             </ResponsiveContainer>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
-            {transportData.map((mode, index) => (
+            {transportData.map((mode, __index) => (
               <div key={mode.mode} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div

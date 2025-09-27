@@ -165,7 +165,7 @@ const LandingPage = () => {
       <section className="px-6 py-16">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
+            {stats.map((stat, __index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
@@ -204,7 +204,7 @@ const LandingPage = () => {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
+            {features.map((feature, __index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 30 }}

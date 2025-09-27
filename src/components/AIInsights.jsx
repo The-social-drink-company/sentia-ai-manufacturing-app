@@ -216,7 +216,7 @@ const AIInsights = () => {
               <div className="action-items">
                 <h4>Recommended Actions:</h4>
                 <ul>
-                  {insight.actionItems.map((action, index) => (
+                  {insight.actionItems.map((action, __index) => (
                     <li key={index}>{action}</li>
                   ))}
                 </ul>

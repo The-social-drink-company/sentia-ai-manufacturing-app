@@ -81,7 +81,7 @@ const ExecutiveDashboardAdvanced = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpiCards.map((kpi, index) => {
+        {kpiCards.map((kpi, __index) => {
           const Icon = kpi.icon;
           const TrendIcon = kpi.trend === 'up' ? TrendingUp : TrendingDown;
           
@@ -153,7 +153,7 @@ const ExecutiveDashboardAdvanced = () => {
             <CardTitle className="text-lg font-semibold">Key Performance Metrics</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {keyMetrics.map((metric, index) => (
+            {keyMetrics.map((metric, __index) => (
               <div key={index} className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">{metric.label}</span>
@@ -174,7 +174,7 @@ const ExecutiveDashboardAdvanced = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => {
+            {quickActions.map((action, __index) => {
               const Icon = action.icon;
               return (
                 <button

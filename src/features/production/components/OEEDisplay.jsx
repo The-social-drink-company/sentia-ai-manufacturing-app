@@ -11,7 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui'
 
 const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
-  const [selectedLine, setSelectedLine] = useState('all')
+  const [selectedLine] = useState('all')
 
   // Mock data fallback
   const oeeData = useMemo(() => data || {

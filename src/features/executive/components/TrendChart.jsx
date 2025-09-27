@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef  } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -29,7 +29,7 @@ const TrendChart = ({ data, categories }) => {
 
   const chartData = {
     labels: data.map(d => d.month),
-    datasets: categories.map((category, index) => {
+    datasets: categories.map((category, __index) => {
       const colors = [
         { border: 'rgb(59, 130, 246)', bg: 'rgba(59, 130, 246, 0.1)' },
         { border: 'rgb(34, 197, 94)', bg: 'rgba(34, 197, 94, 0.1)' },

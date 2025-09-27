@@ -120,7 +120,7 @@ const DataTableWidget = ({
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {paginatedData.map((row, rowIndex) => (
+              {paginatedData.map((row, __rowIndex) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   {columns.map((column) => (
                     <td

@@ -253,7 +253,7 @@ export class DemandForecastingService {
     const seasonalCounts = new Array(period).fill(0)
 
     // Calculate seasonal averages
-    data.forEach((point, index) => {
+    data.forEach((point, _index) => {
       const seasonIndex = index % period
       seasonalAverages[seasonIndex] += point.value
       seasonalCounts[seasonIndex]++
@@ -464,7 +464,7 @@ export class DemandForecastingService {
    * Apply scenario multipliers to base forecast
    */
   applyScenarioMultipliers(forecast, multipliers) {
-    return forecast.map((point, index) => {
+    return forecast.map((point, __index) => {
       if (point.isForecast) {
         const growthFactor = Math.pow(multipliers.growth, index - forecast.findIndex(p => p.isForecast) + 1)
         const randomFactor = 1 + (Math.random() - 0.5) * 0.1 * multipliers.volatility

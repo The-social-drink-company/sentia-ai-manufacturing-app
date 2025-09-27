@@ -251,7 +251,7 @@ class RedisCacheService {
       if (this.isConnected && this.client) {
         const values = await this.client.mGet(fullKeys);
 
-        keys.forEach((originalKey, index) => {
+        keys.forEach((originalKey, _index) => {
           const value = values[index];
           if (value !== null) {
             result[originalKey] = this.deserializeData(value);

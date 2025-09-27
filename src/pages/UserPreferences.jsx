@@ -35,7 +35,7 @@ import {
 
 const UserPreferences = () => {
   const { user, isLoaded } = useUser();
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab] = useState('profile');
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 

@@ -128,7 +128,7 @@ export default function ProductionSchedule({ data }) {
 
               {dateJobs
                 .sort((a, b) => new Date(a.plannedStart) - new Date(b.plannedStart))
-                .map((job, index) => {
+                .map((job, __index) => {
                   const statusConfig = getStatusConfig(job.status)
                   const priorityConfig = getPriorityConfig(job.priority)
                   const scheduleVariance = calculateVariance(job.plannedStart, job.actualStart)

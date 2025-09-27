@@ -343,7 +343,7 @@ const Analytics = () => {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Improvement Recommendations</h2>
           <div className="space-y-4">
-            {analyticsData.recommendations.map((rec, index) => (
+            {analyticsData.recommendations.map((rec, __index) => (
               <div
                 key={index}
                 className={`border-l-4 p-4 rounded-lg ${
@@ -373,7 +373,7 @@ const Analytics = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-1">Recommended Actions:</p>
                       <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                        {rec.actions.map((action, actionIndex) => (
+                        {rec.actions.map((action, __actionIndex) => (
                           <li key={actionIndex}>{action}</li>
                         ))}
                       </ul>

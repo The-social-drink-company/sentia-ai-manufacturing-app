@@ -18,7 +18,7 @@ export default function WorkingCapitalChart({ data, period }) {
 
       {/* Working Capital Bars */}
       <div className="space-y-4">
-        {data.labels?.map((label, index) => {
+        {data.labels?.map((label, __index) => {
           const current = data.current?.[index] || 0
           const optimal = data.optimal?.[index] || 0
           const isNegative = current < 0

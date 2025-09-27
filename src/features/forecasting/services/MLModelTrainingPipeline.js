@@ -122,7 +122,7 @@ export class MLModelTrainingPipeline {
       .sort((a, b) => new Date(a.date) - new Date(b.date))
 
     // Add time-based features
-    processed = processed.map((item, index) => {
+    processed = processed.map((item, __index) => {
       const date = new Date(item.date)
 
       return {
@@ -257,7 +257,7 @@ export class MLModelTrainingPipeline {
     const n = train.length
     let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0
 
-    train.forEach((point, index) => {
+    train.forEach((point, _index) => {
       sumX += index
       sumY += point.normalizedValue
       sumXY += index * point.normalizedValue
@@ -290,7 +290,7 @@ export class MLModelTrainingPipeline {
     const X = []
     const y = []
 
-    train.forEach((point, index) => {
+    train.forEach((point, _index) => {
       const row = []
       for (let d = 0; d <= degree; d++) {
         row.push(Math.pow(index, d))
@@ -544,7 +544,7 @@ export class MLModelTrainingPipeline {
     let sumActual = 0
     let sumSquaredActual = 0
 
-    data.forEach((point, index) => {
+    data.forEach((point, _index) => {
       const predicted = model.predict(index / data.length) // Normalized index
       const actual = point.normalizedValue
 

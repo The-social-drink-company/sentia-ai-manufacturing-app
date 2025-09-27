@@ -30,7 +30,7 @@ import QualityControlMonitor from '../components/quality/QualityControlMonitor';
 
 const Quality = () => {
   const [activeTab, setActiveTab] = useState('realtime');
-  const [selectedInspection, setSelectedInspection] = useState(null);
+  const [selectedInspection] = useState(null);
   const [timeRange, setTimeRange] = useState('week');
   const [productFilter, setProductFilter] = useState('all');
 
@@ -631,7 +631,7 @@ const Quality = () => {
                             dataKey="count"
                             label={({ category, percentage }) => `${category}: ${percentage}%`}
                           >
-                            {data.defectCategories.map((entry, index) => (
+                            {data.defectCategories.map((entry, __index) => (
                               <Cell key={`cell-${index}`} fill={
                                 entry.severity === 'Critical' ? '#EF4444' :
                                 entry.severity === 'Major' ? '#F59E0B' : '#10B981'
@@ -655,7 +655,7 @@ const Quality = () => {
                       { metric: 'Regulatory Compliance', value: data.complianceMetrics.regulatoryCompliance, target: 100.0, unit: '%' },
                       { metric: 'Documentation Complete', value: data.complianceMetrics.documentationComplete, target: 100.0, unit: '%' },
                       { metric: 'Training Compliance', value: data.complianceMetrics.trainingCompliance, target: 95.0, unit: '%' }
-                    ].map((item, index) => (
+                    ].map((item, __index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                           <div className="font-medium text-gray-900 dark:text-white">{item.metric}</div>
@@ -894,7 +894,7 @@ const Quality = () => {
                     Defect Categories
                   </h4>
                   <div className="space-y-3">
-                    {data.defectCategories.map((defect, index) => (
+                    {data.defectCategories.map((defect, __index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div className="flex-1">
                           <div className="flex items-center justify-between">

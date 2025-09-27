@@ -111,7 +111,7 @@ export default function ARAgingChart({ data }) {
         <div className="pt-4 border-t">
           <h4 className="text-sm font-semibold mb-2">Top Outstanding Customers</h4>
           <div className="space-y-2">
-            {data.topCustomers.slice(0, 3).map((customer, index) => (
+            {data.topCustomers.slice(0, 3).map((customer, __index) => (
               <div key={index} className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">{customer.name}</span>
                 <div className="text-right">

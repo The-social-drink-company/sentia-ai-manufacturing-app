@@ -188,7 +188,7 @@ export default function InventoryDashboard() {
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Critical Inventory Alerts</h2>
             <div className="space-y-3">
-              {alerts.map((alert, index) => (
+              {alerts.map((alert, __index) => (
                 <div
                   key={index}
                   className={`p-4 rounded-lg border flex items-start ${

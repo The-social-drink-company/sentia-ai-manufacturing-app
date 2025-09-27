@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui
 
 const generateMockData = () => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  return months.map((month, index) => ({
+  return months.map((month, __index) => ({
     month,
     cashIn: Math.floor(Math.random() * 50000) + 100000,
     cashOut: Math.floor(Math.random() * 40000) + 80000,
@@ -44,7 +44,7 @@ export function CashFlowChart({ data, height = 400, showForecast = true }) {
       return (
         <div className="bg-white p-3 border rounded shadow-lg">
           <p className="font-semibold">{label}</p>
-          {payload.map((entry, index) => (
+          {payload.map((entry, __index) => (
             <p key={index} style={{ color: entry.color }}>
               {entry.name}: {formatCurrency(entry.value)}
             </p>

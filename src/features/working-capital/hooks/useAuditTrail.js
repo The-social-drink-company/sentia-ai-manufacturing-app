@@ -187,7 +187,7 @@ export const useAuditTrail = (componentName) => {
   const logBatch = useCallback((actions) => {
     const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    actions.forEach((actionData, index) => {
+    actions.forEach((actionData, _index) => {
       auditService.logEvent(
         actionData.eventType,
         {

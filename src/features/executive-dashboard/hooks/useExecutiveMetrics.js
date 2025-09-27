@@ -163,7 +163,7 @@ export const useExecutiveMetrics = (period = 'month') => {
         })
 
         // Check for high-impact risks
-        data.risks?.forEach((risk, index) => {
+        data.risks?.forEach((risk, _index) => {
           if (risk.impact === 'High' && risk.probability !== 'Low') {
             newAlerts.push({
               id: `risk-${index}`,

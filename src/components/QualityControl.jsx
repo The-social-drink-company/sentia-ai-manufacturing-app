@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState,  } from 'react';
 import {
   BeakerIcon,
   CheckCircleIcon,
@@ -28,10 +28,10 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const QualityControl = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState('7d');
-  const [selectedProduct, setSelectedProduct] = useState('all');
-  const [selectedMetric, setSelectedMetric] = useState('defect-rate');
-  const [activeTab, setActiveTab] = useState('overview');
+  const [selectedPeriod] = useState('7d');
+  const [selectedProduct] = useState('all');
+  const [selectedMetric] = useState('defect-rate');
+  const [activeTab] = useState('overview');
 
   // Quality metrics data
   const qualityMetrics = {
@@ -503,7 +503,7 @@ const QualityControl = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {controlChartData.map((point, index) => (
+                      {controlChartData.map((point, __index) => (
                         <tr key={index} className="border-b">
                           <td className="p-2">{point.date}</td>
                           <td className="text-right p-2">{point.value}</td>

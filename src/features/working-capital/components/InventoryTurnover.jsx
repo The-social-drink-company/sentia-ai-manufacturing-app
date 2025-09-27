@@ -77,7 +77,7 @@ export default function InventoryTurnover({ data }) {
         <div className="pt-4 border-t">
           <h4 className="text-sm font-semibold mb-2">Category Breakdown</h4>
           <div className="space-y-2">
-            {data.categories.map((category, index) => (
+            {data.categories.map((category, __index) => (
               <div key={index} className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">{category.name}</span>
                 <div className="text-right">
@@ -95,7 +95,7 @@ export default function InventoryTurnover({ data }) {
         <div className="pt-4 border-t">
           <h4 className="text-sm font-semibold mb-2 text-orange-600">Slow-Moving Items</h4>
           <div className="space-y-2">
-            {data.slowMoving.slice(0, 3).map((item, index) => (
+            {data.slowMoving.slice(0, 3).map((item, __index) => (
               <div key={index} className="flex justify-between items-center text-sm">
                 <div>
                   <span className="text-gray-800 font-medium">{item.sku}</span>

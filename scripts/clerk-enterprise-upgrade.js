@@ -27,10 +27,10 @@ const CLERK_PACKAGES = {
 // Environment configuration template
 const ENTERPRISE_CLERK_CONFIG = `
 # Full Clerk Enterprise Configuration
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+CLERK_SECRET_KEY=sk_live_REDACTED
+CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 CLERK_DOMAIN=clerk.financeflo.ai
 CLERK_ENVIRONMENT=production
 
@@ -41,7 +41,7 @@ CLERK_ENABLE_CUSTOM_PAGES=true
 CLERK_ENABLE_WEBHOOKS=true
 CLERK_ENABLE_ANALYTICS=true
 CLERK_ENABLE_AUDIT_LOGS=true
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 
 # Authentication Configuration
 VITE_FORCE_CLERK_AUTH=true
@@ -99,7 +99,7 @@ async function verifyClerkImplementation() {
         const middlewareFile = 'api/middleware/clerkAuth.js';
         if (!fs.existsSync(middlewareFile)) return false;
         const content = fs.readFileSync(middlewareFile, 'utf8');
-        return content.includes('clerkMiddleware') && content.includes('pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ');
+        return content.includes('clerkMiddleware') && content.includes('pk_live_REDACTED');
       }
     },
     {
@@ -108,7 +108,7 @@ async function verifyClerkImplementation() {
         const configFile = 'src/config/clerk.js';
         if (!fs.existsSync(configFile)) return false;
         const content = fs.readFileSync(configFile, 'utf8');
-        return content.includes('pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ');
+        return content.includes('pk_live_REDACTED');
       }
     }
   ];
@@ -198,3 +198,6 @@ async function main() {
 }
 
 main();
+
+
+

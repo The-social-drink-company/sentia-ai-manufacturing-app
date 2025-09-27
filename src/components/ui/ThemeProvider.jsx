@@ -1,4 +1,26 @@
-import ThemeProvider, { useTheme, THEMES } from '../../theming/ThemeProvider.jsx';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
-export { useTheme, THEMES };
-export default ThemeProvider;
+function ThemeProvider({
+  attribute = 'class',
+  defaultTheme = 'system',
+  enableSystem = true,
+  disableTransitionOnChange = true,
+  storageKey = 'sentia-theme',
+  children,
+  ...props
+}) {
+  return (
+    <NextThemesProvider
+      attribute={attribute}
+      defaultTheme={defaultTheme}
+      enableSystem={enableSystem}
+      disableTransitionOnChange={disableTransitionOnChange}
+      storageKey={storageKey}
+      {...props}
+    >
+      {children}
+    </NextThemesProvider>
+  );
+}
+
+export { ThemeProvider };

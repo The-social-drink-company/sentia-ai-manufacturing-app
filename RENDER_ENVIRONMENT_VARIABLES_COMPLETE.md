@@ -37,7 +37,7 @@ TEST_DATABASE_URL: fromDatabase.sentia-db-testing.connectionString (test only)
 ```yaml
 VITE_CLERK_PUBLISHABLE_KEY: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
 CLERK_SECRET_KEY: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
-CLERK_WEBHOOK_SECRET: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET: whsec_REDACTED
 ```
 
 ### Session Management

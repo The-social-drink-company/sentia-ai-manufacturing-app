@@ -6,7 +6,7 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sentia Manufacturing Dashboard - Enterprise Working Capital Intelligence</title>
-    <!-- Application Initialization - No Authentication -->
+    <!-- Bulletproof Initialization - Handles all edge cases -->
     <script>
       // Immediate error catching to prevent blank pages
       window.addEventListener('error', function(e) {
@@ -19,7 +19,7 @@
         window.import = { meta: { env: {} } };
       }
 
-      // Set environment defaults - NO AUTHENTICATION
+      // Set environment defaults with Clerk Authentication
       window.VITE_MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
       window.VITE_API_BASE_URL = '/api';
       window.NODE_ENV = 'production';
@@ -28,7 +28,7 @@
       window.import.meta.env.VITE_API_BASE_URL = '/api';
       window.import.meta.env.MODE = 'production';
 
-      console.log('Application running without authentication');
+      console.log('Application running with Clerk authentication');
     </script>
   </head>
   <body>
@@ -84,7 +84,7 @@
       console.log('[App Init] Starting Sentia Manufacturing Dashboard');
       console.log('[App Init] Environment:', window.location.hostname);
       console.log('[App Init] Protocol:', window.location.protocol);
-      console.log('[App Init] Running without authentication');
+      console.log('[App Init] Running with Clerk authentication');
     </script>
 
     <script>

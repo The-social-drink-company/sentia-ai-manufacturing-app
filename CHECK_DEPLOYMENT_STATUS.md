@@ -23,13 +23,13 @@ You need to add these 3 critical environment variables to BOTH services:
 ### 1. Frontend Key (VITE_CLERK_PUBLISHABLE_KEY)
 ```
 Name: VITE_CLERK_PUBLISHABLE_KEY
-Value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+Value: pk_live_REDACTED
 ```
 
 ### 2. Backend Secret (CLERK_SECRET_KEY)
 ```
 Name: CLERK_SECRET_KEY
-Value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+Value: sk_live_REDACTED
 ```
 
 ### 3. Custom Domain (VITE_CLERK_DOMAIN)
@@ -88,7 +88,7 @@ curl -I https://sentia-manufacturing-development.onrender.com/health
 curl -s https://sentia-manufacturing-development.onrender.com | grep "pk_live_"
 
 # If successful, you'll see:
-# pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+# pk_live_REDACTED
 ```
 
 ---
@@ -121,3 +121,4 @@ After configuration:
 ---
 
 **Next Step**: Add the 3 critical variables to development service NOW to enable authentication.
+

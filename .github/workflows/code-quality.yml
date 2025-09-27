@@ -15,14 +15,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: Claude Code Review
         uses: anthropics/claude-code-action@v1
@@ -38,15 +41,15 @@ jobs:
 
       - name: ESLint Analysis
         run: |
-          npm run lint
-          npm run lint:report || true
+          pnpm run lint
+          pnpm run lint:report || true
 
       - name: TypeScript Check
-        run: npm run type-check
+        run: pnpm run type-check
 
       - name: Test Coverage
         run: |
-          npm run test:coverage
+          pnpm run test:coverage
           echo "Coverage report generated"
 
       - name: SonarCloud Analysis
@@ -63,24 +66,24 @@ jobs:
 
       - name: Bundle Size Check
         run: |
-          npm run build
+          pnpm run build
           echo "Bundle size analysis:"
-          npx bundlesize
+          pnpm dlx bundlesize
 
       - name: Complexity Analysis
         run: |
-          npx complexity-report src/ --format json > complexity.json
+          pnpm dlx complexity-report src/ --format json > complexity.json
           echo "Complexity report generated"
 
       - name: Documentation Check
         run: |
           # Check if documentation is up to date
-          npm run docs:check || echo "Documentation needs update"
+          pnpm run docs:check || echo "Documentation needs update"
 
       - name: Performance Check
         run: |
           # Lighthouse CI for performance
-          npm run lighthouse:ci || true
+          pnpm run lighthouse:ci || true
 
       - name: Upload Reports
         if: always()

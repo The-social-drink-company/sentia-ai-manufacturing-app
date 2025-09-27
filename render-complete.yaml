@@ -37,8 +37,8 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build && cd mcp-server && npm ci"
-    startCommand: "npm run start:with-mcp"
+    buildCommand: "corepack enable && NODE_OPTIONS='--max-old-space-size=2048' pnpm install --frozen-lockfile && pnpm build && cd mcp-server && pnpm install --frozen-lockfile"
+    startCommand: "pnpm start:with-mcp"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -72,8 +72,8 @@ services:
     plan: starter
     region: oregon
     branch: test
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --include=dev && npm run build && cd mcp-server && npm ci"
-    startCommand: "npm run start:with-mcp"
+    buildCommand: "corepack enable && NODE_OPTIONS='--max-old-space-size=2048' pnpm install --frozen-lockfile && pnpm build && cd mcp-server && pnpm install --frozen-lockfile"
+    startCommand: "pnpm start:with-mcp"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -107,8 +107,8 @@ services:
     plan: starter
     region: oregon
     branch: production
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=2048' npm ci --production=false && npm run build && cd mcp-server && npm ci"
-    startCommand: "npm run start:with-mcp"
+    buildCommand: "corepack enable && NODE_OPTIONS='--max-old-space-size=2048' pnpm install --frozen-lockfile && pnpm build && cd mcp-server && pnpm install --frozen-lockfile"
+    startCommand: "pnpm start:with-mcp"
     healthCheckPath: /health
     autoDeploy: true
     envVars:

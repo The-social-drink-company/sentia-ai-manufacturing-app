@@ -27,15 +27,15 @@ Click on "Environment" in the left sidebar
 ### Step 4: Add These Variables (COPY & PASTE EXACTLY):
 
 ```
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 ```
 
 ```
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+CLERK_SECRET_KEY=sk_live_REDACTED
 ```
 
 ```
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 ```
 
 ```
@@ -43,7 +43,7 @@ VITE_CLERK_DOMAIN=clerk.financeflo.ai
 ```
 
 ```
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 ```
 
 ```
@@ -122,3 +122,5 @@ With these keys added:
 # 👉 GO TO RENDER NOW: https://dashboard.render.com
 
 **The monitoring is running. As soon as you add the variables and production comes online, I'll confirm it!**
+
+

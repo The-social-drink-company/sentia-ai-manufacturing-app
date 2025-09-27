@@ -46,4 +46,8 @@ prisma/generated/
 
 # Package manager
 .yarn/
-.pnpm-store/
+.pnpm-store/# Legacy automation artifacts
+agents/
+tests/autonomous/
+.claude/
+.specify/

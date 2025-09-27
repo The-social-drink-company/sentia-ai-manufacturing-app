@@ -6,7 +6,7 @@ services:
     region: oregon # or singapore, frankfurt, ohio
     plan: free # or starter, standard, pro
 
-    buildCommand: npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma db push --skip-generate
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && pnpm dlx prisma generate && pnpm dlx prisma db push --skip-generate
     startCommand: node server.js
 
     healthCheckPath: /health
@@ -36,7 +36,7 @@ services:
       - key: CLERK_SECRET_KEY
         value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
       - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+        value: whsec_REDACTED
 
       # Session & JWT
       - key: SESSION_SECRET

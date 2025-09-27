@@ -12,7 +12,7 @@ services:
     plan: free # Free for development
     branch: development
 
-    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && node verify-build.js
     startCommand: node production-server-simple.js
     healthCheckPath: /health
 
@@ -42,13 +42,13 @@ services:
 
       # Authentication (Clerk Production)
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+        value: pk_live_REDACTED
       - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+        value: sk_live_REDACTED
       - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+        value: pk_live_REDACTED
       - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+        value: whsec_REDACTED
       - key: CLERK_ENVIRONMENT
         value: production
       - key: VITE_CLERK_DOMAIN
@@ -202,7 +202,7 @@ services:
     plan: starter # $7/month for reliable testing
     branch: test
 
-    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && node verify-build.js
     startCommand: node production-server-simple.js
     healthCheckPath: /health
 
@@ -234,13 +234,13 @@ services:
 
       # Authentication (Clerk Production)
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+        value: pk_live_REDACTED
       - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+        value: sk_live_REDACTED
       - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+        value: pk_live_REDACTED
       - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+        value: whsec_REDACTED
       - key: CLERK_ENVIRONMENT
         value: production
       - key: VITE_CLERK_DOMAIN
@@ -394,7 +394,7 @@ services:
     plan: standard # $25/month for production reliability
     branch: production
 
-    buildCommand: npm install --legacy-peer-deps && npm run build && node verify-build.js
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build && node verify-build.js
     startCommand: node production-server-simple.js
     healthCheckPath: /health
 
@@ -422,13 +422,13 @@ services:
 
       # Authentication (Clerk Production)
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+        value: pk_live_REDACTED
       - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+        value: sk_live_REDACTED
       - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+        value: pk_live_REDACTED
       - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+        value: whsec_REDACTED
       - key: CLERK_ENVIRONMENT
         value: production
       - key: VITE_CLERK_DOMAIN
@@ -615,7 +615,7 @@ databases:
     branch: development
     rootDir: mcp-server
 
-    buildCommand: npm install
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
     startCommand: node production-server.js
     healthCheckPath: /health
 
@@ -704,7 +704,7 @@ databases:
 
       # Clerk Authentication (shared with main app)
       - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+        value: sk_live_REDACTED
 
       # Local LLM Support (Optional)
       - key: LOCAL_LLM_ENDPOINT
@@ -731,7 +731,7 @@ databases:
     branch: production
     rootDir: render-monitor
 
-    buildCommand: npm install
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
     startCommand: node production-server.js
     healthCheckPath: /health
 

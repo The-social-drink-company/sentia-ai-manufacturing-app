@@ -29,15 +29,15 @@ $envVars = @(
     @{key="PORT"; value="5000"},
 
     # Clerk Authentication (CRITICAL)
-    @{key="VITE_CLERK_PUBLISHABLE_KEY"; value="pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"},
-    @{key="CLERK_SECRET_KEY"; value="sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq"},
-    @{key="NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"; value="pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ"},
+    @{key="VITE_CLERK_PUBLISHABLE_KEY"; value="pk_live_REDACTED"},
+    @{key="CLERK_SECRET_KEY"; value="sk_live_REDACTED"},
+    @{key="NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"; value="pk_live_REDACTED"},
     @{key="VITE_CLERK_DOMAIN"; value="clerk.financeflo.ai"},
     @{key="VITE_CLERK_SIGN_IN_URL"; value="/sign-in"},
     @{key="VITE_CLERK_SIGN_UP_URL"; value="/sign-up"},
     @{key="VITE_CLERK_AFTER_SIGN_IN_URL"; value="/dashboard"},
     @{key="VITE_CLERK_AFTER_SIGN_UP_URL"; value="/dashboard"},
-    @{key="CLERK_WEBHOOK_SECRET"; value="whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j"},
+    @{key="CLERK_WEBHOOK_SECRET"; value="whsec_REDACTED"},
 
     # API Configuration
     @{key="VITE_API_BASE_URL"; value="/api"},

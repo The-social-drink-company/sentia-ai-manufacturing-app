@@ -1,866 +1,530 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMCPIntegration } from '../../hooks/useMCPIntegration';
-import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+import React, { useState } from 'react';
 import {
-
   CubeIcon,
-  PlusIcon,
-  MagnifyingGlassIcon,
-  FunnelIcon,
-  ArrowDownTrayIcon,
-  ArrowUpTrayIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ClockIcon,
-  ChartBarIcon,
-  AdjustmentsHorizontalIcon,
-  EyeIcon,
-  PencilIcon,
-  TrashIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
-  SignalIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
+  CameraIcon,
+  QrCodeIcon,
+  ClipboardDocumentIcon
 } from '@heroicons/react/24/outline';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area
+} from 'recharts';
 
-const AdvancedInventoryManagement = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+const inventoryData = [
+  {
+    id: 'ITM-001',
+    name: 'Steel Rod 10mm',
+    category: 'Raw Materials',
+    currentStock: 1500,
+    minStock: 500,
+    maxStock: 2000,
+    unit: 'kg',
+    value: 4500,
+    supplier: 'Steel Corp',
+    lastUpdated: '2024-01-15',
+    status: 'good',
+    turnover: 8.5,
+    location: 'A-12-03'
+  },
+  {
+    id: 'ITM-002',
+    name: 'Polymer Pellets',
+    category: 'Raw Materials',
+    currentStock: 250,
+    minStock: 300,
+    maxStock: 800,
+    unit: 'kg',
+    value: 1250,
+    supplier: 'Polymer Inc',
+    lastUpdated: '2024-01-14',
+    status: 'critical',
+    turnover: 12.3,
+    location: 'B-05-01'
+  },
+  {
+    id: 'ITM-003',
+    name: 'Circuit Board Type A',
+    category: 'Components',
+    currentStock: 45,
+    minStock: 20,
+    maxStock: 100,
+    unit: 'pcs',
+    value: 2250,
+    supplier: 'Electronics Ltd',
+    lastUpdated: '2024-01-15',
+    status: 'good',
+    turnover: 6.2,
+    location: 'C-08-15'
+  },
+  {
+    id: 'ITM-004',
+    name: 'Packaging Box Large',
+    category: 'Packaging',
+    currentStock: 180,
+    minStock: 200,
+    maxStock: 500,
+    unit: 'pcs',
+    value: 540,
+    supplier: 'Packaging Co',
+    lastUpdated: '2024-01-13',
+    status: 'warning',
+    turnover: 15.8,
+    location: 'D-01-05'
+  },
+  {
+    id: 'ITM-005',
+    name: 'Finished Product X1',
+    category: 'Finished Goods',
+    currentStock: 85,
+    minStock: 50,
+    maxStock: 200,
+    unit: 'pcs',
+    value: 12750,
+    supplier: 'Internal',
+    lastUpdated: '2024-01-15',
+    status: 'good',
+    turnover: 4.2,
+    location: 'E-10-08'
+  }
+];
+
+const movementData = [
+  { date: '2024-01-01', incoming: 2500, outgoing: 1800, net: 700 },
+  { date: '2024-01-02', incoming: 1200, outgoing: 2100, net: -900 },
+  { date: '2024-01-03', incoming: 3200, outgoing: 1950, net: 1250 },
+  { date: '2024-01-04', incoming: 1800, outgoing: 2400, net: -600 },
+  { date: '2024-01-05', incoming: 2900, outgoing: 1700, net: 1200 },
+  { date: '2024-01-06', incoming: 1600, outgoing: 2200, net: -600 },
+  { date: '2024-01-07', incoming: 2400, outgoing: 1900, net: 500 }
+];
+
+const categoryData = [
+  { name: 'Raw Materials', value: 45, count: 120 },
+  { name: 'Components', value: 25, count: 85 },
+  { name: 'Finished Goods', value: 20, count: 32 },
+  { name: 'Packaging', value: 10, count: 45 }
+];
+
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+
+export default function AdvancedInventoryManagement() {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [viewMode, setViewMode] = useState('grid'); // grid or list
-  const [sortBy, setSortBy] = useState('name');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedView, setSelectedView] = useState('list');
+  const [showFilters, setShowFilters] = useState(false);
 
-  const queryClient = useQueryClient();
-  const { optimizeInventory } = useMCPIntegration();
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'good':
+        return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
+      case 'warning':
+        return <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />;
+      case 'critical':
+        return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />;
+      default:
+        return <CheckCircleIcon className="h-5 w-5 text-gray-500" />;
+    }
+  };
 
-  // Fetch inventory data
-  const { data: inventoryData, isLoading, error } = useQuery({
-    queryKey: ['inventory', 'advanced'],
-    queryFn: async () => {
-      try {
-        const response = await fetch('/api/inventory/advanced');
-        if (!response.ok) {
-          throw new Error('Failed to fetch inventory data');
-        }
-        return await response.json();
-      } catch (error) {
-        logError('Failed to fetch inventory data', error);
-        // Return fallback data
-        return {
-          items: [
-            {
-              id: 'SKU-001',
-              name: 'Premium Spirits Bottle',
-              category: 'Finished Goods',
-              currentStock: 1250,
-              minStock: 500,
-              maxStock: 2000,
-              unitCost: 25.50,
-              totalValue: 31875,
-              status: 'optimal',
-              location: 'Warehouse A-01',
-              supplier: 'Glass Co. Ltd',
-              lastUpdated: new Date().toISOString(),
-              movement: 'increasing',
-            },
-            {
-              id: 'SKU-002',
-              name: 'Raw Spirit Base',
-              category: 'Raw Materials',
-              currentStock: 850,
-              minStock: 300,
-              maxStock: 1500,
-              unitCost: 12.75,
-              totalValue: 10837.50,
-              status: 'optimal',
-              location: 'Storage B-02',
-              supplier: 'Distillery Supplies',
-              lastUpdated: new Date().toISOString(),
-              movement: 'stable',
-            },
-            {
-              id: 'SKU-003',
-              name: 'Packaging Labels',
-              category: 'Packaging',
-              currentStock: 150,
-              minStock: 200,
-              maxStock: 1000,
-              unitCost: 0.25,
-              totalValue: 37.50,
-              status: 'low',
-              location: 'Packaging C-03',
-              supplier: 'Label Solutions',
-              lastUpdated: new Date().toISOString(),
-              movement: 'decreasing',
-            },
-            {
-              id: 'SKU-004',
-              name: 'Quality Control Kits',
-              category: 'Equipment',
-              currentStock: 45,
-              minStock: 50,
-              maxStock: 100,
-              unitCost: 150.00,
-              totalValue: 6750,
-              status: 'critical',
-              location: 'QC Lab D-04',
-              supplier: 'Lab Equipment Co',
-              lastUpdated: new Date().toISOString(),
-              movement: 'decreasing',
-            },
-            {
-              id: 'SKU-005',
-              name: 'Bottling Caps',
-              category: 'Packaging',
-              currentStock: 5000,
-              minStock: 1000,
-              maxStock: 8000,
-              unitCost: 0.15,
-              totalValue: 750,
-              status: 'optimal',
-              location: 'Warehouse A-05',
-              supplier: 'Cap Manufacturing',
-              lastUpdated: new Date().toISOString(),
-              movement: 'stable',
-            },
-          ],
-          categories: ['Finished Goods', 'Raw Materials', 'Packaging', 'Equipment'],
-          summary: {
-            totalItems: 5,
-            totalValue: 50250,
-            lowStockItems: 2,
-            criticalStockItems: 1,
-            optimalItems: 2,
-          },
-          analytics: {
-            turnoverRate: 8.2,
-            carryingCost: 15000,
-            stockoutRisk: 0.05,
-            optimizationPotential: 0.12,
-          },
-        };
-      }
-    },
-    refetchInterval: 30000, // Refetch every 30 seconds
-  });
-
-  // AI-powered inventory optimization
-  const optimizeMutation = useMutation({
-    mutationFn: async () => {
-      const result = await optimizeInventory({
-        optimizationPeriod: 30,
-        includeCarryingCosts: true,
-        demandUncertainty: true,
-      });
-      return result;
-    },
-    onSuccess: (data) => {
-      logInfo('Inventory optimization completed', data);
-      queryClient.invalidateQueries(['inventory']);
-    },
-    onError: (error) => {
-      logError('Inventory optimization failed', error);
-    },
-  });
-
-  // Filter and sort inventory items
-  const filteredItems = React.useMemo(() => {
-    if (!inventoryData?.items) return [];
-
-    let filtered = inventoryData.items.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.id.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-      const matchesStatus = selectedStatus === 'all' || item.status === selectedStatus;
-
-      return matchesSearch && matchesCategory && matchesStatus;
-    });
-
-    // Sort items
-    filtered.sort((a, b) => {
-      let aValue, bValue;
-      
-      switch (sortBy) {
-        case 'name':
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
-          break;
-        case 'stock':
-          aValue = a.currentStock;
-          bValue = b.currentStock;
-          break;
-        case 'value':
-          aValue = a.totalValue;
-          bValue = b.totalValue;
-          break;
-        case 'status':
-          aValue = a.status;
-          bValue = b.status;
-          break;
-        default:
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
-      }
-
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-    return filtered;
-  }, [inventoryData?.items, searchTerm, selectedCategory, selectedStatus, sortBy, sortOrder]);
-
-  // Get status color
   const getStatusColor = (status) => {
     switch (status) {
-      case 'optimal':
-        return 'text-green-600 bg-green-100';
-      case 'low':
-        return 'text-yellow-600 bg-yellow-100';
+      case 'good':
+        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200';
+      case 'warning':
+        return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200';
       case 'critical':
-        return 'text-red-600 bg-red-100';
+        return 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
     }
   };
 
-  // Get movement icon
-  const getMovementIcon = (movement) => {
-    switch (movement) {
-      case 'increasing':
-        return <ArrowTrendingUpIcon className="w-4 h-4 text-green-500" />;
-      case 'decreasing':
-        return <ArrowTrendingDownIcon className="w-4 h-4 text-red-500" />;
-      default:
-        return <SignalIcon className="w-4 h-4 text-gray-500" />;
-    }
+  const getStockLevel = (item) => {
+    if (item.currentStock <= item.minStock) return 'critical';
+    if (item.currentStock <= item.minStock * 1.2) return 'warning';
+    return 'good';
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading inventory data...</p>
-        </div>
-      </div>
-    );
-  }
+  const filteredData = inventoryData.filter(item => {
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.id.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <ExclamationTriangleIcon className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <p className="text-red-600 dark:text-red-400">Failed to load inventory data</p>
-        </div>
-      </div>
-    );
-  }
+  const categories = ['all', ...new Set(inventoryData.map(item => item.category))];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <CubeIcon className="h-8 w-8 text-blue-600" />
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Advanced Inventory Management</h1>
+              <p className="text-gray-600 dark:text-gray-400">Comprehensive inventory tracking and optimization</p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add Item
+            </button>
+            <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+              <QrCodeIcon className="h-4 w-4 mr-2" />
+              Scan QR
+            </button>
+            <button className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+              <ClipboardDocumentIcon className="h-4 w-4 mr-2" />
+              Export
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Advanced Inventory Management
-              </h1>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
-                Comprehensive inventory tracking and optimization
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Items</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{inventoryData.length}</p>
+              <div className="flex items-center mt-2">
+                <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                <span className="text-sm text-green-600 dark:text-green-400">+5 this week</span>
+              </div>
+            </div>
+            <CubeIcon className="h-12 w-12 text-blue-500" />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Value</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                ${inventoryData.reduce((sum, item) => sum + item.value, 0).toLocaleString()}
               </p>
+              <div className="flex items-center mt-2">
+                <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                <span className="text-sm text-green-600 dark:text-green-400">+12.3%</span>
+              </div>
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <motion.button
-                onClick={() => optimizeMutation.mutate()}
-                disabled={optimizeMutation.isPending}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ChartBarIcon className="w-4 h-4 mr-2" />
-                {optimizeMutation.isPending ? 'Optimizing...' : 'AI Optimize'}
-              </motion.button>
-              
-              <motion.button
-                onClick={() => setShowAddModal(true)}
-                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <PlusIcon className="w-4 h-4 mr-2" />
-                Add Item
-              </motion.button>
-            </div>
+            <CubeIcon className="h-12 w-12 text-green-500" />
           </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Items</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {inventoryData?.summary?.totalItems || 0}
-                </p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Low Stock Alerts</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {inventoryData.filter(item => getStockLevel(item) !== 'good').length}
+              </p>
+              <div className="flex items-center mt-2">
+                <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500 mr-1" />
+                <span className="text-sm text-yellow-600 dark:text-yellow-400">Needs attention</span>
               </div>
-              <CubeIcon className="w-8 h-8 text-blue-600" />
             </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Value</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  ${(inventoryData?.summary?.totalValue || 0).toLocaleString()}
-                </p>
-              </div>
-              <ChartBarIcon className="w-8 h-8 text-green-600" />
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Low Stock</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {inventoryData?.summary?.lowStockItems || 0}
-                </p>
-              </div>
-              <ExclamationTriangleIcon className="w-8 h-8 text-yellow-600" />
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Critical Stock</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {inventoryData?.summary?.criticalStockItems || 0}
-                </p>
-              </div>
-              <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
-            </div>
+            <ExclamationTriangleIcon className="h-12 w-12 text-yellow-500" />
           </div>
         </div>
 
-        {/* Filters and Search */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Avg Turnover</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {(inventoryData.reduce((sum, item) => sum + item.turnover, 0) / inventoryData.length).toFixed(1)}x
+              </p>
+              <div className="flex items-center mt-2">
+                <ArrowTrendingUpIcon className="h-4 w-4 text-blue-500 mr-1" />
+                <span className="text-sm text-blue-600 dark:text-blue-400">Optimal range</span>
+              </div>
+            </div>
+            <ArrowTrendingUpIcon className="h-12 w-12 text-blue-500" />
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search inventory..."
+                placeholder="Search items..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
-            {/* Filters */}
-            <div className="flex items-center space-x-4">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Categories</option>
-                {inventoryData?.categories?.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category === 'all' ? 'All Categories' : category}
+                </option>
+              ))}
+            </select>
 
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Status</option>
-                <option value="optimal">Optimal</option>
-                <option value="low">Low Stock</option>
-                <option value="critical">Critical</option>
-              </select>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+            >
+              <FunnelIcon className="h-4 w-4 mr-2" />
+              Filters
+            </button>
+          </div>
 
-              <select
-                value={`${sortBy}-${sortOrder}`}
-                onChange={(e) => {
-                  const [field, order] = e.target.value.split('-');
-                  setSortBy(field);
-                  setSortOrder(order);
-                }}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="name-asc">Name A-Z</option>
-                <option value="name-desc">Name Z-A</option>
-                <option value="stock-desc">Stock High-Low</option>
-                <option value="stock-asc">Stock Low-High</option>
-                <option value="value-desc">Value High-Low</option>
-                <option value="value-asc">Value Low-High</option>
-              </select>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-lg ${
-                    viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'
-                  }`}
-                >
-                  <CubeIcon className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-lg ${
-                    viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'
-                  }`}
-                >
-                  <ChartBarIcon className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+          <div className="flex bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
+            <button
+              onClick={() => setSelectedView('list')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                selectedView === 'list'
+                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              List View
+            </button>
+            <button
+              onClick={() => setSelectedView('analytics')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                selectedView === 'analytics'
+                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Analytics
+            </button>
           </div>
         </div>
 
-        {/* Inventory Items */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Inventory Items ({filteredItems.length})
-            </h2>
-            
-            <div className="flex items-center space-x-2">
-              <button className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900">
-                <ArrowDownTrayIcon className="w-4 h-4 mr-2" />
-                Export
-              </button>
+        {showFilters && (
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Stock Status</label>
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <option value="all">All Status</option>
+                  <option value="good">Good</option>
+                  <option value="warning">Warning</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Supplier</label>
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <option value="all">All Suppliers</option>
+                  <option value="Steel Corp">Steel Corp</option>
+                  <option value="Polymer Inc">Polymer Inc</option>
+                  <option value="Electronics Ltd">Electronics Ltd</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Value Range</label>
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <option value="all">All Values</option>
+                  <option value="low">Under $1,000</option>
+                  <option value="medium">$1,000 - $5,000</option>
+                  <option value="high">Over $5,000</option>
+                </select>
+              </div>
             </div>
           </div>
+        )}
+      </div>
 
-          {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredItems.map((item) => (
-                <InventoryCard
-                  key={item.id}
-                  item={item}
-                  onSelect={setSelectedItem}
-                  getStatusColor={getStatusColor}
-                  getMovementIcon={getMovementIcon}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Item
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Stock
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Value
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredItems.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="px-6 py-4 whitespace-nowrap">
+      {selectedView === 'list' ? (
+        /* Inventory Table */
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Item Details
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Stock Levels
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Value & Turnover
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Location
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredData.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <CubeIcon className="h-8 w-8 text-gray-400 mr-3" />
                         <div>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {item.name}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {item.id}
+                            {item.id} • {item.category}
                           </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-900 dark:text-white">
-                            {item.currentStock}
-                          </span>
-                          {getMovementIcon(item.movement)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        ${item.totalValue.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(item.status)}`}>
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        {item.location}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => setSelectedItem(item)}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            <EyeIcon className="w-4 h-4" />
-                          </button>
-                          <button className="text-gray-600 hover:text-gray-900">
-                            <PencilIcon className="w-4 h-4" />
-                          </button>
-                          <button className="text-red-600 hover:text-red-900">
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {item.currentStock} {item.unit}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Min: {item.minStock} • Max: {item.maxStock}
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
+                        <div
+                          className={`h-2 rounded-full ${
+                            getStockLevel(item) === 'critical' ? 'bg-red-500' :
+                            getStockLevel(item) === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
+                          }`}
+                          style={{ width: `${Math.min((item.currentStock / item.maxStock) * 100, 100)}%` }}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        ${item.value.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        Turnover: {item.turnover}x/year
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {item.location}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(getStockLevel(item))}`}>
+                        {getStatusIcon(getStockLevel(item))}
+                        <span className="ml-1">{getStockLevel(item)}</span>
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 mr-3">
+                        <PencilIcon className="h-4 w-4" />
+                      </button>
+                      <button className="text-gray-600 dark:text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 mr-3">
+                        <CameraIcon className="h-4 w-4" />
+                      </button>
+                      <button className="text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300">
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      ) : (
+        /* Analytics View */
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Stock Movement Chart */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Stock Movement</h3>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={movementData}>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <XAxis dataKey="date" tick={{ fontSize: 12 }} tickFormatter={(value) => new Date(value).toLocaleDateString()} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip labelFormatter={(value) => new Date(value).toLocaleDateString()} />
+                  <Legend />
+                  <Area type="monotone" dataKey="incoming" stackId="1" stroke="#10b981" fill="#10b981" name="Incoming" />
+                  <Area type="monotone" dataKey="outgoing" stackId="2" stroke="#ef4444" fill="#ef4444" name="Outgoing" />
+                  <Line type="monotone" dataKey="net" stroke="#3b82f6" strokeWidth={3} name="Net Change" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
 
-      {/* Add Item Modal */}
-      <AnimatePresence>
-        {showAddModal && (
-          <AddItemModal
-            onClose={() => setShowAddModal(false)}
-            categories={inventoryData?.categories || []}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Item Details Modal */}
-      <AnimatePresence>
-        {selectedItem && (
-          <ItemDetailsModal
-            item={selectedItem}
-            onClose={() => setSelectedItem(null)}
-          />
-        )}
-      </AnimatePresence>
+          {/* Category Distribution */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Category Distribution</h3>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}%`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              {categoryData.map((category, index) => (
+                <div key={category.name} className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div
+                      className="w-3 h-3 rounded mr-2"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{category.name}</span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    {category.count} items
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-// Inventory Card Component
-const InventoryCard = ({ item, onSelect, getStatusColor, getMovementIcon }) => {
-  const stockPercentage = (item.currentStock / item.maxStock) * 100;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
-      onClick={() => onSelect(item)}
-      whileHover={{ scale: 1.02 }}
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-            {item.name}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            {item.id} • {item.category}
-          </p>
-          <div className="flex items-center space-x-2">
-            {getMovementIcon(item.movement)}
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              {item.location}
-            </span>
-          </div>
-        </div>
-        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(item.status)}`}>
-          {item.status}
-        </span>
-      </div>
-
-      <div className="space-y-3">
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-gray-600 dark:text-gray-400">Stock Level</span>
-            <span className="text-sm font-medium text-gray-900 dark:text-white">
-              {item.currentStock} / {item.maxStock}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all duration-500 ${
-                stockPercentage > 60 ? 'bg-green-500' :
-                stockPercentage > 30 ? 'bg-yellow-500' : 'bg-red-500'
-              }`}
-              style={{ width: `${Math.min(stockPercentage, 100)}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Total Value</span>
-          <span className="text-sm font-semibold text-gray-900 dark:text-white">
-            ${item.totalValue.toLocaleString()}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Unit Cost</span>
-          <span className="text-sm font-medium text-gray-900 dark:text-white">
-            ${item.unitCost.toFixed(2)}
-          </span>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-// Add Item Modal Component
-const AddItemModal = ({ onClose, categories }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    minStock: '',
-    maxStock: '',
-    unitCost: '',
-    location: '',
-    supplier: '',
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission
-    logDebug('Adding item:', formData);
-    onClose();
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Add New Inventory Item
-        </h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Item Name
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Category
-            </label>
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Select Category</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Min Stock
-              </label>
-              <input
-                type="number"
-                value={formData.minStock}
-                onChange={(e) => setFormData(prev => ({ ...prev, minStock: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Max Stock
-              </label>
-              <input
-                type="number"
-                value={formData.maxStock}
-                onChange={(e) => setFormData(prev => ({ ...prev, maxStock: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Add Item
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Item Details Modal Component
-const ItemDetailsModal = ({ item, onClose }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {item.name}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <XCircleIcon className="w-6 h-6" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Item ID
-              </label>
-              <p className="text-gray-900 dark:text-white">{item.id}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category
-              </label>
-              <p className="text-gray-900 dark:text-white">{item.category}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Location
-              </label>
-              <p className="text-gray-900 dark:text-white">{item.location}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Supplier
-              </label>
-              <p className="text-gray-900 dark:text-white">{item.supplier}</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Current Stock
-              </label>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{item.currentStock}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Stock Range
-              </label>
-              <p className="text-gray-900 dark:text-white">
-                Min: {item.minStock} | Max: {item.maxStock}
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Unit Cost
-              </label>
-              <p className="text-gray-900 dark:text-white">${item.unitCost.toFixed(2)}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Total Value
-              </label>
-              <p className="text-2xl font-bold text-green-600">${item.totalValue.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-end space-x-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-            >
-              Close
-            </button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              Edit Item
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-export default AdvancedInventoryManagement;
+}

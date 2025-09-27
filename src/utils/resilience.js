@@ -8,8 +8,8 @@ import { devLog } from '../lib/devLog.js';
 export class CircuitBreaker {
   constructor(options = {}) {
     this.failureThreshold = options.failureThreshold || 5;
-    this.timeout = options.timeout ?? 60_000; // 1 minute
-    this.resetTimeout = options.resetTimeout ?? 30_000; // 30 seconds
+    this.timeout = options.timeout || 60000; // 1 minute
+    this.resetTimeout = options.resetTimeout || 30000; // 30 seconds
     
     this.state = 'CLOSED'; // CLOSED, OPEN, HALF_OPEN
     this.failureCount = 0;
@@ -85,8 +85,8 @@ export class CircuitBreaker {
 export class RetryManager {
   constructor(options = {}) {
     this.maxRetries = options.maxRetries || 3;
-    this.initialDelay = options.initialDelay ?? 500;
-    this.maxDelay = options.maxDelay ?? 5_000;
+    this.initialDelay = options.initialDelay || 1000;
+    this.maxDelay = options.maxDelay || 10000;
     this.backoffMultiplier = options.backoffMultiplier || 2;
   }
   

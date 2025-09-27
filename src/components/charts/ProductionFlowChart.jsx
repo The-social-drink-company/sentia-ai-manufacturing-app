@@ -15,9 +15,9 @@ const ProductionFlowChart = ({ data }) => {
   // Generate sample data if not provided
   const chartData = data?.hourlyProduction || Array.from({ length: 24 }, (_, i) => ({
     time: `${String(i).padStart(2, '0')}:00`,
-    units: Math.floor(80 + 40 * Math.sin((i / 24) * Math.PI * 2)),
-    target: 100,
-    efficiency: Math.round(80 + 20 * Math.cos((i / 24) * Math.PI * 2))
+    units: Math.floor(Math.random() * 50) + 100 + Math.sin(i / 3) * 20,
+    target: 130,
+    efficiency: Math.floor(Math.random() * 10) + 85,
   }));
 
   const CustomTooltip = ({ active, payload, label }) => {

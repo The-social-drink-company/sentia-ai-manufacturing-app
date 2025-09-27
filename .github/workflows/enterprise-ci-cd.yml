@@ -25,29 +25,32 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
         run: |
-          npm run lint -- --format json --output-file eslint-report.json || true
-          npm run lint
+          pnpm run lint -- --format json --output-file eslint-report.json || true
+          pnpm run lint
 
       - name: Run Prettier Check
-        run: npm run format:check
+        run: pnpm run format:check
 
       - name: TypeScript Type Check
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: Complexity Analysis
         run: |
-          npx complexity-report src/ --format json > complexity.json
+          pnpm dlx complexity-report src/ --format json > complexity.json
           echo "Code complexity analyzed"
 
       - name: Upload Code Quality Reports
@@ -93,12 +96,12 @@ jobs:
 
       - name: Dependency Audit
         run: |
-          npm audit --audit-level=high
-          npm audit --json > audit-report.json || true
+          pnpm audit --audit-level=high
+          pnpm audit --json > audit-report.json || true
 
       - name: License Check
         run: |
-          npx license-checker --production --json > licenses.json
+          pnpm dlx license-checker --production --json > licenses.json
           echo "License compliance checked"
 
       - name: Secrets Scanning
@@ -120,14 +123,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Test Database
         if: matrix.test-type == 'integration'
@@ -141,7 +147,7 @@ jobs:
 
       - name: Run ${{ matrix.test-type }} Tests
         run: |
-          npm run test:${{ matrix.test-type }} -- --coverage
+          pnpm run test:${{ matrix.test-type }} -- --coverage
         env:
           DATABASE_URL: ${{ matrix.test-type == 'integration' && 'postgresql://postgres:test@localhost:5432/sentia_test' || '' }}
 
@@ -161,22 +167,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Dependencies
         run: |
-          npm ci --legacy-peer-deps
-          npx playwright install --with-deps
+          pnpm install --frozen-lockfile
+          pnpm dlx playwright install --with-deps
 
       - name: Build Application
-        run: npm run build
+        run: pnpm run build
 
       - name: Run E2E Tests
-        run: npm run test:e2e
+        run: pnpm run test:e2e
 
       - name: Upload Playwright Report
         if: always()
@@ -195,24 +204,27 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: Build Production
         run: |
-          npm run build
+          pnpm run build
           echo "Build completed successfully"
 
       - name: Analyze Bundle Size
         run: |
-          npx bundlesize --config .bundlesizerc.json || true
-          npx webpack-bundle-analyzer dist/stats.json -m json -r bundle-report.json || true
+          pnpm dlx bundlesize --config .bundlesizerc.json || true
+          pnpm dlx webpack-bundle-analyzer dist/stats.json -m json -r bundle-report.json || true
 
       - name: Lighthouse CI
         uses: treosh/lighthouse-ci-action@v10
@@ -277,14 +289,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Test Database
         run: |
@@ -298,10 +313,10 @@ jobs:
       - name: Run Migration Tests
         run: |
           # Test migration up
-          DATABASE_URL="postgresql://postgres:test@localhost:5433/migration_test" npm run db:migrate:deploy
+          DATABASE_URL="postgresql://postgres:test@localhost:5433/migration_test" pnpm run db:migrate:deploy
 
           # Test migration rollback
-          DATABASE_URL="postgresql://postgres:test@localhost:5433/migration_test" npm run db:migrate:reset
+          DATABASE_URL="postgresql://postgres:test@localhost:5433/migration_test" pnpm run db:migrate:reset
 
           echo "Migration validation successful"
 
@@ -320,17 +335,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: Build Application
-        run: npm run build
+        run: pnpm run build
 
       - name: Deploy to Render
         id: deploy
@@ -342,7 +360,7 @@ jobs:
 
       - name: Run Smoke Tests
         run: |
-          npm run test:smoke -- --url ${{ steps.deploy.outputs.url }}
+          pnpm run test:smoke -- --url ${{ steps.deploy.outputs.url }}
 
       - name: Notify Deployment
         uses: 8398a7/action-slack@v3
@@ -383,12 +401,12 @@ jobs:
 
       - name: Run Production Smoke Tests
         run: |
-          npm ci --legacy-peer-deps
-          npm run test:smoke -- --url https://sentia-manufacturing-production.onrender.com
+          pnpm install --frozen-lockfile
+          pnpm run test:smoke -- --url https://sentia-manufacturing-production.onrender.com
 
       - name: Performance Test
         run: |
-          npm install -g @unlighthouse/cli
+          pnpm install -g @unlighthouse/cli
           unlighthouse-ci --site https://sentia-manufacturing-production.onrender.com
 
 # Workflow Summary

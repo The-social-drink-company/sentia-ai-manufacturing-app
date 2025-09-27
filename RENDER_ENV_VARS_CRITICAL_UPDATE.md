@@ -25,10 +25,10 @@ Go to: https://dashboard.render.com
 
 ```env
 # CRITICAL - Authentication (Missing)
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+CLERK_SECRET_KEY=sk_live_REDACTED
+CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 
 # CRITICAL - API Configuration (Missing)
 VITE_API_BASE_URL=https://sentia-manufacturing-production.onrender.com/api
@@ -40,7 +40,7 @@ VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
 VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
 VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 
 # MCP Server Integration (Missing)
 MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
@@ -175,3 +175,5 @@ Once these are added, both environments will be fully functional!
 **Created**: 2025-09-20
 **Priority**: CRITICAL - Production is DOWN
 **Time to Fix**: ~10 minutes total
+
+

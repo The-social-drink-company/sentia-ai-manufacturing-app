@@ -5,25 +5,6 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sentia Manufacturing Dashboard</title>
-
-    <!-- Runtime environment bootstrap -->
-    <script>
-      window.__APP_ENV__ = {
-        VITE_API_BASE_URL: window.VITE_API_BASE_URL || '/api',
-        VITE_MCP_SERVER_URL: window.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'
-      };
-
-      if (!window.import) window.import = {};
-      if (!window.import.meta) window.import.meta = {};
-      if (!window.import.meta.env) window.import.meta.env = {};
-
-      Object.keys(window.__APP_ENV__).forEach((key) => {
-        window.import.meta.env[key] = window.__APP_ENV__[key];
-        window[key] = window.__APP_ENV__[key];
-      });
-
-      console.log('[App Init] Bootstrapping Sentia Manufacturing Dashboard with Clerk authentication');
-    </script>
   </head>
   <body>
     <div id="root">
@@ -66,8 +47,10 @@
         }
         console.log('[App Init] Environment:', window.location.hostname);
         console.log('[App Init] Protocol:', window.location.protocol);
-        console.log('[App Init] Awaiting Clerk session...');
+        console.log('[App Init] Clerk session required...');
       });
     </script>
   </body>
 </html>
+
+

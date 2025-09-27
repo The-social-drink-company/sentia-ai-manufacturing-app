@@ -12,7 +12,7 @@ const clerkAuth = clerkMiddleware({
   publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY || 
                   process.env.CLERK_PUBLISHABLE_KEY || 
                   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-                  'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
+                  'pk_live_REDACTED',
   
   // Configure secret key
   secretKey: process.env.CLERK_SECRET_KEY,

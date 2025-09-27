@@ -13,11 +13,11 @@
 
 ```env
 # Clerk Authentication - MUST BE ADDED
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+CLERK_SECRET_KEY=sk_live_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
 
 # API Base URL - MUST BE ADDED
 VITE_API_BASE_URL=/api
@@ -79,3 +79,5 @@ With these variables added, the minimal-server.js will start correctly and serve
 ---
 
 **URGENT**: Add the Clerk environment variables NOW to restore production!
+
+

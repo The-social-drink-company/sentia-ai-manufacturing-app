@@ -7,8 +7,8 @@
       "type": "render",
       "env_vars": {
         "NODE_ENV": "development",
-        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
-        "CLERK_SECRET_KEY": "sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_REDACTED",
+        "CLERK_SECRET_KEY": "sk_live_REDACTED",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_MCP_SERVER_URL": "https://mcp-server-tkyu.onrender.com",
         "VITE_API_BASE_URL": "/api",
@@ -30,8 +30,8 @@
       "type": "render",
       "env_vars": {
         "NODE_ENV": "production",
-        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
-        "CLERK_SECRET_KEY": "sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_REDACTED",
+        "CLERK_SECRET_KEY": "sk_live_REDACTED",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_MCP_SERVER_URL": "https://mcp-server-tkyu.onrender.com",
         "VITE_API_BASE_URL": "/api",
@@ -53,8 +53,8 @@
       "type": "railway",
       "env_vars": {
         "NODE_ENV": "production",
-        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
-        "CLERK_SECRET_KEY": "sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+        "VITE_CLERK_PUBLISHABLE_KEY": "pk_live_REDACTED",
+        "CLERK_SECRET_KEY": "sk_live_REDACTED",
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_MCP_SERVER_URL": "https://mcp-server-tkyu.onrender.com",
         "VITE_API_BASE_URL": "/api",
@@ -72,8 +72,8 @@
     }
   },
   "clerk_config": {
-    "publishable_key": "pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
-    "secret_key": "sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ",
+    "publishable_key": "pk_live_REDACTED",
+    "secret_key": "sk_live_REDACTED",
     "sign_in_url": "/sign-in",
     "sign_up_url": "/sign-up",
     "after_sign_in_url": "/dashboard",
@@ -85,3 +85,4 @@
     "status": "ready_for_deployment"
   }
 }
+

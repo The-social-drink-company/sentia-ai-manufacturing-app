@@ -551,7 +551,7 @@ app.use((err, req, res, _next) => {
 });
 
 // Start server
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
   logger.info(`
 ========================================
 SERVER STARTED SUCCESSFULLY

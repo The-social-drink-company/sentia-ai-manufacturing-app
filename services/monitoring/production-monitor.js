@@ -72,19 +72,19 @@ class ProductionMonitor {
 
   setupAlertHandlers() {
     // Email alert handler (placeholder)
-    this.alertHandlers.set('email', async (alert) => {
+    this.alertHandlers.set(_'email', async _(alert) => {
       logWarn('Email alert triggered', alert);
       // Implement actual email sending logic
     });
 
     // Slack alert handler (placeholder)
-    this.alertHandlers.set('slack', async (alert) => {
+    this.alertHandlers.set(_'slack', async _(alert) => {
       logWarn('Slack alert triggered', alert);
       // Implement actual Slack notification logic
     });
 
     // SMS alert handler (placeholder)
-    this.alertHandlers.set('sms', async (alert) => {
+    this.alertHandlers.set(_'sms', async _(alert) => {
       logWarn('SMS alert triggered', alert);
       // Implement actual SMS sending logic
     });

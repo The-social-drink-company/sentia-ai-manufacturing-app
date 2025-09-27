@@ -325,7 +325,7 @@ class APIIntegrationManager {
    */
   startHealthMonitoring() {
     // Check health every 5 minutes
-    setInterval(async () => {
+    setInterval(async _() => {
       for (const [serviceId, service] of this.services) {
         try {
           const config = this.serviceConfigs[serviceId];

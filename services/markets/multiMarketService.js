@@ -455,7 +455,7 @@ class MultiMarketService extends EventEmitter {
       byCurrency: {}
     };
     
-    Object.entries(marketData).forEach(([market, data]) => {
+    Object.entries(marketData).forEach(_([market, _data]) => {
       if (!data) return;
       
       const marketMetrics = {
@@ -600,7 +600,7 @@ class MultiMarketService extends EventEmitter {
   async syncInventoryAcrossMarkets(sku, allocations) {
     try {
       const results = await Promise.all(
-        Object.entries(allocations).map(async ([market, quantity]) => {
+        Object.entries(allocations).map(async _([market, _quantity]) => {
           try {
             await this.inventory.updateMarketInventory(market, sku, quantity);
             return { market, status: 'success', quantity };
@@ -657,7 +657,7 @@ class MultiMarketService extends EventEmitter {
     
     return Promise.race([
       this.shopify.ping(market),
-      new Promise((_, reject) => 
+      new Promise((_, _reject) => 
         setTimeout(() => reject(new Error('Ping timeout')), timeout)
       )
     ]);
@@ -724,7 +724,7 @@ class MultiMarketService extends EventEmitter {
     };
     
     // Calculate average response times
-    this.metrics.responseTime.forEach((times, operation) => {
+    this.metrics.responseTime.forEach((times, _operation) => {
       if (times.length > 0) {
         summary.averageResponseTime[operation] = 
           times.reduce((a, b) => a + b, 0) / times.length;

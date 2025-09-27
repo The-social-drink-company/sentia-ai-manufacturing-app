@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { cn } from '../../utils/cn'
 
 const DataTableWidget = ({
-  title,
-  columns = [],
-  data = [],
-  searchable = true,
-  sortable = true,
-  pagination = true,
+  _title,
+  columns = _[],
+  data = _[],
+  searchable = _true,
+  sortable = _true,
+  pagination = _true,
   pageSize = 10,
-  loading = false,
+  loading = _false,
   className = ''
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -28,7 +28,7 @@ const DataTableWidget = ({
 
   // Sort data
   const sortedData = sortable && sortColumn
-    ? [...filteredData].sort((a, b) => {
+    ? [...filteredData].sort(_(a, b) => {
         const aVal = a[sortColumn]
         const bVal = b[sortColumn]
         if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1
@@ -60,7 +60,7 @@ const DataTableWidget = ({
       <div className={cn('bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6', className)}>
         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
         <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(5)].map((_, _i) => (
             <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
           ))}
         </div>
@@ -120,7 +120,7 @@ const DataTableWidget = ({
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {paginatedData.map((row, rowIndex) => (
+              {paginatedData.map((row, _rowIndex) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   {columns.map((column) => (
                     <td

@@ -281,7 +281,7 @@ export class WorkflowAutomationService extends EventEmitter {
         
         // Retry if configured
         if (execution.metadata.retryCount < workflow.settings.retryAttempts) {
-          setTimeout(() => {
+          setTimeout(_() => {
             execution.metadata.retryCount++;
             this.executeWorkflow(workflowId, inputData, { ...options, retry: true });
           }, workflow.settings.retryDelay);
@@ -489,7 +489,7 @@ export class WorkflowAutomationService extends EventEmitter {
     this.workflows.set(workflow.id, workflow);
     
     // Setup cron job
-    const cronJob = cron.schedule(workflowConfig.schedule, () => {
+    const cronJob = cron.schedule(_workflowConfig.schedule, _() => {
       this.executeWorkflow(workflow.id, {}, { triggeredBy: 'schedule' });
     }, { scheduled: false });
     
@@ -513,7 +513,7 @@ export class WorkflowAutomationService extends EventEmitter {
     this.workflows.set(workflow.id, workflow);
     
     // Setup event listener
-    this.on(workflowConfig.trigger.event, (eventData) => {
+    this.on(_workflowConfig.trigger.event, _(eventData) => {
       this.executeWorkflow(workflow.id, eventData, { triggeredBy: 'event' });
     });
     
@@ -612,7 +612,7 @@ export class WorkflowAutomationService extends EventEmitter {
    * Setup periodic sync for integration
    */
   setupPeriodicSync(integrationName, interval) {
-    const syncJob = setInterval(async () => {
+    const syncJob = setInterval(async _() => {
       try {
         await this.syncIntegration(integrationName);
       } catch (error) {
@@ -672,7 +672,7 @@ export class WorkflowAutomationService extends EventEmitter {
    * Start event processing
    */
   startEventProcessing() {
-    setInterval(() => {
+    setInterval(_() => {
       this.processEventQueue();
     }, 1000); // Process every second
   }
@@ -796,7 +796,7 @@ export class WorkflowAutomationService extends EventEmitter {
   setupWorkflowTriggers(workflow) {
     if (workflow.trigger?.type === 'schedule') {
       // Setup cron job for scheduled workflows
-      const cronJob = cron.schedule(workflow.trigger.schedule, () => {
+      const cronJob = cron.schedule(_workflow.trigger.schedule, _() => {
         this.executeWorkflow(workflow.id, {}, { triggeredBy: 'schedule' });
       }, { scheduled: false });
       

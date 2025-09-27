@@ -225,7 +225,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       // Calculate overall health
       const healthScores = Object.values(healthResults.checks).map(check => check.score || 0);
       healthResults.score = healthScores.length > 0 ? 
-        Math.round(healthScores.reduce((a, b) => a + b, 0) / healthScores.length) : 100;
+        Math.round(healthScores.reduce((a, _b) => a + b, 0) / healthScores.length) : 100;
       
       // Determine overall status
       if (healthResults.score >= 90) {

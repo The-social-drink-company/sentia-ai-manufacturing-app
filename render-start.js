@@ -45,12 +45,12 @@ const serverProcess = spawn('node', ['render-server.js'], {
   shell: false
 });
 
-serverProcess.on('error', (err) => {
+serverProcess.on(_'error', _(err) => {
   console.error('Failed to start server:', err);
   process.exit(1);
 });
 
-serverProcess.on('exit', (code) => {
+serverProcess.on(_'exit', (code) => {
   if (code !== 0) {
     console.error(`Server exited with code ${code}`);
     process.exit(code);
@@ -58,12 +58,12 @@ serverProcess.on('exit', (code) => {
 });
 
 // Handle process termination
-process.on('SIGTERM', () => {
+process.on(_'SIGTERM', _() => {
   console.log('SIGTERM received, forwarding to server');
   serverProcess.kill('SIGTERM');
 });
 
-process.on('SIGINT', () => {
+process.on(_'SIGINT', _() => {
   console.log('SIGINT received, forwarding to server');
   serverProcess.kill('SIGINT');
 });

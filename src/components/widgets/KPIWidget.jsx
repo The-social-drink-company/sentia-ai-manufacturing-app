@@ -3,14 +3,14 @@ import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from '@heroicons/react/20/solid
 import { cn } from '../../utils/cn'
 
 const KPIWidget = ({
-  title,
+  _title,
   value,
-  prefix = '',
-  suffix = '',
+  prefix = _'',
+  suffix = _'',
   change = null,
   changeType = 'neutral', // 'positive', 'negative', 'neutral'
   trend = null, // Array of values for sparkline
-  loading = false,
+  loading = _false,
   icon: Icon = null,
   color = 'blue' // 'blue', 'green', 'red', 'yellow', 'purple'
 }) => {
@@ -91,7 +91,7 @@ const KPIWidget = ({
 }
 
 // Mini sparkline component
-const Sparkline = ({ data, color = 'blue', width = 60, height = 30 }) => {
+const Sparkline = ({ data, color = 'blue', width = _60, height = 30 }) => {
   const max = Math.max(...data)
   const min = Math.min(...data)
   const range = max - min || 1

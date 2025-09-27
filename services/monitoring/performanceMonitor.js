@@ -298,11 +298,11 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
       return { avg: 0, p50: 0, p95: 0, p99: 0, min: 0, max: 0 };
     }
 
-    const sorted = [...times].sort((a, b) => a - b);
+    const sorted = [...times].sort((a, _b) => a - b);
     const len = sorted.length;
 
     return {
-      avg: times.reduce((a, b) => a + b, 0) / len,
+      avg: times.reduce((a, _b) => a + b, 0) / len,
       p50: sorted[Math.floor(len * 0.5)],
       p95: sorted[Math.floor(len * 0.95)],
       p99: sorted[Math.floor(len * 0.99)],
@@ -897,9 +897,9 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
     // Simplified CSV conversion - in production, use a proper CSV library
     const lines = ['timestamp,type,metric,value'];
     
-    Object.entries(data.metrics).forEach(([type, metrics]) => {
+    Object.entries(data.metrics).forEach(_([type, _metrics]) => {
       metrics.forEach(metric => {
-        Object.entries(metric).forEach(([key, value]) => {
+        Object.entries(metric).forEach(_([key, _value]) => {
           if (key !== 'timestamp' && typeof value === 'number') {
             lines.push(`${metric.timestamp},${type},${key},${value}`);
           }

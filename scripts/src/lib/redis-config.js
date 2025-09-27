@@ -1,6 +1,6 @@
 
 // Enhanced Redis performance settings
-export const REDIS_CONFIG = {
+export const REDISCONFIG = {
   maxMemoryPolicy: 'allkeys-lru',
   maxMemorySize: '512mb',
   persistenceMode: 'rdb',

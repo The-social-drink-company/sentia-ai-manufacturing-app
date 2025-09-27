@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Dashboard Navigation', () => {
+test.describe('Dashboard _Navigation', () => {
   test.beforeEach(async ({ page, context }) => {
     // Mock authentication for all tests
     await context.addCookies([
@@ -14,7 +14,7 @@ test.describe('Dashboard Navigation', () => {
     await page.goto('/dashboard');
   });
 
-  test('should display main dashboard elements', async ({ page }) => {
+  test('should display main dashboard _elements', async ({ page }) => {
     // Check for header
     const header = page.locator('header, [role="banner"]').first();
     await expect(header).toBeVisible();
@@ -28,7 +28,7 @@ test.describe('Dashboard Navigation', () => {
     await expect(mainContent).toBeVisible();
   });
 
-  test('should navigate to Working Capital page', async ({ page }) => {
+  test('should navigate to Working Capital _page', async ({ page }) => {
     // Click on Working Capital link
     const workingCapitalLink = page.locator('a:has-text("Working Capital"), button:has-text("Working Capital")').first();
     await expect(workingCapitalLink).toBeVisible();
@@ -42,7 +42,7 @@ test.describe('Dashboard Navigation', () => {
     await expect(pageTitle).toBeVisible();
   });
 
-  test('should navigate to What-If Analysis page', async ({ page }) => {
+  test('should navigate to What-If Analysis _page', async ({ page }) => {
     // Click on What-If Analysis link
     const whatIfLink = page.locator('a:has-text("What-If"), button:has-text("What-If")').first();
     await expect(whatIfLink).toBeVisible();
@@ -56,7 +56,7 @@ test.describe('Dashboard Navigation', () => {
     await expect(pageTitle).toBeVisible();
   });
 
-  test('should navigate to Production page', async ({ page }) => {
+  test('should navigate to Production _page', async ({ page }) => {
     // Click on Production link
     const productionLink = page.locator('a:has-text("Production"), button:has-text("Production")').first();
     await expect(productionLink).toBeVisible();
@@ -70,7 +70,7 @@ test.describe('Dashboard Navigation', () => {
     await expect(pageTitle).toBeVisible();
   });
 
-  test('should navigate to Quality Control page', async ({ page }) => {
+  test('should navigate to Quality Control _page', async ({ page }) => {
     // Click on Quality link
     const qualityLink = page.locator('a:has-text("Quality"), button:has-text("Quality")').first();
     await expect(qualityLink).toBeVisible();
@@ -84,7 +84,7 @@ test.describe('Dashboard Navigation', () => {
     await expect(pageTitle).toBeVisible();
   });
 
-  test('should navigate to AI Analytics page', async ({ page }) => {
+  test('should navigate to AI Analytics _page', async ({ page }) => {
     // Click on AI Analytics link
     const aiLink = page.locator('a:has-text("AI Analytics"), a:has-text("Analytics"), button:has-text("AI")').first();
     await expect(aiLink).toBeVisible();
@@ -98,7 +98,7 @@ test.describe('Dashboard Navigation', () => {
     await expect(pageTitle).toBeVisible();
   });
 
-  test('should navigate to Inventory page', async ({ page }) => {
+  test('should navigate to Inventory _page', async ({ page }) => {
     // Click on Inventory link
     const inventoryLink = page.locator('a:has-text("Inventory"), button:has-text("Inventory")').first();
     await expect(inventoryLink).toBeVisible();
@@ -112,7 +112,7 @@ test.describe('Dashboard Navigation', () => {
     await expect(pageTitle).toBeVisible();
   });
 
-  test('should navigate to Forecasting page', async ({ page }) => {
+  test('should navigate to Forecasting _page', async ({ page }) => {
     // Click on Forecasting link
     const forecastingLink = page.locator('a:has-text("Forecasting"), a:has-text("Demand"), button:has-text("Forecast")').first();
     await expect(forecastingLink).toBeVisible();
@@ -126,7 +126,7 @@ test.describe('Dashboard Navigation', () => {
     await expect(pageTitle).toBeVisible();
   });
 
-  test('should handle breadcrumb navigation', async ({ page }) => {
+  test('should handle breadcrumb _navigation', async ({ page }) => {
     // Navigate to a sub-page
     await page.goto('/working-capital');
 
@@ -143,7 +143,7 @@ test.describe('Dashboard Navigation', () => {
     }
   });
 
-  test('should toggle sidebar on mobile view', async ({ page }) => {
+  test('should toggle sidebar on mobile _view', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
 
@@ -168,7 +168,7 @@ test.describe('Dashboard Navigation', () => {
     }
   });
 
-  test('should show active navigation item', async ({ page }) => {
+  test('should show active navigation _item', async ({ page }) => {
     // Navigate to Working Capital
     await page.goto('/working-capital');
 
@@ -182,7 +182,7 @@ test.describe('Dashboard Navigation', () => {
     }
   });
 
-  test('should handle keyboard navigation', async ({ page }) => {
+  test('should handle keyboard _navigation', async ({ page }) => {
     // Focus on first navigation item
     await page.keyboard.press('Tab');
     await page.keyboard.press('Tab'); // May need multiple tabs to reach nav
@@ -195,7 +195,7 @@ test.describe('Dashboard Navigation', () => {
     expect(url).not.toBe('http://localhost:3000/dashboard');
   });
 
-  test('should display user role-based navigation items', async ({ page, context }) => {
+  test('should display user role-based navigation _items', async ({ page, context }) => {
     // Set admin role cookie (adjust based on actual implementation)
     await context.addCookies([
       {

@@ -109,7 +109,7 @@ export default function SystemAdminPanel() {
     { category: 'Backup', key: 'Backup Retention', value: '7 days local, 30 days cloud', status: 'good' }
   ];
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'healthy':
       case 'running':
@@ -123,7 +123,7 @@ export default function SystemAdminPanel() {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (_status) => {
     switch (status) {
       case 'healthy':
       case 'running':
@@ -211,7 +211,7 @@ export default function SystemAdminPanel() {
               System Services
             </h3>
             <div className="space-y-3">
-              {systemServices.map((service, index) => (
+              {systemServices.map((service, _index) => (
                 <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
@@ -295,7 +295,7 @@ export default function SystemAdminPanel() {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {configurationSettings.map((setting, index) => (
+                {configurationSettings.map((setting, _index) => (
                   <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                       {setting.category}
@@ -330,7 +330,7 @@ export default function SystemAdminPanel() {
               { label: 'Performance Monitor', icon: CpuChipIcon, color: 'green' },
               { label: 'Security Scan', icon: ShieldCheckIcon, color: 'red' },
               { label: 'System Logs', icon: DocumentTextIcon, color: 'purple' }
-            ].map((action, index) => (
+            ].map((action, _index) => (
               <button
                 key={index}
                 className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}

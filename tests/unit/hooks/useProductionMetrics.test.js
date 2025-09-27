@@ -12,7 +12,7 @@ vi.mock('../../../src/features/production/hooks/useIoTIntegration', () => ({
   useIoTProductionMetrics: vi.fn()
 }))
 
-describe('useProductionMetrics', () => {
+describe(_'useProductionMetrics', _() => {
   const mockProductionData = {
     summary: {
       totalProduction: 25000,
@@ -40,7 +40,7 @@ describe('useProductionMetrics', () => {
     alerts: []
   }
 
-  beforeEach(async () => {
+  beforeEach(async _() => {
     vi.clearAllMocks()
 
     // Mock IoT integration to return no data by default
@@ -56,7 +56,7 @@ describe('useProductionMetrics', () => {
     fetchProductionMetrics.mockResolvedValue(mockProductionData)
   })
 
-  it('initializes with loading state', () => {
+  it('initializes with loading _state', _() => {
     const { result } = renderHook(() => useProductionMetrics())
 
     expect(result.current.loading).toBe(true)
@@ -64,12 +64,12 @@ describe('useProductionMetrics', () => {
     expect(result.current.error).toBe(null)
   })
 
-  it('fetches production metrics on mount', async () => {
+  it('fetches production metrics on _mount', async _() => {
     const { fetchProductionMetrics } = await import('../../../src/features/production/services/productionService')
 
     const { result } = renderHook(() => useProductionMetrics())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
@@ -81,7 +81,7 @@ describe('useProductionMetrics', () => {
     })
   })
 
-  it('uses custom parameters for fetching', async () => {
+  it('uses custom parameters for _fetching', async _() => {
     const { fetchProductionMetrics } = await import('../../../src/features/production/services/productionService')
 
     const { result } = renderHook(() =>
@@ -92,14 +92,14 @@ describe('useProductionMetrics', () => {
       })
     )
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
     expect(fetchProductionMetrics).toHaveBeenCalledWith('7d', 'line-1', 'shift-2')
   })
 
-  it('prioritizes IoT data when available', async () => {
+  it('prioritizes IoT data when _available', async _() => {
     const mockIoTData = {
       summary: { totalProduction: 30000 },
       oee: { overall: 85.2 }
@@ -115,7 +115,7 @@ describe('useProductionMetrics', () => {
 
     const { result } = renderHook(() => useProductionMetrics())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
@@ -131,7 +131,7 @@ describe('useProductionMetrics', () => {
     expect(result.current.dataSource).toBe('iot_sensors')
   })
 
-  it('falls back to service data when IoT is unavailable', async () => {
+  it('falls back to service data when IoT is _unavailable', async _() => {
     const { useIoTProductionMetrics } = await import('../../../src/features/production/hooks/useIoTIntegration')
     useIoTProductionMetrics.mockReturnValue({
       isLoading: false,
@@ -141,7 +141,7 @@ describe('useProductionMetrics', () => {
 
     const { result } = renderHook(() => useProductionMetrics())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
@@ -149,14 +149,14 @@ describe('useProductionMetrics', () => {
     expect(result.current.iotConnectionStatus).toBe('error')
   })
 
-  it('handles fetch errors properly', async () => {
+  it('handles fetch errors _properly', async _() => {
     const mockError = new Error('Failed to fetch production metrics')
     const { fetchProductionMetrics } = await import('../../../src/features/production/services/productionService')
     fetchProductionMetrics.mockRejectedValue(mockError)
 
     const { result } = renderHook(() => useProductionMetrics())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
@@ -164,12 +164,12 @@ describe('useProductionMetrics', () => {
     expect(result.current.data).toBe(null)
   })
 
-  it('provides refetch functionality', async () => {
+  it('provides refetch _functionality', async _() => {
     const { fetchProductionMetrics } = await import('../../../src/features/production/services/productionService')
 
     const { result } = renderHook(() => useProductionMetrics())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
@@ -179,12 +179,12 @@ describe('useProductionMetrics', () => {
     // Call refetch
     result.current.refetch()
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(fetchProductionMetrics).toHaveBeenCalledTimes(1)
     })
   })
 
-  it('provides export functionality', async () => {
+  it('provides export _functionality', async _() => {
     const { exportProductionData } = await import('../../../src/features/production/services/productionService')
 
     const { result } = renderHook(() =>
@@ -195,7 +195,7 @@ describe('useProductionMetrics', () => {
       })
     )
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
@@ -204,20 +204,20 @@ describe('useProductionMetrics', () => {
     expect(exportProductionData).toHaveBeenCalledWith('csv', '7d', 'line-1', 'shift-2')
   })
 
-  it('handles export errors', async () => {
+  it('handles export _errors', async _() => {
     const { exportProductionData } = await import('../../../src/features/production/services/productionService')
     exportProductionData.mockRejectedValue(new Error('Export failed'))
 
     const { result } = renderHook(() => useProductionMetrics())
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
     await expect(result.current.exportData('pdf')).rejects.toThrow('Export failed')
   })
 
-  it('updates data when parameters change', async () => {
+  it('updates data when parameters _change', async _() => {
     const { fetchProductionMetrics } = await import('../../../src/features/production/services/productionService')
 
     const { result, rerender } = renderHook(
@@ -231,7 +231,7 @@ describe('useProductionMetrics', () => {
       }
     )
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
@@ -244,12 +244,12 @@ describe('useProductionMetrics', () => {
       timeRange: '7d'
     })
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(fetchProductionMetrics).toHaveBeenCalledWith('7d', 'line-1', 'shift-1')
     })
   })
 
-  it('provides correct IoT connection status', async () => {
+  it('provides correct IoT connection _status', async _() => {
     const { useIoTProductionMetrics } = await import('../../../src/features/production/hooks/useIoTIntegration')
 
     // Test connecting state
@@ -272,7 +272,7 @@ describe('useProductionMetrics', () => {
 
     rerender()
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.iotConnectionStatus).toBe('connected')
     })
 
@@ -285,7 +285,7 @@ describe('useProductionMetrics', () => {
 
     rerender()
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.iotConnectionStatus).toBe('error')
     })
 
@@ -298,12 +298,12 @@ describe('useProductionMetrics', () => {
 
     rerender()
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.iotConnectionStatus).toBe('disconnected')
     })
   })
 
-  it('maintains stable reference for callbacks', () => {
+  it('maintains stable reference for _callbacks', _() => {
     const { result, rerender } = renderHook(() => useProductionMetrics())
 
     const firstRefetch = result.current.refetch
@@ -315,7 +315,7 @@ describe('useProductionMetrics', () => {
     expect(result.current.exportData).toBe(firstExportData)
   })
 
-  it('handles concurrent fetch requests properly', async () => {
+  it('handles concurrent fetch requests _properly', async _() => {
     const { fetchProductionMetrics } = await import('../../../src/features/production/services/productionService')
 
     // Make fetchProductionMetrics return a promise that resolves after a delay
@@ -332,7 +332,7 @@ describe('useProductionMetrics', () => {
     result.current.refetch()
     result.current.refetch()
 
-    await waitFor(() => {
+    await waitFor(_() => {
       expect(result.current.loading).toBe(false)
     })
 
@@ -341,7 +341,7 @@ describe('useProductionMetrics', () => {
     expect(result.current.error).toBe(null)
   })
 
-  it('cleans up properly on unmount', async () => {
+  it('cleans up properly on _unmount', async _() => {
     const { unmount } = renderHook(() => useProductionMetrics())
 
     // Should not throw errors when unmounting during loading

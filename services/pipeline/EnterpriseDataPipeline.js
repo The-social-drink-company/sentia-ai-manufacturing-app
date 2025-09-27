@@ -278,7 +278,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
    */
   async ingestAccountingData() {
     // Xero webhook handler
-    this.registerWebhook('xero', async (data) => {
+    this.registerWebhook(_'xero', async (data) => {
       await this.queues.ingestion.add({
         source: 'xero',
         data: data,
@@ -356,7 +356,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
    */
   async ingestERPData() {
     // Unleashed webhook
-    this.registerWebhook('unleashed', async (data) => {
+    this.registerWebhook(_'unleashed', async (data) => {
       await this.queues.ingestion.add({
         source: 'unleashed',
         data: this.normalizeUnleashedData(data),
@@ -396,7 +396,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
    */
   async ingestEcommerceData() {
     // Shopify webhook
-    this.registerWebhook('shopify', async (data) => {
+    this.registerWebhook(_'shopify', async (data) => {
       await this.queues.ingestion.add({
         source: 'shopify',
         data: data,
@@ -463,7 +463,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
       this.transforms.validation,
       this.transforms.enrichment,
       this.createStorageWritable('production'),
-      (err) => {
+      (_err) => {
         if (err) {
           logError('Production pipeline error', err);
           this.handlePipelineError('production', err);
@@ -507,7 +507,7 @@ export class EnterpriseDataPipeline extends EventEmitter {
    * Process CSV file uploads
    */
   async processCSVUpload(filePath, type, userId) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const results = [];
       const errors = [];
       let recordCount = 0;
@@ -1283,25 +1283,25 @@ export class EnterpriseDataPipeline extends EventEmitter {
    */
   setupErrorHandling() {
     // Uncaught exceptions
-    process.on('uncaughtException', (error) => {
+    process.on(_'uncaughtException', _(error) => {
       logError('Uncaught exception in data pipeline', error);
       this.shutdown();
       process.exit(1);
     });
 
     // Unhandled rejections
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on(_'unhandledRejection', _(reason, promise) => {
       logError('Unhandled rejection in data pipeline', { reason, promise });
     });
 
     // Graceful shutdown
-    process.on('SIGTERM', async () => {
+    process.on(_'SIGTERM', async () => {
       logInfo('SIGTERM received, shutting down gracefully');
       await this.shutdown();
       process.exit(0);
     });
 
-    process.on('SIGINT', async () => {
+    process.on(_'SIGINT', async () => {
       logInfo('SIGINT received, shutting down gracefully');
       await this.shutdown();
       process.exit(0);

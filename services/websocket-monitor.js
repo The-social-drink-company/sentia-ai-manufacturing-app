@@ -54,12 +54,12 @@ class WebSocketMonitor extends EventEmitter {
 
   startMonitoring() {
     // Update stats every 5 seconds
-    this.monitoringInterval = setInterval(() => {
+    this.monitoringInterval = setInterval(_() => {
       this.updateStats();
     }, 5000);
 
     // Update uptime every second
-    this.uptimeInterval = setInterval(() => {
+    this.uptimeInterval = setInterval(_() => {
       if (this.stats.currentStatus === 'connected') {
         this.stats.uptime++;
       }
@@ -345,7 +345,7 @@ class WebSocketMonitor extends EventEmitter {
 
     // Disconnect and reinitialize
     this.mcpClient.disconnect();
-    setTimeout(() => {
+    setTimeout(_() => {
       this.mcpClient.initialize();
     }, 1000);
   }
@@ -398,19 +398,19 @@ class WebSocketMonitor extends EventEmitter {
   // ====================
 
   getStatusEndpoint() {
-    return (req, res) => {
+    return (_req, res) => {
       res.json(this.getHealthReport());
     };
   }
 
   getStatsEndpoint() {
-    return (req, res) => {
+    return (_req, res) => {
       res.json(this.getStats());
     };
   }
 
   getHistoryEndpoint() {
-    return (req, res) => {
+    return (_req, res) => {
       res.json({
         connections: this.getConnectionHistory(),
         messages: this.getMessageHistory()

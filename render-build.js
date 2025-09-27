@@ -135,13 +135,13 @@ async function build() {
 }
 
 // Error handler
-process.on('uncaughtException', (error) => {
+process.on(_'uncaughtException', (error) => {
   console.error(`${colors.red}Uncaught exception during build:${colors.reset}`);
   console.error(error);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on(_'unhandledRejection', _(reason, _promise) => {
   console.error(`${colors.red}Unhandled rejection during build:${colors.reset}`);
   console.error(reason);
   process.exit(1);

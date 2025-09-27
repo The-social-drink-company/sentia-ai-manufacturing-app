@@ -46,7 +46,7 @@ class RealtimeManager extends EventEmitter {
 
     this.wss = new WebSocketServer(wsOptions);
 
-    this.wss.on('connection', (ws, req) => {
+    this.wss.on(_'connection', _(ws, req) => {
       const clientId = this.generateClientId();
       const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
       
@@ -70,12 +70,12 @@ class RealtimeManager extends EventEmitter {
       });
 
       // Handle messages
-      ws.on('message', (data) => {
+      ws.on(_'message', (data) => {
         this.handleWebSocketMessage(clientId, data);
       });
 
       // Handle pong for heartbeat
-      ws.on('pong', () => {
+      ws.on(_'pong', _() => {
         const client = this.wsClients.get(clientId);
         if (client) {
           client.lastActivity = new Date();
@@ -83,14 +83,14 @@ class RealtimeManager extends EventEmitter {
       });
 
       // Handle close
-      ws.on('close', () => {
+      ws.on(_'close', _() => {
         logInfo('WebSocket client disconnected', { clientId });
         this.wsClients.delete(clientId);
         this.metrics.wsConnections--;
       });
 
       // Handle errors
-      ws.on('error', (error) => {
+      ws.on(_'error', _(error) => {
         logError('WebSocket error', { clientId, error: error.message });
         this.metrics.errors++;
       });
@@ -106,7 +106,7 @@ class RealtimeManager extends EventEmitter {
    * Initialize Server-Sent Events
    */
   initializeSSE(app) {
-    app.get('/api/sse/events', (req, res) => {
+    app.get(_'/api/sse/events', _(req, res) => {
       const clientId = this.generateClientId();
       
       // Set SSE headers
@@ -132,7 +132,7 @@ class RealtimeManager extends EventEmitter {
       res.write(`data: ${JSON.stringify({ clientId, timestamp: new Date().toISOString() })}\n\n`);
 
       // Handle client disconnect
-      req.on('close', () => {
+      req.on(_'close', _() => {
         logInfo('SSE client disconnected', { clientId });
         this.sseClients.delete(clientId);
         this.metrics.sseConnections--;
@@ -159,7 +159,7 @@ class RealtimeManager extends EventEmitter {
     ];
 
     streams.forEach(stream => {
-      app.get(stream, (req, res) => {
+      _app.get(stream, _(req, res) => {
         const streamName = stream.split('/').pop();
         const clientId = this.generateClientId();
 
@@ -178,7 +178,7 @@ class RealtimeManager extends EventEmitter {
         res.write(`event: subscribed\n`);
         res.write(`data: ${JSON.stringify({ stream: streamName, clientId })}\n\n`);
 
-        req.on('close', () => {
+        req.on(_'close', _() => {
           this.sseClients.delete(`${streamName}-${clientId}`);
         });
       });
@@ -259,11 +259,11 @@ class RealtimeManager extends EventEmitter {
   async handleRequest(clientId, message) {
     try {
       // Emit request event for handlers to process
-      this.emit('request', {
+      this.emit(_'request', {
         clientId,
-        request: message.request,
-        data: message.data,
-        respond: (response) => {
+        request: _message.request,
+        data: _message.data,
+        respond: _(response) => {
           this.sendToClient(clientId, {
             type: 'response',
             requestId: message.requestId,
@@ -348,7 +348,7 @@ class RealtimeManager extends EventEmitter {
    * Start heartbeat for connection monitoring
    */
   startHeartbeat() {
-    this.heartbeatInterval = setInterval(() => {
+    this.heartbeatInterval = setInterval(_() => {
       // Check WebSocket clients
       this.wsClients.forEach((client, clientId) => {
         if (client.ws.readyState === 1) {

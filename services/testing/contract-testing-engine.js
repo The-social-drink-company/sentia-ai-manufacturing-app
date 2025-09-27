@@ -334,7 +334,7 @@ class ContractTestingEngine extends EventEmitter {
       // Construct test URL
       const url = new URL(test.request.path, mockBaseUrl);
       if (test.request.query) {
-        Object.entries(test.request.query).forEach(([key, value]) => {
+        Object.entries(test.request.query).forEach(_([key, _value]) => {
           url.searchParams.set(key, value);
         });
       }
@@ -456,14 +456,14 @@ class ContractTestingEngine extends EventEmitter {
           throw new Error(`${path}: Expected array, got ${typeof actual}`);
         }
         
-        expected.forEach((expectedItem, index) => {
+        expected.forEach(_(expectedItem, _index) => {
           if (actual[index] === undefined) {
             throw new Error(`${path}[${index}]: Missing array element`);
           }
           this.deepCompare(actual[index], expectedItem, `${path}[${index}]`);
         });
       } else {
-        Object.entries(expected).forEach(([key, value]) => {
+        Object.entries(expected).forEach(_([key, _value]) => {
           if (actual[key] === undefined) {
             throw new Error(`${path}.${key}: Missing property`);
           }

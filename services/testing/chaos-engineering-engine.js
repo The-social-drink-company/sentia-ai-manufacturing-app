@@ -202,7 +202,7 @@ class ChaosEngineeringEngine extends EventEmitter {
 
   async setupChaosMonitoring() {
     // Setup real-time monitoring for chaos experiments
-    this.monitoringInterval = setInterval(async () => {
+    this.monitoringInterval = setInterval(async _() => {
       if (this.activeExperiments.size > 0) {
         await this.collectChaosMetrics();
         await this.checkEmergencyConditions();
@@ -243,23 +243,23 @@ class ChaosEngineeringEngine extends EventEmitter {
       await this.performSafetyChecks(experiment);
       
       // Execute experiment phases
-      await this.executeExperimentPhase(experiment, 'preparation', async () => {
+      await this.executeExperimentPhase(experiment, _'preparation', async _() => {
         await this.prepareExperiment(experiment);
       });
 
-      await this.executeExperimentPhase(experiment, 'fault-injection', async () => {
+      await this.executeExperimentPhase(experiment, _'fault-injection', async _() => {
         await this.injectFault(experiment);
       });
 
-      await this.executeExperimentPhase(experiment, 'observation', async () => {
+      await this.executeExperimentPhase(experiment, _'observation', async _() => {
         await this.observeSystemBehavior(experiment);
       });
 
-      await this.executeExperimentPhase(experiment, 'recovery', async () => {
+      await this.executeExperimentPhase(experiment, _'recovery', async _() => {
         await this.recoverFromFault(experiment);
       });
 
-      await this.executeExperimentPhase(experiment, 'validation', async () => {
+      await this.executeExperimentPhase(experiment, _'validation', async _() => {
         await this.validateRecovery(experiment);
       });
 
@@ -291,7 +291,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       await this.saveExperimentRecord(experiment);
       
       // Cooldown period
-      setTimeout(() => {
+      setTimeout(_() => {
         this.emit('cooldownComplete');
       }, this.config.safety.cooldownPeriod);
     }
@@ -504,7 +504,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       .map(result => result.value);
 
     return validMeasurements.length > 0 
-      ? validMeasurements.reduce((a, b) => a + b, 0) / validMeasurements.length
+      ? validMeasurements.reduce((a, _b) => a + b, 0) / validMeasurements.length
       : null;
   }
 
@@ -597,7 +597,7 @@ class ChaosEngineeringEngine extends EventEmitter {
       })
     );
 
-    return healthChecks.map((check, index) => ({
+    return healthChecks.map((check, _index) => ({
       ...services[index],
       ...check.value
     }));
@@ -666,7 +666,7 @@ class ChaosEngineeringEngine extends EventEmitter {
     const responseTimes = observations.map(obs => obs.metrics.responseTime).filter(rt => rt !== null);
     if (responseTimes.length > 0) {
       const baselineResponseTime = this.systemBaseline.metrics.responseTime;
-      const avgResponseTime = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
+      const avgResponseTime = responseTimes.reduce((a, _b) => a + b, 0) / responseTimes.length;
       
       analysis.performanceImpact.responseTime = {
         baseline: baselineResponseTime,
@@ -677,7 +677,7 @@ class ChaosEngineeringEngine extends EventEmitter {
 
     // Analyze error rates
     const errorRates = observations.map(obs => obs.metrics.errorRate);
-    const avgErrorRate = errorRates.reduce((a, b) => a + b, 0) / errorRates.length;
+    const avgErrorRate = errorRates.reduce((a, _b) => a + b, 0) / errorRates.length;
     const baselineErrorRate = this.systemBaseline.metrics.errorRate;
     
     analysis.performanceImpact.errorRate = {
@@ -968,7 +968,7 @@ class NetworkChaosController {
     logDebug(`🔄 Recovering network fault: ${faultInjection.type}`);
     
     if (faultInjection.type === 'networkLatency' && !faultInjection.simulated) {
-      await execAsync('tc qdisc del dev lo root').catch(() => {
+      await execAsync('tc qdisc del dev lo root').catch(_() => {
         // Ignore errors - rule might not exist
       });
     }

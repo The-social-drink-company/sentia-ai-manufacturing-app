@@ -9,8 +9,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 const rootDir = path.join(__dirname, '..');
 
 // Configuration
@@ -73,7 +73,7 @@ const logger = createLogger('Test');`
 const replacements = [
   // console.log variations
   {
-    pattern: /console\.log\((.*?)\)/g,
+    pattern: /console.log((.*?))/g,
     replacement: (match, args) => {
       // Check if it's a simple string
       if (args.startsWith("'") || args.startsWith('"') || args.startsWith('`')) {
@@ -85,7 +85,7 @@ const replacements = [
   },
   // console.error variations
   {
-    pattern: /console\.error\((.*?)\)/g,
+    pattern: /console.error((.*?))/g,
     replacement: (match, args) => {
       // Check if it contains 'error' variable
       if (args.includes('error')) {
@@ -96,22 +96,22 @@ const replacements = [
   },
   // console.warn variations
   {
-    pattern: /console\.warn\((.*?)\)/g,
+    pattern: /console.warn((.*?))/g,
     replacement: (match, args) => `logger.warn(${args})`
   },
   // console.info variations
   {
-    pattern: /console\.info\((.*?)\)/g,
+    pattern: /console.info((.*?))/g,
     replacement: (match, args) => `logger.info(${args})`
   },
   // console.debug variations
   {
-    pattern: /console\.debug\((.*?)\)/g,
+    pattern: /console.debug((.*?))/g,
     replacement: (match, args) => `logger.debug(${args})`
   },
   // console.trace variations
   {
-    pattern: /console\.trace\((.*?)\)/g,
+    pattern: /console.trace((.*?))/g,
     replacement: (match, args) => `logger.trace(${args})`
   }
 ];
@@ -119,15 +119,15 @@ const replacements = [
 // React component specific replacements
 const reactReplacements = [
   {
-    pattern: /console\.log\((.*?)\)/g,
+    pattern: /console.log((.*?))/g,
     replacement: (match, args) => `devLog.log(${args})`
   },
   {
-    pattern: /console\.error\((.*?)\)/g,
+    pattern: /console.error((.*?))/g,
     replacement: (match, args) => `devLog.error(${args})`
   },
   {
-    pattern: /console\.warn\((.*?)\)/g,
+    pattern: /console.warn((.*?))/g,
     replacement: (match, args) => `devLog.warn(${args})`
   }
 ];
@@ -196,10 +196,10 @@ function getLoggerImport(fileType, filePath) {
   const importPath = '../'.repeat(depth) + 'src/services/logger/enterprise-logger.js';
 
   if (fileType === 'react') {
-    return `import { devLog } from '${importPath.replace(/\\/g, '/')}';`;
+    return `import { devLog } from '${importPath.replace(/\/g, '/')}';`;
   }
 
-  return `import { createLogger } from '${importPath.replace(/\\/g, '/')}';
+  return `import { createLogger } from '${importPath.replace(/\/g, '/')}';
 const logger = createLogger('${path.basename(filePath, path.extname(filePath))}');`;
 }
 
@@ -209,7 +209,7 @@ async function processFile(filePath) {
     const originalContent = content;
 
     // Check if file has console statements
-    if (!content.match(/console\.(log|error|warn|info|debug|trace)/)) {
+    if (!content.match(/console.(log|error|warn|info|debug|trace)/)) {
       return { filePath, status: 'skipped', reason: 'No console statements found' };
     }
 

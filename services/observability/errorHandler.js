@@ -17,7 +17,7 @@ class ProductionErrorHandler {
   // Global error handler for unhandled errors
   setupGlobalErrorHandling() {
     // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on(_'unhandledRejection', _(reason, promise) => {
       logError('Unhandled Promise Rejection', reason, {
         promise: promise.toString(),
         stack: reason?.stack,
@@ -31,7 +31,7 @@ class ProductionErrorHandler {
     });
 
     // Handle uncaught exceptions  
-    process.on('uncaughtException', (error) => {
+    process.on(_'uncaughtException', (error) => {
       logError('Uncaught Exception', error, {
         severity: 'critical',
         requiresRestart: true
@@ -46,13 +46,13 @@ class ProductionErrorHandler {
     });
 
     // Handle SIGTERM for graceful shutdown
-    process.on('SIGTERM', () => {
+    process.on(_'SIGTERM', () => {
       logInfo('SIGTERM received, performing graceful shutdown');
       this.gracefulShutdown();
     });
 
     // Handle SIGINT (Ctrl+C) for graceful shutdown
-    process.on('SIGINT', () => {
+    process.on(_'SIGINT', () => {
       logInfo('SIGINT received, performing graceful shutdown');
       this.gracefulShutdown();
     });
@@ -60,7 +60,7 @@ class ProductionErrorHandler {
 
   // Express error middleware
   expressErrorHandler() {
-    return (err, req, res, next) => {
+    return (err, req, res, _next) => {
       const errorId = this.generateErrorId();
       
       // Log the error with full context
@@ -104,7 +104,7 @@ class ProductionErrorHandler {
 
   // API error wrapper for consistent error handling
   wrapAsyncRoute(fn) {
-    return async (req, res, next) => {
+    return async (req, res, _next) => {
       try {
         await fn(req, res, next);
       } catch (error) {
@@ -133,7 +133,7 @@ class ProductionErrorHandler {
       try {
         const result = await Promise.race([
           fn(...args),
-          new Promise((_, reject) => 
+          new Promise((_, _reject) => 
             setTimeout(() => reject(new Error('Service timeout')), timeout)
           )
         ]);

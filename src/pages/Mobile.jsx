@@ -49,7 +49,7 @@ const Mobile = () => {
     { id: 4, title: 'Document defects found in QC', status: 'pending', time: '12:00 PM' }
   ];
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch(status) {
       case 'running': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       case 'maintenance': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
@@ -58,7 +58,7 @@ const Mobile = () => {
     }
   };
 
-  const getTaskStatusIcon = (status) => {
+  const getTaskStatusIcon = (_status) => {
     switch(status) {
       case 'completed': return <CheckCircleIcon className="w-5 h-5 text-green-600" />;
       case 'in-progress': return <ArrowPathIcon className="w-5 h-5 text-blue-600 animate-spin" />;
@@ -111,7 +111,7 @@ const Mobile = () => {
       {/* Quick Actions */}
       <div className="px-4 py-4">
         <div className="grid grid-cols-4 gap-2">
-          {quickActions.map((action) => {
+          {quickActions.map(_(action) => {
             const Icon = action.icon;
             return (
               <button

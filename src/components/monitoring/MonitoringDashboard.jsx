@@ -101,7 +101,7 @@ const MonitoringDashboard = () => {
     }
   }
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = (_severity) => {
     switch (severity) {
       case 'critical':
         return 'text-red-600 bg-red-100 border-red-200'
@@ -270,7 +270,7 @@ const MonitoringDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {alerts.slice(0, 5).map((alert, index) => (
+              {alerts.slice(0, 5).map((alert, _index) => (
                 <div
                   key={index}
                   className={`p-3 rounded-lg border ${getSeverityColor(alert.severity)}`}
@@ -336,10 +336,10 @@ const MonitoringDashboard = () => {
                 <div className="mt-4">
                   <h4 className="text-sm font-medium text-gray-900 mb-2">Check Status</h4>
                   <div className="space-y-2">
-                    {systemHealth.checks.slice(0, 5).map((check, index) => (
+                    {systemHealth.checks.slice(0, 5).map((check, _index) => (
                       <div key={index} className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 capitalize">
-                          {check.name?.replace('_', ' ')}
+                          {check.name?.replace('', ' ')}
                         </span>
                         <div className="flex items-center">
                           {check.lastResult?.healthy ? (
@@ -467,10 +467,10 @@ const MonitoringDashboard = () => {
                 <div className="mt-4 pt-4 border-t">
                   <h4 className="text-sm font-medium text-gray-900 mb-2">Top Threats</h4>
                   <div className="space-y-2">
-                    {securityData.topThreats.slice(0, 3).map((threat, index) => (
+                    {securityData.topThreats.slice(0, 3).map((threat, _index) => (
                       <div key={index} className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 capitalize">
-                          {threat.threat.replace('_', ' ')}
+                          {threat.threat.replace('', ' ')}
                         </span>
                         <span className="font-semibold text-red-600">
                           {threat.count}

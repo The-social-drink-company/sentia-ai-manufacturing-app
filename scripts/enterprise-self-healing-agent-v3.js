@@ -80,7 +80,7 @@ const CONFIG = {
 };
 
 // Complete Route Registry from Latest App.jsx
-const ROUTE_REGISTRY = {
+const ROUTEREGISTRY = {
   // Core Dashboard Routes
   dashboard: [
     { path: '/', description: 'Landing page' },
@@ -171,7 +171,7 @@ const ROUTE_REGISTRY = {
 };
 
 // API Endpoint Registry with Latest Updates
-const API_ENDPOINTS = {
+const APIENDPOINTS = {
   // Health & Status
   health: [
     { path: '/api/health', method: 'GET', description: 'System health check', critical: true },
@@ -238,7 +238,7 @@ const API_ENDPOINTS = {
 };
 
 // Environment Variable Validation Registry
-const REQUIRED_ENV_VARS = {
+const REQUIREDENV_VARS = {
   critical: [
     'NODE_ENV',
     'DATABASE_URL',
@@ -436,7 +436,7 @@ class EnterpriseSelfHealingAgentV3 {
   }
 
   setupGracefulShutdown() {
-    const shutdown = async (signal) => {
+    const shutdown = async (_signal) => {
       this.logger.info(`Received ${signal}, initiating graceful shutdown...`);
       this.isRunning = false;
 
@@ -664,7 +664,7 @@ class EnterpriseSelfHealingAgentV3 {
     let passedTests = 0;
 
     for (const [serverName, serverUrl] of Object.entries(CONFIG.MCP_SERVERS)) {
-      if (serverName === 'development' && process.env.NODE_ENV === 'production') {
+      if (serverName === 'development' && process.env.NODEENV = == 'production') {
         continue; // Skip local dev server in production
       }
 
@@ -914,7 +914,7 @@ class EnterpriseSelfHealingAgentV3 {
 
     // Calculate circuit breaker metrics
     const circuitBreakerMetrics = {};
-    Object.entries(this.circuitBreakers).forEach(([env, cb]) => {
+    Object.entries(this.circuitBreakers).forEach(_([env, _cb]) => {
       circuitBreakerMetrics[env] = cb.getHealthMetrics();
     });
 
@@ -1040,7 +1040,7 @@ class EnterpriseSelfHealingAgentV3 {
       performance: parseFloat(report.validationSuites.performance.successRate)
     };
 
-    const weightedScore = Object.entries(weights).reduce((total, [key, weight]) => {
+    const weightedScore = Object.entries(weights).reduce(_(total, _[key, _weight]) => {
       return total + (scores[key] * weight);
     }, 0);
 
@@ -1111,7 +1111,7 @@ class EnterpriseSelfHealingAgentV3 {
     }
 
     // Circuit breaker recommendations
-    Object.entries(report.circuitBreakers).forEach(([env, metrics]) => {
+    Object.entries(report.circuitBreakers).forEach(_([env, _metrics]) => {
       if (metrics.state === 'OPEN' || parseFloat(metrics.successRate) < 95) {
         recommendations.push({
           category: 'Reliability',
@@ -1180,7 +1180,7 @@ class EnterpriseSelfHealingAgentV3 {
       });
 
       // 4. Build validation (only in development)
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODEENV = == 'development') {
         const buildResults = await this.validateBuildProcess();
         this.log('Build validation completed', 'info', {
           successful: buildResults.successful,

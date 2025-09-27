@@ -252,7 +252,7 @@ export default function PersonnelManagement() {
               <option value="all">All Status</option>
               {statusOptions.map(status => (
                 <option key={status} value={status}>
-                  {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {status.replace('', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </option>
               ))}
             </select>
@@ -333,7 +333,7 @@ export default function PersonnelManagement() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(person.status)}`}>
                         {getStatusIcon(person.status)}
-                        <span className="ml-1 capitalize">{person.status.replace('_', ' ')}</span>
+                        <span className="ml-1 capitalize">{person.status.replace('', ' ')}</span>
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -399,7 +399,7 @@ export default function PersonnelManagement() {
                   </div>
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(person.status)}`}>
                     {getStatusIcon(person.status)}
-                    <span className="ml-1 capitalize">{person.status.replace('_', ' ')}</span>
+                    <span className="ml-1 capitalize">{person.status.replace('', ' ')}</span>
                   </span>
                 </div>
 
@@ -455,7 +455,7 @@ export default function PersonnelManagement() {
               { label: 'Training Schedule', icon: AcademicCapIcon, color: 'green' },
               { label: 'Payroll Report', icon: BriefcaseIcon, color: 'purple' },
               { label: 'Safety Training', icon: ShieldCheckIcon, color: 'red' }
-            ].map((action, index) => (
+            ].map((action, _index) => (
               <button
                 key={index}
                 className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}

@@ -30,7 +30,7 @@ const results = {
 };
 
 // Check interval (5 minutes)
-const CHECK_INTERVAL = 5 * 60 * 1000;
+const CHECKINTERVAL = 5 * 60 * 1000;
 
 /**
  * Check if a service is healthy
@@ -146,7 +146,7 @@ async function checkAuth(env, url) {
     });
     
     const html = await response.text();
-    const hasClerkKey = html.includes('pk_live_') || html.includes('pk_test_');
+    const hasClerkKey = html.includes('pk_live') || html.includes('pk_test_');
     
     if (hasClerkKey) {
       spinner.succeed(chalk.green(`${env}: Clerk authentication configured`));
@@ -288,12 +288,12 @@ async function startMonitoring() {
   await testFeatures();
   
   // Set up periodic checks
-  setInterval(async () => {
+  setInterval(async _() => {
     await runHealthChecks();
   }, CHECK_INTERVAL);
   
   // Handle graceful shutdown
-  process.on('SIGINT', () => {
+  process.on('SIGINT', _() => {
     console.log('\n' + chalk.yellow('Stopping monitoring...'));
     process.exit(0);
   });

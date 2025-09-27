@@ -33,7 +33,7 @@ const ENVIRONMENTS = {
 };
 
 // Required environment variables for each service
-const REQUIRED_ENV_VARS = [
+const REQUIREDENV_VARS = [
   'DATABASE_URL',
   'NODE_ENV',
   'VITE_CLERK_PUBLISHABLE_KEY',
@@ -52,7 +52,7 @@ const REQUIRED_ENV_VARS = [
 ];
 
 // API endpoints to check
-const HEALTH_ENDPOINTS = [
+const HEALTHENDPOINTS = [
   '/health',
   '/api/health/database',
   '/api/integrations/status',
@@ -72,18 +72,18 @@ const colors = {
 
 // Helper function to make HTTP requests
 function checkEndpoint(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
+  return new Promise(_(resolve, _reject) => {
+    https.get(url, _(res) => {
       let data = '';
       res.on('data', (chunk) => data += chunk);
-      res.on('end', () => {
+      res.on('end', _() => {
         resolve({
           status: res.statusCode,
           data: data,
           success: res.statusCode >= 200 && res.statusCode < 300
         });
       });
-    }).on('error', (err) => {
+    }).on('error', _(err) => {
       resolve({
         status: 0,
         data: err.message,

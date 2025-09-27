@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import OEEDisplay from '../../../src/features/production/components/OEEDisplay.jsx'
 
-describe('OEEDisplay', () => {
+describe(_'OEEDisplay', () => {
   const mockOEEData = {
     overall: 82.5,
     availability: 87.2,
@@ -37,33 +37,33 @@ describe('OEEDisplay', () => {
     ]
   }
 
-  it('renders OEE display with correct title', () => {
+  it('renders OEE display with correct _title', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText('Overall Equipment Effectiveness (OEE)')).toBeInTheDocument()
   })
 
-  it('displays overall OEE percentage correctly', () => {
+  it('displays overall OEE percentage _correctly', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText('82.5%')).toBeInTheDocument()
   })
 
-  it('displays target and world class benchmarks', () => {
+  it('displays target and world class _benchmarks', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText(/Target: 85%/)).toBeInTheDocument()
     expect(screen.getByText(/World Class: 90%/)).toBeInTheDocument()
   })
 
-  it('shows correct OEE status based on overall value', () => {
+  it('shows correct OEE status based on overall _value', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     // 82.5% should be "Good" (70-85% range)
     expect(screen.getByText('Good')).toBeInTheDocument()
   })
 
-  it('displays all three OEE components', () => {
+  it('displays all three OEE _components', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText('Availability')).toBeInTheDocument()
@@ -75,7 +75,7 @@ describe('OEEDisplay', () => {
     expect(screen.getByText('95.8%')).toBeInTheDocument() // Quality value
   })
 
-  it('shows trend indicators for component changes', () => {
+  it('shows trend indicators for component _changes', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     // Should show positive change for availability (+2.3%)
@@ -88,7 +88,7 @@ describe('OEEDisplay', () => {
     expect(screen.getByText('0.8%')).toBeInTheDocument()
   })
 
-  it('displays OEE calculation formula', () => {
+  it('displays OEE calculation _formula', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText('OEE Calculation')).toBeInTheDocument()
@@ -98,7 +98,7 @@ describe('OEEDisplay', () => {
     expect(screen.getByText('82.5% OEE')).toBeInTheDocument() // Final result
   })
 
-  it('renders line breakdown table when data is provided', () => {
+  it('renders line breakdown table when data is _provided', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText('OEE by Production Line')).toBeInTheDocument()
@@ -108,14 +108,14 @@ describe('OEEDisplay', () => {
     expect(screen.getByText('79.8%')).toBeInTheDocument() // Line 2 overall OEE
   })
 
-  it('shows correct line status indicators', () => {
+  it('shows correct line status _indicators', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText('Running')).toBeInTheDocument() // Line 1 status
     expect(screen.getByText('Setup')).toBeInTheDocument()   // Line 2 status
   })
 
-  it('displays performance insights when OEE is below target', () => {
+  it('displays performance insights when OEE is below _target', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText('Performance Insights')).toBeInTheDocument()
@@ -125,14 +125,14 @@ describe('OEEDisplay', () => {
     expect(insights).toBeInTheDocument()
   })
 
-  it('handles missing data gracefully', () => {
+  it('handles missing data _gracefully', () => {
     render(<OEEDisplay data={null} />)
 
     // Should render with fallback values
     expect(screen.getByText('Overall Equipment Effectiveness (OEE)')).toBeInTheDocument()
   })
 
-  it('renders circular progress indicator', () => {
+  it('renders circular progress _indicator', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     // Check for SVG circle elements (circular progress)
@@ -140,7 +140,7 @@ describe('OEEDisplay', () => {
     expect(svgElements.length).toBeGreaterThan(0)
   })
 
-  it('applies correct color coding for different OEE ranges', () => {
+  it('applies correct color coding for different OEE _ranges', () => {
     // Test excellent OEE (>85%)
     const excellentData = { ...mockOEEData, overall: 88.5 }
     const { rerender } = render(<OEEDisplay data={excellentData} />)
@@ -157,7 +157,7 @@ describe('OEEDisplay', () => {
     expect(screen.getByText('Fair')).toBeInTheDocument()
   })
 
-  it('shows component progress bars with correct targets', () => {
+  it('shows component progress bars with correct _targets', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     // Each component should have its specific target
@@ -166,13 +166,13 @@ describe('OEEDisplay', () => {
     expect(progressBars.length).toBeGreaterThan(0)
   })
 
-  it('updates last updated timestamp', () => {
+  it('updates last updated _timestamp', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     expect(screen.getByText(/Last updated:/)).toBeInTheDocument()
   })
 
-  it('shows component status badges', () => {
+  it('shows component status _badges', () => {
     render(<OEEDisplay data={mockOEEData} />)
 
     // Each OEE component should have a status badge
@@ -180,7 +180,7 @@ describe('OEEDisplay', () => {
     expect(statusElements.length).toBeGreaterThan(0)
   })
 
-  it('handles extreme values correctly', () => {
+  it('handles extreme values _correctly', () => {
     const extremeData = {
       overall: 0,
       availability: 100,

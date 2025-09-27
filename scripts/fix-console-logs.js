@@ -3,8 +3,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(__filename);
 
 // Directories to process
 const directories = [
@@ -43,29 +43,29 @@ function processFile(filePath) {
   // Replace console.log patterns
   const patterns = [
     {
-      pattern: /console\.log\((.*?)\);/g,
+      pattern: /console.log((.*?));/g,
       replacement: 'logDebug($1);',
       needsImport: true
     },
     {
-      pattern: /console\.error\((.*?)\);/g,
+      pattern: /console.error((.*?));/g,
       replacement: 'logError($1);',
       needsImport: true
     },
     {
-      pattern: /console\.warn\((.*?)\);/g,
+      pattern: /console.warn((.*?));/g,
       replacement: 'logWarn($1);',
       needsImport: true
     },
     {
-      pattern: /console\.info\((.*?)\);/g,
+      pattern: /console.info((.*?));/g,
       replacement: 'logInfo($1);',
       needsImport: true
     }
   ];
 
   let needsImport = false;
-  patterns.forEach(({ pattern, replacement }) => {
+  patterns.forEach(({ _pattern, replacement }) => {
     if (content.match(pattern)) {
       content = content.replace(pattern, replacement);
       modified = true;
@@ -77,7 +77,7 @@ function processFile(filePath) {
   if (modified && needsImport && !hasLoggerImport) {
     // Determine relative path to logger
     const relativePath = path.relative(path.dirname(filePath), path.join(__dirname, '../src/utils/logger.js'));
-    const importPath = relativePath.replace(/\\/g, '/').replace('.js', '');
+    const importPath = relativePath.replace(/\/g, '/').replace('.js', '');
 
     // Add import at the top of the file after existing imports
     const importStatement = `import { logDebug, logInfo, logWarn, logError } from '${importPath}';\n`;

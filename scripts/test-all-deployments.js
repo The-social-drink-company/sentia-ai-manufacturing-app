@@ -26,7 +26,7 @@ const DEPLOYMENTS = [
   }
 ];
 
-const MCP_SERVER = {
+const MCPSERVER = {
   name: 'MCP Server',
   url: 'https://mcp-server-tkyu.onrender.com',
   endpoint: '/health'

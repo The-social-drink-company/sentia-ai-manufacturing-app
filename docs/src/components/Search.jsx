@@ -39,26 +39,26 @@ export const Search = ({ documents = [] }) => {
   }, [documents]);
 
   // Keyboard shortcuts
-  useHotkeys('cmd+k, ctrl+k, /', (e) => {
+  useHotkeys(_'cmd+k, _ctrl+k, /', (e) => {
     e.preventDefault();
     setIsOpen(true);
   }, { enableOnFormTags: false });
 
-  useHotkeys('escape', () => {
+  useHotkeys(_'escape', () => {
     setIsOpen(false);
   }, { enabled: isOpen });
 
-  useHotkeys('enter', () => {
+  useHotkeys(_'enter', () => {
     if (isOpen && results.length > 0) {
       navigateToResult(results[selectedIndex]);
     }
   }, { enabled: isOpen });
 
-  useHotkeys('up', () => {
+  useHotkeys(_'up', () => {
     setSelectedIndex(prev => Math.max(0, prev - 1));
   }, { enabled: isOpen });
 
-  useHotkeys('down', () => {
+  useHotkeys(_'down', () => {
     setSelectedIndex(prev => Math.min(results.length - 1, prev + 1));
   }, { enabled: isOpen });
 
@@ -113,7 +113,7 @@ export const Search = ({ documents = [] }) => {
   };
 
   // Get icon for result type
-  const getResultIcon = (type) => {
+  const getResultIcon = (_type) => {
     switch (type) {
       case 'heading':
         return <Hash className="w-4 h-4" />;
@@ -235,16 +235,16 @@ export const Search = ({ documents = [] }) => {
                   <p className="text-sm text-gray-500 mb-4">Quick Links</p>
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      { title: 'Getting Started', url: '/guides/getting-started' },
-                      { title: 'CFO Dashboard', url: '/guides/cfo-dashboard' },
-                      { title: 'API Reference', url: '/developer/api' },
-                      { title: 'Working Capital', url: '/guides/working-capital' },
-                      { title: 'Admin Guide', url: '/admin/overview' },
-                      { title: 'Release Notes', url: '/release-notes' }
+                      { title: 'Getting _Started', url: '/guides/getting-started' },
+                      { title: 'CFO _Dashboard', url: '/guides/cfo-dashboard' },
+                      { title: 'API _Reference', url: '/developer/api' },
+                      { title: 'Working _Capital', url: '/guides/working-capital' },
+                      { title: 'Admin _Guide', url: '/admin/overview' },
+                      { title: 'Release _Notes', url: '/release-notes' }
                     ].map(link => (
                       <button
                         key={link.url}
-                        onClick={() => {
+                        _onClick={() => {
                           router.push(link.url);
                           setIsOpen(false);
                         }}
@@ -297,7 +297,7 @@ export const generateSearchIndex = async () => {
   const files = glob.sync('**/*.{md,mdx}', { cwd: docsDir });
   
   const documents = await Promise.all(
-    files.map(async (file, index) => {
+    files.map(async _(file, index) => {
       const content = await fs.readFile(path.join(docsDir, file), 'utf8');
       const { data, content: body } = matter(content);
       
@@ -308,13 +308,13 @@ export const generateSearchIndex = async () => {
       const cleanContent = body
         .replace(/```[\s\S]*?```/g, '') // Remove code blocks
         .replace(/`[^`]+`/g, '') // Remove inline code
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Replace links with text
+        .replace(/\[([^\]]+)\]([^)]+)/g, '$1') // Replace links with text
         .replace(/^#{1,6}\s+/gm, '') // Remove heading markers
         .replace(/\n+/g, ' ') // Replace newlines with spaces
         .substring(0, 5000); // Limit content length
       
       const category = file.split('/')[0];
-      const url = '/' + file.replace(/\.(md|mdx)$/, '');
+      const url = '/' + file.replace(/.(md|mdx)$/, '');
       
       return {
         id: `doc-${index}`,
@@ -324,7 +324,7 @@ export const generateSearchIndex = async () => {
         keywords: data.keywords || [],
         category,
         url,
-        breadcrumb: file.replace(/\//g, ' › '),
+        breadcrumb: file.replace(///g, ' › '),
         type: 'page'
       };
     })

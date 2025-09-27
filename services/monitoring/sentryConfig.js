@@ -10,7 +10,7 @@ import { CaptureConsole } from '@sentry/integrations';
 /**
  * Initialize Sentry for React application
  */
-export const initSentry = (app) => {
+export const initSentry = (_app) => {
   const environment = process.env.NODE_ENV || 'development';
   const dsn = process.env.VITE_SENTRY_DSN || process.env.SENTRY_DSN;
 
@@ -27,8 +27,8 @@ export const initSentry = (app) => {
         // Set sampling rates
         tracingOrigins: [
           'localhost',
-          /^https:\/\/.*\.railway\.app/,
-          /^https:\/\/sentia-manufacturing/
+          /^https://.*.railway.app/,
+          /^https://sentia-manufacturing/
         ],
         // Performance Monitoring
         routingInstrumentation: Sentry.reactRouterV6Instrumentation(
@@ -163,7 +163,7 @@ export const SentryProfiler = Sentry.Profiler;
 /**
  * Custom error capture with additional context
  */
-export const captureError = (error, context = {}) => {
+export const captureError = (error, context = _{}) => {
   Sentry.withScope((scope) => {
     // Add custom context
     Object.keys(context).forEach(key => {
@@ -189,7 +189,7 @@ export const captureError = (error, context = {}) => {
 /**
  * Performance transaction monitoring
  */
-export const measurePerformance = (name, operation) => {
+export const measurePerformance = (name, _operation) => {
   const transaction = Sentry.startTransaction({
     op: 'function',
     name,
@@ -213,7 +213,7 @@ export const measurePerformance = (name, operation) => {
           transaction.setStatus('internal_error');
           throw err;
         })
-        .finally(() => {
+        .finally(_() => {
           transaction.finish();
         });
     } else {
@@ -231,7 +231,7 @@ export const measurePerformance = (name, operation) => {
 /**
  * Custom metrics tracking
  */
-export const trackMetric = (name, value, unit = 'none', tags = {}) => {
+export const trackMetric = (name, _value, unit = _'none', tags = _{}) => {
   Sentry.metrics.increment(name, value, { 
     unit,
     tags: {
@@ -244,7 +244,7 @@ export const trackMetric = (name, value, unit = 'none', tags = {}) => {
 /**
  * User feedback widget
  */
-export const showUserFeedback = (options = {}) => {
+export const showUserFeedback = (options = _{}) => {
   const user = Sentry.getCurrentHub().getScope().getUser();
   
   Sentry.showReportDialog({
@@ -259,7 +259,7 @@ export const showUserFeedback = (options = {}) => {
 /**
  * Add custom breadcrumb
  */
-export const addBreadcrumb = (message, category = 'custom', level = 'info', data = {}) => {
+export const addBreadcrumb = (_message, category = _'custom', level = _'info', data = _{}) => {
   Sentry.addBreadcrumb({
     message,
     category,
@@ -306,7 +306,7 @@ export const setTags = (tags) => {
 /**
  * Monitor API calls
  */
-export const monitorAPI = async (url, options = {}) => {
+export const monitorAPI = async (_url, options = _{}) => {
   const transaction = Sentry.startTransaction({
     op: 'http.client',
     name: `${options.method || 'GET'} ${url}`,

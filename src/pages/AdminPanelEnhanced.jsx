@@ -286,11 +286,11 @@ const AdminPanelEnhanced = () => {
     return `${days}d ${hours}h ${minutes}m`;
   };
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = (_dateString) => {
     return new Date(dateString).toLocaleString('en-GB');
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'approved':
       case 'active':
@@ -424,7 +424,7 @@ const AdminPanelEnhanced = () => {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
-                              {log.action.replace('_', ' ')}
+                              {log.action.replace('', ' ')}
                             </p>
                             <p className="text-xs text-gray-500">{log.user} • {formatDateTime(log.timestamp)}</p>
                           </div>
@@ -729,7 +729,7 @@ const AdminPanelEnhanced = () => {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            {log.action.replace('_', ' ')}
+                            {log.action.replace('', ' ')}
                           </p>
                           <p className="text-sm text-gray-500">
                             {log.user} • {formatDateTime(log.timestamp)}
@@ -804,7 +804,7 @@ const AdminPanelEnhanced = () => {
                   {Object.entries(settings.integrations).map(([integration, enabled]) => (
                     <div key={integration} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       <span className="text-sm font-medium text-gray-900 dark:text-white capitalize">
-                        {integration.replace('_', ' ')}
+                        {integration.replace('', ' ')}
                       </span>
                       <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium border ${
                         enabled ? getStatusColor('active') : getStatusColor('pending')

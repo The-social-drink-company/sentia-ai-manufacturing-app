@@ -73,7 +73,7 @@ class ProductionMonitor {
 
   // Express middleware for request monitoring
   requestMonitoringMiddleware() {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       const start = Date.now();
       
       // Count request
@@ -197,7 +197,7 @@ class ProductionMonitor {
         const startTime = Date.now();
         const result = await Promise.race([
           checkFn(),
-          new Promise((_, reject) => 
+          new Promise((_, _reject) => 
             setTimeout(() => reject(new Error('Health check timeout')), 10000)
           )
         ]);

@@ -30,7 +30,7 @@ export default function MCPMonitoringDashboard() {
 
   // Simulate real-time updates
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(() {
       setLastUpdate(new Date());
       setMcpMetrics(prev => ({
         ...prev,
@@ -251,7 +251,7 @@ export default function MCPMonitoringDashboard() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {mcpServices.map((service, index) => (
+                {mcpServices.map((service, _index) => (
                   <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className={`px-2 py-1 rounded-full flex items-center space-x-1 ${getStatusColor(service.status)}`}>

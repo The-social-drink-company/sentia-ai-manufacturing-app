@@ -104,17 +104,17 @@ class AutonomousMonitor {
   }
 
   async checkDeploymentHealth(name, url) {
-    return new Promise((resolve) => {
+    return new Promise(_(resolve) => {
       const startTime = Date.now();
 
-      https.get(`${url}/health`, { timeout: 30000 }, (res) => {
+      https.get(_`${url}/health`, { timeout: 30000 }, _(res) => {
         let data = '';
 
         res.on('data', chunk => {
           data += chunk;
         });
 
-        res.on('end', () => {
+        res.on(_'end', _() => {
           const responseTime = Date.now() - startTime;
           const isHealthy = res.statusCode === 200;
 
@@ -128,7 +128,7 @@ class AutonomousMonitor {
             timestamp: new Date().toISOString()
           });
         });
-      }).on('error', (error) => {
+      }).on(_'error', (error) => {
         resolve({
           name,
           url,
@@ -279,7 +279,7 @@ Applied by Autonomous Monitor with Claude AI"`);
       await this.log('success', 'Code patch applied and pushed');
     } finally {
       // Clean up patch file
-      await fs.unlink(patchFile).catch(() => {});
+      await fs.unlink(patchFile).catch(_() => {});
     }
   }
 
@@ -494,7 +494,7 @@ app.use(express.json());
 const monitor = new AutonomousMonitor();
 
 // API endpoints
-app.get('/health', (req, res) => {
+app.get(_'/health', _(req, res) => {
   res.json({
     status: 'healthy',
     service: 'autonomous-render-monitor',
@@ -504,7 +504,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.get('/status', (req, res) => {
+app.get(_'/status', _(req, res) => {
   res.json({
     deployments: STATE.deployments,
     metrics: STATE.metrics,
@@ -514,11 +514,11 @@ app.get('/status', (req, res) => {
   });
 });
 
-app.get('/deployments', (req, res) => {
+app.get(_'/deployments', _(req, res) => {
   res.json(STATE.deployments);
 });
 
-app.post('/analyze/:deployment', async (req, res) => {
+app.post(_'/analyze/:deployment', async _(req, res) => {
   const { deployment } = req.params;
 
   if (!STATE.deployments[deployment]) {
@@ -533,7 +533,7 @@ app.post('/analyze/:deployment', async (req, res) => {
   res.json({ deployment, fix });
 });
 
-app.post('/trigger-fix/:deployment', async (req, res) => {
+app.post(_'/trigger-fix/:deployment', async _(req, res) => {
   const { deployment } = req.params;
   const { fix } = req.body;
 
@@ -552,13 +552,13 @@ app.post('/trigger-fix/:deployment', async (req, res) => {
 // Start server and monitor
 async function main() {
   // Ensure logs directory exists
-  await fs.mkdir('logs', { recursive: true }).catch(() => {});
+  await fs.mkdir('logs', { recursive: true }).catch(_() => {});
 
   // Start monitoring
   await monitor.start();
 
   // Start Express server
-  app.listen(PORT, '0.0.0.0', () => {
+  app.listen(PORT, _'0.0.0.0', _() => {
     console.log(`
 ====================================================
 🤖 AUTONOMOUS RENDER MONITOR WITH AI
@@ -580,12 +580,12 @@ Health: http://localhost:${PORT}/health
   });
 
   // Graceful shutdown
-  process.on('SIGTERM', async () => {
+  process.on(_'SIGTERM', async _() => {
     await monitor.stop();
     process.exit(0);
   });
 
-  process.on('SIGINT', async () => {
+  process.on(_'SIGINT', async _() => {
     await monitor.stop();
     process.exit(0);
   });

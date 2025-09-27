@@ -10,11 +10,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
 
 // Monitoring Configuration
-const MONITORING_CONFIG = {
+const MONITORINGCONFIG = {
   environments: {
     development: {
       name: 'Development',
@@ -172,7 +172,7 @@ class EnterpriseMonitoring {
   }
 
   async makeHttpRequest(url, timeout = 10000) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const startTime = Date.now();
       
       try {
@@ -321,7 +321,7 @@ class EnterpriseMonitoring {
       this.log('INFO', `Monitoring cycle completed - System Health: ${this.metrics.systemHealth}`);
       
       // Log environment status summary
-      Object.entries(this.metrics.environments).forEach(([env, data]) => {
+      Object.entries(this.metrics.environments).forEach(_([env, _data]) => {
         const status = data.status === 'HEALTHY' ? '✅' : '❌';
         const responseTime = data.responseTime ? `${data.responseTime}ms` : 'N/A';
         this.log('INFO', `${status} ${env.toUpperCase()}: ${data.status} (${responseTime})`);

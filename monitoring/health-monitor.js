@@ -161,7 +161,7 @@ class HealthMonitor {
     await this.runHealthCheck();
     
     // Set up continuous monitoring
-    setInterval(async () => {
+    setInterval(async _() => {
       console.log(`\\n⏰ Running scheduled health check...`);
       const summary = await this.runHealthCheck();
       

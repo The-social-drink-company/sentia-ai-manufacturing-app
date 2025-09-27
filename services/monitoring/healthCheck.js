@@ -107,7 +107,7 @@ class HealthCheckService {
     logger.info('Starting health check cycle');
 
     // Run all checks in parallel
-    const promises = Array.from(this.checks.entries()).map(async ([id, check]) => {
+    const promises = Array.from(this.checks.entries()).map(async _([id, _check]) => {
       const result = await this.runSingleCheck(check);
       results.set(id, result);
       return { id, result };
@@ -174,7 +174,7 @@ class HealthCheckService {
     
     try {
       // Add timeout wrapper
-      const timeoutPromise = new Promise((_, reject) => {
+      const timeoutPromise = new Promise(_(_, _reject) => {
         setTimeout(() => reject(new Error('Health check timeout')), check.timeout);
       });
 

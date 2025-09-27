@@ -123,7 +123,7 @@ const MobileFloor = () => {
     }
   };
 
-  const getQualityColor = (result) => {
+  const getQualityColor = (_result) => {
     switch(result) {
       case 'pass': return 'text-green-600';
       case 'warning': return 'text-amber-600';
@@ -132,7 +132,7 @@ const MobileFloor = () => {
     }
   };
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (_priority) => {
     switch(priority) {
       case 'high': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
       case 'medium': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
@@ -334,7 +334,7 @@ const MobileFloor = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {qualityChecks.map((check, index) => (
+              {qualityChecks.map((check, _index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <CheckCircleIcon className={`w-5 h-5 ${getQualityColor(check.result)}`} />

@@ -10,8 +10,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 
 class RenderDeployment {
   constructor() {
@@ -196,11 +196,11 @@ class RenderDeployment {
       // Check bundle size
       const indexPath = path.join(distPath, 'index.html');
       const indexContent = await fs.readFile(indexPath, 'utf8');
-      const jsFiles = indexContent.match(/src="\/assets\/[^"]+\.js"/g) || [];
+      const jsFiles = indexContent.match(/src="/assets/[^"]+.js"/g) || [];
 
       let totalSize = 0;
       for (const jsFile of jsFiles) {
-        const fileName = jsFile.match(/assets\/([^"]+)/)[1];
+        const fileName = jsFile.match(/assets/([^"]+)/)[1];
         const filePath = path.join(distPath, 'assets', fileName);
         const stats = await fs.stat(filePath);
         totalSize += stats.size;
@@ -343,7 +343,7 @@ class RenderDeployment {
     console.log('Running database migrations...');
 
     try {
-      execSync(`NODE_ENV=${environment} npm run db:migrate:deploy`, {
+      execSync(`NODEENV = ${environment} npm run db:migrate:deploy`, {
         stdio: 'inherit',
         env: { ...process.env, NODE_ENV: environment }
       });

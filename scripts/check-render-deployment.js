@@ -9,7 +9,7 @@ import https from 'https';
 import http from 'http';
 import { URL } from 'url';
 
-const RENDER_URL = 'https://sentia-manufacturing-development.onrender.com';
+const RENDERURL = 'https://sentia-manufacturing-development.onrender.com';
 
 console.log('='.repeat(60));
 console.log('RENDER DEPLOYMENT VERIFICATION');
@@ -32,7 +32,7 @@ let passCount = 0;
 let failCount = 0;
 
 async function checkEndpoint(endpoint) {
-  return new Promise((resolve) => {
+  return new Promise(_(resolve) => {
     const url = new URL(endpoint.path, RENDER_URL);
     const protocol = url.protocol === 'https:' ? https : http;
     
@@ -50,14 +50,14 @@ async function checkEndpoint(endpoint) {
       timeout: 10000
     };
 
-    const req = protocol.request(options, (res) => {
+    const req = protocol.request(options, _(res) => {
       let data = '';
       
-      res.on('data', (chunk) => {
+      res.on('data', _(chunk) => {
         data += chunk;
       });
       
-      res.on('end', () => {
+      res.on('end', _() => {
         const passed = res.statusCode === endpoint.expectStatus;
         const icon = passed ? '\u2705' : '\u274c';
         
@@ -103,14 +103,14 @@ async function checkEndpoint(endpoint) {
       });
     });
     
-    req.on('error', (err) => {
+    req.on('error', _(err) => {
       console.log(`  \u274c Error: ${err.message}`);
       failCount++;
       console.log('');
       resolve();
     });
     
-    req.on('timeout', () => {
+    req.on('timeout', _() => {
       console.log(`  \u274c Timeout after 10 seconds`);
       req.destroy();
       failCount++;

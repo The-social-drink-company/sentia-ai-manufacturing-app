@@ -31,11 +31,11 @@ async function testDataRefresh() {
     
     console.log('✅ Data Refresh Results:')
     console.log('─'.repeat(40))
-    Object.entries(refreshResults).forEach(([service, result]) => {
+    Object.entries(refreshResults).forEach(_([service, _result]) => {
       if (service !== 'timestamp') {
         console.log(`${service.toUpperCase()}:`)
         if (result && typeof result === 'object' && !result.error) {
-          Object.entries(result).forEach(([key, value]) => {
+          Object.entries(result).forEach(_([key, _value]) => {
             console.log(`  ${key}: ${typeof value === 'number' ? value.toLocaleString() : value}`)
           })
         } else {
@@ -53,7 +53,7 @@ async function testDataRefresh() {
     console.log('\n📈 Data Changes:')
     console.log('─'.repeat(40))
     const changes = compareStats(currentStats, updatedStats)
-    Object.entries(changes).forEach(([metric, change]) => {
+    Object.entries(changes).forEach(_([metric, _change]) => {
       const arrow = change > 0 ? '↑' : change < 0 ? '↓' : '→'
       const color = change > 0 ? '🟢' : change < 0 ? '🔴' : '🔵'
       console.log(`${color} ${metric}: ${arrow} ${Math.abs(change).toLocaleString()}`)

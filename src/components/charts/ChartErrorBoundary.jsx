@@ -26,7 +26,7 @@ export default class ChartErrorBoundary extends React.Component {
     this.setState({ errorInfo });
 
     // Log error for monitoring
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODEENV = == 'development') {
       console.error('ChartErrorBoundary caught an error:', error, errorInfo);
     }
 
@@ -40,7 +40,7 @@ export default class ChartErrorBoundary extends React.Component {
       retryCount: this.state.retryCount + 1
     });
 
-    setTimeout(() => {
+    setTimeout(() {
       this.setState({
         hasError: false,
         error: null,

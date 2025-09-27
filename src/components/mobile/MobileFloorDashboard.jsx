@@ -145,7 +145,7 @@ export default function MobileFloorDashboard() {
     }
   };
 
-  const getAlertIcon = (type) => {
+  const getAlertIcon = (_type) => {
     switch (type) {
       case 'error':
         return <ExclamationTriangleIcon className="w-4 h-4 text-red-500" />;

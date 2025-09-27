@@ -9,7 +9,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const RENDER_API_KEY = process.env.RENDER_API_KEY || 'rnd_mYUAytWRkb2Pj5GJROqNYubYt25J';
+const RENDERAPI_KEY = process.env.RENDER_API_KEY || 'rnd_mYUAytWRkb2Pj5GJROqNYubYt25J';
 
 const environments = {
   development: {
@@ -148,13 +148,13 @@ async function setupEnvironment(env) {
     console.log(`Environment file ${config.envFile} not found, using defaults`);
 
     // Default environment variables
-    envVars.NODE_ENV = env;
+    envVars.NODEENV = env;
     envVars.PORT = '10000';
-    envVars.CORS_ORIGINS = `https://${config.serviceName}.onrender.com`;
-    envVars.VITE_API_BASE_URL = `https://${config.serviceName}.onrender.com/api`;
-    envVars.VITE_APP_TITLE = 'Sentia Manufacturing Dashboard';
-    envVars.SESSION_SECRET = `sentia-session-secret-${env}-2025`;
-    envVars.JWT_SECRET = `sentia-jwt-secret-${env}-2025`;
+    envVars.CORSORIGINS = `https://${config.serviceName}.onrender.com`;
+    envVars.VITEAPI_BASE_URL = `https://${config.serviceName}.onrender.com/api`;
+    envVars.VITEAPP_TITLE = 'Sentia Manufacturing Dashboard';
+    envVars.SESSIONSECRET = `sentia-session-secret-${env}-2025`;
+    envVars.JWTSECRET = `sentia-jwt-secret-${env}-2025`;
   }
 
   // Get database URL

@@ -136,7 +136,7 @@ export default function MissionControl() {
             <div key={key} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
-                  {key.replace('_', ' ')}
+                  {key.replace('', ' ')}
                 </h3>
                 <div className={`px-2 py-1 rounded-full flex items-center space-x-1 ${getStatusColor(metrics.status)}`}>
                   {getStatusIcon(metrics.status)}
@@ -146,7 +146,7 @@ export default function MissionControl() {
               <div className="space-y-1">
                 {Object.entries(metrics).slice(1).map(([metric, value]) => (
                   <div key={metric} className="flex justify-between text-xs">
-                    <span className="text-gray-500 capitalize">{metric.replace('_', ' ')}:</span>
+                    <span className="text-gray-500 capitalize">{metric.replace('', ' ')}:</span>
                     <span className="font-medium text-gray-900 dark:text-white">{value}</span>
                   </div>
                 ))}
@@ -172,7 +172,7 @@ export default function MissionControl() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {criticalSystems.map((system, index) => (
+                {criticalSystems.map((system, _index) => (
                   <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className={`w-3 h-3 rounded-full ${
@@ -315,7 +315,7 @@ export default function MissionControl() {
               { label: 'System Logs', icon: CommandLineIcon, color: 'gray' },
               { label: 'Configuration', icon: Cog6ToothIcon, color: 'purple' },
               { label: 'Maintenance', icon: ServerIcon, color: 'red' }
-            ].map((action, index) => (
+            ].map((action, _index) => (
               <button
                 key={index}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}

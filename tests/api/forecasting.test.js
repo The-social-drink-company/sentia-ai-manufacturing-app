@@ -13,10 +13,10 @@ const app = express();
 app.use(express.json());
 app.use('/api', forecastingRoutes);
 
-describe('Forecasting API', () => {
+describe('Forecasting _API', () => {
   
-  describe('POST /api/forecast', () => {
-    test('should create forecast job successfully', async () => {
+  describe('POST _/api/forecast', () => {
+    test('should create forecast job _successfully', async () => {
       const requestBody = {
         series_filter: { series_ids: ['series-1', 'series-2'] },
         horizon: 30,
@@ -35,7 +35,7 @@ describe('Forecasting API', () => {
       expect(response.body.message).toBe('Forecast job queued successfully');
     });
 
-    test('should return 400 for missing series_ids', async () => {
+    test('should return 400 for missing _series_ids', async () => {
       const requestBody = {
         horizon: 30,
         models: ['Ensemble']
@@ -49,7 +49,7 @@ describe('Forecasting API', () => {
       expect(response.body.error).toContain('series_filter.series_ids is required');
     });
 
-    test('should return 400 for empty series_ids array', async () => {
+    test('should return 400 for empty series_ids _array', async () => {
       const requestBody = {
         series_filter: { series_ids: [] },
         horizon: 30
@@ -63,7 +63,7 @@ describe('Forecasting API', () => {
       expect(response.body.error).toContain('must contain at least one series ID');
     });
 
-    test('should return 400 for invalid horizon', async () => {
+    test('should return 400 for invalid _horizon', async () => {
       const requestBody = {
         series_filter: { series_ids: ['series-1'] },
         horizon: 400 // Invalid: > 365
@@ -77,7 +77,7 @@ describe('Forecasting API', () => {
       expect(response.body.error).toContain('horizon must be between 1 and 365 days');
     });
 
-    test('should handle idempotent key in headers', async () => {
+    test('should handle idempotent key in _headers', async () => {
       const requestBody = {
         series_filter: { series_ids: ['series-1'] },
         horizon: 30
@@ -94,8 +94,8 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('GET /api/forecast/jobs/:jobId', () => {
-    test('should return job status for valid job ID', async () => {
+  describe('GET _/api/forecast/jobs/:jobId', () => {
+    test('should return job status for valid job _ID', async () => {
       // This would need the mock to return a specific job status
       const response = await request(app)
         .get('/api/forecast/jobs/valid-job-id')
@@ -105,7 +105,7 @@ describe('Forecasting API', () => {
       expect(response.body.job).toBeDefined();
     });
 
-    test('should return 404 for non-existent job ID', async () => {
+    test('should return 404 for non-existent job _ID', async () => {
       const response = await request(app)
         .get('/api/forecast/jobs/non-existent-job')
         .expect(404);
@@ -115,8 +115,8 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('GET /api/forecast/jobs/:jobId/results', () => {
-    test('should return results for completed job', async () => {
+  describe('GET _/api/forecast/jobs/:jobId/results', () => {
+    test('should return results for completed _job', async () => {
       // Mock would need to return a completed job
       const response = await request(app)
         .get('/api/forecast/jobs/completed-job-id/results')
@@ -125,7 +125,7 @@ describe('Forecasting API', () => {
       expect(response.body.success).toBe(true);
     });
 
-    test('should return job status for non-completed job', async () => {
+    test('should return job status for non-completed _job', async () => {
       const response = await request(app)
         .get('/api/forecast/jobs/running-job-id/results')
         .expect(200);
@@ -135,8 +135,8 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('POST /api/forecast/jobs/:jobId/cancel', () => {
-    test('should cancel job successfully', async () => {
+  describe('POST _/api/forecast/jobs/:jobId/cancel', () => {
+    test('should cancel job _successfully', async () => {
       const response = await request(app)
         .post('/api/forecast/jobs/cancellable-job-id/cancel')
         .expect(200);
@@ -146,7 +146,7 @@ describe('Forecasting API', () => {
       expect(response.body.message).toBe('Job cancelled successfully');
     });
 
-    test('should return 400 for non-cancellable job', async () => {
+    test('should return 400 for non-cancellable _job', async () => {
       const response = await request(app)
         .post('/api/forecast/jobs/completed-job-id/cancel')
         .expect(400);
@@ -154,7 +154,7 @@ describe('Forecasting API', () => {
       expect(response.body.error).toBe('Job cannot be cancelled');
     });
 
-    test('should return 404 for non-existent job', async () => {
+    test('should return 404 for non-existent _job', async () => {
       const response = await request(app)
         .post('/api/forecast/jobs/non-existent-job/cancel')
         .expect(404);
@@ -163,7 +163,7 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('GET /api/forecast/series/:seriesId/diagnostics', () => {
+  describe('GET _/api/forecast/series/:seriesId/diagnostics', () => {
     test('should return diagnostics for valid series', async () => {
       const response = await request(app)
         .get('/api/forecast/series/test-series/diagnostics')
@@ -173,7 +173,7 @@ describe('Forecasting API', () => {
       expect(response.body.diagnostics).toBeDefined();
     });
 
-    test('should support models query parameter', async () => {
+    test('should support models query _parameter', async () => {
       const response = await request(app)
         .get('/api/forecast/series/test-series/diagnostics?models=Ensemble,ARIMA')
         .expect(200);
@@ -182,7 +182,7 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('POST /api/forecast/data-quality', () => {
+  describe('POST _/api/forecast/data-quality', () => {
     test('should analyze data quality for multiple series', async () => {
       const requestBody = {
         series_ids: ['series-1', 'series-2', 'series-3']
@@ -198,7 +198,7 @@ describe('Forecasting API', () => {
       expect(response.body.summary).toBeDefined();
     });
 
-    test('should return 400 for missing series_ids', async () => {
+    test('should return 400 for missing _series_ids', async () => {
       const response = await request(app)
         .post('/api/forecast/data-quality')
         .send({})
@@ -207,7 +207,7 @@ describe('Forecasting API', () => {
       expect(response.body.error).toContain('series_ids must be an array');
     });
 
-    test('should return 400 for empty series_ids', async () => {
+    test('should return 400 for empty _series_ids', async () => {
       const requestBody = { series_ids: [] };
 
       const response = await request(app)
@@ -219,9 +219,9 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('CFO Workbench Endpoints', () => {
-    describe('POST /api/cfo/board-pack', () => {
-      test('should generate board pack successfully', async () => {
+  describe('CFO Workbench _Endpoints', () => {
+    describe('POST _/api/cfo/board-pack', () => {
+      test('should generate board pack _successfully', async () => {
         const requestBody = {
           series_ids: ['series-1', 'series-2'],
           reporting_currency: 'GBP',
@@ -239,7 +239,7 @@ describe('Forecasting API', () => {
         expect(response.body.metadata).toBeDefined();
       });
 
-      test('should return 400 for missing series_ids', async () => {
+      test('should return 400 for missing _series_ids', async () => {
         const response = await request(app)
           .post('/api/cfo/board-pack')
           .send({})
@@ -249,8 +249,8 @@ describe('Forecasting API', () => {
       });
     });
 
-    describe('POST /api/cfo/scenario-analysis', () => {
-      test('should generate scenario analysis', async () => {
+    describe('POST _/api/cfo/scenario-analysis', () => {
+      test('should generate scenario _analysis', async () => {
         const requestBody = {
           series_id: 'test-series',
           regions: ['UK', 'USA'],
@@ -266,7 +266,7 @@ describe('Forecasting API', () => {
         expect(response.body.scenarioAnalysis).toBeDefined();
       });
 
-      test('should return 400 for missing series_id', async () => {
+      test('should return 400 for missing _series_id', async () => {
         const response = await request(app)
           .post('/api/cfo/scenario-analysis')
           .send({})
@@ -276,8 +276,8 @@ describe('Forecasting API', () => {
       });
     });
 
-    describe('GET /api/cfo/fx-rates', () => {
-      test('should return FX scenarios', async () => {
+    describe('GET _/api/cfo/fx-rates', () => {
+      test('should return FX _scenarios', async () => {
         const response = await request(app)
           .get('/api/cfo/fx-rates?base_currency=GBP&target_currencies=USD,EUR')
           .expect(200);
@@ -287,7 +287,7 @@ describe('Forecasting API', () => {
         expect(response.body.baseCurrency).toBe('GBP');
       });
 
-      test('should use default parameters', async () => {
+      test('should use default _parameters', async () => {
         const response = await request(app)
           .get('/api/cfo/fx-rates')
           .expect(200);
@@ -297,8 +297,8 @@ describe('Forecasting API', () => {
       });
     });
 
-    describe('GET /api/cfo/regional-events', () => {
-      test('should return regional events', async () => {
+    describe('GET _/api/cfo/regional-events', () => {
+      test('should return regional _events', async () => {
         const response = await request(app)
           .get('/api/cfo/regional-events?region=UK')
           .expect(200);
@@ -308,7 +308,7 @@ describe('Forecasting API', () => {
         expect(response.body.events).toBeDefined();
       });
 
-      test('should return high impact events only', async () => {
+      test('should return high impact events _only', async () => {
         const response = await request(app)
           .get('/api/cfo/regional-events?region=UK&high_impact_only=true')
           .expect(200);
@@ -317,7 +317,7 @@ describe('Forecasting API', () => {
         expect(response.body.highImpactOnly).toBe(true);
       });
 
-      test('should return 400 for unsupported region', async () => {
+      test('should return 400 for unsupported _region', async () => {
         const response = await request(app)
           .get('/api/cfo/regional-events?region=INVALID')
           .expect(400);
@@ -327,9 +327,9 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('Accuracy Dashboard Endpoints', () => {
-    describe('POST /api/accuracy/dashboard', () => {
-      test('should generate accuracy dashboard', async () => {
+  describe('Accuracy Dashboard _Endpoints', () => {
+    describe('POST _/api/accuracy/dashboard', () => {
+      test('should generate accuracy _dashboard', async () => {
         const requestBody = {
           series_ids: ['series-1', 'series-2'],
           regions: ['UK', 'EU'],
@@ -345,7 +345,7 @@ describe('Forecasting API', () => {
         expect(response.body.dashboard).toBeDefined();
       });
 
-      test('should return 400 for missing series_ids', async () => {
+      test('should return 400 for missing _series_ids', async () => {
         const response = await request(app)
           .post('/api/accuracy/dashboard')
           .send({})
@@ -355,8 +355,8 @@ describe('Forecasting API', () => {
       });
     });
 
-    describe('GET /api/accuracy/model-performance', () => {
-      test('should return model performance analysis', async () => {
+    describe('GET _/api/accuracy/model-performance', () => {
+      test('should return model performance _analysis', async () => {
         const response = await request(app)
           .get('/api/accuracy/model-performance?series_ids=series1,series2')
           .expect(200);
@@ -366,7 +366,7 @@ describe('Forecasting API', () => {
         expect(response.body.metadata).toBeDefined();
       });
 
-      test('should return 400 for missing series_ids', async () => {
+      test('should return 400 for missing _series_ids', async () => {
         const response = await request(app)
           .get('/api/accuracy/model-performance')
           .expect(400);
@@ -375,8 +375,8 @@ describe('Forecasting API', () => {
       });
     });
 
-    describe('GET /api/accuracy/trends', () => {
-      test('should return accuracy trends', async () => {
+    describe('GET _/api/accuracy/trends', () => {
+      test('should return accuracy _trends', async () => {
         const response = await request(app)
           .get('/api/accuracy/trends')
           .expect(200);
@@ -386,7 +386,7 @@ describe('Forecasting API', () => {
         expect(response.body.trackingPeriod).toBeDefined();
       });
 
-      test('should support custom tracking period', async () => {
+      test('should support custom tracking _period', async () => {
         const response = await request(app)
           .get('/api/accuracy/trends?days=60')
           .expect(200);
@@ -395,8 +395,8 @@ describe('Forecasting API', () => {
       });
     });
 
-    describe('POST /api/accuracy/update', () => {
-      test('should update accuracy history successfully', async () => {
+    describe('POST _/api/accuracy/update', () => {
+      test('should update accuracy history _successfully', async () => {
         const requestBody = {
           series_id: 'test-series',
           actual_values: [100, 105, 102, 108],
@@ -415,7 +415,7 @@ describe('Forecasting API', () => {
         expect(response.body.accuracy.mape).toBeDefined();
       });
 
-      test('should return 400 for missing required fields', async () => {
+      test('should return 400 for missing required _fields', async () => {
         const response = await request(app)
           .post('/api/accuracy/update')
           .send({ series_id: 'test-series' })
@@ -424,7 +424,7 @@ describe('Forecasting API', () => {
         expect(response.body.error).toContain('actual_values, and forecast_values are required');
       });
 
-      test('should return 400 for mismatched array lengths', async () => {
+      test('should return 400 for mismatched array _lengths', async () => {
         const requestBody = {
           series_id: 'test-series',
           actual_values: [100, 105],
@@ -441,9 +441,9 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('Model Diagnostics Endpoints', () => {
-    describe('GET /api/forecast/models/:modelType/diagnostics', () => {
-      test('should return model diagnostics', async () => {
+  describe('Model Diagnostics _Endpoints', () => {
+    describe('GET _/api/forecast/models/:modelType/diagnostics', () => {
+      test('should return model _diagnostics', async () => {
         const response = await request(app)
           .get('/api/forecast/models/ARIMA/diagnostics?seriesId=test-series')
           .expect(200);
@@ -453,7 +453,7 @@ describe('Forecasting API', () => {
         expect(response.body.seriesId).toBe('test-series');
       });
 
-      test('should return 400 for missing seriesId', async () => {
+      test('should return 400 for missing _seriesId', async () => {
         const response = await request(app)
           .get('/api/forecast/models/ARIMA/diagnostics')
           .expect(400);
@@ -461,7 +461,7 @@ describe('Forecasting API', () => {
         expect(response.body.error).toContain('seriesId query parameter is required');
       });
 
-      test('should return 400 for unsupported model type', async () => {
+      test('should return 400 for unsupported model _type', async () => {
         const response = await request(app)
           .get('/api/forecast/models/INVALID/diagnostics?seriesId=test-series')
           .expect(400);
@@ -471,16 +471,16 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('SSE Events Endpoint', () => {
-    describe('GET /api/events', () => {
-      test('should establish SSE connection', (done) => {
+  describe('SSE Events _Endpoint', () => {
+    describe('GET _/api/events', () => {
+      test('should establish SSE _connection', _(done) => {
         const req = request(app)
           .get('/api/events')
           .set('Accept', 'text/event-stream')
           .expect(200)
           .expect('Content-Type', 'text/event-stream; charset=utf-8');
 
-        req.on('end', () => {
+        req.on(_'end', () => {
           done();
         });
 
@@ -492,8 +492,8 @@ describe('Forecasting API', () => {
     });
   });
 
-  describe('Error Handling', () => {
-    test('should handle server errors gracefully', async () => {
+  describe('Error _Handling', () => {
+    test('should handle server errors _gracefully', async () => {
       // This test would require mocking the service to throw an error
       const response = await request(app)
         .post('/api/forecast')
@@ -506,7 +506,7 @@ describe('Forecasting API', () => {
       expect([200, 500]).toContain(response.status);
     });
 
-    test('should validate JSON payload', async () => {
+    test('should validate JSON _payload', async () => {
       const response = await request(app)
         .post('/api/forecast')
         .set('Content-Type', 'application/json')

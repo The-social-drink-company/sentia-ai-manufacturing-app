@@ -135,7 +135,7 @@ class EnterpriseLogger {
           body: JSON.stringify(logEntry)
         });
       }
-    } catch (err) {
+    } catch {
       // Silently fail remote logging to avoid infinite loops
     }
   }

@@ -325,7 +325,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                 </ul>
               )}
             </div>
-            )
+            );
           })}
         </nav>
 

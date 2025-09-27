@@ -105,7 +105,8 @@
       "Bash(pnpm list:*)",
       "Bash(git reset:*)",
       "Bash(gh pr create:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(pnpm run lint:*)"
     ],
     "deny": [],
     "ask": []

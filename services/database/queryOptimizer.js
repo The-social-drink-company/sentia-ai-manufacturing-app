@@ -73,11 +73,11 @@ export class DatabaseQueryOptimizer extends EventEmitter {
     if (!this.config.monitoring.enabled) return;
 
     // Monitor query events
-    this.prisma.$on('query', (event) => {
+    this.prisma.$on('query', _(event) => {
       this.handleQueryEvent(event);
     });
 
-    this.prisma.$on('error', (event) => {
+    this.prisma.$on('error', _(event) => {
       this.handleErrorEvent(event);
     });
 
@@ -262,10 +262,10 @@ export class DatabaseQueryOptimizer extends EventEmitter {
     // In a real implementation, you'd use a proper SQL parser
 
     // WHERE clause patterns
-    const whereMatches = normalizedQuery.match(/where\s+(\w+)\.(\w+)\s*[=<>]/g);
+    const whereMatches = normalizedQuery.match(/where\s+(\w+).(\w+)\s*[=<>]/g);
     if (whereMatches) {
       whereMatches.forEach(match => {
-        const parts = match.match(/(\w+)\.(\w+)/);
+        const parts = match.match(/(\w+).(\w+)/);
         if (parts) {
           suggestions.push({
             table: parts[1],
@@ -278,10 +278,10 @@ export class DatabaseQueryOptimizer extends EventEmitter {
     }
 
     // JOIN patterns
-    const joinMatches = normalizedQuery.match(/join\s+(\w+)\s+on\s+\w+\.(\w+)\s*=\s*\w+\.(\w+)/g);
+    const joinMatches = normalizedQuery.match(/join\s+(\w+)\s+on\s+\w+.(\w+)\s*=\s*\w+.(\w+)/g);
     if (joinMatches) {
       joinMatches.forEach(match => {
-        const parts = match.match(/join\s+(\w+)\s+on\s+\w+\.(\w+)\s*=\s*\w+\.(\w+)/);
+        const parts = match.match(/join\s+(\w+)\s+on\s+\w+.(\w+)\s*=\s*\w+.(\w+)/);
         if (parts) {
           suggestions.push({
             table: parts[1],
@@ -294,10 +294,10 @@ export class DatabaseQueryOptimizer extends EventEmitter {
     }
 
     // ORDER BY patterns
-    const orderMatches = normalizedQuery.match(/order\s+by\s+(\w+)\.(\w+)/g);
+    const orderMatches = normalizedQuery.match(/order\s+by\s+(\w+).(\w+)/g);
     if (orderMatches) {
       orderMatches.forEach(match => {
-        const parts = match.match(/(\w+)\.(\w+)/);
+        const parts = match.match(/(\w+).(\w+)/);
         if (parts) {
           suggestions.push({
             table: parts[1],

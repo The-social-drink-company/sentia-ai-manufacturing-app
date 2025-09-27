@@ -87,7 +87,7 @@ class OptimizedDatabaseClient {
     };
 
     // Add parameters to URL
-    Object.entries(poolParams).forEach(([key, value]) => {
+    Object.entries(poolParams).forEach(_([key, _value]) => {
       if (!url.searchParams.has(key)) {
         url.searchParams.set(key, value);
       }
@@ -131,11 +131,11 @@ class OptimizedDatabaseClient {
   async optimizeConnection() {
     try {
       // Set connection-level optimizations
-      await this.client.$executeRaw`SET statement_timeout = '30s'`;
-      await this.client.$executeRaw`SET idle_in_transaction_session_timeout = '10s'`;
-      await this.client.$executeRaw`SET work_mem = '32MB'`;
-      await this.client.$executeRaw`SET effective_cache_size = '256MB'`;
-      await this.client.$executeRaw`SET random_page_cost = 1.1`; // SSD optimization
+      await this.client.$executeRaw`SET statementtimeout = '30s'`;
+      await this.client.$executeRaw`SET idlein_transaction_session_timeout = '10s'`;
+      await this.client.$executeRaw`SET workmem = '32MB'`;
+      await this.client.$executeRaw`SET effectivecache_size = '256MB'`;
+      await this.client.$executeRaw`SET randompage_cost = 1.1`; // SSD optimization
 
       logInfo('Database connection optimized');
     } catch (error) {

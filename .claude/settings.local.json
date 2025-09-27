@@ -330,7 +330,8 @@
       "Bash(npx speckit:*)",
       "WebFetch(domain:render.com)",
       "Bash(pnpm install:*)",
-      "Bash(NODE_OPTIONS='--max-old-space-size=4096' pnpm run build)"
+      "Bash(NODE_OPTIONS='--max-old-space-size=4096' pnpm run build)",
+      "Bash(pnpm add:*)"
     ],
     "deny": [],
     "ask": []

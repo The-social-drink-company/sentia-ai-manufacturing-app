@@ -67,9 +67,9 @@ const workingCapitalSchemas = {
  * GET /api/working-capital-intelligence/cash-runway
  * Calculate cash runway with advanced forecasting
  */
-router.get('/cash-runway',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/cash-runway',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const validatedQuery = workingCapitalSchemas.cashRunwayAnalysis.parse(req.query);
     const { timeHorizon, includeSeasonality, includeGrowthScenarios, confidenceLevel } = validatedQuery;
@@ -189,9 +189,9 @@ router.get('/cash-runway',
  * POST /api/working-capital-intelligence/funding-requirements
  * Calculate funding requirements for growth scenarios
  */
-router.post('/funding-requirements',
-  requireAuth,
-  rateLimiters.write,
+router.post(_'/funding-requirements',
+  _requireAuth,
+  _rateLimiters.write,
   asyncHandler(async (req, res) => {
     const validatedBody = workingCapitalSchemas.fundingRequirements.parse(req.body);
     const { growthRate, timeframe, fundingType, includeSeasonality } = validatedBody;
@@ -264,9 +264,9 @@ router.post('/funding-requirements',
  * GET /api/working-capital-intelligence/optimization
  * Working capital optimization analysis
  */
-router.get('/optimization',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/optimization',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const validatedQuery = workingCapitalSchemas.workingCapitalOptimization.parse(req.query);
     const { targetDSO, targetDPO, targetInventoryTurns, industryBenchmark, optimizationGoal } = validatedQuery;
@@ -350,9 +350,9 @@ router.get('/optimization',
  * POST /api/working-capital-intelligence/scenario-planning
  * Advanced scenario planning and modeling
  */
-router.post('/scenario-planning',
-  requireAuth,
-  rateLimiters.write,
+router.post(_'/scenario-planning',
+  _requireAuth,
+  _rateLimiters.write,
   asyncHandler(async (req, res) => {
     const validatedBody = workingCapitalSchemas.scenarioPlanning.parse(req.body);
     const { scenarios, timeframe } = validatedBody;
@@ -362,7 +362,7 @@ router.post('/scenario-planning',
     
     // Model each scenario
     const scenarioResults = await Promise.all(
-      scenarios.map(async (scenario) => {
+      scenarios.map(async _(scenario) => {
         const modeledResults = await modelScenario({
           scenario,
           baselineMetrics,
@@ -414,9 +414,9 @@ router.post('/scenario-planning',
  * GET /api/working-capital-intelligence/industry-benchmarks
  * AI-powered industry benchmarking
  */
-router.get('/industry-benchmarks',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/industry-benchmarks',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const validatedQuery = workingCapitalSchemas.industryBenchmark.parse(req.query);
     const { industry, revenue, employees, region } = validatedQuery;
@@ -523,7 +523,7 @@ function calculateSeasonalityFactor(transactions) {
     monthlyTotals[month] += transaction.amount;
   });
   
-  const averageMonthly = Object.values(monthlyTotals).reduce((sum, total) => sum + total, 0) / Object.keys(monthlyTotals).length;
+  const averageMonthly = Object.values(monthlyTotals).reduce((sum, _total) => sum + total, 0) / Object.keys(monthlyTotals).length;
   const currentMonthTotal = monthlyTotals[currentMonth] || averageMonthly;
   
   return currentMonthTotal / averageMonthly;

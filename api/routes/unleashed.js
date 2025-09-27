@@ -15,7 +15,7 @@ const router = express.Router();
 router.use(clerkAuth);
 
 // GET /api/unleashed/status - Check Unleashed integration status
-router.get('/status', asyncHandler(async (req, res) => {
+router.get(_'/status', asyncHandler(async _(req, res) => {
   try {
     const status = {
       connected: !!(process.env.UNLEASHED_API_ID && process.env.UNLEASHED_API_KEY),
@@ -37,7 +37,7 @@ router.get('/status', asyncHandler(async (req, res) => {
 }));
 
 // POST /api/unleashed/sync - Trigger full data sync
-router.post('/sync', asyncHandler(async (req, res) => {
+router.post(_'/sync', asyncHandler(async _(req, res) => {
   try {
     logInfo('Starting full Unleashed sync');
 
@@ -58,7 +58,7 @@ router.post('/sync', asyncHandler(async (req, res) => {
 }));
 
 // POST /api/unleashed/sync/inventory - Sync inventory only
-router.post('/sync/inventory', asyncHandler(async (req, res) => {
+router.post(_'/sync/inventory', asyncHandler(async _(req, res) => {
   try {
     logInfo('Starting Unleashed inventory sync');
 
@@ -79,7 +79,7 @@ router.post('/sync/inventory', asyncHandler(async (req, res) => {
 }));
 
 // POST /api/unleashed/sync/sales-orders - Sync sales orders
-router.post('/sync/sales-orders', asyncHandler(async (req, res) => {
+router.post(_'/sync/sales-orders', asyncHandler(async _(req, res) => {
   try {
     logInfo('Starting Unleashed sales orders sync');
 
@@ -100,7 +100,7 @@ router.post('/sync/sales-orders', asyncHandler(async (req, res) => {
 }));
 
 // POST /api/unleashed/sync/purchase-orders - Sync purchase orders
-router.post('/sync/purchase-orders', asyncHandler(async (req, res) => {
+router.post(_'/sync/purchase-orders', asyncHandler(async _(req, res) => {
   try {
     logInfo('Starting Unleashed purchase orders sync');
 
@@ -121,7 +121,7 @@ router.post('/sync/purchase-orders', asyncHandler(async (req, res) => {
 }));
 
 // POST /api/unleashed/sync/production-orders - Sync production orders
-router.post('/sync/production-orders', asyncHandler(async (req, res) => {
+router.post(_'/sync/production-orders', asyncHandler(async _(req, res) => {
   try {
     logInfo('Starting Unleashed production orders sync');
 
@@ -142,7 +142,7 @@ router.post('/sync/production-orders', asyncHandler(async (req, res) => {
 }));
 
 // GET /api/unleashed/inventory - Get current inventory levels
-router.get('/inventory', asyncHandler(async (req, res) => {
+router.get(_'/inventory', asyncHandler(async _(req, res) => {
   try {
     const { limit = 100, offset = 0, search, category } = req.query;
 
@@ -188,7 +188,7 @@ router.get('/inventory', asyncHandler(async (req, res) => {
 }));
 
 // GET /api/unleashed/stock-movements - Get stock movement history
-router.get('/stock-movements', asyncHandler(async (req, res) => {
+router.get(_'/stock-movements', asyncHandler(async _(req, res) => {
   try {
     const { days = 30 } = req.query;
 
@@ -208,7 +208,7 @@ router.get('/stock-movements', asyncHandler(async (req, res) => {
 }));
 
 // GET /api/unleashed/warehouse-stock - Get warehouse stock levels
-router.get('/warehouse-stock', asyncHandler(async (req, res) => {
+router.get(_'/warehouse-stock', asyncHandler(async _(req, res) => {
   try {
     const { warehouseCode } = req.query;
 
@@ -228,7 +228,7 @@ router.get('/warehouse-stock', asyncHandler(async (req, res) => {
 }));
 
 // GET /api/unleashed/bom/:productCode - Get Bill of Materials
-router.get('/bom/:productCode', asyncHandler(async (req, res) => {
+router.get(_'/bom/:productCode', asyncHandler(async _(req, res) => {
   try {
     const { productCode } = req.params;
 
@@ -255,7 +255,7 @@ router.get('/bom/:productCode', asyncHandler(async (req, res) => {
 }));
 
 // GET /api/unleashed/production-orders - Get production orders
-router.get('/production-orders', asyncHandler(async (req, res) => {
+router.get(_'/production-orders', asyncHandler(async _(req, res) => {
   try {
     const { limit = 50, offset = 0, status } = req.query;
 
@@ -294,7 +294,7 @@ router.get('/production-orders', asyncHandler(async (req, res) => {
 }));
 
 // GET /api/unleashed/purchase-orders - Get purchase orders
-router.get('/purchase-orders', asyncHandler(async (req, res) => {
+router.get(_'/purchase-orders', asyncHandler(async _(req, res) => {
   try {
     const { limit = 50, offset = 0, status } = req.query;
 

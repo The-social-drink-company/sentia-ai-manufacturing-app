@@ -16,10 +16,10 @@ const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
  * GET /api/supply-chain/overview
  * Get comprehensive supply chain overview
  */
-router.get('/overview',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
+router.get(_'/overview',
+  _requireAuth,
+  _rateLimiters.read,
+  asyncHandler(async _(req, res) => {
     const cacheKey = `supply-chain-overview-${req.userId}`;
     const cached = cache.get(cacheKey);
 

@@ -10,10 +10,10 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get user dashboard layout
-router.get('/dashboard-layout',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
+router.get(_'/dashboard-layout',
+  _requireAuth,
+  _rateLimiters.read,
+  asyncHandler(async _(req, res) => {
     const { userId } = req.auth;
 
     try {
@@ -50,10 +50,10 @@ router.get('/dashboard-layout',
 );
 
 // Save user dashboard layout
-router.post('/dashboard-layout',
-  requireAuth,
-  rateLimiters.write,
-  asyncHandler(async (req, res) => {
+router.post(_'/dashboard-layout',
+  _requireAuth,
+  _rateLimiters.write,
+  asyncHandler(async _(req, res) => {
     const { userId } = req.auth;
     const { layouts, widgets } = req.body;
 
@@ -89,10 +89,10 @@ router.post('/dashboard-layout',
 );
 
 // Get user preferences
-router.get('/preferences',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
+router.get(_'/preferences',
+  _requireAuth,
+  _rateLimiters.read,
+  asyncHandler(async _(req, res) => {
     const { userId } = req.auth;
 
     try {
@@ -120,10 +120,10 @@ router.get('/preferences',
 );
 
 // Update user preferences
-router.put('/preferences',
-  requireAuth,
-  rateLimiters.write,
-  asyncHandler(async (req, res) => {
+router.put(_'/preferences',
+  _requireAuth,
+  _rateLimiters.write,
+  asyncHandler(async _(req, res) => {
     const { userId } = req.auth;
     const { theme, notifications, language, timezone } = req.body;
 

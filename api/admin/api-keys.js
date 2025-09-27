@@ -11,7 +11,7 @@ const dbFallback = getDatabaseFallback();
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || crypto.randomBytes(32);
 const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
 
-const encrypt = (text) => {
+const encrypt = (_text) => {
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipher(ENCRYPTION_ALGORITHM, ENCRYPTION_KEY);
   const encrypted = Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]);
@@ -34,7 +34,7 @@ const decrypt = (encryptedData) => {
 };
 
 // Get all API keys for the current organization
-router.get('/', async (req, res) => {
+router.get(_'/', async _(req, res) => {
   try {
     const apiKeys = await dbFallback.execute(
       async (prisma) => await prisma.apiKey.findMany({
@@ -47,7 +47,7 @@ router.get('/', async (req, res) => {
     );
 
     // Decrypt and format keys for frontend
-    const formattedKeys = apiKeys.reduce((acc, key) => {
+    const formattedKeys = apiKeys.reduce(_(acc, key) => {
       if (!acc[key.service]) acc[key.service] = {};
       
       try {
@@ -70,7 +70,7 @@ router.get('/', async (req, res) => {
 });
 
 // Save or update an API key
-router.post('/', async (req, res) => {
+router.post(_'/', async _(req, res) => {
   try {
     const { service, key, value } = req.body;
     const organizationId = req.user?.organizationId || 'default';
@@ -125,7 +125,7 @@ router.post('/', async (req, res) => {
 });
 
 // Get connection status for all services
-router.get('/status', async (req, res) => {
+router.get(_'/status', async _(req, res) => {
   try {
     const organizationId = req.user?.organizationId || 'default';
     
@@ -139,7 +139,7 @@ router.get('/status', async (req, res) => {
     );
 
     // Group by service
-    const serviceKeys = apiKeys.reduce((acc, key) => {
+    const serviceKeys = apiKeys.reduce(_(acc, key) => {
       if (!acc[key.service]) acc[key.service] = {};
       acc[key.service][key.keyName] = key.value;
       return acc;
@@ -168,7 +168,7 @@ router.get('/status', async (req, res) => {
 });
 
 // Test individual service connection
-router.post('/test/:service', async (req, res) => {
+router.post(_'/test/:service', async _(req, res) => {
   try {
     const { service } = req.params;
     const organizationId = req.user?.organizationId || 'default';
@@ -182,7 +182,7 @@ router.post('/test/:service', async (req, res) => {
       `api-keys-${service}-${organizationId}`
     );
 
-    const keys = apiKeys.reduce((acc, key) => {
+    const keys = apiKeys.reduce(_(acc, key) => {
       acc[key.keyName] = key.value;
       return acc;
     }, {});
@@ -379,7 +379,7 @@ async function syncWithMCPServer() {
     );
     
     // Format for MCP server
-    const envVars = apiKeys.reduce((acc, key) => {
+    const envVars = apiKeys.reduce(_(acc, key) => {
       acc[key.keyName] = key.value;
       return acc;
     }, {});

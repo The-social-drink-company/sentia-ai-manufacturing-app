@@ -14,10 +14,10 @@ const router = express.Router();
  * GET /api/performance/stats
  * Get overall performance statistics
  */
-router.get('/stats',
-  requireAuth,
+router.get(_'/stats',
+  _requireAuth,
   requireAdmin,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async _(req, res) => {
     const prismaStats = prismaEnhanced.getPerformanceStats();
     const optimizerInsights = queryOptimizer.getOptimizationInsights();
     const redisStats = redisCache.getStats();
@@ -51,10 +51,10 @@ router.get('/stats',
  * GET /api/performance/cache
  * Get detailed cache statistics
  */
-router.get('/cache',
-  requireAuth,
+router.get(_'/cache',
+  _requireAuth,
   requireAdmin,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async _(req, res) => {
     const cacheStats = prismaEnhanced.cache.getStats();
     const redisStats = redisCache.getStats();
 
@@ -86,10 +86,10 @@ router.get('/cache',
  * POST /api/performance/cache/clear
  * Clear all caches
  */
-router.post('/cache/clear',
-  requireAuth,
+router.post(_'/cache/clear',
+  _requireAuth,
   requireAdmin,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async _(req, res) => {
     const { tier } = req.body;
 
     if (tier === 'all' || !tier) {
@@ -116,10 +116,10 @@ router.post('/cache/clear',
  * GET /api/performance/queries
  * Get query pattern analysis
  */
-router.get('/queries',
-  requireAuth,
+router.get(_'/queries',
+  _requireAuth,
   requireAdmin,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async _(req, res) => {
     const insights = queryOptimizer.getOptimizationInsights();
 
     res.json({
@@ -137,10 +137,10 @@ router.get('/queries',
  * POST /api/performance/prefetch
  * Trigger cache prefetch
  */
-router.post('/prefetch',
-  requireAuth,
+router.post(_'/prefetch',
+  _requireAuth,
   requireAdmin,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async _(req, res) => {
     const results = await queryOptimizer.prefetchCommonData();
 
     res.json({
@@ -155,10 +155,10 @@ router.post('/prefetch',
  * POST /api/performance/analyze
  * Analyze a specific query
  */
-router.post('/analyze',
-  requireAuth,
+router.post(_'/analyze',
+  _requireAuth,
   requireAdmin,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async _(req, res) => {
     const { model, operation, query } = req.body;
 
     if (!model || !operation) {
@@ -203,8 +203,8 @@ router.post('/analyze',
  * GET /api/performance/health
  * Get database and cache health status
  */
-router.get('/health',
-  asyncHandler(async (req, res) => {
+router.get(_'/health',
+  asyncHandler(async _(req, res) => {
     const health = {
       database: 'unknown',
       cache: 'unknown',
@@ -246,10 +246,10 @@ router.get('/health',
  * POST /api/performance/reset
  * Reset performance metrics
  */
-router.post('/reset',
-  requireAuth,
+router.post(_'/reset',
+  _requireAuth,
   requireAdmin,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async _(req, res) => {
     queryOptimizer.resetMetrics();
 
     res.json({

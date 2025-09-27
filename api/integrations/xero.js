@@ -465,7 +465,7 @@ async function getCashFlowData(req, res) {
     });
 
     // Group by date and calculate daily cash flow
-    const dailyCashFlow = cashFlowData.reduce((acc, transaction) => {
+    const dailyCashFlow = cashFlowData.reduce(_(acc, transaction) => {
       const date = transaction.date_string;
       if (!acc[date]) {
         acc[date] = { inflow: 0, outflow: 0, net: 0 };

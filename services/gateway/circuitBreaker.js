@@ -54,7 +54,7 @@ export class CircuitBreaker extends EventEmitter {
    * Execute a function with circuit breaker protection
    */
   async execute(fn, ...args) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       if (this.isOpen()) {
         const error = new Error(`Circuit breaker is OPEN for ${this.name}`);
         error.code = 'CIRCUIT_BREAKER_OPEN';
@@ -83,7 +83,7 @@ export class CircuitBreaker extends EventEmitter {
         // Handle both sync and async functions
         if (result && typeof result.then === 'function') {
           result
-            .then((value) => {
+            .then(_(value) => {
               this.onSuccess(Date.now() - startTime);
               resolve(value);
             })

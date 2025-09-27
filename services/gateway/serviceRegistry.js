@@ -186,7 +186,7 @@ export class ServiceRegistry extends EventEmitter {
    * Perform health check for a specific service
    */
   async performHealthCheck(serviceName, service) {
-    const healthCheckPromises = service.instances.map(async (instanceUrl) => {
+    const healthCheckPromises = service.instances.map(async _(instanceUrl) => {
       try {
         const healthCheckUrl = `${instanceUrl}${service.healthCheck || '/health'}`;
         const controller = new AbortController();
@@ -307,7 +307,7 @@ export class ServiceRegistry extends EventEmitter {
     const totalServices = services.length;
     const healthyServices = services.filter(s => s.status === 'healthy').length;
     const totalInstances = services.reduce((sum, s) => sum + s.instances.length, 0);
-    const healthyInstances = services.reduce((sum, s) => {
+    const healthyInstances = services.reduce(_(sum, s) => {
       return sum + s.instances.filter(instance => {
         const health = s.instanceHealth?.[instance];
         return health?.status === 'healthy';

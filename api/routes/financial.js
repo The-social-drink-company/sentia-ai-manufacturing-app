@@ -62,9 +62,9 @@ const financialSchemas = {
  * GET /api/financial/dashboard
  * Get financial dashboard overview
  */
-router.get('/dashboard',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/dashboard',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = 'month' } = req.query;
 
@@ -170,9 +170,9 @@ router.get('/dashboard',
  * GET /api/financial/cashflow
  * Get cash flow statement
  */
-router.get('/cashflow',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/cashflow',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const query = financialSchemas.cashFlow.query.parse(req.query);
 
@@ -248,9 +248,9 @@ router.get('/cashflow',
  * GET /api/financial/working-capital
  * Get working capital metrics with proper error handling
  */
-router.get('/working-capital',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/working-capital',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     logDebug('[Working Capital API] Request received');
 
@@ -276,7 +276,7 @@ router.get('/working-capital',
         prisma.$queryRaw`
           SELECT COALESCE(SUM(quantity * unit_cost), 0) as total_value
           FROM inventory
-        `.catch((err) => {
+        `.catch(_(err) => {
           logError('[Working Capital API] Inventory query failed:', err);
           return [{ total_value: 0 }];
         }),
@@ -287,7 +287,7 @@ router.get('/working-capital',
             status: { in: ['pending', 'overdue'] }
           },
           _sum: { totalAmount: true }
-        }).catch((err) => {
+        }).catch(_(err) => {
           logError('[Working Capital API] Receivables query failed:', err);
           return { _sum: { totalAmount: 0 } };
         }),
@@ -298,7 +298,7 @@ router.get('/working-capital',
             status: { in: ['pending', 'approved'] }
           },
           _sum: { amount: true }
-        }).catch((err) => {
+        }).catch(_(err) => {
           logError('[Working Capital API] Payables query failed:', err);
           return { _sum: { amount: 0 } };
         }),
@@ -309,7 +309,7 @@ router.get('/working-capital',
           WHERE is_primary = true
           LIMIT 1
         `.then(rows => rows[0] || { balance: 0 })
-        .catch((err) => {
+        .catch(_(err) => {
           logError('[Working Capital API] Cash query failed:', err);
           return { balance: 0 };
         })
@@ -517,9 +517,9 @@ router.post('/working-capital/calculate',
  * GET /api/financial/invoices
  * Get invoices with filters
  */
-router.get('/invoices',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/invoices',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { status, startDate, endDate, customerId, limit = 50, offset = 0 } = req.query;
 
@@ -650,9 +650,9 @@ router.post('/invoices',
  * GET /api/financial/expenses
  * Get expenses with filters
  */
-router.get('/expenses',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/expenses',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { category, vendor, startDate, endDate, limit = 50, offset = 0 } = req.query;
 
@@ -754,9 +754,9 @@ router.post('/expenses',
  * GET /api/financial/profitability
  * Get profitability analysis
  */
-router.get('/profitability',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/profitability',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = '12m', groupBy = 'month' } = req.query;
 
@@ -828,9 +828,9 @@ router.get('/profitability',
  * GET /api/financial/overview
  * Get comprehensive financial overview
  */
-router.get('/overview',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/overview',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const cacheKey = `financial-overview-${req.userId}`;
     const cached = cache.get(cacheKey);

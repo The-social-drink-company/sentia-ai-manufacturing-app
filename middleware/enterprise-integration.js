@@ -87,7 +87,7 @@ export function applyEnterpriseMiddleware(app) {
   logger.info('✅ Performance tracking middleware applied');
 
   // Apply rate limiting to API routes
-  app.use('/api/', (req, res, next) => {
+  app.use(_'/api/', (req, res, _next) => {
     // Skip rate limiting for health checks
     if (req.path === '/health' || req.path === '/metrics') {
       return next();
@@ -101,7 +101,7 @@ export function applyEnterpriseMiddleware(app) {
   logger.info('✅ Auth rate limiting applied');
 
   // Cache middleware for GET requests
-  app.use('/api/', (req, res, next) => {
+  app.use(_'/api/', (req, res, _next) => {
     // Only cache GET requests
     if (req.method !== 'GET') return next();
 
@@ -129,7 +129,7 @@ export function applyEnterpriseMiddleware(app) {
  * Create enhanced health check endpoint
  */
 export function createHealthEndpoint(app) {
-  app.get('/api/health/enterprise', async (req, res) => {
+  app.get(_'/api/health/enterprise', async (req, res) => {
     const timer = logger.startTimer('health-check');
 
     try {
@@ -211,7 +211,7 @@ export function createHealthEndpoint(app) {
  * Create metrics endpoint for monitoring
  */
 export function createMetricsEndpoint(app) {
-  app.get('/api/metrics', async (req, res) => {
+  app.get(_'/api/metrics', async (req, res) => {
     try {
       const metrics = {
         timestamp: new Date().toISOString(),
@@ -237,7 +237,7 @@ export function createMetricsEndpoint(app) {
  * Enhanced API wrapper with caching and logging
  */
 export function wrapApiEndpoint(handler, options = {}) {
-  return async (req, res, next) => {
+  return async (req, res, _next) => {
     const timer = logger.startTimer(options.name || 'api-request');
 
     try {

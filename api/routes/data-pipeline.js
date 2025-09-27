@@ -22,11 +22,11 @@ const pipeline = new EnterpriseDataPipeline();
 
 // Configure multer for CSV uploads
 const upload = multer({
-  dest: 'uploads/',
+  dest: _'uploads/',
   limits: {
     fileSize: 100 * 1024 * 1024 // 100MB max file size
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: _(req, file, _cb) => {
     const allowedMimes = [
       'text/csv',
       'application/csv',
@@ -46,7 +46,7 @@ const upload = multer({
  * GET /api/data-pipeline/health
  * Check pipeline health status
  */
-router.get('/health', async (req, res) => {
+router.get(_'/health', async _(req, res) => {
   try {
     const health = await pipeline.healthCheck();
 
@@ -149,7 +149,7 @@ router.post('/upload/csv', requireAuth(), upload.single('file'), async (req, res
  * POST /api/data-pipeline/webhook/:source
  * Receive webhook data from external sources
  */
-router.post('/webhook/:source', async (req, res) => {
+router.post(_'/webhook/:source', async _(req, res) => {
   try {
     const { source } = req.params;
     const data = req.body;
@@ -435,7 +435,7 @@ router.get('/analytics/realtime', requireAuth(), async (req, res) => {
     pipeline.on('analytics', analyticsHandler);
 
     // Listen for alerts
-    const alertHandler = (alert) => {
+    const alertHandler = (_alert) => {
       res.write(`data: ${JSON.stringify({
         type: 'alert',
         data: alert
@@ -450,7 +450,7 @@ router.get('/analytics/realtime', requireAuth(), async (req, res) => {
     }, 30000);
 
     // Clean up on disconnect
-    req.on('close', () => {
+    req.on(_'close', () => {
       pipeline.off('analytics', analyticsHandler);
       pipeline.off('alert', alertHandler);
       clearInterval(heartbeat);
@@ -611,12 +611,12 @@ function verifyWebhookSignature(source, signature, data) {
 }
 
 // Graceful shutdown handler
-process.on('SIGTERM', async () => {
+process.on(_'SIGTERM', async () => {
   logInfo('SIGTERM received, shutting down data pipeline');
   await pipeline.shutdown();
 });
 
-process.on('SIGINT', async () => {
+process.on(_'SIGINT', async () => {
   logInfo('SIGINT received, shutting down data pipeline');
   await pipeline.shutdown();
 });

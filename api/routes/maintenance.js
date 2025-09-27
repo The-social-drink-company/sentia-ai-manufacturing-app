@@ -16,10 +16,10 @@ const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
  * GET /api/maintenance/schedule
  * Get maintenance schedule and overview
  */
-router.get('/schedule',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
+router.get(_'/schedule',
+  _requireAuth,
+  _rateLimiters.read,
+  asyncHandler(async _(req, res) => {
     const cacheKey = `maintenance-schedule-${req.userId}`;
     const cached = cache.get(cacheKey);
 

@@ -121,7 +121,8 @@
       "Bash(dir)",
       "Bash(xcopy:*)",
       "Bash(robocopy:*)",
-      "Bash(xargs sed:*)"
+      "Bash(xargs sed:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

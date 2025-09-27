@@ -171,10 +171,10 @@ export const devLog = {
   table: (...args) => {
     if (isDevelopment) console.table(...args);
   },
-  time: (_label) => {
+  time: (label) => {
     if (isDevelopment) console.time(label);
   },
-  timeEnd: (_label) => {
+  timeEnd: (label) => {
     if (isDevelopment) console.timeEnd(label);
   }
 };
@@ -182,7 +182,7 @@ export const devLog = {
 /**
  * Create a scoped logger for specific modules
  */
-export const createLogger = (_scope) => {
+export const createLogger = (scope) => {
   return {
     debug: (message, context) => logDebug(`[${scope}] ${message}`, context),
     info: (message, context) => logInfo(`[${scope}] ${message}`, context),

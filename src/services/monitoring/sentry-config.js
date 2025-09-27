@@ -42,7 +42,7 @@ export const initializeSentry = () => {
         // Monitor performance for key manufacturing operations
         tracePropagationTargets: [
           'localhost',
-          /^https://sentia-manufacturing-/,
+          /^https:\/\/sentia-manufacturing-/,
           /^https:\/\/.*\.onrender\.com$/,
           /^https:\/\/.*\.financeflo\.ai$/
         ],

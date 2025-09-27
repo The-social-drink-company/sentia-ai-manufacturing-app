@@ -174,7 +174,7 @@ export const captureManufacturingException = (error, context = {}) => {
 /**
  * Capture manufacturing performance metrics
  */
-export const capturePerformanceMetric = (_metricName, value, unit = 'ms', context = {}) => {
+export const capturePerformanceMetric = (metricName, value, unit = 'ms', context = {}) => {
   Sentry.withScope(scope => {
     scope.setTag('metric_type', 'performance');
     scope.setTag('manufacturing_module', context.module || 'unknown');
@@ -234,7 +234,7 @@ export const monitorDatabaseOperation = (operationName, queryType = 'read') => {
 /**
  * Monitor external API calls
  */
-export const monitorExternalAPI = (apiName, _endpoint) => {
+export const monitorExternalAPI = (apiName, endpoint) => {
   return Sentry.startTransaction({
     name: `api.${apiName}`,
     op: 'http.client',

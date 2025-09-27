@@ -74,7 +74,7 @@ class SSEClient {
     ]
 
     eventTypes.forEach(type => {
-      _this.eventSource.addEventListener(type, (event) => {
+      this.eventSource.addEventListener(type, (event) => {
         try {
           const data = JSON.parse(event.data)
           this.notifyListeners(type, data)

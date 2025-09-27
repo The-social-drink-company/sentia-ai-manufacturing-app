@@ -76,7 +76,7 @@ const navigation = [
 const Sidebar = ({ isOpen, onToggle }) => {
   const location = useLocation();
   const { user } = useUser();
-  const { role, hasPermission, hasFeature } = useAuthRole();
+  const { role } = useAuthRole();
 
   // State management
   const [collapsed, setCollapsed] = useState(false);
@@ -84,11 +84,11 @@ const Sidebar = ({ isOpen, onToggle }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   // Alert counts (would come from actual data in production)
-  const [alertCounts] = useState({
-    stockLow: 3,
-    capacityIssues: 1,
-    forecastErrors: 0
-  });
+  // const [alertCounts] = useState({
+  //   stockLow: 3,
+  //   capacityIssues: 1,
+  //   forecastErrors: 0
+  // });
 
   // Handle responsive behavior
   useEffect(() => {
@@ -109,7 +109,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
         const { collapsed: savedCollapsed, expanded } = JSON.parse(savedState);
         setCollapsed(savedCollapsed || false);
         setExpandedSections(expanded || {});
-      } catch (e) {
+      } catch {
         // Initialize with default state if parse fails
         initializeDefaultState();
       }
@@ -325,7 +325,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                 </ul>
               )}
             </div>
-            )
+            );
           })}
         </nav>
 

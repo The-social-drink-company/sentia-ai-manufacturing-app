@@ -65,7 +65,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto">
-        {menuSections.map((section, _sectionIndex) => (
+        {menuSections.map((section, sectionIndex) => (
           <div key={sectionIndex} className="py-4">
             <h3 className="px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
               {section.title}

@@ -209,48 +209,15 @@ let mcpConnected = false;
   }
 })();
 
-// Health check endpoint with REAL status
-app.get('/health', async (req, res) => {
-  const health = {
+// Health check endpoint - simplified for Render deployment
+app.get('/health', (req, res) => {
+  res.json({
     status: 'healthy',
     service: 'sentia-manufacturing-dashboard',
     version: '1.0.6',
     environment: NODE_ENV,
-    branch: BRANCH,
-    timestamp: new Date().toISOString(),
-    database: {
-      connected: dbConnected,
-      url: process.env.DATABASE_URL ? 'Configured' : 'Not configured'
-    },
-    mcp: {
-      connected: mcpConnected,
-      url: process.env.MCP_SERVER_URL || 'Not configured'
-    },
-    memory: {
-      rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + ' MB',
-      heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',
-      heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + ' MB'
-    }
-  };
-
-  // Test database connectivity with timeout
-  if (dbConnected) {
-    try {
-      // Add timeout to prevent hanging
-      const dbTest = await Promise.race([
-        prisma.$queryRaw`SELECT 1`,
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Database query timeout')), 2000)
-        )
-      ]);
-      health.database.status = 'operational';
-    } catch (error) {
-      health.database.status = 'error';
-      health.database.error = error.message;
-    }
-  }
-
-  res.json(health);
+    timestamp: new Date().toISOString()
+  });
 });
 
 // API Status endpoint

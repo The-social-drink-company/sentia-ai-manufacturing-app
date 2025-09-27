@@ -235,12 +235,23 @@ export const devLog = NODE_ENV === 'development' ? {
 };
 
 // Express middleware integration (for use in server code only)
-export const expressMiddleware = (_req, _res, next) => {
+export const expressMiddleware = (req, res, next) => {
   // This would only be used in server-side code
   // Skip in browser environment
   if (typeof window !== 'undefined') {
     return next ? next() : undefined;
   }
+  
+  // Log the request in server environment
+  defaultLogger.http(`${req.method} ${req.url}`, {
+    method: req.method,
+    url: req.url,
+    userAgent: req.get('User-Agent'),
+    ip: req.ip
+  });
+  
+  // Always call next() to continue the middleware chain
+  next();
 };
 
 // Stream for Morgan HTTP logger integration (server only)

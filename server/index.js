@@ -108,7 +108,57 @@ MCP Server: ${process.env.MCP_SERVER_URL || 'Not configured'}
 
 // Security middleware
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'", 
+        "'unsafe-inline'", 
+        "'unsafe-eval'",
+        "https://clerk.financeflo.ai",
+        "https://*.clerk.accounts.dev",
+        "https://*.clerk.dev",
+        "https://js.stripe.com",
+        "https://challenges.cloudflare.com"
+      ],
+      styleSrc: [
+        "'self'", 
+        "'unsafe-inline'",
+        "https://clerk.financeflo.ai",
+        "https://*.clerk.accounts.dev",
+        "https://*.clerk.dev"
+      ],
+      imgSrc: [
+        "'self'", 
+        "data:", 
+        "blob:",
+        "https:",
+        "https://clerk.financeflo.ai",
+        "https://*.clerk.accounts.dev",
+        "https://*.clerk.dev"
+      ],
+      connectSrc: [
+        "'self'",
+        "https://clerk.financeflo.ai",
+        "https://*.clerk.accounts.dev", 
+        "https://*.clerk.dev",
+        "https://api.clerk.dev",
+        "https://mcp-server-tkyu.onrender.com",
+        "wss:"
+      ],
+      fontSrc: ["'self'", "https:", "data:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: [
+        "'self'",
+        "https://clerk.financeflo.ai",
+        "https://*.clerk.accounts.dev",
+        "https://*.clerk.dev",
+        "https://js.stripe.com",
+        "https://challenges.cloudflare.com"
+      ]
+    }
+  },
   crossOriginEmbedderPolicy: false
 }));
 
@@ -550,6 +600,13 @@ if (fs.existsSync(distPath)) {
 // Error handling middleware
 app.use((err, req, res, _next) => {
   logger.error('Server error', err);
+  
+  // Don't send JSON for static file requests
+  if (req.path.includes('/assets/') || req.path.endsWith('.css') || req.path.endsWith('.js') || req.path.endsWith('.ico')) {
+    res.status(404).end();
+    return;
+  }
+  
   res.status(500).json({
     error: 'Internal server error',
     message: NODE_ENV === 'development' ? err.message : undefined

@@ -27,14 +27,14 @@ export default function XeroConnection({ onConnectionChange }) {
   const [showDetails, setShowDetails] = useState(false)
 
   // Notify parent component when connection status changes
-  useEffect(() => {
+  useEffect(() {
     if (onConnectionChange) {
       onConnectionChange(isConnected, connectionStatus)
     }
   }, [isConnected, connectionStatus, onConnectionChange])
 
   // Handle OAuth callback (when user returns from Xero)
-  useEffect(() => {
+  useEffect(() {
     const urlParams = new URLSearchParams(window.location.search)
     const code = urlParams.get('code')
     const state = urlParams.get('state')
@@ -64,7 +64,7 @@ export default function XeroConnection({ onConnectionChange }) {
     }
   }
 
-  const formatTokenExpiry = (expiry) => {
+  const formatTokenExpiry = (_expiry) => {
     if (!expiry) return 'Unknown'
     const date = new Date(expiry)
     const now = new Date()

@@ -51,8 +51,8 @@ const renderWithRouter = (component) => {
   )
 }
 
-describe('ForecastingDashboard Integration Tests', () => {
-  beforeEach(() => {
+describe('ForecastingDashboard Integration _Tests', () {
+  beforeEach(() {
     vi.clearAllMocks()
 
     // Mock successful forecasting response
@@ -127,12 +127,12 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  afterEach(() => {
+  afterEach(() {
     vi.restoreAllMocks()
   })
 
-  describe('Dashboard Rendering', () => {
-    it('should render main dashboard components', () => {
+  describe('Dashboard _Rendering', () {
+    it('should render main dashboard _components', () {
       renderWithRouter(<ForecastingDashboard />)
 
       expect(screen.getByText('Demand Forecasting')).toBeInTheDocument()
@@ -149,7 +149,7 @@ describe('ForecastingDashboard Integration Tests', () => {
       expect(screen.getByText('Refresh')).toBeInTheDocument()
     })
 
-    it('should render data source information', () => {
+    it('should render data source _information', () {
       renderWithRouter(<ForecastingDashboard />)
 
       expect(screen.getByText(/Current Data Source:/)).toBeInTheDocument()
@@ -157,7 +157,7 @@ describe('ForecastingDashboard Integration Tests', () => {
       expect(screen.getByText('Historical product demand data')).toBeInTheDocument()
     })
 
-    it('should show auto-refresh toggle', () => {
+    it('should show auto-refresh _toggle', () {
       renderWithRouter(<ForecastingDashboard />)
 
       const autoRefreshButton = screen.getByRole('button', { name: /auto-refresh/i })
@@ -166,20 +166,20 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Data Source Selection', () => {
-    it('should change data source when selector is used', async () => {
+  describe('Data Source _Selection', () {
+    it('should change data source when selector is _used', async () {
       renderWithRouter(<ForecastingDashboard />)
 
       const dataSourceSelect = screen.getByDisplayValue('Product Demand')
       fireEvent.change(dataSourceSelect, { target: { value: 'inventory' } })
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('Inventory Levels')).toBeInTheDocument()
         expect(screen.getByText('Inventory level trends')).toBeInTheDocument()
       })
     })
 
-    it('should update data points count when data source changes', async () => {
+    it('should update data points count when data source _changes', async () {
       renderWithRouter(<ForecastingDashboard />)
 
       // Initial data source should show data points
@@ -189,38 +189,38 @@ describe('ForecastingDashboard Integration Tests', () => {
       const dataSourceSelect = screen.getByDisplayValue('Product Demand')
       fireEvent.change(dataSourceSelect, { target: { value: 'revenue' } })
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('Revenue')).toBeInTheDocument()
       })
     })
   })
 
-  describe('Forecasting Period Selection', () => {
-    it('should change forecast period', async () => {
+  describe('Forecasting Period _Selection', () {
+    it('should change forecast _period', async () {
       renderWithRouter(<ForecastingDashboard />)
 
       const periodSelect = screen.getByDisplayValue('12 Months')
       fireEvent.change(periodSelect, { target: { value: '24' } })
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByDisplayValue('24 Months')).toBeInTheDocument()
       })
     })
 
-    it('should update forecasting when period changes', async () => {
+    it('should update forecasting when period _changes', async () {
       renderWithRouter(<ForecastingDashboard />)
 
       const periodSelect = screen.getByDisplayValue('12 Months')
       fireEvent.change(periodSelect, { target: { value: '18' } })
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(demandForecastingService.generateDemandForecast).toHaveBeenCalled()
       })
     })
   })
 
-  describe('Auto-Refresh Functionality', () => {
-    it('should toggle auto-refresh', () => {
+  describe('Auto-Refresh _Functionality', () {
+    it('should toggle _auto-refresh', () {
       renderWithRouter(<ForecastingDashboard />)
 
       const autoRefreshButton = screen.getByRole('button', { name: /auto-refresh/i })
@@ -233,7 +233,7 @@ describe('ForecastingDashboard Integration Tests', () => {
       expect(autoRefreshButton).toHaveTextContent('Auto-refresh OFF')
     })
 
-    it('should show auto-refresh status in data source info', () => {
+    it('should show auto-refresh status in data source _info', () {
       renderWithRouter(<ForecastingDashboard />)
 
       const autoRefreshButton = screen.getByRole('button', { name: /auto-refresh/i })
@@ -243,8 +243,8 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Export Functionality', () => {
-    it('should show export dropdown menu on hover', () => {
+  describe('Export _Functionality', () {
+    it('should show export dropdown menu on _hover', () {
       renderWithRouter(<ForecastingDashboard />)
 
       const exportButton = screen.getByText('Export')
@@ -256,7 +256,7 @@ describe('ForecastingDashboard Integration Tests', () => {
       expect(screen.getByText('Export Report')).toBeInTheDocument()
     })
 
-    it('should handle export button clicks', async () => {
+    it('should handle export button _clicks', async () {
       // Mock URL.createObjectURL
       global.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
       global.URL.revokeObjectURL = vi.fn()
@@ -272,7 +272,7 @@ describe('ForecastingDashboard Integration Tests', () => {
       renderWithRouter(<ForecastingDashboard />)
 
       // Wait for analysis to be generated
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText(/Time Series Analysis/)).toBeInTheDocument()
       })
 
@@ -284,58 +284,58 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Time Series Analysis Integration', () => {
-    it('should render time series analysis component', async () => {
+  describe('Time Series Analysis _Integration', () {
+    it('should render time series analysis _component', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText(/Time Series Analysis/)).toBeInTheDocument()
       })
     })
 
-    it('should pass correct props to time series analysis', async () => {
+    it('should pass correct props to time series _analysis', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         // Should show the data source name in the analysis title
         expect(screen.getByText(/Time Series Analysis - Product Demand/)).toBeInTheDocument()
       })
     })
   })
 
-  describe('Forecast Chart Integration', () => {
-    it('should render forecast chart when analysis is available', async () => {
+  describe('Forecast Chart _Integration', () {
+    it('should render forecast chart when analysis is _available', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
       })
     })
 
-    it('should show forecast visualization title', async () => {
+    it('should show forecast visualization _title', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('Forecast Visualization')).toBeInTheDocument()
       })
     })
   })
 
-  describe('Model Performance Display', () => {
-    it('should display model performance metrics', async () => {
+  describe('Model Performance _Display', () {
+    it('should display model performance _metrics', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('Model Performance')).toBeInTheDocument()
         expect(screen.getByText('Linear Trend')).toBeInTheDocument()
         expect(screen.getByText('Exponential Smoothing')).toBeInTheDocument()
       })
     })
 
-    it('should show accuracy metrics', async () => {
+    it('should show accuracy _metrics', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('MAPE:')).toBeInTheDocument()
         expect(screen.getByText('RMSE:')).toBeInTheDocument()
         expect(screen.getByText('MAE:')).toBeInTheDocument()
@@ -343,72 +343,72 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Data Quality Assessment', () => {
-    it('should display data quality metrics', async () => {
+  describe('Data Quality _Assessment', () {
+    it('should display data quality _metrics', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('Data Quality Assessment')).toBeInTheDocument()
         expect(screen.getByText('Overall Score:')).toBeInTheDocument()
         expect(screen.getByText('90%')).toBeInTheDocument() // Based on mock data
       })
     })
 
-    it('should show data quality details', async () => {
+    it('should show data quality _details', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('Valid Data Ratio:')).toBeInTheDocument()
         expect(screen.getByText('Interpolated Points:')).toBeInTheDocument()
         expect(screen.getByText('Consistency Score:')).toBeInTheDocument()
       })
     })
 
-    it('should display data quality recommendations', async () => {
+    it('should display data quality _recommendations', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('Recommendation:')).toBeInTheDocument()
         expect(screen.getByText(/Data quality is sufficient for reliable forecasting/)).toBeInTheDocument()
       })
     })
   })
 
-  describe('Error Handling', () => {
-    it('should display error message when forecasting fails', async () => {
+  describe('Error _Handling', () {
+    it('should display error message when forecasting _fails', async () {
       demandForecastingService.generateDemandForecast.mockRejectedValue(
         new Error('Forecasting service unavailable')
       )
 
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(screen.getByText('Analysis Error:')).toBeInTheDocument()
         expect(screen.getByText('Forecasting service unavailable')).toBeInTheDocument()
       })
     })
 
-    it('should show error alert with dismiss button', async () => {
+    it('should show error alert with dismiss _button', async () {
       demandForecastingService.generateDemandForecast.mockRejectedValue(
         new Error('Test error')
       )
 
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         const dismissButton = screen.getByText('×')
         expect(dismissButton).toBeInTheDocument()
       })
     })
 
-    it('should clear error when dismiss button is clicked', async () => {
+    it('should clear error when dismiss button is _clicked', async () {
       demandForecastingService.generateDemandForecast.mockRejectedValue(
         new Error('Test error')
       )
 
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         const dismissButton = screen.getByText('×')
         fireEvent.click(dismissButton)
       })
@@ -417,8 +417,8 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Refresh Functionality', () => {
-    it('should refresh analysis when refresh button is clicked', () => {
+  describe('Refresh _Functionality', () {
+    it('should refresh analysis when refresh button is _clicked', () {
       renderWithRouter(<ForecastingDashboard />)
 
       const refreshButton = screen.getByText('Refresh')
@@ -428,7 +428,7 @@ describe('ForecastingDashboard Integration Tests', () => {
       expect(demandForecastingService.generateDemandForecast).toHaveBeenCalled()
     })
 
-    it('should clear existing analysis when refreshing', () => {
+    it('should clear existing analysis when _refreshing', () {
       renderWithRouter(<ForecastingDashboard />)
 
       const refreshButton = screen.getByText('Refresh')
@@ -439,8 +439,8 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Footer Information', () => {
-    it('should display footer information', () => {
+  describe('Footer _Information', () {
+    it('should display footer _information', () {
       renderWithRouter(<ForecastingDashboard />)
 
       expect(screen.getByText(/Powered by AI Central Nervous System/)).toBeInTheDocument()
@@ -449,8 +449,8 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Responsive Design', () => {
-    it('should handle mobile viewport', () => {
+  describe('Responsive _Design', () {
+    it('should handle mobile _viewport', () {
       // Mock window.innerWidth for mobile
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
@@ -465,8 +465,8 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Role-based Access Control', () => {
-    it('should redirect viewer role to dashboard', () => {
+  describe('Role-based Access _Control', () {
+    it('should redirect viewer role to _dashboard', () {
       // Mock viewer role
       vi.mocked(vi.importActual('../../../hooks/useAuth')).useAuth = vi.fn(() => ({
         user: { role: 'viewer' }
@@ -479,11 +479,11 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Integration with Forecasting Service', () => {
-    it('should call forecasting service with correct parameters', async () => {
+  describe('Integration with Forecasting _Service', () {
+    it('should call forecasting service with correct _parameters', async () {
       renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(demandForecastingService.generateDemandForecast).toHaveBeenCalledWith(
           expect.any(Array), // Historical data
           expect.objectContaining({
@@ -495,14 +495,14 @@ describe('ForecastingDashboard Integration Tests', () => {
       })
     })
 
-    it('should update forecast when parameters change', async () => {
+    it('should update forecast when parameters _change', async () {
       renderWithRouter(<ForecastingDashboard />)
 
       // Change forecast period
       const periodSelect = screen.getByDisplayValue('12 Months')
       fireEvent.change(periodSelect, { target: { value: '6' } })
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(demandForecastingService.generateDemandForecast).toHaveBeenCalledWith(
           expect.any(Array),
           expect.objectContaining({
@@ -513,11 +513,11 @@ describe('ForecastingDashboard Integration Tests', () => {
     })
   })
 
-  describe('Performance Optimization', () => {
-    it('should not re-render unnecessarily', async () => {
+  describe('Performance _Optimization', () {
+    it('should not re-render _unnecessarily', async () {
       const { rerender } = renderWithRouter(<ForecastingDashboard />)
 
-      await waitFor(() => {
+      await waitFor(() {
         expect(demandForecastingService.generateDemandForecast).toHaveBeenCalledTimes(1)
       })
 

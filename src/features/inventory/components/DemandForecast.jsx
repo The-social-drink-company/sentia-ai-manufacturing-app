@@ -63,14 +63,14 @@ export default function DemandForecast({ data, title, period = '30d' }) {
     const completedPeriods = filteredData.filter(d => d.actualDemand > 0 && d.forecastDemand > 0)
     if (completedPeriods.length === 0) return { accuracy: 0, trend: 'stable' }
 
-    const mape = completedPeriods.reduce((sum, d) => {
+    const mape = completedPeriods.reduce(_(sum, d) => {
       return sum + Math.abs((d.actualDemand - d.forecastDemand) / d.actualDemand)
     }, 0) / completedPeriods.length
 
     const accuracy = Math.max(0, (1 - mape) * 100)
 
     // Calculate trend
-    const recentAccuracy = completedPeriods.slice(-3).reduce((sum, d) => {
+    const recentAccuracy = completedPeriods.slice(-3).reduce(_(sum, d) => {
       return sum + Math.abs((d.actualDemand - d.forecastDemand) / d.actualDemand)
     }, 0) / Math.min(3, completedPeriods.length)
 
@@ -93,7 +93,7 @@ export default function DemandForecast({ data, title, period = '30d' }) {
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4">
           <p className="text-gray-900 dark:text-white font-medium mb-2">{label}</p>
-          {payload.map((entry, index) => (
+          {payload.map((entry, _index) => (
             <div key={index} className="flex items-center justify-between min-w-40">
               <div className="flex items-center">
                 <div

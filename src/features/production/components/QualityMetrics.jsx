@@ -37,7 +37,7 @@ export default function QualityMetrics({ data }) {
   const qualityStatus = getQualityStatus(qualityData.overallQuality)
   const fyStatus = getQualityStatus(qualityData.firstPassYield)
 
-  const QualityCard = ({ title, value, format = 'percentage', target, change, icon: Icon, color = 'blue' }) => {
+  const QualityCard = ({ _title, value, format = 'percentage', target, change, icon: Icon, color = 'blue' }) => {
     const formatValue = (val) => {
       switch (format) {
         case 'percentage': return `${val.toFixed(1)}%`
@@ -269,7 +269,7 @@ export default function QualityMetrics({ data }) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {actions.map((action) => {
+            _{actions.map((action) => {
               const statusConfig = getActionStatus(action.status)
               const isOverdue = action.dueDate && new Date(action.dueDate) < new Date() && action.status !== 'completed'
 

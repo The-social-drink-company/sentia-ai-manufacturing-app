@@ -48,7 +48,7 @@ export default function CapacityPlanning({ data }) {
     return { color: 'blue', status: 'Low', bgColor: 'bg-blue-100', textColor: 'text-blue-800' }
   }
 
-  const getConstraintConfig = (type) => {
+  const getConstraintConfig = (_type) => {
     const configs = {
       'Equipment': { color: 'red', icon: CogIcon, variant: 'destructive' },
       'Material': { color: 'yellow', icon: TruckIcon, variant: 'warning' },
@@ -140,7 +140,7 @@ export default function CapacityPlanning({ data }) {
               Identified Bottlenecks
             </h4>
             <div className="space-y-3">
-              {capacityData.bottlenecks.map((bottleneck, index) => {
+              _{capacityData.bottlenecks.map((bottleneck, _index) => {
                 const impactConfig = getImpactConfig(bottleneck.impact)
                 const bottleneckStatus = getUtilizationStatus(bottleneck.utilizationRate)
 
@@ -183,7 +183,7 @@ export default function CapacityPlanning({ data }) {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                {capacityData.forecast.map((day, index) => {
+                {capacityData.forecast.map((day, _index) => {
                   const utilizationStatus = getUtilizationStatus(day.plannedUtilization)
                   const isOvercapacity = day.forecastDemand > day.capacity
                   const remainingCapacity = day.capacity - day.forecastDemand
@@ -241,7 +241,7 @@ export default function CapacityPlanning({ data }) {
         <div>
           <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Capacity Constraints</h4>
           <div className="space-y-3">
-            {capacityData.constraints.map((constraint, index) => {
+            {capacityData.constraints.map((constraint, _index) => {
               const constraintConfig = getConstraintConfig(constraint.type)
               const impactConfig = getImpactConfig(constraint.impact)
               const ConstraintIcon = constraintConfig.icon

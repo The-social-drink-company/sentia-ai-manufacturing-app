@@ -20,7 +20,7 @@ export default function AgingChart({ receivables, payables, title }) {
   const arData = receivables || defaultAgingData.receivables
   const apData = payables || defaultAgingData.payables
 
-  const formatCurrency = (value) => {
+  const formatCurrency = (_value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -30,10 +30,10 @@ export default function AgingChart({ receivables, payables, title }) {
   }
 
   const agingBuckets = ['0-30', '31-60', '61-90', '90+']
-  const arTotal = Object.values(arData).reduce((sum, val) => sum + val, 0)
-  const apTotal = Object.values(apData).reduce((sum, val) => sum + val, 0)
+  const arTotal = Object.values(arData).reduce((sum, _val) => sum + val, 0)
+  const apTotal = Object.values(apData).reduce((sum, _val) => sum + val, 0)
 
-  const getBarColor = (bucket, type) => {
+  const getBarColor = (bucket, _type) => {
     const baseColors = {
       receivables: {
         '0-30': 'bg-green-500',
@@ -73,7 +73,7 @@ export default function AgingChart({ receivables, payables, title }) {
 
       {/* Aging Buckets */}
       <div className="space-y-6">
-        {agingBuckets.map((bucket) => {
+        _{agingBuckets.map((bucket) => {
           const arValue = arData[bucket] || 0
           const apValue = apData[bucket] || 0
           const arPercentage = arTotal > 0 ? (arValue / arTotal) * 100 : 0

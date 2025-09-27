@@ -52,7 +52,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
     )
   }
 
-  const CircularProgress = ({ value, size = 120, strokeWidth = 8, color = 'blue' }) => {
+  const CircularProgress = ({ value, size = _120, strokeWidth = _8, color = 'blue' }) => {
     const radius = (size - strokeWidth) / 2
     const circumference = radius * 2 * Math.PI
     const offset = circumference - (value / 100) * circumference
@@ -102,7 +102,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
     )
   }
 
-  const ComponentBar = ({ label, value, target, icon: Icon, color, change }) => {
+  const ComponentBar = ({ _label, value, target, icon: Icon, color, change }) => {
     const percentage = Math.min((value / target) * 100, 100)
     const status = getOEEStatus(value)
 
@@ -264,7 +264,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                  {oeeData.lineBreakdown.map((line) => {
+                  _{oeeData.lineBreakdown.map((line) => {
                     const lineStatus = getOEEStatus(line.overall)
                     const statusConfig = {
                       'running': { color: 'green', label: 'Running' },

@@ -86,7 +86,7 @@ class FeatureEngineeringService {
   }
 
   detectIQROutliers(values) {
-    const sorted = [...values].sort((a, b) => a - b);
+    const sorted = [...values].sort((a, _b) => a - b);
     const q1 = this.percentile(sorted, 25);
     const q3 = this.percentile(sorted, 75);
     const iqr = q3 - q1;
@@ -450,7 +450,7 @@ class FeatureEngineeringService {
   }
 
   percentile(values, p) {
-    const sorted = [...values].sort((a, b) => a - b);
+    const sorted = [...values].sort((a, _b) => a - b);
     const index = (p / 100) * (sorted.length - 1);
     const lower = Math.floor(index);
     const upper = Math.ceil(index);

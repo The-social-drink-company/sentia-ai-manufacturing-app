@@ -151,12 +151,12 @@ describe('WorkingCapitalExporter', () => {
     vi.restoreAllMocks()
   })
 
-  describe('CSV Export', () => {
-    it('exports data as CSV successfully', async () => {
+  describe('CSV _Export', () => {
+    it('exports data as CSV _successfully', async () => {
       const result = await exporter.exportCSV()
 
       expect(result.success).toBe(true)
-      expect(result.filename).toMatch(/working-capital-report-\d{4}-\d{2}-\d{2}\.csv/)
+      expect(result.filename).toMatch(/working-capital-report-\d{4}-\d{2}-\d{2}.csv/)
 
       // Check that file download was triggered
       expect(global.Blob).toHaveBeenCalledWith(
@@ -165,7 +165,7 @@ describe('WorkingCapitalExporter', () => {
       )
     })
 
-    it('generates correct CSV content structure', () => {
+    it('generates correct CSV content _structure', () => {
       const csvContent = exporter.generateCSVContent()
 
       expect(csvContent).toContain('Working Capital Management Report')
@@ -175,7 +175,7 @@ describe('WorkingCapitalExporter', () => {
       expect(csvContent).toContain('OPTIMIZATION RECOMMENDATIONS')
     })
 
-    it('includes metric values in CSV', () => {
+    it('includes metric values in _CSV', () => {
       const csvContent = exporter.generateCSVContent()
 
       expect(csvContent).toContain('$1,200,000')
@@ -184,7 +184,7 @@ describe('WorkingCapitalExporter', () => {
       expect(csvContent).toContain('1.8')
     })
 
-    it('handles missing data gracefully in CSV', () => {
+    it('handles missing data gracefully in _CSV', () => {
       const emptyExporter = new WorkingCapitalExporter({})
       const csvContent = emptyExporter.generateCSVContent()
 
@@ -193,12 +193,12 @@ describe('WorkingCapitalExporter', () => {
     })
   })
 
-  describe('Excel Export', () => {
-    it('exports data as Excel successfully', async () => {
+  describe('Excel _Export', () => {
+    it('exports data as Excel _successfully', async () => {
       const result = await exporter.exportExcel()
 
       expect(result.success).toBe(true)
-      expect(result.filename).toMatch(/working-capital-report-\d{4}-\d{2}-\d{2}\.xlsx/)
+      expect(result.filename).toMatch(/working-capital-report-\d{4}-\d{2}-\d{2}.xlsx/)
 
       // Check that XLSX methods were called
       expect(mockXLSX.utils.book_new).toHaveBeenCalled()
@@ -206,7 +206,7 @@ describe('WorkingCapitalExporter', () => {
       expect(mockXLSX.utils.writeFile).toHaveBeenCalled()
     })
 
-    it('creates summary sheet correctly', () => {
+    it('creates summary sheet _correctly', () => {
       const sheet = exporter.createSummarySheet(mockXLSX)
 
       expect(mockXLSX.utils.aoa_to_sheet).toHaveBeenCalledWith(
@@ -220,7 +220,7 @@ describe('WorkingCapitalExporter', () => {
       )
     })
 
-    it('creates AR aging sheet correctly', () => {
+    it('creates AR aging sheet _correctly', () => {
       const sheet = exporter.createARAgingSheet(mockXLSX)
 
       expect(mockXLSX.utils.aoa_to_sheet).toHaveBeenCalledWith(
@@ -233,7 +233,7 @@ describe('WorkingCapitalExporter', () => {
       )
     })
 
-    it('creates AP aging sheet correctly', () => {
+    it('creates AP aging sheet _correctly', () => {
       const sheet = exporter.createAPAgingSheet(mockXLSX)
 
       expect(mockXLSX.utils.aoa_to_sheet).toHaveBeenCalledWith(
@@ -245,7 +245,7 @@ describe('WorkingCapitalExporter', () => {
       )
     })
 
-    it('creates cash flow sheet correctly', () => {
+    it('creates cash flow sheet _correctly', () => {
       const sheet = exporter.createCashFlowSheet(mockXLSX)
 
       expect(mockXLSX.utils.aoa_to_sheet).toHaveBeenCalledWith(
@@ -258,7 +258,7 @@ describe('WorkingCapitalExporter', () => {
       )
     })
 
-    it('handles Excel export errors gracefully', async () => {
+    it('handles Excel export errors _gracefully', async () => {
       mockXLSX.utils.book_new.mockImplementation(() => {
         throw new Error('Excel error')
       })
@@ -270,12 +270,12 @@ describe('WorkingCapitalExporter', () => {
     })
   })
 
-  describe('PDF Export', () => {
-    it('exports data as PDF successfully', async () => {
+  describe('PDF _Export', () => {
+    it('exports data as PDF _successfully', async () => {
       const result = await exporter.exportPDF()
 
       expect(result.success).toBe(true)
-      expect(result.filename).toMatch(/working-capital-report-\d{4}-\d{2}-\d{2}\.pdf/)
+      expect(result.filename).toMatch(/working-capital-report-\d{4}-\d{2}-\d{2}.pdf/)
 
       // Check that jsPDF methods were called
       expect(mockJsPDF.setFontSize).toHaveBeenCalled()
@@ -283,7 +283,7 @@ describe('WorkingCapitalExporter', () => {
       expect(mockJsPDF.save).toHaveBeenCalled()
     })
 
-    it('adds executive summary to PDF', () => {
+    it('adds executive summary to _PDF', () => {
       const yPosition = exporter.addExecutiveSummary(mockJsPDF, 50)
 
       expect(mockJsPDF.text).toHaveBeenCalledWith('Executive Summary', 20, 50)
@@ -295,7 +295,7 @@ describe('WorkingCapitalExporter', () => {
       expect(yPosition).toBeGreaterThan(50)
     })
 
-    it('adds key metrics table to PDF', () => {
+    it('adds key metrics table to _PDF', () => {
       exporter.addKeyMetricsTable(mockJsPDF, 100)
 
       expect(mockJsPDF.autoTable).toHaveBeenCalledWith(
@@ -308,7 +308,7 @@ describe('WorkingCapitalExporter', () => {
       )
     })
 
-    it('adds aging analysis to PDF', () => {
+    it('adds aging analysis to _PDF', () => {
       const yPosition = exporter.addAgingAnalysis(mockJsPDF, 150)
 
       expect(mockJsPDF.text).toHaveBeenCalledWith('Aging Analysis', 20, 150)
@@ -316,7 +316,7 @@ describe('WorkingCapitalExporter', () => {
       expect(yPosition).toBeGreaterThan(150)
     })
 
-    it('handles PDF export errors gracefully', async () => {
+    it('handles PDF export errors _gracefully', async () => {
       mockJsPDF.save.mockImplementation(() => {
         throw new Error('PDF error')
       })
@@ -327,7 +327,7 @@ describe('WorkingCapitalExporter', () => {
       expect(result.error).toContain('PDF error')
     })
 
-    it('adds page breaks when needed', () => {
+    it('adds page breaks when _needed', () => {
       // Mock a scenario where content exceeds page height
       exporter.addRecommendations(mockJsPDF, 250)
 
@@ -335,12 +335,12 @@ describe('WorkingCapitalExporter', () => {
     })
   })
 
-  describe('JSON Export', () => {
-    it('exports data as JSON successfully', () => {
+  describe('JSON _Export', () => {
+    it('exports data as JSON _successfully', () => {
       const result = exporter.exportJSON()
 
       expect(result.success).toBe(true)
-      expect(result.filename).toMatch(/working-capital-data-\d{4}-\d{2}-\d{2}\.json/)
+      expect(result.filename).toMatch(/working-capital-data-\d{4}-\d{2}-\d{2}.json/)
 
       // Check that file download was triggered
       expect(global.Blob).toHaveBeenCalledWith(
@@ -349,7 +349,7 @@ describe('WorkingCapitalExporter', () => {
       )
     })
 
-    it('includes metadata in JSON export', () => {
+    it('includes metadata in JSON _export', () => {
       // Mock Blob to capture content
       let jsonContent
       global.Blob.mockImplementation((content) => {
@@ -365,27 +365,27 @@ describe('WorkingCapitalExporter', () => {
     })
   })
 
-  describe('Utility Methods', () => {
-    it('formats currency correctly', () => {
+  describe('Utility _Methods', () => {
+    it('formats currency _correctly', () => {
       expect(exporter.formatCurrency(1234567)).toBe('$1,234,567')
       expect(exporter.formatCurrency(0)).toBe('$0')
       expect(exporter.formatCurrency(-1000)).toBe('$-1,000')
     })
 
-    it('calculates percentages correctly', () => {
+    it('calculates percentages _correctly', () => {
       expect(exporter.getPercentage(250, 1000)).toBe('25.0%')
       expect(exporter.getPercentage(0, 1000)).toBe('0.0%')
       expect(exporter.getPercentage(100, 0)).toBe('0%')
     })
 
-    it('determines status text correctly', () => {
+    it('determines status text _correctly', () => {
       expect(exporter.getStatusText(6)).toBe('Improving')
       expect(exporter.getStatusText(-6)).toBe('Declining')
       expect(exporter.getStatusText(2)).toBe('Stable')
       expect(exporter.getStatusText(null)).toBe('N/A')
     })
 
-    it('handles file download correctly', () => {
+    it('handles file download _correctly', () => {
       exporter.downloadFile('test content', 'test.csv', 'text/csv')
 
       expect(global.Blob).toHaveBeenCalledWith(['test content'], { type: 'text/csv' })
@@ -395,8 +395,8 @@ describe('WorkingCapitalExporter', () => {
     })
   })
 
-  describe('Export Options', () => {
-    it('respects includeForecasts option', async () => {
+  describe('Export _Options', () => {
+    it('respects includeForecasts _option', async () => {
       const exporterWithForecasts = new WorkingCapitalExporter(mockData, {
         includeForecasts: true
       })
@@ -404,7 +404,7 @@ describe('WorkingCapitalExporter', () => {
       expect(exporterWithForecasts.options.includeForecasts).toBe(true)
     })
 
-    it('respects includeRecommendations option', () => {
+    it('respects includeRecommendations _option', () => {
       const exporterWithoutRecs = new WorkingCapitalExporter(mockData, {
         includeRecommendations: false
       })
@@ -412,7 +412,7 @@ describe('WorkingCapitalExporter', () => {
       expect(exporterWithoutRecs.options.includeRecommendations).toBe(false)
     })
 
-    it('sets default options correctly', () => {
+    it('sets default options _correctly', () => {
       expect(exporter.options.includeCharts).toBe(false)
       expect(exporter.options.includeForecasts).toBe(true)
       expect(exporter.options.includeRecommendations).toBe(true)
@@ -421,13 +421,13 @@ describe('WorkingCapitalExporter', () => {
   })
 })
 
-describe('Export Service Functions', () => {
+describe('Export Service _Functions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   describe('exportWorkingCapitalData', () => {
-    it('creates exporter and calls correct method', async () => {
+    it('creates exporter and calls correct _method', async () => {
       const mockData = { summary: { workingCapital: 1000000 } }
 
       const result = await exportWorkingCapitalData(mockData, 'csv')
@@ -436,7 +436,7 @@ describe('Export Service Functions', () => {
       expect(result.success).toBe(true)
     })
 
-    it('handles unsupported format error', async () => {
+    it('handles unsupported format _error', async () => {
       const mockData = { summary: { workingCapital: 1000000 } }
 
       await expect(exportWorkingCapitalData(mockData, 'unsupported')).rejects.toThrow(
@@ -444,7 +444,7 @@ describe('Export Service Functions', () => {
       )
     })
 
-    it('passes options correctly to exporter', async () => {
+    it('passes options correctly to _exporter', async () => {
       const mockData = { summary: { workingCapital: 1000000 } }
       const options = { includeForecasts: false, includeCharts: true }
 
@@ -455,30 +455,30 @@ describe('Export Service Functions', () => {
     })
   })
 
-  describe('Quick Export Functions', () => {
+  describe('Quick Export _Functions', () => {
     const mockData = { summary: { workingCapital: 1000000 } }
 
-    it('quickExportCSV works correctly', async () => {
+    it('quickExportCSV works _correctly', async () => {
       const result = await quickExportCSV(mockData)
       expect(result.success).toBe(true)
     })
 
-    it('quickExportExcel works correctly', async () => {
+    it('quickExportExcel works _correctly', async () => {
       const result = await quickExportExcel(mockData)
       expect(result.success).toBe(true)
     })
 
-    it('quickExportPDF works correctly', async () => {
+    it('quickExportPDF works _correctly', async () => {
       const result = await quickExportPDF(mockData)
       expect(result.success).toBe(true)
     })
 
-    it('quickExportJSON works correctly', () => {
+    it('quickExportJSON works _correctly', () => {
       const result = quickExportJSON(mockData)
       expect(result.success).toBe(true)
     })
 
-    it('all quick export functions accept options', async () => {
+    it('all quick export functions accept _options', async () => {
       const options = { includeForecasts: false }
 
       await expect(quickExportCSV(mockData, options)).resolves.toBeDefined()
@@ -489,8 +489,8 @@ describe('Export Service Functions', () => {
   })
 })
 
-describe('Error Handling', () => {
-  it('handles Blob creation errors', async () => {
+describe('Error _Handling', () => {
+  it('handles Blob creation _errors', async () => {
     global.Blob.mockImplementation(() => {
       throw new Error('Blob error')
     })
@@ -502,7 +502,7 @@ describe('Error Handling', () => {
     expect(result.error).toContain('Blob error')
   })
 
-  it('handles DOM manipulation errors', () => {
+  it('handles DOM manipulation _errors', () => {
     mockDocument.createElement.mockImplementation(() => {
       throw new Error('DOM error')
     })
@@ -514,7 +514,7 @@ describe('Error Handling', () => {
     }).toThrow('DOM error')
   })
 
-  it('handles missing data gracefully', async () => {
+  it('handles missing data _gracefully', async () => {
     const emptyExporter = new WorkingCapitalExporter({})
 
     const csvResult = await emptyExporter.exportCSV()
@@ -525,8 +525,8 @@ describe('Error Handling', () => {
   })
 })
 
-describe('Data Validation', () => {
-  it('handles null and undefined values in data', () => {
+describe('Data _Validation', () => {
+  it('handles null and undefined values in _data', () => {
     const dataWithNulls = {
       summary: {
         workingCapital: null,
@@ -545,7 +545,7 @@ describe('Data Validation', () => {
     expect(() => exporter.formatCurrency(undefined)).not.toThrow()
   })
 
-  it('handles empty arrays and objects', () => {
+  it('handles empty arrays and _objects', () => {
     const dataWithEmpties = {
       summary: {},
       receivables: { topCustomers: [] },

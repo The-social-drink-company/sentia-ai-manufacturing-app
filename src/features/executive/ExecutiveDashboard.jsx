@@ -35,13 +35,13 @@ const ExecutiveDashboard = () => {
     data: sseData,
     isConnected: sseConnected,
     lastUpdate: sseLastUpdate
-  } = useSSE(['executive-metrics', 'executive-alerts', 'system-status'], {
-    onEvent: (eventType, eventData) => {
+  } = useSSE(_['executive-metrics', 'executive-alerts', 'system-status'], {
+    onEvent: _(eventType, eventData) => {
       switch (eventType) {
         case 'executive-metrics':
           if (eventData.metrics) {
             // Update specific metrics in the store
-            Object.entries(eventData.metrics).forEach(([key, value]) => {
+            Object.entries(eventData.metrics).forEach(_([key, _value]) => {
               updateMetric({ name: key, data: value });
             });
           }

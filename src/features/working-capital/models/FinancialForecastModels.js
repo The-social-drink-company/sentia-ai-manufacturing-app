@@ -107,7 +107,7 @@ export class TimeSeriesForecaster {
     const trendForecast = trendForecaster.linearTrend(periodsToForecast)
 
     // Reapply seasonality to forecast
-    return trendForecast.map((point, index) => {
+    return trendForecast.map(_(point, index) => {
       const seasonalIndex = seasonalIndices[index % this.seasonalityPeriod]
       return {
         ...point,
@@ -122,7 +122,7 @@ export class TimeSeriesForecaster {
     const seasonalCounts = new Array(this.seasonalityPeriod).fill(0)
 
     // Calculate averages for each seasonal period
-    this.data.forEach((point, index) => {
+    this.data.forEach(_(point, index) => {
       const seasonIndex = index % this.seasonalityPeriod
       seasonalSums[seasonIndex] += point.value
       seasonalCounts[seasonIndex]++

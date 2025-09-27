@@ -59,23 +59,23 @@ const createWrapper = () => {
   )
 }
 
-describe('useProductionMetrics', () => {
-  beforeEach(() => {
+describe('useProductionMetrics', _() => {
+  beforeEach(_() => {
     vi.clearAllMocks()
   })
 
-  afterEach(() => {
+  afterEach(_() => {
     vi.resetAllMocks()
   })
 
-  describe('IoT Data Integration', () => {
-    it('should use IoT data when available and healthy', async () => {
+  describe('IoT Data _Integration', _() => {
+    it('should use IoT data when available and _healthy', async _() => {
       const { result } = renderHook(
         () => useProductionMetrics({ line: 'all', shift: 'current', timeRange: '24h' }),
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.loading).toBe(false)
       })
 
@@ -85,7 +85,7 @@ describe('useProductionMetrics', () => {
       expect(result.current.data.summary.totalMachines).toBe(5)
     })
 
-    it('should include filter context with IoT data', async () => {
+    it('should include filter context with IoT _data', async _() => {
       const filters = { line: 'line-1', shift: 'shift-1', timeRange: '4h' }
 
       const { result } = renderHook(
@@ -93,18 +93,18 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.data?.filters).toEqual(filters)
       })
     })
 
-    it('should mark data as real-time when using IoT', async () => {
+    it('should mark data as real-time when using _IoT', async _() => {
       const { result } = renderHook(
         () => useProductionMetrics(),
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.data?.isRealTimeData).toBe(true)
         expect(result.current.data?.source).toBe('iot_sensors')
         expect(result.current.iotConnectionStatus).toBe('connected')
@@ -112,8 +112,8 @@ describe('useProductionMetrics', () => {
     })
   })
 
-  describe('Fallback to Mock Data', () => {
-    beforeEach(() => {
+  describe('Fallback to Mock _Data', _() => {
+    beforeEach(_() => {
       // Mock IoT data as unavailable
       vi.doMock('./useIoTIntegration', () => ({
         useIoTProductionMetrics: () => ({
@@ -145,13 +145,13 @@ describe('useProductionMetrics', () => {
       })
     })
 
-    it('should fallback to service data when IoT unavailable', async () => {
+    it('should fallback to service data when IoT _unavailable', async _() => {
       const { result } = renderHook(
         () => useProductionMetrics(),
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.loading).toBe(false)
       })
 
@@ -160,7 +160,7 @@ describe('useProductionMetrics', () => {
       expect(result.current.data?.source).toBe('mock_data')
     })
 
-    it('should pass correct parameters to service', async () => {
+    it('should pass correct parameters to _service', async _() => {
       const params = { line: 'line-2', shift: 'shift-2', timeRange: '7d' }
 
       renderHook(
@@ -168,7 +168,7 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(mockProductionService.fetchProductionMetrics).toHaveBeenCalledWith(
           params.timeRange,
           params.line,
@@ -178,8 +178,8 @@ describe('useProductionMetrics', () => {
     })
   })
 
-  describe('Loading States', () => {
-    it('should show loading state initially', () => {
+  describe('Loading _States', _() => {
+    it('should show loading state _initially', _() => {
       const { result } = renderHook(
         () => useProductionMetrics(),
         { wrapper: createWrapper() }
@@ -189,7 +189,7 @@ describe('useProductionMetrics', () => {
       expect(result.current.data).toBeNull()
     })
 
-    it('should show loading state when IoT is loading', () => {
+    it('should show loading state when IoT is _loading', _() => {
       vi.doMock('./useIoTIntegration', () => ({
         useIoTProductionMetrics: () => ({
           isLoading: true,
@@ -207,8 +207,8 @@ describe('useProductionMetrics', () => {
     })
   })
 
-  describe('Error Handling', () => {
-    it('should handle service errors gracefully', async () => {
+  describe('Error _Handling', _() => {
+    it('should handle service errors _gracefully', async _() => {
       vi.doMock('./useIoTIntegration', () => ({
         useIoTProductionMetrics: () => ({
           isLoading: false,
@@ -225,13 +225,13 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.error).toBe(serviceError)
         expect(result.current.loading).toBe(false)
       })
     })
 
-    it('should set IoT connection status to error when IoT fails', async () => {
+    it('should set IoT connection status to error when IoT _fails', async _() => {
       vi.doMock('./useIoTIntegration', () => ({
         useIoTProductionMetrics: () => ({
           isLoading: false,
@@ -249,18 +249,18 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.iotConnectionStatus).toBe('error')
       })
     })
   })
 
-  describe('Data Export', () => {
-    beforeEach(() => {
+  describe('Data _Export', _() => {
+    beforeEach(_() => {
       mockProductionService.exportProductionData.mockResolvedValue(undefined)
     })
 
-    it('should export data with correct parameters', async () => {
+    it('should export data with correct _parameters', async _() => {
       const params = { line: 'line-1', shift: 'shift-1', timeRange: '24h' }
 
       const { result } = renderHook(
@@ -268,7 +268,7 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.loading).toBe(false)
       })
 
@@ -282,7 +282,7 @@ describe('useProductionMetrics', () => {
       )
     })
 
-    it('should handle export errors', async () => {
+    it('should handle export _errors', async _() => {
       const exportError = new Error('Export failed')
       mockProductionService.exportProductionData.mockRejectedValue(exportError)
 
@@ -291,7 +291,7 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.loading).toBe(false)
       })
 
@@ -299,8 +299,8 @@ describe('useProductionMetrics', () => {
     })
   })
 
-  describe('Data Refresh', () => {
-    it('should refetch data when called', async () => {
+  describe('Data _Refresh', _() => {
+    it('should refetch data when _called', async _() => {
       mockProductionService.fetchProductionMetrics.mockResolvedValue({
         summary: { totalProduction: 1000 }
       })
@@ -310,7 +310,7 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.loading).toBe(false)
       })
 
@@ -320,14 +320,14 @@ describe('useProductionMetrics', () => {
       // Trigger refetch
       result.current.refetch()
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(mockProductionService.fetchProductionMetrics).toHaveBeenCalled()
       })
     })
   })
 
-  describe('Parameter Changes', () => {
-    it('should refetch when parameters change', async () => {
+  describe('Parameter _Changes', _() => {
+    it('should refetch when parameters _change', async _() => {
       mockProductionService.fetchProductionMetrics.mockResolvedValue({
         summary: { totalProduction: 1000 }
       })
@@ -340,7 +340,7 @@ describe('useProductionMetrics', () => {
         }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.loading).toBe(false)
       })
 
@@ -350,7 +350,7 @@ describe('useProductionMetrics', () => {
       // Change parameters
       rerender({ line: 'line-1', shift: 'shift-1', timeRange: '7d' })
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(mockProductionService.fetchProductionMetrics).toHaveBeenCalledWith(
           '7d', 'line-1', 'shift-1'
         )
@@ -358,20 +358,20 @@ describe('useProductionMetrics', () => {
     })
   })
 
-  describe('Real-time Data Status', () => {
-    it('should indicate when using real-time data', async () => {
+  describe('Real-time Data _Status', _() => {
+    it('should indicate when using real-time _data', async _() => {
       const { result } = renderHook(
         () => useProductionMetrics(),
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.isRealTimeData).toBe(true)
         expect(result.current.iotConnectionStatus).toBe('connected')
       })
     })
 
-    it('should indicate when using mock data', async () => {
+    it('should indicate when using mock _data', async _() => {
       vi.doMock('./useIoTIntegration', () => ({
         useIoTProductionMetrics: () => ({
           isLoading: false,
@@ -389,14 +389,14 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.isRealTimeData).toBe(false)
         expect(result.current.iotConnectionStatus).toBe('disconnected')
         expect(result.current.dataSource).toBe('mock_data')
       })
     })
 
-    it('should show connecting status when IoT is loading', () => {
+    it('should show connecting status when IoT is _loading', _() => {
       vi.doMock('./useIoTIntegration', () => ({
         useIoTProductionMetrics: () => ({
           isLoading: true,
@@ -414,14 +414,14 @@ describe('useProductionMetrics', () => {
     })
   })
 
-  describe('Data Structure Validation', () => {
-    it('should maintain consistent data structure for IoT data', async () => {
+  describe('Data Structure _Validation', _() => {
+    it('should maintain consistent data structure for IoT _data', async _() => {
       const { result } = renderHook(
         () => useProductionMetrics(),
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.data).toBeDefined()
       })
 
@@ -440,7 +440,7 @@ describe('useProductionMetrics', () => {
       expect(data.filters).toHaveProperty('timeRange')
     })
 
-    it('should maintain consistent data structure for mock data', async () => {
+    it('should maintain consistent data structure for mock _data', async _() => {
       vi.doMock('./useIoTIntegration', () => ({
         useIoTProductionMetrics: () => ({
           isLoading: false,
@@ -460,7 +460,7 @@ describe('useProductionMetrics', () => {
         { wrapper: createWrapper() }
       )
 
-      await waitFor(() => {
+      await waitFor(_() => {
         expect(result.current.data).toBeDefined()
       })
 

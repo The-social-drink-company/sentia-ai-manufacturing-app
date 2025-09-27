@@ -15,7 +15,7 @@ const generateMockJobs = () => {
   const statuses = ['scheduled', 'in-progress', 'completed', 'delayed', 'failed']
   const products = ['SNTG-001', 'SNTG-002', 'SNTB-001', 'SNTB-002', 'SNTR-001']
 
-  return Array.from({ length: 10 }, (_, i) => ({
+  return Array.from({ length: 10 }, (_, _i) => ({
     id: `JOB-${1000 + i}`,
     product: products[Math.floor(Math.random() * products.length)],
     quantity: Math.floor(Math.random() * 5000) + 1000,
@@ -61,7 +61,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline' }) {
     return variants[status] || 'default'
   }
 
-  const formatTime = (dateString) => {
+  const formatTime = (_dateString) => {
     const date = new Date(dateString)
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -69,7 +69,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline' }) {
     })
   }
 
-  const formatDate = (dateString) => {
+  const formatDate = (_dateString) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
       month: 'short',
@@ -78,7 +78,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline' }) {
   }
 
   const renderTimelineView = () => {
-    const groupedJobs = productionJobs.reduce((acc, job) => {
+    const groupedJobs = productionJobs.reduce(_(acc, job) => {
       const date = formatDate(job.startTime)
       if (!acc[date]) acc[date] = []
       acc[date].push(job)
@@ -99,7 +99,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline' }) {
                 <div
                   key={job.id}
                   className="relative flex items-start mb-6"
-                  onClick={() => {
+                  _onClick={() => {
                     setSelectedJob(job)
                     onJobClick && onJobClick(job)
                   }}
@@ -202,7 +202,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline' }) {
               <tr
                 key={job.id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-                onClick={() => {
+                _onClick={() => {
                   setSelectedJob(job)
                   onJobClick && onJobClick(job)
                 }}

@@ -84,7 +84,7 @@ export default function ReorderRecommendations({ data, title, onReorderAction })
     }
   }
 
-  const calculateEOQ = (annualDemand, orderCost, holdingCost) => {
+  const calculateEOQ = (annualDemand, orderCost, _holdingCost) => {
     if (!annualDemand || !orderCost || !holdingCost) return null
     return Math.sqrt((2 * annualDemand * orderCost) / holdingCost)
   }
@@ -112,7 +112,7 @@ export default function ReorderRecommendations({ data, title, onReorderAction })
       }
     })
 
-  const handleItemSelection = (itemId) => {
+  const handleItemSelection = (_itemId) => {
     const newSelection = new Set(selectedItems)
     if (newSelection.has(itemId)) {
       newSelection.delete(itemId)
@@ -122,7 +122,7 @@ export default function ReorderRecommendations({ data, title, onReorderAction })
     setSelectedItems(newSelection)
   }
 
-  const handleBulkAction = (action) => {
+  const handleBulkAction = (_action) => {
     const selectedData = filteredData.filter(item => selectedItems.has(item.id))
     selectedData.forEach(item => onReorderAction?.(item, action))
     setSelectedItems(new Set())

@@ -26,11 +26,11 @@ const generateMockData = () => {
 }
 
 export function CashFlowChart({ data, height = 400, showForecast = true }) {
-  const chartData = useMemo(() => {
+  const chartData = useMemo(() {
     return data || generateMockData()
   }, [data])
 
-  const formatCurrency = (value) => {
+  const formatCurrency = (_value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',

@@ -37,7 +37,7 @@ describe('CashFlowChart', () => {
     vi.clearAllMocks()
   })
 
-  it('renders chart with provided cash flow data', () => {
+  it('renders chart with provided cash flow _data', () => {
     render(<CashFlowChart data={mockData} />)
 
     expect(screen.getByTestId('cash-flow-chart')).toBeInTheDocument()
@@ -46,21 +46,21 @@ describe('CashFlowChart', () => {
     )
   })
 
-  it('displays no data message when data is null', () => {
+  it('displays no data message when data is _null', () => {
     render(<CashFlowChart data={null} />)
 
     expect(screen.getByText('No cash flow data available')).toBeInTheDocument()
     expect(screen.queryByTestId('cash-flow-chart')).not.toBeInTheDocument()
   })
 
-  it('displays no data message when data is undefined', () => {
+  it('displays no data message when data is _undefined', () => {
     render(<CashFlowChart />)
 
     expect(screen.getByText('No cash flow data available')).toBeInTheDocument()
     expect(screen.queryByTestId('cash-flow-chart')).not.toBeInTheDocument()
   })
 
-  it('renders three datasets for inflow, outflow, and net cash flow', () => {
+  it('renders three datasets for _inflow, _outflow, and net cash _flow', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartDatasets = screen.getByTestId('chart-datasets')
@@ -72,7 +72,7 @@ describe('CashFlowChart', () => {
     expect(datasets.find(d => d.label === 'Net Cash Flow')).toBeDefined()
   })
 
-  it('configures chart with proper time series options', () => {
+  it('configures chart with proper time series _options', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')
@@ -84,7 +84,7 @@ describe('CashFlowChart', () => {
     expect(options.plugins.title).toHaveProperty('text', 'Cash Flow Analysis')
   })
 
-  it('handles partial data gracefully', () => {
+  it('handles partial data _gracefully', () => {
     const partialData = {
       labels: ['Jan', 'Feb'],
       cashInflow: [100000, 120000],
@@ -100,7 +100,7 @@ describe('CashFlowChart', () => {
     )
   })
 
-  it('handles empty arrays', () => {
+  it('handles empty _arrays', () => {
     const emptyData = {
       labels: [],
       cashInflow: [],
@@ -114,7 +114,7 @@ describe('CashFlowChart', () => {
     expect(screen.getByTestId('chart-labels')).toHaveTextContent(JSON.stringify([]))
   })
 
-  it('formats y-axis with currency values', () => {
+  it('formats y-axis with currency _values', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')
@@ -123,7 +123,7 @@ describe('CashFlowChart', () => {
     expect(options.scales.y.ticks).toHaveProperty('callback')
   })
 
-  it('uses proper colors for different cash flow types', () => {
+  it('uses proper colors for different cash flow _types', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartDatasets = screen.getByTestId('chart-datasets')
@@ -133,7 +133,7 @@ describe('CashFlowChart', () => {
     // Chart should have distinct datasets for different cash flow components
   })
 
-  it('handles negative cash flow values', () => {
+  it('handles negative cash flow _values', () => {
     const negativeFlowData = {
       labels: ['Jan', 'Feb'],
       cashInflow: [50000, 60000],
@@ -151,14 +151,14 @@ describe('CashFlowChart', () => {
     expect(netFlowDataset.data).toEqual([-20000, -20000])
   })
 
-  it('provides proper accessibility attributes', () => {
+  it('provides proper accessibility _attributes', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartElement = screen.getByRole('img')
     expect(chartElement).toHaveAttribute('data-testid', 'cash-flow-chart')
   })
 
-  it('handles very large cash flow amounts', () => {
+  it('handles very large cash flow _amounts', () => {
     const largeAmountData = {
       labels: ['Q1', 'Q2'],
       cashInflow: [10000000, 12000000],
@@ -175,7 +175,7 @@ describe('CashFlowChart', () => {
     expect(datasets.find(d => d.label === 'Cash Inflow').data).toEqual([10000000, 12000000])
   })
 
-  it('configures legend and tooltips appropriately', () => {
+  it('configures legend and tooltips _appropriately', () => {
     render(<CashFlowChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')

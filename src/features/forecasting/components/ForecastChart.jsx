@@ -23,14 +23,14 @@ import {
 } from '@heroicons/react/24/solid'
 
 const ForecastChart = ({
-  data = [],
-  scenarios = {},
-  title = "Forecast Chart",
+  data = _[],
+  scenarios = _{},
+  title = "Forecast _Chart",
   height = 400,
-  showConfidenceBands = true,
-  showScenarios = true,
-  className = "",
-  onDataPointClick,
+  showConfidenceBands = _true,
+  showScenarios = _true,
+  className = _"",
+  _onDataPointClick,
   interactive = true
 }) => {
   const [visibleScenarios, setVisibleScenarios] = React.useState({
@@ -46,7 +46,7 @@ const ForecastChart = ({
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return []
 
-    const processedData = data.map((point, index) => ({
+    const processedData = data.map((point, _index) => ({
       ...point,
       index,
       date: new Date(point.date).toLocaleDateString(),
@@ -68,9 +68,9 @@ const ForecastChart = ({
 
     // Add scenario data if available
     if (showScenarios && scenarios) {
-      Object.entries(scenarios).forEach(([scenarioName, scenarioData]) => {
+      Object.entries(scenarios).forEach(_([scenarioName, _scenarioData]) => {
         if (visibleScenarios[scenarioName] && scenarioData) {
-          scenarioData.forEach((scenarioPoint, index) => {
+          scenarioData.forEach((scenarioPoint, _index) => {
             const existingPoint = processedData[index]
             if (existingPoint) {
               existingPoint[`${scenarioName}Value`] = typeof scenarioPoint.value === 'number'
@@ -144,7 +144,7 @@ const ForecastChart = ({
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
           <p className="font-semibold text-gray-900 dark:text-white mb-2">{label}</p>
           <div className="space-y-1">
-            {payload.map((entry, index) => {
+            _{payload.map((entry, _index) => {
               const [value, name] = formatTooltipValue(entry.value, entry.dataKey)
               return (
                 <div key={index} className="flex justify-between items-center">

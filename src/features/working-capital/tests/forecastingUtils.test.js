@@ -13,7 +13,7 @@ import {
   createScenarioModels
 } from '../utils/forecastingUtils.js'
 
-describe('Time Series Forecaster', () => {
+describe('Time Series _Forecaster', () => {
   let mockData
   let forecaster
 
@@ -29,8 +29,8 @@ describe('Time Series Forecaster', () => {
     forecaster = new TimeSeriesForecaster(mockData)
   })
 
-  describe('Simple Moving Average', () => {
-    it('calculates moving average correctly', () => {
+  describe('Simple Moving _Average', () => {
+    it('calculates moving average _correctly', () => {
       const result = forecaster.simpleMovingAverage(3)
 
       expect(result).toHaveLength(mockData.length)
@@ -45,7 +45,7 @@ describe('Time Series Forecaster', () => {
       expect(result[2].method).toBe('SMA')
     })
 
-    it('handles insufficient data gracefully', () => {
+    it('handles insufficient data _gracefully', () => {
       const smallData = [{ value: 100 }, { value: 110 }]
       const smallForecaster = new TimeSeriesForecaster(smallData)
 
@@ -54,8 +54,8 @@ describe('Time Series Forecaster', () => {
     })
   })
 
-  describe('Exponential Smoothing', () => {
-    it('applies exponential smoothing correctly', () => {
+  describe('Exponential _Smoothing', () => {
+    it('applies exponential smoothing _correctly', () => {
       const result = forecaster.exponentialSmoothing()
 
       expect(result).toHaveLength(mockData.length)
@@ -68,15 +68,15 @@ describe('Time Series Forecaster', () => {
       expect(result[1].method).toBe('ES')
     })
 
-    it('handles empty data', () => {
+    it('handles empty _data', () => {
       const emptyForecaster = new TimeSeriesForecaster([])
       const result = emptyForecaster.exponentialSmoothing()
       expect(result).toEqual([])
     })
   })
 
-  describe('Linear Trend Forecasting', () => {
-    it('generates linear trend forecast', () => {
+  describe('Linear Trend _Forecasting', () => {
+    it('generates linear trend _forecast', () => {
       const result = forecaster.linearTrend(3)
 
       expect(result.length).toBe(mockData.length + 3)
@@ -93,7 +93,7 @@ describe('Time Series Forecaster', () => {
       })
     })
 
-    it('handles insufficient data for trend analysis', () => {
+    it('handles insufficient data for trend _analysis', () => {
       const singlePoint = [{ date: '2024-01-01', value: 100, period: 'Jan' }]
       const singleForecaster = new TimeSeriesForecaster(singlePoint)
 
@@ -101,7 +101,7 @@ describe('Time Series Forecaster', () => {
       expect(result).toEqual(singlePoint)
     })
 
-    it('calculates confidence levels correctly', () => {
+    it('calculates confidence levels _correctly', () => {
       const result = forecaster.linearTrend(5)
       const forecastValues = result.filter(item => item.isForecast)
 
@@ -112,8 +112,8 @@ describe('Time Series Forecaster', () => {
     })
   })
 
-  describe('Seasonal Forecasting', () => {
-    it('applies seasonal forecasting when sufficient data', () => {
+  describe('Seasonal _Forecasting', () => {
+    it('applies seasonal forecasting when sufficient _data', () => {
       // Create data with 24 periods for seasonal analysis
       const seasonalData = Array.from({ length: 24 }, (_, i) => ({
         date: new Date(2024, i, 1).toISOString(),
@@ -137,7 +137,7 @@ describe('Time Series Forecaster', () => {
       })
     })
 
-    it('falls back to linear trend with insufficient seasonal data', () => {
+    it('falls back to linear trend with insufficient seasonal _data', () => {
       const result = forecaster.seasonalForecast(3)
 
       // Should fallback to linear trend
@@ -147,7 +147,7 @@ describe('Time Series Forecaster', () => {
       })
     })
 
-    it('calculates seasonal indices correctly', () => {
+    it('calculates seasonal indices _correctly', () => {
       const seasonalData = Array.from({ length: 24 }, (_, i) => ({
         date: new Date(2024, i, 1).toISOString(),
         value: 100 + (i % 12) * 10, // Clear seasonal pattern
@@ -166,13 +166,13 @@ describe('Time Series Forecaster', () => {
       })
 
       // Indices should sum to approximately the number of periods
-      const sum = indices.reduce((a, b) => a + b, 0)
+      const sum = indices.reduce((a, _b) => a + b, 0)
       expect(sum).toBeCloseTo(12, 1)
     })
   })
 })
 
-describe('Cash Flow Forecaster', () => {
+describe('Cash Flow _Forecaster', () => {
   let mockHistoricalData
   let forecaster
 
@@ -186,8 +186,8 @@ describe('Cash Flow Forecaster', () => {
     forecaster = new CashFlowForecaster(mockHistoricalData)
   })
 
-  describe('Monte Carlo Simulation', () => {
-    it('generates monte carlo forecast with statistics', () => {
+  describe('Monte Carlo _Simulation', () => {
+    it('generates monte carlo forecast with _statistics', () => {
       const result = forecaster.monteCarloForecast(100) // Reduced iterations for testing
 
       expect(result.statistics.mean).toBeDefined()
@@ -206,7 +206,7 @@ describe('Cash Flow Forecaster', () => {
       })
     })
 
-    it('handles custom iterations and periods', () => {
+    it('handles custom iterations and _periods', () => {
       const customForecaster = new CashFlowForecaster(mockHistoricalData, {
         forecastPeriods: 6
       })
@@ -217,8 +217,8 @@ describe('Cash Flow Forecaster', () => {
     })
   })
 
-  describe('Scenario Forecasting', () => {
-    it('generates base scenario forecast', () => {
+  describe('Scenario _Forecasting', () => {
+    it('generates base scenario _forecast', () => {
       const result = forecaster.generateScenarioForecast('base', 0)
 
       expect(result.period).toBe(1)
@@ -229,7 +229,7 @@ describe('Cash Flow Forecaster', () => {
       expect(result.confidence).toBeLessThanOrEqual(1)
     })
 
-    it('applies optimistic scenario adjustments', () => {
+    it('applies optimistic scenario _adjustments', () => {
       const baseResult = forecaster.generateScenarioForecast('base', 0)
       const optimisticResult = forecaster.generateScenarioForecast('optimistic', 0)
 
@@ -239,7 +239,7 @@ describe('Cash Flow Forecaster', () => {
       expect(optimisticResult.scenario).toBe('optimistic')
     })
 
-    it('applies pessimistic scenario adjustments', () => {
+    it('applies pessimistic scenario _adjustments', () => {
       const baseResult = forecaster.generateScenarioForecast('base', 0)
       const pessimisticResult = forecaster.generateScenarioForecast('pessimistic', 0)
 
@@ -249,7 +249,7 @@ describe('Cash Flow Forecaster', () => {
       expect(pessimisticResult.scenario).toBe('pessimistic')
     })
 
-    it('applies stressed scenario adjustments', () => {
+    it('applies stressed scenario _adjustments', () => {
       const baseResult = forecaster.generateScenarioForecast('base', 0)
       const stressedResult = forecaster.generateScenarioForecast('stressed', 0)
 
@@ -260,8 +260,8 @@ describe('Cash Flow Forecaster', () => {
     })
   })
 
-  describe('Base Metrics Calculation', () => {
-    it('calculates base metrics correctly', () => {
+  describe('Base Metrics _Calculation', () => {
+    it('calculates base metrics _correctly', () => {
       const metrics = forecaster.calculateBaseMetrics()
 
       expect(metrics.avgInflow).toBeCloseTo(158750, 0) // Average of mock data
@@ -270,7 +270,7 @@ describe('Cash Flow Forecaster', () => {
       expect(metrics.outflowVolatility).toBeGreaterThan(0)
     })
 
-    it('calculates volatility correctly', () => {
+    it('calculates volatility _correctly', () => {
       const values = [100, 110, 90, 120, 80]
       const volatility = forecaster.calculateVolatility(values)
 
@@ -279,8 +279,8 @@ describe('Cash Flow Forecaster', () => {
     })
   })
 
-  describe('Seasonal Factors', () => {
-    it('applies seasonal patterns correctly', () => {
+  describe('Seasonal _Factors', () => {
+    it('applies seasonal patterns _correctly', () => {
       const januaryFactor = forecaster.getSeasonalFactor(0)
       const julyFactor = forecaster.getSeasonalFactor(6)
 
@@ -295,7 +295,7 @@ describe('Cash Flow Forecaster', () => {
   })
 })
 
-describe('Working Capital Optimizer', () => {
+describe('Working Capital _Optimizer', () => {
   let optimizer
   let currentMetrics
   let industryBenchmarks
@@ -322,8 +322,8 @@ describe('Working Capital Optimizer', () => {
     optimizer = new WorkingCapitalOptimizer(currentMetrics, industryBenchmarks)
   })
 
-  describe('Optimization Opportunities Calculation', () => {
-    it('identifies DSO optimization opportunities', () => {
+  describe('Optimization Opportunities _Calculation', () => {
+    it('identifies DSO optimization _opportunities', () => {
       const opportunities = optimizer.calculateOptimizationOpportunities()
 
       const dsoOpportunity = opportunities.find(opp => opp.metric === 'DSO')
@@ -335,7 +335,7 @@ describe('Working Capital Optimizer', () => {
       expect(dsoOpportunity.priority).toBeDefined()
     })
 
-    it('identifies DIO optimization opportunities', () => {
+    it('identifies DIO optimization _opportunities', () => {
       const opportunities = optimizer.calculateOptimizationOpportunities()
 
       const dioOpportunity = opportunities.find(opp => opp.metric === 'DIO')
@@ -345,7 +345,7 @@ describe('Working Capital Optimizer', () => {
       expect(dioOpportunity.improvement).toBe(5)
     })
 
-    it('identifies DPO optimization opportunities', () => {
+    it('identifies DPO optimization _opportunities', () => {
       const opportunities = optimizer.calculateOptimizationOpportunities()
 
       const dpoOpportunity = opportunities.find(opp => opp.metric === 'DPO')
@@ -376,8 +376,8 @@ describe('Working Capital Optimizer', () => {
     })
   })
 
-  describe('Recommendation Generation', () => {
-    it('generates DSO recommendations based on improvement needed', () => {
+  describe('Recommendation _Generation', () => {
+    it('generates DSO recommendations based on improvement _needed', () => {
       const recommendations = optimizer.getDSORecommendations(15)
 
       expect(recommendations).toContain('Implement automated payment reminders')
@@ -385,14 +385,14 @@ describe('Working Capital Optimizer', () => {
       expect(recommendations.length).toBeGreaterThan(1)
     })
 
-    it('generates appropriate DIO recommendations', () => {
+    it('generates appropriate DIO _recommendations', () => {
       const recommendations = optimizer.getDIORecommendations(20)
 
       expect(recommendations).toContain('Implement ABC analysis for inventory classification')
       expect(recommendations.length).toBeGreaterThan(0)
     })
 
-    it('generates appropriate DPO recommendations', () => {
+    it('generates appropriate DPO _recommendations', () => {
       const recommendations = optimizer.getDPORecommendations(12)
 
       expect(recommendations).toContain('Negotiate extended payment terms with key suppliers')
@@ -401,8 +401,8 @@ describe('Working Capital Optimizer', () => {
     })
   })
 
-  describe('Impact Calculation', () => {
-    it('calculates total optimization impact correctly', () => {
+  describe('Impact _Calculation', () => {
+    it('calculates total optimization impact _correctly', () => {
       const opportunities = optimizer.calculateOptimizationOpportunities()
       const impact = optimizer.calculateOptimizationImpact(opportunities)
 
@@ -413,7 +413,7 @@ describe('Working Capital Optimizer', () => {
       expect(impact.roi).toBeGreaterThan(0)
     })
 
-    it('calculates CCC improvements correctly', () => {
+    it('calculates CCC improvements _correctly', () => {
       const opportunities = [
         { metric: 'DSO', improvement: 10 },
         { metric: 'DIO', improvement: 5 },
@@ -428,9 +428,9 @@ describe('Working Capital Optimizer', () => {
   })
 })
 
-describe('Forecasting Utilities', () => {
+describe('Forecasting _Utilities', () => {
   describe('generateCashFlowForecast', () => {
-    it('generates comprehensive cash flow forecast', () => {
+    it('generates comprehensive cash flow _forecast', () => {
       const historicalData = [
         { cashInflow: 150000, cashOutflow: 120000, netCashFlow: 30000 },
         { cashInflow: 160000, cashOutflow: 125000, netCashFlow: 35000 }
@@ -445,7 +445,7 @@ describe('Forecasting Utilities', () => {
       expect(result.base).toHaveLength(6)
     })
 
-    it('includes Monte Carlo simulation when requested', () => {
+    it('includes Monte Carlo simulation when _requested', () => {
       const result = generateCashFlowForecast([], {
         includeMonteCarlo: true,
         iterations: 100
@@ -457,7 +457,7 @@ describe('Forecasting Utilities', () => {
   })
 
   describe('assessCashFlowRisk', () => {
-    it('identifies cash shortage risks', () => {
+    it('identifies cash shortage _risks', () => {
       const forecastData = [
         { cumulativeCash: 20000, netCashFlow: -10000 },
         { cumulativeCash: 10000, netCashFlow: -5000 },
@@ -472,7 +472,7 @@ describe('Forecasting Utilities', () => {
       expect(result.summary.totalRisks).toBe(result.risks.length)
     })
 
-    it('calculates volatility correctly', () => {
+    it('calculates volatility _correctly', () => {
       const forecastData = [
         { netCashFlow: 30000 },
         { netCashFlow: -20000 },
@@ -485,7 +485,7 @@ describe('Forecasting Utilities', () => {
       expect(result.summary.volatility).toBeGreaterThan(0)
     })
 
-    it('uses custom thresholds', () => {
+    it('uses custom _thresholds', () => {
       const forecastData = [{ cumulativeCash: 30000 }]
       const customThresholds = { criticalCash: 50000 }
 
@@ -497,7 +497,7 @@ describe('Forecasting Utilities', () => {
   })
 
   describe('createScenarioModels', () => {
-    it('creates multiple scenario models', () => {
+    it('creates multiple scenario _models', () => {
       const baseData = [
         { dso: 35, dio: 30, dpo: 35, ccc: 30 }
       ]
@@ -513,7 +513,7 @@ describe('Forecasting Utilities', () => {
       expect(result.stressed[0].scenarioAdjusted).toBe(true)
     })
 
-    it('applies scenario adjustments correctly', () => {
+    it('applies scenario adjustments _correctly', () => {
       const baseData = [{ dso: 40, dio: 30, dpo: 35, ccc: 35 }]
 
       const result = createScenarioModels(baseData)
@@ -529,7 +529,7 @@ describe('Forecasting Utilities', () => {
       expect(result.pessimistic[0].dpo).toBeLessThan(baseData[0].dpo)
     })
 
-    it('recalculates CCC after adjustments', () => {
+    it('recalculates CCC after _adjustments', () => {
       const baseData = [{ dso: 40, dio: 30, dpo: 35, ccc: 35 }]
 
       const result = createScenarioModels(baseData)
@@ -541,7 +541,7 @@ describe('Forecasting Utilities', () => {
       })
     })
 
-    it('includes scenario metadata', () => {
+    it('includes scenario _metadata', () => {
       const baseData = [{ dso: 40 }]
 
       const result = createScenarioModels(baseData)

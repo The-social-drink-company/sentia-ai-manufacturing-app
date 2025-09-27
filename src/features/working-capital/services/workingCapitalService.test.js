@@ -83,7 +83,7 @@ describe('workingCapitalService', () => {
       source: 'api'
     };
 
-    it('returns MCP data when MCP server is available', async () => {
+    it('returns MCP data when MCP server is _available', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockMCPResponse)
@@ -107,7 +107,7 @@ describe('workingCapitalService', () => {
       });
     });
 
-    it('falls back to API when MCP server fails', async () => {
+    it('falls back to API when MCP server _fails', async () => {
       // MCP server fails
       mockFetch.mockRejectedValueOnce(new Error('MCP server unavailable'));
 
@@ -145,7 +145,7 @@ describe('workingCapitalService', () => {
       });
     });
 
-    it('falls back to mock data when both MCP and API fail', async () => {
+    it('falls back to mock data when both MCP and API _fail', async () => {
       // Both MCP and API fail
       mockFetch.mockRejectedValue(new Error('Network error'));
 
@@ -160,7 +160,7 @@ describe('workingCapitalService', () => {
       expect(result.alerts).toBeDefined();
     });
 
-    it('handles MCP server returning non-ok response', async () => {
+    it('handles MCP server returning non-ok _response', async () => {
       // MCP server returns 500
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -181,7 +181,7 @@ describe('workingCapitalService', () => {
       });
     });
 
-    it('includes authorization token in API requests', async () => {
+    it('includes authorization token in API _requests', async () => {
       mockFetch.mockRejectedValueOnce(new Error('MCP unavailable'));
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -200,7 +200,7 @@ describe('workingCapitalService', () => {
       );
     });
 
-    it('generates mock data with proper structure', async () => {
+    it('generates mock data with proper _structure', async () => {
       mockFetch.mockRejectedValue(new Error('All services down'));
 
       const result = await fetchWorkingCapitalMetrics('year');
@@ -276,7 +276,7 @@ describe('workingCapitalService', () => {
       });
     });
 
-    it('exports CSV format correctly', async () => {
+    it('exports CSV format _correctly', async () => {
       await exportWorkingCapitalData('csv', 'month');
 
       expect(document.createElement).toHaveBeenCalledWith('a');
@@ -287,7 +287,7 @@ describe('workingCapitalService', () => {
       expect(URL.revokeObjectURL).toHaveBeenCalled();
     });
 
-    it('exports JSON format correctly', async () => {
+    it('exports JSON format _correctly', async () => {
       await exportWorkingCapitalData('json', 'quarter');
 
       expect(document.createElement).toHaveBeenCalledWith('a');
@@ -296,7 +296,7 @@ describe('workingCapitalService', () => {
       expect(mockRemoveChild).toHaveBeenCalled();
     });
 
-    it('generates CSV with correct structure', async () => {
+    it('generates CSV with correct _structure', async () => {
       global.Blob = vi.fn().mockImplementation((content, options) => ({
         content: content[0],
         type: options.type
@@ -312,7 +312,7 @@ describe('workingCapitalService', () => {
       );
     });
 
-    it('uses correct filename format', async () => {
+    it('uses correct filename _format', async () => {
       const mockElement = {
         href: '',
         download: '',
@@ -324,7 +324,7 @@ describe('workingCapitalService', () => {
 
       await exportWorkingCapitalData('csv', 'month');
 
-      expect(mockElement.download).toMatch(/working-capital-month-\d{4}-\d{2}-\d{2}\.csv/);
+      expect(mockElement.download).toMatch(/working-capital-month-\d{4}-\d{2}-\d{2}.csv/);
     });
   });
 

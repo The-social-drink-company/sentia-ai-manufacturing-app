@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import CashConversionCycle from '../components/CashConversionCycle'
 
-describe('CashConversionCycle', () => {
+describe('CashConversionCycle', () {
   const mockData = {
     dso: 42, // Days Sales Outstanding
     dio: 28, // Days Inventory Outstanding
@@ -17,11 +17,11 @@ describe('CashConversionCycle', () => {
     }
   }
 
-  beforeEach(() => {
+  beforeEach(() {
     vi.clearAllMocks()
   })
 
-  it('renders cash conversion cycle metrics', () => {
+  it('renders cash conversion cycle _metrics', () {
     render(<CashConversionCycle data={mockData} />)
 
     expect(screen.getByText('Cash Conversion Cycle')).toBeInTheDocument()
@@ -50,7 +50,7 @@ describe('CashConversionCycle', () => {
     expect(screen.getByText('35')).toBeInTheDocument()
   })
 
-  it('shows trend indicators for each metric', () => {
+  it('shows trend indicators for each _metric', () {
     render(<CashConversionCycle data={mockData} />)
 
     // Should show trend indicators (up/down arrows or similar)
@@ -60,19 +60,19 @@ describe('CashConversionCycle', () => {
     expect(screen.getByText('-1.2')).toBeInTheDocument() // CCC trend
   })
 
-  it('displays no data message when data is null', () => {
+  it('displays no data message when data is _null', () {
     render(<CashConversionCycle data={null} />)
 
     expect(screen.getByText(/No cash conversion cycle data available/i)).toBeInTheDocument()
   })
 
-  it('displays no data message when data is undefined', () => {
+  it('displays no data message when data is _undefined', () {
     render(<CashConversionCycle />)
 
     expect(screen.getByText(/No cash conversion cycle data available/i)).toBeInTheDocument()
   })
 
-  it('handles missing trend data gracefully', () => {
+  it('handles missing trend data _gracefully', () {
     const dataWithoutTrend = {
       dso: 42,
       dio: 28,
@@ -88,7 +88,7 @@ describe('CashConversionCycle', () => {
     // Should not crash when trend data is missing
   })
 
-  it('calculates CCC correctly when individual components provided', () => {
+  it('calculates CCC correctly when individual components _provided', () {
     const componentData = {
       dso: 45,
       dio: 30,
@@ -102,7 +102,7 @@ describe('CashConversionCycle', () => {
     expect(screen.getByText('35')).toBeInTheDocument()
   })
 
-  it('handles zero values correctly', () => {
+  it('handles zero values _correctly', () {
     const zeroData = {
       dso: 0,
       dio: 0,
@@ -122,7 +122,7 @@ describe('CashConversionCycle', () => {
     expect(screen.getAllByText('0')).toHaveLength(8) // 4 values + 4 trend values
   })
 
-  it('applies appropriate styling for positive/negative trends', () => {
+  it('applies appropriate styling for positive/negative _trends', () {
     render(<CashConversionCycle data={mockData} />)
 
     // Check for presence of trend indicators
@@ -130,7 +130,7 @@ describe('CashConversionCycle', () => {
     expect(container).toBeInTheDocument()
   })
 
-  it('shows improvement indicators for better CCC', () => {
+  it('shows improvement indicators for better _CCC', () {
     const improvingData = {
       dso: 42,
       dio: 28,
@@ -152,7 +152,7 @@ describe('CashConversionCycle', () => {
     expect(screen.getByText('-6.0')).toBeInTheDocument()
   })
 
-  it('handles very large cycle values', () => {
+  it('handles very large cycle _values', () {
     const largeCycleData = {
       dso: 120,
       dio: 90,
@@ -174,14 +174,14 @@ describe('CashConversionCycle', () => {
     expect(screen.getByText('60')).toBeInTheDocument()
   })
 
-  it('provides helpful tooltips or explanations', () => {
+  it('provides helpful tooltips or _explanations', () {
     render(<CashConversionCycle data={mockData} />)
 
     // Should have explanatory text about what CCC means
     expect(screen.getByText('Cash Conversion Cycle')).toBeInTheDocument()
   })
 
-  it('renders with proper accessibility attributes', () => {
+  it('renders with proper accessibility _attributes', () {
     render(<CashConversionCycle data={mockData} />)
 
     const container = screen.getByText('Cash Conversion Cycle').closest('div')

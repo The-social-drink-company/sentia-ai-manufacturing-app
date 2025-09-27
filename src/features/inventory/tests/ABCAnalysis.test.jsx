@@ -19,7 +19,7 @@ vi.mock('recharts', () => ({
   TreeMap: vi.fn(() => <div data-testid="tree-map" />)
 }))
 
-describe('ABCAnalysis', () => {
+describe('ABCAnalysis', () {
   const mockData = [
     { sku: 'SKU001', name: 'Product A', unitCost: 100, quantity: 500, category: 'electronics' },
     { sku: 'SKU002', name: 'Product B', unitCost: 50, quantity: 200, category: 'components' },
@@ -28,35 +28,35 @@ describe('ABCAnalysis', () => {
     { sku: 'SKU005', name: 'Product E', unitCost: 10, quantity: 1000, category: 'supplies' }
   ]
 
-  beforeEach(() => {
+  beforeEach(() {
     vi.clearAllMocks()
   })
 
-  it('renders ABC analysis with title', () => {
+  it('renders ABC analysis with _title', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis Dashboard" />)
 
     expect(screen.getByText('ABC Analysis Dashboard')).toBeInTheDocument()
   })
 
-  it('displays no data message when data is empty', () => {
+  it('displays no data message when data is _empty', () {
     render(<ABCAnalysis data={[]} title="ABC Analysis" />)
 
     expect(screen.getByText('No inventory data available for ABC analysis')).toBeInTheDocument()
   })
 
-  it('displays no data message when data is null', () => {
+  it('displays no data message when data is _null', () {
     render(<ABCAnalysis data={null} title="ABC Analysis" />)
 
     expect(screen.getByText('No inventory data available for ABC analysis')).toBeInTheDocument()
   })
 
-  it('displays no data message when data is undefined', () => {
+  it('displays no data message when data is _undefined', () {
     render(<ABCAnalysis title="ABC Analysis" />)
 
     expect(screen.getByText('No inventory data available for ABC analysis')).toBeInTheDocument()
   })
 
-  it('renders view mode selector buttons', () => {
+  it('renders view mode selector _buttons', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     expect(screen.getByRole('button', { name: /chart/i })).toBeInTheDocument()
@@ -64,21 +64,21 @@ describe('ABCAnalysis', () => {
     expect(screen.getByRole('button', { name: /treemap/i })).toBeInTheDocument()
   })
 
-  it('renders category filter dropdown', () => {
+  it('renders category filter _dropdown', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     const categorySelect = screen.getByDisplayValue('All Categories')
     expect(categorySelect).toBeInTheDocument()
   })
 
-  it('renders sort by dropdown', () => {
+  it('renders sort by _dropdown', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     const sortSelect = screen.getByDisplayValue('Value')
     expect(sortSelect).toBeInTheDocument()
   })
 
-  it('switches to table view when table button is clicked', () => {
+  it('switches to table view when table button is _clicked', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     const tableButton = screen.getByRole('button', { name: /table/i })
@@ -91,7 +91,7 @@ describe('ABCAnalysis', () => {
     expect(screen.getByText('Class')).toBeInTheDocument()
   })
 
-  it('switches to treemap view when treemap button is clicked', () => {
+  it('switches to treemap view when treemap button is _clicked', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     const treemapButton = screen.getByRole('button', { name: /treemap/i })
@@ -100,7 +100,7 @@ describe('ABCAnalysis', () => {
     expect(screen.getByTestId('tree-map')).toBeInTheDocument()
   })
 
-  it('filters by category when category is selected', () => {
+  it('filters by category when category is _selected', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     const categorySelect = screen.getByDisplayValue('All Categories')
@@ -109,7 +109,7 @@ describe('ABCAnalysis', () => {
     expect(categorySelect.value).toBe('A')
   })
 
-  it('changes sort order when sort by is changed', () => {
+  it('changes sort order when sort by is _changed', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     const sortSelect = screen.getByDisplayValue('Value')
@@ -118,7 +118,7 @@ describe('ABCAnalysis', () => {
     expect(sortSelect.value).toBe('quantity')
   })
 
-  it('displays ABC classification summary', () => {
+  it('displays ABC classification _summary', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     // Should show summary statistics for A, B, C categories
@@ -127,7 +127,7 @@ describe('ABCAnalysis', () => {
     expect(screen.getByText(/Class C/i)).toBeInTheDocument()
   })
 
-  it('handles products with zero or missing values', () => {
+  it('handles products with zero or missing _values', () {
     const dataWithZeros = [
       { sku: 'SKU001', name: 'Product A', unitCost: 0, quantity: 100 },
       { sku: 'SKU002', name: 'Product B', unitCost: 50, quantity: 0 },
@@ -140,7 +140,7 @@ describe('ABCAnalysis', () => {
     // Should not crash with zero or null values
   })
 
-  it('calculates ABC classification correctly', () => {
+  it('calculates ABC classification _correctly', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     // Switch to table view to see classifications
@@ -152,21 +152,21 @@ describe('ABCAnalysis', () => {
     expect(tableBody).toBeInTheDocument()
   })
 
-  it('displays value and percentage information', () => {
+  it('displays value and percentage _information', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     // Should show percentage information in the summary
     expect(screen.getByText(/%/)).toBeInTheDocument()
   })
 
-  it('renders responsive chart container', () => {
+  it('renders responsive chart _container', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
     expect(screen.getByTestId('bar-chart')).toBeInTheDocument()
   })
 
-  it('handles very large inventory datasets', () => {
+  it('handles very large inventory _datasets', () {
     const largeDataset = Array.from({ length: 1000 }, (_, i) => ({
       sku: `SKU${i.toString().padStart(4, '0')}`,
       name: `Product ${i}`,
@@ -181,7 +181,7 @@ describe('ABCAnalysis', () => {
     // Should handle large datasets without performance issues
   })
 
-  it('provides export functionality for ABC data', () => {
+  it('provides export functionality for ABC _data', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     // Look for export button
@@ -191,14 +191,14 @@ describe('ABCAnalysis', () => {
     }
   })
 
-  it('shows appropriate icons for different ABC classes', () => {
+  it('shows appropriate icons for different ABC _classes', () {
     render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     // Should have appropriate visual indicators for A, B, C classes
     expect(screen.getByText('ABC Analysis')).toBeInTheDocument()
   })
 
-  it('handles missing product names gracefully', () => {
+  it('handles missing product names _gracefully', () {
     const dataWithMissingNames = [
       { sku: 'SKU001', unitCost: 100, quantity: 500 },
       { sku: 'SKU002', name: '', unitCost: 50, quantity: 200 },
@@ -211,7 +211,7 @@ describe('ABCAnalysis', () => {
     // Should handle missing product names without crashing
   })
 
-  it('updates classification when data changes', () => {
+  it('updates classification when data _changes', () {
     const { rerender } = render(<ABCAnalysis data={mockData} title="ABC Analysis" />)
 
     const newData = [

@@ -132,7 +132,7 @@ class IoTSensorService {
 
   // Connect via WebSocket
   connectWebSocket() {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       try {
         this.websocket = new WebSocket(IOT_CONFIG.wsEndpoint)
 

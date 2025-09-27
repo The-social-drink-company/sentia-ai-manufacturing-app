@@ -5,7 +5,7 @@ export default function CashFlowForecast({ data, period = 'current' }) {
   const [forecastPeriod, setForecastPeriod] = useState('30')
 
   // Mock forecast data if not provided
-  const generateForecastData = (days) => {
+  const generateForecastData = (_days) => {
     const startDate = new Date()
     const forecast = []
     let runningBalance = 150000 // Starting cash balance
@@ -45,7 +45,7 @@ export default function CashFlowForecast({ data, period = 'current' }) {
 
   const forecastData = data || generateForecastData(forecastPeriod)
 
-  const formatCurrency = (value) => {
+  const formatCurrency = (_value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -180,7 +180,7 @@ export default function CashFlowForecast({ data, period = 'current' }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {forecastData.slice(0, 30).map((day, index) => (
+              {forecastData.slice(0, 30).map((day, _index) => (
                 <tr key={day.date} className={`${
                   day.runningBalance < 50000 ? 'bg-red-50 dark:bg-red-900/10' : ''
                 }`}>

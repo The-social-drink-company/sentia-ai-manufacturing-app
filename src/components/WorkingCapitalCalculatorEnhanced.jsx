@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
 import { logError } from '../utils/structuredLogger.js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -100,7 +99,7 @@ const WorkingCapitalCalculatorEnhanced = () => {
       const data = lines.slice(1).map(line => {
         const values = line.split(',')
         const row = {}
-        headers.forEach((header, index) => {
+        headers.forEach(_(header, _index) => {
           row[header.trim()] = values[index]?.trim()
         })
         return row
@@ -512,7 +511,7 @@ const WorkingCapitalCalculatorEnhanced = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {boardTalkingPoints.map((point, index) => (
+                    {boardTalkingPoints.map((point, _index) => (
                       <div key={index} className="flex items-start space-x-2">
                         <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-slate-700 dark:text-slate-300">{point}</p>
@@ -684,7 +683,7 @@ const WorkingCapitalCalculatorEnhanced = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {workingCapitalLevers.map((lever, index) => (
+                  {workingCapitalLevers.map((lever, _index) => (
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="font-semibold text-sm">{lever.title}</h4>
@@ -725,7 +724,7 @@ const WorkingCapitalCalculatorEnhanced = () => {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {pieData.map((entry, index) => (
+                      {pieData.map((entry, _index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -733,7 +732,7 @@ const WorkingCapitalCalculatorEnhanced = () => {
                   </RechartsPieChart>
                 </ResponsiveContainer>
                 <div className="mt-4 space-y-2">
-                  {pieData.map((entry, index) => (
+                  {pieData.map((entry, _index) => (
                     <div key={index} className="flex items-center justify-between text-sm">
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }}></div>

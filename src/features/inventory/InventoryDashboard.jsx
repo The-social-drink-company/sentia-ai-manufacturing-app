@@ -37,8 +37,8 @@ export default function InventoryDashboard() {
   }
 
   // Auto-refresh every 30 seconds for inventory data
-  useEffect(() => {
-    const interval = setInterval(() => {
+  useEffect(() {
+    const interval = setInterval(() {
       refetch()
     }, 30 * 1000) // 30 seconds for real-time inventory
     return () => clearInterval(interval)
@@ -79,7 +79,7 @@ export default function InventoryDashboard() {
     )
   }
 
-  const handleExport = async (format) => {
+  const handleExport = async (_format) => {
     try {
       await exportData(format)
     } catch (err) {
@@ -188,7 +188,7 @@ export default function InventoryDashboard() {
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Critical Inventory Alerts</h2>
             <div className="space-y-3">
-              {alerts.map((alert, index) => (
+              {alerts.map((alert, _index) => (
                 <div
                   key={index}
                   className={`p-4 rounded-lg border flex items-start ${

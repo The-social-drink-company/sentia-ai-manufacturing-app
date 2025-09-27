@@ -20,7 +20,7 @@ describe('ExecutiveStore', () => {
     vi.clearAllMocks();
   });
 
-  it('initializes with empty state', () => {
+  it('initializes with empty _state', () => {
     const state = useExecutiveStore.getState();
 
     expect(state.metrics).toEqual({});
@@ -30,7 +30,7 @@ describe('ExecutiveStore', () => {
     expect(state.error).toBe(null);
   });
 
-  it('fetches executive metrics successfully', async () => {
+  it('fetches executive metrics _successfully', async () => {
     const mockResponse = {
       data: {
         metrics: {
@@ -60,7 +60,7 @@ describe('ExecutiveStore', () => {
     expect(state.lastUpdated).toBeTruthy();
   });
 
-  it('handles fetch errors', async () => {
+  it('handles fetch _errors', async () => {
     const errorMessage = 'Network Error';
     mockedAxios.get.mockRejectedValueOnce(new Error(errorMessage));
 
@@ -73,7 +73,7 @@ describe('ExecutiveStore', () => {
     expect(state.loading).toBe(false);
   });
 
-  it('updates metric correctly', () => {
+  it('updates metric _correctly', () => {
     const { updateMetric } = useExecutiveStore.getState();
     const metricUpdate = {
       id: 'revenue',
@@ -89,7 +89,7 @@ describe('ExecutiveStore', () => {
     expect(state.lastUpdated).toBeTruthy();
   });
 
-  it('adds alert correctly', () => {
+  it('adds alert _correctly', () => {
     const { addAlert } = useExecutiveStore.getState();
     const newAlert = {
       severity: 'warning',
@@ -106,7 +106,7 @@ describe('ExecutiveStore', () => {
     expect(state.alerts[0].timestamp).toBeTruthy();
   });
 
-  it('dismisses alert correctly', () => {
+  it('dismisses alert _correctly', () => {
     // First add an alert
     const { addAlert, dismissAlert } = useExecutiveStore.getState();
     addAlert({ severity: 'info', title: 'Test Alert' });
@@ -121,7 +121,7 @@ describe('ExecutiveStore', () => {
     expect(state.alerts).toHaveLength(0);
   });
 
-  it('updates preferences correctly', () => {
+  it('updates preferences _correctly', () => {
     const { updatePreferences } = useExecutiveStore.getState();
     const newPreferences = {
       layout: 'compact',
@@ -135,7 +135,7 @@ describe('ExecutiveStore', () => {
     expect(state.preferences.kpiSelection).toEqual(['revenue', 'cashFlow']);
   });
 
-  it('calculates current ratio correctly', () => {
+  it('calculates current ratio _correctly', () => {
     const { calculateCurrentRatio } = useExecutiveStore.getState();
 
     // Set up test data
@@ -154,7 +154,7 @@ describe('ExecutiveStore', () => {
     expect(state.metrics.currentRatio.target).toBe(2.0);
   });
 
-  it('calculates quick ratio correctly', () => {
+  it('calculates quick ratio _correctly', () => {
     const { calculateQuickRatio } = useExecutiveStore.getState();
 
     // Set up test data
@@ -174,7 +174,7 @@ describe('ExecutiveStore', () => {
     expect(state.metrics.quickRatio.target).toBe(1.0);
   });
 
-  it('calculates cash unlock correctly', () => {
+  it('calculates cash unlock _correctly', () => {
     const { calculateCashUnlock } = useExecutiveStore.getState();
 
     // Set up test data
@@ -195,7 +195,7 @@ describe('ExecutiveStore', () => {
     expect(cashUnlock).toBe(3500000);
   });
 
-  it('generates mock data correctly', () => {
+  it('generates mock data _correctly', () => {
     const { generateMockData } = useExecutiveStore.getState();
 
     generateMockData();

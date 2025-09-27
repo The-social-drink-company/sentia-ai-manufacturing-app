@@ -20,11 +20,11 @@ const generateMockInventory = () => {
 }
 
 export function InventoryHeatmap({ data, onCellClick }) {
-  const inventoryData = useMemo(() => {
+  const inventoryData = useMemo(() {
     return data || generateMockInventory()
   }, [data])
 
-  const locations = useMemo(() => {
+  const locations = useMemo(() {
     if (inventoryData.length > 0) {
       return inventoryData[0].locations.map(l => l.location)
     }
@@ -121,7 +121,7 @@ export function InventoryHeatmap({ data, onCellClick }) {
             <div className="grid grid-cols-10 gap-1 mt-2 pt-2 border-t">
               <div className="col-span-2 px-2 py-1 text-sm font-semibold">Location Total</div>
               {locations.map(location => {
-                const locationTotal = inventoryData.reduce((sum, item) => {
+                const locationTotal = _inventoryData.reduce((sum, item) => {
                   const loc = item.locations.find(l => l.location === location)
                   return sum + (loc?.quantity || 0)
                 }, 0)

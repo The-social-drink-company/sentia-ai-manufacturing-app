@@ -86,7 +86,7 @@ export default function SlowMovingStock({ data }) {
     return <ClockIcon className="h-4 w-4 text-orange-600 dark:text-orange-400" />
   }
 
-  const formatCurrency = (value) => {
+  const formatCurrency = (_value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -102,7 +102,7 @@ export default function SlowMovingStock({ data }) {
   }
 
   // Sort by urgency and days on hand
-  const sortedData = [...mockData].sort((a, b) => {
+  const sortedData = [...mockData].sort(_(a, b) => {
     const urgencyOrder = { critical: 3, high: 2, medium: 1, low: 0 }
     if (urgencyOrder[a.urgency] !== urgencyOrder[b.urgency]) {
       return urgencyOrder[b.urgency] - urgencyOrder[a.urgency]

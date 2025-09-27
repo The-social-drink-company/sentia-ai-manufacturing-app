@@ -19,7 +19,7 @@ const Analytics = () => {
   const [lastUpdate, setLastUpdate] = useState(null);
   const [selectedTimeframe, setSelectedTimeframe] = useState('7');
 
-  useEffect(() => {
+  useEffect(() {
     const initializeAnalytics = async () => {
       try {
         setLoading(true);
@@ -50,7 +50,7 @@ const Analytics = () => {
   };
 
   // Auto-refresh every 30 seconds
-  useEffect(() => {
+  useEffect(() {
     const interval = setInterval(fetchAnalyticsData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -67,7 +67,7 @@ const Analytics = () => {
     return 'bg-red-500';
   };
 
-  const getTrendIcon = (trend) => {
+  const getTrendIcon = (_trend) => {
     switch (trend) {
       case 'improving':
         return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
@@ -343,7 +343,7 @@ const Analytics = () => {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Improvement Recommendations</h2>
           <div className="space-y-4">
-            {analyticsData.recommendations.map((rec, index) => (
+            {analyticsData.recommendations.map((rec, _index) => (
               <div
                 key={index}
                 className={`border-l-4 p-4 rounded-lg ${
@@ -373,7 +373,7 @@ const Analytics = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-1">Recommended Actions:</p>
                       <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                        {rec.actions.map((action, actionIndex) => (
+                        {rec.actions.map((action, _actionIndex) => (
                           <li key={actionIndex}>{action}</li>
                         ))}
                       </ul>

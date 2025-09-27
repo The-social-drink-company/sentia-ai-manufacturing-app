@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import ReorderRecommendations from '../components/ReorderRecommendations'
 
-describe('ReorderRecommendations', () => {
+describe('ReorderRecommendations', () {
   const mockRecommendations = [
     {
       sku: 'SKU001',
@@ -43,35 +43,35 @@ describe('ReorderRecommendations', () => {
     }
   ]
 
-  beforeEach(() => {
+  beforeEach(() {
     vi.clearAllMocks()
   })
 
-  it('renders reorder recommendations title', () => {
+  it('renders reorder recommendations _title', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText(/Reorder Recommendations/i)).toBeInTheDocument()
   })
 
-  it('displays no data message when recommendations array is empty', () => {
+  it('displays no data message when recommendations array is _empty', () {
     render(<ReorderRecommendations data={[]} />)
 
     expect(screen.getByText(/No reorder recommendations at this time/i)).toBeInTheDocument()
   })
 
-  it('displays no data message when data is null', () => {
+  it('displays no data message when data is _null', () {
     render(<ReorderRecommendations data={null} />)
 
     expect(screen.getByText(/No reorder recommendations at this time/i)).toBeInTheDocument()
   })
 
-  it('displays no data message when data is undefined', () => {
+  it('displays no data message when data is _undefined', () {
     render(<ReorderRecommendations />)
 
     expect(screen.getByText(/No reorder recommendations at this time/i)).toBeInTheDocument()
   })
 
-  it('renders all recommendation items', () => {
+  it('renders all recommendation _items', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText('Product A')).toBeInTheDocument()
@@ -79,7 +79,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText('Product C')).toBeInTheDocument()
   })
 
-  it('displays SKU information for each item', () => {
+  it('displays SKU information for each _item', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText('SKU001')).toBeInTheDocument()
@@ -87,7 +87,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText('SKU003')).toBeInTheDocument()
   })
 
-  it('shows current stock levels', () => {
+  it('shows current stock _levels', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText('50')).toBeInTheDocument()  // Current stock for Product A
@@ -95,7 +95,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText('120')).toBeInTheDocument() // Current stock for Product C
   })
 
-  it('displays suggested order quantities', () => {
+  it('displays suggested order _quantities', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText('200')).toBeInTheDocument() // Suggested quantity for Product A
@@ -103,7 +103,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText('300')).toBeInTheDocument() // Suggested quantity for Product C
   })
 
-  it('shows urgency levels with appropriate styling', () => {
+  it('shows urgency levels with appropriate _styling', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText(/high/i)).toBeInTheDocument()
@@ -111,7 +111,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText(/low/i)).toBeInTheDocument()
   })
 
-  it('displays lead time information', () => {
+  it('displays lead time _information', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText('14')).toBeInTheDocument() // Lead time for Product A
@@ -119,7 +119,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText('7')).toBeInTheDocument()  // Lead time for Product C
   })
 
-  it('shows supplier information', () => {
+  it('shows supplier _information', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText('Supplier A')).toBeInTheDocument()
@@ -127,7 +127,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText('Supplier C')).toBeInTheDocument()
   })
 
-  it('displays estimated costs', () => {
+  it('displays estimated _costs', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText(/10,000/)).toBeInTheDocument()
@@ -135,7 +135,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText(/15,000/)).toBeInTheDocument()
   })
 
-  it('shows days until stockout', () => {
+  it('shows days until _stockout', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     expect(screen.getByText('5')).toBeInTheDocument()  // Days until stockout for Product A
@@ -143,7 +143,7 @@ describe('ReorderRecommendations', () => {
     expect(screen.getByText('18')).toBeInTheDocument() // Days until stockout for Product C
   })
 
-  it('provides action buttons for each recommendation', () => {
+  it('provides action buttons for each _recommendation', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     const orderButtons = screen.getAllByText(/order now/i)
@@ -153,7 +153,7 @@ describe('ReorderRecommendations', () => {
     expect(viewDetailsButtons).toHaveLength(3)
   })
 
-  it('handles order now button clicks', () => {
+  it('handles order now button _clicks', () {
     const mockOnOrder = vi.fn()
     render(<ReorderRecommendations data={mockRecommendations} onOrderNow={mockOnOrder} />)
 
@@ -163,7 +163,7 @@ describe('ReorderRecommendations', () => {
     expect(mockOnOrder).toHaveBeenCalledWith(mockRecommendations[0])
   })
 
-  it('sorts recommendations by urgency by default', () => {
+  it('sorts recommendations by urgency by _default', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     const items = screen.getAllByTestId(/recommendation-item/i)
@@ -171,14 +171,14 @@ describe('ReorderRecommendations', () => {
     expect(items[0]).toHaveTextContent('Product A') // high urgency
   })
 
-  it('provides filtering options', () => {
+  it('provides filtering _options', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     const urgencyFilter = screen.getByDisplayValue(/all urgency/i)
     expect(urgencyFilter).toBeInTheDocument()
   })
 
-  it('filters by urgency level', () => {
+  it('filters by urgency _level', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     const urgencyFilter = screen.getByDisplayValue(/all urgency/i)
@@ -189,14 +189,14 @@ describe('ReorderRecommendations', () => {
     expect(screen.queryByText('Product C')).not.toBeInTheDocument()
   })
 
-  it('displays total recommended order value', () => {
+  it('displays total recommended order _value', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     // Should show sum of all recommendation costs
     expect(screen.getByText(/32,500/)).toBeInTheDocument() // 10000 + 7500 + 15000
   })
 
-  it('handles missing optional fields gracefully', () => {
+  it('handles missing optional fields _gracefully', () {
     const incompleteData = [
       {
         sku: 'SKU001',
@@ -214,7 +214,7 @@ describe('ReorderRecommendations', () => {
     // Should not crash with missing fields
   })
 
-  it('provides export functionality for recommendations', () => {
+  it('provides export functionality for _recommendations', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     const exportButton = screen.queryByText(/export/i)
@@ -223,7 +223,7 @@ describe('ReorderRecommendations', () => {
     }
   })
 
-  it('shows visual indicators for critical items', () => {
+  it('shows visual indicators for critical _items', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     // High urgency items should have visual indicators
@@ -231,7 +231,7 @@ describe('ReorderRecommendations', () => {
     expect(criticalItems.length).toBeGreaterThan(0)
   })
 
-  it('handles very large recommendation lists', () => {
+  it('handles very large recommendation _lists', () {
     const largeDataset = Array.from({ length: 100 }, (_, i) => ({
       sku: `SKU${i.toString().padStart(3, '0')}`,
       name: `Product ${i}`,
@@ -247,7 +247,7 @@ describe('ReorderRecommendations', () => {
     // Should handle large datasets with pagination or virtualization
   })
 
-  it('provides bulk action capabilities', () => {
+  it('provides bulk action _capabilities', () {
     render(<ReorderRecommendations data={mockRecommendations} />)
 
     const selectAllCheckbox = screen.queryByLabelText(/select all/i)
@@ -261,7 +261,7 @@ describe('ReorderRecommendations', () => {
     }
   })
 
-  it('updates recommendations when data changes', () => {
+  it('updates recommendations when data _changes', () {
     const { rerender } = render(<ReorderRecommendations data={mockRecommendations} />)
 
     const newRecommendations = [

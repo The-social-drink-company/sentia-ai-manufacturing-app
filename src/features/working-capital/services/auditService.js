@@ -77,7 +77,7 @@ class AuditLogger {
 
     // Set up beforeunload to flush remaining logs
     if (typeof window !== 'undefined') {
-      window.addEventListener('beforeunload', () => {
+      window.addEventListener('beforeunload', _() => {
         this.flush(true) // Synchronous flush on page unload
       })
     }
@@ -472,7 +472,7 @@ export const auditService = {
 
 // React hook for audit logging
 export const useAuditLogger = () => {
-  const logAction = (eventType, details, severity, compliance) => {
+  const logAction = (_eventType, details, severity, compliance) => {
     return auditService.logEvent(eventType, details, severity, compliance)
   }
 

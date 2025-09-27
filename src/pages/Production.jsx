@@ -34,7 +34,7 @@ const Production = () => {
 
   // Fetch production data with real-time updates
   const { data: productionData, isLoading, refetch } = useQuery({
-    queryKey: ['production', selectedLine, timeRange],
+    queryKey: _['production', _selectedLine, _timeRange],
     queryFn: async () => {
       try {
         const response = await fetch(`/api/production/overview?line=${selectedLine}&range=${timeRange}`, {
@@ -55,7 +55,7 @@ const Production = () => {
 
   // Fetch personnel data for production
   const { data: personnel } = useQuery({
-    queryKey: ['personnel-production'],
+    queryKey: _['personnel-production'],
     queryFn: async () => {
       try {
         const response = await fetch('/api/personnel/for-task/production_operator');
@@ -307,7 +307,7 @@ const Production = () => {
     }
   };
 
-  const formatTime = (dateString) => {
+  const formatTime = (_dateString) => {
     return new Date(dateString).toLocaleTimeString('en-GB', {
       hour: '2-digit',
       minute: '2-digit'
@@ -326,7 +326,7 @@ const Production = () => {
         <div className="animate-pulse">
           <div className="h-8 bg-gray-300 rounded w-1/3 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
+            {[...Array(8)].map((_, _i) => (
               <div key={i} className="h-32 bg-gray-300 rounded"></div>
             ))}
           </div>

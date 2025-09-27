@@ -7,7 +7,7 @@ import { useEffect, useCallback, useRef } from 'react'
 import { useAuth } from '../../../hooks/useAuth'
 import { auditService, AUDIT_EVENTS, AUDIT_SEVERITY, COMPLIANCE_STANDARDS } from '../services/auditService'
 
-export const useAuditTrail = (componentName) => {
+export const useAuditTrail = (_componentName) => {
   const { user } = useAuth()
   const componentMountTime = useRef(Date.now())
   const sessionActions = useRef([])
@@ -49,7 +49,7 @@ export const useAuditTrail = (componentName) => {
   }, [user, componentName])
 
   // Track user actions within the component
-  const trackAction = useCallback((action, details = {}) => {
+  const trackAction = useCallback(_(action, details = _{}) => {
     const actionId = auditService.logEvent(
       action,
       {
@@ -71,7 +71,7 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Log data access events
-  const logDataAccess = useCallback((dataType, details = {}) => {
+  const logDataAccess = useCallback(_(dataType, details = _{}) => {
     return auditService.logEvent(
       AUDIT_EVENTS.DATA_VIEW,
       {
@@ -88,7 +88,7 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Log export actions with high compliance requirements
-  const logExport = useCallback((format, details = {}) => {
+  const logExport = useCallback(_(format, details = _{}) => {
     return auditService.logDataExport(format, {
       component: componentName,
       includeForecasts: details.includeForecasts,
@@ -101,7 +101,7 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Log configuration changes
-  const logConfigChange = useCallback((setting, oldValue, newValue, reason = '') => {
+  const logConfigChange = useCallback(_(setting, _oldValue, _newValue, reason = _'') => {
     return auditService.logSettingsUpdate(
       setting,
       oldValue,
@@ -115,7 +115,7 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Log errors with context
-  const logError = useCallback((error, context = {}) => {
+  const logError = useCallback(_(error, context = _{}) => {
     return auditService.logError(error, {
       component: componentName,
       userAction: context.action,
@@ -126,7 +126,7 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Log performance metrics
-  const logPerformance = useCallback((metric, value, threshold, context = {}) => {
+  const logPerformance = useCallback(_(metric, _value, _threshold, context = _{}) => {
     return auditService.logPerformanceIssue(
       metric,
       value,
@@ -141,7 +141,7 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Log forecast generation
-  const logForecastGeneration = useCallback((forecastType, options = {}) => {
+  const logForecastGeneration = useCallback(_(forecastType, options = _{}) => {
     return auditService.logForecastGeneration(forecastType, {
       component: componentName,
       userInitiated: true,
@@ -150,7 +150,7 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Log recommendation actions
-  const logRecommendationAction = useCallback((recommendationId, action, details = {}) => {
+  const logRecommendationAction = useCallback(_(recommendationId, action, details = _{}) => {
     return auditService.logRecommendationAction(recommendationId, action, {
       component: componentName,
       userInitiated: true,
@@ -160,7 +160,7 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Log API interactions
-  const logAPICall = useCallback((endpoint, method, status, details = {}) => {
+  const logAPICall = useCallback(_(endpoint, method, status, details = _{}) => {
     const eventType = status >= 400 ? AUDIT_EVENTS.API_FAILURE : AUDIT_EVENTS.DATA_VIEW
     const severity = status >= 500 ? AUDIT_SEVERITY.CRITICAL
                    : status >= 400 ? AUDIT_SEVERITY.ERROR
@@ -184,10 +184,10 @@ export const useAuditTrail = (componentName) => {
   }, [componentName])
 
   // Batch logging for multiple actions
-  const logBatch = useCallback((actions) => {
+  const logBatch = useCallback(_(actions) => {
     const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    actions.forEach((actionData, index) => {
+    actions.forEach(_(actionData, _index) => {
       auditService.logEvent(
         actionData.eventType,
         {
@@ -237,7 +237,7 @@ export const useDashboardAudit = () => {
   const audit = useAuditTrail('WorkingCapitalDashboard')
 
   // Dashboard-specific logging functions
-  const logDashboardLoad = useCallback((loadTime, dataPoints) => {
+  const logDashboardLoad = useCallback(_(loadTime, _dataPoints) => {
     return audit.logPerformance('dashboard_load_time', loadTime, 3000, {
       action: 'dashboard_load',
       dataPoints,
@@ -245,15 +245,15 @@ export const useDashboardAudit = () => {
     })
   }, [audit])
 
-  const logPeriodChange = useCallback((oldPeriod, newPeriod) => {
+  const logPeriodChange = useCallback(_(oldPeriod, _newPeriod) => {
     return audit.logConfigChange('reporting_period', oldPeriod, newPeriod, 'user_selection')
   }, [audit])
 
-  const logCurrencyChange = useCallback((oldCurrency, newCurrency) => {
+  const logCurrencyChange = useCallback(_(oldCurrency, _newCurrency) => {
     return audit.logConfigChange('display_currency', oldCurrency, newCurrency, 'user_selection')
   }, [audit])
 
-  const logMetricRefresh = useCallback((source, recordsUpdated) => {
+  const logMetricRefresh = useCallback(_(source, _recordsUpdated) => {
     return auditService.logDataRefresh(source, {
       component: 'WorkingCapitalDashboard',
       type: 'manual',
@@ -262,7 +262,7 @@ export const useDashboardAudit = () => {
     })
   }, [])
 
-  const logAlertInteraction = useCallback((alertId, action) => {
+  const logAlertInteraction = useCallback(_(alertId, action) => {
     return audit.trackAction(AUDIT_EVENTS.RECOMMENDATION_VIEW, {
       alertId,
       alertAction: action,
@@ -284,7 +284,7 @@ export const useDashboardAudit = () => {
 export const useExportAudit = () => {
   const audit = useAuditTrail('ExportService')
 
-  const logExportAttempt = useCallback((format, options = {}) => {
+  const logExportAttempt = useCallback(_(format, options = _{}) => {
     return audit.logExport(format, {
       exportOptions: options,
       userInitiated: true,
@@ -292,7 +292,7 @@ export const useExportAudit = () => {
     })
   }, [audit])
 
-  const logExportSuccess = useCallback((format, fileSize, duration) => {
+  const logExportSuccess = useCallback(_(format, _fileSize, _duration) => {
     return audit.trackAction(AUDIT_EVENTS.DATA_EXPORT, {
       format,
       fileSize,
@@ -301,7 +301,7 @@ export const useExportAudit = () => {
     })
   }, [audit])
 
-  const logExportFailure = useCallback((format, error, context = {}) => {
+  const logExportFailure = useCallback(_(format, _error, context = _{}) => {
     return audit.logError(error, {
       format,
       exportAttempt: true,
@@ -321,14 +321,14 @@ export const useExportAudit = () => {
 export const useForecastAudit = () => {
   const audit = useAuditTrail('ForecastService')
 
-  const logForecastRequest = useCallback((forecastType, parameters) => {
+  const logForecastRequest = useCallback(_(forecastType, _parameters) => {
     return audit.logForecastGeneration(forecastType, {
       parameters,
       requestTimestamp: new Date().toISOString()
     })
   }, [audit])
 
-  const logForecastCompletion = useCallback((forecastType, duration, accuracy) => {
+  const logForecastCompletion = useCallback(_(forecastType, _duration, _accuracy) => {
     return audit.trackAction(AUDIT_EVENTS.FORECAST_GENERATE, {
       forecastType,
       processingDuration: duration,
@@ -337,7 +337,7 @@ export const useForecastAudit = () => {
     })
   }, [audit])
 
-  const logScenarioCreation = useCallback((scenarioName, parameters) => {
+  const logScenarioCreation = useCallback(_(scenarioName, _parameters) => {
     return audit.trackAction(AUDIT_EVENTS.SCENARIO_CREATE, {
       scenarioName,
       parameters,
@@ -345,7 +345,7 @@ export const useForecastAudit = () => {
     })
   }, [audit])
 
-  const logRiskAssessment = useCallback((riskLevel, riskCount, methodology) => {
+  const logRiskAssessment = useCallback(_(riskLevel, _riskCount, _methodology) => {
     return auditService.logRiskAssessment(riskLevel, [], {
       component: 'ForecastService',
       riskCount,

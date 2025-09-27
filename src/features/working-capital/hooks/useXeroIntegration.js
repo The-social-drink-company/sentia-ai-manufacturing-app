@@ -68,7 +68,7 @@ export const useXeroIntegration = () => {
 
   // Disconnect mutation
   const disconnectMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async _() => {
       audit.trackAction('xero_disconnect_attempt')
       xeroService.disconnect()
       const newStatus = xeroService.getConnectionStatus()
@@ -111,13 +111,13 @@ export const useXeroIntegration = () => {
 }
 
 // Hook for fetching accounts receivable data from Xero
-export const useXeroAccountsReceivable = (options = {}) => {
+export const useXeroAccountsReceivable = (options = _{}) => {
   const { isConnected } = useXeroIntegration()
   const audit = useAuditTrail('XeroAccountsReceivable')
 
   return useQuery({
-    queryKey: ['xero', 'accounts-receivable', options],
-    queryFn: async () => {
+    queryKey: _['xero', 'accounts-receivable', _options],
+    queryFn: async _() => {
       audit.logDataAccess('accounts_receivable', { source: 'xero_api' })
       const startTime = performance.now()
 
@@ -151,13 +151,13 @@ export const useXeroAccountsReceivable = (options = {}) => {
 }
 
 // Hook for fetching accounts payable data from Xero
-export const useXeroAccountsPayable = (options = {}) => {
+export const useXeroAccountsPayable = (options = _{}) => {
   const { isConnected } = useXeroIntegration()
   const audit = useAuditTrail('XeroAccountsPayable')
 
   return useQuery({
-    queryKey: ['xero', 'accounts-payable', options],
-    queryFn: async () => {
+    queryKey: _['xero', 'accounts-payable', _options],
+    queryFn: async _() => {
       audit.logDataAccess('accounts_payable', { source: 'xero_api' })
       const startTime = performance.now()
 
@@ -195,8 +195,8 @@ export const useXeroCashAccounts = () => {
   const audit = useAuditTrail('XeroCashAccounts')
 
   return useQuery({
-    queryKey: ['xero', 'cash-accounts'],
-    queryFn: async () => {
+    queryKey: _['xero', 'cash-accounts'],
+    queryFn: async _() => {
       audit.logDataAccess('cash_accounts', { source: 'xero_api' })
       const startTime = performance.now()
 
@@ -230,8 +230,8 @@ export const useXeroBalanceSheet = () => {
   const audit = useAuditTrail('XeroBalanceSheet')
 
   return useQuery({
-    queryKey: ['xero', 'balance-sheet'],
-    queryFn: async () => {
+    queryKey: _['xero', 'balance-sheet'],
+    queryFn: async _() => {
       audit.logDataAccess('balance_sheet', { source: 'xero_api' })
       const startTime = performance.now()
 
@@ -260,13 +260,13 @@ export const useXeroBalanceSheet = () => {
 }
 
 // Hook for fetching profit and loss data
-export const useXeroProfitLoss = (periods = 12) => {
+export const useXeroProfitLoss = (periods = _12) => {
   const { isConnected } = useXeroIntegration()
   const audit = useAuditTrail('XeroProfitLoss')
 
   return useQuery({
-    queryKey: ['xero', 'profit-loss', periods],
-    queryFn: async () => {
+    queryKey: _['xero', 'profit-loss', _periods],
+    queryFn: async _() => {
       audit.logDataAccess('profit_loss', { source: 'xero_api', periods })
       const startTime = performance.now()
 
@@ -358,7 +358,7 @@ export const useXeroWorkingCapitalData = () => {
   }, [arQuery.data, apQuery.data, balanceSheetQuery.data, audit])
 
   // Refresh all data
-  const refetch = useCallback(async () => {
+  const refetch = useCallback(async _() => {
     audit.trackAction('xero_data_refresh', { userInitiated: true })
 
     const promises = [

@@ -6,7 +6,7 @@
 import { TimeSeriesForecaster, CashFlowForecaster, WorkingCapitalOptimizer } from '../models/FinancialForecastModels.js'
 
 // Cash flow forecasting utilities
-export const generateCashFlowForecast = (historicalData, options = {}) => {
+export const generateCashFlowForecast = (_historicalData, options = _{}) => {
   const forecaster = new CashFlowForecaster(historicalData, options)
   const scenarios = ['base', 'optimistic', 'pessimistic']
 
@@ -28,7 +28,7 @@ export const generateCashFlowForecast = (historicalData, options = {}) => {
 }
 
 // Working Capital metrics forecasting
-export const forecastWorkingCapitalMetrics = (historicalMetrics, options = {}) => {
+export const forecastWorkingCapitalMetrics = (historicalMetrics, options = _{}) => {
   const dsoForecaster = new TimeSeriesForecaster(
     historicalMetrics.map(m => ({ date: m.date, value: m.dso, period: m.period })),
     { smoothingFactor: 0.3 }
@@ -74,7 +74,7 @@ export const forecastWorkingCapitalMetrics = (historicalMetrics, options = {}) =
 }
 
 // Generate optimization recommendations
-export const generateOptimizationRecommendations = (currentMetrics, industryBenchmarks = {}) => {
+export const generateOptimizationRecommendations = (_currentMetrics, industryBenchmarks = _{}) => {
   const optimizer = new WorkingCapitalOptimizer(currentMetrics, industryBenchmarks)
   const opportunities = optimizer.calculateOptimizationOpportunities()
   const impact = optimizer.calculateOptimizationImpact(opportunities)
@@ -93,7 +93,7 @@ export const generateOptimizationRecommendations = (currentMetrics, industryBenc
 }
 
 // Risk assessment utilities
-export const assessCashFlowRisk = (forecastData, thresholds = {}) => {
+export const assessCashFlowRisk = (forecastData, thresholds = _{}) => {
   const defaultThresholds = {
     criticalCash: 25000,
     lowCash: 75000,
@@ -147,7 +147,7 @@ export const assessCashFlowRisk = (forecastData, thresholds = {}) => {
     .map(f => f.netCashFlow)
 
   if (cashFlows.length > 1) {
-    const mean = cashFlows.reduce((a, b) => a + b, 0) / cashFlows.length
+    const mean = cashFlows.reduce((a, _b) => a + b, 0) / cashFlows.length
     const variance = cashFlows.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / cashFlows.length
     const volatility = Math.sqrt(variance) / Math.abs(mean)
 
@@ -194,14 +194,14 @@ export const assessCashFlowRisk = (forecastData, thresholds = {}) => {
       criticalRisks: risks.filter(r => r.severity === 'critical').length,
       warningRisks: risks.filter(r => r.severity === 'warning').length,
       volatility: cashFlows.length > 1 ? Math.sqrt(
-        cashFlows.reduce((sum, value) => sum + Math.pow(value - (cashFlows.reduce((a, b) => a + b, 0) / cashFlows.length), 2), 0) / cashFlows.length
-      ) / Math.abs(cashFlows.reduce((a, b) => a + b, 0) / cashFlows.length) : 0
+        cashFlows.reduce((sum, value) => sum + Math.pow(value - (cashFlows.reduce((a, _b) => a + b, 0) / cashFlows.length), 2), 0) / cashFlows.length
+      ) / Math.abs(cashFlows.reduce((a, _b) => a + b, 0) / cashFlows.length) : 0
     }
   }
 }
 
 // Scenario modeling utilities
-export const createScenarioModels = (baseData, scenarioDefinitions = {}) => {
+export const createScenarioModels = (baseData, scenarioDefinitions = _{}) => {
   const defaultScenarios = {
     optimistic: {
       name: 'Optimistic',
@@ -241,7 +241,7 @@ export const createScenarioModels = (baseData, scenarioDefinitions = {}) => {
   const scenarios = { ...defaultScenarios, ...scenarioDefinitions }
   const results = {}
 
-  Object.entries(scenarios).forEach(([key, scenario]) => {
+  Object.entries(scenarios).forEach(_([key, scenario]) => {
     results[key] = applyScenarioAdjustments(baseData, scenario.adjustments)
     results[key].scenarioInfo = {
       name: scenario.name,

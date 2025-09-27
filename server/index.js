@@ -529,7 +529,7 @@ function broadcastSSE(eventType, data) {
 global.broadcastSSE = broadcastSSE;
 
 // Serve static files from dist directory
-const distPath = path.join(__dirname, 'dist');
+const distPath = path.join(process.cwd(), 'dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 

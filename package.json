@@ -59,7 +59,7 @@
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
     "lint:check": "pnpm dlx eslint src server --max-warnings 0",
-    "prepare": "husky"
+    "prepare": "node -e \"try { require('husky') } catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e }\" && husky || true"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

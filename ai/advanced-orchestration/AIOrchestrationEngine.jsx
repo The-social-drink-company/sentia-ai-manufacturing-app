@@ -353,7 +353,7 @@ const AIOrchestrationDashboard = () => {
     return () => clearInterval(interval);
   }, [orchestrator]);
 
-  const executeTask = useCallback(async (taskType, prompt, data) => {
+  const executeTask = useCallback(async _(taskType, _prompt, data) => {
     setActiveTask({ taskType, prompt, status: 'running', startTime: Date.now() });
     
     try {
@@ -444,7 +444,7 @@ const AIOrchestrationDashboard = () => {
 
       {/* Model Status Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Object.entries(AI_MODELS).map(([key, model]) => {
+        {Object.entries(AI_MODELS).map(_([key, model]) => {
           const status = metrics.modelStatus[key];
           const performance = metrics.modelPerformance[key];
           
@@ -542,7 +542,7 @@ const AIOrchestrationDashboard = () => {
           <div>
             <h3 className="font-medium text-gray-900 dark:text-white mb-3">Recent Tasks</h3>
             <div className="space-y-2">
-              {taskHistory.map((task, index) => (
+              {taskHistory.map((task, _index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded">
                   <span className="text-sm text-gray-900 dark:text-white">Task {task.taskId}</span>
                   <div className="flex items-center space-x-2 text-sm">

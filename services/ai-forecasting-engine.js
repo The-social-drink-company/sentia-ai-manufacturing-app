@@ -692,8 +692,8 @@ class AIForecastingEngine {
     
     // Simple linear regression
     const n = x.length;
-    const sumX = x.reduce((a, b) => a + b, 0);
-    const sumY = y.reduce((a, b) => a + b, 0);
+    const sumX = x.reduce((a, _b) => a + b, 0);
+    const sumY = y.reduce((a, _b) => a + b, 0);
     const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
     const sumXX = x.reduce((acc, xi) => acc + xi * xi, 0);
     

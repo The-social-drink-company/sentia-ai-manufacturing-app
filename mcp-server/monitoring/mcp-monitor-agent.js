@@ -44,13 +44,13 @@ const logger = winston.createLogger({
 });
 
 // Structured logging helpers (matching main server pattern)
-const logInfo = (message, meta = {}) => {
+const logInfo = (message, meta = _{}) => {
   if (process.env.NODE_ENV === 'development') {
     logger.info(message, meta);
   }
 };
 
-const logWarn = (message, meta = {}) => {
+const logWarn = (message, meta = _{}) => {
   logger.warn(message, meta);
 };
 
@@ -179,7 +179,7 @@ class MCPMonitorAgent extends EventEmitter {
     });
 
     // Health endpoint
-    this.app.get('/health', (req, res) => {
+    this.app.get(_'/health', (req, res) => {
       res.json({
         status: 'healthy',
         uptime: Math.floor((Date.now() - this.state.startTime) / 1000),
@@ -190,7 +190,7 @@ class MCPMonitorAgent extends EventEmitter {
     });
 
     // Metrics endpoint
-    this.app.get('/metrics', (req, res) => {
+    this.app.get(_'/metrics', (req, res) => {
       const recentMetrics = {
         ...this.metrics,
         checks: this.metrics.checks.slice(-100),
@@ -207,7 +207,7 @@ class MCPMonitorAgent extends EventEmitter {
     });
 
     // Alerts endpoint
-    this.app.get('/alerts', (req, res) => {
+    this.app.get(_'/alerts', (req, res) => {
       res.json({
         active: this.metrics.alerts.filter(a => !a.resolved),
         recent: this.metrics.alerts.slice(-20),
@@ -216,7 +216,7 @@ class MCPMonitorAgent extends EventEmitter {
     });
 
     // Service status endpoint
-    this.app.get('/services/:service', (req, res) => {
+    this.app.get(_'/services/:service', (req, res) => {
       const service = this.services[req.params.service];
       if (!service) {
         return res.status(404).json({ error: 'Service not found' });
@@ -231,7 +231,7 @@ class MCPMonitorAgent extends EventEmitter {
     });
 
     // Dashboard UI
-    this.app.get('/', (req, res) => {
+    this.app.get(_'/', (req, res) => {
       res.send(this.generateDashboardHTML());
     });
 
@@ -250,14 +250,14 @@ class MCPMonitorAgent extends EventEmitter {
     try {
       this.ws = new WebSocket(wsUrl);
 
-      this.ws.on('open', () => {
+      this.ws.on(_'open', () => {
         logInfo('WebSocket connected to MCP server');
         this.services.mcpServer.status = 'connected';
         this.services.mcpServer.lastCheck = Date.now();
         this.emit('ws-connected');
       });
 
-      this.ws.on('message', (data) => {
+      this.ws.on(_'message', (data) => {
         try {
           const message = JSON.parse(data);
           this.handleWebSocketMessage(message);
@@ -272,7 +272,7 @@ class MCPMonitorAgent extends EventEmitter {
         this.services.mcpServer.error = error.message;
       });
 
-      this.ws.on('close', () => {
+      this.ws.on(_'close', () => {
         logWarn('WebSocket disconnected');
         this.services.mcpServer.status = 'disconnected';
 
@@ -1185,7 +1185,7 @@ class MCPMonitorAgent extends EventEmitter {
         }
 
         // Auto-refresh toggle
-        document.getElementById('refresh-toggle').addEventListener('change', (e) => {
+        document.getElementById('refresh-toggle').addEventListener(_'change', (e) => {
             if (e.target.checked) {
                 refreshInterval = setInterval(updateDashboard, 5000);
             } else {
@@ -1226,7 +1226,7 @@ class MCPMonitorAgent extends EventEmitter {
 
       // Close server
       if (this.server) {
-        await new Promise((resolve) => {
+        await new Promise(_(resolve) => {
           this.server.close(resolve);
         });
         this.server = null;
@@ -1251,7 +1251,7 @@ export default MCPMonitorAgent;
 if (import.meta.url === `file://${process.argv[1]}`) {
   const agent = new MCPMonitorAgent();
 
-  agent.on('alert', (alert) => {
+  agent.on(_'alert', (alert) => {
     logWarn('ALERT', alert);
   });
 
@@ -1261,13 +1261,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 
   // Graceful shutdown
-  process.on('SIGINT', async () => {
+  process.on(_'SIGINT', async () => {
     logInfo('Shutting down monitor agent...');
     await agent.stop();
     process.exit(0);
   });
 
-  process.on('SIGTERM', async () => {
+  process.on(_'SIGTERM', async () => {
     logInfo('Shutting down monitor agent...');
     await agent.stop();
     process.exit(0);

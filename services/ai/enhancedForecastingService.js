@@ -581,15 +581,15 @@ class EnhancedForecastingService {
     if (values.length < 2) return 1;
     const recent = values.slice(-10);
     const older = values.slice(-20, -10);
-    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
-    const olderAvg = older.reduce((a, b) => a + b, 0) / older.length;
+    const recentAvg = recent.reduce((a, _b) => a + b, 0) / recent.length;
+    const olderAvg = older.reduce((a, _b) => a + b, 0) / older.length;
     return recentAvg / (olderAvg || 1);
   }
 
   calculateSeasonality(values) {
     if (values.length < 7) return 1;
     const weeklyPattern = values.slice(-7);
-    return weeklyPattern.reduce((a, b) => a + b, 0) / (weeklyPattern.length * values[values.length - 1]);
+    return weeklyPattern.reduce((a, _b) => a + b, 0) / (weeklyPattern.length * values[values.length - 1]);
   }
 
   simulateValue(values, trend, seasonal, index) {
@@ -784,7 +784,7 @@ class EnhancedForecastingService {
       throw new Error('Prediction and actual arrays must have same length');
     }
     
-    const mse = predictions.reduce((sum, pred, index) => {
+    const mse = predictions.reduce(_(sum, pred, index) => {
       return sum + Math.pow(pred - actual[index], 2);
     }, 0) / predictions.length;
     

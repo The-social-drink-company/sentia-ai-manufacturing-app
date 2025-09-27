@@ -67,7 +67,7 @@ class AgentMonitor extends EventEmitter {
     this.performHealthCheck();
     
     // Setup monitoring interval
-    this.monitoringInterval = setInterval(() => {
+    this.monitoringInterval = setInterval(_() => {
       this.performHealthCheck();
     }, this.healthCheckInterval);
 
@@ -334,7 +334,7 @@ class AgentMonitor extends EventEmitter {
 const agentMonitor = new AgentMonitor();
 
 // Auto-start monitoring when module is loaded
-process.nextTick(() => {
+process.nextTick(_() => {
   logger.info('Agent Monitor ready for 24/7 operation');
 });
 

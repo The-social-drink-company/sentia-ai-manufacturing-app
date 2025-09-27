@@ -441,18 +441,18 @@ class DualAIOrchestrator extends EventEmitter {
             const claudeWeight = 0.5;
             
             // Combine forecast values
-            const combinedValues = openaiResult.forecast.values.map((value, index) => {
+            const combinedValues = openaiResult.forecast.values.map((value, _index) => {
                 const claudeValue = claudeResult.forecast.values[index];
                 return (value * openaiWeight) + (claudeValue * claudeWeight);
             });
             
             // Combine confidence intervals
-            const combinedLower = openaiResult.forecast.confidence_intervals.lower.map((value, index) => {
+            const combinedLower = openaiResult.forecast.confidence_intervals.lower.map((value, _index) => {
                 const claudeValue = claudeResult.forecast.confidence_intervals.lower[index];
                 return Math.min(value, claudeValue); // Take the more conservative lower bound
             });
             
-            const combinedUpper = openaiResult.forecast.confidence_intervals.upper.map((value, index) => {
+            const combinedUpper = openaiResult.forecast.confidence_intervals.upper.map((value, _index) => {
                 const claudeValue = claudeResult.forecast.confidence_intervals.upper[index];
                 return Math.max(value, claudeValue); // Take the more optimistic upper bound
             });
@@ -700,7 +700,7 @@ class DualAIOrchestrator extends EventEmitter {
     
     combineExternalFactors(factors1, factors2) {
         const combined = [...factors1, ...factors2];
-        const unique = combined.reduce((acc, factor) => {
+        const unique = combined.reduce(_(acc, factor) => {
             const existing = acc.find(f => f.factor === factor.factor);
             if (existing) {
                 existing.impact = (existing.impact + factor.impact) / 2;

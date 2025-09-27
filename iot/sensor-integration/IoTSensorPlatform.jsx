@@ -223,7 +223,7 @@ class IoTSensorPlatform {
   }
 
   collectSensorData() {
-    this.sensors.forEach((sensor, sensorId) => {
+    this.sensors.forEach((sensor, _sensorId) => {
       if (sensor.status !== 'active') return;
 
       const sensorType = SENSOR_TYPES[sensor.type];
@@ -424,7 +424,7 @@ const IoTSensorDashboard = () => {
     return () => clearInterval(interval);
   }, [iotPlatform]);
 
-  const handleAcknowledgeAlert = useCallback((alertId) => {
+  const handleAcknowledgeAlert = useCallback(_(alertId) => {
     iotPlatform.acknowledgeAlert(alertId);
   }, [iotPlatform]);
 
@@ -595,7 +595,7 @@ const IoTSensorDashboard = () => {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Sensor Network</h2>
             
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {metrics.sensors.map((sensor) => {
+              _{metrics.sensors.map((sensor) => {
                 const sensorType = SENSOR_TYPES[sensor.type];
                 const IconComponent = sensorType?.icon || CpuChipIcon;
                 

@@ -279,7 +279,7 @@ export default function AIAnalyticsDashboard() {
               AI Models Performance
             </h3>
             <div className="space-y-3">
-              {aiModels.map((model, index) => (
+              {aiModels.map((model, _index) => (
                 <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
@@ -385,7 +385,7 @@ export default function AIAnalyticsDashboard() {
               { label: 'Generate Insights', icon: LightBulbIcon, color: 'yellow' },
               { label: 'Monitor Performance', icon: EyeIcon, color: 'green' },
               { label: 'System Diagnostics', icon: CommandLineIcon, color: 'purple' }
-            ].map((action, index) => (
+            ].map((action, _index) => (
               <button
                 key={index}
                 className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}

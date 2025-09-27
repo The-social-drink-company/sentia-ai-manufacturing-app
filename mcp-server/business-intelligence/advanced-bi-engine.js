@@ -86,7 +86,7 @@ export class AdvancedBusinessIntelligenceEngine extends EventEmitter {
   
   startRealTimeProcessing() {
     // Real-time KPI monitoring (every 30 seconds)
-    setInterval(async () => {
+    setInterval(async _() => {
       try {
         await this.processRealTimeKPIs();
       } catch (error) {
@@ -95,7 +95,7 @@ export class AdvancedBusinessIntelligenceEngine extends EventEmitter {
     }, 30000);
     
     // Alert processing (every 10 seconds)
-    setInterval(async () => {
+    setInterval(async _() => {
       try {
         await this.processAlerts();
       } catch (error) {
@@ -106,7 +106,7 @@ export class AdvancedBusinessIntelligenceEngine extends EventEmitter {
   
   startPeriodicAnalysis() {
     // Hourly insights generation
-    setInterval(async () => {
+    setInterval(async _() => {
       try {
         await this.generatePeriodicInsights();
       } catch (error) {
@@ -115,7 +115,7 @@ export class AdvancedBusinessIntelligenceEngine extends EventEmitter {
     }, 3600000); // 1 hour
     
     // Daily executive reports
-    setInterval(async () => {
+    setInterval(async _() => {
       try {
         await this.generateExecutiveReports();
       } catch (error) {
@@ -469,7 +469,7 @@ export class AdvancedBusinessIntelligenceEngine extends EventEmitter {
       });
     });
     
-    return actionItems.sort((a, b) => {
+    return actionItems.sort(_(a, b) => {
       const priorityOrder = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1 };
       return priorityOrder[b.priority] - priorityOrder[a.priority];
     });

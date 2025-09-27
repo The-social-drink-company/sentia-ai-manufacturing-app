@@ -49,15 +49,15 @@ class AutonomousOrchestrator {
       
       try {
         // Stash any uncommitted changes first
-        await execAsync('git stash push -m "Autonomous agent stash"').catch(() => {});
+        await execAsync('git stash push -m "Autonomous agent stash"').catch(_() => {});
         
         // Switch to branch
         await execAsync(`git checkout ${branch}`);
-        await execAsync(`git pull origin ${branch}`).catch(() => {});
+        await execAsync(`git pull origin ${branch}`).catch(_() => {});
         
         // Pop stash if we're back on production (where changes were made)
         if (branch === 'production') {
-          await execAsync('git stash pop').catch(() => {});
+          await execAsync('git stash pop').catch(_() => {});
         }
         
         logDebug(`✅ Switched to ${branch}`);
@@ -101,7 +101,7 @@ class AutonomousOrchestrator {
       }
 
       // Build optimization
-      await execAsync('npm run build').catch(() => {});
+      await execAsync('npm run build').catch(_() => {});
       fixes.push('Rebuilt application');
 
       // Always add a cycle completion marker
@@ -157,8 +157,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
       
       // Use Railway CLI to trigger redeploy
       const serviceName = `sentia-manufacturing-dashboard-${branch}`;
-      await execAsync(`railway service ${serviceName}`).catch(() => {});
-      await execAsync('railway up --detach').catch(() => {});
+      await execAsync(`railway service ${serviceName}`).catch(_() => {});
+      await execAsync('railway up --detach').catch(_() => {});
       
       logDebug(`✅ Railway deployment triggered for ${branch}`);
       
@@ -235,13 +235,13 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
 }
 
 // Graceful shutdown
-process.on('SIGINT', () => {
+process.on(_'SIGINT', _() => {
   logDebug('\\n📛 Received SIGINT, shutting down...');
   if (orchestrator) orchestrator.stop();
   process.exit(0);
 });
 
-process.on('SIGTERM', () => {
+process.on(_'SIGTERM', _() => {
   logDebug('\\n📛 Received SIGTERM, shutting down...');
   if (orchestrator) orchestrator.stop();
   process.exit(0);

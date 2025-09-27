@@ -9,13 +9,13 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 
-const RENDER_SERVICES = {
+const RENDERSERVICES = {
   development: 'sentia-manufacturing-development',
   testing: 'sentia-manufacturing-testing',
   production: 'sentia-manufacturing-production'
 };
 
-const ENV_VARS = {
+const ENVVARS = {
   // Clerk Configuration
   VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_REDACTED',
   CLERK_SECRET_KEY: 'sk_live_REDACTED',

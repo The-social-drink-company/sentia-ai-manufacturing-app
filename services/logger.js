@@ -5,7 +5,7 @@ import { existsSync, mkdirSync } from 'fs'
 const { combine, timestamp, printf, colorize, errors } = winston.format
 
 // Custom log format
-const logFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
+const logFormat = printf(({ _level, _message, _timestamp, stack, ...meta }) => {
   let logEntry = `${timestamp} [${level}]: ${message}`
   
   if (stack) {
@@ -81,7 +81,7 @@ if (process.env.NODE_ENV !== 'production' || isRailwayOrRender) {
     format: combine(
       colorize(),
       timestamp({ format: 'HH:mm:ss' }),
-      printf(({ level, message, timestamp, stack }) => {
+      printf(({ _level, _message, _timestamp, stack }) => {
         let logEntry = `${timestamp} [${level}]: ${message}`
         if (stack) {
           logEntry += `\n${stack}`
@@ -93,11 +93,11 @@ if (process.env.NODE_ENV !== 'production' || isRailwayOrRender) {
 }
 
 // Helper functions for different log levels
-export const logInfo = (message, meta = {}) => {
+export const logInfo = (_message, meta = _{}) => {
   logger.info(message, meta)
 }
 
-export const logError = (message, error = null, meta = {}) => {
+export const logError = (_message, error = _null, meta = _{}) => {
   if (error) {
     logger.error(message, { error: error.message, stack: error.stack, ...meta })
   } else {
@@ -105,15 +105,15 @@ export const logError = (message, error = null, meta = {}) => {
   }
 }
 
-export const logWarn = (message, meta = {}) => {
+export const logWarn = (_message, meta = _{}) => {
   logger.warn(message, meta)
 }
 
-export const logDebug = (message, meta = {}) => {
+export const logDebug = (_message, meta = _{}) => {
   logger.debug(message, meta)
 }
 
-export const logHttp = (message, meta = {}) => {
+export const logHttp = (_message, meta = _{}) => {
   logger.http(message, meta)
 }
 

@@ -472,7 +472,7 @@ export const auditService = {
 
 // React hook for audit logging
 export const useAuditLogger = () => {
-  const logAction = (eventType, details, severity, compliance) => {
+  const logAction = (_eventType, details, severity, compliance) => {
     return auditService.logEvent(eventType, details, severity, compliance)
   }
 

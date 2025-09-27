@@ -31,7 +31,7 @@ console.log('- Test data factory: DISABLED');
 console.log('='.repeat(70));
 
 // Start the main server
-import('./server.js').then(() => {
+import('./server.js').then(_() => {
   console.log('Server started successfully');
 }).catch(error => {
   console.error('Server startup failed:', error);

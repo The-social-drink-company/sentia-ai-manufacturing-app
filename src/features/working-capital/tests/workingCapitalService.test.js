@@ -75,7 +75,7 @@ vi.mock('../utils/forecastingUtils.js', () => ({
 // Mock fetch globally
 global.fetch = vi.fn()
 
-describe('Working Capital Service', () => {
+describe('Working Capital _Service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
@@ -92,7 +92,7 @@ describe('Working Capital Service', () => {
   })
 
   describe('fetchWorkingCapitalMetrics', () => {
-    it('returns mock data when API is unavailable', async () => {
+    it('returns mock data when API is _unavailable', async () => {
       const result = await fetchWorkingCapitalMetrics('month')
 
       expect(result).toBeDefined()
@@ -103,7 +103,7 @@ describe('Working Capital Service', () => {
       expect(result).toHaveProperty('inventory')
     })
 
-    it('generates appropriate mock data structure', async () => {
+    it('generates appropriate mock data _structure', async () => {
       const result = await fetchWorkingCapitalMetrics('month')
 
       // Check summary structure
@@ -143,7 +143,7 @@ describe('Working Capital Service', () => {
       expect(quarterResult).toHaveProperty('summary')
     })
 
-    it('attempts MCP API call first', async () => {
+    it('attempts MCP API call _first', async () => {
       await fetchWorkingCapitalMetrics('month')
 
       expect(global.fetch).toHaveBeenCalledWith(
@@ -154,7 +154,7 @@ describe('Working Capital Service', () => {
   })
 
   describe('generateCashFlowForecast', () => {
-    it('generates forecast using forecasting utilities', async () => {
+    it('generates forecast using forecasting _utilities', async () => {
       const result = await generateCashFlowForecast({ periods: 6 })
 
       expect(result.success).toBe(true)
@@ -175,7 +175,7 @@ describe('Working Capital Service', () => {
       expect(result.metadata.periods).toBe(12)
     })
 
-    it('falls back to mock data when API fails', async () => {
+    it('falls back to mock data when API _fails', async () => {
       // Mock API failure
       global.fetch.mockRejectedValue(new Error('API Error'))
 
@@ -186,7 +186,7 @@ describe('Working Capital Service', () => {
       expect(Array.isArray(result.historical)).toBe(true)
     })
 
-    it('handles errors gracefully', async () => {
+    it('handles errors _gracefully', async () => {
       // Mock forecasting utility error
       const { forecastingUtils } = require('../utils/forecastingUtils.js')
       forecastingUtils.generateCashFlowForecast.mockImplementation(() => {
@@ -201,7 +201,7 @@ describe('Working Capital Service', () => {
   })
 
   describe('generateWorkingCapitalForecast', () => {
-    it('generates working capital metrics forecast', async () => {
+    it('generates working capital metrics _forecast', async () => {
       const result = await generateWorkingCapitalForecast({ periods: 6 })
 
       expect(result.success).toBe(true)
@@ -213,7 +213,7 @@ describe('Working Capital Service', () => {
       expect(result.forecast[0]).toHaveProperty('ccc')
     })
 
-    it('uses mock historical data when API unavailable', async () => {
+    it('uses mock historical data when API _unavailable', async () => {
       const result = await generateWorkingCapitalForecast()
 
       expect(result.success).toBe(true)
@@ -223,7 +223,7 @@ describe('Working Capital Service', () => {
   })
 
   describe('generateOptimizationRecommendations', () => {
-    it('generates optimization recommendations', async () => {
+    it('generates optimization _recommendations', async () => {
       const currentMetrics = {
         dso: 42,
         dio: 35,
@@ -241,7 +241,7 @@ describe('Working Capital Service', () => {
       expect(result.summary).toBeDefined()
     })
 
-    it('uses industry benchmarks correctly', async () => {
+    it('uses industry benchmarks _correctly', async () => {
       const currentMetrics = { dso: 45 }
       const customBenchmarks = { dso: 30 }
 
@@ -253,7 +253,7 @@ describe('Working Capital Service', () => {
       expect(result.metadata.benchmarksUsed.dso).toBe(30)
     })
 
-    it('handles errors in recommendation generation', async () => {
+    it('handles errors in recommendation _generation', async () => {
       const { forecastingUtils } = require('../utils/forecastingUtils.js')
       forecastingUtils.generateOptimizationRecommendations.mockImplementation(() => {
         throw new Error('Recommendation error')
@@ -267,7 +267,7 @@ describe('Working Capital Service', () => {
   })
 
   describe('assessCashFlowRisk', () => {
-    it('assesses cash flow risks correctly', async () => {
+    it('assesses cash flow risks _correctly', async () => {
       const forecastData = [
         { netCashFlow: 30000, cumulativeCash: 200000 },
         { netCashFlow: -50000, cumulativeCash: 150000 },
@@ -297,7 +297,7 @@ describe('Working Capital Service', () => {
   })
 
   describe('createScenarioAnalysis', () => {
-    it('creates scenario models correctly', async () => {
+    it('creates scenario models _correctly', async () => {
       const baseData = [
         { dso: 35, dio: 30, dpo: 35, ccc: 30 }
       ]
@@ -311,7 +311,7 @@ describe('Working Capital Service', () => {
       expect(result.baseData).toEqual(baseData)
     })
 
-    it('uses custom scenario definitions', async () => {
+    it('uses custom scenario _definitions', async () => {
       const baseData = [{ dso: 35 }]
       const customScenarios = {
         custom: {
@@ -329,7 +329,7 @@ describe('Working Capital Service', () => {
   })
 
   describe('exportWorkingCapitalData', () => {
-    it('exports data in CSV format', async () => {
+    it('exports data in CSV _format', async () => {
       // Mock the export service
       const mockExportService = {
         exportWorkingCapitalData: vi.fn().mockResolvedValue({
@@ -386,7 +386,7 @@ describe('Working Capital Service', () => {
       expect(mockAnchor.click).toHaveBeenCalled()
     })
 
-    it('includes forecast data when requested', async () => {
+    it('includes forecast data when _requested', async () => {
       const mockExportService = {
         exportWorkingCapitalData: vi.fn().mockResolvedValue({ success: true })
       }
@@ -401,7 +401,7 @@ describe('Working Capital Service', () => {
       expect(forecastingUtils.generateCashFlowForecast).toHaveBeenCalled()
     })
 
-    it('includes recommendations when requested', async () => {
+    it('includes recommendations when _requested', async () => {
       const mockExportService = {
         exportWorkingCapitalData: vi.fn().mockResolvedValue({ success: true })
       }
@@ -417,8 +417,8 @@ describe('Working Capital Service', () => {
     })
   })
 
-  describe('Mock Data Generation', () => {
-    it('generates realistic mock data ranges', async () => {
+  describe('Mock Data _Generation', () => {
+    it('generates realistic mock data _ranges', async () => {
       const result = await fetchWorkingCapitalMetrics('month')
 
       // Check that values are within realistic ranges
@@ -436,7 +436,7 @@ describe('Working Capital Service', () => {
       expect(result.payables.dpo).toBeLessThanOrEqual(50)
     })
 
-    it('maintains consistency in aging data', async () => {
+    it('maintains consistency in aging _data', async () => {
       const result = await fetchWorkingCapitalMetrics('month')
 
       // AR aging should add up to total

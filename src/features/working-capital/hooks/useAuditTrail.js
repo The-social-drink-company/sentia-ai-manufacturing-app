@@ -7,7 +7,7 @@ import { useEffect, useCallback, useRef } from 'react'
 import { useAuth } from '../../../hooks/useAuth'
 import { auditService, AUDIT_EVENTS, AUDIT_SEVERITY, COMPLIANCE_STANDARDS } from '../services/auditService'
 
-export const useAuditTrail = (componentName) => {
+export const useAuditTrail = (_componentName) => {
   const { user } = useAuth()
   const componentMountTime = useRef(Date.now())
   const sessionActions = useRef([])
@@ -237,7 +237,7 @@ export const useDashboardAudit = () => {
   const audit = useAuditTrail('WorkingCapitalDashboard')
 
   // Dashboard-specific logging functions
-  const logDashboardLoad = useCallback((loadTime, dataPoints) => {
+  const logDashboardLoad = useCallback((loadTime, _dataPoints) => {
     return audit.logPerformance('dashboard_load_time', loadTime, 3000, {
       action: 'dashboard_load',
       dataPoints,
@@ -245,15 +245,15 @@ export const useDashboardAudit = () => {
     })
   }, [audit])
 
-  const logPeriodChange = useCallback((oldPeriod, newPeriod) => {
+  const logPeriodChange = useCallback((oldPeriod, _newPeriod) => {
     return audit.logConfigChange('reporting_period', oldPeriod, newPeriod, 'user_selection')
   }, [audit])
 
-  const logCurrencyChange = useCallback((oldCurrency, newCurrency) => {
+  const logCurrencyChange = useCallback((oldCurrency, _newCurrency) => {
     return audit.logConfigChange('display_currency', oldCurrency, newCurrency, 'user_selection')
   }, [audit])
 
-  const logMetricRefresh = useCallback((source, recordsUpdated) => {
+  const logMetricRefresh = useCallback((source, _recordsUpdated) => {
     return auditService.logDataRefresh(source, {
       component: 'WorkingCapitalDashboard',
       type: 'manual',
@@ -345,7 +345,7 @@ export const useForecastAudit = () => {
     })
   }, [audit])
 
-  const logRiskAssessment = useCallback((riskLevel, riskCount, methodology) => {
+  const logRiskAssessment = useCallback((riskLevel, _riskCount, _methodology) => {
     return auditService.logRiskAssessment(riskLevel, [], {
       component: 'ForecastService',
       riskCount,

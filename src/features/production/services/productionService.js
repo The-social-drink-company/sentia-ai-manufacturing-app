@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env?.VITE_API_BASE_URL || '/api'
+const APIBASE = import.meta.env?.VITE_API_BASE_URL || '/api'
 const MCP_BASE = import.meta.env?.VITE_MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'
 
 // Import structured logger

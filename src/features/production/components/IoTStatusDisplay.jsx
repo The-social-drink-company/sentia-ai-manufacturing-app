@@ -19,7 +19,7 @@ export default function IoTStatusDisplay() {
   const { criticalCount, totalCount } = useIoTAlarms()
   const [showDetails, setShowDetails] = useState(false)
 
-  const formatLastReceived = (timestamp) => {
+  const formatLastReceived = (_timestamp) => {
     if (!timestamp) return 'Never'
     const diff = new Date() - new Date(timestamp)
     const seconds = Math.floor(diff / 1000)
@@ -266,7 +266,7 @@ export default function IoTStatusDisplay() {
               <div className="flex items-center space-x-2">
                 {!isConnected && (
                   <button
-                    onClick={() => {
+                    _onClick={() => {
                       // Trigger reconnection
                       window.location.reload()
                     }}

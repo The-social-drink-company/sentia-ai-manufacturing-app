@@ -71,7 +71,7 @@ export default function EnterpriseDashboard() {
   const [selectedTimeframe, setSelectedTimeframe] = useState('6m');
   const [selectedView, setSelectedView] = useState('overview');
 
-  const getAlertIcon = (type) => {
+  const getAlertIcon = (_type) => {
     switch (type) {
       case 'critical':
         return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />;
@@ -84,7 +84,7 @@ export default function EnterpriseDashboard() {
     }
   };
 
-  const getAlertColor = (type) => {
+  const getAlertColor = (_type) => {
     switch (type) {
       case 'critical':
         return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
@@ -97,7 +97,7 @@ export default function EnterpriseDashboard() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'excellent':
         return 'text-green-600 dark:text-green-400';

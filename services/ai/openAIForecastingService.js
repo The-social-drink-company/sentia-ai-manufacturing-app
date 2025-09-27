@@ -392,7 +392,7 @@ class OpenAIForecastingService extends EventEmitter {
       const recent = product.recentSales || [];
       if (recent.length < 7) continue;
 
-      const mean = recent.reduce((a, b) => a + b, 0) / recent.length;
+      const mean = recent.reduce((a, _b) => a + b, 0) / recent.length;
       const stdDev = Math.sqrt(
         recent.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / recent.length
       );
@@ -533,7 +533,7 @@ class OpenAIForecastingService extends EventEmitter {
       dayCounts[i] > 0 ? total / dayCounts[i] : 0
     );
     
-    const overallAvg = dayTotals.reduce((a, b) => a + b) / dayCounts.reduce((a, b) => a + b);
+    const overallAvg = dayTotals.reduce((a, _b) => a + b) / dayCounts.reduce((a, _b) => a + b);
     
     return avgByDay.map(avg => avg / overallAvg);
   }
@@ -580,7 +580,7 @@ class OpenAIForecastingService extends EventEmitter {
     
     if (returns.length === 0) return 0;
     
-    const mean = returns.reduce((a, b) => a + b) / returns.length;
+    const mean = returns.reduce((a, _b) => a + b) / returns.length;
     const variance = returns.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / returns.length;
     
     return Math.sqrt(variance);

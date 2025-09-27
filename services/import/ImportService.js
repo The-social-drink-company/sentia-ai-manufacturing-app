@@ -351,7 +351,7 @@ class ImportService {
       if (!rules) return analysis;
 
       // Analyze numeric fields
-      Object.entries(rules).forEach(([fieldName, rule]) => {
+      Object.entries(rules).forEach(_([fieldName, _rule]) => {
         if (rule.type === 'number' || rule.type === 'integer') {
           const values = data
             .map(row => parseFloat(row[fieldName]))
@@ -674,7 +674,7 @@ class ImportService {
       logInfo('Starting data commit process', { importJobId });
 
       // Begin transaction for two-phase commit
-      return await prisma.$transaction(async (tx) => {
+      return await prisma.$transaction(async _(tx) => {
         // Phase 1: Verify data integrity
         const validationQuery = `
           SELECT 

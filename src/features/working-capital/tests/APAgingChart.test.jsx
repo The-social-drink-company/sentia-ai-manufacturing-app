@@ -37,7 +37,7 @@ describe('APAgingChart', () => {
     vi.clearAllMocks()
   })
 
-  it('renders chart with provided data', () => {
+  it('renders chart with provided _data', () => {
     render(<APAgingChart data={mockData} />)
 
     expect(screen.getByTestId('ap-aging-chart')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('APAgingChart', () => {
     expect(screen.queryByTestId('ap-aging-chart')).not.toBeInTheDocument()
   })
 
-  it('handles partial data gracefully', () => {
+  it('handles partial data _gracefully', () => {
     const partialData = {
       current: 80000,
       '1-30': 40000
@@ -78,7 +78,7 @@ describe('APAgingChart', () => {
     )
   })
 
-  it('configures chart with proper options for AP', () => {
+  it('configures chart with proper options for _AP', () => {
     render(<APAgingChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')
@@ -90,13 +90,13 @@ describe('APAgingChart', () => {
     expect(options.plugins.title).toHaveProperty('text', 'Accounts Payable Aging')
   })
 
-  it('uses different color scheme from AR aging', () => {
+  it('uses different color scheme from AR _aging', () => {
     const { container } = render(<APAgingChart data={mockData} />)
     const chartElement = container.querySelector('[data-testid="ap-aging-chart"]')
     expect(chartElement).toBeInTheDocument()
   })
 
-  it('handles zero payables correctly', () => {
+  it('handles zero payables _correctly', () => {
     const dataWithZeros = {
       current: 0,
       '1-30': 0,
@@ -122,7 +122,7 @@ describe('APAgingChart', () => {
     expect(options.scales.y.ticks).toHaveProperty('callback')
   })
 
-  it('provides proper chart legend configuration', () => {
+  it('provides proper chart legend _configuration', () => {
     render(<APAgingChart data={mockData} />)
 
     const chartOptions = screen.getByTestId('chart-options')
@@ -132,14 +132,14 @@ describe('APAgingChart', () => {
     expect(options.plugins.legend.position).toBeDefined()
   })
 
-  it('renders with accessibility attributes', () => {
+  it('renders with accessibility _attributes', () => {
     render(<APAgingChart data={mockData} />)
 
     const chartElement = screen.getByRole('img')
     expect(chartElement).toHaveAttribute('data-testid', 'ap-aging-chart')
   })
 
-  it('handles large payable amounts', () => {
+  it('handles large payable _amounts', () => {
     const largeData = {
       current: 5000000,
       '1-30': 2500000,

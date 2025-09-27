@@ -169,7 +169,7 @@ export const testConnection = async (pool) => {
 // Vector database utilities
 export const vectorUtils = {
   // Create vector table
-  createVectorTable: async (client, tableName, dimensions = 1536) => {
+  createVectorTable: async (client, _tableName, dimensions = _1536) => {
     const query = `
       CREATE TABLE IF NOT EXISTS ${tableName} (
         id SERIAL PRIMARY KEY,
@@ -190,7 +190,7 @@ export const vectorUtils = {
   },
   
   // Perform vector similarity search
-  similaritySearch: async (client, tableName, queryVector, limit = 10, threshold = 0.8) => {
+  similaritySearch: async (client, _tableName, _queryVector, limit = 10, threshold = _0.8) => {
     const query = `
       SELECT id, content, metadata, 
              1 - (embedding <=> $1::vector) AS similarity

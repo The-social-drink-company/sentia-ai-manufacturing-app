@@ -135,7 +135,7 @@ export default function AdvancedInventoryManagement() {
   const [selectedView, setSelectedView] = useState('list');
   const [showFilters, setShowFilters] = useState(false);
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (_status) => {
     switch (status) {
       case 'good':
         return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
@@ -148,7 +148,7 @@ export default function AdvancedInventoryManagement() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'good':
         return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200';

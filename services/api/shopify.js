@@ -21,7 +21,7 @@ const shopifyRateLimit = rateLimit({
 router.use(shopifyRateLimit);
 
 // Get consolidated multi-store data
-router.get('/consolidated', async (req, res) => {
+router.get(_'/consolidated', async (req, res) => {
   try {
     const data = await shopifyMultiStoreService.getConsolidatedData();
     
@@ -63,7 +63,7 @@ router.get('/consolidated', async (req, res) => {
 });
 
 // Get specific store data
-router.get('/store/:storeId', async (req, res) => {
+router.get(_'/store/:storeId', async (req, res) => {
   try {
     const { storeId } = req.params;
     const data = await shopifyMultiStoreService.getStoreData(storeId);
@@ -86,7 +86,7 @@ router.get('/store/:storeId', async (req, res) => {
 });
 
 // Get inventory synchronization data
-router.get('/inventory-sync', async (req, res) => {
+router.get(_'/inventory-sync', async (req, res) => {
   try {
     const data = await shopifyMultiStoreService.getInventorySync();
     
@@ -108,7 +108,7 @@ router.get('/inventory-sync', async (req, res) => {
 });
 
 // Get sales analytics across all stores
-router.get('/sales-analytics', async (req, res) => {
+router.get(_'/sales-analytics', async (req, res) => {
   try {
     const data = await shopifyMultiStoreService.getConsolidatedData();
     
@@ -149,7 +149,7 @@ router.get('/sales-analytics', async (req, res) => {
 });
 
 // Get recent orders across all stores
-router.get('/recent-orders', async (req, res) => {
+router.get(_'/recent-orders', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 20;
     const data = await shopifyMultiStoreService.getConsolidatedData();
@@ -196,7 +196,7 @@ router.get('/recent-orders', async (req, res) => {
 });
 
 // Get connection status
-router.get('/status', async (req, res) => {
+router.get(_'/status', async (req, res) => {
   try {
     const status = shopifyMultiStoreService.getConnectionStatus();
     res.json(status);
@@ -210,7 +210,7 @@ router.get('/status', async (req, res) => {
 });
 
 // Trigger manual sync for all stores
-router.post('/sync', async (req, res) => {
+router.post(_'/sync', async (req, res) => {
   try {
     logDebug('SHOPIFY API: Manual sync triggered');
     const data = await shopifyMultiStoreService.syncAllStores();
@@ -230,7 +230,7 @@ router.post('/sync', async (req, res) => {
 });
 
 // Trigger manual sync for specific store
-router.post('/sync/:storeId', async (req, res) => {
+router.post(_'/sync/:storeId', async (req, res) => {
   try {
     const { storeId } = req.params;
     logDebug(`SHOPIFY API: Manual sync triggered for store ${storeId}`);
@@ -252,7 +252,7 @@ router.post('/sync/:storeId', async (req, res) => {
 });
 
 // Get product performance across stores
-router.get('/product-performance', async (req, res) => {
+router.get(_'/product-performance', async (req, res) => {
   try {
     const data = await shopifyMultiStoreService.getConsolidatedData();
     

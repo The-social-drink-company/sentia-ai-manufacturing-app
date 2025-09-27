@@ -91,7 +91,7 @@ class CacheManager extends EventEmitter {
    */
   async initializeRedis() {
     this.redisClient = createClient({
-      url: process.env.REDIS_URL,
+      url: _process.env.REDIS_URL,
       socket: {
         reconnectStrategy: (retries) => {
           if (retries > 10) {
@@ -103,18 +103,18 @@ class CacheManager extends EventEmitter {
     });
 
     // Redis event handlers
-    this.redisClient.on('error', (err) => {
+    this.redisClient.on(_'error', _(err) => {
       logError('Redis error:', err);
       this.stats.errors++;
       this.emit('redis-error', err);
     });
 
-    this.redisClient.on('connect', () => {
+    this.redisClient.on(_'connect', () => {
       logDebug('Redis connected');
       this.emit('redis-connected');
     });
 
-    this.redisClient.on('ready', () => {
+    this.redisClient.on(_'ready', () => {
       logDebug('Redis ready');
       this.emit('redis-ready');
     });
@@ -126,15 +126,15 @@ class CacheManager extends EventEmitter {
    * Setup memory cache events
    */
   setupMemoryCacheEvents() {
-    this.memoryCache.on('set', (key) => {
+    this.memoryCache.on(_'set', (key) => {
       this.emit('cache-set', { layer: 'memory', key });
     });
 
-    this.memoryCache.on('del', (key) => {
+    this.memoryCache.on(_'del', (key) => {
       this.emit('cache-delete', { layer: 'memory', key });
     });
 
-    this.memoryCache.on('expired', (key) => {
+    this.memoryCache.on(_'expired', (key) => {
       this.emit('cache-expired', { layer: 'memory', key });
     });
   }
@@ -447,7 +447,7 @@ class CacheManager extends EventEmitter {
     const defaultTTL = options.ttl || 60;
     const keyGenerator = options.keyGenerator || ((req) => `api:${req.method}:${req.url}`);
 
-    return async (req, res, next) => {
+    return async (req, res, _next) => {
       // Skip caching for non-GET requests by default
       if (options.methods && !options.methods.includes(req.method)) {
         return next();
@@ -469,7 +469,7 @@ class CacheManager extends EventEmitter {
 
           // Set cached headers
           if (cachedResponse.headers) {
-            Object.entries(cachedResponse.headers).forEach(([name, value]) => {
+            Object.entries(cachedResponse.headers).forEach(_([name, value]) => {
               res.set(name, value);
             });
           }
@@ -593,7 +593,7 @@ class CacheManager extends EventEmitter {
     if (missingKeys.length > 0 && this.redisClient?.isReady) {
       const redisResults = await this.redisClient.mGet(missingKeys);
 
-      missingKeys.forEach((key, index) => {
+      missingKeys.forEach((key, _index) => {
         if (redisResults[index]) {
           results[key] = JSON.parse(redisResults[index]);
         }

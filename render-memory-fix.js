@@ -33,7 +33,7 @@ console.log('='.repeat(70));
 // Monitor memory usage
 const formatMemory = (bytes) => (bytes / 1024 / 1024).toFixed(2) + ' MB';
 
-setInterval(() => {
+setInterval(_() => {
   const usage = process.memoryUsage();
   const heapUsed = formatMemory(usage.heapUsed);
   const heapTotal = formatMemory(usage.heapTotal);

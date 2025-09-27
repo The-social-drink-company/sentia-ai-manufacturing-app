@@ -62,10 +62,10 @@ export const applyEnterpriseSecurity = (app) => {
   app.use(csrfProtection.middleware());
 
   // Security event logging middleware
-  app.use((req, res, next) => {
+  app.use((req, res, _next) => {
     // Log suspicious patterns
     const suspiciousPatterns = [
-      /\.\.\//, // Directory traversal
+      /..//, // Directory traversal
       /\bselect\b.*\bfrom\b/i, // SQL injection
       /<script/i, // XSS attempts
       /\bexec\b/i, // Command injection
@@ -98,7 +98,7 @@ export const applyEnterpriseSecurity = (app) => {
  */
 export const securityMonitoring = (app) => {
   // Monitor failed login attempts
-  app.use('/api/auth/login', (req, res, next) => {
+  app.use(_'/api/auth/login', (req, res, _next) => {
     const originalSend = res.send;
     res.send = function(...args) {
       if (res.statusCode === 401 || res.statusCode === 403) {
@@ -110,7 +110,7 @@ export const securityMonitoring = (app) => {
   });
 
   // Monitor admin access attempts
-  app.use('/api/admin/*', (req, res, next) => {
+  app.use(_'/api/admin/*', (req, res, _next) => {
     logSecurityEvent('ADMIN_ACCESS', req, {
       endpoint: req.originalUrl
     });
@@ -118,7 +118,7 @@ export const securityMonitoring = (app) => {
   });
 
   // Monitor file uploads
-  app.use('/api/upload/*', (req, res, next) => {
+  app.use(_'/api/upload/*', (req, res, _next) => {
     if (req.files || req.file) {
       logSecurityEvent('FILE_UPLOAD', req, {
         fileCount: req.files ? Object.keys(req.files).length : 1,
@@ -134,12 +134,12 @@ export const securityMonitoring = (app) => {
  */
 export const addValidationRoutes = (app) => {
   // User registration validation
-  app.post('/api/auth/register', [
-    validationRules.email,
-    validationRules.password,
-    validationRules.username,
+  app.post(_'/api/auth/register', [
+    _validationRules.email,
+    _validationRules.password,
+    _validationRules.username,
     handleValidationErrors
-  ], (req, res, next) => {
+  ], (req, res, _next) => {
     // Registration logic would go here
     next();
   });
@@ -151,16 +151,16 @@ export const addValidationRoutes = (app) => {
     validationRules.quantity.optional(),
     validationRules.date.optional(),
     handleValidationErrors
-  ], (req, res, next) => {
+  ], (req, res, _next) => {
     next();
   });
 
   // Data import validation
-  app.post('/api/import/*', [
+  app.post(_'/api/import/*', [
     validationRules.page,
-    validationRules.limit,
+    _validationRules.limit,
     handleValidationErrors
-  ], (req, res, next) => {
+  ], (req, res, _next) => {
     next();
   });
 };
@@ -170,7 +170,7 @@ export const addValidationRoutes = (app) => {
  */
 export const addSecureHealthChecks = (app) => {
   // Public health check (limited info)
-  app.get('/health', (req, res) => {
+  app.get(_'/health', (req, res) => {
     res.json({
       status: 'ok',
       timestamp: new Date().toISOString(),
@@ -179,7 +179,7 @@ export const addSecureHealthChecks = (app) => {
   });
 
   // Detailed health check (requires authentication)
-  app.get('/api/health/detailed', async (req, res) => {
+  app.get(_'/api/health/detailed', async (req, res) => {
     try {
       const healthStatus = healthCheckService.getStatus();
       res.json({
@@ -196,7 +196,7 @@ export const addSecureHealthChecks = (app) => {
   });
 
   // Health check metrics
-  app.get('/api/health/metrics', (req, res) => {
+  app.get(_'/api/health/metrics', (req, res) => {
     const metrics = healthCheckService.getMetrics();
     res.json({
       success: true,
@@ -205,7 +205,7 @@ export const addSecureHealthChecks = (app) => {
   });
 
   // Security status endpoint
-  app.get('/api/security/status', (req, res) => {
+  app.get(_'/api/security/status', (req, res) => {
     const securityStatus = {
       timestamp: new Date().toISOString(),
       blockedIPs: ipBlocker.blockedIPs ? ipBlocker.blockedIPs.size : 0,
@@ -227,8 +227,8 @@ export const addSecureHealthChecks = (app) => {
  * File upload security wrapper
  */
 export const secureFileUpload = (upload) => {
-  return (req, res, next) => {
-    upload(req, res, (err) => {
+  return (req, res, _next) => {
+    upload(req, res, _(err) => {
       if (err) {
         logSecurityEvent('FILE_UPLOAD_ERROR', req, { error: err.message });
         return res.status(400).json({
@@ -316,7 +316,7 @@ export const addWebVitalsEndpoint = (app) => {
  */
 export const addErrorHandling = (app) => {
   // 404 handler
-  app.use((req, res, next) => {
+  app.use((req, res, _next) => {
     if (!req.route && req.path.startsWith('/api/')) {
       logSecurityEvent('API_404', req);
       res.status(404).json({
@@ -329,7 +329,7 @@ export const addErrorHandling = (app) => {
   });
 
   // Global error handler
-  app.use((error, req, res, next) => {
+  app.use((error, req, res, _next) => {
     // Log the error
     logger.error('Unhandled error:', error);
     

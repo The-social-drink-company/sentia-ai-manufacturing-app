@@ -30,10 +30,10 @@ export default function AgingChart({ receivables, payables, title }) {
   }
 
   const agingBuckets = ['0-30', '31-60', '61-90', '90+']
-  const arTotal = Object.values(arData).reduce((sum, val) => sum + val, 0)
-  const apTotal = Object.values(apData).reduce((sum, val) => sum + val, 0)
+  const arTotal = Object.values(arData).reduce((sum, _val) => sum + val, 0)
+  const apTotal = Object.values(apData).reduce((sum, _val) => sum + val, 0)
 
-  const getBarColor = (bucket, type) => {
+  const getBarColor = (bucket, _type) => {
     const baseColors = {
       receivables: {
         '0-30': 'bg-green-500',

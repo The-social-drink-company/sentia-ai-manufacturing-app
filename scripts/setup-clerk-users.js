@@ -11,7 +11,7 @@ const clerk = createClerkClient({
 });
 
 // User configurations
-const USERS_TO_CREATE = [
+const USERSTO_CREATE = [
   {
     email: 'paul.roberts@sentiaspirits.com',
     username: 'paul_roberts',
@@ -80,7 +80,7 @@ const USERS_TO_CREATE = [
   }
 ];
 
-const EMAIL_TEMPLATE = {
+const EMAILTEMPLATE = {
   subject: 'Welcome to Sentia Manufacturing Dashboard - Test Access',
   body: `
 Dear {{firstName}},

@@ -48,7 +48,7 @@ export default function CapacityPlanning({ data }) {
     return { color: 'blue', status: 'Low', bgColor: 'bg-blue-100', textColor: 'text-blue-800' }
   }
 
-  const getConstraintConfig = (type) => {
+  const getConstraintConfig = (_type) => {
     const configs = {
       'Equipment': { color: 'red', icon: CogIcon, variant: 'destructive' },
       'Material': { color: 'yellow', icon: TruckIcon, variant: 'warning' },

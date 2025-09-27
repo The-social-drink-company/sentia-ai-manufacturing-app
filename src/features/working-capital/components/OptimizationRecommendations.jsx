@@ -107,7 +107,7 @@ export default function OptimizationRecommendations({ recommendations, onActionC
     }
   }
 
-  const getTypeIcon = (type) => {
+  const getTypeIcon = (_type) => {
     switch (type) {
       case 'receivables':
         return <ArrowTrendingUpIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -159,7 +159,7 @@ export default function OptimizationRecommendations({ recommendations, onActionC
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
           <p className="text-sm text-blue-600 dark:text-blue-400">Potential Cash Impact</p>
           <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
-            {formatCurrency(sortedRecommendations.reduce((sum, r) => {
+            {formatCurrency(_sortedRecommendations.reduce((sum, r) => {
               const match = r.impact.match(/\$([0-9,]+)/)
               return match ? sum + parseInt(match[1].replace(/,/g, '')) : sum
             }, 0))}
@@ -214,7 +214,7 @@ export default function OptimizationRecommendations({ recommendations, onActionC
               <div className="flex items-center space-x-2">
                 {getStatusIcon(rec.status)}
                 <span className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                  {rec.status.replace('_', ' ')}
+                  {rec.status.replace('', ' ')}
                 </span>
               </div>
             </div>

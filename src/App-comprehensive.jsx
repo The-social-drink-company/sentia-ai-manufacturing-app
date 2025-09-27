@@ -392,7 +392,7 @@ const AppComprehensive = () => {
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
-      onError={(error, errorInfo) => {
+      onError = {(error, errorInfo) => {
         logError('Application error in comprehensive app', { error: error.message, stack: error.stack, errorInfo });
         // Send to error tracking service
         if (import.meta.env.VITE_SENTRY_DSN) {

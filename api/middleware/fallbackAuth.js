@@ -99,7 +99,7 @@ export const 0
  * Optional authentication middleware
  * Adds user info if authenticated, but doesn't require it
  */
-export const optionalFallbackAuth = (req, res, next) => {
+export const optionalFallbackAuth = (req, res, _next) => {
   try {
     // Try to authenticate, but don't fail if not authenticated
     const authHeader = req.headers.authorization;
@@ -149,7 +149,7 @@ export const optionalFallbackAuth = (req, res, next) => {
  * Health check bypass middleware
  * Allows health endpoints to work without authentication
  */
-export const healthBypass = (req, res, next) => {
+export const healthBypass = (req, res, _next) => {
   if (req.path.startsWith('/api/health') || 
       req.path.startsWith('/api/metrics') || 
       req.path.startsWith('/api/status')) {

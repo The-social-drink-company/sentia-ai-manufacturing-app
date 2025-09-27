@@ -28,7 +28,7 @@ const ENVIRONMENTS = {
   }
 };
 
-const CLERK_CONFIG = {
+const CLERKCONFIG = {
   VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_REDACTED',
   CLERK_SECRET_KEY: 'sk_live_REDACTED',
   VITE_MCP_SERVER_URL: 'https://mcp-server-tkyu.onrender.com',
@@ -77,13 +77,13 @@ function updateClerkConfiguration() {
   
   // Update Clerk publishable key
   indexContent = indexContent.replace(
-    /window\.VITE_CLERK_PUBLISHABLE_KEY = '[^']*'/g,
+    /window.VITECLERK_PUBLISHABLE_KEY = '[^']*'/g,
     `window.VITE_CLERK_PUBLISHABLE_KEY = '${CLERK_CONFIG.VITE_CLERK_PUBLISHABLE_KEY}'`
   );
   
   // Update MCP server URL
   indexContent = indexContent.replace(
-    /window\.VITE_MCP_SERVER_URL = '[^']*'/g,
+    /window.VITEMCP_SERVER_URL = '[^']*'/g,
     `window.VITE_MCP_SERVER_URL = '${CLERK_CONFIG.VITE_MCP_SERVER_URL}'`
   );
   
@@ -95,7 +95,7 @@ function updateClerkConfiguration() {
   let clerkContent = fs.readFileSync(clerkConfigPath, 'utf8');
   
   clerkContent = clerkContent.replace(
-    /publishableKey: env\.VITE_CLERK_PUBLISHABLE_KEY \|\|\s*window\.VITE_CLERK_PUBLISHABLE_KEY \|\|\s*'[^']*'/g,
+    /publishableKey: env.VITE_CLERK_PUBLISHABLE_KEY \|\|\s*window.VITE_CLERK_PUBLISHABLE_KEY \|\|\s*'[^']*'/g,
     `publishableKey: env.VITE_CLERK_PUBLISHABLE_KEY ||\n                    window.VITE_CLERK_PUBLISHABLE_KEY ||\n                    '${CLERK_CONFIG.VITE_CLERK_PUBLISHABLE_KEY}'`
   );
   

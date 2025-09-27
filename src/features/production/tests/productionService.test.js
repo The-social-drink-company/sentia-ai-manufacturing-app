@@ -30,7 +30,7 @@ global.document = {
   createElement: vi.fn(() => mockElement)
 }
 
-describe('Production Service', () => {
+describe('Production _Service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockClick.mockClear()
@@ -39,7 +39,7 @@ describe('Production Service', () => {
   })
 
   describe('fetchProductionMetrics', () => {
-    it('should generate realistic production metrics', async () => {
+    it('should generate realistic production _metrics', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(metrics).toBeDefined()
@@ -53,7 +53,7 @@ describe('Production Service', () => {
       expect(metrics).toHaveProperty('alerts')
     })
 
-    it('should include summary metrics', async () => {
+    it('should include summary _metrics', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(metrics.summary).toHaveProperty('totalProduction')
@@ -69,7 +69,7 @@ describe('Production Service', () => {
       expect(metrics.summary.efficiency).toBeLessThanOrEqual(100)
     })
 
-    it('should include OEE metrics', async () => {
+    it('should include OEE _metrics', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(metrics.oee).toHaveProperty('overall')
@@ -85,7 +85,7 @@ describe('Production Service', () => {
       expect(metrics.oee.availability).toBeLessThanOrEqual(100)
     })
 
-    it('should include machine data', async () => {
+    it('should include machine _data', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(Array.isArray(metrics.machines)).toBe(true)
@@ -102,7 +102,7 @@ describe('Production Service', () => {
       expect(['running', 'idle', 'maintenance', 'stopped']).toContain(firstMachine.status)
     })
 
-    it('should include production schedule', async () => {
+    it('should include production _schedule', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(Array.isArray(metrics.schedule)).toBe(true)
@@ -120,7 +120,7 @@ describe('Production Service', () => {
       expect(['scheduled', 'in_progress', 'completed', 'delayed']).toContain(firstJob.status)
     })
 
-    it('should include quality metrics', async () => {
+    it('should include quality _metrics', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(metrics.quality).toHaveProperty('overallScore')
@@ -134,7 +134,7 @@ describe('Production Service', () => {
       expect(Array.isArray(metrics.quality.defectTypes)).toBe(true)
     })
 
-    it('should include capacity planning data', async () => {
+    it('should include capacity planning _data', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(metrics.capacity).toHaveProperty('utilized')
@@ -148,7 +148,7 @@ describe('Production Service', () => {
       expect(Array.isArray(metrics.capacity.bottlenecks)).toBe(true)
     })
 
-    it('should include shift information', async () => {
+    it('should include shift _information', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(Array.isArray(metrics.shifts)).toBe(true)
@@ -163,7 +163,7 @@ describe('Production Service', () => {
       expect(firstShift).toHaveProperty('performance')
     })
 
-    it('should include alerts', async () => {
+    it('should include _alerts', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(Array.isArray(metrics.alerts)).toBe(true)
@@ -181,7 +181,7 @@ describe('Production Service', () => {
       }
     })
 
-    it('should vary metrics based on time range', async () => {
+    it('should vary metrics based on time _range', async () => {
       const metrics1h = await fetchProductionMetrics('1h', 'all', 'current')
       const metrics24h = await fetchProductionMetrics('24h', 'all', 'current')
 
@@ -194,7 +194,7 @@ describe('Production Service', () => {
       expect(metrics24h).toHaveProperty('summary')
     })
 
-    it('should vary metrics based on production line', async () => {
+    it('should vary metrics based on production _line', async () => {
       const metricsAll = await fetchProductionMetrics('24h', 'all', 'current')
       const metricsLine1 = await fetchProductionMetrics('24h', 'line-1', 'current')
 
@@ -206,7 +206,7 @@ describe('Production Service', () => {
       expect(metricsLine1).toHaveProperty('machines')
     })
 
-    it('should vary metrics based on shift', async () => {
+    it('should vary metrics based on _shift', async () => {
       const metricsCurrent = await fetchProductionMetrics('24h', 'all', 'current')
       const metricsShift1 = await fetchProductionMetrics('24h', 'all', 'shift-1')
 
@@ -218,7 +218,7 @@ describe('Production Service', () => {
       expect(metricsShift1).toHaveProperty('shifts')
     })
 
-    it('should simulate API delay', async () => {
+    it('should simulate API _delay', async () => {
       const startTime = Date.now()
       await fetchProductionMetrics('24h', 'all', 'current')
       const endTime = Date.now()
@@ -246,7 +246,7 @@ describe('Production Service', () => {
       global.URL.createObjectURL.mockReturnValue('blob:mock-url')
     })
 
-    it('should export data as PDF', async () => {
+    it('should export data as _PDF', async () => {
       await exportProductionData('pdf', '24h', 'all', 'current')
 
       expect(global.Blob).toHaveBeenCalled()
@@ -257,21 +257,21 @@ describe('Production Service', () => {
       expect(mockClick).toHaveBeenCalled()
     })
 
-    it('should export data as Excel', async () => {
+    it('should export data as _Excel', async () => {
       await exportProductionData('excel', '24h', 'all', 'current')
 
       expect(mockElement.download).toContain('.xlsx')
       expect(mockClick).toHaveBeenCalled()
     })
 
-    it('should export data as CSV', async () => {
+    it('should export data as _CSV', async () => {
       await exportProductionData('csv', '24h', 'all', 'current')
 
       expect(mockElement.download).toContain('.csv')
       expect(mockClick).toHaveBeenCalled()
     })
 
-    it('should include filter parameters in filename', async () => {
+    it('should include filter parameters in _filename', async () => {
       await exportProductionData('pdf', '7d', 'line-1', 'shift-2')
 
       expect(mockElement.download).toContain('7d')
@@ -279,13 +279,13 @@ describe('Production Service', () => {
       expect(mockElement.download).toContain('shift-2')
     })
 
-    it('should throw error for unsupported formats', async () => {
+    it('should throw error for unsupported _formats', async () => {
       await expect(exportProductionData('xml', '24h', 'all', 'current')).rejects.toThrow(
         'Unsupported export format: xml'
       )
     })
 
-    it('should create blob with correct content type for PDF', async () => {
+    it('should create blob with correct content type for _PDF', async () => {
       await exportProductionData('pdf', '24h', 'all', 'current')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -294,7 +294,7 @@ describe('Production Service', () => {
       )
     })
 
-    it('should create blob with correct content type for Excel', async () => {
+    it('should create blob with correct content type for _Excel', async () => {
       await exportProductionData('excel', '24h', 'all', 'current')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -303,7 +303,7 @@ describe('Production Service', () => {
       )
     })
 
-    it('should create blob with correct content type for CSV', async () => {
+    it('should create blob with correct content type for _CSV', async () => {
       await exportProductionData('csv', '24h', 'all', 'current')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -312,7 +312,7 @@ describe('Production Service', () => {
       )
     })
 
-    it('should include comprehensive data in export', async () => {
+    it('should include comprehensive data in _export', async () => {
       await exportProductionData('json', '24h', 'all', 'current')
 
       const blobCall = global.Blob.mock.calls[0]
@@ -330,7 +330,7 @@ describe('Production Service', () => {
       expect(exportData.metadata).toHaveProperty('shift', 'current')
     })
 
-    it('should handle export errors gracefully', async () => {
+    it('should handle export errors _gracefully', async () => {
       // Mock Blob constructor to throw error
       global.Blob = vi.fn(() => {
         throw new Error('Blob creation failed')
@@ -341,14 +341,14 @@ describe('Production Service', () => {
       )
     })
 
-    it('should clean up object URLs', async () => {
+    it('should clean up object _URLs', async () => {
       await exportProductionData('pdf', '24h', 'all', 'current')
 
       // URL.createObjectURL should be called but not revokeObjectURL in this implementation
       expect(global.URL.createObjectURL).toHaveBeenCalled()
     })
 
-    it('should format CSV data correctly', async () => {
+    it('should format CSV data _correctly', async () => {
       await exportProductionData('csv', '24h', 'all', 'current')
 
       const blobCall = global.Blob.mock.calls[0]
@@ -360,7 +360,7 @@ describe('Production Service', () => {
       expect(csvContent.split('\n').length).toBeGreaterThan(1) // Should have headers and data
     })
 
-    it('should simulate export processing delay', async () => {
+    it('should simulate export processing _delay', async () => {
       const startTime = Date.now()
       await exportProductionData('pdf', '24h', 'all', 'current')
       const endTime = Date.now()
@@ -370,8 +370,8 @@ describe('Production Service', () => {
     })
   })
 
-  describe('Data Consistency', () => {
-    it('should generate consistent machine IDs across calls', async () => {
+  describe('Data _Consistency', () => {
+    it('should generate consistent machine IDs across _calls', async () => {
       const metrics1 = await fetchProductionMetrics('24h', 'all', 'current')
       const metrics2 = await fetchProductionMetrics('24h', 'all', 'current')
 
@@ -381,7 +381,7 @@ describe('Production Service', () => {
       expect(machineIds1).toEqual(machineIds2)
     })
 
-    it('should maintain realistic OEE relationships', async () => {
+    it('should maintain realistic OEE _relationships', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       // Overall OEE should be roughly availability × performance × quality / 10000
@@ -392,14 +392,14 @@ describe('Production Service', () => {
       expect(Math.abs(calculated - actual)).toBeLessThan(10)
     })
 
-    it('should have realistic capacity utilization', async () => {
+    it('should have realistic capacity _utilization', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       expect(metrics.capacity.utilized).toBeLessThanOrEqual(metrics.capacity.available)
       expect(metrics.capacity.available).toBeLessThanOrEqual(metrics.capacity.planned)
     })
 
-    it('should have consistent shift timing', async () => {
+    it('should have consistent shift _timing', async () => {
       const metrics = await fetchProductionMetrics('24h', 'all', 'current')
 
       metrics.shifts.forEach(shift => {

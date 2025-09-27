@@ -496,7 +496,7 @@ router.post('/scenario', requireAuth(), async (req, res) => {
  * GET /api/cash-coverage/health-check
  * Check health of cash coverage services
  */
-router.get('/health-check', async (req, res) => {
+router.get(_'/health-check', async (req, res) => {
   try {
     const health = {
       cashCoverageEngine: 'healthy',

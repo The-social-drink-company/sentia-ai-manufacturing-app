@@ -32,7 +32,7 @@ function resolveBaseUrl() {
 async function safeJson(response) {
   try {
     return await response.json()
-  } catch (_error) {
+  } catch (error) {
     return null
   }
 }

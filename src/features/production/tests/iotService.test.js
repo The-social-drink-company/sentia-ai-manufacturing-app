@@ -67,7 +67,7 @@ const localStorageMock = {
 }
 global.localStorage = localStorageMock
 
-describe('IoT Service', () => {
+describe('IoT _Service', () => {
   beforeEach(() => {
     // Reset mocks
     vi.clearAllMocks()
@@ -84,7 +84,7 @@ describe('IoT Service', () => {
   })
 
   describe('Initialization', () => {
-    it('should initialize with default machine configuration', () => {
+    it('should initialize with default machine _configuration', () => {
       const connectionStatus = iotService.getConnectionStatus()
 
       expect(connectionStatus.totalMachines).toBeGreaterThan(0)
@@ -92,7 +92,7 @@ describe('IoT Service', () => {
       expect(connectionStatus.isConnected).toBe(false)
     })
 
-    it('should initialize sensor data for all machines', () => {
+    it('should initialize sensor data for all _machines', () => {
       const allSensorData = iotService.getAllSensorData()
 
       expect(allSensorData).toBeInstanceOf(Array)
@@ -107,7 +107,7 @@ describe('IoT Service', () => {
       expect(firstMachine.sensors).toHaveProperty('pressure')
     })
 
-    it('should initialize machine states', () => {
+    it('should initialize machine _states', () => {
       const allSensorData = iotService.getAllSensorData()
       const firstMachineId = allSensorData[0].machineId
 
@@ -120,8 +120,8 @@ describe('IoT Service', () => {
     })
   })
 
-  describe('WebSocket Connection', () => {
-    it('should establish WebSocket connection', async () => {
+  describe('WebSocket _Connection', () => {
+    it('should establish WebSocket _connection', async () => {
       // Connection is automatically attempted on service creation
       await new Promise(resolve => setTimeout(resolve, 50))
 
@@ -129,7 +129,7 @@ describe('IoT Service', () => {
       expect(status.isConnected).toBe(true)
     })
 
-    it('should handle connection failures gracefully', () => {
+    it('should handle connection failures _gracefully', () => {
       const originalWebSocket = global.WebSocket
 
       // Mock failing WebSocket
@@ -151,7 +151,7 @@ describe('IoT Service', () => {
       global.WebSocket = originalWebSocket
     })
 
-    it('should attempt reconnection on connection loss', async () => {
+    it('should attempt reconnection on connection _loss', async () => {
       // First establish connection
       await new Promise(resolve => setTimeout(resolve, 50))
 
@@ -169,13 +169,13 @@ describe('IoT Service', () => {
     })
   })
 
-  describe('Sensor Data Processing', () => {
+  describe('Sensor Data _Processing', () => {
     beforeEach(async () => {
       // Ensure connection is established
       await new Promise(resolve => setTimeout(resolve, 50))
     })
 
-    it('should process incoming sensor data', () => {
+    it('should process incoming sensor _data', () => {
       const testSensorData = {
         type: 'sensor_data',
         payload: {
@@ -199,7 +199,7 @@ describe('IoT Service', () => {
       expect(machineData.status).toBe('online')
     })
 
-    it('should process machine state changes', () => {
+    it('should process machine state _changes', () => {
       const testStateChange = {
         type: 'machine_state',
         payload: {
@@ -220,7 +220,7 @@ describe('IoT Service', () => {
       expect(machineState.productivity).toBe(95.2)
     })
 
-    it('should process OEE updates', () => {
+    it('should process OEE _updates', () => {
       const testOEEUpdate = {
         type: 'oee_update',
         payload: {
@@ -243,7 +243,7 @@ describe('IoT Service', () => {
       expect(machineData.oee.overall).toBe(80.7)
     })
 
-    it('should process alarm notifications', () => {
+    it('should process alarm _notifications', () => {
       const testAlarm = {
         type: 'alarm',
         payload: {
@@ -266,12 +266,12 @@ describe('IoT Service', () => {
     })
   })
 
-  describe('Machine Control', () => {
+  describe('Machine _Control', () => {
     beforeEach(async () => {
       await new Promise(resolve => setTimeout(resolve, 50))
     })
 
-    it('should send machine commands', () => {
+    it('should send machine _commands', () => {
       const success = iotService.sendMachineCommand('CNC_001', 'start')
 
       expect(success).toBe(true)
@@ -293,7 +293,7 @@ describe('IoT Service', () => {
       expect(sentMessage.payload.parameters).toEqual(parameters)
     })
 
-    it('should fail to send commands when disconnected', () => {
+    it('should fail to send commands when _disconnected', () => {
       iotService.disconnect()
 
       const success = iotService.sendMachineCommand('CNC_001', 'start')
@@ -301,7 +301,7 @@ describe('IoT Service', () => {
     })
   })
 
-  describe('Alarm Management', () => {
+  describe('Alarm _Management', () => {
     beforeEach(async () => {
       await new Promise(resolve => setTimeout(resolve, 50))
 
@@ -322,7 +322,7 @@ describe('IoT Service', () => {
       }
     })
 
-    it('should acknowledge alarms', () => {
+    it('should acknowledge _alarms', () => {
       const success = iotService.acknowledgeAlarm('CNC_001', 'test_alarm_001')
 
       expect(success).toBe(true)
@@ -333,7 +333,7 @@ describe('IoT Service', () => {
       expect(alarm).toHaveProperty('acknowledgedAt')
     })
 
-    it('should send acknowledgment to IoT system', () => {
+    it('should send acknowledgment to IoT _system', () => {
       iotService.acknowledgeAlarm('CNC_001', 'test_alarm_001')
 
       const ackMessage = iotService.websocket.sentMessages.find(msg => {
@@ -347,14 +347,14 @@ describe('IoT Service', () => {
       expect(parsed.payload.alarmId).toBe('test_alarm_001')
     })
 
-    it('should handle acknowledgment of non-existent alarms', () => {
+    it('should handle acknowledgment of non-existent _alarms', () => {
       const success = iotService.acknowledgeAlarm('CNC_001', 'non_existent_alarm')
       expect(success).toBe(false)
     })
   })
 
-  describe('Mock Data Generation', () => {
-    it('should generate realistic mock sensor data', () => {
+  describe('Mock Data _Generation', () => {
+    it('should generate realistic mock sensor _data', () => {
       // Trigger mock data generation
       iotService.generateMockSensorData()
 
@@ -376,7 +376,7 @@ describe('IoT Service', () => {
       expect(firstMachine.oee.overall).toBeLessThanOrEqual(100)
     })
 
-    it('should update machine states during mock data generation', () => {
+    it('should update machine states during mock data _generation', () => {
       const initialState = iotService.getMachineState('CNC_001')
       const initialStateValue = initialState.currentState
 
@@ -391,8 +391,8 @@ describe('IoT Service', () => {
     })
   })
 
-  describe('Health Monitoring', () => {
-    it('should perform health checks', () => {
+  describe('Health _Monitoring', () => {
+    it('should perform health _checks', () => {
       const initialStatus = iotService.getConnectionStatus()
 
       iotService.performHealthCheck()
@@ -402,7 +402,7 @@ describe('IoT Service', () => {
       expect(postCheckStatus.isConnected).toBe(initialStatus.isConnected)
     })
 
-    it('should detect unhealthy connections', () => {
+    it('should detect unhealthy _connections', () => {
       // Mock old last data received time
       iotService.lastDataReceived = new Date(Date.now() - 120000) // 2 minutes ago
 
@@ -414,8 +414,8 @@ describe('IoT Service', () => {
     })
   })
 
-  describe('Connection Status', () => {
-    it('should provide accurate connection status', () => {
+  describe('Connection _Status', () => {
+    it('should provide accurate connection _status', () => {
       const status = iotService.getConnectionStatus()
 
       expect(status).toHaveProperty('isConnected')
@@ -429,7 +429,7 @@ describe('IoT Service', () => {
       expect(typeof status.onlineMachines).toBe('number')
     })
 
-    it('should track online machine count', () => {
+    it('should track online machine _count', () => {
       // Initially all machines should be offline
       const initialStatus = iotService.getConnectionStatus()
       expect(initialStatus.onlineMachines).toBe(0)
@@ -442,8 +442,8 @@ describe('IoT Service', () => {
     })
   })
 
-  describe('Event Listeners', () => {
-    it('should add and remove event listeners', () => {
+  describe('Event _Listeners', () => {
+    it('should add and remove event _listeners', () => {
       const mockListener = vi.fn()
 
       const removeListener = iotService.addEventListener(mockListener)
@@ -453,7 +453,7 @@ describe('IoT Service', () => {
       expect(iotService.listeners.has(mockListener)).toBe(false)
     })
 
-    it('should notify listeners of events', () => {
+    it('should notify listeners of _events', () => {
       const mockListener = vi.fn()
       iotService.addEventListener(mockListener)
 
@@ -462,7 +462,7 @@ describe('IoT Service', () => {
       expect(mockListener).toHaveBeenCalledWith('test_event', { data: 'test' })
     })
 
-    it('should handle listener errors gracefully', () => {
+    it('should handle listener errors _gracefully', () => {
       const errorListener = vi.fn(() => {
         throw new Error('Listener error')
       })
@@ -480,8 +480,8 @@ describe('IoT Service', () => {
     })
   })
 
-  describe('Data Retrieval', () => {
-    it('should retrieve all sensor data', () => {
+  describe('Data _Retrieval', () => {
+    it('should retrieve all sensor _data', () => {
       const allData = iotService.getAllSensorData()
 
       expect(Array.isArray(allData)).toBe(true)
@@ -496,7 +496,7 @@ describe('IoT Service', () => {
       })
     })
 
-    it('should retrieve specific machine data', () => {
+    it('should retrieve specific machine _data', () => {
       const allData = iotService.getAllSensorData()
       const firstMachineId = allData[0].machineId
 
@@ -506,14 +506,14 @@ describe('IoT Service', () => {
       expect(specificData.machineId).toBe(firstMachineId)
     })
 
-    it('should return undefined for non-existent machines', () => {
+    it('should return undefined for non-existent _machines', () => {
       const nonExistentData = iotService.getMachineSensorData('NON_EXISTENT_MACHINE')
       expect(nonExistentData).toBeUndefined()
     })
   })
 
   describe('Cleanup', () => {
-    it('should disconnect properly', () => {
+    it('should disconnect _properly', () => {
       const closeSpy = vi.fn()
       if (iotService.websocket) {
         iotService.websocket.close = closeSpy
@@ -527,12 +527,12 @@ describe('IoT Service', () => {
   })
 })
 
-describe('IoT Service Edge Cases', () => {
+describe('IoT Service Edge _Cases', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('should handle malformed WebSocket messages', async () => {
+  it('should handle malformed WebSocket _messages', async () => {
     await new Promise(resolve => setTimeout(resolve, 50))
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -551,7 +551,7 @@ describe('IoT Service Edge Cases', () => {
     consoleSpy.mockRestore()
   })
 
-  it('should handle unknown message types', async () => {
+  it('should handle unknown message _types', async () => {
     await new Promise(resolve => setTimeout(resolve, 50))
 
     const unknownMessage = {
@@ -567,7 +567,7 @@ describe('IoT Service Edge Cases', () => {
     }).not.toThrow()
   })
 
-  it('should handle sensor data for unknown machines', () => {
+  it('should handle sensor data for unknown _machines', () => {
     const unknownMachineData = {
       type: 'sensor_data',
       payload: {

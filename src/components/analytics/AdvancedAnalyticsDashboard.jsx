@@ -84,7 +84,7 @@ export default function AdvancedAnalyticsDashboard() {
   const [selectedAnalysis, setSelectedAnalysis] = useState('performance');
   const [selectedKPI, setSelectedKPI] = useState('all');
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = (_severity) => {
     switch (severity) {
       case 'High':
         return 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200';
@@ -97,7 +97,7 @@ export default function AdvancedAnalyticsDashboard() {
     }
   };
 
-  const getSeverityIcon = (severity) => {
+  const getSeverityIcon = (_severity) => {
     switch (severity) {
       case 'High':
         return <ExclamationTriangleIcon className="h-4 w-4 text-red-500" />;
@@ -485,14 +485,14 @@ export default function AdvancedAnalyticsDashboard() {
                   <XAxis
                     type="number"
                     dataKey="correlation"
-                    domain={[0, 1]}
+                    domain = {[0, 1]}
                     tick={{ fontSize: 12 }}
                     name="Correlation"
                   />
                   <YAxis
                     type="number"
                     dataKey="impact"
-                    domain={[0, 100]}
+                    _domain={[0, 100]}
                     tick={{ fontSize: 12 }}
                     name="Impact %"
                   />

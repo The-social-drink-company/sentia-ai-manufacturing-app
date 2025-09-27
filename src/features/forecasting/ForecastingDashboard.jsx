@@ -61,7 +61,7 @@ export default function ForecastingDashboard() {
     setData(sourceData)
   }, [selectedDataSource])
 
-  const handleForecastUpdate = (forecastResult) => {
+  const handleForecastUpdate = (_forecastResult) => {
     setAnalysis(forecastResult)
   }
 
@@ -303,7 +303,7 @@ export default function ForecastingDashboard() {
                   {Object.entries(analysis.accuracy || {}).map(([method, metrics]) => (
                     <div key={method} className="border-b border-gray-200 dark:border-gray-700 pb-3 last:border-b-0">
                       <h4 className="font-semibold capitalize text-gray-900 dark:text-white mb-2">
-                        {method.replace('_', ' ')}
+                        {method.replace('', ' ')}
                       </h4>
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>

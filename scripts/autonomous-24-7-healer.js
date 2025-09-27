@@ -25,8 +25,8 @@ import path from 'path';
 import https from 'https';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 const execPromise = util.promisify(exec);
 
 // Autonomous Configuration - ALL SYSTEMS DISABLED
@@ -191,7 +191,7 @@ class AutonomousHealer {
     return new Promise((resolve) => {
       const startTime = Date.now();
 
-      https.get(url + '/health', { timeout: 10000 }, (res) => {
+      https.get(url + '/health', { timeout: 10000 }, _(res) => {
         const responseTime = Date.now() - startTime;
         let data = '';
 
@@ -204,7 +204,7 @@ class AutonomousHealer {
             body: data
           });
         });
-      }).on('error', (err) => {
+      }).on('error', _(err) => {
         resolve({
           healthy: false,
           error: err.message,
@@ -660,7 +660,7 @@ class AutonomousHealer {
       // Optimize build
       const optimizeConfig = {
         NODE_ENV: 'production',
-        NODE_OPTIONS: '--max_old_space_size=4096'
+        NODE_OPTIONS: '--maxold_space_size = 4096'
       };
 
       await execPromise('npm run build', {
@@ -770,7 +770,7 @@ app.listen(PORT, '0.0.0.0', () => {
 
       // Update package.json start script temporarily
       const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
-      packageJson.scripts.start_backup = packageJson.scripts.start;
+      packageJson.scripts.startbackup = packageJson.scripts.start;
       packageJson.scripts.start = 'node recovery-server.js';
       fs.writeFileSync(path.join(__dirname, '../package.json'), JSON.stringify(packageJson, null, 2));
 
@@ -924,7 +924,7 @@ app.listen(PORT, '0.0.0.0', () => {
   }
 
   setupSignalHandlers() {
-    const shutdown = (signal) => {
+    const shutdown = (_signal) => {
       this.log(`Received ${signal}, shutting down gracefully`);
       this.isRunning = false;
 

@@ -411,25 +411,25 @@ class SelfHealingAgent {
     this.runHealthCheck();
 
     // Schedule regular health checks
-    const healthInterval = setInterval(() => {
+    const healthInterval = setInterval(_() => {
       this.runHealthCheck();
     }, CONFIG.HEALTH_CHECK_INTERVAL);
 
     // Schedule deep scans
-    const deepScanInterval = setInterval(() => {
+    const deepScanInterval = setInterval(_() => {
       this.log('🔍 Running deep diagnostic scan with mock data validation...');
       this.runHealthCheck();
     }, CONFIG.DEEP_SCAN_INTERVAL);
 
     // Graceful shutdown
-    process.on('SIGINT', () => {
+    process.on('SIGINT', _() => {
       this.log('🛑 Shutting down Enhanced Self-Healing Agent...');
       clearInterval(healthInterval);
       clearInterval(deepScanInterval);
       process.exit(0);
     });
 
-    process.on('SIGTERM', () => {
+    process.on('SIGTERM', _() => {
       this.log('🛑 Received SIGTERM, shutting down...');
       clearInterval(healthInterval);
       clearInterval(deepScanInterval);

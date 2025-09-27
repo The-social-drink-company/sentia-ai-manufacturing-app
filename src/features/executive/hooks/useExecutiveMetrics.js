@@ -45,7 +45,7 @@ const generateMockMetrics = (period) => {
     },
 
     cashFlow: {
-      labels: Array.from({ length: 12 }, (_, i) => {
+      labels: Array.from({ length: 12 }, (_, _i) => {
         const date = new Date()
         date.setMonth(date.getMonth() - (11 - i))
         return date.toLocaleDateString('en-US', { month: 'short' })

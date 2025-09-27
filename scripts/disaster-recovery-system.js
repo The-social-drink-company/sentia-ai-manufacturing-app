@@ -10,11 +10,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
 
 // Disaster Recovery Configuration
-const DR_CONFIG = {
+const DRCONFIG = {
   environments: {
     development: {
       name: 'Development',
@@ -97,14 +97,14 @@ class DisasterRecoverySystem {
   }
 
   async executeCommand(command, timeout = 120000) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       this.log('INFO', `Executing: ${command}`);
       
       exec(command, { 
         cwd: projectRoot,
         timeout,
         maxBuffer: 1024 * 1024 * 10 // 10MB buffer
-      }, (error, stdout, stderr) => {
+      }, _(error, stdout, _stderr) => {
         if (error) {
           reject(error);
         } else {

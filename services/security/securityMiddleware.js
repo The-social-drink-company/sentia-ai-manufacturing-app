@@ -73,9 +73,9 @@ export const securityHeaders = helmet({
 
 // General API rate limiting
 export const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * _1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
+  message: 'Too many requests from this IP, please try again _later.',
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
@@ -89,10 +89,10 @@ export const apiLimiter = rateLimit({
 
 // Strict rate limiting for authentication endpoints
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * _1000, // 15 minutes
   max: 5, // Limit each IP to 5 requests per windowMs
   skipSuccessfulRequests: true,
-  message: 'Too many authentication attempts, please try again later.',
+  message: 'Too many authentication attempts, please try again _later.',
   handler: (req, res) => {
     logger.error(`Auth rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
@@ -120,7 +120,7 @@ export const aiLimiter = rateLimit({
  * MongoDB Injection Protection
  */
 export const mongoSanitizer = mongoSanitize({
-  replaceWith: '_',
+  replaceWith: _'_',
   onSanitize: ({ req, key }) => {
     logger.warn(`Potential MongoDB injection attempt from IP: ${req.ip}, key: ${key}`);
   }
@@ -129,7 +129,7 @@ export const mongoSanitizer = mongoSanitize({
 /**
  * XSS Protection Middleware
  */
-export const xssProtection = (req, res, next) => {
+export const xssProtection = (req, res, _next) => {
   // Sanitize body
   if (req.body) {
     Object.keys(req.body).forEach(key => {
@@ -208,7 +208,7 @@ class CSRFProtection {
   }
 
   middleware() {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       // Skip CSRF for GET requests and API endpoints that use JWT
       if (req.method === 'GET' || req.path.startsWith('/api/public')) {
         return next();
@@ -295,7 +295,7 @@ export const validationRules = {
 /**
  * Validation Error Handler
  */
-export const handleValidationErrors = (req, res, next) => {
+export const handleValidationErrors = (req, res, _next) => {
   const errors = validationResult(req);
   
   if (!errors.isEmpty()) {
@@ -315,11 +315,11 @@ export const handleValidationErrors = (req, res, next) => {
 /**
  * SQL Injection Protection
  */
-export const sqlInjectionProtection = (req, res, next) => {
+export const sqlInjectionProtection = (req, res, _next) => {
   const sqlPatterns = [
     /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE)\b)/gi,
-    /(--|\||;|\/\*|\*\/|xp_|sp_|0x)/gi,
-    /(\bEXEC(\s|\()|EXECUTE(\s|\())/gi
+    /(--|\||;|/*|*/|xp_|sp_|0x)/gi,
+    /(\bEXEC(\s|()|EXECUTE(\s|())/gi
   ];
 
   const checkForSQLInjection = (value) => {
@@ -436,7 +436,7 @@ class IPBlocker {
   }
 
   middleware() {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       const ip = req.ip;
       
       if (this.isBlocked(ip)) {
@@ -454,7 +454,7 @@ export const ipBlocker = new IPBlocker();
 /**
  * Security Event Logger
  */
-export const logSecurityEvent = (eventType, req, details = {}) => {
+export const logSecurityEvent = (eventType, req, details = _{}) => {
   const event = {
     type: eventType,
     timestamp: new Date().toISOString(),

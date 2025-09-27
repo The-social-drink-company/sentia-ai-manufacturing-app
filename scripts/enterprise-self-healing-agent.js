@@ -225,7 +225,7 @@ class EnterpriseSelfHealingAgent {
   }
 
   setupGracefulShutdown() {
-    const shutdown = async (signal) => {
+    const shutdown = async (_signal) => {
       this.logger.info(`Received ${signal}, initiating graceful shutdown...`);
       this.isRunning = false;
       
@@ -351,7 +351,7 @@ class EnterpriseSelfHealingAgent {
     }
 
     const settledResults = await Promise.allSettled(promises);
-    settledResults.forEach((result, index) => {
+    settledResults.forEach((result, _index) => {
       if (result.status === 'fulfilled') {
         results.push(result.value);
       } else {
@@ -553,7 +553,7 @@ class EnterpriseSelfHealingAgent {
         // Only flag as mock if values appear outside legitimate business contexts
         const suspiciousPatterns = [
           'dataSource.*fallback', 'test_data', 'mock_data', 'sample_data',
-          'lorem ipsum', 'placeholder', 'MOCK_', 'TEST_'
+          'lorem ipsum', 'placeholder', 'MOCK', 'TEST'
         ];
         
         const foundSuspiciousPatterns = suspiciousPatterns.filter(pattern => 
@@ -779,7 +779,7 @@ class EnterpriseSelfHealingAgent {
     // Circuit breaker is open - wait and retry
     if (error.includes('Circuit breaker') && error.includes('OPEN')) {
       strategies.push({
-        name: 'Wait for Circuit Breaker Recovery',
+        name: 'Wait for Circuit Breaker _Recovery',
         priority: 1,
         execute: async () => {
           await new Promise(resolve => setTimeout(resolve, CONFIG.CIRCUIT_BREAKER.recoveryTimeout));
@@ -810,7 +810,7 @@ class EnterpriseSelfHealingAgent {
     // 5xx errors - server issues
     if (error.includes('HTTP 5')) {
       strategies.push({
-        name: 'Server Recovery Wait',
+        name: 'Server Recovery _Wait',
         priority: 4,
         execute: async () => {
           // Wait for server to self-recover
@@ -887,7 +887,7 @@ class EnterpriseSelfHealingAgent {
 
     // Calculate circuit breaker metrics
     const circuitBreakerMetrics = {};
-    Object.entries(this.circuitBreakers).forEach(([env, cb]) => {
+    Object.entries(this.circuitBreakers).forEach(_([env, _cb]) => {
       circuitBreakerMetrics[env] = cb.getHealthMetrics();
     });
 
@@ -985,7 +985,7 @@ class EnterpriseSelfHealingAgent {
       uptime: this.healthStats.uptimePercentage
     };
 
-    const weightedScore = Object.entries(weights).reduce((total, [key, weight]) => {
+    const weightedScore = Object.entries(weights).reduce(_(total, _[key, _weight]) => {
       return total + (scores[key] * weight);
     }, 0);
 
@@ -1026,7 +1026,7 @@ class EnterpriseSelfHealingAgent {
     }
 
     // Circuit breaker recommendations
-    Object.entries(report.circuitBreakers).forEach(([env, metrics]) => {
+    Object.entries(report.circuitBreakers).forEach(_([env, _metrics]) => {
       if (metrics.state === 'OPEN' || parseFloat(metrics.successRate) < 95) {
         recommendations.push({
           category: 'Reliability',

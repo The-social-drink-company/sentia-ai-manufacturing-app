@@ -17,7 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
 
 // Configuration
@@ -139,7 +139,7 @@ class EnterpriseDeploymentPipeline {
   }
 
   async executeCommand(command, cwd = projectRoot, timeout = 120000) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       this.log('INFO', `Executing: ${command}`);
       
       const process = spawn('cmd', ['/c', command], {
@@ -173,7 +173,7 @@ class EnterpriseDeploymentPipeline {
       });
 
       // Handle timeout
-      setTimeout(() => {
+      setTimeout(_() => {
         process.kill();
         reject(new Error(`Command timeout after ${timeout}ms: ${command}`));
       }, timeout);

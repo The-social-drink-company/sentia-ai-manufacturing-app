@@ -12,15 +12,17 @@ const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 import { BulletproofAuthProvider } from './auth/BulletproofAuthProvider';
 
 const AppMultiStage = () => {
-  const [appState, setAppState] = useState('loading'); // Skip landing page, go straight to loading
-  const [clerkLoaded, setClerkLoaded] = useState(true); // Start with Clerk loaded
+  const [appState, setAppState] = useState('landing'); // Start with landing page for proper UX
+  const [clerkLoaded, setClerkLoaded] = useState(false); // Load Clerk when user clicks Get Started
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
-  devLog.log('[AppMultiStage] Current state:', { appState, clerkLoaded });
+  devLog.log('[AppMultiStage] Current state:', { appState, clerkLoaded, loadingProgress });
 
   const handleGetStarted = () => {
     devLog.log('[AppMultiStage] Get started clicked');
     // Start loading Clerk and show multi-stage loader
     setAppState('loading');
+    setLoadingProgress(0);
 
     // Simulate Clerk initialization
     if (!clerkLoaded) {
@@ -34,13 +36,22 @@ const AppMultiStage = () => {
     setAppState('authenticated');
   };
 
-  // Auto-complete loading after a short delay
+  // Enhanced loading with progress tracking
   React.useEffect(() => {
     if (appState === 'loading') {
-      const timer = setTimeout(() => {
-        handleLoadingComplete();
-      }, 1000);
-      return () => clearTimeout(timer);
+      const progressInterval = setInterval(() => {
+        setLoadingProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            // Complete loading after reaching 90%
+            setTimeout(() => handleLoadingComplete(), 200);
+            return 100;
+          }
+          return prev + Math.random() * 20;
+        });
+      }, 100);
+
+      return () => clearInterval(progressInterval);
     }
   }, [appState]);
 
@@ -53,7 +64,7 @@ const AppMultiStage = () => {
   // Multi-stage loading
   if (appState === 'loading') {
     devLog.log('[AppMultiStage] Rendering loading stage');
-    return <MultiStageLoader onComplete={handleLoadingComplete} />;
+    return <MultiStageLoader onComplete={handleLoadingComplete} progress={loadingProgress} />;
   }
 
   // Authenticated app with bulletproof auth

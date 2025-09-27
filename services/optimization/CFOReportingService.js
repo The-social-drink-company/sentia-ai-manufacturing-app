@@ -449,7 +449,7 @@ class CFOReportingService {
   }
 
   simulateOrderPlan(optimizationData) {
-    return optimizationData.map((item, index) => ({
+    return optimizationData.map((item, _index) => ({
       orderId: `ORD-${Date.now()}-${index}`,
       skuId: item.skuId,
       quantity: item.outputs?.recommendedOrderQty || 0,

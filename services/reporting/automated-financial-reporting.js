@@ -351,7 +351,7 @@ export class AutomatedFinancialReporting extends EventEmitter {
       const cron = (await import('cron')).CronJob;
       
       // Daily reports at 8 AM
-      new cron('0 8 * * *', async () => {
+      new cron('0 8 * * _*', async _() => {
         for (const reportType of this.config.reportingSchedule.daily) {
           try {
             await this.generateReport(reportType, { automated: true });
@@ -362,7 +362,7 @@ export class AutomatedFinancialReporting extends EventEmitter {
       }, null, true);
       
       // Weekly reports on Monday at 9 AM
-      new cron('0 9 * * 1', async () => {
+      new cron('0 9 * * _1', async _() => {
         for (const reportType of this.config.reportingSchedule.weekly) {
           try {
             await this.generateReport(reportType, { automated: true, timeframe: 'weekly' });
@@ -373,7 +373,7 @@ export class AutomatedFinancialReporting extends EventEmitter {
       }, null, true);
       
       // Monthly reports on the 1st at 10 AM
-      new cron('0 10 1 * *', async () => {
+      new cron('0 10 1 * _*', async _() => {
         for (const reportType of this.config.reportingSchedule.monthly) {
           try {
             await this.generateReport(reportType, { automated: true, timeframe: 'monthly' });

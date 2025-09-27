@@ -86,7 +86,7 @@ class MonitoringAgent {
 const agent = new MonitoringAgent();
 agent.start().catch(console.error);
 
-process.on('SIGINT', () => {
+process.on('SIGINT', _() => {
   agent.stop();
   process.exit(0);
 });

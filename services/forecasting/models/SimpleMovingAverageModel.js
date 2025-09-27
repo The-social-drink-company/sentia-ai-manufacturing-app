@@ -21,7 +21,7 @@ class SimpleMovingAverageModel {
 
     const values = this.timeSeries.map(point => point.value);
     const lastValues = values.slice(-this.windowSize);
-    const movingAverage = lastValues.reduce((sum, val) => sum + val, 0) / lastValues.length;
+    const movingAverage = lastValues.reduce((sum, _val) => sum + val, 0) / lastValues.length;
     
     // Simple SMA assumes constant forecast equal to the moving average
     return new Array(horizon).fill(movingAverage);

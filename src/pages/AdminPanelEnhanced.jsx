@@ -121,7 +121,7 @@ const AdminPanelEnhanced = () => {
       first_name: 'John',
       last_name: 'Doe',
       email_addresses: [{ email_address: 'john@example.com' }],
-      public_metadata: { role: 'admin', approved: true },
+      publicmetadata: { role: 'admin', approved: true },
       last_sign_in_at: new Date().toISOString(),
       created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
     },
@@ -130,7 +130,7 @@ const AdminPanelEnhanced = () => {
       first_name: 'Jane',
       last_name: 'Smith',
       email_addresses: [{ email_address: 'jane@example.com' }],
-      public_metadata: { role: 'user', approved: true },
+      publicmetadata: { role: 'user', approved: true },
       last_sign_in_at: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
       created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
     },
@@ -139,7 +139,7 @@ const AdminPanelEnhanced = () => {
       first_name: 'Bob',
       last_name: 'Wilson',
       email_addresses: [{ email_address: 'bob@example.com' }],
-      public_metadata: { role: 'user', approved: false },
+      publicmetadata: { role: 'user', approved: false },
       last_sign_in_at: null,
       created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
     }
@@ -216,7 +216,7 @@ const AdminPanelEnhanced = () => {
       email_enabled: true,
       slack_enabled: false,
       webhook_enabled: true,
-      alert_threshold: 85
+      alertthreshold: 85
     },
     security: {
       password_policy: 'strong',
@@ -286,11 +286,11 @@ const AdminPanelEnhanced = () => {
     return `${days}d ${hours}h ${minutes}m`;
   };
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = (_dateString) => {
     return new Date(dateString).toLocaleString('en-GB');
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'approved':
       case 'active':
@@ -424,7 +424,7 @@ const AdminPanelEnhanced = () => {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
-                              {log.action.replace('_', ' ')}
+                              {log.action.replace('', ' ')}
                             </p>
                             <p className="text-xs text-gray-500">{log.user} • {formatDateTime(log.timestamp)}</p>
                           </div>
@@ -501,17 +501,17 @@ const AdminPanelEnhanced = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                              userItem.public_metadata?.role === 'admin' ? getStatusColor('approved') :
+                              userItem.publicmetadata?.role === 'admin' ? getStatusColor('approved') :
                               getStatusColor('pending')
                             }`}>
-                              {userItem.public_metadata?.role || 'user'}
+                              {userItem.publicmetadata?.role || 'user'}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                              getStatusColor(userItem.public_metadata?.approved ? 'approved' : 'pending')
+                              getStatusColor(userItem.publicmetadata?.approved ? 'approved' : 'pending')
                             }`}>
-                              {userItem.public_metadata?.approved ? 'Active' : 'Pending'}
+                              {userItem.publicmetadata?.approved ? 'Active' : 'Pending'}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -729,7 +729,7 @@ const AdminPanelEnhanced = () => {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            {log.action.replace('_', ' ')}
+                            {log.action.replace('', ' ')}
                           </p>
                           <p className="text-sm text-gray-500">
                             {log.user} • {formatDateTime(log.timestamp)}
@@ -804,7 +804,7 @@ const AdminPanelEnhanced = () => {
                   {Object.entries(settings.integrations).map(([integration, enabled]) => (
                     <div key={integration} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       <span className="text-sm font-medium text-gray-900 dark:text-white capitalize">
-                        {integration.replace('_', ' ')}
+                        {integration.replace('', ' ')}
                       </span>
                       <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium border ${
                         enabled ? getStatusColor('active') : getStatusColor('pending')

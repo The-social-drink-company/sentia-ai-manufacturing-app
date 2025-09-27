@@ -22,9 +22,9 @@ const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
  * GET /api/inventory/levels
  * Get current inventory levels with filters
  */
-router.get('/levels',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/levels',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     // Validate query parameters
     const query = inventoryLevelSchema.query.parse(req.query);
@@ -410,9 +410,9 @@ router.post('/optimize/reorder',
  * GET /api/inventory/movements
  * Get inventory movements history
  */
-router.get('/movements',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/movements',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     // Validate query parameters
     const query = inventoryMovementSchema.query.parse(req.query);
@@ -640,9 +640,9 @@ router.post('/stocktake',
  * GET /api/inventory/analytics
  * Get inventory analytics and insights
  */
-router.get('/analytics',
-  requireAuth,
-  rateLimiters.read,
+router.get(_'/analytics',
+  _requireAuth,
+  _rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = '30d' } = req.query;
 

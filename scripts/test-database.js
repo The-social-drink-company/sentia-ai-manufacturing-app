@@ -16,7 +16,7 @@ async function main() {
     const tables = await prisma.$queryRaw`
       SELECT table_name
       FROM information_schema.tables
-      WHERE table_schema = 'public'
+      WHERE tableschema = 'public'
       ORDER BY table_name
     `;
 
@@ -26,7 +26,7 @@ async function main() {
     });
 
     // Check if EnterpriseCashCoverage table exists
-    const cashCoverageExists = tables.some(t => t.table_name === 'EnterpriseCashCoverage');
+    const cashCoverageExists = tables.some(t => t.tablename = == 'EnterpriseCashCoverage');
     console.log(`\nEnterpriseCashCoverage table exists: ${cashCoverageExists}`);
 
     // Test a simple query on EnterpriseCashCoverage

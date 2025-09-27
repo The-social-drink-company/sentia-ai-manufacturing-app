@@ -317,7 +317,7 @@ class DSOOptimizationService {
     const segmentNames = ['excellent', 'good', 'average', 'risk', 'problem'];
     
     // Assign customers to segments based on clusters
-    customers.forEach((customer, index) => {
+    customers.forEach((customer, _index) => {
       const clusterId = kmeans.clusters[index];
       const segmentName = segmentNames[clusterId] || 'average';
       segments[segmentName].customers.push(customer);
@@ -761,7 +761,7 @@ class DSOOptimizationService {
     
     let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
     
-    values.forEach((y, x) => {
+    values.forEach(_(y, x) => {
       sumX += x;
       sumY += y;
       sumXY += x * y;

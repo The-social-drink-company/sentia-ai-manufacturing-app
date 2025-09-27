@@ -17,7 +17,7 @@ console.log('='.repeat(60));
 
 // Check environment
 const isRender = !!process.env.RENDER;
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = process.env.NODEENV = == 'development';
 
 console.log('Environment:', process.env.NODE_ENV || 'not set');
 console.log('Platform:', isRender ? 'Render' : 'Local');
@@ -70,7 +70,7 @@ async function testConnection() {
       const tableTest = await prisma.$queryRaw`
         SELECT COUNT(*) as table_count
         FROM information_schema.tables
-        WHERE table_schema = 'public'
+        WHERE tableschema = 'public'
       `;
       console.log('📋 Tables in database:', tableTest[0].table_count);
     } catch (error) {

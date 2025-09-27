@@ -164,7 +164,7 @@ class IoTSensorService {
         }
 
         this.websocket.onerror = (error) => {
-          auditService.logError(error, { action: 'iot_websocket_error' })
+          auditService.logError(error, { action: 'iot_websocketerror' })
           reject(error)
         }
 

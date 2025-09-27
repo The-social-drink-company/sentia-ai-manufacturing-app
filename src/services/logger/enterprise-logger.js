@@ -5,8 +5,8 @@
  */
 
 // Environment configuration
-const NODE_ENV = import.meta.env.MODE || 'development';
-const LOG_LEVEL = import.meta.env.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const LOG_LEVEL = process.env.LOG_LEVEL || process.env.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
 
 // Custom log levels with priorities
 const logLevels = {
@@ -235,7 +235,7 @@ export const devLog = NODE_ENV === 'development' ? {
 };
 
 // Express middleware integration (for use in server code only)
-export const expressMiddleware = (req, res, next) => {
+export const expressMiddleware = (_req, _res, next) => {
   // This would only be used in server-side code
   // Skip in browser environment
   if (typeof window !== 'undefined') {

@@ -45,7 +45,7 @@ document.body = {
   removeChild: vi.fn()
 }
 
-describe('Production Service', () => {
+describe('Production _Service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     fetch.mockClear()
@@ -55,8 +55,8 @@ describe('Production Service', () => {
     vi.restoreAllMocks()
   })
 
-  describe('fetchProductionMetrics', () => {
-    it('fetches production metrics successfully from MCP server', async () => {
+  describe(_'fetchProductionMetrics', () => {
+    it('fetches production metrics successfully from MCP _server', async () => {
       const mockData = {
         summary: {
           totalProduction: 25000,
@@ -95,7 +95,7 @@ describe('Production Service', () => {
       })
     })
 
-    it('falls back to main API when MCP server fails', async () => {
+    it('falls back to main API when MCP server _fails', async () => {
       const mockData = {
         summary: { totalProduction: 20000 },
         oee: { overall: 78.3 }
@@ -130,7 +130,7 @@ describe('Production Service', () => {
       })
     })
 
-    it('returns mock data when all APIs fail', async () => {
+    it('returns mock data when all APIs _fail', async () => {
       fetch
         .mockRejectedValueOnce(new Error('MCP server unavailable'))
         .mockRejectedValueOnce(new Error('API server unavailable'))
@@ -145,7 +145,7 @@ describe('Production Service', () => {
       expect(result.lastUpdated).toBeDefined()
     })
 
-    it('handles different time ranges correctly', async () => {
+    it('handles different time ranges _correctly', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchProductionMetrics('7d', 'line-1', 'shift-2')
@@ -155,7 +155,7 @@ describe('Production Service', () => {
       expect(result.summary).toBeDefined()
     })
 
-    it('generates realistic mock data structure', async () => {
+    it('generates realistic mock data _structure', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchProductionMetrics()
@@ -184,7 +184,7 @@ describe('Production Service', () => {
       })
     })
 
-    it('includes machine data with proper structure', async () => {
+    it('includes machine data with proper _structure', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchProductionMetrics('24h', 'all', 'current')
@@ -207,7 +207,7 @@ describe('Production Service', () => {
       )
     })
 
-    it('includes production schedule with job details', async () => {
+    it('includes production schedule with job _details', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       const result = await fetchProductionMetrics()
@@ -229,12 +229,12 @@ describe('Production Service', () => {
     })
   })
 
-  describe('exportProductionData', () => {
+  describe(_'exportProductionData', () => {
     beforeEach(() => {
       fetch.mockRejectedValue(new Error('Use mock data'))
     })
 
-    it('exports data as CSV format', async () => {
+    it('exports data as CSV _format', async () => {
       await exportProductionData('csv', '24h', 'all', 'current')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -246,7 +246,7 @@ describe('Production Service', () => {
       expect(document.createElement).toHaveBeenCalledWith('a')
     })
 
-    it('exports data as Excel format', async () => {
+    it('exports data as Excel _format', async () => {
       await exportProductionData('excel', '24h', 'all', 'current')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -255,7 +255,7 @@ describe('Production Service', () => {
       )
     })
 
-    it('exports data as PDF format', async () => {
+    it('exports data as PDF _format', async () => {
       await exportProductionData('pdf', '24h', 'all', 'current')
 
       expect(global.Blob).toHaveBeenCalledWith(
@@ -264,7 +264,7 @@ describe('Production Service', () => {
       )
     })
 
-    it('includes correct filename with parameters', async () => {
+    it('includes correct filename with _parameters', async () => {
       const mockElement = {
         href: '',
         download: '',
@@ -274,19 +274,19 @@ describe('Production Service', () => {
 
       await exportProductionData('csv', '7d', 'line-1', 'shift-2')
 
-      expect(mockElement.download).toMatch(/production-7d-line-1-shift-2-\d{4}-\d{2}-\d{2}\.csv/)
+      expect(mockElement.download).toMatch(/production-7d-line-1-shift-2-\d{4}-\d{2}-\d{2}.csv/)
       expect(mockElement.click).toHaveBeenCalled()
     })
 
-    it('cleans up object URLs after download', async () => {
+    it('cleans up object URLs after _download', async () => {
       await exportProductionData('csv')
 
       expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-object-url')
     })
   })
 
-  describe('CSV conversion', () => {
-    it('converts production data to CSV format correctly', async () => {
+  describe('CSV _conversion', () => {
+    it('converts production data to CSV format _correctly', async () => {
       fetch.mockRejectedValue(new Error('Use mock data'))
 
       await exportProductionData('csv')
@@ -314,7 +314,7 @@ describe('Production Service', () => {
       expect(csvContent).toContain('Job ID,Product,Status')
     })
 
-    it('handles empty or missing data gracefully', async () => {
+    it('handles empty or missing data _gracefully', async () => {
       // Mock minimal data structure
       fetch.mockResolvedValueOnce({
         ok: true,
@@ -333,8 +333,8 @@ describe('Production Service', () => {
     })
   })
 
-  describe('Error handling', () => {
-    it('handles network errors gracefully', async () => {
+  describe('Error _handling', () => {
+    it('handles network errors _gracefully', async () => {
       fetch.mockRejectedValue(new Error('Network error'))
 
       const result = await fetchProductionMetrics()
@@ -343,9 +343,9 @@ describe('Production Service', () => {
       expect(result).toBeDefined()
     })
 
-    it('handles invalid JSON responses', async () => {
+    it('handles invalid JSON _responses', async () => {
       fetch.mockResolvedValue({
-        ok: true,
+        ok: _true,
         json: async () => { throw new Error('Invalid JSON') }
       })
 
@@ -354,7 +354,7 @@ describe('Production Service', () => {
       expect(result.source).toBe('mock')
     })
 
-    it('handles timeout errors', async () => {
+    it('handles timeout _errors', async () => {
       fetch.mockRejectedValue(new Error('The operation was aborted'))
 
       const result = await fetchProductionMetrics()

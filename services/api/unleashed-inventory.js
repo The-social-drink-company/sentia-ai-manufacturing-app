@@ -15,7 +15,7 @@ const router = express.Router();
 /**
  * Get real-time inventory status
  */
-router.get('/status', async (req, res) => {
+router.get(_'/status', async _(req, res) => {
   try {
     const { warehouse, lowStockOnly, search } = req.query;
 
@@ -92,7 +92,7 @@ router.get('/status', async (req, res) => {
 /**
  * Get stock movements for a product
  */
-router.get('/movements/:sku', async (req, res) => {
+router.get(_'/movements/:sku', async _(req, res) => {
   try {
     const { sku } = req.params;
     const { startDate, endDate, limit = 50 } = req.query;
@@ -157,7 +157,7 @@ router.get('/movements/:sku', async (req, res) => {
 /**
  * Get stock movement trends
  */
-router.get('/trends', async (req, res) => {
+router.get(_'/trends', async _(req, res) => {
   try {
     const { period = '30d', groupBy = 'day' } = req.query;
 
@@ -261,7 +261,7 @@ router.get('/trends', async (req, res) => {
 /**
  * Trigger manual sync
  */
-router.post('/sync', async (req, res) => {
+router.post(_'/sync', async _(req, res) => {
   try {
     const syncService = getUnleashedSync();
 
@@ -299,7 +299,7 @@ router.post('/sync', async (req, res) => {
 /**
  * Get sync status
  */
-router.get('/sync/status', async (req, res) => {
+router.get(_'/sync/status', async _(req, res) => {
   try {
     const syncService = getUnleashedSync();
     const status = syncService.getStatus();
@@ -320,7 +320,7 @@ router.get('/sync/status', async (req, res) => {
 /**
  * Get low stock alerts
  */
-router.get('/alerts', async (req, res) => {
+router.get(_'/alerts', async _(req, res) => {
   try {
     const { severity = 'all', limit = 50 } = req.query;
 
@@ -402,7 +402,7 @@ router.get('/alerts', async (req, res) => {
 /**
  * Get product availability
  */
-router.get('/availability/:sku', async (req, res) => {
+router.get(_'/availability/:sku', async _(req, res) => {
   try {
     const { sku } = req.params;
 
@@ -450,13 +450,13 @@ router.get('/availability/:sku', async (req, res) => {
     });
 
     // Calculate availability
-    const incomingStock = pendingPurchaseOrders.reduce((sum, po) => {
+    const incomingStock = pendingPurchaseOrders.reduce(_(sum, po) => {
       const lines = po.data.lines || [];
       const productLines = lines.filter(l => l.productCode === sku);
       return sum + productLines.reduce((lineSum, l) => lineSum + l.quantity, 0);
     }, 0);
 
-    const committedStock = pendingSalesOrders.reduce((sum, so) => {
+    const committedStock = pendingSalesOrders.reduce(_(sum, so) => {
       const lines = so.data.lines || [];
       const productLines = lines.filter(l => l.productCode === sku);
       return sum + productLines.reduce((lineSum, l) => lineSum + l.quantity, 0);
@@ -498,7 +498,7 @@ router.get('/availability/:sku', async (req, res) => {
 /**
  * Subscribe to real-time updates via SSE
  */
-router.get('/realtime', (req, res) => {
+router.get(_'/realtime', _(req, res) => {
   // Set up SSE headers
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -514,12 +514,12 @@ router.get('/realtime', (req, res) => {
   })}\n\n`);
 
   // Keep connection alive
-  const keepAlive = setInterval(() => {
+  const keepAlive = setInterval(_() => {
     res.write(`data: ${JSON.stringify({ type: 'ping' })}\n\n`);
   }, 30000);
 
   // Clean up on disconnect
-  req.on('close', () => {
+  req.on(_'close', _() => {
     clearInterval(keepAlive);
     logInfo('SSE connection closed');
   });

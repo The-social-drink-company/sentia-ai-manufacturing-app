@@ -10,8 +10,8 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 // Get __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(__filename);
 
 // Load environment variables
 dotenv.config({ path: join(__dirname, '..', '.env') });
@@ -32,7 +32,7 @@ const tests = {
 let allPassed = true;
 
 // Check each configuration
-Object.entries(tests).forEach(([name, value]) => {
+Object.entries(tests).forEach(_([name, _value]) => {
   if (value) {
     // Mask the actual value for security
     const masked = value.substring(0, 20) + '...' + value.substring(value.length - 4);
@@ -50,7 +50,7 @@ console.log('-'.repeat(40));
 // Validate key formats
 if (process.env.VITE_CLERK_PUBLISHABLE_KEY) {
   const pubKey = process.env.VITE_CLERK_PUBLISHABLE_KEY;
-  if (pubKey.startsWith('pk_test_') || pubKey.startsWith('pk_live_')) {
+  if (pubKey.startsWith('pk_test') || pubKey.startsWith('pk_live')) {
     console.log('✅ Publishable key has correct format');
   } else {
     console.log('⚠️  Publishable key format unusual (should start with pk_test_ or pk_live_)');
@@ -59,7 +59,7 @@ if (process.env.VITE_CLERK_PUBLISHABLE_KEY) {
 
 if (process.env.CLERK_SECRET_KEY) {
   const secretKey = process.env.CLERK_SECRET_KEY;
-  if (secretKey.startsWith('sk_test_') || secretKey.startsWith('sk_live_')) {
+  if (secretKey.startsWith('sk_test') || secretKey.startsWith('sk_live')) {
     console.log('✅ Secret key has correct format');
   } else {
     console.log('⚠️  Secret key format unusual (should start with sk_test_ or sk_live_)');
@@ -71,7 +71,7 @@ console.log('Environment Detection:');
 console.log('-'.repeat(40));
 
 // Detect environment
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODEENV = == 'production';
 const isRender = !!process.env.RENDER;
 const isLocal = !process.env.RENDER && !process.env.RAILWAY_ENVIRONMENT;
 
@@ -98,9 +98,9 @@ if (allPassed) {
   console.log('Required Setup:');
   console.log('1. Get keys from: https://dashboard.clerk.com');
   console.log('2. Add to .env file:');
-  console.log('   VITE_CLERK_PUBLISHABLE_KEY=pk_test_...');
-  console.log('   CLERK_SECRET_KEY=sk_test_...');
-  console.log('   CLERK_WEBHOOK_SECRET=whsec_...');
+  console.log('   VITECLERK_PUBLISHABLE_KEY = pk_test_...');
+  console.log('   CLERKSECRET_KEY = sk_test_...');
+  console.log('   CLERKWEBHOOK_SECRET = whsec_...');
 }
 
 console.log('='.repeat(60));

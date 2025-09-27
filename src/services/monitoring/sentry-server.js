@@ -117,7 +117,7 @@ export const sentryErrorHandler = () => {
       }
 
       // Capture specific manufacturing errors
-      if (error.code && error.code.startsWith('MFG_')) {
+      if (error.code && error.code.startsWith('MFG')) {
         return true;
       }
 
@@ -130,7 +130,7 @@ export const sentryErrorHandler = () => {
  * Set manufacturing operation context
  */
 export const setSentryOperationContext = (operation, module, metadata = {}) => {
-  Sentry.setContext('manufacturing_operation', {
+  Sentry.setContext('manufacturingoperation', {
     operation,
     module,
     timestamp: new Date().toISOString(),
@@ -180,7 +180,7 @@ export const capturePerformanceMetric = (metricName, value, unit = 'ms', context
     scope.setTag('manufacturing_module', context.module || 'unknown');
 
     scope.setExtra('metric_name', metricName);
-    scope.setExtra('metric_value', value);
+    scope.setExtra('metricvalue', value);
     scope.setExtra('metric_unit', unit);
 
     Sentry.captureMessage(`Performance Metric: ${metricName}`, 'info');
@@ -197,7 +197,7 @@ export const capturePerformanceMetric = (metricName, value, unit = 'ms', context
 /**
  * Start server transaction for manufacturing API operations
  */
-export const startServerTransaction = (name, operation = 'manufacturing_api') => {
+export const startServerTransaction = (_name, operation = 'manufacturing_api') => {
   const transaction = Sentry.startTransaction({
     name,
     op: operation,

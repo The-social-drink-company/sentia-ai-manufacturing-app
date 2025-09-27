@@ -228,7 +228,7 @@ export class SecurityMonitor {
 
     if (isSecurityRelated) {
       const securityError = {
-        type: 'security_error',
+        type: 'securityerror',
         timestamp: Date.now(),
         message: event.message,
         filename: event.filename,
@@ -240,7 +240,7 @@ export class SecurityMonitor {
         severity: this.classifySecurityErrorSeverity(event.message)
       }
 
-      this.recordSecurityEvent('security_error', securityError)
+      this.recordSecurityEvent('securityerror', securityError)
     }
   }
 
@@ -502,7 +502,7 @@ export class SecurityMonitor {
         totalEvents: this.getTotalEventCount(),
         criticalAlerts: this.getCriticalAlertsCount(),
         cspViolations: this.getEventCount('csp_violation'),
-        securityErrors: this.getEventCount('security_error'),
+        securityErrors: this.getEventCount('securityerror'),
         threatDetections: this.getEventCount('alerts'),
         highRiskSessions: this.getHighRiskSessionsCount()
       },
@@ -660,7 +660,7 @@ export class SecurityMonitor {
    */
   trackAuthEvent(type, details) {
     const authEvent = {
-      type: 'auth_' + type,
+      type: 'auth' + type,
       timestamp: Date.now(),
       sessionId: this.getSessionId(),
       ipAddress: this.getClientIP(),

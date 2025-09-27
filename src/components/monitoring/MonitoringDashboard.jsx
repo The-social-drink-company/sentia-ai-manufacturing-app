@@ -101,7 +101,7 @@ const MonitoringDashboard = () => {
     }
   }
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = (_severity) => {
     switch (severity) {
       case 'critical':
         return 'text-red-600 bg-red-100 border-red-200'
@@ -339,7 +339,7 @@ const MonitoringDashboard = () => {
                     {systemHealth.checks.slice(0, 5).map((check, index) => (
                       <div key={index} className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 capitalize">
-                          {check.name?.replace('_', ' ')}
+                          {check.name?.replace('', ' ')}
                         </span>
                         <div className="flex items-center">
                           {check.lastResult?.healthy ? (
@@ -470,7 +470,7 @@ const MonitoringDashboard = () => {
                     {securityData.topThreats.slice(0, 3).map((threat, index) => (
                       <div key={index} className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 capitalize">
-                          {threat.threat.replace('_', ' ')}
+                          {threat.threat.replace('', ' ')}
                         </span>
                         <span className="font-semibold text-red-600">
                           {threat.count}

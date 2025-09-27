@@ -191,7 +191,7 @@ class LinearRegressionModel {
 
   // Matrix operations helper methods
   transpose(matrix) {
-    return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+    return matrix[0].map((_, _colIndex) => matrix.map(row => row[colIndex]));
   }
 
   matrixMultiply(A, B) {

@@ -96,7 +96,7 @@ const initializeLakehouse = () => {
 initializeLakehouse();
 
 // Health check
-app.get('/health', (req, res) => {
+app.get(_'/health', _(req, res) => {
   res.json({ 
     status: 'healthy',
     service: 'lakehouse',
@@ -105,7 +105,7 @@ app.get('/health', (req, res) => {
 });
 
 // Data ingestion endpoint
-app.post('/ingest/:table', async (req, res) => {
+app.post(_'/ingest/:table', async _(req, res) => {
   try {
     const { table } = req.params;
     const { data, schema = 'raw' } = req.body;
@@ -138,7 +138,7 @@ app.post('/ingest/:table', async (req, res) => {
 });
 
 // Query endpoint
-app.post('/query', async (req, res) => {
+app.post(_'/query', async _(req, res) => {
   try {
     const { sql, params = [] } = req.body;
     
@@ -162,7 +162,7 @@ app.post('/query', async (req, res) => {
 });
 
 // Analytics endpoint
-app.get('/analytics/:metric', async (req, res) => {
+app.get(_'/analytics/:metric', async _(req, res) => {
   try {
     const { metric } = req.params;
     const { startDate, endDate, groupBy = 'day' } = req.query;
@@ -224,7 +224,7 @@ app.get('/analytics/:metric', async (req, res) => {
 });
 
 // Export to Parquet
-app.post('/export/parquet', async (req, res) => {
+app.post(_'/export/parquet', async _(req, res) => {
   try {
     const { table, outputPath } = req.body;
     
@@ -244,6 +244,6 @@ app.post('/export/parquet', async (req, res) => {
 });
 
 const PORT = process.env.LAKEHOUSE_PORT || 8100;
-app.listen(PORT, () => {
+app.listen(PORT, _() => {
   logger.info(`Lakehouse service running on port ${PORT}`);
 });

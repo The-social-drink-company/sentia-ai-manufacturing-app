@@ -109,7 +109,7 @@ export default function SystemAdminPanel() {
     { category: 'Backup', key: 'Backup Retention', value: '7 days local, 30 days cloud', status: 'good' }
   ];
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'healthy':
       case 'running':
@@ -123,7 +123,7 @@ export default function SystemAdminPanel() {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (_status) => {
     switch (status) {
       case 'healthy':
       case 'running':

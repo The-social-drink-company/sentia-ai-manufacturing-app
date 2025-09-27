@@ -93,7 +93,7 @@ export default function ProductionDashboard() {
     )
   }
 
-  const handleExport = async (format) => {
+  const handleExport = async (_format) => {
     try {
       await exportData(format)
     } catch (err) {

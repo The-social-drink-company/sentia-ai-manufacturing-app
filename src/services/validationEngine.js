@@ -37,7 +37,7 @@ class ValidationEngine {
         dimensions_cm: {
           required: true,
           type: 'string',
-          format: /^\d+(\.\d+)?x\d+(\.\d+)?x\d+(\.\d+)?$/,
+          format: /^\d+(.\d+)?x\d+(.\d+)?x\d+(.\d+)?$/,
           description: 'Format: "LxWxH" (e.g., "10.5x5.2x15.0")'
         },
         unit_cost: {
@@ -114,7 +114,7 @@ class ValidationEngine {
         gross_revenue: {
           required: false,
           type: 'number',
-          businessRule: 'gross_revenue = quantity_sold * unit_price'
+          businessRule: 'grossrevenue = quantity_sold * unit_price'
         },
         net_revenue: {
           required: false,
@@ -609,7 +609,7 @@ class ValidationEngine {
       case 'historical_sales':
         // Calculate gross revenue if not provided
         if (data.quantity_sold && data.unit_price && !data.gross_revenue) {
-          data.gross_revenue = data.quantity_sold * data.unit_price;
+          data.grossrevenue = data.quantity_sold * data.unit_price;
         }
         
         // Validate revenue calculations
@@ -728,7 +728,7 @@ class ValidationEngine {
       }
       
       // Basic math operations only - use safe evaluation
-      if (/^[\d\+\-\*\/\.\s\(\)]+$/.test(expr)) {
+      if (/^[\d+\-*/.\s()]+$/.test(expr)) {
         return this.safeEvaluate(expr);
       }
     } catch (error) {
@@ -747,7 +747,7 @@ class ValidationEngine {
     // Simple calculator for basic operations using manual parsing
     try {
       // Only allow mathematical operations
-      if (!/^[\d\+\-\*\/\.\(\)]+$/.test(expr)) {
+      if (!/^[\d+\-*/.()]+$/.test(expr)) {
         throw new Error('Invalid characters in expression');
       }
       
@@ -773,7 +773,7 @@ class ValidationEngine {
     
     const parseNumber = () => {
       let num = '';
-      while (index < expr.length && /[\d\.]/.test(expr[index])) {
+      while (index < expr.length && /[\d.]/.test(expr[index])) {
         num += expr[index++];
       }
       return parseFloat(num);
@@ -791,7 +791,7 @@ class ValidationEngine {
     
     const parseTerm = () => {
       let result = parseFactor();
-      while (index < expr.length && /[\*\/]/.test(expr[index])) {
+      while (index < expr.length && /[*/]/.test(expr[index])) {
         const op = expr[index++];
         const right = parseFactor();
         result = op === '*' ? result * right : result / right;
@@ -801,7 +801,7 @@ class ValidationEngine {
     
     const parseExpression = () => {
       let result = parseTerm();
-      while (index < expr.length && /[\+\-]/.test(expr[index])) {
+      while (index < expr.length && /[+\-]/.test(expr[index])) {
         const op = expr[index++];
         const right = parseTerm();
         result = op === '+' ? result + right : result - right;

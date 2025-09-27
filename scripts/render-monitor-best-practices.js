@@ -44,14 +44,14 @@ class RenderMonitorAgent {
     return new Promise((resolve) => {
       const healthUrl = `${url}/health`;
 
-      https.get(healthUrl, { timeout: 30000 }, (res) => {
+      https.get(healthUrl, { timeout: 30000 }, _(res) => {
         let data = '';
 
         res.on('data', chunk => {
           data += chunk;
         });
 
-        res.on('end', () => {
+        res.on('end', _() => {
           resolve({
             name,
             url,
@@ -61,7 +61,7 @@ class RenderMonitorAgent {
             timestamp: new Date().toISOString()
           });
         });
-      }).on('error', (error) => {
+      }).on('error', _(error) => {
         resolve({
           name,
           url,
@@ -219,10 +219,10 @@ class RenderMonitorAgent {
       try {
         const serverFile = await fs.readFile('server.js', 'utf-8');
 
-        if (!serverFile.includes('pool_mode=transaction')) {
+        if (!serverFile.includes('poolmode = transaction')) {
           // Add connection pooling to database URLs
           const updatedServer = serverFile.replace(
-            /DATABASE_URL\s*=\s*process\.env\.DATABASE_URL/g,
+            /DATABASE_URL\s*=\s*process.env.DATABASE_URL/g,
             'DATABASE_URL = process.env.DATABASE_URL + "?pool_mode=transaction"'
           );
 
@@ -289,7 +289,7 @@ Applied by Render Monitor Agent`;
     try {
       // Search for console.log in source files
       const { stdout } = await execAsync(
-        'grep -r "console\\.log" --include="*.js" --include="*.jsx" src/ services/ | head -20'
+        'grep -r "console\.log" --include="*.js" --include="*.jsx" src/ services/ | head -20'
       );
 
       const matches = stdout.split('\n').filter(line => line.trim());
@@ -313,9 +313,9 @@ Applied by Render Monitor Agent`;
 
       // Replace console.log with structured logging
       const updatedContent = content
-        .replace(/console\.log\(/g, '// console.log(')
-        .replace(/console\.error\(/g, 'logError(')
-        .replace(/console\.warn\(/g, 'logWarn(');
+        .replace(/console.log(/g, '// console.log(')
+        .replace(/console.error(/g, 'logError(')
+        .replace(/console.warn(/g, 'logWarn(');
 
       if (content !== updatedContent) {
         await fs.writeFile(filePath, updatedContent);
@@ -334,9 +334,9 @@ Applied by Render Monitor Agent`;
       const endpoints = ['/health', '/', '/api/health'];
 
       for (const endpoint of endpoints) {
-        https.get(`${url}${endpoint}`, { timeout: 60000 }, (res) => {
-          res.on('data', () => {}); // Consume response
-        }).on('error', () => {}); // Ignore errors
+        https.get(`${url}${endpoint}`, { timeout: 60000 }, _(res) => {
+          res.on('data', _() => {}); // Consume response
+        }).on('error', _() => {}); // Ignore errors
 
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -400,7 +400,7 @@ Applied by Render Monitor Agent`;
     this.isRunning = true;
 
     // Ensure logs directory exists
-    await fs.mkdir('logs', { recursive: true }).catch(() => {});
+    await fs.mkdir('logs', { recursive: true }).catch(_() => {});
 
     await this.log('INFO', '='.repeat(60));
     await this.log('INFO', 'RENDER MONITOR AGENT WITH BEST PRACTICES');
@@ -424,12 +424,12 @@ const agent = new RenderMonitorAgent();
 agent.start().catch(console.error);
 
 // Graceful shutdown
-process.on('SIGINT', () => {
+process.on('SIGINT', _() => {
   agent.stop();
   process.exit(0);
 });
 
-process.on('SIGTERM', () => {
+process.on('SIGTERM', _() => {
   agent.stop();
   process.exit(0);
 });

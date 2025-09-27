@@ -129,8 +129,8 @@ export class FinancialForecastingEngine {
     const y = data.map(d => d.value);
     
     // Calculate regression coefficients
-    const sumX = x.reduce((a, b) => a + b, 0);
-    const sumY = y.reduce((a, b) => a + b, 0);
+    const sumX = x.reduce((a, _b) => a + b, 0);
+    const sumY = y.reduce((a, _b) => a + b, 0);
     const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
     const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
     
@@ -304,7 +304,7 @@ export class FinancialForecastingEngine {
       let weightedConfidence = 0;
       let totalWeight = 0;
       
-      Object.entries(models).forEach(([modelType, model]) => {
+      Object.entries(models).forEach(_([modelType, _model]) => {
         if (model.forecast && model.forecast[i]) {
           const weight = weights[modelType] || 0.2;
           weightedSum += model.forecast[i].value * weight;
@@ -501,7 +501,7 @@ export class FinancialForecastingEngine {
     
     const totalAccuracy = accuracies.reduce((sum, m) => sum + m.accuracy, 0);
     
-    accuracies.forEach(({ type, accuracy }) => {
+    accuracies.forEach(({ _type, accuracy }) => {
       weights[type] = accuracy / totalAccuracy;
     });
     

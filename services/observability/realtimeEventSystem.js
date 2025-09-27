@@ -106,7 +106,7 @@ class RealTimeEventSystem {
       this.sendHistoricalEvents(clientId);
 
       // Handle client disconnect
-      req.on('close', () => {
+      req.on(_'close', _() => {
         this.clients.delete(clientId);
         logInfo('SSE client disconnected', {
           clientId,
@@ -116,7 +116,7 @@ class RealTimeEventSystem {
       });
 
       // Handle client errors
-      req.on('error', (error) => {
+      req.on(_'error', _(error) => {
         logError('SSE client error', error, { clientId });
         this.clients.delete(clientId);
       });
@@ -243,7 +243,7 @@ class RealTimeEventSystem {
   startDataUpdates() {
     const updateInterval = 10000; // 10 seconds
 
-    const periodicUpdate = setInterval(() => {
+    const periodicUpdate = setInterval(_() => {
       if (!this.isActive) {
         clearInterval(periodicUpdate);
         return;
@@ -358,7 +358,7 @@ class RealTimeEventSystem {
 
   // Heartbeat to keep connections alive
   startHeartbeat() {
-    setInterval(() => {
+    setInterval(_() => {
       if (!this.isActive) return;
 
       const now = new Date();

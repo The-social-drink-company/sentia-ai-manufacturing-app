@@ -84,9 +84,9 @@ class DeploymentVerifier {
     this.log(`\n${COLORS.blue}Testing WebSocket: ${name}${COLORS.reset}`);
     this.log(`URL: ${url}`);
     
-    return new Promise((resolve) => {
+    return new Promise(_(resolve) => {
       const ws = new WebSocket(url);
-      const timeout = setTimeout(() => {
+      const timeout = setTimeout(_() => {
         ws.close();
         this.log(`❌ ${name} - FAILED (Timeout)`, 'red');
         this.results.failed++;
@@ -94,7 +94,7 @@ class DeploymentVerifier {
         resolve();
       }, this.config.timeout);
 
-      ws.on('open', () => {
+      ws.on('open', _() => {
         clearTimeout(timeout);
         this.log(`✅ ${name} - PASSED`, 'green');
         this.results.passed++;
@@ -103,7 +103,7 @@ class DeploymentVerifier {
         resolve();
       });
 
-      ws.on('error', (error) => {
+      ws.on('error', _(error) => {
         clearTimeout(timeout);
         this.log(`❌ ${name} - FAILED`, 'red');
         this.log(`   Error: ${error.message}`, 'red');

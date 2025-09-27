@@ -275,7 +275,7 @@ class AutonomousOrchestrator {
   }
 
   async executeAgent(agentPath, branch) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const child = spawn('node', [agentPath, branch], {
         cwd: path.dirname(__dirname),
         env: { ...process.env, AGENT_MODE: 'autonomous', BRANCH: branch }
@@ -284,15 +284,15 @@ class AutonomousOrchestrator {
       let output = '';
       let error = '';
 
-      child.stdout.on('data', (data) => {
+      child.stdout.on(_'data', (data) => {
         output += data.toString();
       });
 
-      child.stderr.on('data', (data) => {
+      child.stderr.on(_'data', (data) => {
         error += data.toString();
       });
 
-      child.on('close', (code) => {
+      child.on(_'close', (code) => {
         if (code === 0) {
           try {
             const result = JSON.parse(output);
@@ -508,7 +508,7 @@ ${[...new Set(fixes.flatMap(f => f.files || []))].map(f => `- ${f}`).join('\\n')
 }
 
 // Signal handlers for graceful shutdown
-process.on('SIGINT', async () => {
+process.on(_'SIGINT', async () => {
   logDebug('\n📛 Received SIGINT, shutting down gracefully...');
   if (orchestrator) {
     await orchestrator.stop();
@@ -516,7 +516,7 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
+process.on(_'SIGTERM', async () => {
   logDebug('\n📛 Received SIGTERM, shutting down gracefully...');
   if (orchestrator) {
     await orchestrator.stop();

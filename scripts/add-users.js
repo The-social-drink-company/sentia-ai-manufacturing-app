@@ -143,7 +143,7 @@ if (process.argv.length > 2) {
     lastName,
     password,
     role
-  }).then(() => {
+  }).then(_() => {
     console.log('✨ Custom user creation completed!');
   });
 } else {

@@ -84,7 +84,7 @@ export default function WorkingCapitalDashboard() {
                 <h3 className="text-lg font-semibold text-red-800 dark:text-red-200">Error Loading Data</h3>
                 <p className="text-red-600 dark:text-red-400 mt-1">{error.message}</p>
                 <button
-                  onClick={() => {
+                  _onClick={() => {
                     audit.logError(error, { action: 'retry_data_load', userInitiated: true })
                     refetch()
                   }}
@@ -100,7 +100,7 @@ export default function WorkingCapitalDashboard() {
     )
   }
 
-  const handleExport = async (format) => {
+  const handleExport = async (_format) => {
     const startTime = performance.now()
 
     try {
@@ -133,13 +133,13 @@ export default function WorkingCapitalDashboard() {
   }
 
   // Handle period changes with audit logging
-  const handlePeriodChange = (newPeriod) => {
+  const handlePeriodChange = (_newPeriod) => {
     audit.logPeriodChange(selectedPeriod, newPeriod)
     setSelectedPeriod(newPeriod)
   }
 
   // Handle currency changes with audit logging
-  const handleCurrencyChange = (newCurrency) => {
+  const handleCurrencyChange = (_newCurrency) => {
     audit.logCurrencyChange(selectedCurrency, newCurrency)
     setSelectedCurrency(newCurrency)
   }
@@ -235,7 +235,7 @@ export default function WorkingCapitalDashboard() {
         {/* Xero Integration Section */}
         <div className="mb-8">
           <XeroConnection
-            onConnectionChange={(connected, status) => {
+            onConnectionChange={(connected, _status) => {
               audit.trackAction('xero_connection_changed', {
                 connected,
                 tenantName: status?.tenantName,

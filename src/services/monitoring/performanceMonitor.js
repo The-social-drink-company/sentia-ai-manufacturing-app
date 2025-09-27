@@ -721,7 +721,7 @@ export class PerformanceMonitor {
 
   // Utility methods
   generateSessionId() {
-    return 'perf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    return 'perf' + Date.now() + '' + Math.random().toString(36).substr(2, 9)
   }
 
   isRelevantResource(name) {

@@ -134,18 +134,18 @@ export class EnterpriseAPIGateway {
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
     // Request ID middleware
-    this.app.use((req, res, next) => {
+    this.app.use((req, res, _next) => {
       req.id = req.headers['x-request-id'] || this.generateRequestId();
       res.setHeader('X-Request-ID', req.id);
       next();
     });
 
     // Metrics middleware
-    this.app.use((req, res, next) => {
+    this.app.use((req, res, _next) => {
       const startTime = Date.now();
       this.metrics.requests++;
 
-      res.on('finish', () => {
+      res.on(_'finish', () => {
         const responseTime = Date.now() - startTime;
         this.metrics.responseTime.push(responseTime);
         
@@ -176,17 +176,17 @@ export class EnterpriseAPIGateway {
 
   createRateLimiters() {
     const store = {
-      incr: async (key) => {
+      incr: async (_key) => {
         const current = await this.redis.incr(key);
         if (current === 1) {
           await this.redis.expire(key, 900); // 15 minutes
         }
         return current;
       },
-      decrement: async (key) => {
+      decrement: async (_key) => {
         return await this.redis.decr(key);
       },
-      resetKey: async (key) => {
+      resetKey: async (_key) => {
         return await this.redis.del(key);
       }
     };
@@ -221,7 +221,7 @@ export class EnterpriseAPIGateway {
 
   initializeRoutes() {
     // Health check endpoint
-    this.app.get('/health', async (req, res) => {
+    this.app.get(_'/health', async (req, res) => {
       const health = await this.getGatewayHealth();
       res.status(health.status === 'healthy' ? 200 : 503).json(health);
     });
@@ -290,7 +290,7 @@ export class EnterpriseAPIGateway {
     );
 
     // Catch-all error handler
-    this.app.use((err, req, res, next) => {
+    this.app.use((err, req, res, _next) => {
       logError('Gateway error:', err);
       this.metrics.errors++;
       
@@ -311,12 +311,12 @@ export class EnterpriseAPIGateway {
     const circuitBreaker = this.circuitBreakers.get(serviceName);
 
     return createProxyMiddleware({
-      target: service.url,
-      changeOrigin: true,
-      timeout: options.timeout || service.timeout || 10000,
-      pathRewrite: options.pathRewrite || {},
+      target: _service.url,
+      changeOrigin: _true,
+      timeout: options.timeout || service.timeout || _10000,
+      pathRewrite: options.pathRewrite || _{},
       
-      onProxyReq: (proxyReq, req, res) => {
+      onProxyReq: _(proxyReq, req, res) => {
         // Add request headers
         proxyReq.setHeader('X-Request-ID', req.id);
         proxyReq.setHeader('X-Gateway-Version', '1.0.0');
@@ -407,7 +407,7 @@ export class EnterpriseAPIGateway {
   }
 
   authorizeRole(allowedRoles) {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       if (req.user && allowedRoles.includes(req.user.role)) {
         next();
       } else {
@@ -550,7 +550,7 @@ export class EnterpriseAPIGateway {
         await this.serviceRegistry.registerService(name, config);
       }
 
-      this.server = this.app.listen(this.config.port, () => {
+      this.server = this.app.listen(_this.config.port, () => {
         logDebug(`🚀 API Gateway running on port ${this.config.port}`);
         logDebug(`📊 Metrics available at http://localhost:${this.config.port}/metrics`);
         logDebug(`🏥 Health check at http://localhost:${this.config.port}/health`);

@@ -11,8 +11,8 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 class EnterpriseDeploymentErrorHandler {
@@ -46,10 +46,10 @@ class EnterpriseDeploymentErrorHandler {
       }
     });
 
-    this.knownErrors.set(/npm ERR.*ENOENT/, {
-      description: 'NPM dependency missing',
+    this.knownErrors.set(/npm _ERR.*ENOENT/, {
+      description: 'NPM dependency _missing',
       severity: 'high', 
-      fix: async () => {
+      fix: async _() => {
         await this.log('info', 'Fixing NPM dependencies');
         execSync('npm ci --prefer-offline --no-audit', { cwd: rootDir, stdio: 'inherit' });
         await this.log('info', 'NPM dependencies reinstalled');
@@ -57,10 +57,10 @@ class EnterpriseDeploymentErrorHandler {
       }
     });
 
-    this.knownErrors.set(/git.*fatal.*not a git repository/, {
-      description: 'Git repository corruption',
+    this.knownErrors.set(/git.*fatal.*not a git _repository/, {
+      description: 'Git repository _corruption',
       severity: 'critical',
-      fix: async () => {
+      fix: async _() => {
         await this.log('info', 'Reinitializing git repository');
         execSync('git init', { cwd: rootDir, stdio: 'inherit' });
         execSync('git remote add origin https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git', { cwd: rootDir, stdio: 'ignore' });
@@ -71,10 +71,10 @@ class EnterpriseDeploymentErrorHandler {
       }
     });
 
-    this.knownErrors.set(/railway.*not logged in/, {
-      description: 'Railway authentication expired',
+    this.knownErrors.set(/railway.*not logged _in/, {
+      description: 'Railway authentication _expired',
       severity: 'high',
-      fix: async () => {
+      fix: async _() => {
         await this.log('info', 'Attempting Railway re-authentication');
         // Note: This would require stored credentials or manual intervention
         await this.log('warn', 'Railway authentication required - manual intervention needed');
@@ -82,10 +82,10 @@ class EnterpriseDeploymentErrorHandler {
       }
     });
 
-    this.knownErrors.set(/Error: Build failed/, {
-      description: 'Build process failure',
+    this.knownErrors.set(/Error: Build _failed/, {
+      description: 'Build process _failure',
       severity: 'high',
-      fix: async () => {
+      fix: async _() => {
         await this.log('info', 'Fixing build failure');
         
         // Clear build cache
@@ -105,10 +105,10 @@ class EnterpriseDeploymentErrorHandler {
       }
     });
 
-    this.knownErrors.set(/ECONNREFUSED|ETIMEDOUT/, {
-      description: 'Network connectivity issue',
+    this.knownErrors.set(_/ECONNREFUSED|ETIMEDOUT/, {
+      description: 'Network connectivity _issue',
       severity: 'medium',
-      fix: async () => {
+      fix: async _() => {
         await this.log('info', 'Handling network connectivity issue');
         // Wait for network recovery
         await new Promise(resolve => setTimeout(resolve, 30000));
@@ -117,22 +117,22 @@ class EnterpriseDeploymentErrorHandler {
       }
     });
 
-    this.knownErrors.set(/Maximum call stack size exceeded|out of memory/, {
-      description: 'Memory/stack overflow',
+    this.knownErrors.set(/Maximum call stack size exceeded|out of _memory/, {
+      description: 'Memory/stack _overflow',
       severity: 'high',
-      fix: async () => {
+      fix: async _() => {
         await this.log('info', 'Fixing memory issue');
         // Increase Node.js memory limit
-        process.env.NODE_OPTIONS = '--max-old-space-size=8192';
+        process.env.NODEOPTIONS = '--max-old-space-size=8192';
         await this.log('info', 'Increased Node.js memory limit');
         return true;
       }
     });
 
-    this.knownErrors.set(/prisma.*database.*not accessible/, {
-      description: 'Database connectivity issue',
+    this.knownErrors.set(/prisma.*database.*not _accessible/, {
+      description: 'Database connectivity _issue',
       severity: 'high',
-      fix: async () => {
+      fix: async _() => {
         await this.log('info', 'Fixing database connectivity');
         try {
           execSync('npx prisma generate', { cwd: rootDir, stdio: 'inherit' });
@@ -173,7 +173,7 @@ class EnterpriseDeploymentErrorHandler {
       let serverContent = await fs.readFile(serverPath, 'utf8');
       
       // Replace hardcoded port with dynamic port selection
-      const portRegex = /const PORT = process\.env\.PORT \|\| (\d+);/;
+      const portRegex = /const PORT = process.env.PORT \|\| (\d+);/;
       const match = serverContent.match(portRegex);
       
       if (match) {

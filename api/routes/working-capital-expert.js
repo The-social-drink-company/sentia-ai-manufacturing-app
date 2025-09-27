@@ -35,7 +35,7 @@ const workingCapitalSchema = z.object({
  * POST /api/working-capital-expert/calculate
  * Calculate comprehensive working capital metrics with AI benchmarking
  */
-router.post('/calculate',
+router.post(_'/calculate',
   requireAuth,
   asyncHandler(async (req, res) => {
     logDebug('[Working Capital Expert] Calculation request received');
@@ -84,7 +84,7 @@ router.post('/calculate',
  * GET /api/working-capital-expert/benchmarks/:industry
  * Get industry benchmarks
  */
-router.get('/benchmarks/:industry',
+router.get(_'/benchmarks/:industry',
   requireAuth,
   asyncHandler(async (req, res) => {
     const { industry } = req.params;
@@ -127,7 +127,7 @@ router.get('/benchmarks/:industry',
  * GET /api/working-capital-expert/recommendations
  * Get AI-powered recommendations based on current metrics
  */
-router.get('/recommendations',
+router.get(_'/recommendations',
   requireAuth,
   asyncHandler(async (req, res) => {
     logDebug('[Working Capital Expert] Generating recommendations');

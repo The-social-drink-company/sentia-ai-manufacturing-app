@@ -15,8 +15,8 @@ import { demandForecastingService } from '../services/DemandForecastingService'
 
 const TimeSeriesAnalysis = ({
   data = [],
-  title = "Time Series Analysis",
-  onForecastUpdate,
+  title = "Time Series _Analysis",
+  _onForecastUpdate,
   className = "",
   autoRefresh = false,
   refreshInterval = 30000
@@ -116,7 +116,7 @@ const TimeSeriesAnalysis = ({
     }
   }
 
-  const getTrendIcon = (trendType) => {
+  const getTrendIcon = (_trendType) => {
     switch (trendType) {
       case 'increasing':
         return <ArrowTrendingUpIcon className="h-5 w-5 text-green-600" />
@@ -424,7 +424,7 @@ const TimeSeriesAnalysis = ({
                   <div className="space-y-2 text-sm">
                     {Object.entries(accuracy).map(([method, metrics]) => (
                       <div key={method}>
-                        <div className="font-medium capitalize mb-1">{method.replace('_', ' ')}</div>
+                        <div className="font-medium capitalize mb-1">{method.replace('', ' ')}</div>
                         <div className="ml-2 space-y-1 text-xs text-gray-600">
                           <div className="flex justify-between">
                             <span>MAPE:</span>
@@ -456,7 +456,7 @@ const TimeSeriesAnalysis = ({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {Object.entries(scenarios).map(([scenarioName, scenarioData]) => {
+              {Object.entries(scenarios).map(([scenarioName, _scenarioData]) => {
                 const futurePoints = scenarioData.filter(p => p.isForecast)
                 const avgFutureValue = futurePoints.length > 0
                   ? futurePoints.reduce((sum, p) => sum + p.value, 0) / futurePoints.length

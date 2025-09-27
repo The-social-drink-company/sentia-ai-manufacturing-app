@@ -499,7 +499,7 @@ class ProductionDeployment {
 
     if (this.deploymentResults.warnings.length > 0) {
       console.log('\nWARNINGS:');
-      this.deploymentResults.warnings.forEach((warning, index) => {
+      this.deploymentResults.warnings.forEach(_(warning, index) => {
         console.log(`  ${index + 1}. ${warning}`);
       });
     }

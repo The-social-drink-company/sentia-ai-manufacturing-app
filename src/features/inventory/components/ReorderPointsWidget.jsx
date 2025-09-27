@@ -16,7 +16,7 @@ export default function ReorderPointsWidget({ data }) {
     ]
   }
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (_status) => {
     switch (status) {
       case 'critical':
         return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
@@ -29,7 +29,7 @@ export default function ReorderPointsWidget({ data }) {
     }
   }
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (_status) => {
     switch (status) {
       case 'critical':
         return <ExclamationTriangleIcon className="h-5 w-5 text-red-600 dark:text-red-400" />

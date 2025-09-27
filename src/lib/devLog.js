@@ -5,11 +5,11 @@ const devLog = {
   warn: (...args) => {},
   error: (...args) => {},
   debug: (...args) => {},
-  table: (data) => {},
-  time: (label) => {},
-  timeEnd: (label) => {},
-  group: (label) => {},
-  groupCollapsed: (label) => {},
+  table: (_data) => {},
+  time: (_label) => {},
+  timeEnd: (_label) => {},
+  group: (_label) => {},
+  groupCollapsed: (_label) => {},
   groupEnd: () => {}
 };
 

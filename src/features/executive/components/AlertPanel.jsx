@@ -5,7 +5,7 @@ import { useState } from 'react';
 const AlertPanel = ({ alerts, className }) => {
   const [dismissedAlerts, setDismissedAlerts] = useState(new Set());
 
-  const handleDismiss = (alertId) => {
+  const handleDismiss = (_alertId) => {
     setDismissedAlerts(prev => new Set(prev).add(alertId));
   };
 

@@ -64,7 +64,7 @@ export default function XeroConnection({ onConnectionChange }) {
     }
   }
 
-  const formatTokenExpiry = (expiry) => {
+  const formatTokenExpiry = (_expiry) => {
     if (!expiry) return 'Unknown'
     const date = new Date(expiry)
     const now = new Date()

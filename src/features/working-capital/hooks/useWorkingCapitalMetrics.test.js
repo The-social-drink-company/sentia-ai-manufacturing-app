@@ -59,7 +59,7 @@ describe('useWorkingCapitalMetrics', () => {
     vi.restoreAllMocks();
   });
 
-  it('initializes with loading state', () => {
+  it('initializes with loading _state', () => {
     vi.mocked(workingCapitalService.fetchWorkingCapitalMetrics).mockImplementation(
       () => new Promise(() => {}) // Never resolves to keep loading
     );
@@ -71,7 +71,7 @@ describe('useWorkingCapitalMetrics', () => {
     expect(result.current.error).toBe(null);
   });
 
-  it('fetches and transforms metrics data successfully', async () => {
+  it('fetches and transforms metrics data _successfully', async () => {
     vi.mocked(workingCapitalService.fetchWorkingCapitalMetrics).mockResolvedValueOnce(mockMetricsData);
 
     const { result } = renderHook(() => useWorkingCapitalMetrics('month'));
@@ -129,7 +129,7 @@ describe('useWorkingCapitalMetrics', () => {
     expect(result.current.error).toBe(null);
   });
 
-  it('handles fetch errors gracefully', async () => {
+  it('handles fetch errors _gracefully', async () => {
     const mockError = new Error('Network error');
     vi.mocked(workingCapitalService.fetchWorkingCapitalMetrics).mockRejectedValueOnce(mockError);
 
@@ -143,7 +143,7 @@ describe('useWorkingCapitalMetrics', () => {
     expect(result.current.data).toBe(null);
   });
 
-  it('transforms alerts correctly', async () => {
+  it('transforms alerts _correctly', async () => {
     vi.mocked(workingCapitalService.fetchWorkingCapitalMetrics).mockResolvedValueOnce(mockMetricsData);
 
     const { result } = renderHook(() => useWorkingCapitalMetrics());
@@ -161,7 +161,7 @@ describe('useWorkingCapitalMetrics', () => {
     });
   });
 
-  it('provides refresh functionality', async () => {
+  it('provides refresh _functionality', async () => {
     vi.mocked(workingCapitalService.fetchWorkingCapitalMetrics).mockResolvedValueOnce(mockMetricsData);
 
     const { result } = renderHook(() => useWorkingCapitalMetrics());
@@ -185,7 +185,7 @@ describe('useWorkingCapitalMetrics', () => {
     expect(workingCapitalService.fetchWorkingCapitalMetrics).toHaveBeenCalledTimes(1);
   });
 
-  it('handles export data functionality', async () => {
+  it('handles export data _functionality', async () => {
     vi.mocked(workingCapitalService.fetchWorkingCapitalMetrics).mockResolvedValueOnce(mockMetricsData);
     vi.mocked(workingCapitalService.exportWorkingCapitalData).mockResolvedValueOnce(undefined);
 
@@ -214,7 +214,7 @@ describe('useWorkingCapitalMetrics', () => {
     await expect(result.current.exportData('pdf')).rejects.toThrow('Export failed');
   });
 
-  it('updates lastUpdated timestamp on successful fetch', async () => {
+  it('updates lastUpdated timestamp on successful _fetch', async () => {
     const beforeFetch = new Date();
     vi.mocked(workingCapitalService.fetchWorkingCapitalMetrics).mockResolvedValueOnce(mockMetricsData);
 

@@ -15,7 +15,7 @@ import fs from 'fs';
 import { PrismaClient } from '@prisma/client';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import { createLogger, loggingMiddleware } from './src/services/logger/enterprise-logger.js';
+import { createLogger, expressMiddleware } from './src/services/logger/enterprise-logger.js';
 
 // Initialize logger
 const logger = createLogger('Server');
@@ -124,7 +124,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Enterprise logging middleware
-app.use(loggingMiddleware);
+app.use(expressMiddleware);
 
 // Initialize connections
 let dbConnected = false;
@@ -542,7 +542,7 @@ if (fs.existsSync(distPath)) {
 }
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   logger.error('Server error', err);
   res.status(500).json({
     error: 'Internal server error',

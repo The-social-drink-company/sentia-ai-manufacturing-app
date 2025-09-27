@@ -29,46 +29,46 @@ import {
 import { useAuthRole } from '@/hooks/useAuthRole';
 import { cn } from '@/utils/cn';
 
-// Navigation configuration
+// Navigation configuration with role-based access control
 const navigation = [
   {
     title: 'Overview',
     items: [
-      { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, badge: 'Live' }
+      { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, badge: 'Live', roles: ['viewer', 'operator', 'manager', 'admin', 'master_admin'] }
     ]
   },
   {
     title: 'Planning & Analytics',
     items: [
-      { name: 'Demand Forecasting', href: '/forecasting', icon: PresentationChartLineIcon },
-      { name: 'Inventory Management', href: '/inventory', icon: CubeIcon },
-      { name: 'Production Tracking', href: '/production', icon: TruckIcon },
-      { name: 'Quality Control', href: '/quality', icon: ClipboardDocumentCheckIcon },
-      { name: 'AI Analytics', href: '/ai-analytics', icon: SparklesIcon, badge: 'AI' }
+      { name: 'Demand Forecasting', href: '/forecasting', icon: PresentationChartLineIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
+      { name: 'Inventory Management', href: '/inventory', icon: CubeIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
+      { name: 'Production Tracking', href: '/production', icon: TruckIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
+      { name: 'Quality Control', href: '/quality', icon: ClipboardDocumentCheckIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
+      { name: 'AI Analytics', href: '/ai-analytics', icon: SparklesIcon, badge: 'AI', roles: ['manager', 'admin', 'master_admin'] }
     ]
   },
   {
     title: 'Financial Management',
     items: [
-      { name: 'Working Capital', href: '/working-capital', icon: BanknotesIcon },
-      { name: 'What-If Analysis', href: '/what-if', icon: BeakerIcon },
-      { name: 'Financial Reports', href: '/reports', icon: DocumentChartBarIcon }
+      { name: 'Working Capital', href: '/working-capital', icon: BanknotesIcon, roles: ['manager', 'admin', 'master_admin'] },
+      { name: 'What-If Analysis', href: '/what-if', icon: BeakerIcon, roles: ['manager', 'admin', 'master_admin'] },
+      { name: 'Financial Reports', href: '/reports', icon: DocumentChartBarIcon, roles: ['viewer', 'manager', 'admin', 'master_admin'] }
     ]
   },
   {
     title: 'Data Management',
     items: [
-      { name: 'Data Import', href: '/import', icon: CircleStackIcon },
-      { name: 'Import Templates', href: '/templates', icon: DocumentTextIcon }
+      { name: 'Data Import', href: '/import', icon: CircleStackIcon, roles: ['manager', 'admin', 'master_admin'] },
+      { name: 'Import Templates', href: '/templates', icon: DocumentTextIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] }
     ]
   },
   {
     title: 'Administration',
     items: [
-      { name: 'Admin Panel', href: '/admin', icon: ShieldCheckIcon },
-      { name: 'User Management', href: '/users', icon: UsersIcon },
-      { name: 'System Configuration', href: '/config', icon: Cog6ToothIcon },
-      { name: 'Monitoring', href: '/monitoring', icon: ServerStackIcon }
+      { name: 'Admin Panel', href: '/admin', icon: ShieldCheckIcon, roles: ['admin', 'master_admin'] },
+      { name: 'User Management', href: '/users', icon: UsersIcon, roles: ['admin', 'master_admin'] },
+      { name: 'System Configuration', href: '/config', icon: Cog6ToothIcon, roles: ['admin', 'master_admin'] },
+      { name: 'Monitoring', href: '/monitoring', icon: ServerStackIcon, roles: ['manager', 'admin', 'master_admin'] }
     ]
   }
 ];
@@ -76,7 +76,7 @@ const navigation = [
 const Sidebar = ({ isOpen, onToggle }) => {
   const location = useLocation();
   const { user } = useUser();
-  const { role, hasPermission, hasFeature } = useAuthRole();
+  const { role } = useAuthRole();
 
   // State management
   const [collapsed, setCollapsed] = useState(false);
@@ -84,11 +84,11 @@ const Sidebar = ({ isOpen, onToggle }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   // Alert counts (would come from actual data in production)
-  const [alertCounts] = useState({
-    stockLow: 3,
-    capacityIssues: 1,
-    forecastErrors: 0
-  });
+  // const [alertCounts] = useState({
+  //   stockLow: 3,
+  //   capacityIssues: 1,
+  //   forecastErrors: 0
+  // });
 
   // Handle responsive behavior
   useEffect(() => {
@@ -109,7 +109,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
         const { collapsed: savedCollapsed, expanded } = JSON.parse(savedState);
         setCollapsed(savedCollapsed || false);
         setExpandedSections(expanded || {});
-      } catch (e) {
+      } catch {
         // Initialize with default state if parse fails
         initializeDefaultState();
       }
@@ -150,17 +150,16 @@ const Sidebar = ({ isOpen, onToggle }) => {
     }));
   }, [collapsed, expandedSections]);
 
-  // Check if user has access to a route based on role
-  const hasAccess = useCallback((href) => {
-    const adminRoutes = ['/admin', '/users', '/config', '/monitoring'];
-    const managerRoutes = ['/forecasting', '/inventory', '/production', '/quality', '/reports', '/ai-analytics'];
+  // Check if user has access to a navigation item based on role
+  const hasAccess = useCallback((item) => {
+    // If no roles specified, allow all users
+    if (!item.roles || item.roles.length === 0) return true;
 
-    if (role === 'admin') return true;
-    if (role === 'manager' && !adminRoutes.includes(href)) return true;
-    if (role === 'operator' && !adminRoutes.includes(href) && !managerRoutes.includes(href)) return true;
-    if (role === 'viewer' && !adminRoutes.includes(href) && !managerRoutes.includes(href)) return true;
+    // If user has no role, default to viewer
+    const userRole = role || 'viewer';
 
-    return false;
+    // Check if user's role is in the allowed roles list
+    return item.roles.includes(userRole);
   }, [role]);
 
   // Handle keyboard shortcuts
@@ -238,7 +237,14 @@ const Sidebar = ({ isOpen, onToggle }) => {
           className="flex-1 overflow-y-auto p-2 space-y-1"
           aria-label="Primary navigation"
         >
-          {navigation.map((section) => (
+          {navigation.map((section) => {
+            // Filter items user has access to
+            const accessibleItems = section.items.filter(item => hasAccess(item));
+
+            // Don't render section if no items are accessible
+            if (accessibleItems.length === 0) return null;
+
+            return (
             <div key={section.title} className="space-y-1">
               {/* Section header */}
               {!collapsed && (
@@ -264,8 +270,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
                   className="space-y-1"
                   role="list"
                 >
-                  {section.items
-                    .filter(item => hasAccess(item.href))
+                  {accessibleItems
                     .map((item) => {
                       const Icon = item.icon;
                       const isActive = location.pathname === item.href;
@@ -320,7 +325,8 @@ const Sidebar = ({ isOpen, onToggle }) => {
                 </ul>
               )}
             </div>
-          ))}
+            );
+          })}
         </nav>
 
         {/* User section */}

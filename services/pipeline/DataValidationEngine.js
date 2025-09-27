@@ -153,7 +153,7 @@ export class DataValidationEngine {
    */
   initializeCleansingRules() {
     // Date cleansing rules
-    this.cleansingRules.set('date', {
+    this.cleansingRules.set(_'date', {
       cleanser: (value) => {
         if (!value) return null;
 
@@ -189,7 +189,7 @@ export class DataValidationEngine {
     });
 
     // Currency amount cleansing
-    this.cleansingRules.set('currency', {
+    this.cleansingRules.set(_'currency', {
       cleanser: (value) => {
         if (typeof value === 'number') return value;
         if (!value) return 0;
@@ -209,7 +209,7 @@ export class DataValidationEngine {
     });
 
     // String cleansing
-    this.cleansingRules.set('string', {
+    this.cleansingRules.set(_'string', {
       cleanser: (value) => {
         if (!value) return '';
 
@@ -222,7 +222,7 @@ export class DataValidationEngine {
     });
 
     // Email cleansing
-    this.cleansingRules.set('email', {
+    this.cleansingRules.set(_'email', {
       cleanser: (value) => {
         if (!value) return null;
 
@@ -236,7 +236,7 @@ export class DataValidationEngine {
     });
 
     // Phone number cleansing
-    this.cleansingRules.set('phone', {
+    this.cleansingRules.set(_'phone', {
       cleanser: (value) => {
         if (!value) return null;
 
@@ -250,7 +250,7 @@ export class DataValidationEngine {
     });
 
     // Tax number cleansing
-    this.cleansingRules.set('taxNumber', {
+    this.cleansingRules.set(_'taxNumber', {
       cleanser: (value) => {
         if (!value) return null;
 
@@ -277,15 +277,15 @@ export class DataValidationEngine {
    */
   initializeAnomalyDetection() {
     // Z-score based anomaly detection for numerical values
-    this.anomalyDetectors.set('zscore', {
-      detect: (values, threshold = 3) => {
+    this.anomalyDetectors.set(_'zscore', {
+      detect: _(values, threshold = 3) => {
         if (!Array.isArray(values) || values.length < 3) return [];
 
         const mean = values.reduce((a, b) => a + b, 0) / values.length;
         const variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
         const stdDev = Math.sqrt(variance);
 
-        return values.map((value, index) => {
+        return values.map((value, _index) => {
           const zScore = Math.abs((value - mean) / stdDev);
           return {
             index,
@@ -298,8 +298,8 @@ export class DataValidationEngine {
     });
 
     // Interquartile range (IQR) anomaly detection
-    this.anomalyDetectors.set('iqr', {
-      detect: (values, multiplier = 1.5) => {
+    this.anomalyDetectors.set(_'iqr', {
+      detect: _(values, multiplier = _1.5) => {
         if (!Array.isArray(values) || values.length < 4) return [];
 
         const sorted = [...values].sort((a, b) => a - b);
@@ -313,7 +313,7 @@ export class DataValidationEngine {
         const lowerBound = q1 - (multiplier * iqr);
         const upperBound = q3 + (multiplier * iqr);
 
-        return values.map((value, index) => ({
+        return values.map((value, _index) => ({
           index,
           value,
           isAnomaly: value < lowerBound || value > upperBound
@@ -322,8 +322,8 @@ export class DataValidationEngine {
     });
 
     // Time series anomaly detection
-    this.anomalyDetectors.set('timeseries', {
-      detect: (data, windowSize = 7) => {
+    this.anomalyDetectors.set(_'timeseries', {
+      detect: (data, windowSize = _7) => {
         if (!Array.isArray(data) || data.length < windowSize) return [];
 
         const anomalies = [];
@@ -622,7 +622,7 @@ export class DataValidationEngine {
     const missingByField = {};
 
     records.forEach(record => {
-      Object.entries(record).forEach(([field, value]) => {
+      Object.entries(record).forEach(_([field, value]) => {
         totalFields++;
         if (value === null || value === undefined || value === '') {
           missingFields++;
@@ -649,8 +649,8 @@ export class DataValidationEngine {
     const fieldPatterns = new Map();
 
     // Build field patterns
-    records.forEach((record, index) => {
-      Object.entries(record).forEach(([field, value]) => {
+    records.forEach((record, _index) => {
+      Object.entries(record).forEach(_([field, value]) => {
         if (!fieldPatterns.has(field)) {
           fieldPatterns.set(field, new Set());
         }
@@ -690,11 +690,11 @@ export class DataValidationEngine {
     let mismatches = 0;
     const mismatchDetails = [];
 
-    records.forEach((record, index) => {
+    records.forEach((record, _index) => {
       const ref = references[index];
       if (!ref) return;
 
-      Object.entries(record).forEach(([field, value]) => {
+      Object.entries(record).forEach(_([field, value]) => {
         if (field in ref) {
           if (value === ref[field]) {
             matches++;
@@ -732,7 +732,7 @@ export class DataValidationEngine {
     let stale = 0;
     const staleRecords = [];
 
-    records.forEach((record, index) => {
+    records.forEach((record, _index) => {
       // Look for date fields
       const dateFields = ['date', 'timestamp', 'createdAt', 'updatedAt', 'lastModified'];
       let recordDate = null;

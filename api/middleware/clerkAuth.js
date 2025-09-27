@@ -40,7 +40,7 @@ const clerkAuth = clerkMiddleware({
  */
 const requireAuthMiddleware = requireAuth({
   // Custom error handling
-  onError: (error, req, res, next) => {
+  onError: (error, req, res, _next) => {
     logError('Authentication required', {
       error: error.message,
       path: req.path,
@@ -62,7 +62,7 @@ const requireAuthMiddleware = requireAuth({
  * @param {Array<string>} allowedRoles - Array of roles allowed to access the endpoint
  */
 const requireRole = (allowedRoles) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     try {
       // Get auth from Clerk
       const auth = getAuth(req);
@@ -122,7 +122,7 @@ const requireRole = (allowedRoles) => {
  * @param {string} permission - Required permission
  */
 const requirePermission = (permission) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     try {
       // Get auth from Clerk
       const auth = getAuth(req);
@@ -181,7 +181,7 @@ const requirePermission = (permission) => {
  * Optional authentication middleware
  * Adds user info to request if authenticated, but doesn't require authentication
  */
-const optionalAuth = (req, res, next) => {
+const optionalAuth = (req, res, _next) => {
   // User info will be available in req.auth if authenticated
   // No error thrown if not authenticated
   next();
@@ -203,7 +203,7 @@ const requireManager = requireRole(['manager', 'admin', 'super_admin']);
  * User info extraction middleware
  * Extracts and formats user information for downstream use
  */
-const extractUserInfo = (req, res, next) => {
+const extractUserInfo = (req, res, _next) => {
   try {
     // Get auth from Clerk
     const auth = getAuth(req);

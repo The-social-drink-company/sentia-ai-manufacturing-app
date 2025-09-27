@@ -45,7 +45,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CRITICAL: Content Security Policy for Clerk Authentication
-app.use((req, res, next) => {
+app.use((req, res, _next) => {
   // Set CSP headers for Clerk to work properly
   const clerkDomains = [
     'https://*.clerk.accounts.dev',
@@ -82,7 +82,7 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint - ALWAYS WORKS
-app.get('/health', (req, res) => {
+app.get(_'/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -100,7 +100,7 @@ app.get('/health', (req, res) => {
 });
 
 // API status endpoint
-app.get('/api/status', (req, res) => {
+app.get(_'/api/status', (req, res) => {
   res.json({
     status: 'operational',
     api_version: 'v1',
@@ -283,7 +283,7 @@ const fallbackHTML = `<!DOCTYPE html>
 
   <script>
     // Auto-refresh after 5 seconds if still loading
-    setTimeout(() => {
+    setTimeout(_() => {
       const status = document.getElementById('status');
       const appStatus = document.getElementById('app-status');
       if (status.classList.contains('loading')) {
@@ -300,7 +300,7 @@ const fallbackHTML = `<!DOCTYPE html>
           document.getElementById('app-status').textContent = 'Server Running';
         }
       })
-      .catch(() => {
+      .catch(_() => {
         document.getElementById('app-status').textContent = 'Connection Error';
       });
   </script>
@@ -308,7 +308,7 @@ const fallbackHTML = `<!DOCTYPE html>
 </html>`;
 
 // CRITICAL: Serve clerk-init.js BEFORE static middleware to ensure proper injection
-app.get('/clerk-init.js', (req, res) => {
+app.get(_'/clerk-init.js', (req, res) => {
   console.log('[Clerk Init] Serving dynamically generated clerk-init.js');
 
   const clerkPublishableKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || null;
@@ -386,9 +386,9 @@ if (distExists) {
   }));
 
   // Serve all static files from dist
-  app.use(express.static(distPath, {
-    index: false,
-    maxAge: '1h',
+  app.use(_express.static(distPath, {
+    index: _false,
+    maxAge: _'1h',
     setHeaders: (res, path) => {
       // Set proper MIME types
       if (path.endsWith('.html')) {
@@ -416,7 +416,7 @@ if (distExists) {
 }
 
 // API Routes - Basic functionality
-app.get('/api/health', (req, res) => {
+app.get(_'/api/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -426,14 +426,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.get('/api/test-simple', (req, res) => {
+app.get(_'/api/test-simple', (req, res) => {
   res.json({
     message: 'API is working',
     timestamp: new Date().toISOString()
   });
 });
 
-app.get('/api/services/status', (req, res) => {
+app.get(_'/api/services/status', (req, res) => {
   res.json({
     status: 'operational',
     services: {
@@ -445,7 +445,7 @@ app.get('/api/services/status', (req, res) => {
 });
 
 // Mock API endpoints for dashboard
-app.get('/api/dashboard/stats', (req, res) => {
+app.get(_'/api/dashboard/stats', (req, res) => {
   res.json({
     kpis: {
       0,
@@ -458,7 +458,7 @@ app.get('/api/dashboard/stats', (req, res) => {
 });
 
 // Catch all route - serve index.html or fallback with Clerk env
-app.get('*', (req, res) => {
+app.get(_'*', (req, res) => {
   // Don't serve HTML for API routes
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });
@@ -507,7 +507,7 @@ app.get('*', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use(_(err, req, res, _next) => {
   console.error('Server error:', err);
   res.status(500).json({
     error: 'Internal server error',
@@ -519,7 +519,7 @@ app.use((err, req, res, next) => {
 const server = createServer(app);
 
 // Start server
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, _'0.0.0.0', _() => {
   console.log('='.repeat(70));
   console.log(`Server running on port ${PORT}`);
   console.log(`Health check: ${process.env.RENDER_EXTERNAL_URL || null}/health`);
@@ -529,17 +529,17 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+process.on(_'SIGTERM', _() => {
   console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
+  server.close(_() => {
     console.log('Server closed');
     process.exit(0);
   });
 });
 
-process.on('SIGINT', () => {
+process.on(_'SIGINT', _() => {
   console.log('SIGINT received, shutting down gracefully');
-  server.close(() => {
+  server.close(_() => {
     console.log('Server closed');
     process.exit(0);
   });

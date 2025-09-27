@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test'
 
-test.describe('Critical Manufacturing Dashboard Workflows', () => {
+test.describe('Critical Manufacturing Dashboard _Workflows', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to application
     await page.goto('/')
@@ -14,8 +14,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
     await page.waitForLoadState('networkidle')
   })
 
-  test.describe('Authentication & User Management Workflow', () => {
-    test('complete user authentication flow', async ({ page }) => {
+  test.describe('Authentication & User Management _Workflow', () => {
+    test('complete user authentication _flow', async ({ page }) => {
       // Test login process
       if (await page.locator('[data-testid="login-form"]').isVisible()) {
         await page.fill('[data-testid="email-input"]', 'test.manager@sentia.com')
@@ -35,7 +35,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       await expect(page.locator('[data-testid="kpi-strip-widget"]')).toBeVisible()
     })
 
-    test('user role permissions validation', async ({ page }) => {
+    test('user role permissions _validation', async ({ page }) => {
       // Test different user roles see appropriate content
       const roleTests = [
         { role: 'manager', shouldSee: ['working-capital-widget', 'forecast-widget', 'admin-nav'], shouldNotSee: [] },
@@ -50,7 +50,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       }
     })
 
-    test('session management and security', async ({ page }) => {
+    test('session management and _security', async ({ page }) => {
       // Test session timeout handling
       // Simulate expired session
       await page.evaluate(() => {
@@ -72,8 +72,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
     })
   })
 
-  test.describe('Dashboard Management Workflow', () => {
-    test('complete dashboard customization flow', async ({ page }) => {
+  test.describe('Dashboard Management _Workflow', () => {
+    test('complete dashboard customization _flow', async ({ page }) => {
       // Navigate to dashboard
       await page.goto('/dashboard')
       await page.waitForSelector('[data-testid="dashboard-grid"]')
@@ -112,7 +112,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       await expect(page.locator('[data-testid="cash-flow-widget"]')).toBeVisible()
     })
 
-    test('widget interaction and data refresh', async ({ page }) => {
+    test('widget interaction and data _refresh', async ({ page }) => {
       await page.goto('/dashboard')
 
       // Test widget refresh functionality
@@ -138,7 +138,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       expect(download.suggestedFilename()).toContain('kpi-data')
     })
 
-    test('responsive dashboard behavior', async ({ page }) => {
+    test('responsive dashboard _behavior', async ({ page }) => {
       // Test mobile viewport
       await page.setViewportSize({ width: 375, height: 667 })
       await page.goto('/dashboard')
@@ -167,8 +167,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
     })
   })
 
-  test.describe('Financial Management Workflow', () => {
-    test('working capital analysis end-to-end', async ({ page }) => {
+  test.describe('Financial Management _Workflow', () => {
+    test('working capital analysis _end-to-end', async ({ page }) => {
       // Navigate to working capital
       await page.goto('/working-capital')
       await page.waitForSelector('[data-testid="working-capital-dashboard"]')
@@ -205,7 +205,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       expect(rowCount).toBeGreaterThan(0)
     })
 
-    test('what-if scenario analysis workflow', async ({ page }) => {
+    test('what-if scenario analysis _workflow', async ({ page }) => {
       await page.goto('/what-if')
       await page.waitForSelector('[data-testid="scenario-builder"]')
 
@@ -242,7 +242,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       await expect(page.locator('[data-testid="save-success"]')).toBeVisible()
     })
 
-    test('financial reporting and export workflow', async ({ page }) => {
+    test('financial reporting and export _workflow', async ({ page }) => {
       await page.goto('/analytics')
       await page.waitForSelector('[data-testid="financial-reports"]')
 
@@ -278,8 +278,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
     })
   })
 
-  test.describe('Manufacturing Operations Workflow', () => {
-    test('demand forecasting complete workflow', async ({ page }) => {
+  test.describe('Manufacturing Operations _Workflow', () => {
+    test('demand forecasting complete _workflow', async ({ page }) => {
       await page.goto('/forecasting')
       await page.waitForSelector('[data-testid="forecasting-dashboard"]')
 
@@ -322,7 +322,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       expect(download.suggestedFilename()).toContain('demand-forecast')
     })
 
-    test('inventory management workflow', async ({ page }) => {
+    test('inventory management _workflow', async ({ page }) => {
       await page.goto('/inventory')
       await page.waitForSelector('[data-testid="inventory-dashboard"]')
 
@@ -362,7 +362,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       await expect(page.locator('[data-testid="optimization-recommendations"]')).toBeVisible()
     })
 
-    test('production tracking workflow', async ({ page }) => {
+    test('production tracking _workflow', async ({ page }) => {
       await page.goto('/production')
       await page.waitForSelector('[data-testid="production-dashboard"]')
 
@@ -398,8 +398,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
     })
   })
 
-  test.describe('System Health and Monitoring Workflow', () => {
-    test('monitoring dashboard functionality', async ({ page }) => {
+  test.describe('System Health and Monitoring _Workflow', () => {
+    test('monitoring dashboard _functionality', async ({ page }) => {
       // Navigate to monitoring dashboard (admin only)
       await page.goto('/monitoring')
 
@@ -440,7 +440,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       await expect(page.locator('[data-testid="alert-rules"]')).toBeVisible()
     })
 
-    test('error handling and recovery workflow', async ({ page }) => {
+    test('error handling and recovery _workflow', async ({ page }) => {
       await page.goto('/dashboard')
 
       // Simulate network error
@@ -467,7 +467,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       await expect(page.locator('[data-testid="kpi-strip-widget"]')).toBeVisible()
     })
 
-    test('performance monitoring and optimization', async ({ page }) => {
+    test('performance monitoring and _optimization', async ({ page }) => {
       // Enable performance monitoring
       await page.addInitScript(() => {
         window.__PERFORMANCE_MONITORING__ = true
@@ -514,8 +514,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
     })
   })
 
-  test.describe('Data Integration and API Workflow', () => {
-    test('external API integration health check', async ({ page }) => {
+  test.describe('Data Integration and API _Workflow', () => {
+    test('external API integration health _check', async ({ page }) => {
       await page.goto('/admin/integrations')
       await page.waitForSelector('[data-testid="integration-status"]')
 
@@ -547,7 +547,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       expect(syncResults.length).toBeGreaterThan(0)
     })
 
-    test('data import and validation workflow', async ({ page }) => {
+    test('data import and validation _workflow', async ({ page }) => {
       await page.goto('/data-import')
       await page.waitForSelector('[data-testid="import-dashboard"]')
 
@@ -586,8 +586,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
     })
   })
 
-  test.describe('Security and Compliance Workflow', () => {
-    test('security monitoring and threat detection', async ({ page }) => {
+  test.describe('Security and Compliance _Workflow', () => {
+    test('security monitoring and threat _detection', async ({ page }) => {
       await page.goto('/security')
 
       // May require admin access
@@ -624,7 +624,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       }
     })
 
-    test('audit trail and compliance reporting', async ({ page }) => {
+    test('audit trail and compliance _reporting', async ({ page }) => {
       await page.goto('/audit')
       await page.waitForSelector('[data-testid="audit-dashboard"]')
 
@@ -659,8 +659,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
     })
   })
 
-  test.describe('Mobile and Accessibility Workflow', () => {
-    test('mobile application functionality', async ({ page }) => {
+  test.describe('Mobile and Accessibility _Workflow', () => {
+    test('mobile application _functionality', async ({ page }) => {
       // Set mobile viewport
       await page.setViewportSize({ width: 375, height: 667 })
       await page.goto('/dashboard')
@@ -689,7 +689,7 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
       await expect(page.locator('[data-testid="kpi-detail-modal"]')).toBeVisible()
     })
 
-    test('accessibility compliance testing', async ({ page }) => {
+    test('accessibility compliance _testing', async ({ page }) => {
       await page.goto('/dashboard')
 
       // Test keyboard navigation
@@ -736,8 +736,8 @@ test.describe('Critical Manufacturing Dashboard Workflows', () => {
 })
 
 // Test utilities and helpers
-test.describe('Test Infrastructure Validation', () => {
-  test('application startup and health', async ({ page }) => {
+test.describe('Test Infrastructure _Validation', () => {
+  test('application startup and _health', async ({ page }) => {
     // Test application startup
     const startTime = Date.now()
     await page.goto('/')
@@ -761,7 +761,7 @@ test.describe('Test Infrastructure Validation', () => {
     console.log(`Application loaded in ${loadTime}ms with health status: ${healthData.status}`)
   })
 
-  test('database connectivity and performance', async ({ page }) => {
+  test('database connectivity and _performance', async ({ page }) => {
     // Test database health via API
     const dbResponse = await page.request.get('/api/health/database')
     expect(dbResponse.status()).toBe(200)
@@ -773,7 +773,7 @@ test.describe('Test Infrastructure Validation', () => {
     console.log(`Database response time: ${dbHealth.responseTime}ms`)
   })
 
-  test('external service connectivity', async ({ page }) => {
+  test('external service _connectivity', async ({ page }) => {
     // Test external service status
     const servicesResponse = await page.request.get('/api/health/services')
 

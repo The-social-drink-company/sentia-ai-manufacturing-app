@@ -7,6 +7,7 @@ import AIAnalyticsDashboard from './components/AI/AIAnalyticsDashboard';
 import DataManagementCenter from './components/data/DataManagementCenter';
 import ClerkAuthGuard from './components/auth/ClerkAuthGuard';
 import ChatBot from './components/ChatBot';
+import AIChatbot from './components/ai-chatbot/AIChatbot';
 
 function App() {
   const [currentView, setCurrentView] = useState('landing');
@@ -356,6 +357,7 @@ function App() {
   return (
     <ClerkAuthGuard>
       <AppContent />
+      <AIChatbot />
     </ClerkAuthGuard>
   );
 }

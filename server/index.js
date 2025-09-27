@@ -615,19 +615,45 @@ app.use((err, req, res, _next) => {
 
 // Start server
 httpServer.listen(PORT, '0.0.0.0', () => {
+  const address = httpServer.address();
   logger.info(`
 ========================================
 SERVER STARTED SUCCESSFULLY
 ========================================
-URL: http://localhost:${PORT}
-Health: http://localhost:${PORT}/health
-API Status: http://localhost:${PORT}/api/status
+Binding: ${address.address}:${address.port}
+URL: http://0.0.0.0:${PORT}
+Health: http://0.0.0.0:${PORT}/health
+API Status: http://0.0.0.0:${PORT}/api/status
 Environment: ${NODE_ENV}
 Branch: ${BRANCH}
 Database: ${dbConnected ? 'Connected' : 'Not connected'}
 MCP: ${mcpConnected ? 'Connected' : 'Not connected'}
+Render External Access: Available on all interfaces
 ========================================
   `);
+  
+  // Additional debugging for Render deployment
+  logger.info(`Server binding details:`, {
+    address: address.address,
+    port: address.port,
+    family: address.family,
+    bindingHost: '0.0.0.0',
+    requestedPort: PORT
+  });
+});
+
+// Handle server binding errors
+httpServer.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    logger.error(`Port ${PORT} is already in use`);
+    process.exit(1);
+  } else if (error.code === 'EACCES') {
+    logger.error(`Permission denied to bind to port ${PORT}`);
+    process.exit(1);
+  } else {
+    logger.error('Server binding error:', error);
+    process.exit(1);
+  }
 });
 
 // Graceful shutdown

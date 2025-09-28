@@ -55,7 +55,7 @@ const RequireAuth = () => (
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 if (!publishableKey) {
-  throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY in environment variables')
+  console.warn('Missing VITE_CLERK_PUBLISHABLE_KEY, Clerk features will be disabled')
 }
 
 const AuthenticatedApp = () => (

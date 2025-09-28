@@ -61,11 +61,19 @@ export const RootApp = () => {
   }
 
   if (!publishableKey || publishableKey.length < 20) {
-    console.error('[Clerk] Invalid VITE_CLERK_PUBLISHABLE_KEY:', publishableKey)
+    console.warn('[Clerk] Invalid VITE_CLERK_PUBLISHABLE_KEY, falling back to demo mode:', publishableKey)
     console.log('[Clerk] Available environment variables:', Object.keys(import.meta.env))
 
-    showErrorFallback('Authentication Configuration Error', 'Invalid or missing Clerk publishable key. Please check environment variables.')
-    throw new Error('Invalid VITE_CLERK_PUBLISHABLE_KEY')
+    // Fallback to demo mode instead of crashing
+    return (
+      <LandingPageMarketing
+        onRequestSignIn={() => setBootConfig({ targetPath: '/app/sign-in' })}
+        onRequestDemo={() => setBootConfig({ targetPath: '/app/dashboard?demo=1' })}
+        onRequestContact={() => {
+          window.location.href = 'mailto:sales@sentiamfg.com'
+        }}
+      />
+    )
   }
 
   console.log('[Clerk] Initializing with publishable key:', `${publishableKey.substring(0, 20)}...`)

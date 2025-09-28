@@ -67,7 +67,7 @@ app.get('/health', async (req, res) => {
   const healthCheck = {
     status: 'healthy',
     service: 'sentia-manufacturing-dashboard',
-    version: '1.0.9-bulletproof',
+    version: '1.0.10-bulletproof-force-deploy',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
     deployment: 'bulletproof-html-only',
@@ -104,7 +104,7 @@ app.get('/api/status', (req, res) => {
     success: true,
     data: {
       service: 'sentia-manufacturing-dashboard',
-      version: '1.0.9-bulletproof',
+      version: '1.0.10-bulletproof-force-deploy',
       environment: process.env.NODE_ENV || 'development',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
@@ -403,7 +403,7 @@ function generateBulletproofHTML() {
             <div class="info-grid">
                 <div class="info-item">
                     <div class="info-label">Version</div>
-                    <div class="info-value">1.0.9-bulletproof</div>
+                    <div class="info-value">1.0.10-bulletproof-force-deploy</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Environment</div>

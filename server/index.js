@@ -13,6 +13,9 @@ import helmet from 'helmet';
 import compression from 'compression';
 import fs from 'fs';
 import realAPI from './api/real-api.js';
+import healthAPI from './api/health.js';
+import externalAPIService from './services/external-api-service.js';
+import dataValidator from './services/data-validator.js';
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
@@ -84,21 +87,64 @@ app.use(logger);
 // Mount real API routes - NO MOCK DATA
 app.use('/api', realAPI);
 
+// Mount health check routes
+app.use('/', healthAPI);
+
+// Enhanced dashboard data endpoint with external API integration
+app.get('/api/dashboard/data', async (req, res) => {
+  try {
+    // Get data from all sources
+    const data = await externalAPIService.getDashboardData();
+
+    // Validate the data
+    const validation = dataValidator.validateBatch('financialMetrics',
+      data.data.financial ? [data.data.financial] : []);
+
+    if (validation.errors.length > 0) {
+      console.warn('Data validation warnings:', validation.errors);
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Dashboard data error:', error);
+    res.status(500).json({
+      error: 'Failed to fetch dashboard data',
+      message: error.message
+    });
+  }
+});
+
+// Data sync endpoint
+app.post('/api/sync', async (req, res) => {
+  try {
+    const results = await externalAPIService.syncAllData();
+    res.json(results);
+  } catch (error) {
+    console.error('Sync error:', error);
+    res.status(500).json({
+      error: 'Failed to sync data',
+      message: error.message
+    });
+  }
+});
+
 // Serve static files from dist directory (AFTER API routes)
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));
 
-// Health check endpoint
-app.get('/health', (req, res) => {
+// Service health status endpoint
+app.get('/api/services/status', (req, res) => {
+  const status = externalAPIService.getHealthStatus();
   res.json({
-    status: 'healthy',
-    service: 'sentia-manufacturing-dashboard',
-    version: '2.0.0-enterprise-real-data',
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString(),
+    ...status,
+    server: {
+      version: '2.0.0-enterprise-real-data',
+      environment: process.env.NODE_ENV || 'development',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    },
     clerk: {
-      configured: !!process.env.VITE_CLERK_PUBLISHABLE_KEY,
-      publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET'
+      configured: !!process.env.VITE_CLERK_PUBLISHABLE_KEY
     }
   });
 });
@@ -236,13 +282,34 @@ app.use((err, req, res, next) => {
   }
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Sentia Manufacturing Dashboard server running on port ${PORT}`);
-  console.log(`📁 Serving static files from: ${distPath}`);
-  console.log(`🔐 Clerk configured: ${!!process.env.VITE_CLERK_PUBLISHABLE_KEY}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// Initialize services and start server
+async function startServer() {
+  try {
+    // Initialize external API connections
+    console.log('Initializing external API services...');
+
+    // Start the server
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log('\n========================================');
+      console.log('SENTIA MANUFACTURING ENTERPRISE SERVER');
+      console.log('========================================');
+      console.log(`🚀 Server: http://localhost:${PORT}`);
+      console.log(`📁 Static: ${distPath}`);
+      console.log(`🔐 Auth: ${!!process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'Clerk Configured' : 'Not Configured'}`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📊 Health: http://localhost:${PORT}/health`);
+      console.log(`📈 Metrics: http://localhost:${PORT}/metrics`);
+      console.log(`🔄 Sync: http://localhost:${PORT}/api/sync`);
+      console.log('========================================\n');
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

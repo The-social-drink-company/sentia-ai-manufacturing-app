@@ -131,7 +131,8 @@
       "Bash(pnpm start:*)",
       "Bash(set PORT=10000)",
       "Bash(python:*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:clerk.com)"
     ],
     "deny": [],
     "ask": []

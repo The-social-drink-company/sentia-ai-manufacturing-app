@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentia Diagnostic</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .status-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .pass { color: #10b981; font-weight: bold; }
+        .fail { color: #ef4444; font-weight: bold; }
+        .pending { color: #f59e0b; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        pre {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-card">
+        <h1>Sentia Manufacturing - System Diagnostic</h1>
+        <p>Real-time system health check</p>
+    </div>
+
+    <div class="status-card">
+        <h2>Environment</h2>
+        <div id="env-status"></div>
+    </div>
+
+    <div class="status-card">
+        <h2>API Status</h2>
+        <div id="api-status"></div>
+    </div>
+
+    <div class="status-card">
+        <h2>React Application</h2>
+        <div id="app-status"></div>
+    </div>
+
+    <div class="status-card">
+        <h2>Console Output</h2>
+        <pre id="console-output"></pre>
+    </div>
+
+    <div class="status-card">
+        <button onclick="runDiagnostics()">Run Full Diagnostics</button>
+        <button onclick="testAuth()">Test Authentication</button>
+        <button onclick="window.location.href='/'">Go to Landing Page</button>
+    </div>
+
+    <script>
+        const log = (msg) => {
+            const output = document.getElementById('console-output');
+            output.textContent += msg + '\n';
+            console.log(msg);
+        };
+
+        async function checkEndpoint(url) {
+            try {
+                const response = await fetch(url);
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    return { ok: true, status: response.status, data };
+                } else {
+                    const text = await response.text();
+                    return { ok: response.ok, status: response.status, text: text.substring(0, 100) };
+                }
+            } catch (error) {
+                return { ok: false, error: error.message };
+            }
+        }
+
+        async function runDiagnostics() {
+            log('=== Starting Diagnostics ===');
+            log(new Date().toISOString());
+            
+            // Check environment
+            const envDiv = document.getElementById('env-status');
+            envDiv.innerHTML = `
+                <div class="status-item">
+                    <span>Browser</span>
+                    <span>${navigator.userAgent.split(' ').pop()}</span>
+                </div>
+                <div class="status-item">
+                    <span>URL</span>
+                    <span>${window.location.origin}</span>
+                </div>
+                <div class="status-item">
+                    <span>Protocol</span>
+                    <span>${window.location.protocol}</span>
+                </div>
+            `;
+
+            // Check API endpoints
+            const apiDiv = document.getElementById('api-status');
+            apiDiv.innerHTML = '<div class="status-item"><span>Checking...</span></div>';
+            
+            const endpoints = [
+                '/health',
+                '/api/health',
+                '/api/services/status',
+                '/api/mcp/status'
+            ];
+
+            let apiHtml = '';
+            for (const endpoint of endpoints) {
+                log(`Checking ${endpoint}...`);
+                const result = await checkEndpoint(endpoint);
+                const status = result.ok ? 'pass' : 'fail';
+                apiHtml += `
+                    <div class="status-item">
+                        <span>${endpoint}</span>
+                        <span class="${status}">${result.status || 'ERROR'}</span>
+                    </div>
+                `;
+                
+                if (result.data) {
+                    log(`  Response: ${JSON.stringify(result.data).substring(0, 100)}`);
+                }
+            }
+            apiDiv.innerHTML = apiHtml;
+
+            // Check React app
+            const appDiv = document.getElementById('app-status');
+            const rootDiv = await checkReactApp();
+            
+            appDiv.innerHTML = `
+                <div class="status-item">
+                    <span>React Root Element</span>
+                    <span class="${rootDiv ? 'pass' : 'fail'}">${rootDiv ? 'Found' : 'Not Found'}</span>
+                </div>
+                <div class="status-item">
+                    <span>React Scripts Loaded</span>
+                    <span class="${checkScripts() ? 'pass' : 'fail'}">${checkScripts() ? 'Yes' : 'No'}</span>
+                </div>
+                <div class="status-item">
+                    <span>Clerk Configuration</span>
+                    <span class="${window.Clerk ? 'pass' : 'pending'}">${window.Clerk ? 'Loaded' : 'Not Loaded'}</span>
+                </div>
+            `;
+
+            log('=== Diagnostics Complete ===');
+        }
+
+        async function checkReactApp() {
+            // Try to load the main page and check for React
+            try {
+                const response = await fetch('/');
+                const html = await response.text();
+                return html.includes('id="root"');
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function checkScripts() {
+            const scripts = Array.from(document.querySelectorAll('script[src]'));
+            return scripts.some(s => s.src.includes('/js/') || s.src.includes('chunk'));
+        }
+
+        async function testAuth() {
+            log('=== Testing Authentication ===');
+            
+            // Check if Clerk is available
+            if (window.Clerk) {
+                log('Clerk is loaded');
+                try {
+                    const session = await window.Clerk.session;
+                    log(`Session: ${session ? 'Active' : 'None'}`);
+                } catch (error) {
+                    log(`Clerk error: ${error.message}`);
+                }
+            } else {
+                log('Clerk not loaded - checking for fallback auth');
+                
+                // Check localStorage for fallback auth
+                const authState = localStorage.getItem('sentia_auth_state');
+                if (authState) {
+                    log('Fallback auth state found');
+                    const parsed = JSON.parse(authState);
+                    log(`User: ${parsed.state?.user?.fullName || 'Unknown'}`);
+                } else {
+                    log('No auth state found');
+                }
+            }
+            
+            log('=== Auth Test Complete ===');
+        }
+
+        // Run diagnostics on load
+        window.addEventListener('load', () => {
+            runDiagnostics();
+        });
+
+        // Capture any errors
+        window.addEventListener('error', (event) => {
+            log(`ERROR: ${event.message} at ${event.filename}:${event.lineno}`);
+        });
+    </script>
+</body>
+</html>

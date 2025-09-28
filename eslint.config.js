@@ -18,8 +18,7 @@ export default [
       'node_modules/**',
       'spec-kit/**',
       'agents/**',
-      'src/features/**',
-      'src/components/widgets/**',
+      'src/features/**',\n
       'src/components/ui/*.test.*',
       'tests/**',
       'scripts/**',
@@ -80,3 +79,4 @@ export default [
     }
   }
 ]
+

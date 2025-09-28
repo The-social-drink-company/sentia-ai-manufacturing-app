@@ -127,7 +127,8 @@
       "Bash(taskkill:*)",
       "Bash(npx babel:*)",
       "Bash(PORT=5001 pnpm run dev:server)",
-      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm run build)"
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm run build)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

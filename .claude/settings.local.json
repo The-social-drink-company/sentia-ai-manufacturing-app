@@ -60,7 +60,8 @@
       "WebFetch(domain:sentia-manufacturing-dashboard.onrender.com)",
       "Bash(timeout:*)",
       "Bash(npm run build:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

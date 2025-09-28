@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -51,15 +50,20 @@ const STATS = [
   { label: 'Order Fulfillment', value: '98.5%', change: '+1.2%', positive: true }
 ]
 
-const LandingPageWithFlow = () => {
-  const navigate = useNavigate()
+const PureLandingPage = () => {
+  const handleGetStarted = () => {
+    // Navigate to app with Clerk
+    window.location.href = '/app'
+  }
 
-  const handleEngage = (action) => {
-    navigate('/sign-in')
+  const handleViewDemo = () => {
+    // Navigate to app with Clerk
+    window.location.href = '/app'
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      {/* Header */}
       <header className="relative z-10 px-6 py-4">
         <nav className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -72,13 +76,13 @@ const LandingPageWithFlow = () => {
             <Button
               variant="ghost"
               className="text-white hover:bg-white/10"
-              onClick={() => handleEngage('sign-in')}
+              onClick={handleGetStarted}
             >
               Sign In
             </Button>
             <Button
               className="bg-gradient-to-r from-blue-500 to-cyan-400"
-              onClick={() => handleEngage('start')}
+              onClick={handleGetStarted}
             >
               Launch App
             </Button>
@@ -86,6 +90,7 @@ const LandingPageWithFlow = () => {
         </nav>
       </header>
 
+      {/* Hero Section */}
       <main className="relative">
         <div className="mx-auto max-w-7xl px-6 py-16 sm:py-24">
           <div className="text-center">
@@ -104,7 +109,7 @@ const LandingPageWithFlow = () => {
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-xl hover:shadow-blue-500/25"
-                onClick={() => handleEngage('start')}
+                onClick={handleGetStarted}
               >
                 Get Started
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
@@ -113,7 +118,7 @@ const LandingPageWithFlow = () => {
                 size="lg"
                 variant="outline"
                 className="border-white/20 text-white hover:bg-white/10"
-                onClick={() => handleEngage('demo')}
+                onClick={handleViewDemo}
               >
                 View Live Demo
               </Button>
@@ -121,6 +126,7 @@ const LandingPageWithFlow = () => {
           </div>
         </div>
 
+        {/* Stats Section */}
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {STATS.map((stat) => (
@@ -135,6 +141,7 @@ const LandingPageWithFlow = () => {
           </div>
         </div>
 
+        {/* Features Section */}
         <div className="mx-auto max-w-7xl px-6 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white sm:text-4xl">
@@ -159,6 +166,7 @@ const LandingPageWithFlow = () => {
           </div>
         </div>
 
+        {/* CTA Section */}
         <div className="mx-auto max-w-7xl px-6 py-16">
           <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-center">
             <h2 className="text-3xl font-bold text-white">Ready to Transform Your Manufacturing?</h2>
@@ -169,7 +177,7 @@ const LandingPageWithFlow = () => {
               <Button
                 size="lg"
                 className="bg-white text-blue-600 hover:bg-slate-100"
-                onClick={() => handleEngage('start')}
+                onClick={handleGetStarted}
               >
                 Start Free Trial
               </Button>
@@ -177,7 +185,7 @@ const LandingPageWithFlow = () => {
                 size="lg"
                 variant="outline"
                 className="border-white/30 text-white hover:bg-white/10"
-                onClick={() => handleEngage('demo')}
+                onClick={handleViewDemo}
               >
                 Explore Dashboard
               </Button>
@@ -189,4 +197,4 @@ const LandingPageWithFlow = () => {
   )
 }
 
-export default LandingPageWithFlow
+export default PureLandingPage

@@ -1,5 +1,4 @@
-﻿import { useNavigate } from 'react-router-dom'
-import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -54,14 +53,9 @@ const STATS = [
 
 const LandingPage = () => {
   const navigate = useNavigate()
-  const { isSignedIn } = useAuth()
 
   const handleGetStarted = () => {
-    if (isSignedIn) {
-      navigate('/dashboard')
-    } else {
-      navigate('/sign-in')
-    }
+    navigate('/app/sign-in')
   }
 
   return (
@@ -76,23 +70,19 @@ const LandingPage = () => {
             <span className="text-xl font-bold text-white">Sentia Manufacturing</span>
           </div>
           <div className="flex items-center space-x-4">
-            <SignedOut>
-              <Button
-                variant="ghost"
-                className="text-white hover:bg-white/10"
-                onClick={() => navigate('/sign-in')}
-              >
-                Sign In
-              </Button>
-            </SignedOut>
-            <SignedIn>
-              <Button
-                className="bg-gradient-to-r from-blue-500 to-cyan-400"
-                onClick={() => navigate('/dashboard')}
-              >
-                Go to Dashboard
-              </Button>
-            </SignedIn>
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/10"
+              onClick={handleGetStarted}
+            >
+              Sign In
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-500 to-cyan-400"
+              onClick={() => navigate('/app/dashboard')}
+            >
+              Go to Dashboard
+            </Button>
           </div>
         </nav>
       </header>
@@ -125,7 +115,7 @@ const LandingPage = () => {
                 size="lg"
                 variant="outline"
                 className="border-white/20 text-white hover:bg-white/10"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/app/dashboard')}
               >
                 View Live Demo
               </Button>
@@ -192,7 +182,7 @@ const LandingPage = () => {
                 size="lg"
                 variant="outline"
                 className="border-white/30 text-white hover:bg-white/10"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/app/dashboard')}
               >
                 Explore Dashboard
               </Button>

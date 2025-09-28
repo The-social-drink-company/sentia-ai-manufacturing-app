@@ -50,6 +50,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(enhancedLogger);
 
+// CRITICAL: Serve static files from dist directory
+app.use(express.static(path.join(__dirname, '../dist')));
+
 // Mock enterprise data
 const enterpriseData = {
   executive: {

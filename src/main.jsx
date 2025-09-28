@@ -47,41 +47,28 @@ const initializeApp = async () => {
     devLog.log('[main.jsx] Creating React root...');
     const root = createRoot(rootElement);
 
-    // Try to load the comprehensive enterprise app
+    // Load the working Clerk-integrated app
     try {
-      devLog.log('[main.jsx] Attempting to load App-comprehensive...');
-      const { default: App } = await import('./App-comprehensive.jsx');
+      devLog.log('[main.jsx] Loading App-multistage with bulletproof authentication...');
+      const { default: App } = await import('./App-multistage.jsx');
 
-      devLog.log('[main.jsx] App-comprehensive loaded successfully, rendering...');
+      devLog.log('[main.jsx] App-multistage loaded successfully, rendering...');
       root.render(
         <StrictMode>
           <App />
         </StrictMode>
       );
-      devLog.log('[main.jsx] Enterprise app mounted successfully with AI features');
+      devLog.log('[main.jsx] Multi-stage app with authentication mounted successfully');
     } catch (appError) {
-      logError('[main.jsx] Failed to load App-comprehensive', appError);
-      devLog.log('[main.jsx] Attempting App-multistage fallback...');
+      logError('[main.jsx] Failed to load App-multistage', appError);
+      devLog.log('[main.jsx] Falling back to basic app...');
 
-      try {
-        const { default: App } = await import('./App-multistage.jsx');
-        root.render(
-          <StrictMode>
-            <App />
-          </StrictMode>
-        );
-        devLog.log('[main.jsx] App-multistage mounted successfully');
-      } catch (multistageError) {
-        logError('[main.jsx] Failed to load App-multistage', multistageError);
-        devLog.log('[main.jsx] Falling back to simple app...');
-
-        root.render(
-          <StrictMode>
-            <FallbackApp />
-          </StrictMode>
-        );
-        devLog.log('[main.jsx] Fallback app mounted successfully');
-      }
+      root.render(
+        <StrictMode>
+          <FallbackApp />
+        </StrictMode>
+      );
+      devLog.log('[main.jsx] Fallback app mounted successfully');
     }
   } catch (error) {
     logError('[main.jsx] Critical error mounting React app', error);

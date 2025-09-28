@@ -92,7 +92,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     service: 'sentia-manufacturing-dashboard',
-    version: '2.0.0-clean',
+    version: '2.0.0-enterprise-real-data',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
     clerk: {
@@ -108,7 +108,7 @@ app.get('/api/status', (req, res) => {
     success: true,
     data: {
       service: 'sentia-manufacturing-dashboard',
-      version: '2.0.0-clean',
+      version: '2.0.0-enterprise-real-data',
       environment: process.env.NODE_ENV || 'development',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),

@@ -65,7 +65,8 @@
       "Bash(git commit:*)",
       "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm run build)",
       "Read(//c/Users/User/Downloads/**)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(pnpm run:*)"
     ],
     "deny": [],
     "ask": []

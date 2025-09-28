@@ -8,6 +8,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import enhancedForecastingRouter from './server/api/enhanced-forecasting.js';
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +21,9 @@ const PORT = process.env.PORT || 10000;
 
 // Enable CORS
 app.use(cors());
+
+// Parse JSON bodies
+app.use(express.json());
 
 // Serve static files from the dist directory
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -310,6 +314,26 @@ app.get('/api/mcp/tools', async (req, res) => {
     console.error('MCP API error', error);
     res.status(500).json({ error: 'Failed to list MCP tools' });
   }
+});
+
+// Enhanced Forecasting API Routes
+app.use('/api/forecasting/enhanced', enhancedForecastingRouter);
+
+// AI Status endpoint for enhanced forecasting
+app.get('/api/ai/status', (req, res) => {
+  res.json({
+    models: {
+      openai: !!process.env.OPENAI_API_KEY,
+      claude: !!process.env.ANTHROPIC_API_KEY
+    },
+    ready: !!(process.env.OPENAI_API_KEY && process.env.ANTHROPIC_API_KEY),
+    capabilities: [
+      'dual_model_forecasting',
+      '365_day_horizon',
+      'ensemble_prediction',
+      'business_intelligence'
+    ]
+  });
 });
 
 // Serve the React app for all other routes

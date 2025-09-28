@@ -42,7 +42,14 @@
       "Bash(set PORT=5001)",
       "Bash(git stash:*)",
       "Bash(git cherry-pick:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:dashboard.render.com)",
+      "Bash(TASKKILL /F /IM node.exe)",
+      "Bash(Ctrl+C)",
+      "Bash(findstr:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

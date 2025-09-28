@@ -5,7 +5,6 @@ import express from 'express';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import xeroNode from 'xero-node';
-import AWS from 'aws-sdk';
 import Shopify from '@shopify/shopify-api';
 
 const router = express.Router();
@@ -22,16 +21,6 @@ const initializeAPIs = () => {
       scopes: 'accounting.reports.read accounting.transactions.read'.split(' ')
     }) : null;
 
-  // Amazon SP-API
-  const amazonSP = process.env.AMAZON_SP_API_KEY ?
-    new AWS.SPAPI({
-      region: 'us-west-2',
-      credentials: {
-        accessKeyId: process.env.AMAZON_SP_API_KEY,
-        secretAccessKey: process.env.AMAZON_SP_API_SECRET,
-      }
-    }) : null;
-
   // Shopify API
   const shopifyClient = process.env.SHOPIFY_API_KEY && process.env.SHOPIFY_API_SECRET ?
     new Shopify.Clients.Rest(
@@ -39,13 +28,13 @@ const initializeAPIs = () => {
       process.env.SHOPIFY_ACCESS_TOKEN
     ) : null;
 
-  return { xeroClient, amazonSP, shopifyClient };
+  return { xeroClient, shopifyClient };
 };
 
 // Dashboard Summary - Real Data from Multiple Sources
 router.get('/dashboard/summary', async (req, res) => {
   try {
-    const { xeroClient, amazonSP, shopifyClient } = initializeAPIs();
+    const { xeroClient, shopifyClient } = initializeAPIs();
 
     // Fetch real financial data from Xero
     let financialData = null;

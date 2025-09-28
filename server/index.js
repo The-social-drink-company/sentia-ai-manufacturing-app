@@ -76,7 +76,7 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     clerk: {
-      configured: !!process.env.VITE_CLERK_PUBLISHABLE_KEY,
+      configured: Boolean(process.env.VITE_CLERK_PUBLISHABLE_KEY),
       publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET'
     }
   });
@@ -94,7 +94,7 @@ app.get('/api/status', (req, res) => {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       clerk: {
-        configured: !!process.env.VITE_CLERK_PUBLISHABLE_KEY
+        configured: Boolean(process.env.VITE_CLERK_PUBLISHABLE_KEY)
       }
     },
     meta: {
@@ -323,7 +323,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`API: http://localhost:${PORT}/api/status`);
   console.log(`Dashboard: http://localhost:${PORT}/api/dashboard/summary`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Clerk: ${!!process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'Configured' : 'Not configured'}`);
+  console.log(`Clerk: ${Boolean(process.env.VITE_CLERK_PUBLISHABLE_KEY) ? 'Configured' : 'Not configured'}`);
   console.log('========================================\n');
 });
 

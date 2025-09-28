@@ -35,7 +35,7 @@ class HealthChecker {
     this.registerCheck('database', async () => {
       try {
         const start = performance.now();
-        const result = await prisma.$queryRaw`SELECT 1 as health`;
+        await prisma.$queryRaw`SELECT 1 as health`;
         const latency = performance.now() - start;
 
         return {

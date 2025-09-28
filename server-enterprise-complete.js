@@ -533,9 +533,19 @@ const distPath = path.join(__dirname, 'dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 
-  // SPA fallback - must be last
+  // SPA fallback - must be last AND must exclude API routes
   app.get('*', (req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
+    // Don't serve index.html for API routes
+    if (req.path.startsWith('/api/')) {
+      res.status(404).json({
+        error: 'API endpoint not found',
+        path: req.path,
+        method: req.method,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
   });
 } else {
   logger.warn('dist directory not found - static files will not be served');

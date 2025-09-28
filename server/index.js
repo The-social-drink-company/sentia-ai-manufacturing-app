@@ -1,4 +1,4 @@
-﻿/**
+ï»¿/**
  * BULLETPROOF ENTERPRISE SERVER
  * Properly configured Express server with guaranteed API routing
  */
@@ -311,7 +311,7 @@ app.get('*', (req, res) => {
         </style>
       </head>
       <body>
-        <h1>ðŸš€ Sentia Manufacturing Dashboard</h1>
+        <h1>Ã°Å¸Å¡â‚¬ Sentia Manufacturing Dashboard</h1>
         <p class="status">Server is running successfully</p>
         <p class="error">Frontend build not found - please run build process</p>
 
@@ -336,11 +336,7 @@ app.get('*', (req, res) => {
 });
 
 // Error handling middleware
-<<<<<<< HEAD
-app.use((err, req, res) => {
-=======
 app.use((err, req, res, _next) => {
->>>>>>> branch-23-bulletproof
   console.error('Server error:', err);
 
   if (req.path.startsWith('/api/')) {
@@ -365,11 +361,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`API: http://localhost:${PORT}/api/status`);
   console.log(`Dashboard: http://localhost:${PORT}/api/dashboard/summary`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-<<<<<<< HEAD
-  console.log(`Clerk: ${process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'Configured' : 'Not configured'}`);
-=======
   console.log(`Clerk: ${isClerkConfigured ? 'Configured' : 'Not configured'}`);
->>>>>>> branch-23-bulletproof
   console.log('========================================\n');
 });
 

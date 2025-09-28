@@ -1,42 +1,3 @@
-<<<<<<< HEAD
-﻿import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-
-const metricCards = [
-  {
-    title: 'Defect Rate',
-    value: '2.3%',
-    description: 'Target 2.0%',
-    variant: 'destructive'
-  },
-  {
-    title: 'First Pass Yield',
-    value: '94.5%',
-    description: 'Target 95%',
-    variant: 'secondary'
-  },
-  {
-    title: 'Customer Complaints',
-    value: '12',
-    description: 'Target under 10',
-    variant: 'secondary'
-  },
-  {
-    title: 'Inspection Throughput',
-    value: '1,248',
-    description: '24h window',
-    variant: 'default'
-  }
-]
-
-const inspectionStages = [
-  { label: 'Incoming Materials', progress: 82 },
-  { label: 'In-Process Quality', progress: 76 },
-  { label: 'Final Inspection', progress: 91 },
-  { label: 'Post-Shipment Audits', progress: 63 }
-]
-=======
 import { useState } from 'react';
 import {
   BeakerIcon,
@@ -65,7 +26,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
->>>>>>> branch-23-bulletproof
 
 const QualityControl = () => {
   return (

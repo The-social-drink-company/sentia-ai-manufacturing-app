@@ -6,31 +6,6 @@ const SAMPLE_ROWS = [
   { name: 'SKU-412', revenue: '$211K', margin: '35%', risk: 'Low' }
 ]
 
-<<<<<<< HEAD
-const DataTableWidget = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Key customers</CardTitle>
-    </CardHeader>
-    <CardContent className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-border text-sm">
-        <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
-          <tr>
-            <th className="px-4 py-2 font-medium">Customer / SKU</th>
-            <th className="px-4 py-2 font-medium">Revenue</th>
-            <th className="px-4 py-2 font-medium">Margin</th>
-            <th className="px-4 py-2 font-medium">Risk</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {SAMPLE_ROWS.map((row) => (
-            <tr key={row.name}>
-              <td className="px-4 py-3 font-medium text-foreground">{row.name}</td>
-              <td className="px-4 py-3">{row.revenue}</td>
-              <td className="px-4 py-3">{row.margin}</td>
-              <td className="px-4 py-3">{row.risk}</td>
-            </tr>
-=======
 const DataTableWidget = ({
   title,
   columns = [],
@@ -90,7 +65,6 @@ const DataTableWidget = ({
         <div className="space-y-2">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
->>>>>>> branch-23-bulletproof
           ))}
         </tbody>
       </table>
@@ -98,9 +72,6 @@ const DataTableWidget = ({
   </Card>
 )
 
-<<<<<<< HEAD
-export default DataTableWidget
-=======
   return (
     <div className={cn('bg-white dark:bg-gray-800 rounded-xl shadow-sm', className)}>
       <div className="p-6">
@@ -208,4 +179,3 @@ export default DataTableWidget
 }
 
 export default DataTableWidget
->>>>>>> branch-23-bulletproof

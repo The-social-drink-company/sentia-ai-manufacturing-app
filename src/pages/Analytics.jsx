@@ -71,11 +71,6 @@ const RETENTION_ROWS = [
 ]
 
 const Analytics = () => {
-<<<<<<< HEAD
-  const [range, setRange] = useState('30d')
-  const kpis = KPI_SERIES[range]
-  const revenueData = useMemo(() => REVENUE_SERIES[range], [range])
-=======
   const [analyticsData, setAnalyticsData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -175,7 +170,6 @@ const Analytics = () => {
       </div>
     );
   }
->>>>>>> branch-23-bulletproof
 
   return (
     <section className="space-y-6">
@@ -305,9 +299,6 @@ const Metric = ({ label, value, helper }) => (
   </div>
 )
 
-<<<<<<< HEAD
-export default Analytics
-=======
                 {/* Downtime Variance */}
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Downtime Variance:</span>
@@ -381,4 +372,3 @@ export default Analytics
 };
 
 export default Analytics;
->>>>>>> branch-23-bulletproof

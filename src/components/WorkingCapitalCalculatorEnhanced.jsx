@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-﻿import WorkingCapitalCalculator from './WorkingCapitalCalculator'
-=======
 import { useState, useEffect, useRef } from 'react';
 import { logError } from '../utils/structuredLogger.js'
->>>>>>> branch-23-bulletproof
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 

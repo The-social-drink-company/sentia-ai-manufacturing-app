@@ -1,10 +1,6 @@
 ﻿import { SignIn } from '@clerk/clerk-react'
 
 const ClerkSignIn = () => (
-<<<<<<< HEAD
-  <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
-    <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" />
-=======
   <div className="flex min-h-screen flex-col bg-slate-950 text-white lg:flex-row">
     <div className="flex flex-1 flex-col justify-center space-y-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-10">
       <p className="text-xs uppercase tracking-[0.4em] text-sky-400">Sentia Manufacturing</p>
@@ -23,7 +19,6 @@ const ClerkSignIn = () => (
         <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" afterSignInUrl="/dashboard" />
       </div>
     </div>
->>>>>>> branch-23-bulletproof
   </div>
 )
 

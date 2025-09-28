@@ -45,8 +45,11 @@ const __dirname = path.dirname(__filename);
 let prisma = null;
 let PrismaClient = null;
 
-const prismaClientPath = path.join(__dirname, '.prisma', 'client');
-const prismaRuntimeAvailable = fs.existsSync(prismaClientPath);
+const prismaRuntimePaths = [
+  path.join(__dirname, '.prisma', 'client'),
+  path.join(__dirname, 'node_modules', '.prisma', 'client')
+];
+const prismaRuntimeAvailable = prismaRuntimePaths.some((runtimePath) => fs.existsSync(runtimePath));
 
 if (prismaRuntimeAvailable) {
   try {
@@ -710,10 +713,16 @@ function broadcastSSE(eventType, data) {
 // Make broadcast function globally available
 global.broadcastSSE = broadcastSSE;
 
-// Serve static files from dist directory
+// Serve static files from dist directory (exclude API routes)
 const distPath = path.join(__dirname, 'dist');
 if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
+  app.use((req, res, next) => {
+    // Skip static file serving for API routes
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    express.static(distPath)(req, res, next);
+  });
 
   // SPA fallback - must be last AND must exclude API routes
   app.get('*', (req, res) => {

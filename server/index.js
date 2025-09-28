@@ -4,7 +4,8 @@ import { fileURLToPath } from 'url';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import { PrismaClient } from '@prisma/client';\nimport fs from 'fs';\n
+import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -441,7 +442,24 @@ app.get('*', (req, res) => {
     });
   }
   
-  const indexPath = path.join(__dirname, '../dist/index.html');\n\n  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');\n  res.setHeader('Pragma', 'no-cache');\n  res.setHeader('Expires', '0');\n\n  if (fs.existsSync(indexPath)) {\n    res.sendFile(indexPath);\n    return;\n  }\n\n  const progressiveHTML = generateProgressiveHTML();\n  res.setHeader('Content-Type', 'text/html; charset=utf-8');\n  res.send(progressiveHTML);
+  const indexPath = path.join(__dirname, '../dist/index.html');
+
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
+  // Prioritize serving React build if it exists
+  if (fs.existsSync(indexPath)) {
+    console.log('Serving React build from:', indexPath);
+    res.sendFile(indexPath);
+    return;
+  }
+
+  // Fallback to progressive HTML if no build exists
+  console.log('React build not found, serving progressive HTML');
+  const progressiveHTML = generateProgressiveHTML();
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(progressiveHTML);
 });
 
 // Enhanced error handling
@@ -492,4 +510,4 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🛡️ Bulletproof design - no more blank screens!`);
 });
 
-export default app;\n
+export default app;

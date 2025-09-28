@@ -7,7 +7,7 @@ import App from "./App-enterprise.jsx"
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key")
+  console.warn("Missing Publishable Key - Clerk features will be limited")
 }
 
 // Remove fallback loader once React loads

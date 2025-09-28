@@ -147,21 +147,30 @@ export function BulletproofAuthProvider({ children }) {
       setAuthMode('fallback');
     }, 3000); // 3 second timeout
 
+    // Check if we should disable Clerk
+    const disableClerk = import.meta.env.VITE_DISABLE_CLERK === 'true';
+    const forceClerkAuth = import.meta.env.VITE_FORCE_CLERK_AUTH === 'true';
+
     // Check if we should use Clerk or fallback
-    if (isValidKey) {
-      // Force Clerk mode for valid keys
-      console.info('Valid Clerk key detected, initializing Clerk...');
+    if (disableClerk && !forceClerkAuth) {
+      clearTimeout(timeout);
+      console.warn('Clerk is disabled via VITE_DISABLE_CLERK, using fallback mode');
+      setAuthMode('fallback');
+    } else if (isValidKey || forceClerkAuth) {
+      // Force Clerk mode for valid keys or when forced
+      console.info('Clerk authentication enabled');
       console.info('Key info:', {
         keyStart: clerkKey?.substring(0, 30) + '...',
         keyLength: clerkKey?.length,
-        domain: 'champion-bulldog-92.clerk.accounts.dev'
+        domain: 'clerk.financeflo.ai',
+        forceAuth: forceClerkAuth
       });
       clearTimeout(timeout);
       // Force Clerk mode - DO NOT use fallback with valid key
       setAuthMode('clerk');
     } else {
       clearTimeout(timeout);
-      console.warn('Invalid Clerk key - using fallback mode');
+      console.warn('No valid Clerk key and auth not forced - using fallback mode');
       console.info('Clerk key status:', {
         hasKey: !!clerkKey,
         keyStart: clerkKey?.substring(0, 20),

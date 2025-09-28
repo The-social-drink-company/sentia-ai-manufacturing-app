@@ -72,7 +72,7 @@ const AuthenticatedApp = () => (
         colorBackground: '#ffffff',
         colorInputBackground: '#ffffff',
         colorInputText: '#1f2937',
-        fontFamily: '\"Inter\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif',
+        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         borderRadius: '0.5rem'
       },
       elements: {

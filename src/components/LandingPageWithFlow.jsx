@@ -54,7 +54,7 @@ const STATS = [
 const LandingPageWithFlow = () => {
   const navigate = useNavigate()
 
-  const handleEngage = (action) => {
+  const handleEngage = () => {
     navigate('/sign-in')
   }
 

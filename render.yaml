@@ -1,11 +1,11 @@
 services:
   - type: web
-    name: sentia-manufacturing-dashboard-final
+    name: sentia-manufacturing-dashboard
     env: node
     plan: starter
     region: oregon
     branch: branch-23-bulletproof
-    buildCommand: "echo 'Build not required - using pre-built application'"
+    buildCommand: "npm install"
     startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true

@@ -338,7 +338,7 @@ app.use((err, req, res) => {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n========================================');
-  console.log('ðŸš€ SENTIA MANUFACTURING DASHBOARD');
+  console.log('SENTIA MANUFACTURING DASHBOARD');
   console.log('   BULLETPROOF CONFIGURATION');
   console.log('========================================');
   console.log(`Server: http://localhost:${PORT}`);
@@ -346,7 +346,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`API: http://localhost:${PORT}/api/status`);
   console.log(`Dashboard: http://localhost:${PORT}/api/dashboard/summary`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Clerk: ${!!process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'Configured' : 'Not configured'}`);
+  console.log(`Clerk: ${process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'Configured' : 'Not configured'}`);
   console.log('========================================\n');
 });
 

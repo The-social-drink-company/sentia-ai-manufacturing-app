@@ -13,7 +13,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma migrate deploy && npx prisma generate && pnpm run build"
-    startCommand: "node server.js"
+    startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -24,7 +24,7 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        value: postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_dev
+        value: postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_dev?sslmode=require
       # fromDatabase:
           name: sentia-manufacturing-db
           property: connectionString
@@ -56,7 +56,7 @@ services:
     region: oregon
     branch: testing
     buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma migrate deploy && npx prisma generate && pnpm run build"
-    startCommand: "node server.js"
+    startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -67,7 +67,7 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        value: postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_dev
+        value: postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a.oregon-postgres.render.com/sentia_manufacturing_test?sslmode=require
       # fromDatabase:
           name: sentia-manufacturing-db
           property: connectionString
@@ -99,7 +99,7 @@ services:
     region: oregon
     branch: production
     buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma migrate deploy && npx prisma generate && pnpm run build"
-    startCommand: "node server.js"
+    startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -110,7 +110,7 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        value: postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com/sentia_manufacturing_prod
+        value: postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com/sentia_manufacturing_prod?sslmode=require
       # fromDatabase:
           name: sentia-manufacturing-db
           property: connectionString

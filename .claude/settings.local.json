@@ -51,7 +51,8 @@
       "Bash(findstr:*)",
       "Bash(git checkout:*)",
       "Bash(git pull:*)",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "WebFetch(domain:sentia-manufacturing-dashboard.onrender.com)"
     ],
     "deny": [],
     "ask": []

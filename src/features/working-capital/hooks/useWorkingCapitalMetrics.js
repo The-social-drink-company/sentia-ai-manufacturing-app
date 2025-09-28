@@ -2,6 +2,27 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { workingCapitalApi } from '../../../services/api/workingCapitalApi'
 import { logError, logWarn } from '../../../utils/structuredLogger.js'
 
+const isFiniteNumber = value => typeof value === 'number' && Number.isFinite(value)
+
+const formatDaysLabel = value =>
+  isFiniteNumber(value) ? `${Math.round(value)} days` : 'Not available'
+
+const formatCurrency = (value, currency = 'USD') => {
+  if (!isFiniteNumber(value)) {
+    return 'Not available'
+  }
+
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0
+    }).format(value)
+  } catch (error) {
+    return value.toString()
+  }
+}
+
 const percentChange = (current, previous) => {
   if (current === null || current === undefined || previous === null || previous === undefined) {
     return null
@@ -128,7 +149,7 @@ const buildAlerts = (summary, receivables, payables, inventory) => {
       id: 'ccc-alert',
       severity: 'warning',
       title: 'Cash conversion cycle deteriorating',
-      description: CCC is  days. Target is < 45 days.,
+      description: `CCC is ${formatDaysLabel(summary.cashConversionCycle)}. Target is < 45 days.`,
       action: 'Review receivable collections and inventory turns'
     })
   }
@@ -138,7 +159,7 @@ const buildAlerts = (summary, receivables, payables, inventory) => {
       id: 'dso-alert',
       severity: 'warning',
       title: 'Days sales outstanding elevated',
-      description: Current DSO is  days. Typical SaaS benchmark is 35-40 days.,
+      description: `Current DSO is ${formatDaysLabel(receivables.dso)}. Typical SaaS benchmark is 35-40 days.`,
       action: 'Prioritise collections for invoices older than 30 days'
     })
   }
@@ -148,7 +169,7 @@ const buildAlerts = (summary, receivables, payables, inventory) => {
       id: 'dpo-alert',
       severity: 'info',
       title: 'Supplier payments being settled early',
-      description: DPO is  days. Consider negotiating extended terms.,
+      description: `DPO is ${formatDaysLabel(payables.dpo)}. Consider negotiating extended terms.`,
       action: 'Engage top suppliers regarding 45-day terms'
     })
   }
@@ -158,7 +179,7 @@ const buildAlerts = (summary, receivables, payables, inventory) => {
       id: 'inventory-alert',
       severity: 'warning',
       title: 'Inventory days on hand above target',
-      description: Inventory is sitting  days on average.,
+      description: `Inventory is sitting ${formatDaysLabel(inventory.dio)} on average.`,
       action: 'Reduce purchase orders for slow-moving SKUs'
     })
   }
@@ -176,7 +197,9 @@ const buildRecommendations = (summary, receivables, payables, inventory) => {
       priority: 'high',
       title: 'Accelerate collections',
       description: 'Implement targeted outreach on invoices older than 30 days.',
-      impact: Potential cash unlock: ,
+      impact: receivables.total
+        ? `Potential cash unlock: ${formatCurrency(receivables.total * 0.1)}`
+        : 'Potential cash unlock: pending data',
       effort: 'medium',
       timeframe: '2-3 weeks'
     })
@@ -189,7 +212,9 @@ const buildRecommendations = (summary, receivables, payables, inventory) => {
       priority: 'medium',
       title: 'Optimise supplier payment terms',
       description: 'Explore extending standard payment terms to 45 days with strategic partners.',
-      impact: Potential cash preservation: ,
+      impact: payables.total
+        ? `Potential cash preservation: ${formatCurrency(payables.total * 0.05)}`
+        : 'Potential cash preservation: pending data',
       effort: 'low',
       timeframe: '1-2 weeks'
     })
@@ -202,7 +227,9 @@ const buildRecommendations = (summary, receivables, payables, inventory) => {
       priority: 'high',
       title: 'Reduce excess inventory',
       description: 'Slow-moving items are tying up cash. Prioritise liquidation or production rescheduling.',
-      impact: Potential free cash: ,
+      impact: inventory.total
+        ? `Potential free cash: ${formatCurrency(inventory.total * 0.08)}`
+        : 'Potential free cash: pending data',
       effort: 'high',
       timeframe: '4-6 weeks'
     })
@@ -248,7 +275,7 @@ const createExporter = data => async format => {
     const blob = new Blob([csvBody], { type: 'text/csv' })
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.download = working-capital-.csv
+    link.download = `working-capital-${timestamp}.csv`
     link.click()
     return
   }
@@ -257,12 +284,12 @@ const createExporter = data => async format => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.download = working-capital-.json
+    link.download = `working-capital-${timestamp}.json`
     link.click()
     return
   }
 
-  throw new Error(Export format \"\" is not supported yet.)
+  throw new Error('Export format "' + format + '" is not supported yet.')
 }
 
 export function useWorkingCapitalMetrics(period = 'current') {

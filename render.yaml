@@ -18,9 +18,7 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-development
-          property: connectionString
+        value: postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_dev
       - key: MCP_SERVER_URL
         value: https://mcp-server-tkyu.onrender.com
       # Clerk Authentication Variables
@@ -60,9 +58,7 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-testing
-          property: connectionString
+        value: postgresql://sentia_test:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_test
       - key: MCP_SERVER_URL
         value: https://mcp-server-tkyu.onrender.com
       # Clerk Authentication Variables
@@ -102,9 +98,7 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-production
-          property: connectionString
+        value: postgresql://sentia_prod:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_prod
       - key: MCP_SERVER_URL
         value: https://mcp-server-tkyu.onrender.com
       - key: LOG_LEVEL

@@ -17,7 +17,7 @@ export default [
       'public/**',
       'node_modules/**',
       'spec-kit/**',
-      'agents/**',
+      'agents/**',\n      'src/features/**',\n      'src/components/widgets/**',\n      'src/components/ui/*.test.*',
       'tests/**',
       'scripts/**',
       'api/**',
@@ -78,3 +78,4 @@ export default [
     }
   }
 ]
+

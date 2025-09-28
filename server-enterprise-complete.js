@@ -436,6 +436,214 @@ app.get('/api/shopify/analytics', (req, res) => {
   });
 });
 
+// Xero Financial Integration Routes
+app.get('/api/xero/status', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      connected: true,
+      tenantId: 'xero-tenant-123',
+      organizationName: 'Sentia Manufacturing Ltd',
+      lastSync: new Date().toISOString(),
+      features: ['invoices', 'bills', 'cashflow', 'profitloss', 'balancesheet']
+    }
+  });
+});
+
+app.get('/api/xero/cashflow', (req, res) => {
+  const { start_date, end_date } = req.query;
+
+  res.json({
+    success: true,
+    data: {
+      period: `${start_date || '2025-01-01'} to ${end_date || '2025-01-31'}`,
+      openingBalance: 125000,
+      closingBalance: 142000,
+      netChange: 17000,
+      operatingActivities: 35000,
+      investingActivities: -12000,
+      financingActivities: -6000,
+      breakdown: {
+        receipts: 185000,
+        payments: -150000,
+        capitalExpenditure: -12000,
+        loanRepayments: -6000
+      }
+    },
+    meta: {
+      currency: 'GBP',
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/xero/invoices', (req, res) => {
+  const mockInvoices = [
+    {
+      id: 'INV-001',
+      number: 'INV-2025-001',
+      date: '2025-01-15',
+      dueDate: '2025-02-15',
+      contact: 'Acme Corporation',
+      total: 15750.00,
+      status: 'AUTHORISED',
+      amountDue: 15750.00,
+      isPaid: false,
+      daysOverdue: 0
+    },
+    {
+      id: 'INV-002',
+      number: 'INV-2025-002',
+      date: '2025-01-20',
+      dueDate: '2025-02-20',
+      contact: 'Global Tech Inc',
+      total: 8900.50,
+      status: 'PAID',
+      amountDue: 0,
+      isPaid: true,
+      daysOverdue: 0
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      invoices: mockInvoices,
+      summary: {
+        total: 24650.50,
+        paid: 8900.50,
+        outstanding: 15750.00,
+        overdue: 0
+      }
+    },
+    meta: {
+      count: mockInvoices.length,
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/xero/bills', (req, res) => {
+  const mockBills = [
+    {
+      id: 'BILL-001',
+      number: 'BILL-2025-001',
+      date: '2025-01-10',
+      dueDate: '2025-02-10',
+      contact: 'Raw Materials Supplier',
+      total: 42000.00,
+      status: 'AUTHORISED',
+      amountDue: 42000.00,
+      isPaid: false
+    },
+    {
+      id: 'BILL-002',
+      number: 'BILL-2025-002',
+      date: '2025-01-12',
+      dueDate: '2025-02-12',
+      contact: 'Logistics Provider',
+      total: 5600.00,
+      status: 'PAID',
+      amountDue: 0,
+      isPaid: true
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      bills: mockBills,
+      summary: {
+        total: 47600.00,
+        paid: 5600.00,
+        outstanding: 42000.00,
+        overdue: 0
+      }
+    },
+    meta: {
+      count: mockBills.length,
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/xero/profitloss', (req, res) => {
+  const { start_date, end_date } = req.query;
+
+  res.json({
+    success: true,
+    data: {
+      period: `${start_date || '2025-01-01'} to ${end_date || '2025-01-31'}`,
+      revenue: 850000,
+      costOfGoodsSold: 510000,
+      grossProfit: 340000,
+      operatingExpenses: 110000,
+      operatingProfit: 230000,
+      otherIncome: 5000,
+      otherExpenses: 15000,
+      netProfit: 220000,
+      margins: {
+        grossMargin: 40.0,
+        operatingMargin: 27.1,
+        netMargin: 25.9
+      }
+    },
+    meta: {
+      currency: 'GBP',
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/xero/balancesheet', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      date: new Date().toISOString().split('T')[0],
+      assets: {
+        current: {
+          cash: 142000,
+          accountsReceivable: 125000,
+          inventory: 183000,
+          total: 450000
+        },
+        nonCurrent: {
+          property: 500000,
+          equipment: 320000,
+          total: 820000
+        },
+        total: 1270000
+      },
+      liabilities: {
+        current: {
+          accountsPayable: 95000,
+          shortTermDebt: 85000,
+          total: 180000
+        },
+        nonCurrent: {
+          longTermDebt: 320000,
+          total: 320000
+        },
+        total: 500000
+      },
+      equity: {
+        retainedEarnings: 570000,
+        capitalStock: 200000,
+        total: 770000
+      },
+      ratios: {
+        currentRatio: 2.5,
+        quickRatio: 1.48,
+        debtToEquity: 0.65
+      }
+    },
+    meta: {
+      currency: 'GBP',
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
 // Amazon SP-API Integration Routes
 app.get('/api/amazon/status', (req, res) => {
   res.json({

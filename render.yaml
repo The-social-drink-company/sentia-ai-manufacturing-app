@@ -24,7 +24,8 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
+        value: postgresql://neondb_owner:DLe8b3LYMqxL@ep-young-resonance-a5y0oa5g.us-east-2.aws.neon.tech/neondb?sslmode=require
+      # fromDatabase:
           name: sentia-manufacturing-db
           property: connectionString
       - key: MCP_SERVER_URL
@@ -66,7 +67,8 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
+        value: postgresql://neondb_owner:DLe8b3LYMqxL@ep-young-resonance-a5y0oa5g.us-east-2.aws.neon.tech/neondb?sslmode=require
+      # fromDatabase:
           name: sentia-manufacturing-db
           property: connectionString
       - key: MCP_SERVER_URL
@@ -108,7 +110,8 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
+        value: postgresql://neondb_owner:DLe8b3LYMqxL@ep-young-resonance-a5y0oa5g.us-east-2.aws.neon.tech/neondb?sslmode=require
+      # fromDatabase:
           name: sentia-manufacturing-db
           property: connectionString
       - key: MCP_SERVER_URL

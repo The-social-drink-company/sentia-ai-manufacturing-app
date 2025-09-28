@@ -1,0 +1,1 @@
+import{j as t}from"./react-vendor-CbFVVgBZ.js";import"./vendor-BHPHB5s9.js";import"./charts-Dbk9-C0f.js";import"./utils-Pe79r9Ua.js";function r(){return t.jsxs("div",{style:{padding:16},children:[t.jsx("h2",{children:"Smart Automation"}),t.jsx("p",{children:"Placeholder — replace with the real automation UI."})]})}const n=()=>t.jsx(r,{});export{n as default};

@@ -10,7 +10,6 @@ if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key")
 }
 
-<<<<<<< HEAD
 // Remove fallback loader once React loads
 const fallbackLoader = document.getElementById("fallback-loader")
 if (fallbackLoader) {
@@ -46,31 +45,6 @@ createRoot(document.getElementById("root")).render(
           },
           headerSubtitle: {
             color: "#6b7280"
-=======
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ClerkProvider 
-      publishableKey={PUBLISHABLE_KEY}
-      appearance={{
-        baseTheme: 'light',
-        variables: {
-          colorPrimary: '#2563eb',
-          colorBackground: '#ffffff',
-          colorInputBackground: '#f8fafc',
-          colorInputText: '#1e293b',
-          borderRadius: '8px'
-        },
-        elements: {
-          formButtonPrimary: {
-            backgroundColor: '#2563eb',
-            '&:hover': {
-              backgroundColor: '#1d4ed8'
-            }
-          },
-          card: {
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-            border: '1px solid #e2e8f0'
->>>>>>> baed00d3308a0840f08ad991048d6e31660a3b56
           }
         }
       }}

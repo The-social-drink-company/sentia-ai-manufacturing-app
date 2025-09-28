@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BulletproofAuthProvider } from './auth/BulletproofAuthProvider';
 import AIChatbot from './components/AIChatbot';
 
 // Simple Dashboard Component with Real Data
@@ -133,17 +134,19 @@ const WorkingCapital = () => (
 // Main App Component
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/working-capital" element={<WorkingCapital />} />
-        <Route path="/production" element={<Dashboard />} />
-        <Route path="/inventory" element={<Dashboard />} />
-        <Route path="*" element={<Dashboard />} />
-      </Routes>
-      <AIChatbot />
-    </BrowserRouter>
+    <BulletproofAuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/working-capital" element={<WorkingCapital />} />
+          <Route path="/production" element={<Dashboard />} />
+          <Route path="/inventory" element={<Dashboard />} />
+          <Route path="*" element={<Dashboard />} />
+        </Routes>
+        <AIChatbot />
+      </BrowserRouter>
+    </BulletproofAuthProvider>
   );
 }
 

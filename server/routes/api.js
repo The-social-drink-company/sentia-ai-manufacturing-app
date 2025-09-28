@@ -110,7 +110,23 @@ function buildWorkingCapitalPayload(orderedHistory, latest) {
     timestamp: new Date().toISOString()
   };
 }
-\nasync function safeFindMany(model, args, label) {\n  try {\n    if (model && typeof model.findMany === 'function') {\n      return await model.findMany(args);\n    }\n  } catch (error) {\n    if (error && error.code === 'P2021') {\n      logWarn('Table not available for ' + label, error);\n    } else {\n      logWarn('Failed to load ' + label + ' records', error);\n    }\n  }\n  return [];\n}\n\nfunction buildDashboardAlerts(latest) {
+
+async function safeFindMany(model, args, label) {
+  try {
+    if (model && typeof model.findMany === 'function') {
+      return await model.findMany(args);
+    }
+  } catch (error) {
+    if (error && error.code === 'P2021') {
+      logWarn('Table not available for ' + label, error);
+    } else {
+      logWarn('Failed to load ' + label + ' records', error);
+    }
+  }
+  return [];
+}
+
+function buildDashboardAlerts(latest) {
   const alerts = [];
   const currentRatio = latest.workingCapitalRatio ?? ((latest.currentAssets ?? 0) / Math.max(latest.currentLiabilities ?? 1, 1));
   const cashConversionCycle = latest.cashConversionCycle ?? 0;
@@ -571,6 +587,9 @@ function convertToCSV(data) {
 }
 
 export default router;
+
+
+
 
 
 

@@ -51,7 +51,10 @@
       "Bash(findstr:*)",
       "Bash(git checkout:*)",
       "Bash(git pull:*)",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "Bash(for file in src/pages/ClerkSignIn.jsx src/components/DashboardLayout.jsx src/components/widgets/DataTableWidget.jsx)",
+      "Bash(do echo \"Checking $file\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

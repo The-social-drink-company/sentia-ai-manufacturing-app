@@ -1,4 +1,4 @@
-﻿import { SignIn } from '@clerk/clerk-react'
+import { SignIn } from '@clerk/clerk-react'
 
 const ClerkSignIn = () => (
   <div className="flex min-h-screen flex-col bg-slate-950 text-white lg:flex-row">

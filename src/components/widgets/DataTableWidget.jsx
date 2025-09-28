@@ -1,4 +1,4 @@
-﻿import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const SAMPLE_ROWS = [
   { name: 'SKU-145', revenue: '$182K', margin: '38%', risk: 'Low' },

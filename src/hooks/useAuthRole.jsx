@@ -31,6 +31,8 @@ export const useAuthRole = () => {
       };
     }
 
+    const effectiveIsSignedIn = mode === 'clerk' ? isSignedIn : true;
+
     // Get role from bulletproof system or user metadata
     const userRole = roleData?.role ||
                     user?.publicMetadata?.role ||
@@ -63,17 +65,17 @@ export const useAuthRole = () => {
     // Helper functions
     const hasRole = (role) => userRole === role;
 
-    const hasPermission = (_permission) => {
+    const hasPermission = (permission) => {
       if (userRole === 'admin') return true; // Admins have all permissions
       return userPermissions.includes(permission);
     };
 
-    const hasFeature = (_feature) => {
+    const hasFeature = (feature) => {
       if (userRole === 'admin') return true; // Admins have all features
       return userFeatures[feature] === true;
     };
 
-    const isRoleAtLeast = (_minimumRole) => {
+    const isRoleAtLeast = (minimumRole) => {
       return (roleHierarchy[userRole] || 0) >= (roleHierarchy[minimumRole] || 0);
     };
 
@@ -88,7 +90,7 @@ export const useAuthRole = () => {
       return displayName.substring(0, 2).toUpperCase();
     };
 
-    const canAccess = (_resource) => {
+    const canAccess = (resource) => {
       const resourcePermissions = {
         dashboard: ['read'],
         analytics: ['read'],
@@ -107,7 +109,7 @@ export const useAuthRole = () => {
 
     return {
       isLoading: false,
-      isAuthenticated: mode === 'clerk' ? isSignedIn : false,
+      isAuthenticated: effectiveIsSignedIn,
       authMode: mode,
       user: user || {
         id: 'guest',
@@ -125,7 +127,7 @@ export const useAuthRole = () => {
       getUserInitials,
       canAccess,
       // Backwards compatibility
-      isSignedIn: isSignedIn || false,
+      isSignedIn: effectiveIsSignedIn,
       userEmail,
       userName: displayName
     };

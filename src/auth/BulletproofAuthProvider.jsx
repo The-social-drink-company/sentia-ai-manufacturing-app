@@ -18,7 +18,7 @@ const AuthContext = createContext(null);
 // Default fallback authentication state
 const FALLBACKAUTH_STATE = {
   isLoaded: true,
-  isSignedIn: false,
+  isSignedIn: true,
   userId: 'guest_user',
   sessionId: 'guest_session',
   user: {

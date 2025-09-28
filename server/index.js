@@ -466,7 +466,7 @@ function generateBulletproofHTML() {
             
             let message = 'BULLETPROOF DIAGNOSTICS:\\n\\n';
             for (const [key, value] of Object.entries(results)) {
-                message += `${key}: ${value}\\n`;
+                message += key + ': ' + value + '\\n';
             }
             
             alert(message);
@@ -499,7 +499,7 @@ function generateBulletproofHTML() {
         // Performance monitoring
         window.addEventListener('load', function() {
             const loadTime = performance.now();
-            console.log(\`✅ Page loaded in \${loadTime.toFixed(2)}ms - BULLETPROOF!\`);
+            console.log('✅ Page loaded in ' + loadTime.toFixed(2) + 'ms - BULLETPROOF!');
         });
     </script>
 </body>

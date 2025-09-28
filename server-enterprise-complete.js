@@ -350,6 +350,237 @@ app.get('/api/mcp/tools', async (req, res) => {
   }
 });
 
+// Shopify Integration API Routes
+app.get('/api/shopify/status', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      overall: true,
+      stores: {
+        uk: { connected: true, error: null, lastCheck: new Date().toISOString() },
+        usa: { connected: true, error: null, lastCheck: new Date().toISOString() }
+      },
+      rateLimits: {
+        uk: { remaining: 38, resetTime: Date.now() + 1000 },
+        usa: { remaining: 40, resetTime: Date.now() + 1000 }
+      }
+    },
+    meta: {
+      timestamp: new Date().toISOString(),
+      stores: ['UK', 'USA'],
+      apiVersion: '2024-10'
+    }
+  });
+});
+
+app.get('/api/shopify/orders', (req, res) => {
+  const mockOrders = [
+    {
+      id: 5770,
+      order_number: 1001,
+      customer: { first_name: 'John', last_name: 'Smith', email: 'john@example.com' },
+      total_price: '125.00',
+      currency: 'GBP',
+      financial_status: 'paid',
+      fulfillment_status: 'fulfilled',
+      created_at: new Date().toISOString(),
+      region: 'UK',
+      line_items: [{ title: 'Premium Widget A', quantity: 2, price: '62.50' }]
+    },
+    {
+      id: 5771,
+      order_number: 1002,
+      customer: { first_name: 'Sarah', last_name: 'Johnson', email: 'sarah@example.com' },
+      total_price: '89.99',
+      currency: 'USD',
+      financial_status: 'paid',
+      fulfillment_status: 'pending',
+      created_at: new Date(Date.now() - 3600000).toISOString(),
+      region: 'USA',
+      line_items: [{ title: 'Standard Widget B', quantity: 1, price: '89.99' }]
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      orders: mockOrders,
+      totalCount: mockOrders.length,
+      breakdown: {
+        uk: { count: 1, error: null },
+        usa: { count: 1, error: null }
+      }
+    },
+    meta: {
+      lastUpdated: new Date().toISOString(),
+      isDemo: true
+    }
+  });
+});
+
+app.get('/api/shopify/analytics', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      uk: { totalRevenue: 12500, totalOrders: 45, averageOrderValue: 277.78, conversionRate: 3.2 },
+      usa: { totalRevenue: 8999, totalOrders: 32, averageOrderValue: 281.22, conversionRate: 2.8 },
+      combined: { totalRevenue: 21499, totalOrders: 77, averageOrderValue: 279.21, conversionRate: 3.0 }
+    },
+    meta: {
+      dateRange: {
+        start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        end_date: new Date().toISOString().split('T')[0]
+      },
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+// Amazon SP-API Integration Routes
+app.get('/api/amazon/status', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      overall: true,
+      marketplaces: {
+        uk: { connected: true, error: null, lastCheck: new Date().toISOString() },
+        usa: { connected: true, error: null, lastCheck: new Date().toISOString() }
+      },
+      rateLimits: {
+        uk: { remaining: 95, resetTime: Date.now() + 60000 },
+        usa: { remaining: 98, resetTime: Date.now() + 60000 }
+      }
+    },
+    meta: {
+      timestamp: new Date().toISOString(),
+      marketplaces: ['UK', 'USA'],
+      apiVersion: 'SP-API v0'
+    }
+  });
+});
+
+app.get('/api/amazon/orders', (req, res) => {
+  const mockOrders = [
+    {
+      AmazonOrderId: 'AMZ-UK-001',
+      PurchaseDate: new Date().toISOString(),
+      OrderStatus: 'Shipped',
+      OrderTotal: { CurrencyCode: 'GBP', Amount: '45.99' },
+      NumberOfItemsShipped: 1,
+      NumberOfItemsUnshipped: 0,
+      BuyerEmail: 'buyer@example.com',
+      ShipServiceLevel: 'Standard',
+      region: 'UK',
+      marketplace: 'Amazon UK'
+    },
+    {
+      AmazonOrderId: 'AMZ-USA-001',
+      PurchaseDate: new Date(Date.now() - 86400000).toISOString(),
+      OrderStatus: 'Pending',
+      OrderTotal: { CurrencyCode: 'USD', Amount: '67.50' },
+      NumberOfItemsShipped: 0,
+      NumberOfItemsUnshipped: 2,
+      BuyerEmail: 'usbuyer@example.com',
+      ShipServiceLevel: 'Expedited',
+      region: 'USA',
+      marketplace: 'Amazon USA'
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      orders: mockOrders,
+      totalCount: mockOrders.length,
+      breakdown: {
+        uk: { count: 1, error: null },
+        usa: { count: 1, error: null }
+      }
+    },
+    meta: {
+      lastUpdated: new Date().toISOString(),
+      isDemo: true
+    }
+  });
+});
+
+app.get('/api/amazon/inventory', (req, res) => {
+  const mockInventory = [
+    {
+      sellerSku: 'WIDGET-A-001',
+      fnSku: 'X001234567',
+      asin: 'B08EXAMPLE',
+      productName: 'Premium Widget A',
+      totalQuantity: 150,
+      inStockQuantity: 120,
+      reservedQuantity: 30,
+      region: 'UK'
+    },
+    {
+      sellerSku: 'WIDGET-B-001',
+      fnSku: 'X001234568',
+      asin: 'B08EXAMPL2',
+      productName: 'Standard Widget B',
+      totalQuantity: 89,
+      inStockQuantity: 67,
+      reservedQuantity: 22,
+      region: 'USA'
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      inventorySummaries: mockInventory,
+      totalCount: mockInventory.length,
+      breakdown: {
+        uk: { count: 1, totalStock: 150 },
+        usa: { count: 1, totalStock: 89 }
+      }
+    },
+    meta: {
+      lastUpdated: new Date().toISOString(),
+      isDemo: true
+    }
+  });
+});
+
+app.get('/api/amazon/analytics', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      uk: {
+        totalRevenue: 15750,
+        totalOrders: 89,
+        averageOrderValue: 176.97,
+        topProducts: ['Premium Widget A', 'Deluxe Widget C'],
+        salesVelocity: 12.3
+      },
+      usa: {
+        totalRevenue: 22100,
+        totalOrders: 134,
+        averageOrderValue: 164.93,
+        topProducts: ['Standard Widget B', 'Economy Widget D'],
+        salesVelocity: 18.7
+      },
+      combined: {
+        totalRevenue: 37850,
+        totalOrders: 223,
+        averageOrderValue: 169.73,
+        marketShare: 4.8,
+        growthRate: 23.4
+      }
+    },
+    meta: {
+      dateRange: {
+        start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        end_date: new Date().toISOString().split('T')[0]
+      },
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
 // Business Intelligence API Routes
 app.get('/api/business-intelligence/summary', (req, res) => {
   res.json({

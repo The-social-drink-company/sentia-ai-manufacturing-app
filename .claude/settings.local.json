@@ -63,7 +63,8 @@
       "Bash(npm run dev:*)",
       "Bash(cat:*)",
       "WebFetch(domain:sentia-manufacturing-testing.onrender.com)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "WebFetch(domain:sentia-manufacturing-development.onrender.com)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,964 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  OPERATOR
+  VIEWER
+}
+
+enum ProductionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum MovementType {
+  IN
+  OUT
+  ADJUSTMENT
+  TRANSFER
+}
+
+model User {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  name        String?
+  role        Role
+  preferences Json?
+  dashboards  Dashboard[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([role], name: "idx_user_role")
+}
+
+model WorkingCapital {
+  id                  String   @id @default(cuid())
+  date                DateTime @default(now())
+  currentAssets       Float
+  currentLiabilities  Float
+  inventory           Float
+  accountsReceivable  Float
+  accountsPayable     Float
+  cash                Float
+  dso                 Int
+  dpo                 Int
+  dio                 Int
+  cashConversionCycle Int
+  workingCapitalRatio Float
+  quickRatio          Float
+  createdAt           DateTime @default(now())
+
+  @@index([date], name: "idx_working_capital_date")
+}
+
+model CashRunway {
+  id              String   @id @default(cuid())
+  date            DateTime
+  cashBalance     Float
+  monthlyBurnRate Float
+  monthlyRevenue  Float
+  netBurnRate     Float
+  runwayMonths    Float
+  coverageDay30   Float
+  coverageDay60   Float
+  coverageDay90   Float
+  coverageDay120  Float
+  coverageDay180  Float
+  createdAt       DateTime @default(now())
+
+  @@index([date], name: "idx_cash_runway_date")
+}
+
+model Production {
+  id                String           @id @default(cuid())
+  jobNumber         String           @unique
+  productName       String
+  productSKU        String?
+  quantity          Int
+  targetQuantity    Int
+  completedQuantity Int              @default(0)
+  status            ProductionStatus
+  priority          Priority
+  startDate         DateTime
+  targetDate        DateTime
+  completionDate    DateTime?
+  qualityScore      Float?
+  defectRate        Float?
+  efficiency        Float?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  qualityChecks QualityCheck[]
+
+  @@index([status], name: "idx_production_status")
+  @@index([priority], name: "idx_production_priority")
+  @@index([targetDate], name: "idx_production_target_date")
+}
+
+model Inventory {
+  id              String              @id @default(cuid())
+  sku             String              @unique
+  name            String
+  description     String?
+  quantity        Int
+  reorderPoint    Int
+  reorderQuantity Int
+  location        String
+  warehouse       String
+  unitCost        Float
+  totalValue      Float
+  lastMovement    DateTime?
+  movements       InventoryMovement[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([warehouse, location], name: "idx_inventory_location")
+  @@index([quantity], name: "idx_inventory_quantity")
+}
+
+model InventoryMovement {
+  id          String       @id @default(cuid())
+  inventoryId String
+  inventory   Inventory    @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  type        MovementType
+  quantity    Int
+  reference   String?
+  reason      String?
+  performedBy String?
+  createdAt   DateTime     @default(now())
+
+  @@index([inventoryId, createdAt], name: "idx_inventory_movement_inventory_time")
+  @@index([type, createdAt], name: "idx_inventory_movement_type_time")
+}
+
+model AIInsight {
+  id         String   @id @default(cuid())
+  type       String
+  category   String
+  title      String
+  content    String   @db.Text
+  confidence Float
+  priority   String
+  embedding  Float[]
+  metadata   Json
+  actionable Boolean  @default(false)
+  actioned   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([type, category], name: "idx_ai_insight_type_category")
+  @@index([actionable, actioned], name: "idx_ai_insight_actionability")
+  @@index([confidence], name: "idx_ai_insight_confidence")
+}
+
+model Dashboard {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  type      String
+  layout    Json
+  widgets   Json
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name], name: "uix_dashboard_user_name")
+  @@index([userId, type], name: "idx_dashboard_user_type")
+  @@index([isDefault], name: "idx_dashboard_is_default")
+}
+
+model Analytics {
+  id        String   @id @default(cuid())
+  date      DateTime
+  metric    String
+  value     Float
+  dimension String?
+  forecast  Float?
+  actual    Float?
+  variance  Float?
+  metadata  Json
+  createdAt DateTime @default(now())
+
+  @@index([date, metric], name: "idx_analytics_date_metric")
+  @@index([metric, dimension], name: "idx_analytics_metric_dimension")
+}
+
+model MCPRequest {
+  id             String   @id @default(cuid())
+  tool           String
+  request        Json
+  response       Json?
+  status         String
+  processingTime Int?
+  error          String?
+  createdAt      DateTime @default(now())
+
+  @@index([tool, status], name: "idx_mcp_request_tool_status")
+  @@index([createdAt], name: "idx_mcp_request_created_at")
+}
+
+model CashLedger {
+  id               String   @id @default(cuid())
+  date             DateTime @default(now())
+  description      String
+  category         String
+  subCategory      String?
+  amount           Float
+  balance          Float
+  source           String
+  sourceId         String?
+  reconciledStatus String   @default("pending")
+  tags             String[]
+  metadata         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([date], name: "idx_cash_ledger_date")
+  @@index([category, subCategory], name: "idx_cash_ledger_category")
+  @@index([source, sourceId], name: "idx_cash_ledger_source")
+}
+
+model CashProjection {
+  id               String   @id @default(cuid())
+  projectionDate   DateTime
+  projectedAmount  Float
+  actualAmount     Float?
+  variance         Float?
+  confidenceLevel  Float
+  scenarioType     String   @default("base")
+  assumptions      Json
+  projectionMethod String
+  dataSource       String
+  isAdjusted       Boolean  @default(false)
+  adjustmentReason String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([projectionDate], name: "idx_cash_projection_date")
+  @@index([scenarioType], name: "idx_cash_projection_scenario")
+}
+
+model Expense {
+  id              String   @id @default(cuid())
+  date            DateTime @default(now())
+  vendor          String
+  category        String
+  subCategory     String?
+  amount          Float
+  currency        String   @default("USD")
+  paymentMethod   String
+  invoiceNumber   String?
+  approvedBy      String?
+  department      String?
+  project         String?
+  isRecurring     Boolean  @default(false)
+  recurringPeriod String?
+  taxAmount       Float?
+  tags            String[]
+  attachments     String[]
+  notes           String?
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([date], name: "idx_expense_date")
+  @@index([vendor], name: "idx_expense_vendor")
+  @@index([category, subCategory], name: "idx_expense_category")
+  @@index([status], name: "idx_expense_status")
+}
+
+model ExecutiveMetric {
+  id   String   @id @default(cuid())
+  date DateTime @default(now())
+
+  // Financial KPIs
+  revenue            Float
+  revenueTarget      Float
+  revenueTrend       Float
+  cashFlow           Float
+  cashFlowTarget     Float
+  cashFlowTrend      Float
+  currentRatio       Float
+  currentRatioTarget Float @default(2.0)
+  currentRatioTrend  Float
+  quickRatio         Float
+  quickRatioTarget   Float @default(1.0)
+  quickRatioTrend    Float
+
+  // Operational KPIs
+  oee              Float
+  oeeTarget        Float @default(85)
+  oeeTrend         Float
+  throughput       Float
+  throughputTarget Float
+  throughputTrend  Float
+
+  // Strategic KPIs
+  marketShare                Float
+  marketShareTarget          Float
+  marketShareTrend           Float
+  customerSatisfaction       Float
+  customerSatisfactionTarget Float @default(90)
+  customerSatisfactionTrend  Float
+
+  // Working Capital Components
+  currentAssets      Float
+  currentLiabilities Float
+  inventory          Float
+  daysInventory      Float
+  daysReceivables    Float
+  daysPayables       Float
+  cashUnlock         Float
+
+  // Metadata
+  isActual   Boolean @default(true)
+  confidence Float   @default(1.0)
+  dataSource String  @default("system")
+  notes      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date], name: "idx_executive_metric_date")
+  @@index([isActual], name: "idx_executive_metric_type")
+}
+
+model ExecutiveAlert {
+  id          String    @id @default(cuid())
+  severity    String // critical, warning, info
+  type        String // risk, opportunity, notification
+  category    String // financial, operational, strategic
+  title       String
+  description String    @db.Text
+  impact      String?
+  action      String?
+  source      String
+  metrics     Json?
+  isActive    Boolean   @default(true)
+  isDismissed Boolean   @default(false)
+  dismissedBy String?
+  dismissedAt DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([severity, isActive], name: "idx_executive_alert_severity")
+  @@index([type, category], name: "idx_executive_alert_type")
+  @@index([isActive, isDismissed], name: "idx_executive_alert_status")
+  @@index([createdAt], name: "idx_executive_alert_created")
+}
+
+model EnterpriseCashCoverage {
+  id           String   @id @default(cuid())
+  period       DateTime
+  startingCash Float    @default(0)
+  endingCash   Float    @default(0)
+
+  // Revenue components
+  salesRevenue        Float @default(0)
+  subscriptionRevenue Float @default(0)
+  serviceRevenue      Float @default(0)
+  otherRevenue        Float @default(0)
+  totalRevenue        Float @default(0)
+
+  // Operating expenses
+  payrollExpenses        Float @default(0)
+  rentExpenses           Float @default(0)
+  utilitiesExpenses      Float @default(0)
+  marketingExpenses      Float @default(0)
+  suppliesExpenses       Float @default(0)
+  maintenanceExpenses    Float @default(0)
+  insuranceExpenses      Float @default(0)
+  professionalFees       Float @default(0)
+  otherOperatingExpenses Float @default(0)
+  totalOperatingExpenses Float @default(0)
+
+  // Non-operating items
+  capitalExpenses           Float @default(0)
+  loanPayments              Float @default(0)
+  taxPayments               Float @default(0)
+  dividendPayments          Float @default(0)
+  otherNonOperatingExpenses Float @default(0)
+
+  // Cash flow metrics
+  netCashFlow       Float @default(0)
+  operatingCashFlow Float @default(0)
+  financingCashFlow Float @default(0)
+  investingCashFlow Float @default(0)
+
+  // Coverage ratios
+  cashCoverageRatio        Float @default(0)
+  quickRatio               Float @default(0)
+  currentRatio             Float @default(0)
+  debtServiceCoverageRatio Float @default(0)
+
+  // Working capital items
+  accountsReceivable Float @default(0)
+  accountsPayable    Float @default(0)
+  inventory          Float @default(0)
+  prepaidExpenses    Float @default(0)
+  accruedLiabilities Float @default(0)
+
+  // Key metrics
+  daysOfCashOnHand Float @default(0)
+  burnRate         Float @default(0)
+  runwayMonths     Float @default(0)
+
+  // Analysis flags
+  isActual        Boolean @default(false)
+  isForecast      Boolean @default(true)
+  confidenceScore Float   @default(0.5)
+
+  // Source tracking
+  dataSource   String  @default("manual")
+  importedFrom String?
+
+  // Metadata
+  notes       String?
+  adjustments Json?
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([period])
+  @@index([period], name: "idx_enterprise_cash_coverage_period")
+  @@index([isActual, isForecast], name: "idx_enterprise_cash_coverage_type")
+  @@index([dataSource], name: "idx_enterprise_cash_coverage_source")
+}
+
+// ===== XERO INTEGRATION MODELS =====
+model XeroAccount {
+  id                      String   @id @default(cuid())
+  xeroId                  String   @unique
+  code                    String?
+  name                    String
+  type                    String
+  bankAccountNumber       String?
+  status                  String
+  description             String?
+  class                   String?
+  systemAccount           String?
+  enablePaymentsToAccount Boolean  @default(false)
+  showInExpenseClaims     Boolean  @default(true)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([xeroId], name: "idx_xero_account_xero_id")
+  @@index([type], name: "idx_xero_account_type")
+}
+
+model XeroContact {
+  id              String   @id @default(cuid())
+  xeroId          String   @unique
+  name            String
+  firstName       String?
+  lastName        String?
+  emailAddress    String?
+  contactStatus   String?
+  isSupplier      Boolean  @default(false)
+  isCustomer      Boolean  @default(false)
+  defaultCurrency String?
+  accountNumber   String?
+  companyNumber   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  invoices XeroInvoice[]
+  bills    XeroBill[]
+  payments XeroPayment[]
+
+  @@index([xeroId], name: "idx_xero_contact_xero_id")
+  @@index([isSupplier, isCustomer], name: "idx_xero_contact_type")
+}
+
+model XeroInvoice {
+  id              String      @id @default(cuid())
+  xeroId          String      @unique
+  invoiceNumber   String?
+  reference       String?
+  type            String
+  contactId       String
+  contact         XeroContact @relation(fields: [contactId], references: [id])
+  date            DateTime?
+  dueDate         DateTime?
+  status          String
+  lineAmountTypes String?
+  subTotal        Float?
+  totalTax        Float?
+  total           Float?
+  amountDue       Float?
+  amountPaid      Float?
+  amountCredited  Float?
+  currencyCode    String      @default("USD")
+  fullyPaidOnDate DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  payments XeroPayment[]
+
+  @@index([xeroId], name: "idx_xero_invoice_xero_id")
+  @@index([contactId], name: "idx_xero_invoice_contact")
+  @@index([status], name: "idx_xero_invoice_status")
+  @@index([dueDate], name: "idx_xero_invoice_due_date")
+}
+
+model XeroBill {
+  id              String      @id @default(cuid())
+  xeroId          String      @unique
+  billNumber      String?
+  reference       String?
+  type            String
+  contactId       String
+  contact         XeroContact @relation(fields: [contactId], references: [id])
+  date            DateTime?
+  dueDate         DateTime?
+  status          String
+  lineAmountTypes String?
+  subTotal        Float?
+  totalTax        Float?
+  total           Float?
+  amountDue       Float?
+  amountPaid      Float?
+  amountCredited  Float?
+  currencyCode    String      @default("USD")
+  fullyPaidOnDate DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  payments XeroPayment[]
+
+  @@index([xeroId], name: "idx_xero_bill_xero_id")
+  @@index([contactId], name: "idx_xero_bill_contact")
+  @@index([status], name: "idx_xero_bill_status")
+  @@index([dueDate], name: "idx_xero_bill_due_date")
+}
+
+model XeroPayment {
+  id             String    @id @default(cuid())
+  xeroId         String    @unique
+  date           DateTime?
+  amount         Float?
+  currencyCode   String    @default("USD")
+  paymentType    String?
+  status         String?
+  isReconciled   Boolean   @default(false)
+  reference      String?
+  batchPaymentId String?
+
+  // Relations
+  contactId String?
+  contact   XeroContact? @relation(fields: [contactId], references: [id])
+  invoiceId String?
+  invoice   XeroInvoice? @relation(fields: [invoiceId], references: [id])
+  billId    String?
+  bill      XeroBill?    @relation(fields: [billId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([xeroId], name: "idx_xero_payment_xero_id")
+  @@index([date], name: "idx_xero_payment_date")
+  @@index([status], name: "idx_xero_payment_status")
+}
+
+model XeroBankTransaction {
+  id            String    @id @default(cuid())
+  xeroId        String    @unique
+  bankAccountId String?
+  type          String
+  date          DateTime?
+  reference     String?
+  amount        Float?
+  currencyCode  String    @default("USD")
+  status        String?
+  isReconciled  Boolean   @default(false)
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([xeroId], name: "idx_xero_bank_transaction_xero_id")
+  @@index([date], name: "idx_xero_bank_transaction_date")
+  @@index([type], name: "idx_xero_bank_transaction_type")
+  @@index([isReconciled], name: "idx_xero_bank_transaction_reconciled")
+}
+
+model XeroItem {
+  id                   String   @id @default(cuid())
+  xeroId               String   @unique
+  code                 String?
+  name                 String
+  description          String?
+  salesDetails         Json?
+  purchaseDetails      Json?
+  isTrackedAsInventory Boolean  @default(false)
+  isSold               Boolean  @default(true)
+  isPurchased          Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([xeroId], name: "idx_xero_item_xero_id")
+  @@index([code], name: "idx_xero_item_code")
+  @@index([isTrackedAsInventory], name: "idx_xero_item_inventory")
+}
+
+// ===== AMAZON SP-API MODELS =====
+model AmazonOrder {
+  id                     String    @id @default(cuid())
+  amazonOrderId          String    @unique
+  marketplace            String
+  orderStatus            String
+  fulfillmentChannel     String?
+  salesChannel           String?
+  orderType              String?
+  purchaseDate           DateTime?
+  lastUpdateDate         DateTime?
+  orderTotal             Float?
+  currency               String    @default("USD")
+  numberOfItemsShipped   Int       @default(0)
+  numberOfItemsUnshipped Int       @default(0)
+  buyerEmail             String?
+  isBusinessOrder        Boolean   @default(false)
+  isPrime                Boolean   @default(false)
+  isGlobalExpressEnabled Boolean   @default(false)
+  isReplacementOrder     Boolean   @default(false)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  orderItems AmazonOrderItem[]
+
+  @@index([amazonOrderId], name: "idx_amazon_order_id")
+  @@index([marketplace], name: "idx_amazon_order_marketplace")
+  @@index([orderStatus], name: "idx_amazon_order_status")
+  @@index([purchaseDate], name: "idx_amazon_order_purchase_date")
+}
+
+model AmazonOrderItem {
+  id                    String      @id @default(cuid())
+  orderItemId           String
+  amazonOrderId         String
+  order                 AmazonOrder @relation(fields: [amazonOrderId], references: [amazonOrderId])
+  asin                  String
+  sellerSKU             String?
+  title                 String?
+  quantityOrdered       Int
+  quantityShipped       Int         @default(0)
+  itemPrice             Float?
+  itemTax               Float?
+  shippingPrice         Float?
+  shippingTax           Float?
+  giftWrapPrice         Float?
+  giftWrapTax           Float?
+  itemPromotionDiscount Float?
+  shipPromotionDiscount Float?
+  currency              String      @default("USD")
+  conditionNote         String?
+  conditionId           String?
+  conditionSubtypeId    String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@unique([orderItemId, amazonOrderId])
+  @@index([amazonOrderId], name: "idx_amazon_order_item_order")
+  @@index([asin], name: "idx_amazon_order_item_asin")
+  @@index([sellerSKU], name: "idx_amazon_order_item_sku")
+}
+
+model AmazonInventory {
+  id                       String    @id @default(cuid())
+  sellerSKU                String    @unique
+  asin                     String?
+  fnSKU                    String?
+  productName              String?
+  condition                String?
+  totalQuantity            Int       @default(0)
+  inStockQuantity          Int       @default(0)
+  availableQuantity        Int       @default(0)
+  fulfillableQuantity      Int       @default(0)
+  inboundWorkingQuantity   Int       @default(0)
+  inboundShippedQuantity   Int       @default(0)
+  inboundReceivingQuantity Int       @default(0)
+  reservedQuantity         Int       @default(0)
+  unfulfillableQuantity    Int       @default(0)
+  lastUpdated              DateTime?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  @@index([sellerSKU], name: "idx_amazon_inventory_sku")
+  @@index([asin], name: "idx_amazon_inventory_asin")
+  @@index([lastUpdated], name: "idx_amazon_inventory_updated")
+}
+
+// ===== SHOPIFY MODELS =====
+model ShopifyOrder {
+  id                String    @id @default(cuid())
+  shopifyOrderId    String    @unique
+  orderNumber       String?
+  email             String?
+  phone             String?
+  name              String?
+  financialStatus   String?
+  fulfillmentStatus String?
+  tags              String?
+  totalPrice        Float?
+  totalTax          Float?
+  totalDiscounts    Float?
+  totalWeight       Float?
+  currency          String    @default("USD")
+  processedAt       DateTime?
+  closedAt          DateTime?
+  cancelledAt       DateTime?
+  test              Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  lineItems ShopifyLineItem[]
+
+  @@index([shopifyOrderId], name: "idx_shopify_order_id")
+  @@index([orderNumber], name: "idx_shopify_order_number")
+  @@index([financialStatus], name: "idx_shopify_order_financial_status")
+  @@index([fulfillmentStatus], name: "idx_shopify_order_fulfillment_status")
+  @@index([processedAt], name: "idx_shopify_order_processed")
+}
+
+model ShopifyLineItem {
+  id                 String       @id @default(cuid())
+  lineItemId         String
+  shopifyOrderId     String
+  order              ShopifyOrder @relation(fields: [shopifyOrderId], references: [shopifyOrderId])
+  productId          String?
+  variantId          String?
+  title              String?
+  variantTitle       String?
+  sku                String?
+  vendor             String?
+  quantity           Int
+  price              Float?
+  totalDiscount      Float?
+  grams              Float?
+  requiresShipping   Boolean      @default(true)
+  taxable            Boolean      @default(true)
+  fulfillmentService String?
+  fulfillmentStatus  String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@unique([lineItemId, shopifyOrderId])
+  @@index([shopifyOrderId], name: "idx_shopify_line_item_order")
+  @@index([productId], name: "idx_shopify_line_item_product")
+  @@index([sku], name: "idx_shopify_line_item_sku")
+}
+
+model ShopifyProduct {
+  id               String    @id @default(cuid())
+  shopifyProductId String    @unique
+  title            String
+  handle           String?
+  vendor           String?
+  productType      String?
+  tags             String?
+  status           String?
+  description      String?   @db.Text
+  publishedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  variants ShopifyVariant[]
+
+  @@index([shopifyProductId], name: "idx_shopify_product_id")
+  @@index([handle], name: "idx_shopify_product_handle")
+  @@index([vendor], name: "idx_shopify_product_vendor")
+  @@index([status], name: "idx_shopify_product_status")
+}
+
+model ShopifyVariant {
+  id                 String         @id @default(cuid())
+  shopifyVariantId   String         @unique
+  shopifyProductId   String
+  product            ShopifyProduct @relation(fields: [shopifyProductId], references: [shopifyProductId])
+  title              String?
+  price              Float?
+  compareAtPrice     Float?
+  sku                String?
+  barcode            String?
+  grams              Float?
+  weight             Float?
+  weightUnit         String?
+  inventoryQuantity  Int            @default(0)
+  inventoryPolicy    String?
+  inventoryTracking  String?
+  requiresShipping   Boolean        @default(true)
+  taxable            Boolean        @default(true)
+  fulfillmentService String?
+  position           Int?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([shopifyVariantId], name: "idx_shopify_variant_id")
+  @@index([shopifyProductId], name: "idx_shopify_variant_product")
+  @@index([sku], name: "idx_shopify_variant_sku")
+  @@index([barcode], name: "idx_shopify_variant_barcode")
+}
+
+// ===== MANUFACTURING MODELS =====
+model Machine {
+  id             String    @id @default(cuid())
+  machineId      String    @unique
+  name           String
+  type           String
+  location       String
+  manufacturer   String?
+  model          String?
+  serialNumber   String?
+  installDate    DateTime?
+  status         String    @default("online")
+  isActive       Boolean   @default(true)
+  configuration  Json?
+  specifications Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  sensors            MachineSensor[]
+  alerts             MachineAlert[]
+  maintenanceRecords MachineMaintenanceRecord[]
+
+  @@index([machineId], name: "idx_machine_machine_id")
+  @@index([type], name: "idx_machine_type")
+  @@index([status], name: "idx_machine_status")
+  @@index([location], name: "idx_machine_location")
+}
+
+model MachineSensor {
+  id         String   @id @default(cuid())
+  machineId  String
+  machine    Machine  @relation(fields: [machineId], references: [id])
+  sensorType String
+  sensorName String
+  value      Float
+  unit       String?
+  threshold  Float?
+  minValue   Float?
+  maxValue   Float?
+  status     String   @default("normal")
+  timestamp  DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([machineId, sensorType], name: "idx_machine_sensor_machine_type")
+  @@index([timestamp], name: "idx_machine_sensor_timestamp")
+  @@index([status], name: "idx_machine_sensor_status")
+}
+
+model MachineAlert {
+  id             String    @id @default(cuid())
+  machineId      String
+  machine        Machine   @relation(fields: [machineId], references: [id])
+  severity       String
+  type           String
+  title          String
+  description    String?
+  acknowledged   Boolean   @default(false)
+  acknowledgedBy String?
+  acknowledgedAt DateTime?
+  resolvedAt     DateTime?
+  metadata       Json?
+  createdAt      DateTime  @default(now())
+
+  @@index([machineId], name: "idx_machine_alert_machine")
+  @@index([severity], name: "idx_machine_alert_severity")
+  @@index([acknowledged], name: "idx_machine_alert_acknowledged")
+  @@index([createdAt], name: "idx_machine_alert_created")
+}
+
+model MachineMaintenanceRecord {
+  id            String    @id @default(cuid())
+  machineId     String
+  machine       Machine   @relation(fields: [machineId], references: [id])
+  type          String
+  description   String
+  performedBy   String?
+  scheduledDate DateTime?
+  completedDate DateTime?
+  duration      Int?
+  cost          Float?
+  status        String    @default("scheduled")
+  notes         String?
+  attachments   String[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([machineId], name: "idx_machine_maintenance_machine")
+  @@index([type], name: "idx_machine_maintenance_type")
+  @@index([status], name: "idx_machine_maintenance_status")
+  @@index([scheduledDate], name: "idx_machine_maintenance_scheduled")
+}
+
+model QualityCheck {
+  id           String      @id @default(cuid())
+  productionId String?
+  production   Production? @relation(fields: [productionId], references: [id])
+  checkType    String
+  checkDate    DateTime    @default(now())
+  inspector    String?
+  passed       Boolean
+  score        Float?
+  defectCount  Int         @default(0)
+  sampleSize   Int?
+  notes        String?
+  corrective   String?
+  attachments  String[]
+  metadata     Json?
+  createdAt    DateTime    @default(now())
+
+  @@index([productionId], name: "idx_quality_check_production")
+  @@index([checkType], name: "idx_quality_check_type")
+  @@index([checkDate], name: "idx_quality_check_date")
+  @@index([passed], name: "idx_quality_check_passed")
+}
+
+model ProductionOrder {
+  id               String           @id @default(cuid())
+  orderNumber      String           @unique
+  productSKU       String
+  quantity         Int
+  priority         Priority         @default(MEDIUM)
+  status           ProductionStatus @default(PENDING)
+  scheduledStart   DateTime?
+  scheduledEnd     DateTime?
+  actualStart      DateTime?
+  actualEnd        DateTime?
+  assignedMachine  String?
+  assignedOperator String?
+  batchNumber      String?
+  qualityGrade     String?
+  yield            Float?
+  efficiency       Float?
+  notes            String?
+  metadata         Json?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([orderNumber], name: "idx_production_order_number")
+  @@index([productSKU], name: "idx_production_order_sku")
+  @@index([status], name: "idx_production_order_status")
+  @@index([priority], name: "idx_production_order_priority")
+  @@index([scheduledStart], name: "idx_production_order_scheduled")
+}

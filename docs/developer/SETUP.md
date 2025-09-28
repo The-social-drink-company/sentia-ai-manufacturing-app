@@ -26,7 +26,7 @@ Complete guide for setting up the Sentia Manufacturing Dashboard development env
 
 **Required Software:**
 - Node.js 18.0+ (LTS recommended)
-- pnpm 9.12.0+
+- npm 8.0+ or yarn 1.22+
 - Git 2.30+
 - Modern code editor (VS Code recommended)
 
@@ -47,10 +47,7 @@ nvm use 18
 
 # Verify installation
 node --version  # Should show v18.x.x
-
-# Install pnpm globally
-npm install -g pnpm@9.12.0
-pnpm --version  # Should show 9.12.0+
+npm --version   # Should show 8.x.x+
 ```
 
 **Git Installation:**
@@ -157,34 +154,34 @@ git checkout -b feature/your-feature-name development
 
 ```bash
 # Install Node.js dependencies
-pnpm install
+npm install
 
 # Verify installation
-pnpm list --depth=0
+npm list --depth=0
 ```
 
 **Common Installation Issues:**
 ```bash
-# If pnpm install fails, try:
-pnpm store prune
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
+# If npm install fails, try:
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
 
 # For permission issues on macOS/Linux:
-sudo chown -R $(whoami) ~/.local/share/pnpm
+sudo chown -R $(whoami) ~/.npm
 ```
 
 ### 3. Verify Installation
 
 ```bash
 # Check if all scripts are available
-pnpm run --help
+npm run --help
 
 # Test build process
-pnpm run build
+npm run build
 
 # Run linting
-pnpm run lint
+npm run lint
 ```
 
 ---
@@ -362,7 +359,7 @@ SKIP_EMAIL_VERIFICATION=true
 
 ```bash
 # Install Prisma CLI globally
-pnpm add -g prisma
+npm install -g prisma
 
 # Generate Prisma client
 npx prisma generate
@@ -392,13 +389,13 @@ npx prisma studio
 **Start Full Stack:**
 ```bash
 # Terminal 1: Start backend
-pnpm run dev:server
+npm run dev:server
 
-# Terminal 2: Start frontend
-pnpm run dev:client
+# Terminal 2: Start frontend  
+npm run dev:client
 
 # Or start both concurrently
-pnpm run dev
+npm run dev
 ```
 
 **Verify Everything is Running:**
@@ -410,27 +407,27 @@ pnpm run dev
 
 **Frontend Only:**
 ```bash
-pnpm run dev:client
+npm run dev:client
 ```
 
 **Backend Only:**
 ```bash
-pnpm run dev:server
+npm run dev:server
 ```
 
 **Database Operations:**
 ```bash
 # Reset database
-pnpm run db:reset
+npm run db:reset
 
 # View database
-pnpm run db:studio
+npm run db:studio
 
 # Generate new migration
-pnpm run db:migrate
+npm run db:migrate
 
 # Seed test data
-pnpm run db:seed
+npm run db:seed
 ```
 
 ### Production Build (Local)

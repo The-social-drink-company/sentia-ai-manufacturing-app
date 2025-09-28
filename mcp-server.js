@@ -534,7 +534,7 @@ const tools = {
 };
 
 // WebSocket connection handler
-wss.on(_'connection', (ws, req) => {
+wss.on('connection', (ws, req) => {
   const connectionId = uuidv4();
   const clientIp = req.socket.remoteAddress;
 
@@ -561,12 +561,12 @@ wss.on(_'connection', (ws, req) => {
 
   // Set up ping/pong for connection health
   ws.isAlive = true;
-  ws.on(_'pong', () => {
+  ws.on('pong', () => {
     ws.isAlive = true;
   });
 
   // Message handler
-  ws.on(_'message', async (data) => {
+  ws.on('message', async (data) => {
     try {
       const message = JSON.parse(data.toString());
       await handleWebSocketMessage(connectionId, message);
@@ -580,12 +580,12 @@ wss.on(_'connection', (ws, req) => {
   });
 
   // Error handler
-  ws.on(_'error', (error) => {
+  ws.on('error', (error) => {
     console.error(`WebSocket error for ${connectionId}:`, error);
   });
 
   // Disconnection handler
-  ws.on(_'close', () => {
+  ws.on('close', () => {
     console.log(`WebSocket disconnected: ${connectionId}`);
 
     // Clean up subscriptions
@@ -746,7 +746,7 @@ function broadcast(topic, data) {
 }
 
 // Health check endpoint
-app.get(_'/health', async (req, res) => {
+app.get('/health', async (req, res) => {
   try {
     const [dbStatus, providerStatus] = await Promise.all([
       checkDatabaseConnection(),
@@ -783,7 +783,7 @@ app.get(_'/health', async (req, res) => {
 });
 
 // MCP protocol endpoints
-app.post(_'/mcp/v1/tools', (req, res) => {
+app.post('/mcp/v1/tools', (req, res) => {
   res.json({
     tools: Object.keys(tools).map(name => ({
       name,
@@ -794,7 +794,7 @@ app.post(_'/mcp/v1/tools', (req, res) => {
   });
 });
 
-app.post(_'/mcp/v1/execute', async (req, res) => {
+app.post('/mcp/v1/execute', async (req, res) => {
   const { tool, params } = req.body;
 
   try {
@@ -1191,7 +1191,7 @@ setInterval(async () => {
 }, 30000);
 
 // Graceful shutdown
-process.on(_'SIGTERM', () => {
+process.on('SIGTERM', () => {
   console.log('SIGTERM received. Shutting down gracefully...');
 
   clearInterval(heartbeatInterval);

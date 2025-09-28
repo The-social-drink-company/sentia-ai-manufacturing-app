@@ -257,7 +257,7 @@ export class MLModelTrainingPipeline {
     const n = train.length
     let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0
 
-    train.forEach((point, index) => {
+    train.forEach((point, _index) => {
       sumX += index
       sumY += point.normalizedValue
       sumXY += index * point.normalizedValue
@@ -290,7 +290,7 @@ export class MLModelTrainingPipeline {
     const X = []
     const y = []
 
-    train.forEach((point, index) => {
+    train.forEach((point, _index) => {
       const row = []
       for (let d = 0; d <= degree; d++) {
         row.push(Math.pow(index, d))
@@ -544,7 +544,7 @@ export class MLModelTrainingPipeline {
     let sumActual = 0
     let sumSquaredActual = 0
 
-    data.forEach((point, index) => {
+    data.forEach((point, _index) => {
       const predicted = model.predict(index / data.length) // Normalized index
       const actual = point.normalizedValue
 
@@ -584,7 +584,7 @@ export class MLModelTrainingPipeline {
     let bestModel = null
     let bestScore = Infinity
 
-    Object.entries(models).forEach(([modelType, _result]) => {
+    Object.entries(models).forEach(([modelType, result]) => {
       if (result.trained && result.metrics) {
         // Use weighted score combining MAE, RMSE, and R²
         const score = (

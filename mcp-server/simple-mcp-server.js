@@ -18,13 +18,13 @@ app.use(cors());
 app.use(express.json());
 
 // Basic middleware
-app.use((req, res, _next) => {
+app.use((req, res, next) => {
   logDebug(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
 // Root endpoint
-app.get(_'/', (req, res) => {
+app.get('/', (req, res) => {
   res.json({
     name: 'Sentia MCP Server',
     version: '2.0.0-simple',
@@ -37,7 +37,7 @@ app.get(_'/', (req, res) => {
 });
 
 // Health check endpoint
-app.get(_'/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     server: 'sentia-mcp-server-simple',
@@ -52,7 +52,7 @@ app.get(_'/health', (req, res) => {
 });
 
 // MCP info endpoint
-app.get(_'/mcp/info', (req, res) => {
+app.get('/mcp/info', (req, res) => {
   res.json({
     server: {
       name: 'Sentia MCP Server',
@@ -73,7 +73,7 @@ app.get(_'/mcp/info', (req, res) => {
 });
 
 // MCP status endpoint
-app.get(_'/mcp/status', (req, res) => {
+app.get('/mcp/status', (req, res) => {
   res.json({
     status: 'operational',
     services: {
@@ -87,7 +87,7 @@ app.get(_'/mcp/status', (req, res) => {
 });
 
 // Error handling middleware
-app.use((error, req, res, _next) => {
+app.use((error, req, res, next) => {
   logError('Server error:', error);
   res.status(500).json({
     status: 'error',
@@ -97,7 +97,7 @@ app.use((error, req, res, _next) => {
 });
 
 // 404 handler
-app.use(_'*', (req, res) => {
+app.use('*', (req, res) => {
   res.status(404).json({
     status: 'not_found',
     message: `Endpoint ${req.originalUrl} not found`,
@@ -107,7 +107,7 @@ app.use(_'*', (req, res) => {
 });
 
 // Start server
-const server = app.listen(port, _'0.0.0.0', () => {
+const server = app.listen(port, '0.0.0.0', () => {
   logDebug(`🚀 Sentia MCP Server (Simple) running on port ${port}`);
   logDebug(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
   logDebug(`🚂 Railway: ${process.env.RAILWAY_ENVIRONMENT ? 'Yes' : 'No'}`);
@@ -116,7 +116,7 @@ const server = app.listen(port, _'0.0.0.0', () => {
 });
 
 // Graceful shutdown
-process.on(_'SIGTERM', () => {
+process.on('SIGTERM', () => {
   logDebug('Received SIGTERM, shutting down gracefully');
   server.close(() => {
     logDebug('Server closed');
@@ -124,7 +124,7 @@ process.on(_'SIGTERM', () => {
   });
 });
 
-process.on(_'SIGINT', () => {
+process.on('SIGINT', () => {
   logDebug('Received SIGINT, shutting down gracefully');
   server.close(() => {
     logDebug('Server closed');
@@ -133,12 +133,12 @@ process.on(_'SIGINT', () => {
 });
 
 // Error handling
-process.on(_'uncaughtException', (error) => {
+process.on('uncaughtException', (error) => {
   logError('Uncaught exception:', error);
   process.exit(1);
 });
 
-process.on(_'unhandledRejection', (reason, _promise) => {
+process.on('unhandledRejection', (reason, promise) => {
   logError('Unhandled rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });

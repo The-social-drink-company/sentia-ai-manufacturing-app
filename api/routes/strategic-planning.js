@@ -16,7 +16,7 @@ const strategicAI = new StrategicPlanningAI();
 /**
  * Middleware to check executive access
  */
-const requireExecutive = (req, res, _next) => {
+const requireExecutive = (req, res, next) => {
   const userRole = req.auth?.sessionClaims?.role;
 
   if (!userRole || !['admin', 'executive', 'manager'].includes(userRole)) {
@@ -33,7 +33,7 @@ const requireExecutive = (req, res, _next) => {
  * GET /api/strategic-planning/health
  * Check strategic AI service health
  */
-router.get(_'/health', async (req, res) => {
+router.get('/health', async (req, res) => {
   try {
     const health = {
       status: 'operational',

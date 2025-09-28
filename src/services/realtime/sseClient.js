@@ -3,7 +3,7 @@
  * Handles real-time updates from the server
  */
 
-import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
+import { logInfo, logError } from '../../utils/structuredLogger.js'
 
 const SSE_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '/events') || 'http://localhost:5000/events'
 

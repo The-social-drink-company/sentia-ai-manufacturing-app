@@ -84,7 +84,7 @@ export class IntelligentBusinessDecisionEngine extends EventEmitter {
   
   async loadBusinessRules() {
     // Manufacturing business rules
-    this.businessRules.set(_'inventory_management', {
+    this.businessRules.set('inventory_management', {
       reorderPoint: (currentStock, leadTime, dailyDemand) => {
         return dailyDemand * leadTime * 1.2; // 20% safety margin
       },

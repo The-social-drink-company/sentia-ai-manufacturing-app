@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // Health check endpoint
-app.get(_'/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     server: 'sentia-mcp-test-server',
@@ -30,7 +30,7 @@ app.get(_'/health', (req, res) => {
 });
 
 // Root endpoint  
-app.get(_'/', (req, res) => {
+app.get('/', (req, res) => {
   res.json({
     message: 'Sentia MCP Server Test - Railway Deployment',
     status: 'operational',
@@ -41,18 +41,18 @@ app.get(_'/', (req, res) => {
 });
 
 // Start server
-app.listen(port, _'0.0.0.0', () => {
+app.listen(port, '0.0.0.0', () => {
   logDebug(`🚀 Sentia MCP Test Server running on port ${port}`);
   logDebug(`🔗 Health check: http://localhost:${port}/health`);
 });
 
 // Error handling
-process.on(_'uncaughtException', (error) => {
+process.on('uncaughtException', (error) => {
   logError('Uncaught exception:', error);
   process.exit(1);
 });
 
-process.on(_'unhandledRejection', (reason, _promise) => {
+process.on('unhandledRejection', (reason, promise) => {
   logError('Unhandled rejection:', reason);
   process.exit(1);
 });

@@ -1,82 +1,56 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { visualizer } from 'rollup-plugin-visualizer'
+import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: '0.0.0.0',
-    port: 5173,
-    strictPort: false
+export default defineConfig(({ command }) => ({
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(command === "build" ? "production" : (process.env.NODE_ENV || "development"))
   },
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    emptyOutDir: true,
-    chunkSizeWarningLimit: 2000,
-    // Enhanced chunking strategy for better performance
-    rollupOptions: {
-      output: {
-        // Optimized manual chunking for lazy loading
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            // Core authentication chunk (always needed)
-            if (id.includes('@clerk')) return 'clerk';
-
-            // Charts and visualization (can be lazy loaded)
-            if (id.includes('recharts') || id.includes('chart.js') || id.includes('d3')) {
-              return 'charts';
-            }
-
-            // React ecosystem (frequently used)
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-
-            // Utility libraries (can be shared)
-            if (id.includes('date-fns') || id.includes('lodash') || id.includes('axios')) {
-              return 'utils';
-            }
-
-            // Everything else
-            return 'vendor';
-          }
-
-          // Application code splitting by feature
-          if (id.includes('src/features/executive')) return 'feature-executive';
-          if (id.includes('src/features/working-capital')) return 'feature-working-capital';
-          if (id.includes('src/features/inventory')) return 'feature-inventory';
-          if (id.includes('src/features/production')) return 'feature-production';
-
-          // Let Vite handle other app code
-        },
-        // Optimize chunk naming
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
-      },
-      // Performance optimizations
-      maxParallelFileOps: 5, // Increased for better build performance
-      treeshake: {
-        preset: 'smallest',
-        moduleSideEffects: false
-      }
-    },
-    // Enhanced minification
-    minify: 'esbuild',
-    target: 'es2020', // Modern browsers for better optimization
-    // Source maps only in development
-    sourcemap: process.env.NODE_ENV === 'development',
-    reportCompressedSize: false,
-    cssCodeSplit: true,
-    // Asset inlining threshold
-    assetsInlineLimit: 4096 // 4KB
-  },
+  root: '.', // Explicitly set root to current directory
+  plugins: [react(),tailwindcss(),visualizer({
+      filename: "dist/stats.html",
+      template: "treemap",
+      gzipSize: true,
+      brotliSize: true
+    })],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-})
-
+  build: {
+    outDir: 'dist', // Explicitly set output directory
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@clerk')) {
+              return 'clerk';
+            }
+            if (id.includes('recharts') || id.includes('framer-motion') || id.includes('embla')) {
+              return 'charts';
+            }
+            if (id.includes('@tanstack')) {
+              return 'data-layer';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'radix';
+            }
+            if (id.includes('react-router')) {
+              return 'router';
+            }
+            return 'vendor';
+          }
+        },
+      },
+    },
+  },
+}))

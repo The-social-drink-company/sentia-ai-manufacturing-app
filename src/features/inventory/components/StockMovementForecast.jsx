@@ -5,7 +5,7 @@ export default function StockMovementForecast({ data, period = 'current' }) {
   const [forecastPeriod, setForecastPeriod] = useState('30')
 
   // Mock stock movement forecast data if not provided
-  const generateForecastData = (_days) => {
+  const generateForecastData = (days) => {
     const forecast = []
     const today = new Date()
 
@@ -274,7 +274,7 @@ export default function StockMovementForecast({ data, period = 'current' }) {
         </div>
         <div className="flex items-center">
           <div className="w-3 h-3 bg-red-500 rounded mr-1"></div>
-          <span className="text-gray-600 dark:text-gray-400">Low (<85%)</span>
+          <span className="text-gray-600 dark:text-gray-400">Low (&lt;85%)</span>
         </div>
       </div>
 

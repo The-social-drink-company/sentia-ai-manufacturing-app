@@ -62,9 +62,9 @@ const financialSchemas = {
  * GET /api/financial/dashboard
  * Get financial dashboard overview
  */
-router.get(_'/dashboard',
-  _requireAuth,
-  _rateLimiters.read,
+router.get('/dashboard',
+  requireAuth,
+  rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = 'month' } = req.query;
 
@@ -170,9 +170,9 @@ router.get(_'/dashboard',
  * GET /api/financial/cashflow
  * Get cash flow statement
  */
-router.get(_'/cashflow',
-  _requireAuth,
-  _rateLimiters.read,
+router.get('/cashflow',
+  requireAuth,
+  rateLimiters.read,
   asyncHandler(async (req, res) => {
     const query = financialSchemas.cashFlow.query.parse(req.query);
 
@@ -248,9 +248,9 @@ router.get(_'/cashflow',
  * GET /api/financial/working-capital
  * Get working capital metrics with proper error handling
  */
-router.get(_'/working-capital',
-  _requireAuth,
-  _rateLimiters.read,
+router.get('/working-capital',
+  requireAuth,
+  rateLimiters.read,
   asyncHandler(async (req, res) => {
     logDebug('[Working Capital API] Request received');
 
@@ -517,9 +517,9 @@ router.post('/working-capital/calculate',
  * GET /api/financial/invoices
  * Get invoices with filters
  */
-router.get(_'/invoices',
-  _requireAuth,
-  _rateLimiters.read,
+router.get('/invoices',
+  requireAuth,
+  rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { status, startDate, endDate, customerId, limit = 50, offset = 0 } = req.query;
 
@@ -650,9 +650,9 @@ router.post('/invoices',
  * GET /api/financial/expenses
  * Get expenses with filters
  */
-router.get(_'/expenses',
-  _requireAuth,
-  _rateLimiters.read,
+router.get('/expenses',
+  requireAuth,
+  rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { category, vendor, startDate, endDate, limit = 50, offset = 0 } = req.query;
 
@@ -754,9 +754,9 @@ router.post('/expenses',
  * GET /api/financial/profitability
  * Get profitability analysis
  */
-router.get(_'/profitability',
-  _requireAuth,
-  _rateLimiters.read,
+router.get('/profitability',
+  requireAuth,
+  rateLimiters.read,
   asyncHandler(async (req, res) => {
     const { period = '12m', groupBy = 'month' } = req.query;
 
@@ -828,9 +828,9 @@ router.get(_'/profitability',
  * GET /api/financial/overview
  * Get comprehensive financial overview
  */
-router.get(_'/overview',
-  _requireAuth,
-  _rateLimiters.read,
+router.get('/overview',
+  requireAuth,
+  rateLimiters.read,
   asyncHandler(async (req, res) => {
     const cacheKey = `financial-overview-${req.userId}`;
     const cached = cache.get(cacheKey);

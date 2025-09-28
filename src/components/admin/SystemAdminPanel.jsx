@@ -25,7 +25,7 @@ export default function SystemAdminPanel() {
     security: { status: 'healthy', threats: 0, lastScan: '2 hours ago' }
   });
 
-  const [logs, setLogs] = useState([
+  const [logs] = useState([
     { id: 1, level: 'info', message: 'System backup completed successfully', timestamp: '2024-09-26 10:15:32', service: 'backup' },
     { id: 2, level: 'warning', message: 'High memory usage detected on server-02', timestamp: '2024-09-26 10:08:15', service: 'monitoring' },
     { id: 3, level: 'info', message: 'Database optimization completed', timestamp: '2024-09-26 09:45:22', service: 'database' },
@@ -109,7 +109,7 @@ export default function SystemAdminPanel() {
     { category: 'Backup', key: 'Backup Retention', value: '7 days local, 30 days cloud', status: 'good' }
   ];
 
-  const getStatusColor = (_status) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'healthy':
       case 'running':
@@ -123,7 +123,7 @@ export default function SystemAdminPanel() {
     }
   };
 
-  const getStatusIcon = (_status) => {
+  const getStatusIcon = (status) => {
     switch (status) {
       case 'healthy':
       case 'running':

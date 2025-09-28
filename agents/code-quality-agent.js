@@ -84,7 +84,7 @@ class CodeQualityAgent {
     
     // Check for console statements
     try {
-      const { stdout } = await execAsync('grep -r "console\." src/ --include="*.js" --include="*.jsx" -l | head -20');
+      const { stdout } = await execAsync('grep -r "console\\." src/ --include="*.js" --include="*.jsx" -l | head -20');
       const filesWithConsole = stdout.trim().split('\n').filter(Boolean);
       
       for (const file of filesWithConsole) {
@@ -167,10 +167,10 @@ class CodeQualityAgent {
       
       // Replace console statements
       updatedContent = updatedContent
-        .replace(/console.log(/g, 'devLog.log(')
-        .replace(/console.warn(/g, 'devLog.warn(')
-        .replace(/console.error(/g, 'devLog.error(')
-        .replace(/console.info(/g, 'devLog.log(');
+        .replace(/console\.log\(/g, 'devLog.log(')
+        .replace(/console\.warn\(/g, 'devLog.warn(')
+        .replace(/console\.error\(/g, 'devLog.error(')
+        .replace(/console\.info\(/g, 'devLog.log(');
       
       if (updatedContent !== content) {
         await fs.writeFile(issue.file, updatedContent);

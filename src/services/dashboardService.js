@@ -1,4 +1,4 @@
-import { logInfo, logError, logWarn, logDebug, devLog } from '../utils/structuredLogger.js';
+import { logWarn } from '../utils/structuredLogger.js'
 
 const DEFAULT_MCP_BASE_URL = 'https://mcp-server-tkyu.onrender.com'
 const DASHBOARD_SUMMARY_PATH = '/v1/dashboard/summary'
@@ -33,6 +33,7 @@ async function safeJson(response) {
   try {
     return await response.json()
   } catch (error) {
+    logWarn('Failed to parse dashboard summary JSON', error)
     return null
   }
 }
@@ -79,3 +80,5 @@ export async function fetchDashboardSummary({ signal } = {}) {
     }
   }
 }
+
+

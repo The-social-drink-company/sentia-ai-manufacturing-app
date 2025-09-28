@@ -33,7 +33,7 @@ const FEATURE_DIAGNOSTICS = process.env.FEATURE_DIAGNOSTICS === 'true' || false;
  * POST /api/optimization/sku/optimize
  * Optimize single SKU with constraint handling
  */
-router.post(_'/sku/optimize', async (req, res) => {
+router.post('/sku/optimize', async (req, res) => {
   try {
     const { sku, constraints = {}, demandHistory = [] } = req.body;
 
@@ -75,7 +75,7 @@ router.post(_'/sku/optimize', async (req, res) => {
  * POST /api/optimization/batch/optimize
  * Optimize batch of SKUs with global constraints
  */
-router.post(_'/batch/optimize', async (req, res) => {
+router.post('/batch/optimize', async (req, res) => {
   try {
     const { skus, globalConstraints = {} } = req.body;
 
@@ -107,7 +107,7 @@ router.post(_'/batch/optimize', async (req, res) => {
  * POST /api/optimization/jobs/create
  * Create asynchronous optimization job
  */
-router.post(_'/jobs/create', async (req, res) => {
+router.post('/jobs/create', async (req, res) => {
   try {
     const { jobType, payload, options = {} } = req.body;
 
@@ -159,7 +159,7 @@ router.post(_'/jobs/create', async (req, res) => {
  * GET /api/optimization/jobs/:jobId/status
  * Get job status and results
  */
-router.get(_'/jobs/:jobId/status', async (req, res) => {
+router.get('/jobs/:jobId/status', async (req, res) => {
   try {
     const { jobId } = req.params;
     const status = JobManagerService.getJobStatus(jobId);
@@ -191,7 +191,7 @@ router.get(_'/jobs/:jobId/status', async (req, res) => {
  * DELETE /api/optimization/jobs/:jobId
  * Cancel optimization job
  */
-router.delete(_'/jobs/:jobId', async (req, res) => {
+router.delete('/jobs/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params;
     const result = await JobManagerService.cancelJob(jobId);
@@ -217,7 +217,7 @@ router.delete(_'/jobs/:jobId', async (req, res) => {
  * GET /api/optimization/queue/status
  * Get job queue status
  */
-router.get(_'/queue/status', async (req, res) => {
+router.get('/queue/status', async (req, res) => {
   try {
     const queueStatus = JobManagerService.getQueueStatus();
     const healthMetrics = JobManagerService.getHealthMetrics();
@@ -248,7 +248,7 @@ if (FEATURE_MULTI_WH) {
    * POST /api/optimization/multi-warehouse/optimize
    * Multi-warehouse optimization with cross-border capabilities
    */
-  router.post(_'/multi-warehouse/optimize', async (req, res) => {
+  router.post('/multi-warehouse/optimize', async (req, res) => {
     try {
       const { skus, demandByRegion, constraints = {} } = req.body;
 
@@ -285,7 +285,7 @@ if (FEATURE_MULTI_WH) {
    * POST /api/optimization/multi-warehouse/source-selection
    * Optimal source warehouse selection
    */
-  router.post(_'/multi-warehouse/source-selection', async (req, res) => {
+  router.post('/multi-warehouse/source-selection', async (req, res) => {
     try {
       const { sku, demandRegion, availableSources } = req.body;
 
@@ -322,7 +322,7 @@ if (FEATURE_MULTI_WH) {
    * POST /api/optimization/multi-warehouse/transfers/optimize
    * Optimize inter-warehouse transfers
    */
-  router.post(_'/multi-warehouse/transfers/optimize', async (req, res) => {
+  router.post('/multi-warehouse/transfers/optimize', async (req, res) => {
     try {
       const { transferRequests } = req.body;
 
@@ -354,7 +354,7 @@ if (FEATURE_MULTI_WH) {
    * GET /api/optimization/multi-warehouse/config/:region
    * Get warehouse configuration for region
    */
-  router.get(_'/multi-warehouse/config/:region', async (req, res) => {
+  router.get('/multi-warehouse/config/:region', async (req, res) => {
     try {
       const { region } = req.params;
       const config = MultiWarehouseService.getWarehouseConfig(region);
@@ -393,7 +393,7 @@ if (FEATURE_WC_OPTIMIZATION) {
    * POST /api/optimization/working-capital/analyze
    * Analyze working capital requirements
    */
-  router.post(_'/working-capital/analyze', async (req, res) => {
+  router.post('/working-capital/analyze', async (req, res) => {
     try {
       const { orderPlan, region = 'uk' } = req.body;
 
@@ -427,7 +427,7 @@ if (FEATURE_WC_OPTIMIZATION) {
    * POST /api/optimization/working-capital/optimize-payments
    * Optimize payment timing for early pay discounts
    */
-  router.post(_'/working-capital/optimize-payments', async (req, res) => {
+  router.post('/working-capital/optimize-payments', async (req, res) => {
     try {
       const { orderPlan, wcConfig } = req.body;
 
@@ -459,7 +459,7 @@ if (FEATURE_WC_OPTIMIZATION) {
    * POST /api/optimization/working-capital/apply-constraints
    * Apply WC constraints to order plan
    */
-  router.post(_'/working-capital/apply-constraints', async (req, res) => {
+  router.post('/working-capital/apply-constraints', async (req, res) => {
     try {
       const { orderPlan, region = 'uk' } = req.body;
 
@@ -491,7 +491,7 @@ if (FEATURE_WC_OPTIMIZATION) {
    * GET /api/optimization/working-capital/limits/:region
    * Get WC limits for region
    */
-  router.get(_'/working-capital/limits/:region', async (req, res) => {
+  router.get('/working-capital/limits/:region', async (req, res) => {
     try {
       const { region } = req.params;
       const limits = WorkingCapitalService.getWCLimits(region);
@@ -530,7 +530,7 @@ if (FEATURE_CFO_REPORTS) {
    * POST /api/optimization/reports/board-pack
    * Generate CFO board pack
    */
-  router.post(_'/reports/board-pack', async (req, res) => {
+  router.post('/reports/board-pack', async (req, res) => {
     try {
       const { optimizationData, period = 'Q1-2024', region = 'ALL' } = req.body;
 
@@ -566,7 +566,7 @@ if (FEATURE_CFO_REPORTS) {
    * POST /api/optimization/reports/export
    * Export board pack to various formats
    */
-  router.post(_'/reports/export', async (req, res) => {
+  router.post('/reports/export', async (req, res) => {
     try {
       const { boardPack, format = 'json' } = req.body;
 
@@ -612,7 +612,7 @@ if (FEATURE_DIAGNOSTICS) {
    * POST /api/optimization/diagnostics/explain
    * Generate decision explanation
    */
-  router.post(_'/diagnostics/explain', async (req, res) => {
+  router.post('/diagnostics/explain', async (req, res) => {
     try {
       const { optimizationResult } = req.body;
 
@@ -644,7 +644,7 @@ if (FEATURE_DIAGNOSTICS) {
    * POST /api/optimization/diagnostics/report
    * Generate diagnostic report for optimization batch
    */
-  router.post(_'/diagnostics/report', async (req, res) => {
+  router.post('/diagnostics/report', async (req, res) => {
     try {
       const { optimizationResults } = req.body;
 
@@ -676,7 +676,7 @@ if (FEATURE_DIAGNOSTICS) {
    * GET /api/optimization/diagnostics/history/:skuId
    * Get decision history for SKU
    */
-  router.get(_'/diagnostics/history/:skuId', async (req, res) => {
+  router.get('/diagnostics/history/:skuId', async (req, res) => {
     try {
       const { skuId } = req.params;
       const { limit = 10 } = req.query;
@@ -709,7 +709,7 @@ if (FEATURE_DIAGNOSTICS) {
  * GET /api/optimization/health
  * System health check
  */
-router.get(_'/health', async (req, res) => {
+router.get('/health', async (req, res) => {
   try {
     const health = {
       status: 'healthy',
@@ -739,7 +739,7 @@ router.get(_'/health', async (req, res) => {
  * GET /api/optimization/version
  * API version info
  */
-router.get(_'/version', async (req, res) => {
+router.get('/version', async (req, res) => {
   res.json({
     service: 'Stock Level Optimization API',
     version: '1.0.0',
@@ -758,7 +758,7 @@ router.get(_'/version', async (req, res) => {
 /**
  * Cache management
  */
-router.delete(_'/cache', async (req, res) => {
+router.delete('/cache', async (req, res) => {
   try {
     OptimizationService.clearCache();
     
@@ -779,7 +779,7 @@ router.delete(_'/cache', async (req, res) => {
 });
 
 // Error handling middleware
-router.use((error, req, res, _next) => {
+router.use((error, req, res, next) => {
   logError('Optimization API Error', error);
   
   res.status(error.status 0).json({
@@ -797,7 +797,7 @@ router.use((error, req, res, _next) => {
  * POST /api/optimization/working-capital/multi-region
  * FinanceFlo multi-region working capital projection with FX consolidation
  */
-router.post(_'/working-capital/multi-region', async (req, res) => {
+router.post('/working-capital/multi-region', async (req, res) => {
   try {
     const {
       horizonMonths = 12,
@@ -836,7 +836,7 @@ router.post(_'/working-capital/multi-region', async (req, res) => {
  * GET /api/optimization/working-capital/fx-status
  * Get foreign exchange service status for health monitoring
  */
-router.get(_'/working-capital/fx-status', async (req, res) => {
+router.get('/working-capital/fx-status', async (req, res) => {
   try {
     const fxStatus = workingCapitalFinanceService.getFXStatus();
     
@@ -864,7 +864,7 @@ router.get(_'/working-capital/fx-status', async (req, res) => {
  * GET /api/optimization/lead-times
  * Get FinanceFlo regional lead time specifications
  */
-router.get(_'/lead-times', async (req, res) => {
+router.get('/lead-times', async (req, res) => {
   try {
     const { region } = req.query;
 

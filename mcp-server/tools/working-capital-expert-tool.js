@@ -249,8 +249,8 @@ export class WorkingCapitalExpertTool {
 
   parseAIBenchmarks(aiResponse, industry) {
     // Extract numerical values from AI response
-    const extractNumber = (text, _keyword) => {
-      const regex = new RegExp(`${keyword}[^\\d]*(\\d+\.?\\d*)`, 'i');
+    const extractNumber = (text, keyword) => {
+      const regex = new RegExp(`${keyword}[^\\d]*(\\d+\\.?\\d*)`, 'i');
       const match = text.match(regex);
       return match ? parseFloat(match[1]) : null;
     };
@@ -356,8 +356,8 @@ export class WorkingCapitalExpertTool {
     const lines = aiResponse.split('\n').filter(line => line.trim());
 
     lines.forEach(line => {
-      if (line.match(/^\d+.|^-|^*/)) {
-        const cleanLine = line.replace(/^[\d+.\-*\s]+/, '').trim();
+      if (line.match(/^\d+\.|^-|^\*/)) {
+        const cleanLine = line.replace(/^[\d+\.\-\*\s]+/, '').trim();
         if (cleanLine.length > 10) {
           recommendations.push({
             action: cleanLine,

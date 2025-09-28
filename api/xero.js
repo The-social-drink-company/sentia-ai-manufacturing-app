@@ -13,7 +13,7 @@ const router = express.Router();
  * GET /api/xero/auth
  * Initiate Xero OAuth flow
  */
-router.get(_'/auth', async (req, res) => {
+router.get('/auth', async (req, res) => {
   try {
     const authUrl = await xeroService.getAuthUrl();
     res.json({
@@ -35,7 +35,7 @@ router.get(_'/auth', async (req, res) => {
  * GET /api/xero/callback
  * Handle Xero OAuth callback
  */
-router.get(_'/callback', async (req, res) => {
+router.get('/callback', async (req, res) => {
   try {
     const { code } = req.query;
     
@@ -75,7 +75,7 @@ router.get(_'/callback', async (req, res) => {
  * GET /api/xero/organizations
  * Get connected Xero organizations
  */
-router.get(_'/organizations', async (req, res) => {
+router.get('/organizations', async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.replace('Bearer ', '') || req.session?.xeroTokens?.access_token;
     
@@ -108,7 +108,7 @@ router.get(_'/organizations', async (req, res) => {
  * GET /api/xero/contacts
  * Get contacts from Xero
  */
-router.get(_'/contacts', async (req, res) => {
+router.get('/contacts', async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.replace('Bearer ', '') || req.session?.xeroTokens?.access_token;
     const { tenantId, page = 1, limit = 100 } = req.query;
@@ -155,7 +155,7 @@ router.get(_'/contacts', async (req, res) => {
  * POST /api/xero/contacts
  * Create or update contact in Xero
  */
-router.post(_'/contacts', async (req, res) => {
+router.post('/contacts', async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.replace('Bearer ', '') || req.session?.xeroTokens?.access_token;
     const { tenantId, contactData } = req.body;
@@ -197,7 +197,7 @@ router.post(_'/contacts', async (req, res) => {
  * GET /api/xero/invoices
  * Get invoices from Xero
  */
-router.get(_'/invoices', async (req, res) => {
+router.get('/invoices', async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.replace('Bearer ', '') || req.session?.xeroTokens?.access_token;
     const { tenantId, page = 1, limit = 100 } = req.query;
@@ -244,7 +244,7 @@ router.get(_'/invoices', async (req, res) => {
  * POST /api/xero/invoices
  * Create invoice in Xero
  */
-router.post(_'/invoices', async (req, res) => {
+router.post('/invoices', async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.replace('Bearer ', '') || req.session?.xeroTokens?.access_token;
     const { tenantId, invoiceData } = req.body;
@@ -286,7 +286,7 @@ router.post(_'/invoices', async (req, res) => {
  * GET /api/xero/items
  * Get items/products from Xero
  */
-router.get(_'/items', async (req, res) => {
+router.get('/items', async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.replace('Bearer ', '') || req.session?.xeroTokens?.access_token;
     const { tenantId, page = 1, limit = 100 } = req.query;
@@ -333,7 +333,7 @@ router.get(_'/items', async (req, res) => {
  * POST /api/xero/items
  * Create or update item in Xero
  */
-router.post(_'/items', async (req, res) => {
+router.post('/items', async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.replace('Bearer ', '') || req.session?.xeroTokens?.access_token;
     const { tenantId, itemData } = req.body;
@@ -375,7 +375,7 @@ router.post(_'/items', async (req, res) => {
  * GET /api/xero/test
  * Test Xero connection
  */
-router.get(_'/test', async (req, res) => {
+router.get('/test', async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.replace('Bearer ', '') || req.session?.xeroTokens?.access_token;
     

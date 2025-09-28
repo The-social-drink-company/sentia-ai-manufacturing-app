@@ -455,7 +455,7 @@ Provide comprehensive analysis, insights, and recommendations for manufacturing 
     this.wsConnections.add(ws);
     this.metrics.activeConnections = this.wsConnections.size;
     
-    ws.on(_'close', () => {
+    ws.on('close', () => {
       this.wsConnections.delete(ws);
       this.metrics.activeConnections = this.wsConnections.size;
     });

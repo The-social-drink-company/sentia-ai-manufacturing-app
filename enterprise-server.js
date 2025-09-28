@@ -53,11 +53,11 @@ class SentiaManufacturingServer {
   // Enterprise Middleware Stack
   initializeMiddleware() {
     // Request logging and metrics
-    this.app.use((req, res, _next) => {
+    this.app.use((req, res, next) => {
       this.requestCount++;
       const start = Date.now();
       
-      res.on(_'finish', () => {
+      res.on('finish', () => {
         const duration = Date.now() - start;
         if (config.enableDetailedLogging) {
           console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
@@ -68,7 +68,7 @@ class SentiaManufacturingServer {
     });
 
     // Security headers
-    this.app.use((req, res, _next) => {
+    this.app.use((req, res, next) => {
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('X-Frame-Options', 'DENY');
       res.setHeader('X-XSS-Protection', '1; mode=block');
@@ -363,7 +363,7 @@ class SentiaManufacturingServer {
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener(_'submit', async (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const button = document.getElementById('loginButton');
@@ -725,7 +725,7 @@ class SentiaManufacturingServer {
     });
 
     // Global error handler
-    this.app.use((err, req, res, _next) => {
+    this.app.use((err, req, res, next) => {
       this.errorCount++;
       
       console.error('Server Error:', {
@@ -785,7 +785,7 @@ class SentiaManufacturingServer {
 
   // Graceful Shutdown
   setupGracefulShutdown() {
-    const gracefulShutdown = (_signal) => {
+    const gracefulShutdown = (signal) => {
       console.log(`Received ${signal}. Starting graceful shutdown...`);
       
       this.server.close(() => {
@@ -854,7 +854,7 @@ class SentiaManufacturingServer {
 
   // Start the server
   start() {
-    this.server = this.app.listen(_config.port, _'0.0.0.0', () => {
+    this.server = this.app.listen(config.port, '0.0.0.0', () => {
       console.log('🚀 SENTIA MANUFACTURING ENTERPRISE SERVER STARTED');
       console.log('================================================');
       console.log(`🌐 Server running on port ${config.port}`);

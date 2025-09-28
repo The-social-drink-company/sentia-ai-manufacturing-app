@@ -235,13 +235,13 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
 }
 
 // Graceful shutdown
-process.on(_'SIGINT', () => {
+process.on('SIGINT', () => {
   logDebug('\\n📛 Received SIGINT, shutting down...');
   if (orchestrator) orchestrator.stop();
   process.exit(0);
 });
 
-process.on(_'SIGTERM', () => {
+process.on('SIGTERM', () => {
   logDebug('\\n📛 Received SIGTERM, shutting down...');
   if (orchestrator) orchestrator.stop();
   process.exit(0);

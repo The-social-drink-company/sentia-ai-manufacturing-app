@@ -1,0 +1,270 @@
+# SENTIA MANUFACTURING DASHBOARD - ENTERPRISE RENDER DEPLOYMENT
+# Fortune 500-Level Multi-Branch Deployment Strategy
+# Optimized for Performance, Reliability, and Scalability
+
+previewsEnabled: true
+previewsExpireAfterDays: 7
+
+services:
+  # ==================================================
+  # PRODUCTION ENVIRONMENT - Mission Critical
+  # ==================================================
+  - type: web
+    name: sentia-manufacturing-production
+    env: node
+    plan: pro  # Upgraded to Pro for production reliability
+    region: oregon
+    branch: production
+    buildCommand: |
+      corepack enable &&
+      echo "=== PRODUCTION BUILD START ===" &&
+      pnpm install --frozen-lockfile --prod &&
+      echo "Installing build dependencies..." &&
+      pnpm add -D vite @vitejs/plugin-react postcss autoprefixer &&
+      echo "Generating Prisma client..." &&
+      pnpm dlx prisma generate &&
+      echo "Building optimized production bundle..." &&
+      NODE_OPTIONS='--max-old-space-size=8192' pnpm run build &&
+      echo "Verifying build output..." &&
+      ls -la dist/ &&
+      echo "=== PRODUCTION BUILD COMPLETE ==="
+    startCommand: "NODE_OPTIONS='--max-old-space-size=2048 --expose-gc' node server-enterprise-complete.js"
+    healthCheckPath: /health
+    autoDeploy: true
+    pullRequestPreviewsEnabled: false
+    # Production Environment Variables
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BRANCH
+        value: production
+      - key: PORT
+        value: 10000
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=2048 --expose-gc"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-production
+          property: connectionString
+      - key: PROD_DATABASE_URL
+        fromDatabase:
+          name: sentia-db-production
+          property: connectionString
+      # Security Configuration
+      - key: CORS_ORIGINS
+        value: "https://sentia-manufacturing-production.onrender.com"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      # Feature Flags - Production
+      - key: AUTO_DEPLOY_ENABLED
+        value: false
+      - key: AUTO_FIX_ENABLED
+        value: false
+      - key: ENABLE_AUTONOMOUS_TESTING
+        value: false
+      - key: ENABLE_DETAILED_LOGGING
+        value: false
+      - key: LOG_LEVEL
+        value: error
+      # MCP Server Configuration
+      - key: MCP_SERVER_URL
+        value: "https://mcp-server-production.onrender.com"
+      - key: MCP_JWT_SECRET
+        generateValue: true
+      - key: MCP_ENABLE_WEBSOCKET
+        value: true
+      - key: MCP_SERVER_HEALTH_CHECK_INTERVAL
+        value: 30000
+
+  # ==================================================
+  # TESTING ENVIRONMENT - QA & UAT
+  # ==================================================
+  - type: web
+    name: sentia-manufacturing-testing
+    env: node
+    plan: starter
+    region: oregon
+    branch: test
+    buildCommand: |
+      corepack enable &&
+      echo "=== TESTING BUILD START ===" &&
+      pnpm install --frozen-lockfile &&
+      pnpm add -D vite @vitejs/plugin-react postcss autoprefixer &&
+      pnpm dlx prisma generate &&
+      NODE_OPTIONS='--max-old-space-size=6144' pnpm run build &&
+      echo "=== TESTING BUILD COMPLETE ==="
+    startCommand: "NODE_OPTIONS='--max-old-space-size=1536' node server-enterprise-complete.js"
+    healthCheckPath: /health
+    autoDeploy: true
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: NODE_ENV
+        value: testing
+      - key: BRANCH
+        value: testing
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-testing
+          property: connectionString
+      - key: TEST_DATABASE_URL
+        fromDatabase:
+          name: sentia-db-testing
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: "https://sentia-manufacturing-testing.onrender.com"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      # Feature Flags - Testing
+      - key: AUTO_DEPLOY_ENABLED
+        value: false
+      - key: AUTO_FIX_ENABLED
+        value: true
+      - key: ENABLE_AUTONOMOUS_TESTING
+        value: true
+      - key: ENABLE_DETAILED_LOGGING
+        value: true
+      - key: LOG_LEVEL
+        value: info
+      # MCP Server Configuration
+      - key: MCP_SERVER_URL
+        value: "https://mcp-server-testing.onrender.com"
+      - key: MCP_JWT_SECRET
+        generateValue: true
+
+  # ==================================================
+  # DEVELOPMENT ENVIRONMENT - Active Development
+  # ==================================================
+  - type: web
+    name: sentia-manufacturing-development
+    env: node
+    plan: starter
+    region: oregon
+    branch: development
+    buildCommand: |
+      corepack enable &&
+      echo "=== DEVELOPMENT BUILD START ===" &&
+      pnpm install --frozen-lockfile &&
+      pnpm add -D vite @vitejs/plugin-react postcss autoprefixer &&
+      pnpm dlx prisma generate &&
+      NODE_OPTIONS='--max-old-space-size=4096' pnpm run build &&
+      echo "=== DEVELOPMENT BUILD COMPLETE ==="
+    startCommand: "NODE_OPTIONS='--max-old-space-size=1024' node server-enterprise-complete.js"
+    healthCheckPath: /health
+    autoDeploy: true
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: BRANCH
+        value: development
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
+      - key: DEV_DATABASE_URL
+        fromDatabase:
+          name: sentia-db-development
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: "https://sentia-manufacturing-development.onrender.com"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      # Feature Flags - Development
+      - key: AUTO_DEPLOY_ENABLED
+        value: true
+      - key: AUTO_FIX_ENABLED
+        value: true
+      - key: ENABLE_AUTONOMOUS_TESTING
+        value: true
+      - key: ENABLE_DETAILED_LOGGING
+        value: true
+      - key: LOG_LEVEL
+        value: debug
+      # MCP Server Configuration
+      - key: MCP_SERVER_URL
+        value: "https://mcp-server-development.onrender.com"
+      - key: MCP_JWT_SECRET
+        generateValue: true
+
+  # ==================================================
+  # HOTFIX ENVIRONMENT - Emergency Fixes
+  # ==================================================
+  - type: web
+    name: sentia-manufacturing-hotfix
+    env: node
+    plan: starter
+    region: oregon
+    branch: hotfix
+    buildCommand: |
+      corepack enable &&
+      echo "=== HOTFIX BUILD START ===" &&
+      pnpm install --frozen-lockfile --prod &&
+      pnpm add -D vite @vitejs/plugin-react &&
+      pnpm dlx prisma generate &&
+      NODE_OPTIONS='--max-old-space-size=4096' pnpm run build &&
+      echo "=== HOTFIX BUILD COMPLETE ==="
+    startCommand: "NODE_OPTIONS='--max-old-space-size=1024' node server-enterprise-complete.js"
+    healthCheckPath: /health
+    autoDeploy: false  # Manual deployment for hotfixes
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BRANCH
+        value: hotfix
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-production
+          property: connectionString
+      - key: LOG_LEVEL
+        value: warn
+
+# ==================================================
+# DATABASE SERVICES
+# ==================================================
+databases:
+  # Production Database - High Availability
+  - name: sentia-db-production
+    databaseName: sentia_manufacturing_prod
+    user: sentia_prod_user
+    plan: pro  # High-performance PostgreSQL with pgvector
+    region: oregon
+
+  # Testing Database
+  - name: sentia-db-testing
+    databaseName: sentia_manufacturing_test
+    user: sentia_test_user
+    plan: starter
+    region: oregon
+
+  # Development Database
+  - name: sentia-db-development
+    databaseName: sentia_manufacturing_dev
+    user: sentia_dev_user
+    plan: starter
+    region: oregon
+
+# ==================================================
+# REDIS SERVICES FOR CACHING
+# ==================================================
+  # Production Redis
+  - name: sentia-redis-production
+    plan: pro
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+
+  # Development/Testing Redis
+  - name: sentia-redis-development
+    plan: starter
+    region: oregon

@@ -237,4 +237,6 @@ setInterval(() => {
   });
 }, 60000);
 
+export const sendSSEEvent = (eventType, data, filter) => broadcast(eventType, data, filter)
+
 export default router;

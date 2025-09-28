@@ -10,6 +10,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import pg from 'pg';
 import cors from 'cors';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 config();
 
@@ -89,19 +91,19 @@ async function checkDatabaseConnection() {
     await pool.query('SELECT 1');
     return { status: 'healthy' };
   } catch (error) {
-    console.error('[MCP] Database health check failed', error);
+    logError('[MCP] Database health check failed', error);
     return { status: 'degraded', error: error.message };
   }
 }
 
 function checkProviderStatus() {
-  return Object.entries(providers).reduce((acc, [key, _client]) => {
+  return Object.entries(providers).reduce((acc, [key, client]) => {
     acc[key] = client ? 'ready' : 'unconfigured';
     return acc;
   }, {});
 }
 
-app.get(_'/health', async (_req, res) => {
+app.get('/health', async (_req, res) => {
   const database = await checkDatabaseConnection();
   res.json({
     status: 'healthy',
@@ -121,7 +123,7 @@ app.get(_'/health', async (_req, res) => {
 });
 
 const httpServer = app.listen(Number(MCP_HTTP_PORT), () => {
-  console.log(`Sentia MCP health server listening on port ${MCP_HTTP_PORT}`);
+  logDebug(`Sentia MCP health server listening on port ${MCP_HTTP_PORT}`);
 });
 
 async function runHealthCheck() {
@@ -135,7 +137,7 @@ async function runHealthCheck() {
 
 setInterval(() => {
   runHealthCheck().catch(error => {
-    console.error('[MCP] Error running scheduled health check', error);
+    logError('[MCP] Error running scheduled health check', error);
   });
 }, HEALTH_CHECK_INTERVAL_MS);
 
@@ -153,7 +155,7 @@ async function fetchContextSnippets(limit = 5) {
       confidence: row.confidence
     }));
   } catch (error) {
-    console.error('[MCP] Failed to fetch AI context', error);
+    logError('[MCP] Failed to fetch AI context', error);
     return [];
   }
 }
@@ -242,7 +244,7 @@ async function storeEmbedding({ id = randomUUID(), content = '', metadata = {}, 
     );
     return id;
   } catch (error) {
-    console.error('[MCP] Failed to store embedding', error);
+    logError('[MCP] Failed to store embedding', error);
     return null;
   }
 }
@@ -264,7 +266,7 @@ async function semanticSearch(vector, limit = 5) {
       similarity: Number(row.score)
     }));
   } catch (error) {
-    console.error('[MCP] Semantic search failed', error);
+    logError('[MCP] Semantic search failed', error);
     return [];
   }
 }
@@ -278,7 +280,7 @@ async function fetchInventorySnapshot(limit = 50) {
     );
     return rows;
   } catch (error) {
-    console.error('[MCP] Failed to fetch inventory snapshot', error);
+    logError('[MCP] Failed to fetch inventory snapshot', error);
     return [];
   }
 }
@@ -292,7 +294,7 @@ function computeInventoryInsights(rows) {
     };
   }
 
-  const aggregates = rows.reduce((acc, _item) => {
+  const aggregates = rows.reduce((acc, item) => {
     const quantity = toNumber(getValue(item, 'quantity'));
     const unitCost = toNumber(getValue(item, 'unitCost'));
     const totalValue = toNumber(getValue(item, 'totalValue'), quantity * unitCost);
@@ -352,7 +354,7 @@ async function fetchAnalyticsSeries(metric, dimension = null, window = 30) {
       forecast: row.forecast !== null ? toNumber(row.forecast) : null
     })).reverse();
   } catch (error) {
-    console.error('[MCP] Failed to fetch analytics series', error);
+    logError('[MCP] Failed to fetch analytics series', error);
     return [];
   }
 }
@@ -397,7 +399,7 @@ async function fetchRecentProduction(limit = 50) {
     );
     return rows;
   } catch (error) {
-    console.error('[MCP] Failed to fetch production records', error);
+    logError('[MCP] Failed to fetch production records', error);
     return [];
   }
 }
@@ -453,7 +455,7 @@ async function fetchWorkingCapital(limit = 90) {
     );
     return rows.reverse();
   } catch (error) {
-    console.error('[MCP] Failed to fetch working capital data', error);
+    logError('[MCP] Failed to fetch working capital data', error);
     return [];
   }
 }
@@ -467,7 +469,7 @@ async function fetchCashRunway(limit = 24) {
     );
     return rows.reverse();
   } catch (error) {
-    console.error('[MCP] Failed to fetch cash runway data', error);
+    logError('[MCP] Failed to fetch cash runway data', error);
     return [];
   }
 }
@@ -490,7 +492,7 @@ async function storeMcpRequest({ tool, request, response, status, error, started
       ]
     );
   } catch (dbError) {
-    console.error('[MCP] Failed to persist MCP request log', dbError);
+    logError('[MCP] Failed to persist MCP request log', dbError);
   }
 }
 
@@ -692,7 +694,7 @@ async function fetchSystemStatus() {
 }
 
 const toolExecutors = {
-  'ai-manufacturing-request': async (params = {}, provider = _'claude') => {
+  'ai-manufacturing-request': async (params = {}, provider = 'claude') => {
     const { prompt, contextLimit = 5 } = params;
     if (!prompt) {
       throw new Error('Prompt is required for ai-manufacturing-request');
@@ -730,7 +732,7 @@ async function handleToolRequest(tool, params = {}, provider = 'claude') {
       return result;
     } catch (error) {
       lastError = error;
-      console.error(`[MCP] Tool execution failed (attempt ${attempt}/${MAX_RETRIES})`, error);
+      logError(`[MCP] Tool execution failed (attempt ${attempt}/${MAX_RETRIES})`, error);
       if (attempt < MAX_RETRIES) {
         await wait(RETRY_DELAY_MS * attempt);
       }
@@ -745,7 +747,7 @@ function safeSend(socket, payload) {
   if (socket.readyState !== socket.OPEN) return;
   const message = JSON.stringify(payload);
   if (socket.bufferedAmount > MAX_BUFFERED_BYTES) {
-    console.warn('[MCP] Socket backpressure detected, dropping message');
+    logWarn('[MCP] Socket backpressure detected, dropping message');
     return;
   }
   socket.send(message);
@@ -775,7 +777,7 @@ function getSubscriptionPredicate(topics = []) {
 
 const wss = new WebSocketServer({ port: Number(MCP_SERVER_PORT) });
 
-wss.on(_'connection', (socket, req) => {
+wss.on('connection', (socket, req) => {
   const url = new URL(req.url ?? '/', 'http://localhost');
   const token = url.searchParams.get('token');
   if (MCP_API_KEY && token !== MCP_API_KEY) {
@@ -785,7 +787,7 @@ wss.on(_'connection', (socket, req) => {
   }
 
   socket.isAlive = true;
-  socket.on(_'pong', () => {
+  socket.on('pong', () => {
     socket.isAlive = true;
   });
 
@@ -799,7 +801,7 @@ wss.on(_'connection', (socket, req) => {
     tools: Object.keys(toolExecutors)
   });
 
-  socket.on(_'message', async (raw) => {
+  socket.on('message', async (raw) => {
     socket.isAlive = true;
     metrics.totalRequests += 1;
 
@@ -834,14 +836,14 @@ wss.on(_'connection', (socket, req) => {
     }
   });
 
-  socket.on(_'close', () => {
+  socket.on('close', () => {
     metrics.activeConnections = Math.max(metrics.activeConnections - 1, 0);
     connections.delete(socket);
     subscriptions.delete(socket);
   });
 
-  socket.on(_'error', (error) => {
-    console.error('[MCP] WebSocket error', error);
+  socket.on('error', (error) => {
+    logError('[MCP] WebSocket error', error);
   });
 });
 
@@ -856,10 +858,10 @@ const heartbeatInterval = setInterval(() => {
   });
 }, HEARTBEAT_INTERVAL_MS);
 
-console.log(`Sentia MCP WebSocket server listening on port ${MCP_SERVER_PORT}`);
+logDebug(`Sentia MCP WebSocket server listening on port ${MCP_SERVER_PORT}`);
 
 async function shutdown() {
-  console.log('Shutting down Sentia MCP server...');
+  logDebug('Shutting down Sentia MCP server...');
   clearInterval(heartbeatInterval);
   wss.clients.forEach(client => client.terminate());
   wss.close();
@@ -867,9 +869,9 @@ async function shutdown() {
   if (pool) {
     try {
       await pool.end();
-      console.log('Database pool closed');
+      logDebug('Database pool closed');
     } catch (error) {
-      console.error('[MCP] Failed to close database pool', error);
+      logError('[MCP] Failed to close database pool', error);
     }
   }
   process.exit(0);

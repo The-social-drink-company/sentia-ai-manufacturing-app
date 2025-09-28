@@ -8,6 +8,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ===== FORECASTING MODELS =====
+model ForecastResult {
+  id             String   @id @default(cuid())
+  productSKU     String
+  period         String
+  horizon        Int      // Days ahead
+  demandForecast Float
+  confidence     Float?
+  accuracy       Float?
+  method         String?  // "ai", "statistical", "hybrid"
+  modelVersion   String?
+  parameters     Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  validations ForecastValidation[]
+
+  @@index([productSKU], name: "idx_forecast_result_sku")
+  @@index([period], name: "idx_forecast_result_period")
+  @@index([horizon], name: "idx_forecast_result_horizon")
+  @@index([createdAt], name: "idx_forecast_result_created")
+}
+
+model ForecastValidation {
+  id               String        @id @default(cuid())
+  forecastResultId String
+  forecastResult   ForecastResult @relation(fields: [forecastResultId], references: [id])
+  actualDemand     Float
+  absoluteError    Float
+  percentageError  Float
+  validationDate   DateTime
+  notes            String?
+  createdAt        DateTime      @default(now())
+
+  @@index([forecastResultId], name: "idx_forecast_validation_result")
+  @@index([validationDate], name: "idx_forecast_validation_date")
+}
+
+model DemandHistory {
+  id          String   @id @default(cuid())
+  productSKU  String
+  date        DateTime
+  demand      Float
+  source      String?  // "sales", "orders", "consumption"
+  category    String?
+  seasonality Float?
+  trend       Float?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@unique([productSKU, date])
+  @@index([productSKU], name: "idx_demand_history_sku")
+  @@index([date], name: "idx_demand_history_date")
+  @@index([source], name: "idx_demand_history_source")
+}
+
 enum Role {
   ADMIN
   MANAGER

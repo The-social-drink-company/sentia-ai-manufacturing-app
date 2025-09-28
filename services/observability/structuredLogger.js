@@ -154,6 +154,30 @@ export const logDebug = (_message, metadata = _{}) => {
   log('debug', message, metadata);
 };
 
+const HEALTH_LOG_PATHS = [
+  '/health',
+  '/health/live',
+  '/health/ready',
+  '/health/detailed',
+  '/health/history',
+  '/health/liveness',
+  '/health/readiness',
+  '/api/health',
+  '/api/health/live',
+  '/api/health/ready',
+  '/api/health/detailed'
+];
+
+const shouldSkipRequestLogging = req => {
+  const path = (req?.path || req?.originalUrl || '').toLowerCase();
+
+  if (!path) {
+    return false;
+  }
+
+  return HEALTH_LOG_PATHS.some(target => path === target || path.startsWith(`${target}/`));
+};
+
 // HTTP request logging
 export const logHttpRequest = (req, res, duration) => {
   const metadata = {
@@ -268,25 +292,28 @@ export const correlationIdMiddleware = (req, res, _next) => {
 // Express middleware for request logging
 export const requestLoggingMiddleware = (req, res, _next) => {
   const start = Date.now();
-  
-  // Log request start
-  logInfo(`Request started: ${req.method} ${req.path}`, {
-    method: req.method,
-    path: req.path,
-    query: req.query
-  });
-  
-  // Capture response
+  const skipLogging = shouldSkipRequestLogging(req);
+
+  if (!skipLogging) {
+    logInfo(`Request started: ${req.method} ${req.path}`, {
+      method: req.method,
+      path: req.path,
+      query: req.query
+    });
+  }
+
   const originalSend = res.send;
-  res.send = function(data) {
+  res.send = function sendWithLogging(data) {
     res.send = originalSend;
-    const duration = Date.now() - start;
-    
-    logHttpRequest(req, res, duration);
-    
+
+    if (!skipLogging) {
+      const duration = Date.now() - start;
+      logHttpRequest(req, res, duration);
+    }
+
     return res.send(data);
   };
-  
+
   next();
 };
 

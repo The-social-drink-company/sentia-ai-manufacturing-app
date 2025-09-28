@@ -122,7 +122,7 @@ export class TimeSeriesForecaster {
     const seasonalCounts = new Array(this.seasonalityPeriod).fill(0)
 
     // Calculate averages for each seasonal period
-    this.data.forEach((point, index) => {
+    this.data.forEach((point, _index) => {
       const seasonIndex = index % this.seasonalityPeriod
       seasonalSums[seasonIndex] += point.value
       seasonalCounts[seasonIndex]++

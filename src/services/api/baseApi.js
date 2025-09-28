@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Base API Service
  * Enterprise-grade API client with error handling, retries, and interceptors
  */
 
-const APIBASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 const MAX_RETRIES = 3
 const RETRY_DELAY = 1000
 
@@ -25,7 +25,7 @@ class BaseApi {
   }
 
   async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`
+    const url = ${this.baseURL}
     const config = {
       ...options,
       headers: {
@@ -34,38 +34,39 @@ class BaseApi {
       }
     }
 
-    // Add auth token if available
-    const token = this.getAuthToken()
+    const token = await this.getAuthToken()
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = Bearer 
     }
 
     let lastError
-    for (let i = 0; i < MAX_RETRIES; i++) {
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt += 1) {
       try {
         const response = await fetch(url, config)
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
           throw new ApiError(
-            errorData.message || `HTTP ${response.status}`,
+            errorData.message || HTTP ,
             response.status,
             errorData
           )
+        }
+
+        if (response.status === 204) {
+          return null
         }
 
         return await response.json()
       } catch (error) {
         lastError = error
 
-        // Don't retry on client errors (4xx)
         if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
           throw error
         }
 
-        // Wait before retry
-        if (i < MAX_RETRIES - 1) {
-          await this.sleep(RETRY_DELAY * Math.pow(2, i))
+        if (attempt < MAX_RETRIES - 1) {
+          await this.sleep(RETRY_DELAY * Math.pow(2, attempt))
         }
       }
     }
@@ -74,8 +75,13 @@ class BaseApi {
   }
 
   async get(endpoint, params = {}) {
-    const queryString = new URLSearchParams(params).toString()
-    const url = queryString ? `${endpoint}?${queryString}` : endpoint
+    const queryString = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(params).filter(([, value]) => value !== undefined && value !== null)
+      )
+    ).toString()
+
+    const url = queryString ? ${endpoint}? : endpoint
 
     return this.request(url, {
       method: 'GET'
@@ -109,16 +115,28 @@ class BaseApi {
     })
   }
 
-  getAuthToken() {
-    // Get token from Clerk or localStorage
-    const clerkToken = window.Clerk?.session?.getToken()
-    if (clerkToken) return clerkToken
+  async getAuthToken() {
+    try {
+      const clerkSession = window?.Clerk?.session
+
+      if (clerkSession?.getToken) {
+        try {
+          return await clerkSession.getToken({ template: 'sentia-backend' })
+        } catch (templateError) {
+          return await clerkSession.getToken()
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to fetch Clerk token', error)
+    }
 
     return localStorage.getItem('authToken')
   }
 
   sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise(resolve => {
+      setTimeout(resolve, ms)
+    })
   }
 }
 

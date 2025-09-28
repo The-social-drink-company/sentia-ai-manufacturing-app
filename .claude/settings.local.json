@@ -132,7 +132,9 @@
       "Bash(set PORT=10000)",
       "Bash(python:*)",
       "WebSearch",
-      "WebFetch(domain:clerk.com)"
+      "WebFetch(domain:clerk.com)",
+      "Bash(xargs ls:*)",
+      "Bash(set PORT=5001)"
     ],
     "deny": [],
     "ask": []

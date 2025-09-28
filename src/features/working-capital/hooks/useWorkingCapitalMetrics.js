@@ -1,375 +1,349 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useXeroWorkingCapitalData } from './useXeroIntegration'
-import { logWarn } from '../../../utils/structuredLogger.js'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { workingCapitalApi } from '../../../services/api/workingCapitalApi'
+import { logError, logWarn } from '../../../utils/structuredLogger.js'
+
+const percentChange = (current, previous) => {
+  if (current === null || current === undefined || previous === null || previous === undefined) {
+    return null
+  }
+
+  if (previous === 0) {
+    return null
+  }
+
+  return ((current - previous) / Math.abs(previous)) * 100
+}
+
+const buildSummary = (latest, previous) => {
+  if (!latest) {
+    return null
+  }
+
+  const workingCapitalCurrent = latest.currentAssets - latest.currentLiabilities
+  const workingCapitalPrevious = previous
+    ? previous.currentAssets - previous.currentLiabilities
+    : null
+
+  return {
+    workingCapital: workingCapitalCurrent,
+    workingCapitalChange: percentChange(workingCapitalCurrent, workingCapitalPrevious),
+    cashConversionCycle: latest.cashConversionCycle,
+    cccChange: percentChange(latest.cashConversionCycle, previous?.cashConversionCycle),
+    currentRatio: latest.workingCapitalRatio,
+    currentRatioChange: percentChange(latest.workingCapitalRatio, previous?.workingCapitalRatio),
+    quickRatio: latest.quickRatio,
+    quickRatioChange: percentChange(latest.quickRatio, previous?.quickRatio)
+  }
+}
+
+const buildReceivables = latest => {
+  if (!latest) {
+    return null
+  }
+
+  return {
+    total: latest.accountsReceivable ?? null,
+    dso: latest.dso ?? null,
+    overdue: null,
+    aging: null
+  }
+}
+
+const buildPayables = latest => {
+  if (!latest) {
+    return null
+  }
+
+  return {
+    total: latest.accountsPayable ?? null,
+    dpo: latest.dpo ?? null,
+    discountsAvailable: null,
+    aging: null
+  }
+}
+
+const buildInventory = (latest, inventorySummary) => {
+  if (!latest && !inventorySummary) {
+    return null
+  }
+
+  return {
+    total: inventorySummary?.totalValue ?? latest?.inventory ?? null,
+    dio: latest?.dio ?? null,
+    turnoverRatio: inventorySummary?.turnover ?? null
+  }
+}
+
+const buildCccHistory = entries => {
+  if (!entries?.length) {
+    return []
+  }
+
+  return entries
+    .slice(0, 6)
+    .reverse()
+    .map(entry => ({
+      month: new Date(entry.date).toLocaleDateString('en', { month: 'short' }),
+      ccc: entry.cashConversionCycle,
+      dso: entry.dso,
+      dio: entry.dio,
+      dpo: entry.dpo
+    }))
+}
+
+const buildCashFlowSeries = (rows, openingBalance) => {
+  if (!rows?.length) {
+    return []
+  }
+
+  const ordered = [...rows].reverse()
+  let runningBalance = openingBalance ?? 0
+
+  return ordered.map(row => {
+    const inflow = ['operatingCashFlow', 'financingCashFlow', 'investingCashFlow']
+      .map(key => Math.max(row[key] ?? 0, 0))
+      .reduce((acc, value) => acc + value, 0)
+
+    const outflow = ['operatingCashFlow', 'financingCashFlow', 'investingCashFlow']
+      .map(key => Math.min(row[key] ?? 0, 0))
+      .reduce((acc, value) => acc + value, 0)
+
+    runningBalance += row.netCashFlow ?? 0
+
+    return {
+      date: row.date,
+      inflow,
+      outflow: Math.abs(outflow),
+      netFlow: row.netCashFlow ?? inflow + outflow,
+      runningBalance
+    }
+  })
+}
+
+const buildAlerts = (summary, receivables, payables, inventory) => {
+  const alerts = []
+
+  if (summary?.cashConversionCycle && summary.cashConversionCycle > 60) {
+    alerts.push({
+      id: 'ccc-alert',
+      severity: 'warning',
+      title: 'Cash conversion cycle deteriorating',
+      description: CCC is  days. Target is < 45 days.,
+      action: 'Review receivable collections and inventory turns'
+    })
+  }
+
+  if (receivables?.dso && receivables.dso > 45) {
+    alerts.push({
+      id: 'dso-alert',
+      severity: 'warning',
+      title: 'Days sales outstanding elevated',
+      description: Current DSO is  days. Typical SaaS benchmark is 35-40 days.,
+      action: 'Prioritise collections for invoices older than 30 days'
+    })
+  }
+
+  if (payables?.dpo && payables.dpo < 20) {
+    alerts.push({
+      id: 'dpo-alert',
+      severity: 'info',
+      title: 'Supplier payments being settled early',
+      description: DPO is  days. Consider negotiating extended terms.,
+      action: 'Engage top suppliers regarding 45-day terms'
+    })
+  }
+
+  if (inventory?.dio && inventory.dio > 45) {
+    alerts.push({
+      id: 'inventory-alert',
+      severity: 'warning',
+      title: 'Inventory days on hand above target',
+      description: Inventory is sitting  days on average.,
+      action: 'Reduce purchase orders for slow-moving SKUs'
+    })
+  }
+
+  return alerts
+}
+
+const buildRecommendations = (summary, receivables, payables, inventory) => {
+  const recommendations = []
+
+  if (receivables?.total && receivables.dso && receivables.dso > 45) {
+    recommendations.push({
+      id: 'accelerate-collections',
+      type: 'receivables',
+      priority: 'high',
+      title: 'Accelerate collections',
+      description: 'Implement targeted outreach on invoices older than 30 days.',
+      impact: Potential cash unlock: ,
+      effort: 'medium',
+      timeframe: '2-3 weeks'
+    })
+  }
+
+  if (payables?.total && payables.dpo && payables.dpo < 25) {
+    recommendations.push({
+      id: 'extend-terms',
+      type: 'payables',
+      priority: 'medium',
+      title: 'Optimise supplier payment terms',
+      description: 'Explore extending standard payment terms to 45 days with strategic partners.',
+      impact: Potential cash preservation: ,
+      effort: 'low',
+      timeframe: '1-2 weeks'
+    })
+  }
+
+  if (inventory?.total && inventory.dio && inventory.dio > 45) {
+    recommendations.push({
+      id: 'reduce-inventory',
+      type: 'inventory',
+      priority: 'high',
+      title: 'Reduce excess inventory',
+      description: 'Slow-moving items are tying up cash. Prioritise liquidation or production rescheduling.',
+      impact: Potential free cash: ,
+      effort: 'high',
+      timeframe: '4-6 weeks'
+    })
+  }
+
+  return recommendations
+}
+
+const createExporter = data => async format => {
+  if (!data) {
+    throw new Error('No working capital data to export')
+  }
+
+  const timestamp = new Date().toISOString().split('T')[0]
+
+  if (format === 'csv') {
+    const headers = ['Metric', 'Value']
+    const rows = []
+
+    if (data.summary) {
+      rows.push(['Working Capital', data.summary.workingCapital ?? ''])
+      rows.push(['Cash Conversion Cycle', data.summary.cashConversionCycle ?? ''])
+      rows.push(['Current Ratio', data.summary.currentRatio ?? ''])
+      rows.push(['Quick Ratio', data.summary.quickRatio ?? ''])
+    }
+
+    if (data.receivables) {
+      rows.push(['Accounts Receivable', data.receivables.total ?? ''])
+      rows.push(['DSO', data.receivables.dso ?? ''])
+    }
+
+    if (data.payables) {
+      rows.push(['Accounts Payable', data.payables.total ?? ''])
+      rows.push(['DPO', data.payables.dpo ?? ''])
+    }
+
+    if (data.inventory) {
+      rows.push(['Inventory Value', data.inventory.total ?? ''])
+      rows.push(['DIO', data.inventory.dio ?? ''])
+    }
+
+    const csvBody = [headers.join(','), ...rows.map(row => row.join(','))].join('\n')
+    const blob = new Blob([csvBody], { type: 'text/csv' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = working-capital-.csv
+    link.click()
+    return
+  }
+
+  if (format === 'json') {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = working-capital-.json
+    link.click()
+    return
+  }
+
+  throw new Error(Export format \"\" is not supported yet.)
+}
 
 export function useWorkingCapitalMetrics(period = 'current') {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Try to get real data from Xero first
-  const xeroData = useXeroWorkingCapitalData()
-
-  // Mock data generator for working capital metrics
-  const generateMockData = useCallback(() => {
-    const baseData = {
-      summary: {
-        workingCapital: 450000 + Math.random() * 100000,
-        workingCapitalChange: (Math.random() - 0.5) * 20,
-        cashConversionCycle: 45 + Math.random() * 10,
-        cccChange: (Math.random() - 0.5) * 10,
-        currentRatio: 2.1 + Math.random() * 0.5,
-        currentRatioChange: (Math.random() - 0.5) * 5,
-        quickRatio: 1.6 + Math.random() * 0.3,
-        quickRatioChange: (Math.random() - 0.5) * 5
-      },
-
-      receivables: {
-        total: 285000 + Math.random() * 50000,
-        dso: 42 + Math.random() * 8,
-        overdue: 45000 + Math.random() * 20000,
-        aging: {
-          '0-30': 180000 + Math.random() * 30000,
-          '31-60': 65000 + Math.random() * 15000,
-          '61-90': 25000 + Math.random() * 10000,
-          '90+': 15000 + Math.random() * 8000
-        }
-      },
-
-      payables: {
-        total: 220000 + Math.random() * 40000,
-        dpo: 28 + Math.random() * 6,
-        discountsAvailable: 8500 + Math.random() * 3000,
-        aging: {
-          '0-30': 140000 + Math.random() * 25000,
-          '31-60': 50000 + Math.random() * 12000,
-          '61-90': 20000 + Math.random() * 8000,
-          '90+': 10000 + Math.random() * 5000
-        }
-      },
-
-      inventory: {
-        total: 380000 + Math.random() * 70000,
-        dio: 32 + Math.random() * 8,
-        turnoverRatio: 11.2 + Math.random() * 2
-      },
-
-      cashFlow: {
-        current: 150000 + Math.random() * 50000,
-        projected30: 175000 + Math.random() * 30000,
-        projected60: 185000 + Math.random() * 40000,
-        projected90: 195000 + Math.random() * 50000,
-        forecast: generateForecastData()
-      },
-
-      recommendations: [
-        {
-          id: 1,
-          type: 'receivables',
-          priority: 'high',
-          title: 'Accelerate Collections',
-          description: 'Reduce DSO by 5 days to unlock cash',
-          impact: '$42,000',
-          effort: 'medium',
-          timeframe: '2-3 weeks'
-        },
-        {
-          id: 2,
-          type: 'payables',
-          priority: 'medium',
-          title: 'Optimize Payment Terms',
-          description: 'Extend DPO by 3 days while capturing discounts',
-          impact: '$18,500',
-          effort: 'low',
-          timeframe: '1-2 weeks'
-        },
-        {
-          id: 3,
-          type: 'inventory',
-          priority: 'high',
-          title: 'Reduce Excess Stock',
-          description: 'Clear slow-moving inventory to improve turnover',
-          impact: '$65,000',
-          effort: 'high',
-          timeframe: '4-6 weeks'
-        }
-      ],
-
-      alerts: generateAlerts(),
-
-      cccHistory: [
-        { month: 'Jan', ccc: 52 },
-        { month: 'Feb', ccc: 48 },
-        { month: 'Mar', ccc: 50 },
-        { month: 'Apr', ccc: 47 },
-        { month: 'May', ccc: 49 },
-        { month: 'Jun', ccc: 45 + Math.random() * 5 }
-      ]
-    }
-
-    return baseData
-  }, [period])
-
-  // Generate forecast data
-  function generateForecastData() {
-    const forecast = []
-    const startDate = new Date()
-
-    for (let i = 0; i < 90; i++) {
-      const date = new Date(startDate)
-      date.setDate(date.getDate() + i)
-
-      const baseInflow = 12000 + Math.random() * 8000
-      const baseOutflow = 9000 + Math.random() * 6000
-
-      // Add weekly and monthly patterns
-      const dayOfWeek = date.getDay()
-      const dayOfMonth = date.getDate()
-
-      let inflow = baseInflow
-      let outflow = baseOutflow
-
-      // Weekend adjustments
-      if (dayOfWeek === 0 || dayOfWeek === 6) {
-        inflow *= 0.3
-        outflow *= 0.2
-      }
-
-      // Month-end patterns
-      if (dayOfMonth >= 28) {
-        outflow *= 1.5 // More bills
-        inflow *= 0.8  // Slower collections
-      }
-
-      // Early month patterns
-      if (dayOfMonth <= 5) {
-        inflow *= 1.3 // Better collections
-      }
-
-      forecast.push({
-        date: date.toISOString().split('T')[0],
-        inflow: Math.round(inflow),
-        outflow: Math.round(outflow),
-        netFlow: Math.round(inflow - outflow)
-      })
-    }
-
-    return forecast
-  }
-
-  // Generate contextual alerts based on data
-  function generateAlerts() {
-    const alerts = []
-
-    // DSO alert
-    const dso = 42 + Math.random() * 8
-    if (dso > 45) {
-      alerts.push({
-        id: 1,
-        severity: 'warning',
-        title: 'High Days Sales Outstanding',
-        description: `DSO is ${Math.round(dso)} days, above target of 40 days`,
-        action: 'Review collections process'
-      })
-    }
-
-    // Cash flow alert
-    if (Math.random() > 0.7) {
-      alerts.push({
-        id: 2,
-        severity: 'critical',
-        title: 'Cash Flow Projection Alert',
-        description: 'Projected cash shortfall in 45 days',
-        action: 'Accelerate collections or delay payments'
-      })
-    }
-
-    // Discount opportunity
-    if (Math.random() > 0.5) {
-      alerts.push({
-        id: 3,
-        severity: 'info',
-        title: 'Early Payment Discounts Available',
-        description: '$8,500 in potential savings from supplier discounts',
-        action: 'Review payment schedule'
-      })
-    }
-
-    return alerts
-  }
-
-  // Fetch data function (prioritize Xero, fallback to mock)
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
 
     try {
-      // If Xero is connected and has data, use real data
-      if (xeroData.isConnected && xeroData.summary) {
-        const realData = {
-          ...xeroData,
-          // Add mock alerts and recommendations for now
-          alerts: generateAlerts(),
-          recommendations: [
-            {
-              id: 1,
-              type: 'receivables',
-              priority: 'high',
-              title: 'Accelerate Collections',
-              description: `DSO is ${xeroData.receivables?.dso || 0} days - consider early payment incentives`,
-              impact: `$${Math.round((xeroData.receivables?.overdue || 0) * 0.1).toLocaleString()}`,
-              effort: 'medium',
-              timeframe: '2-3 weeks'
-            },
-            {
-              id: 2,
-              type: 'payables',
-              priority: 'medium',
-              title: 'Optimize Payment Terms',
-              description: `DPO is ${xeroData.payables?.dpo || 0} days - negotiate extended terms`,
-              impact: `$${Math.round((xeroData.payables?.discountsAvailable || 0) * 1.5).toLocaleString()}`,
-              effort: 'low',
-              timeframe: '1-2 weeks'
-            }
-          ],
-          // Add cash conversion cycle history (would need historical Xero data)
-          cccHistory: [
-            { month: 'Jan', ccc: 52 },
-            { month: 'Feb', ccc: 48 },
-            { month: 'Mar', ccc: 50 },
-            { month: 'Apr', ccc: 47 },
-            { month: 'May', ccc: 49 },
-            { month: 'Jun', ccc: xeroData.summary?.cashConversionCycle || 45 }
-          ]
+      const [workingCapital, cashFlow, financialMetrics, inventory] = await Promise.all([
+        workingCapitalApi.getWorkingCapital(period),
+        workingCapitalApi.getCashFlow(),
+        workingCapitalApi.getFinancialMetrics(),
+        workingCapitalApi.getDashboardSummary().then(summary => summary?.inventory ?? null).catch(error => {
+          logWarn('Failed to load dashboard summary', error)
+          return null
+        })
+      ])
+
+      const entries = workingCapital?.data ?? []
+      if (!entries.length) {
+        throw new Error('No working capital records available yet.')
+      }
+
+      const latest = workingCapital.latest ?? entries[0]
+      const previous = entries[1] ?? null
+
+      const summary = buildSummary(latest, previous)
+      const receivables = buildReceivables(latest)
+      const payables = buildPayables(latest)
+      const inventoryMetrics = buildInventory(latest, inventory)
+      const cashFlowSeries = buildCashFlowSeries(cashFlow?.data ?? [], latest?.cash)
+      const cccHistory = buildCccHistory(entries)
+      const alerts = buildAlerts(summary, receivables, payables, inventoryMetrics)
+      const recommendations = buildRecommendations(summary, receivables, payables, inventoryMetrics)
+
+      setData({
+        summary,
+        receivables,
+        payables,
+        inventory: inventoryMetrics,
+        cashFlow: {
+          series: cashFlowSeries,
+          latest: cashFlow?.latest ?? null
+        },
+        recommendations,
+        alerts,
+        cccHistory,
+        source: {
+          workingCapital: workingCapital?.dataSource ?? null,
+          cashFlow: cashFlow?.dataSource ?? null,
+          metrics: financialMetrics?.dataSource ?? null
         }
-
-        setData(realData)
-        setLoading(false)
-        return
-      }
-
-      // Fallback to mock data
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 500))
-
-      // Simulate occasional errors
-      if (Math.random() < 0.05) {
-        throw new Error('Failed to fetch working capital data')
-      }
-
-      const mockData = generateMockData()
-      setData(mockData)
-      setLoading(false)
+      })
     } catch (err) {
-      setError(err)
+      logError('Failed to load working capital metrics', err)
+      setError(err instanceof Error ? err : new Error('Failed to load working capital metrics'))
+      setData(null)
+    } finally {
       setLoading(false)
     }
-  }, [generateMockData, xeroData])
+  }, [period])
 
-  // Refetch function
-  const refetch = useCallback(async () => {
-    // If Xero is connected, refresh Xero data first
-    if (xeroData.isConnected && xeroData.refetch) {
-      try {
-        await xeroData.refetch()
-      } catch (err) {
-        logWarn('Failed to refresh Xero data', err)
-      }
-    }
-
-    // Then fetch/update our combined data
-    await fetchData()
-  }, [fetchData, xeroData])
-
-  // Export data function
-  const exportData = useCallback(async (format) => {
-    if (!data) return
-
-    const exportPayload = {
-      timestamp: new Date().toISOString(),
-      period: period,
-      format: format,
-      data: data
-    }
-
-    try {
-      // Simulate export processing
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      switch (format) {
-        case 'pdf':
-          // Create and download PDF
-          const pdfBlob = new Blob([JSON.stringify(exportPayload, null, 2)], {
-            type: 'application/pdf'
-          })
-          const pdfUrl = URL.createObjectURL(pdfBlob)
-          const pdfLink = document.createElement('a')
-          pdfLink.href = pdfUrl
-          pdfLink.download = `working-capital-report-${period}.pdf`
-          pdfLink.click()
-          break
-
-        case 'excel':
-          // Create and download Excel
-          const excelBlob = new Blob([JSON.stringify(exportPayload, null, 2)], {
-            type: 'application/vnd.ms-excel'
-          })
-          const excelUrl = URL.createObjectURL(excelBlob)
-          const excelLink = document.createElement('a')
-          excelLink.href = excelUrl
-          excelLink.download = `working-capital-report-${period}.xlsx`
-          excelLink.click()
-          break
-
-        case 'csv':
-          // Create and download CSV
-          const csvData = convertToCSV(data)
-          const csvBlob = new Blob([csvData], { type: 'text/csv' })
-          const csvUrl = URL.createObjectURL(csvBlob)
-          const csvLink = document.createElement('a')
-          csvLink.href = csvUrl
-          csvLink.download = `working-capital-report-${period}.csv`
-          csvLink.click()
-          break
-
-        default:
-          throw new Error(`Unsupported export format: ${format}`)
-      }
-    } catch (err) {
-      throw new Error(`Export failed: ${err.message}`)
-    }
-  }, [data, period])
-
-  // Convert data to CSV format
-  const convertToCSV = (data) => {
-    const headers = ['Metric', 'Value', 'Change', 'Status']
-    const rows = [
-      ['Working Capital', `$${data.summary.workingCapital.toLocaleString()}`, `${data.summary.workingCapitalChange?.toFixed(1)}%`, 'Current'],
-      ['Cash Conversion Cycle', `${data.summary.cashConversionCycle} days`, `${data.summary.cccChange?.toFixed(1)}%`, 'Current'],
-      ['Current Ratio', data.summary.currentRatio?.toFixed(2), `${data.summary.currentRatioChange?.toFixed(1)}%`, 'Current'],
-      ['Quick Ratio', data.summary.quickRatio?.toFixed(2), `${data.summary.quickRatioChange?.toFixed(1)}%`, 'Current'],
-      ['DSO', `${data.receivables.dso} days`, '', 'Current'],
-      ['DPO', `${data.payables.dpo} days`, '', 'Current'],
-      ['DIO', `${data.inventory.dio} days`, '', 'Current']
-    ]
-
-    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n')
-    return csvContent
-  }
-
-  // Initial data fetch
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  const exportData = useMemo(() => createExporter(data), [data])
+  const isUsingRealData = Boolean(data?.source?.workingCapital === 'database')
 
   return {
     data,
     loading,
     error,
-    refetch,
+    refetch: fetchData,
     exportData,
-    // Xero integration status
-    isXeroConnected: xeroData.isConnected,
-    xeroStatus: xeroData.connectionStatus,
-    isUsingRealData: xeroData.isConnected && !!xeroData.summary
+    isXeroConnected: false,
+    xeroStatus: null,
+    isUsingRealData
   }
 }

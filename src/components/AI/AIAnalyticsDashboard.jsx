@@ -124,7 +124,9 @@ const AIAnalyticsDashboard = () => {
                 <p className="text-xs text-muted-foreground">Impact: {item.impact}</p>
                 <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                   <span>{item.time}</span>
-                  <Badge variant={item.status === 'Completed' ? 'secondary' : item.status === 'Queued' ? 'outline' : 'default'}>{item.status}</Badge>
+                  <Badge variant={item.status === 'Completed' ? 'secondary' : item.status === 'Queued' ? 'outline' : 'default'}>
+                    {item.status}
+                  </Badge>
                 </div>
               </div>
             ))}

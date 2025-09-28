@@ -39,71 +39,91 @@ function App() {
     huggingface: 'connected'
   })
   const [realTimeData, setRealTimeData] = useState({
-    revenue: '£3.17M',
-    workingCapital: '£170.3K',
-    units: '245K',
-    efficiency: '94.8%',
-    shopifyOrders: [
-      {
-        id: '5770',
-        customer: 'Siro Tondi',
-        product: 'GABA 3-bottle bundle',
-        location: 'Switzerland',
-        amount: '£98.47',
-        status: 'Paid'
-      },
-      {
-        id: '5769',
-        customer: 'Douglas Yarborough',
-        product: 'GABA Red + Gold 500ml',
-        location: 'Freeport, NY',
-        amount: '$107.97',
-        status: 'Processing'
-      }
-    ],
+    revenue: 'Loading...',
+    workingCapital: 'Loading...',
+    units: 'Loading...',
+    efficiency: 'Loading...',
+    shopifyOrders: [],
     workingCapitalComponents: {
-      receivables: { amount: '£85.2K', days: 28 },
-      inventory: { amount: '£125.8K', days: 45 },
-      payables: { amount: '£40.7K', days: 35 }
+      receivables: { amount: 'Loading...', days: 0 },
+      inventory: { amount: 'Loading...', days: 0 },
+      payables: { amount: 'Loading...', days: 0 }
     }
   })
 
-  // Initialize MCP connections
+  // Fetch REAL data from APIs
   useEffect(() => {
-    const initializeMCP = async () => {
+    const fetchRealData = async () => {
+      if (!isSignedIn) return
+
       try {
-        // Simulate MCP server health checks
-        const mcpServers = ['xero', 'shopify', 'unleashed', 'huggingface']
-        
-        for (const server of mcpServers) {
-          setTimeout(() => {
-            setMcpStatus(prev => ({
-              ...prev,
-              [server]: server === 'xero' ? 'error' : 'connected'
-            }))
-          }, 1000 + Math.random() * 2000)
+        const token = await getToken()
+
+        // Fetch real working capital data
+        const wcResponse = await fetch('/api/financial/working-capital', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        const wcData = await wcResponse.json()
+
+        // Fetch real Shopify orders
+        const shopifyResponse = await fetch('/api/shopify/orders?limit=5', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        const shopifyData = await shopifyResponse.json()
+
+        // Fetch real production metrics
+        const prodResponse = await fetch('/api/production/metrics', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        const prodData = await prodResponse.json()
+
+        // Fetch real MCP status
+        const mcpResponse = await fetch('/api/mcp/status')
+        const mcpData = await mcpResponse.json()
+
+        // Update with REAL data
+        setRealTimeData({
+          revenue: wcData.data?.revenue || 'API Error',
+          workingCapital: wcData.data?.totalWorkingCapital || 'API Error',
+          units: prodData.data?.totalProduction || 'API Error',
+          efficiency: prodData.data?.efficiency || 'API Error',
+          shopifyOrders: shopifyData.data?.orders || [],
+          workingCapitalComponents: {
+            receivables: {
+              amount: wcData.data?.receivables?.amount || 'API Error',
+              days: wcData.data?.receivables?.dso || 0
+            },
+            inventory: {
+              amount: wcData.data?.inventory?.amount || 'API Error',
+              days: wcData.data?.inventory?.dio || 0
+            },
+            payables: {
+              amount: wcData.data?.payables?.amount || 'API Error',
+              days: wcData.data?.payables?.dpo || 0
+            }
+          }
+        })
+
+        // Update MCP status with real data
+        if (mcpData.success) {
+          setMcpStatus({
+            xero: mcpData.data.xero ? 'connected' : 'error',
+            shopify: mcpData.data.shopify ? 'connected' : 'error',
+            unleashed: mcpData.data.unleashed ? 'connected' : 'error',
+            huggingface: mcpData.data.ai ? 'connected' : 'error'
+          })
         }
       } catch (error) {
-        console.error('MCP initialization error:', error)
+        console.error('Failed to fetch real data:', error)
       }
     }
 
-    if (isSignedIn) {
-      initializeMCP()
-    }
-  }, [isSignedIn])
-
-  // Simulate real-time data updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRealTimeData(prev => ({
-        ...prev,
-        efficiency: (94.5 + Math.random() * 0.6).toFixed(1) + '%'
-      }))
-    }, 5000)
+    fetchRealData()
+    // Refresh every 30 seconds with REAL data
+    const interval = setInterval(fetchRealData, 30000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [isSignedIn, getToken])
 
   if (!isLoaded) {
     return (

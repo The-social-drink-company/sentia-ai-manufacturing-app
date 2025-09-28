@@ -7,8 +7,10 @@
 // Environment configuration
 // Check if we're in a browser (Vite) or Node.js environment
 const isBrowser = typeof window !== 'undefined';
-const NODE_ENV = isBrowser ? (import.meta.env?.MODE || 'development') : (process.env.NODE_ENV || 'development');
-const LOG_LEVEL = isBrowser ? (import.meta.env?.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug')) : (process.env.LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug'));
+const rawNodeEnv = (typeof process !== 'undefined' && process.env) ? process.env.NODE_ENV : undefined;
+const NODE_ENV = isBrowser ? (import.meta.env?.MODE || 'development') : (rawNodeEnv || 'development');
+const rawLogLevel = (typeof process !== 'undefined' && process.env) ? process.env.LOG_LEVEL : undefined;
+const LOG_LEVEL = isBrowser ? (import.meta.env?.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug')) : (rawLogLevel || (NODE_ENV === 'production' ? 'info' : 'debug'));
 
 // Log levels
 const LOG_LEVELS = {

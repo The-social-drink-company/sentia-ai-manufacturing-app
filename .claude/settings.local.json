@@ -55,7 +55,8 @@
       "Bash(for file in src/pages/ClerkSignIn.jsx src/components/DashboardLayout.jsx src/components/widgets/DataTableWidget.jsx)",
       "Bash(do echo \"Checking $file\")",
       "Bash(done)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(gh pr list:*)"
     ],
     "deny": [],
     "ask": []

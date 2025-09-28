@@ -1,11 +1,12 @@
 {
   "name": "sentia-manufacturing-dashboard-bulletproof",
   "version": "2.0.0-bulletproof",
-  "description": "Sentia Manufacturing Dashboard - Pre-built for 100% successful deployment",
+  "description": "Sentia Manufacturing Dashboard - Enterprise React Application with Clerk Authentication",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "echo 'Build not required - using pre-built application'"
+    "build": "echo 'Build not required - using pre-built application'",
+    "postinstall": "echo 'Installation complete - ready for deployment'"
   },
   "dependencies": {
     "express": "^4.18.2"

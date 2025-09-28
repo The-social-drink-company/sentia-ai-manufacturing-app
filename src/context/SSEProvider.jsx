@@ -1,17 +1,9 @@
 import { devLog } from '../lib/devLog.js';
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useSSE } from '../hooks/useSSE';
 import { useQueryClient } from '@tanstack/react-query';
 
-const SSEContext = createContext();
-
-export const useSSEContext = () => {
-  const context = useContext(SSEContext);
-  if (!context) {
-    throw new Error('useSSEContext must be used within an SSEProvider');
-  }
-  return context;
-};
+import { SSEContext } from './sse-context.js';
 
 export const SSEProvider = ({ children }) => {
   const queryClient = useQueryClient();
@@ -138,36 +130,4 @@ const handleGlobalSSEEvent = (eventType, data, queryClient) => {
       }
       break;
   }
-};
-
-// Hook for showing connection status indicator
-export const useSSEStatus = () => {
-  const { isConnected, connectionStats, globalLiveUpdates } = useSSEContext();
-  
-  return {
-    isConnected,
-    isActive: globalLiveUpdates,
-    eventsReceived: connectionStats.eventsReceived,
-    lastEventTime: connectionStats.lastEventTime,
-    uptime: connectionStats.uptime ? Date.now() - connectionStats.uptime : null
-  };
-};
-
-// Hook for global SSE controls
-export const useSSEControls = () => {
-  const { 
-    globalLiveUpdates, 
-    setGlobalLiveUpdates, 
-    reconnect, 
-    disconnect 
-  } = useSSEContext();
-
-  return {
-    isEnabled: globalLiveUpdates,
-    enable: () => setGlobalLiveUpdates(true),
-    disable: () => setGlobalLiveUpdates(false),
-    toggle: () => setGlobalLiveUpdates(prev => !prev),
-    reconnect,
-    disconnect
-  };
 };

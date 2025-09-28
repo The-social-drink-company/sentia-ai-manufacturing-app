@@ -1,14 +1,6 @@
-﻿import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+﻿import { Suspense, lazy } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip
-} from 'recharts'
 
 const regionalPerformance = [
   { region: 'APAC', revenue: 3200000, ebitda: 780000 },
@@ -22,6 +14,8 @@ const capitalKpis = [
   { label: 'Intercompany exposure', value: '$1.1M', helper: 'Pending settlements' },
   { label: 'FX sensitivity', value: '$380K', helper: '±1% USD/EUR/JPY' }
 ]
+
+const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
 
 const DashboardEnterprise = () => (
   <section className="space-y-6">
@@ -55,16 +49,9 @@ const DashboardEnterprise = () => (
         <CardDescription>Revenue and EBITDA by operating region for the current quarter.</CardDescription>
       </CardHeader>
       <CardContent className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={regionalPerformance}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="region" tickLine={false} axisLine={false} />
-            <YAxis tickFormatter={(value) => `$${Math.round(value / 1000)}k`} />
-            <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
-            <Bar dataKey="revenue" fill="#2563eb" radius={[6, 6, 0, 0]} />
-            <Bar dataKey="ebitda" fill="#16a34a" radius={[6, 6, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+          <RegionalContributionChart data={regionalPerformance} />
+        </Suspense>
       </CardContent>
     </Card>
   </section>

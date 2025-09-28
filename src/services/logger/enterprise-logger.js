@@ -7,9 +7,12 @@
 // Environment configuration
 // Check if we're in a browser (Vite) or Node.js environment
 const isBrowser = typeof window !== 'undefined';
-const rawNodeEnv = (typeof process !== 'undefined' && process.env) ? process.env.NODE_ENV : undefined;
+const nodeProcess = typeof globalThis !== 'undefined' ? globalThis.process : undefined;
+const processEnv = nodeProcess && nodeProcess.env ? nodeProcess.env : undefined;
+
+const rawNodeEnv = processEnv ? processEnv.NODE_ENV : undefined;
 const NODE_ENV = isBrowser ? (import.meta.env?.MODE || 'development') : (rawNodeEnv || 'development');
-const rawLogLevel = (typeof process !== 'undefined' && process.env) ? process.env.LOG_LEVEL : undefined;
+const rawLogLevel = processEnv ? processEnv.LOG_LEVEL : undefined;
 const LOG_LEVEL = isBrowser ? (import.meta.env?.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug')) : (rawLogLevel || (NODE_ENV === 'production' ? 'info' : 'debug'));
 
 // Log levels
@@ -83,8 +86,10 @@ class EnterpriseLogger {
         logs.push(logData);
         if (logs.length > 100) logs.shift();
         localStorage.setItem('app_logs', JSON.stringify(logs));
-      } catch (e) {
-        // Ignore localStorage errors
+      } catch (error) {
+        if (isBrowser && NODE_ENV === 'development') {
+          console.warn('[LOGGER] Failed to persist log history', error);
+        }
       }
     }
   }

@@ -5,33 +5,8 @@ import { AuthProvider } from './providers/AuthProvider.jsx'
 import { logInfo, logError, logDebug } from './utils/logger.js'
 import { devLog } from '@/utils/structuredLogger.js'
 
-// Simplified initialization
-devLog.log('Initializing Sentia Manufacturing Dashboard...');
-
-// Simple fallback App component
-const FallbackApp = () => {
-  devLog.log('[FallbackApp] Rendering...');
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md w-full text-center">
-        <div className="bg-white shadow-xl rounded-lg p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Sentia Manufacturing Dashboard
-          </h1>
-          <p className="text-gray-600 mb-6">
-            System Loading...
-          </p>
-          <a
-            href="/dashboard"
-            className="block w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Continue to Dashboard
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-};
+// Initialize with proper Clerk authentication
+devLog.log('Initializing Sentia Manufacturing Dashboard with Clerk Authentication...');
 
 const initializeApp = async () => {
   const rootElement = document.getElementById('root');
@@ -41,47 +16,31 @@ const initializeApp = async () => {
     return;
   }
 
-  devLog.log('Root element found, mounting React app...');
+  devLog.log('Root element found, mounting React app with Clerk...');
 
   try {
     devLog.log('[main.jsx] Creating React root...');
     const root = createRoot(rootElement);
 
-    // Try to load the comprehensive enterprise app
+    // Load the simple Clerk implementation
     try {
-      devLog.log('[main.jsx] Attempting to load App-comprehensive...');
-      const { default: App } = await import('./App-comprehensive.jsx');
+      devLog.log('[main.jsx] Loading simple Clerk authentication app...');
+      const { default: App } = await import('./main-simple-clerk.jsx');
 
-      devLog.log('[main.jsx] App-comprehensive loaded successfully, rendering...');
+      devLog.log('[main.jsx] Simple Clerk app loaded successfully');
+      // The main-simple-clerk.jsx already includes the root render, so we just import it
+      devLog.log('[main.jsx] Clerk authentication app mounted successfully');
+    } catch (clerkError) {
+      logError('[main.jsx] Failed to load Clerk app', clerkError);
+      
+      // Fallback to basic app without authentication
+      const { default: BasicApp } = await import('./App.jsx');
       root.render(
         <StrictMode>
-          <App />
+          <BasicApp />
         </StrictMode>
       );
-      devLog.log('[main.jsx] Enterprise app mounted successfully with AI features');
-    } catch (appError) {
-      logError('[main.jsx] Failed to load App-comprehensive', appError);
-      devLog.log('[main.jsx] Attempting App-multistage fallback...');
-
-      try {
-        const { default: App } = await import('./App-multistage.jsx');
-        root.render(
-          <StrictMode>
-            <App />
-          </StrictMode>
-        );
-        devLog.log('[main.jsx] App-multistage mounted successfully');
-      } catch (multistageError) {
-        logError('[main.jsx] Failed to load App-multistage', multistageError);
-        devLog.log('[main.jsx] Falling back to simple app...');
-
-        root.render(
-          <StrictMode>
-            <FallbackApp />
-          </StrictMode>
-        );
-        devLog.log('[main.jsx] Fallback app mounted successfully');
-      }
+      devLog.log('[main.jsx] Basic app mounted as fallback');
     }
   } catch (error) {
     logError('[main.jsx] Critical error mounting React app', error);

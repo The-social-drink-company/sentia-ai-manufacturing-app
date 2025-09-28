@@ -7,7 +7,7 @@ const WorkingCapitalDashboard = lazy(() => import('./features/working-capital/Wo
 const InventoryDashboard = lazy(() => import('./features/inventory/InventoryDashboard'));
 const ProductionDashboard = lazy(() => import('./features/production/ProductionDashboard'));
 const AIInsights = lazy(() => import('./components/AIInsights'));
-const AIAnalyticsDashboard = lazy(() => import('./features/ai-analytics/AIAnalyticsDashboard'));
+const AIAnalyticsDashboard = lazy(() => import('./components/AI/AIAnalyticsDashboard'));
 const QualityControlDashboard = lazy(() => import('./features/quality/QualityControlDashboard'));
 
 function App() {

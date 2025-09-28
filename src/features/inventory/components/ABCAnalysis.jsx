@@ -10,8 +10,7 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
-  TreeMap
+  Cell
 } from 'recharts'
 import {
   CubeIcon,

@@ -1,9 +1,9 @@
 import React from 'react';
-import { SignUp } from '@clerk/clerk-react';
+import { SignIn } from '@clerk/clerk-react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useClerkAuth } from '../auth/ClerkAuthProvider';
 
-const SignUpPage = () => {
+const SignInPage = () => {
   const { isSignedIn, isLoaded } = useClerkAuth();
   const location = useLocation();
   
@@ -38,20 +38,20 @@ const SignUpPage = () => {
             </svg>
           </div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Join Sentia Manufacturing
+            Sentia Manufacturing
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Create your account to access the manufacturing dashboard
+            Sign in to access your manufacturing dashboard
           </p>
         </div>
 
-        {/* Clerk Sign Up Component */}
+        {/* Clerk Sign In Component */}
         <div className="bg-white dark:bg-gray-800 py-8 px-6 shadow-xl rounded-lg border border-gray-200 dark:border-gray-700">
-          <SignUp 
+          <SignIn 
             routing="path"
-            path="/sign-up"
+            path="/sign-in"
             redirectUrl="/dashboard"
-            signInUrl="/sign-in"
+            signUpUrl="/sign-up"
           />
         </div>
 
@@ -66,4 +66,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SignInPage;

@@ -1,5 +1,6 @@
-import React from 'react'
-import { useAuthRole } from '../../hooks/useAuthRole.jsx'
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuthRole } from '../../auth/ClerkAuthProvider';
 import { AlertCircle, Shield, Clock, Loader2 } from 'lucide-react'
 
 export default function ProtectedRoute({ 
@@ -9,25 +10,22 @@ export default function ProtectedRoute({
   requiredPermission = null,
   requiredRoleAtLeast = null,
   requiredFeature = null,
-  fallback = null
+  fallback = null,
+  requiredRoles = [] // Support for multiple roles
 }) {
   const { 
-    isLoading, 
-    isAuthenticated, 
-    hasRole, 
-    hasPermission, 
-    isRoleAtLeast,
-    hasFeature,
+    isLoaded, 
+    isSignedIn, 
+    user,
     role,
-    getUserDisplayName,
-    isSignedIn
-  } = useAuthRole()
-  
-  // Compatibility with Clerk's isLoaded - bulletproof auth is always loaded
-  const isLoaded = !isLoading
+    hasPermission,
+    isAdmin,
+    isManager
+  } = useAuthRole();
+  const location = useLocation();
 
   // Loading states
-  if (!isLoaded || isLoading) {
+  if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
@@ -40,43 +38,23 @@ export default function ProtectedRoute({
     )
   }
 
-  // Not signed in
-  if (!isSignedIn || !isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <div className="text-center">
-            <Shield className="mx-auto h-12 w-12 text-red-500 mb-4" />
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Authentication Required
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              You need to sign in to access this page.
-            </p>
-            <button
-              onClick={() => window.location.href = '/'}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-            >
-              Go to Sign In
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+  // Not signed in - redirect to sign-in page
+  if (!isSignedIn) {
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
-  // Check admin requirement (master_admin also has admin privileges)
-  if (requireAdmin && role !== 'admin' && role !== 'master_admin') {
+  // Check admin requirement
+  if (requireAdmin && !isAdmin) {
     return <UnauthorizedAccess 
       reason="Admin access required" 
       userRole={role}
-      requiredRole="admin or master_admin"
+      requiredRole="admin"
       fallback={fallback}
     />
   }
 
   // Check specific role requirement
-  if (requiredRole && !hasRole(requiredRole)) {
+  if (requiredRole && role !== requiredRole && !isAdmin) {
     return <UnauthorizedAccess 
       reason="Specific role required" 
       userRole={role}
@@ -85,14 +63,17 @@ export default function ProtectedRoute({
     />
   }
 
-  // Check minimum role level requirement  
-  if (requiredRoleAtLeast && !isRoleAtLeast(requiredRoleAtLeast)) {
-    return <UnauthorizedAccess 
-      reason="Insufficient role level" 
-      userRole={role}
-      requiredRole={`${requiredRoleAtLeast} or higher`}
-      fallback={fallback}
-    />
+  // Check multiple roles requirement
+  if (requiredRoles.length > 0) {
+    const hasRequiredRole = requiredRoles.includes(role) || isAdmin;
+    if (!hasRequiredRole) {
+      return <UnauthorizedAccess 
+        reason="Required role not found" 
+        userRole={role}
+        requiredRole={requiredRoles.join(' or ')}
+        fallback={fallback}
+      />
+    }
   }
 
   // Check permission requirement
@@ -101,16 +82,6 @@ export default function ProtectedRoute({
       reason="Missing required permission" 
       userRole={role}
       requiredPermission={requiredPermission}
-      fallback={fallback}
-    />
-  }
-
-  // Check feature requirement
-  if (requiredFeature && !hasFeature(requiredFeature)) {
-    return <UnauthorizedAccess 
-      reason="Feature not available" 
-      userRole={role}
-      requiredFeature={requiredFeature}
       fallback={fallback}
     />
   }

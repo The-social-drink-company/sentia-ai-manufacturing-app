@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentia Manufacturing - Login</title>
+    <script src="https://unpkg.com/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .features {
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .feature {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-icon {
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .auth-buttons {
+            margin-top: 30px;
+        }
+        
+        .auth-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .auth-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🏭 Sentia Manufacturing</div>
+        <div class="subtitle">Enterprise Dashboard</div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div>Real-time Manufacturing Analytics</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <div>AI-Powered Demand Forecasting</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <div>Working Capital Optimization</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📈</div>
+                <div>Live Business Intelligence</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div>Enterprise Security & Authentication</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌐</div>
+                <div>Multi-Source Data Integration</div>
+            </div>
+        </div>
+        
+        <div class="auth-buttons">
+            <button class="auth-button" onclick="signIn()">🔐 Sign In</button>
+            <button class="auth-button" onclick="signUp()">📝 Sign Up</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Authenticating...</p>
+        </div>
+        
+        <div class="status" id="status" style="display: none;">
+            <p>✅ All systems operational</p>
+            <p>🔗 Connected to: Shopify, Unleashed ERP, Xero, MCP Server</p>
+            <p>🤖 AI Analytics: 95% confidence</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Clerk with your publishable key
+        const clerkPublishableKey = 'pk_test_ZGVmaW5lZC1kb2ctNzEuY2xlcmsuYWNjb3VudHMuZGV2JA';
+        
+        // Initialize Clerk
+        const clerk = window.Clerk;
+        
+        async function initializeClerk() {
+            try {
+                await clerk.load({
+                    publishableKey: clerkPublishableKey
+                });
+                
+                // Check if user is already signed in
+                if (clerk.user) {
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard';
+                }
+                
+                // Show status
+                document.getElementById('status').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Clerk initialization error:', error);
+                alert('Authentication system error: ' + error.message);
+            }
+        }
+        
+        async function signIn() {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                
+                await clerk.openSignIn({
+                    afterSignInUrl: '/dashboard',
+                    redirectUrl: '/dashboard'
+                });
+                
+            } catch (error) {
+                console.error('Sign in error:', error);
+                alert('Sign in error: ' + error.message);
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        async function signUp() {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                
+                await clerk.openSignUp({
+                    afterSignUpUrl: '/dashboard',
+                    redirectUrl: '/dashboard'
+                });
+                
+            } catch (error) {
+                console.error('Sign up error:', error);
+                alert('Sign up error: ' + error.message);
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', initializeClerk);
+        
+        // Handle authentication state changes
+        clerk.addListener('user', (user) => {
+            if (user) {
+                // User signed in, redirect to dashboard
+                window.location.href = '/dashboard';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -10,9 +10,9 @@ import ClerkSignIn from './pages/ClerkSignIn';
 const ProtectedRoute = ({ children }) => {
   const auth = useBulletproofAuth();
 
-  // If not signed in, redirect to sign-in page
-  if (!auth.isSignedIn) {
-    console.log('[ProtectedRoute] User not signed in, redirecting to /sign-in');
+  // If auth is not available or not signed in, redirect to sign-in page
+  if (!auth || !auth.isSignedIn) {
+    console.log('[ProtectedRoute] User not authenticated, redirecting to /sign-in');
     return <Navigate to="/sign-in" replace />;
   }
 

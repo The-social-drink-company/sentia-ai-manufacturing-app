@@ -15,24 +15,7 @@ import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from 
 // Authentication context that always has a value
 const AuthContext = createContext(null);
 
-// Default fallback authentication state
-const FALLBACKAUTH_STATE = {
-  isLoaded: true,
-  isSignedIn: true,
-  userId: 'guest_user',
-  sessionId: 'guest_session',
-  user: {
-    id: 'guest_user',
-    firstName: 'Guest',
-    lastName: 'User',
-    fullName: 'Guest User',
-    emailAddresses: [{ emailAddress: 'guest@sentia.local' }],
-    publicMetadata: { role: 'viewer' }
-  },
-  signOut: () => Promise.resolve(),
-  getToken: () => Promise.resolve(null),
-  mode: 'fallback'
-};
+// No fallback - authentication is always required
 
 // Loading screen component
 const LoadingScreen = () => (
@@ -107,15 +90,7 @@ function ClerkAuthIntegration({ children }) {
   );
 }
 
-// Simple fallback auth provider that doesn't use Clerk hooks
-// This provides basic auth functionality when Clerk is not available
-function FallbackAuthProvider({ children }) {
-  return (
-    <AuthContext.Provider value={FALLBACKAUTH_STATE}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+// Authentication is always required - no fallback provider
 
 // Main bulletproof auth provider
 export function BulletproofAuthProvider({ children }) {
@@ -143,40 +118,27 @@ export function BulletproofAuthProvider({ children }) {
 
     // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      console.warn('Authentication timeout - switching to fallback mode');
-      setAuthMode('fallback');
-    }, 3000); // 3 second timeout
+      console.warn('Authentication timeout - Clerk is required');
+      setError('Authentication timeout. Please check your connection and try again.');
+      setAuthMode('error');
+    }, 5000); // 5 second timeout
 
-    // Check if we should disable Clerk
-    const disableClerk = import.meta.env.VITE_DISABLE_CLERK === 'true';
-    const forceClerkAuth = import.meta.env.VITE_FORCE_CLERK_AUTH === 'true';
+    // ALWAYS use Clerk - no fallback allowed
+    clearTimeout(timeout);
 
-    // Check if we should use Clerk or fallback
-    if (disableClerk && !forceClerkAuth) {
-      clearTimeout(timeout);
-      console.warn('Clerk is disabled via VITE_DISABLE_CLERK, using fallback mode');
-      setAuthMode('fallback');
-    } else if (isValidKey || forceClerkAuth) {
-      // Force Clerk mode for valid keys or when forced
-      console.info('Clerk authentication enabled');
+    if (!isValidKey) {
+      console.error('Invalid or missing Clerk key - authentication is required');
+      setError('Authentication configuration error. Please contact support.');
+      setAuthMode('error');
+    } else {
+      console.info('Clerk authentication initialized');
       console.info('Key info:', {
         keyStart: clerkKey?.substring(0, 30) + '...',
         keyLength: clerkKey?.length,
-        domain: 'clerk.financeflo.ai',
-        forceAuth: forceClerkAuth
+        domain: 'clerk.financeflo.ai'
       });
-      clearTimeout(timeout);
-      // Force Clerk mode - DO NOT use fallback with valid key
+      // Force Clerk mode - NO FALLBACK
       setAuthMode('clerk');
-    } else {
-      clearTimeout(timeout);
-      console.warn('No valid Clerk key and auth not forced - using fallback mode');
-      console.info('Clerk key status:', {
-        hasKey: !!clerkKey,
-        keyStart: clerkKey?.substring(0, 20),
-        keyLength: clerkKey?.length
-      });
-      setAuthMode('fallback');
     }
 
     return () => clearTimeout(timeout);
@@ -191,9 +153,9 @@ export function BulletproofAuthProvider({ children }) {
     initialize();
   };
 
-  // Show error screen if we have an error
-  if (error && authMode !== 'fallback') {
-    return <AuthError error={error} onRetry={handleRetry} />;
+  // Show error screen if we have an error or invalid config
+  if (error || authMode === 'error') {
+    return <AuthError error={error || 'Authentication is required to access this application'} onRetry={handleRetry} />;
   }
 
   // Show loading only briefly during initialization
@@ -226,14 +188,11 @@ export function BulletproofAuthProvider({ children }) {
     }
   }
 
-  // Fallback mode - always works
-  return (
-    <AuthContext.Provider value={FALLBACKAUTH_STATE}>
-      <div data-auth-mode="fallback" className="w-full h-full">
-        {children}
-      </div>
-    </AuthContext.Provider>
-  );
+  // No fallback - show error if Clerk isn't working
+  return <AuthError
+    error="Authentication system is not available. Please ensure Clerk is properly configured."
+    onRetry={handleRetry}
+  />;
 }
 
 // Universal auth hook that ALWAYS works
@@ -248,8 +207,8 @@ export function useBulletproofAuth() {
 
   // Note: Removed direct Clerk hook usage to prevent context errors
 
-  // Ultimate fallback - always return valid auth state
-  return FALLBACKAUTH_STATE;
+  // No fallback - authentication is required
+  return null;
 }
 
 // Helper hook to check auth mode

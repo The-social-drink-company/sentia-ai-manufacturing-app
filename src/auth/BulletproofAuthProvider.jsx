@@ -101,11 +101,10 @@ export function BulletproofAuthProvider({ children }) {
   // Get and validate Clerk key
   const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
-  // Your key: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
-  // This appears to be a valid Clerk test key
+  // Accept both production (pk_live_) and test (pk_test_) keys
   const isValidKey = Boolean(
     clerkKey &&
-    clerkKey.startsWith('pk') &&
+    (clerkKey.startsWith('pk_live_') || clerkKey.startsWith('pk_test_')) &&
     clerkKey.length > 20 &&
     !clerkKey.includes('undefined') &&
     !clerkKey.includes('YOUR_KEY') &&

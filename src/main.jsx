@@ -4,12 +4,30 @@ import { ClerkProvider } from '@clerk/clerk-react'
 import './index.css'
 import App from './App.jsx'
 
-// Clerk publishable key - PRODUCTION ONLY
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ'
+// Clerk publishable key from environment
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-console.log('Initializing Clerk with key:', PUBLISHABLE_KEY ? 'Found' : 'Missing')
+// Validate the key is present and properly formatted
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY in environment variables')
+}
 
-// PRODUCTION implementation - no workarounds, no shortcuts
+// Validate key format (should start with pk_ and not end with $)
+if (!PUBLISHABLE_KEY.startsWith('pk_')) {
+  throw new Error('Invalid Clerk publishable key format. Key should start with pk_')
+}
+
+if (PUBLISHABLE_KEY.endsWith('$')) {
+  console.error('Warning: Clerk publishable key appears to be truncated (ends with $)')
+}
+
+console.log('Clerk initialization:', {
+  keyPresent: !!PUBLISHABLE_KEY,
+  keyPrefix: PUBLISHABLE_KEY.substring(0, 7),
+  environment: import.meta.env.MODE
+})
+
+// PRODUCTION implementation with proper error handling
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ClerkProvider
@@ -18,6 +36,12 @@ createRoot(document.getElementById('root')).render(
       afterSignUpUrl="/dashboard"
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
+      appearance={{
+        elements: {
+          rootBox: "mx-auto",
+          card: "shadow-lg"
+        }
+      }}
     >
       <App />
     </ClerkProvider>

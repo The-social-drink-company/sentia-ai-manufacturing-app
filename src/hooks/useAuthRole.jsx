@@ -31,7 +31,7 @@ export const useAuthRole = () => {
       };
     }
 
-    const effectiveIsSignedIn = mode === 'clerk' ? isSignedIn : true;
+    const effectiveIsSignedIn = mode === 'clerk' ? isSignedIn : false;
 
     // Get role from bulletproof system or user metadata
     const userRole = roleData?.role ||

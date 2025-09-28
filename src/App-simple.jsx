@@ -8,7 +8,7 @@ import ClerkSignIn from './pages/ClerkSignIn';
 
 // Protected Route Component - Requires authentication
 const ProtectedRoute = ({ children }) => {
-  const auth = useBulletproofAuth();
+  const auth = useAuth();
 
   // If auth is not available or not signed in, redirect to sign-in page
   if (!auth || !auth.isSignedIn) {
@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children }) => {
 // Simple Dashboard Component with Real Data
 const Dashboard = () => {
   const [data, setData] = React.useState(null);
-  const auth = useBulletproofAuth();
+  const auth = useAuth();
 
   React.useEffect(() => {
     // Fetch real data from MCP server
@@ -244,3 +244,4 @@ function App() {
 }
 
 export default App;
+

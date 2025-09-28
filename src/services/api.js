@@ -61,7 +61,7 @@ class APIService {
       // Try MCP server first
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/working-capital`);
       return data;
-    } catch (error) {
+    } catch (_error) {
       // Fallback to local API
       return this.fetchWithAuth(`${this.apiBaseUrl}/financial/working-capital`);
     }
@@ -71,7 +71,7 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/cash-flow`);
       return data;
-    } catch (error) {
+    } catch (_error) {
       return this.fetchWithAuth(`${this.apiBaseUrl}/financial/cash-flow`);
     }
   }
@@ -80,7 +80,7 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/metrics`);
       return data;
-    } catch (error) {
+    } catch (_error) {
       return this.fetchWithAuth(`${this.apiBaseUrl}/financial/metrics`);
     }
   }
@@ -90,7 +90,7 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/production/metrics`);
       return data;
-    } catch (error) {
+    } catch (_error) {
       return this.fetchWithAuth(`${this.apiBaseUrl}/production/metrics`);
     }
   }
@@ -99,7 +99,7 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/inventory/current`);
       return data;
-    } catch (error) {
+    } catch (_error) {
       return this.fetchWithAuth(`${this.apiBaseUrl}/inventory/current`);
     }
   }
@@ -108,7 +108,7 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/quality/metrics`);
       return data;
-    } catch (error) {
+    } catch (_error) {
       return this.fetchWithAuth(`${this.apiBaseUrl}/quality/metrics`);
     }
   }
@@ -118,7 +118,7 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/dashboard/summary`);
       return data;
-    } catch (error) {
+    } catch (_error) {
       return this.fetchWithAuth(`${this.apiBaseUrl}/dashboard/summary`);
     }
   }

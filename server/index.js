@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * BULLETPROOF ENTERPRISE SERVER
  * Properly configured Express server with guaranteed API routing
  */
@@ -311,7 +311,7 @@ app.get('*', (req, res) => {
         </style>
       </head>
       <body>
-        <h1>Ã°Å¸Å¡â‚¬ Sentia Manufacturing Dashboard</h1>
+        <h1>ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ Sentia Manufacturing Dashboard</h1>
         <p class="status">Server is running successfully</p>
         <p class="error">Frontend build not found - please run build process</p>
 
@@ -336,7 +336,7 @@ app.get('*', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, _next) => {
+app.use((err, req, res) => {
   console.error('Server error:', err);
 
   if (req.path.startsWith('/api/')) {

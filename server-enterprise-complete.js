@@ -44,23 +44,38 @@ const __dirname = path.dirname(__filename);
 // Initialize Prisma Client with graceful fallback
 let prisma = null;
 let PrismaClient = null;
-try {
-  const pkg = await import('@prisma/client');
-  PrismaClient = pkg.PrismaClient;
-  prisma = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL || process.env[`${process.env.NODE_ENV?.toUpperCase()}_DATABASE_URL`] || process.env.DEV_DATABASE_URL
-      }
-    }
-  });
-  logger.info('Prisma client initialized successfully');
-} catch (error) {
-  logger.warn('Prisma client failed to initialize, running without database:', error.message);
-  prisma = null;
-}
 
+const prismaClientPath = path.join(__dirname, '.prisma', 'client');
+const prismaRuntimeAvailable = fs.existsSync(prismaClientPath);
+
+if (prismaRuntimeAvailable) {
+  try {
+    const pkg = await import('@prisma/client');
+    PrismaClient = pkg?.PrismaClient ?? null;
+
+    if (PrismaClient) {
+      prisma = new PrismaClient({
+        log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+        datasources: {
+          db: {
+            url:
+              process.env.DATABASE_URL ||
+              process.env[`${process.env.NODE_ENV?.toUpperCase()}_DATABASE_URL`] ||
+              process.env.DEV_DATABASE_URL
+          }
+        }
+      });
+      logger.info('Prisma client initialized successfully');
+    } else {
+      logger.warn('Prisma client module did not export PrismaClient constructor');
+    }
+  } catch (error) {
+    logger.warn('Prisma client failed to initialize, running without database:', error.message);
+    prisma = null;
+  }
+} else {
+  logger.warn('Prisma runtime (.prisma/client) not found - skipping database initialization');
+}
 // Test database connection
 async function testDatabaseConnection() {
   if (!prisma) {

@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useState } from 'react'
+ï»¿import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const API_BASE_URL = (import.meta.env && import.meta.env.VITE_API_BASE_URL) ? import.meta.env.VITE_API_BASE_URL : '/api'
 
@@ -26,7 +26,7 @@ async function getClerkToken() {
 
   try {
     return await clerkSession.getToken({ template: 'sentia-backend' })
-  } catch (templateError) {
+  } catch (_error) {
     return clerkSession.getToken()
   }
 }
@@ -47,7 +47,7 @@ async function fetchJson(path, params) {
     let details = {}
     try {
       details = await response.json()
-    } catch (parseError) {
+    } catch {
       // ignore parsing issues here
     }
 

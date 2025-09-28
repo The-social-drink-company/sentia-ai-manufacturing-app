@@ -1,5 +1,5 @@
 import { devLog } from '../lib/devLog.js';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { useSSE } from '../hooks/useSSE';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -71,7 +71,7 @@ export const SSEProvider = ({ children }) => {
 };
 
 // Global event handler for cross-component updates
-const handleGlobalSSEEvent = (_eventType, data, queryClient) => {
+const handleGlobalSSEEvent = (eventType, data, queryClient) => {
   switch (eventType) {
     case 'system.maintenance.start':
       // Show maintenance banner across all components
@@ -133,8 +133,8 @@ const handleGlobalSSEEvent = (_eventType, data, queryClient) => {
 
     default:
       // Log unknown events for debugging
-      if (process.env.NODEENV = == 'development') {
-        devLog.log('Unhandled SSE event:', eventType, data);
+      if (import.meta.env?.DEV) {
+        devLog.log('Unhandled SSE event:', eventType, data)
       }
       break;
   }

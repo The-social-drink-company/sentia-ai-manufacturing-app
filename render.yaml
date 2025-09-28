@@ -5,7 +5,7 @@ services:
     plan: starter
     region: oregon
     branch: branch-23-bulletproof
-    buildCommand: "npm install && npm run build"
+    buildCommand: "pnpm install --no-frozen-lockfile"
     startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true

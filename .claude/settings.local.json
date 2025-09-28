@@ -56,7 +56,8 @@
       "Bash(do echo \"Checking $file\")",
       "Bash(done)",
       "Bash(git restore:*)",
-      "Bash(gh pr list:*)"
+      "Bash(gh pr list:*)",
+      "WebFetch(domain:sentia-manufacturing-dashboard.onrender.com)"
     ],
     "deny": [],
     "ask": []

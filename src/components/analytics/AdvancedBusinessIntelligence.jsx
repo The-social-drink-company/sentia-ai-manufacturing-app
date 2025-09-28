@@ -4,7 +4,7 @@
  * Part of Phase 2.3: Advanced Business Intelligence Implementation
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   TrendingUpIcon,
   LightBulbIcon,
@@ -27,9 +27,9 @@ const AdvancedBusinessIntelligence = () => {
 
   useEffect(() => {
     fetchBusinessIntelligence();
-  }, []);
+  }, [fetchBusinessIntelligence]);
 
-  const fetchBusinessIntelligence = async () => {
+  const fetchBusinessIntelligence = useCallback(async () => {
     try {
       // Simulate AI-powered business intelligence API calls
       const [insightsData, kpiData, predictionsData, recommendationsData] = await Promise.all([
@@ -48,7 +48,7 @@ const AdvancedBusinessIntelligence = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const fetchAIInsights = async () => {
     // AI-powered insights from Claude and GPT-4 integration

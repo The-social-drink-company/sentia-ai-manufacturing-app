@@ -33,55 +33,8 @@ const EnhancedForecasting = () => {
     { value: 'optimistic', label: 'Optimistic', color: 'green', probability: '20%' }
   ];
 
-  // Generate enhanced forecast using dual AI models
-  const generateEnhancedForecast = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      // Check AI models availability
-      const aiStatus = await fetch('/api/ai/status').then(r => r.json());
-      setAiModelsStatus(aiStatus.models || { openai: false, claude: false });
-
-      // Generate forecast with current parameters
-      const response = await fetch('/api/forecasting/enhanced', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          horizon: forecastHorizon,
-          includeScenarios: true,
-          includeTrendAnalysis: true,
-          includeSeasonality: true,
-          businessContext: {
-            currentInventory: 12500,
-            productionCapacity: 15000,
-            marketConditions: 'stable',
-            economicIndicators: 'positive'
-          }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Forecast generation failed: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setForecastData(data);
-
-    } catch (error) {
-      console.error('Enhanced forecast generation failed:', error);
-      // Fallback to demo data
-      setForecastData(generateDemoForecastData());
-    } finally {
-      setIsLoading(false);
-    }
-  }, [forecastHorizon]);
-
-  // Auto-generate forecast on component mount and horizon change
-  useEffect(() => {
-    generateEnhancedForecast();
-  }, [generateEnhancedForecast]);
-
   // Demo data generator for development
-  const generateDemoForecastData = () => {
+  const generateDemoForecastData = useCallback(() => {
     const baseValue = 8500;
     const predictions = [];
 
@@ -175,7 +128,54 @@ const EnhancedForecasting = () => {
         }
       }
     };
-  };
+  }, [forecastHorizon]);
+
+  // Generate enhanced forecast using dual AI models
+  const generateEnhancedForecast = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Check AI models availability
+      const aiStatus = await fetch('/api/ai/status').then(r => r.json());
+      setAiModelsStatus(aiStatus.models || { openai: false, claude: false });
+
+      // Generate forecast with current parameters
+      const response = await fetch('/api/forecasting/enhanced', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          horizon: forecastHorizon,
+          includeScenarios: true,
+          includeTrendAnalysis: true,
+          includeSeasonality: true,
+          businessContext: {
+            currentInventory: 12500,
+            productionCapacity: 15000,
+            marketConditions: 'stable',
+            economicIndicators: 'positive'
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Forecast generation failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setForecastData(data);
+
+    } catch (error) {
+      console.error('Enhanced forecast generation failed:', error);
+      // Fallback to demo data
+      setForecastData(generateDemoForecastData());
+    } finally {
+      setIsLoading(false);
+    }
+  }, [forecastHorizon, generateDemoForecastData]);
+
+  // Auto-generate forecast on component mount and horizon change
+  useEffect(() => {
+    generateEnhancedForecast();
+  }, [generateEnhancedForecast]);
 
   // Format chart data based on selected scenario
   const getChartData = () => {
@@ -500,3 +500,4 @@ const EnhancedForecasting = () => {
 };
 
 export default EnhancedForecasting;
+

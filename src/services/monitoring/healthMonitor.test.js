@@ -181,8 +181,8 @@ describe('HealthMonitor', () => {
 
     it('should alert on high memory usage', async () => {
       // Mock high memory usage
-      global.performance.memory.usedJSHeapSize = 1024 * 1024 * 180 // 180MB
-      global.performance.memory.jsHeapSizeLimit = 1024 * 1024 * 200 // 200MB
+      globalThis.performance.memory.usedJSHeapSize = 1024 * 1024 * 180 // 180MB
+      globalThis.performance.memory.jsHeapSizeLimit = 1024 * 1024 * 200 // 200MB
 
       monitor.start()
       const memoryCheck = monitor.healthChecks.get('memory')

@@ -32,7 +32,10 @@ function resolveBaseUrl() {
 async function safeJson(response) {
   try {
     return await response.json()
-  } catch (error) {\n    logWarn('Failed to parse dashboard summary JSON', error)\n    return null\n  }
+  } catch (error) {
+    logWarn('Failed to parse dashboard summary JSON', error)
+    return null
+  }
 }
 
 export async function fetchDashboardSummary({ signal } = {}) {
@@ -77,4 +80,5 @@ export async function fetchDashboardSummary({ signal } = {}) {
     }
   }
 }
+
 

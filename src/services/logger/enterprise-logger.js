@@ -154,26 +154,55 @@ export const createLogger = (name) => {
   };
 };
 
+const HEALTH_LOG_PATHS = [
+  '/health',
+  '/health/live',
+  '/health/ready',
+  '/health/detailed',
+  '/health/history',
+  '/health/liveness',
+  '/health/readiness',
+  '/api/health',
+  '/api/health/live',
+  '/api/health/ready',
+  '/api/health/detailed'
+];
+
+const isHealthEndpoint = req => {
+  const path = (req?.path || req?.originalUrl || '').toLowerCase();
+
+  if (!path) {
+    return false;
+  }
+
+  return HEALTH_LOG_PATHS.some(target => path === target || path.startsWith(`${target}/`));
+};
+
 // Express middleware for logging
 export const loggingMiddleware = (req, res, next) => {
   const start = Date.now();
 
-  // Log request
-  logger.info(`${req.method} ${req.path}`, {
-    method: req.method,
-    path: req.path,
-    query: req.query,
-    ip: req.ip
-  });
+  const skipLogging = isHealthEndpoint(req);
+
+  if (!skipLogging) {
+    logger.info(`${req.method} ${req.path}`, {
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      ip: req.ip
+    });
+  }
 
   // Capture response
   const originalSend = res.send;
-  res.send = function(data) {
+  res.send = function sendWithLogging(data) {
     const duration = Date.now() - start;
-    logger.info(`Response sent: ${req.method} ${req.path}`, {
-      statusCode: res.statusCode,
-      duration: `${duration}ms`
-    });
+    if (!skipLogging) {
+      logger.info(`Response sent: ${req.method} ${req.path}`, {
+        statusCode: res.statusCode,
+        duration: `${duration}ms`
+      });
+    }
     return originalSend.call(this, data);
   };
 
@@ -182,3 +211,4 @@ export const loggingMiddleware = (req, res, next) => {
 
 // Default export
 export default logger;
+

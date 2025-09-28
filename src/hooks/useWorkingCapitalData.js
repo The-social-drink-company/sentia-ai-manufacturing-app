@@ -26,7 +26,8 @@ async function getClerkToken() {
 
   try {
     return await clerkSession.getToken({ template: 'sentia-backend' })
-  } catch (_error) {
+  } catch (error) {
+    console.warn('[useWorkingCapitalData] Clerk token fetch failed, retrying with default session token', error)
     return clerkSession.getToken()
   }
 }

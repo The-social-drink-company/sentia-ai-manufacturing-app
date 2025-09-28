@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.11.3
+        version: 1.11.3
       '@azure/msal-browser':
         specifier: ^3.26.1
         version: 3.30.0

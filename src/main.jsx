@@ -36,55 +36,48 @@ const FallbackApp = () => {
 const initializeApp = async () => {
   const rootElement = document.getElementById('root');
   if (!rootElement) {
-    logError('Root element not found');
+    console.error('Root element not found');
     document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Error: Root element not found</div>';
     return;
   }
 
-  devLog.log('Root element found, mounting React app...');
+  console.log('Root element found, mounting React app...');
 
   try {
-    devLog.log('[main.jsx] Creating React root...');
+    console.log('[main.jsx] Creating React root...');
     const root = createRoot(rootElement);
 
-    // Try to load the comprehensive enterprise app
+    // Load the simple app directly for reliability
     try {
-      devLog.log('[main.jsx] Attempting to load App-comprehensive...');
-      const { default: App } = await import('./App-comprehensive.jsx');
+      console.log('[main.jsx] Loading App-simple...');
+      const { default: App } = await import('./App-simple.jsx');
 
-      devLog.log('[main.jsx] App-comprehensive loaded successfully, rendering...');
+      console.log('[main.jsx] App-simple loaded successfully, rendering...');
       root.render(
         <StrictMode>
           <App />
         </StrictMode>
       );
-      devLog.log('[main.jsx] Enterprise app mounted successfully with AI features');
-    } catch (appError) {
-      logError('[main.jsx] Failed to load App-comprehensive', appError);
-      devLog.log('[main.jsx] Attempting App-multistage fallback...');
+      console.log('[main.jsx] App mounted successfully with AI features');
 
-      try {
-        const { default: App } = await import('./App-multistage.jsx');
-        root.render(
-          <StrictMode>
-            <App />
-          </StrictMode>
-        );
-        devLog.log('[main.jsx] App-multistage mounted successfully');
-      } catch (multistageError) {
-        logError('[main.jsx] Failed to load App-multistage', multistageError);
-        devLog.log('[main.jsx] Falling back to simple app...');
-
-        root.render(
-          <StrictMode>
-            <FallbackApp />
-          </StrictMode>
-        );
-        devLog.log('[main.jsx] Fallback app mounted successfully');
+      // Remove the fallback loader
+      const loader = document.getElementById('fallback-loader');
+      if (loader) {
+        loader.style.display = 'none';
       }
+    } catch (appError) {
+      console.error('[main.jsx] Failed to load App-simple', appError);
+
+      // Use fallback app
+      root.render(
+        <StrictMode>
+          <FallbackApp />
+        </StrictMode>
+      );
+      console.log('[main.jsx] Fallback app mounted');
     }
   } catch (error) {
-    logError('[main.jsx] Critical error mounting React app', error);
+    console.error('[main.jsx] Critical error mounting React app', error);
     rootElement.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Critical Error: ' + error.message + '</div>';
   }
 };

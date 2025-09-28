@@ -1,1 +1,0 @@
-import{j as t}from"./react-vendor-CbFVVgBZ.js";import r from"./AdvancedInventoryManagement-C9ypTznz.js";import"./vendor-BHPHB5s9.js";import"./charts-Dbk9-C0f.js";import"./utils-Pe79r9Ua.js";const a=()=>t.jsx(r,{});export{a as default};

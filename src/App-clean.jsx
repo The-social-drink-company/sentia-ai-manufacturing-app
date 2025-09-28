@@ -19,7 +19,7 @@ import ErrorFallback from './components/ui/ErrorFallback';
 
 // Lazy-loaded pages
 const LandingPage = lazy(() => import('./pages/LandingPage'));
-const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Dashboard = lazy(() => import('./pages/WorkingCapitalDashboard'));
 const WorkingCapital = lazy(() => import('./pages/WorkingCapital'));
 const Production = lazy(() => import('./pages/Production'));
 const Inventory = lazy(() => import('./pages/Inventory'));

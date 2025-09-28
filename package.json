@@ -23,7 +23,11 @@
     "lint": "eslint src server --ext .js,.jsx",
     "lint:fix": "eslint src server --ext .js,.jsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,json}\" \"server/**/*.{js,json}\" \"*.{js,json,md}\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,json}\" \"server/**/*.{js,json}\" \"*.{js,json,md}\""
+    "format:check": "prettier --check \"src/**/*.{js,jsx,json}\" \"server/**/*.{js,json}\" \"*.{js,json,md}\"",
+    "db:seed": "node prisma/seed.js",
+    "db:migrate": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@azure/msal-browser": "^3.26.1",

@@ -14,12 +14,19 @@ export default defineConfig(({ command }) => ({
     "process.env.NODE_ENV": JSON.stringify(command === "build" ? "production" : (process.env.NODE_ENV || "development"))
   },
   root: '.', // Explicitly set root to current directory
-  plugins: [react(),tailwindcss(),visualizer({
+  plugins: [
+    react({
+      jsxRuntime: 'automatic',
+      jsxImportSource: 'react'
+    }),
+    tailwindcss(),
+    visualizer({
       filename: "dist/stats.html",
       template: "treemap",
       gzipSize: true,
       brotliSize: true
-    })],
+    })
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

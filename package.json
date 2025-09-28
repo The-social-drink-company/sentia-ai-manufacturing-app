@@ -1,13 +1,9 @@
 {
-  "name": "sentia-manufacturing-dashboard",
-  "private": true,
-  "version": "1.0.10",
-  "description": "Enterprise Manufacturing Dashboard with React/Vite frontend and Node.js backend",
+  "name": "sentia-manufacturing-dashboard-bulletproof",
+  "version": "2.0.0-bulletproof",
+  "description": "Sentia Manufacturing Dashboard - Enterprise working capital intelligence",
+  "main": "server-enterprise-complete.js",
   "type": "module",
-  "engines": {
-    "node": ">=20.0.0 <25.0.0"
-  },
-  "packageManager": "pnpm@9.12.0",
   "scripts": {
     "dev": "concurrently \"pnpm run dev:client\" \"pnpm run dev:server\"",
     "dev:client": "vite --host --port 3000",
@@ -205,5 +201,15 @@
     "typescript": "^5.3.0",
     "vite": "^7.1.7",
     "vitest": "^2.1.8"
+=======
+    "start": "node server.js",
+    "build": "echo 'Build not required - using pre-built application'"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+>>>>>>> baed00d3308a0840f08ad991048d6e31660a3b56
   }
 }

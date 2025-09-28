@@ -1,3 +1,5 @@
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 /**
  * Manufacturing Analytics Service
  * Provides comprehensive manufacturing analytics, KPIs, trends, and anomaly detection
@@ -69,7 +71,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, kpis);
       return kpis;
     } catch (error) {
-      console.error('Error fetching KPIs:', error);
+      logError('Error fetching KPIs:', error);
       throw error;
     }
   }
@@ -113,7 +115,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, trends);
       return trends;
     } catch (error) {
-      console.error('Error fetching production trends:', error);
+      logError('Error fetching production trends:', error);
       throw error;
     }
   }
@@ -161,7 +163,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, anomalies);
       return anomalies;
     } catch (error) {
-      console.error('Error detecting anomalies:', error);
+      logError('Error detecting anomalies:', error);
       throw error;
     }
   }
@@ -223,7 +225,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, maintenance);
       return maintenance;
     } catch (error) {
-      console.error('Error fetching predictive maintenance:', error);
+      logError('Error fetching predictive maintenance:', error);
       throw error;
     }
   }
@@ -285,7 +287,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, performance);
       return performance;
     } catch (error) {
-      console.error('Error fetching line performance:', error);
+      logError('Error fetching line performance:', error);
       throw error;
     }
   }
@@ -340,7 +342,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, shifts);
       return shifts;
     } catch (error) {
-      console.error('Error fetching shift analysis:', error);
+      logError('Error fetching shift analysis:', error);
       throw error;
     }
   }
@@ -379,7 +381,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, energy);
       return energy;
     } catch (error) {
-      console.error('Error fetching energy analytics:', error);
+      logError('Error fetching energy analytics:', error);
       throw error;
     }
   }
@@ -420,7 +422,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, waste);
       return waste;
     } catch (error) {
-      console.error('Error fetching waste analysis:', error);
+      logError('Error fetching waste analysis:', error);
       throw error;
     }
   }
@@ -473,7 +475,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, supplyChain);
       return supplyChain;
     } catch (error) {
-      console.error('Error fetching supply chain analytics:', error);
+      logError('Error fetching supply chain analytics:', error);
       throw error;
     }
   }
@@ -516,7 +518,7 @@ class ManufacturingAnalyticsService {
       this.setCache(cacheKey, workforce);
       return workforce;
     } catch (error) {
-      console.error('Error fetching workforce analytics:', error);
+      logError('Error fetching workforce analytics:', error);
       throw error;
     }
   }

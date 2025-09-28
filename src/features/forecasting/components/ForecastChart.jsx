@@ -25,12 +25,12 @@ import {
 const ForecastChart = ({
   data = [],
   scenarios = {},
-  title = "Forecast _Chart",
+  title = "Forecast Chart",
   height = 400,
   showConfidenceBands = true,
   showScenarios = true,
   className = "",
-  _onDataPointClick,
+  onDataPointClick,
   interactive = true
 }) => {
   const [visibleScenarios, setVisibleScenarios] = React.useState({
@@ -68,9 +68,9 @@ const ForecastChart = ({
 
     // Add scenario data if available
     if (showScenarios && scenarios) {
-      Object.entries(scenarios).forEach(([scenarioName, _scenarioData]) => {
+      Object.entries(scenarios).forEach(([scenarioName, scenarioData]) => {
         if (visibleScenarios[scenarioName] && scenarioData) {
-          scenarioData.forEach((scenarioPoint, index) => {
+          scenarioData.forEach((scenarioPoint, _index) => {
             const existingPoint = processedData[index]
             if (existingPoint) {
               existingPoint[`${scenarioName}Value`] = typeof scenarioPoint.value === 'number'

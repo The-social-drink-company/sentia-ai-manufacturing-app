@@ -35,7 +35,7 @@ class RedisCacheService {
     try {
       if (process.env.REDIS_URL) {
         this.client = createClient({
-          url: _process.env.REDIS_URL,
+          url: process.env.REDIS_URL,
           socket: {
             connectTimeout: 10000,
             lazyConnect: true,
@@ -251,7 +251,7 @@ class RedisCacheService {
       if (this.isConnected && this.client) {
         const values = await this.client.mGet(fullKeys);
 
-        keys.forEach((originalKey, index) => {
+        keys.forEach((originalKey, _index) => {
           const value = values[index];
           if (value !== null) {
             result[originalKey] = this.deserializeData(value);
@@ -476,7 +476,7 @@ export const cacheService = new RedisCacheService();
 
 // Export cache decorators for common patterns
 export const withCache = (key, ttl, options = {}) => {
-  return (_target, _propertyName, descriptor) => {
+  return (target, propertyName, descriptor) => {
     const method = descriptor.value;
 
     descriptor.value = async function(...args) {

@@ -23,6 +23,8 @@ import {
 } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import ChartErrorBoundary from '../components/charts/ChartErrorBoundary';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const Forecasting = () => {
   const [forecastHorizon, setForecastHorizon] = useState('12_months');
@@ -45,7 +47,7 @@ const Forecasting = () => {
           return await response.json();
         }
       } catch (error) {
-        console.error('Forecast API error:', error);
+        logError('Forecast API error:', error);
       }
       return mockForecastData;
     },
@@ -464,7 +466,7 @@ const Forecasting = () => {
                   </h4>
                   <div className="space-y-3">
                     {data.seasonalPatterns.map((pattern, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">)
                         <div>
                           <div className="font-medium text-gray-900 dark:text-white">{pattern.period}</div>
                           <div className="text-sm text-gray-500">{pattern.description}</div>
@@ -720,7 +722,7 @@ const Forecasting = () => {
                       { horizon: 'Medium-term (3-12 months)', accuracy: data.accuracyMetrics.mediumTerm },
                       { horizon: 'Long-term (12+ months)', accuracy: data.accuracyMetrics.longTerm }
                     ].map((item, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">)
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {item.horizon}
                         </div>

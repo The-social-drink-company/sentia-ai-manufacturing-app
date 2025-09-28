@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState,  } from 'react';
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,20 +19,20 @@ import {
 } from 'lucide-react'
 
 const ExecutiveDashboard = () => {
-  const [metrics, setMetrics] = useState({
+  const [metrics] = useState({
     totalRevenue: { value: '£2.5M', change: '+15.2%', trend: 'up' },
     activeOrders: { value: '1,250', change: '+8.5%', trend: 'up' },
     inventoryValue: { value: '£0.8M', change: '-2.1%', trend: 'down' },
     activeCustomers: { value: '850', change: '+12.3%', trend: 'up' }
   })
 
-  const [workingCapital, setWorkingCapital] = useState({
+  const [workingCapital] = useState({
     current: '£1.9M',
     projection: '£2.1M',
     change: '+19.5%'
   })
 
-  const [kpis, setKpis] = useState([
+  const [kpis] = useState([
     { label: 'Revenue Growth', value: '+15.2%', target: 85 },
     { label: 'Order Fulfillment', value: '94.8%', target: 95 },
     { label: 'Customer Satisfaction', value: '4.7/5', target: 90 },

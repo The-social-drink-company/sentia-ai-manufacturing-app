@@ -5,8 +5,8 @@ import { z } from 'zod';
  * @param {z.ZodSchema} schema - Zod schema to validate against
  * @param {string} property - Property to validate ('body', 'query', 'params')
  */
-export const validate = (schema, property = _'body') => {
-  return (req, res, _next) => {
+export const validate = (schema, property = 'body') => {
+  return (req, res, next) => {
     try {
       const validated = schema.parse(req[property]);
       req[property] = validated;

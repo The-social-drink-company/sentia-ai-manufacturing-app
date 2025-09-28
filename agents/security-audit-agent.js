@@ -234,8 +234,8 @@ class SecurityAuditAgent {
         
         // Replace new RegExp with safer alternatives
         updated = updated.replace(
-          /new RegExp\(([^,)]+)\)/g,
-          (_match, pattern) => {
+          /new RegExp\\(([^,)]+)\\)/g,
+          (match, pattern) => {
             // If pattern is a variable, add input validation comment
             if (!pattern.startsWith('"') && !pattern.startsWith("'")) {
               return `/* @security-check */ ${match}`;
@@ -266,8 +266,8 @@ class SecurityAuditAgent {
         
         // Replace eval with safer alternatives
         updated = updated.replace(
-          /\\beval\(([^)]+)\)/g,
-          (_match, code) => {
+          /\\beval\\(([^)]+)\\)/g,
+          (match, code) => {
             return `Function('"use strict"; return (' + ${code} + ')')()`;
           }
         );

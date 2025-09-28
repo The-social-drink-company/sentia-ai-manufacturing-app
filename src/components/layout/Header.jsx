@@ -24,7 +24,7 @@ const Header = ({ _onMenuToggle, isSidebarOpen }) => {
   const { role, getUserDisplayName } = useAuthRole()
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [notifications, setNotifications] = useState([])
+  const [notifications] = useState([])
 
   // Get role display information
   const getRoleInfo = (userRole) => {

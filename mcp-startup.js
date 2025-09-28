@@ -36,12 +36,12 @@ const mcpProcess = spawn('node', [serverScript], {
   }
 });
 
-mcpProcess.on(_'error', (error) => {
+mcpProcess.on('error', (error) => {
   console.error('❌ Failed to start MCP server:', error);
   process.exit(1);
 });
 
-mcpProcess.on(_'exit', (code, _signal) => {
+mcpProcess.on('exit', (code, signal) => {
   if (code !== 0) {
     console.error(`❌ MCP server exited with code ${code} (signal: ${signal})`);
     process.exit(code || 1);
@@ -52,12 +52,12 @@ mcpProcess.on(_'exit', (code, _signal) => {
 });
 
 // Handle graceful shutdown
-process.on(_'SIGTERM', () => {
+process.on('SIGTERM', () => {
   console.log('🔄 Received SIGTERM, shutting down MCP server...');
   mcpProcess.kill('SIGTERM');
 });
 
-process.on(_'SIGINT', () => {
+process.on('SIGINT', () => {
   console.log('🔄 Received SIGINT, shutting down MCP server...');
   mcpProcess.kill('SIGINT');
 });

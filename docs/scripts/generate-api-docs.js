@@ -21,8 +21,8 @@ async function extractEndpoints() {
     
     // Parse Express routes
     const routePatterns = [
-      /app.(get|post|put|patch|delete)\s*(\s*['"`]([^'"`]+)['"`]/g,
-      /router.(get|post|put|patch|delete)\s*(\s*['"`]([^'"`]+)['"`]/g
+      /app\.(get|post|put|patch|delete)\s*\(\s*['"`]([^'"`]+)['"`]/g,
+      /router\.(get|post|put|patch|delete)\s*\(\s*['"`]([^'"`]+)['"`]/g
     ];
     
     for (const pattern of routePatterns) {
@@ -33,7 +33,7 @@ async function extractEndpoints() {
         // Extract JSDoc comments if present
         const lineStart = content.lastIndexOf('\n', match.index);
         const previousLines = content.substring(Math.max(0, lineStart - 500), match.index);
-        const jsdocMatch = previousLines.match(//**[\s\S]*?*//);
+        const jsdocMatch = previousLines.match(/\/\*\*[\s\S]*?\*\//);
         
         let description = '';
         let parameters = [];
@@ -44,7 +44,7 @@ async function extractEndpoints() {
           const jsdoc = jsdocMatch[0];
           
           // Extract description
-          const descMatch = jsdoc.match(//**\s*\n\s**\s*([^@\n]+)/);
+          const descMatch = jsdoc.match(/\/\*\*\s*\n\s*\*\s*([^@\n]+)/);
           if (descMatch) {
             description = descMatch[1].trim();
           }

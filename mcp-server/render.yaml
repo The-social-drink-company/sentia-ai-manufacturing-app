@@ -1,0 +1,98 @@
+﻿services:
+  # MCP Server - Enterprise AI Central Nervous System
+  - type: web
+    name: sentia-mcp-server
+    runtime: node
+    region: oregon
+    plan: standard # /month for production reliability
+
+    repo: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
+    branch: development
+    rootDir: mcp-server
+
+    buildCommand: npm install
+    startCommand: npm start
+
+    healthCheckPath: /health
+
+    envVars:
+      # Core Configuration
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: LOG_LEVEL
+        value: info
+
+      # JWT Configuration
+      - key: JWT_SECRET
+        generateValue: true
+
+      # AI Services - Claude (Anthropic)
+      - key: ANTHROPIC_API_KEY
+        value: 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
+
+      # AI Services - OpenAI
+      - key: OPENAI_API_KEY
+        value: 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
+
+      # Google AI (Optional)
+      - key: GOOGLE_AI_API_KEY
+        sync: false
+
+      # Local LLM Configuration (Optional)
+      - key: LOCAL_LLM_ENDPOINT
+        value: http://localhost:11434
+      - key: LOCAL_LLM_MODEL
+        value: llama2
+
+      # Database Connection (Using Render PostgreSQL from main app)
+      # Note: This will use the same database as the main application
+      # The connection string will be provided via environment group
+      - key: DATABASE_URL
+        sync: false # Will be set from Render environment group or dashboard
+
+      # External Service APIs (For unified interface)
+      - key: XERO_CLIENT_ID
+        value: 9C0CAB921C134476A249E48BBECB8C4B
+      - key: XERO_CLIENT_SECRET
+        value: f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
+
+      - key: SHOPIFY_UK_API_KEY
+        value: 7a30cd84e7a106b852c8e0fb789de10e
+      - key: SHOPIFY_UK_ACCESS_TOKEN
+        value: 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
+      - key: SHOPIFY_UK_SHOP_URL
+        value: sentiaspirits.myshopify.com
+
+      - key: AMAZON_UK_MARKETPLACE_ID
+        value: A1F83G8C2ARO7P
+      - key: AMAZON_USA_MARKETPLACE_ID
+        value: ATVPDKIKX0DER
+
+      - key: UNLEASHED_API_ID
+        value: d5313df6-db35-430c-a69e-ae27dffe0c5a
+      - key: UNLEASHED_API_KEY
+        value: 2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+
+      # CORS Settings
+      - key: CORS_ORIGINS
+        value: https://sentia-manufacturing-development.onrender.com,https://sentia-manufacturing-testing.onrender.com,https://sentia-manufacturing-production.onrender.com
+
+      # WebSocket Configuration
+      - key: ENABLE_WEBSOCKET
+        value: true
+      - key: WS_HEARTBEAT_INTERVAL
+        value: 30000
+
+      # Redis Cache (Optional)
+      - key: REDIS_URL
+        sync: false
+
+      # Feature Flags
+      - key: ENABLE_AI_FEATURES
+        value: true
+      - key: ENABLE_VECTOR_DB
+        value: true
+      - key: ENABLE_DECISION_ENGINE
+        value: true

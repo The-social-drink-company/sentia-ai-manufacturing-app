@@ -5,260 +5,178 @@
  */
 
 // Environment configuration
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const LOG_LEVEL = process.env.LOG_LEVEL || process.env.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug');
+// Check if we're in a browser (Vite) or Node.js environment
+const isBrowser = typeof window !== 'undefined';
+const NODE_ENV = isBrowser ? (import.meta.env?.MODE || 'development') : (process.env.NODE_ENV || 'development');
+const LOG_LEVEL = isBrowser ? (import.meta.env?.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug')) : (process.env.LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug'));
 
-// Custom log levels with priorities
-const logLevels = {
-  levels: {
-    critical: 0,
-    error: 1,
-    warn: 2,
-    info: 3,
-    http: 4,
-    debug: 5,
-    trace: 6
-  },
-  colors: {
-    critical: '#ff0000',
-    error: '#ff4444',
-    warn: '#ffaa00',
-    info: '#00aa00',
-    http: '#aa00aa',
-    debug: '#0066cc',
-    trace: '#888888'
-  }
+// Log levels
+const LOG_LEVELS = {
+  trace: 0,
+  debug: 1,
+  info: 2,
+  warn: 3,
+  error: 4,
+  fatal: 5
 };
 
-// Determine if a log level should be displayed
-const shouldLog = (level) => {
-  const currentLevel = logLevels.levels[LOG_LEVEL] || logLevels.levels.info;
-  const messageLevel = logLevels.levels[level] || logLevels.levels.info;
-  return messageLevel <= currentLevel;
-};
+// Check if we should show debug logs
+const shouldDebug = LOG_LEVEL === 'debug' || LOG_LEVEL === 'trace';
 
-// Format timestamp
-const formatTimestamp = () => {
-  const now = new Date();
-  return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
-};
-
-// Format log message
-const formatMessage = (level, message, metadata = {}) => {
-  const timestamp = formatTimestamp();
-  const metaStr = Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : '';
-  return {
-    timestamp,
-    level,
-    message,
-    metadata,
-    formatted: `[${timestamp}] ${level.toUpperCase()}: ${message} ${metaStr}`
-  };
-};
-
-// Enterprise Logger Class
+/**
+ * Structured logger for browser environment
+ */
 class EnterpriseLogger {
-  constructor(component = 'App') {
-    this.component = component;
-    this.logs = [];
-    this.maxLogs = 1000; // Keep last 1000 logs in memory
+  constructor() {
+    this.context = {
+      environment: NODE_ENV,
+      timestamp: new Date().toISOString(),
+      browser: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
+    };
   }
 
-  // Core logging method
-  log(level, message, metadata = {}) {
-    if (!shouldLog(level)) return;
+  shouldLog(level) {
+    return LOG_LEVELS[level] >= LOG_LEVELS[LOG_LEVEL] || 0;
+  }
 
-    const logEntry = formatMessage(level, message, {
-      ...metadata,
-      component: this.component
-    });
+  formatLog(level, message, data = {}) {
+    return {
+      ...this.context,
+      level,
+      timestamp: new Date().toISOString(),
+      message,
+      ...data
+    };
+  }
 
-    // Store in memory
-    this.logs.push(logEntry);
-    if (this.logs.length > this.maxLogs) {
-      this.logs.shift();
+  log(level, message, data) {
+    if (!this.shouldLog(level)) return;
+
+    const logData = this.formatLog(level, message, data);
+
+    // In browser, use console methods
+    switch (level) {
+      case 'trace':
+      case 'debug':
+        console.debug('[DEBUG]', message, data || '');
+        break;
+      case 'info':
+        console.info('[INFO]', message, data || '');
+        break;
+      case 'warn':
+        console.warn('[WARN]', message, data || '');
+        break;
+      case 'error':
+      case 'fatal':
+        console.error('[ERROR]', message, data || '');
+        break;
+      default:
+        console.log('[LOG]', message, data || '');
     }
 
-    // Output to console in development
+    // Store in localStorage for debugging (limited to last 100 logs)
     if (NODE_ENV === 'development') {
-      const color = logLevels.colors[level];
-      const style = `color: ${color}; font-weight: ${level === 'critical' ? 'bold' : 'normal'}`;
-
-      console.log(`%c${logEntry.formatted}`, style);
-
-      // Also log metadata if present
-      if (Object.keys(metadata).length > 0) {
-        console.log('Metadata:', metadata);
-      }
-    } else if (NODE_ENV === 'production') {
-      // In production, use appropriate console methods
-      switch (level) {
-        case 'critical':
-        case 'error':
-          console.error(logEntry.formatted, metadata);
-          break;
-        case 'warn':
-          console.warn(logEntry.formatted, metadata);
-          break;
-        case 'info':
-        case 'http':
-          console.info(logEntry.formatted, metadata);
-          break;
-        case 'debug':
-        case 'trace':
-          if (LOG_LEVEL === 'debug' || LOG_LEVEL === 'trace') {
-            console.log(logEntry.formatted, metadata);
-          }
-          break;
-        default:
-          console.log(logEntry.formatted, metadata);
+      try {
+        const logs = JSON.parse(localStorage.getItem('app_logs') || '[]');
+        logs.push(logData);
+        if (logs.length > 100) logs.shift();
+        localStorage.setItem('app_logs', JSON.stringify(logs));
+      } catch (e) {
+        // Ignore localStorage errors
       }
     }
-
-    // Send to remote logging service in production
-    if (NODE_ENV === 'production' && (level === 'critical' || level === 'error')) {
-      this.sendToRemote(logEntry);
-    }
-
-    return logEntry;
   }
 
-  // Send logs to remote service
-  async sendToRemote(logEntry) {
-    try {
-      // This would be replaced with actual remote logging service
-      // e.g., Sentry, LogRocket, DataDog, etc.
-      if (window.REMOTE_LOGGING_ENABLED) {
-        await fetch('/api/logs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(logEntry)
-        });
-      }
-    } catch {
-      // Silently fail remote logging to avoid infinite loops
-    }
+  trace(message, data) {
+    this.log('trace', message, data);
   }
 
-  // Log level methods
-  critical(message, metadata) {
-    return this.log('critical', message, metadata);
+  debug(message, data) {
+    this.log('debug', message, data);
   }
 
-  error(message, error, metadata = {}) {
-    const errorMeta = error instanceof Error ? {
-      ...metadata,
-      error: error.message,
-      stack: error.stack
-    } : metadata;
-    return this.log('error', message, errorMeta);
+  info(message, data) {
+    this.log('info', message, data);
   }
 
-  warn(message, metadata) {
-    return this.log('warn', message, metadata);
+  warn(message, data) {
+    this.log('warn', message, data);
   }
 
-  info(message, metadata) {
-    return this.log('info', message, metadata);
+  error(message, data) {
+    this.log('error', message, data);
   }
 
-  http(message, metadata) {
-    return this.log('http', message, metadata);
-  }
-
-  debug(message, metadata) {
-    return this.log('debug', message, metadata);
-  }
-
-  trace(message, metadata) {
-    return this.log('trace', message, metadata);
-  }
-
-  // Special logging methods
-  audit(action, userId, details) {
-    return this.log('info', `AUDIT: ${action}`, { userId, details, type: 'audit' });
-  }
-
-  metric(name, value, unit = '', tags = {}) {
-    return this.log('info', `METRIC: ${name}`, { value, unit, tags, type: 'metric' });
-  }
-
-  // Get logs for debugging
-  getLogs(level = null) {
-    if (!level) return this.logs;
-    return this.logs.filter(log => log.level === level);
-  }
-
-  // Clear logs
-  clearLogs() {
-    this.logs = [];
+  fatal(message, data) {
+    this.log('fatal', message, data);
   }
 }
 
-// Create default logger instance
-const defaultLogger = new EnterpriseLogger('Default');
+// Create singleton instance
+const logger = new EnterpriseLogger();
 
-// Factory function to create component-specific loggers
-export const createLogger = (component) => {
-  return new EnterpriseLogger(component);
-};
+// Export convenience functions
+export const logTrace = (message, data) => logger.trace(message, data);
+export const logDebug = (message, data) => logger.debug(message, data);
+export const logInfo = (message, data) => logger.info(message, data);
+export const logWarn = (message, data) => logger.warn(message, data);
+export const logError = (message, data) => logger.error(message, data);
+export const logFatal = (message, data) => logger.fatal(message, data);
 
-// Export singleton for backward compatibility
-export default defaultLogger;
-
-// Named exports for convenience
-export const critical = (msg, meta) => defaultLogger.critical(msg, meta);
-export const error = (msg, err, meta) => defaultLogger.error(msg, err, meta);
-export const warn = (msg, meta) => defaultLogger.warn(msg, meta);
-export const info = (msg, meta) => defaultLogger.info(msg, meta);
-export const http = (msg, meta) => defaultLogger.http(msg, meta);
-export const debug = (msg, meta) => defaultLogger.debug(msg, meta);
-export const trace = (msg, meta) => defaultLogger.trace(msg, meta);
-export const audit = (action, userId, details) => defaultLogger.audit(action, userId, details);
-export const metric = (name, value, unit, tags) => defaultLogger.metric(name, value, unit, tags);
-
-// Development-only console wrapper
-export const devLog = NODE_ENV === 'development' ? {
-  log: (...args) => defaultLogger.debug(args.join(' ')),
-  error: (...args) => defaultLogger.error(args.join(' ')),
-  warn: (...args) => defaultLogger.warn(args.join(' ')),
-  info: (...args) => defaultLogger.info(args.join(' ')),
-  debug: (...args) => defaultLogger.debug(args.join(' ')),
-  trace: (...args) => defaultLogger.trace(args.join(' '))
-} : {
-  log: () => {},
-  error: () => {},
-  warn: () => {},
-  info: () => {},
-  debug: () => {},
-  trace: () => {}
-};
-
-// Express middleware integration (for use in server code only)
-export const expressMiddleware = (req, res, next) => {
-  // This would only be used in server-side code
-  // Skip in browser environment
-  if (typeof window !== 'undefined') {
-    return next ? next() : undefined;
+// Development-only console helpers (for backwards compatibility)
+export const devLog = {
+  log: (...args) => {
+    if (shouldDebug) console.log(...args);
+  },
+  warn: (...args) => {
+    if (shouldDebug) console.warn(...args);
+  },
+  error: (...args) => {
+    if (shouldDebug) console.error(...args);
+  },
+  info: (...args) => {
+    if (shouldDebug) console.info(...args);
   }
-  
-  // Log the request in server environment
-  defaultLogger.http(`${req.method} ${req.url}`, {
+};
+
+// Create logger function for compatibility
+export const createLogger = (name) => {
+  // Return a namespaced version of the logger
+  return {
+    trace: (msg, data) => logger.trace(`[${name}] ${msg}`, data),
+    debug: (msg, data) => logger.debug(`[${name}] ${msg}`, data),
+    info: (msg, data) => logger.info(`[${name}] ${msg}`, data),
+    warn: (msg, data) => logger.warn(`[${name}] ${msg}`, data),
+    error: (msg, data) => logger.error(`[${name}] ${msg}`, data),
+    fatal: (msg, data) => logger.fatal(`[${name}] ${msg}`, data)
+  };
+};
+
+// Express middleware for logging
+export const loggingMiddleware = (req, res, next) => {
+  const start = Date.now();
+
+  // Log request
+  logger.info(`${req.method} ${req.path}`, {
     method: req.method,
-    url: req.url,
-    userAgent: req.get('User-Agent'),
+    path: req.path,
+    query: req.query,
     ip: req.ip
   });
-  
-  // Always call next() to continue the middleware chain
+
+  // Capture response
+  const originalSend = res.send;
+  res.send = function(data) {
+    const duration = Date.now() - start;
+    logger.info(`Response sent: ${req.method} ${req.path}`, {
+      statusCode: res.statusCode,
+      duration: `${duration}ms`
+    });
+    return originalSend.call(this, data);
+  };
+
   next();
 };
 
-// Stream for Morgan HTTP logger integration (server only)
-export const stream = {
-  write: (message) => {
-    if (typeof window === 'undefined') {
-      defaultLogger.http(message.trim());
-    }
-  }
-};
+// Default export
+export default logger;

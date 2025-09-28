@@ -26,10 +26,12 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import ChartErrorBoundary from '../components/charts/ChartErrorBoundary';
 import RealTimeProductionMonitor from '../components/production/RealTimeProductionMonitor';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const Production = () => {
   const [activeTab, setActiveTab] = useState('realtime');
-  const [selectedLine, setSelectedLine] = useState('all');
+  const [selectedLine] = useState('all');
   const [timeRange, setTimeRange] = useState('today');
 
   // Fetch production data with real-time updates
@@ -45,7 +47,7 @@ const Production = () => {
           return await response.json();
         }
       } catch (error) {
-        console.error('Production API error:', error);
+        logError('Production API error:', error);
       }
       return mockProductionData;
     },
@@ -64,7 +66,7 @@ const Production = () => {
           return result.data || [];
         }
       } catch (error) {
-        console.error('Error fetching personnel:', error);
+        logError('Error fetching personnel:', error);
       }
       return [];
     },
@@ -724,7 +726,7 @@ const Production = () => {
                       { action: 'Train operators on new QC procedures', priority: 'Medium', due: 'This Week', status: 'Pending' },
                       { action: 'Review supplier quality specs', priority: 'Low', due: 'Next Week', status: 'Scheduled' }
                     ].map((item, index) => (
-                      <div key={index} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div key={index} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">)
                         <div className="flex justify-between items-start">
                           <div>
                             <div className="font-medium text-gray-900 dark:text-white text-sm">

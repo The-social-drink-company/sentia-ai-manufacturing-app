@@ -1,4 +1,9 @@
+<<<<<<< HEAD
+import { useState, , useRef  } from 'react';
+
+=======
 import { useState, useEffect, useRef } from 'react'
+>>>>>>> development
 import { logError } from '../utils/structuredLogger.js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -99,7 +104,7 @@ const WorkingCapitalCalculatorEnhanced = () => {
       const data = lines.slice(1).map(line => {
         const values = line.split(',')
         const row = {}
-        headers.forEach((header, index) => {
+        headers.forEach((header, _index) => {
           row[header.trim()] = values[index]?.trim()
         })
         return row

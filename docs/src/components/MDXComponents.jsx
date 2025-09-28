@@ -67,8 +67,8 @@ export const Alert = ({ children, title = 'Alert', type = 'error' }) => (
 );
 
 // KPI Component
-export const Kpi = ({ label, _value, delta, trend, format = _'number', prefix = '', suffix = '' }) => {
-  const formatValue = (_val) => {
+export const Kpi = ({ label, value, delta, trend, format = 'number', prefix = '', suffix = '' }) => {
+  const formatValue = (val) => {
     if (format === 'currency') {
       return new Intl.NumberFormat('en-GB', {
         style: 'currency',
@@ -137,7 +137,7 @@ export const Tabs = ({ children, defaultTab = 0 }) => {
     <div className="my-4">
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex space-x-8">
-          {tabs.map((tab, _index) => (
+          {tabs.map((tab, index) => (
             <button
               key={index}
               onClick={() => setActiveTab(index)}
@@ -187,7 +187,7 @@ export const Mermaid = ({ chart }) => {
 };
 
 // Code Block with Copy
-export const CodeBlock = ({ children, language = _'javascript', title }) => {
+export const CodeBlock = ({ children, language = 'javascript', title }) => {
   const [copied, setCopied] = React.useState(false);
   
   const handleCopy = () => {
@@ -276,7 +276,7 @@ export const ComplianceBadge = ({ region }) => {
 };
 
 // API Endpoint Component
-export const ApiEndpoint = ({ _method, _path, description }) => {
+export const ApiEndpoint = ({ method, path, description }) => {
   const methodColors = {
     GET: 'bg-blue-500',
     POST: 'bg-green-500',
@@ -301,7 +301,7 @@ export const ApiEndpoint = ({ _method, _path, description }) => {
 };
 
 // Screenshot Component with Caption
-export const Screenshot = ({ _src, _alt, caption }) => {
+export const Screenshot = ({ src, alt, caption }) => {
   return (
     <figure className="my-6">
       <div className="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
@@ -317,7 +317,7 @@ export const Screenshot = ({ _src, _alt, caption }) => {
 };
 
 // Video Embed Component
-export const Video = ({ _src, title, poster }) => {
+export const Video = ({ src, title, poster }) => {
   return (
     <div className="my-6 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
       <video

@@ -22,7 +22,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const MobileFloor = () => {
   const [selectedMachine, setSelectedMachine] = useState('MCH-001');
-  const [activeTab, setActiveTab] = useState('status');
+  const [activeTab] = useState('status');
 
   // Machine data
   const machines = [
@@ -123,7 +123,7 @@ const MobileFloor = () => {
     }
   };
 
-  const getQualityColor = (_result) => {
+  const getQualityColor = (result) => {
     switch(result) {
       case 'pass': return 'text-green-600';
       case 'warning': return 'text-amber-600';
@@ -132,7 +132,7 @@ const MobileFloor = () => {
     }
   };
 
-  const getPriorityColor = (_priority) => {
+  const getPriorityColor = (priority) => {
     switch(priority) {
       case 'high': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
       case 'medium': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';

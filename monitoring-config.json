@@ -43,7 +43,7 @@
         "priority": "low",
         "expectedFeatures": ["dashboard", "development"],
         "healthCheckPath": "/api/health",
-        "startCommand": "pnpm dev:client"
+        "startCommand": "npm run dev:client"
       },
       {
         "name": "Localhost 3002",
@@ -53,7 +53,7 @@
         "priority": "low",
         "expectedFeatures": ["dashboard"],
         "healthCheckPath": "/api/health",
-        "startCommand": "pnpm dev"
+        "startCommand": "npm run dev"
       },
       {
         "name": "Localhost 3003",
@@ -63,7 +63,7 @@
         "priority": "low",
         "expectedFeatures": ["dashboard"],
         "healthCheckPath": "/api/health",
-        "startCommand": "pnpm dev"
+        "startCommand": "npm run dev"
       }
     ],
     
@@ -156,12 +156,12 @@
         "test": "test"
       },
       "buildCommands": [
-        "pnpm install",
-        "pnpm build"
+        "npm install",
+        "npm run build"
       ],
       "healthCheckCommands": [
-        "pnpm test:run",
-        "pnpm lint"
+        "npm run test:run",
+        "npm run lint"
       ]
     }
   },

@@ -112,7 +112,7 @@ const realtimeData = [
 const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#6b7280'];
 
 export default function MobileFloorDashboard() {
-  const [selectedLine, setSelectedLine] = useState(null);
+  const [selectedLine] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
 
   const getStatusIcon = (status) => {
@@ -145,7 +145,7 @@ export default function MobileFloorDashboard() {
     }
   };
 
-  const getAlertIcon = (_type) => {
+  const getAlertIcon = (type) => {
     switch (type) {
       case 'error':
         return <ExclamationTriangleIcon className="w-4 h-4 text-red-500" />;

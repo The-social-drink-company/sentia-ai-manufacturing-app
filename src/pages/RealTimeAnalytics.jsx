@@ -42,7 +42,7 @@ ChartJS.register(
 
 const RealTimeAnalytics = () => {
   const [timeRange, setTimeRange] = useState('24h');
-  const [selectedMetrics, setSelectedMetrics] = useState(['revenue', 'orders', 'inventory']);
+  const [selectedMetrics] = useState(['revenue', 'orders', 'inventory']);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   // Fetch real-time data from all integrations

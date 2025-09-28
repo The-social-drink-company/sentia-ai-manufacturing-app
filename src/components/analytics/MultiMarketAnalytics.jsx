@@ -44,10 +44,10 @@ import {
 
 const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('Q4-2024');
-  const [comparisonMode, setComparisonMode] = useState('absolute');
-  const [selectedMetric, setSelectedMetric] = useState('revenue');
-  const [riskTolerance, setRiskTolerance] = useState([75]);
-  const [showPredictions, setShowPredictions] = useState(true);
+  const [comparisonMode] = useState('absolute');
+  const [selectedMetric] = useState('revenue');
+  const [riskTolerance] = useState([75]);
+  const [showPredictions] = useState(true);
   const [analyticsData, setAnalyticsData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 

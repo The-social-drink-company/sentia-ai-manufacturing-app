@@ -206,7 +206,7 @@ class DeploymentHealthAgent {
     try {
       // Create or fix health endpoint
       const healthRoute = `
-router.get(_'/health', (req, res) => {
+router.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),

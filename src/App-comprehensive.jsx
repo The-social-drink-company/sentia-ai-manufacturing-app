@@ -21,6 +21,7 @@ import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import ErrorFallback from './components/ui/ErrorFallback';
+import ChatBot from './components/Chatbot';
 
 // Authentication Components
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -385,6 +386,8 @@ const AuthenticatedApp = () => {
           </div>
         </main>
       </div>
+      {/* Chatbot Component */}
+      <ChatBot />
     </div>
   );
 };

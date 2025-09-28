@@ -20,7 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import MobileFloorDashboard from '@/components/mobile/MobileFloorDashboard';
 
 const Mobile = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab] = useState('dashboard');
   const [scanMode, setScanMode] = useState(false);
   const [notifications] = useState([
     { id: 1, type: 'alert', message: 'Machine M-102 requires maintenance', time: '5 min ago' },
@@ -49,7 +49,7 @@ const Mobile = () => {
     { id: 4, title: 'Document defects found in QC', status: 'pending', time: '12:00 PM' }
   ];
 
-  const getStatusColor = (_status) => {
+  const getStatusColor = (status) => {
     switch(status) {
       case 'running': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       case 'maintenance': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
@@ -58,7 +58,7 @@ const Mobile = () => {
     }
   };
 
-  const getTaskStatusIcon = (_status) => {
+  const getTaskStatusIcon = (status) => {
     switch(status) {
       case 'completed': return <CheckCircleIcon className="w-5 h-5 text-green-600" />;
       case 'in-progress': return <ArrowPathIcon className="w-5 h-5 text-blue-600 animate-spin" />;

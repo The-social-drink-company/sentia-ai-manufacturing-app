@@ -32,10 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 const UserPreferences = () => {
   const { user, isLoaded } = useUser();
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab] = useState('profile');
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -106,14 +107,14 @@ const UserPreferences = () => {
           const parsed = JSON.parse(savedPrefs);
           setPreferences(prev => ({ ...prev, ...parsed }));
         } catch (e) {
-          console.error('Failed to load preferences:', e);
+          logError('Failed to load preferences:', e);
         }
       }
     }
   }, [isLoaded, user]);
 
   // Handle preference changes
-  const handlePreferenceChange = (_category, _field, value) => {
+  const handlePreferenceChange = (category, field, value) => {
     setPreferences(prev => {
       if (category) {
         return {

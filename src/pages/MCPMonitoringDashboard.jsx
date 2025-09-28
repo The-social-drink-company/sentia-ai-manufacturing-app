@@ -17,7 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function MCPMonitoringDashboard() {
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [mcpMetrics, setMcpMetrics] = useState({
     uptime: '99.8%',

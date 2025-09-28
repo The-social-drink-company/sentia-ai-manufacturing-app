@@ -7,10 +7,10 @@ export default {
     }
   },
   moduleNameMapping: {
-    '^(\.{1,2}/.*)\.js$': '$1'
+    '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   transform: {
-    '^.+\.js$': ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }]
+    '^.+\\.js$': ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }]
   },
   testMatch: [
     '**/tests/**/*.test.js'

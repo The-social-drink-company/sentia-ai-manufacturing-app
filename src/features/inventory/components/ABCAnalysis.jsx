@@ -26,7 +26,7 @@ import {
 export default function ABCAnalysis({ data, title }) {
   const [viewMode, setViewMode] = useState('chart') // chart, table, treemap
   const [selectedCategory, setSelectedCategory] = useState('all') // all, A, B, C
-  const [sortBy, setSortBy] = useState('value') // value, quantity, percentage
+  const [sortBy] = useState('value') // value, quantity, percentage
 
   if (!data || data.length === 0) {
     return (
@@ -295,7 +295,7 @@ export default function ABCAnalysis({ data, title }) {
           ratio={4/3}
           stroke="#fff"
           strokeWidth={2}
-          content={({ _root, depth, x, y, width, height, index, payload, name }) => {
+          content={({ root, depth, x, y, width, height, index, payload, name }) => {
             if (depth === 1) {
               return (
                 <g>

@@ -21,7 +21,7 @@ export default function ForecastingDashboard() {
   const { user } = useAuth()
   const [data, setData] = useState([])
   const [analysis, setAnalysis] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading] = useState(false)
   const [error, setError] = useState(null)
   const [selectedDataSource, setSelectedDataSource] = useState('demand')
   const [selectedPeriod, setSelectedPeriod] = useState(12)
@@ -61,7 +61,7 @@ export default function ForecastingDashboard() {
     setData(sourceData)
   }, [selectedDataSource])
 
-  const handleForecastUpdate = (_forecastResult) => {
+  const handleForecastUpdate = (forecastResult) => {
     setAnalysis(forecastResult)
   }
 
@@ -303,7 +303,7 @@ export default function ForecastingDashboard() {
                   {Object.entries(analysis.accuracy || {}).map(([method, metrics]) => (
                     <div key={method} className="border-b border-gray-200 dark:border-gray-700 pb-3 last:border-b-0">
                       <h4 className="font-semibold capitalize text-gray-900 dark:text-white mb-2">
-                        {method.replace('', ' ')}
+                        {method.replace('_', ' ')}
                       </h4>
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>

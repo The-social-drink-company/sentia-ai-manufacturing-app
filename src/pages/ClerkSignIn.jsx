@@ -1,14 +1,16 @@
 import React from 'react';
 import { SignIn } from '@clerk/clerk-react';
 import { Navigate } from 'react-router-dom';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const ClerkSignIn = () => {
-  console.log('[ClerkSignIn] Component rendering...');
+  logDebug('[ClerkSignIn] Component rendering...');
   
   // Add debug information
   const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-  console.log('[ClerkSignIn] Clerk key available:', !!clerkKey);
-  console.log('[ClerkSignIn] Clerk key prefix:', clerkKey?.substring(0, 20));
+  logDebug('[ClerkSignIn] Clerk key available:', !!clerkKey);
+  logDebug('[ClerkSignIn] Clerk key prefix:', clerkKey?.substring(0, 20));
 
   try {
     // Try to get auth state but don't fail if it's not available
@@ -19,21 +21,21 @@ const ClerkSignIn = () => {
       const { useBulletproofAuth, useAuthMode } = require('../auth/BulletproofAuthProvider');
       auth = useBulletproofAuth();
       mode = useAuthMode();
-      console.log('[ClerkSignIn] Auth mode:', mode);
-      console.log('[ClerkSignIn] Auth state:', auth);
+      logDebug('[ClerkSignIn] Auth mode:', mode);
+      logDebug('[ClerkSignIn] Auth state:', auth);
     } catch (error) {
-      console.warn('[ClerkSignIn] Could not get auth state:', error);
+      logWarn('[ClerkSignIn] Could not get auth state:', error);
     }
 
     // If already signed in, redirect to dashboard
     if (auth?.isSignedIn) {
-      console.log('[ClerkSignIn] User already signed in, redirecting...');
+      logDebug('[ClerkSignIn] User already signed in, redirecting...');
       return <Navigate to="/dashboard" replace />;
     }
 
     // If not in Clerk mode, show fallback message
     if (mode && mode !== 'clerk') {
-      console.log('[ClerkSignIn] Not in Clerk mode, showing fallback');
+      logDebug('[ClerkSignIn] Not in Clerk mode, showing fallback');
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
           <div className="max-w-md w-full text-center">
@@ -65,7 +67,7 @@ const ClerkSignIn = () => {
       );
     }
 
-    console.log('[ClerkSignIn] Rendering Clerk SignIn component...');
+    logDebug('[ClerkSignIn] Rendering Clerk SignIn component...');
     
     // Render Clerk SignIn component
     return (
@@ -107,7 +109,7 @@ const ClerkSignIn = () => {
       </div>
     );
   } catch (error) {
-    console.error('[ClerkSignIn] Error rendering component:', error);
+    logError('[ClerkSignIn] Error rendering component:', error);
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-md w-full text-center">
@@ -132,3 +134,5 @@ const ClerkSignIn = () => {
 };
 
 export default ClerkSignIn;
+
+

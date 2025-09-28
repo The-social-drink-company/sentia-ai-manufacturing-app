@@ -223,7 +223,7 @@ class IoTSensorPlatform {
   }
 
   collectSensorData() {
-    this.sensors.forEach((sensor, _sensorId) => {
+    this.sensors.forEach((sensor, sensorId) => {
       if (sensor.status !== 'active') return;
 
       const sensorType = SENSOR_TYPES[sensor.type];

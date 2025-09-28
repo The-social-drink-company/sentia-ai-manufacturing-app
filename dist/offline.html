@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentia Manufacturing - Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .offline-container {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            background: #f3f4f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .offline-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .offline-message {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .retry-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 12px;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard-button {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dashboard-button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .network-status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-offline { background: #ef4444; }
+        .status-online { background: #10b981; }
+
+        .features-list {
+            text-align: left;
+            margin-top: 1.5rem;
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .features-list h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .features-list ul {
+            list-style: none;
+        }
+
+        .features-list li {
+            margin-bottom: 0.5rem;
+            color: #6b7280;
+        }
+
+        .features-list li:before {
+            content: "✓";
+            color: #10b981;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 640px) {
+            .offline-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .offline-title {
+                font-size: 1.5rem;
+            }
+
+            .retry-button, .dashboard-button {
+                display: block;
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">
+            📡
+        </div>
+        
+        <h1 class="offline-title">You're Offline</h1>
+        
+        <p class="offline-message">
+            Don't worry! You can still access cached manufacturing data and continue working with limited functionality.
+        </p>
+
+        <div>
+            <button class="retry-button" onclick="retryConnection()">
+                Try Again
+            </button>
+            <button class="dashboard-button" onclick="goToDashboard()">
+                Go to Dashboard
+            </button>
+        </div>
+
+        <div class="network-status" id="networkStatus">
+            <span class="status-indicator status-offline"></span>
+            Network: Offline
+        </div>
+
+        <div class="features-list">
+            <h3>Available Offline Features:</h3>
+            <ul>
+                <li>View cached dashboard data</li>
+                <li>Access recent reports and analytics</li>
+                <li>Browse manufacturing history</li>
+                <li>View production schedules</li>
+                <li>Access quality control data</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Monitor network status
+        function updateNetworkStatus() {
+            const statusElement = document.getElementById('networkStatus');
+            const indicator = statusElement.querySelector('.status-indicator');
+            
+            if (navigator.onLine) {
+                indicator.className = 'status-indicator status-online';
+                statusElement.innerHTML = '<span class="status-indicator status-online"></span>Network: Online - Ready to sync!';
+                
+                // Auto-redirect after 2 seconds when back online
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
+            } else {
+                indicator.className = 'status-indicator status-offline';
+                statusElement.innerHTML = '<span class="status-indicator status-offline"></span>Network: Offline';
+            }
+        }
+
+        // Retry connection
+        function retryConnection() {
+            const button = document.querySelector('.retry-button');
+            button.textContent = 'Checking...';
+            
+            // Check if we can reach the server
+            fetch('/api/health', { 
+                method: 'GET',
+                cache: 'no-cache'
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    throw new Error('Server not reachable');
+                }
+            })
+            .catch(() => {
+                button.textContent = 'Still Offline';
+                setTimeout(() => {
+                    button.textContent = 'Try Again';
+                }, 2000);
+            });
+        }
+
+        // Go to dashboard (will use cached version)
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+
+        // Listen for online/offline events
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        // Initial status check
+        updateNetworkStatus();
+
+        // Periodic network check
+        setInterval(() => {
+            if (!navigator.onLine) {
+                // Try a lightweight request to check actual connectivity
+                fetch('/favicon.ico', {
+                    method: 'HEAD',
+                    cache: 'no-cache',
+                    mode: 'no-cors'
+                }).then(() => {
+                    // If this succeeds but navigator.onLine is false,
+                    // it might be a false negative
+                    if (!navigator.onLine) {
+                        updateNetworkStatus();
+                    }
+                }).catch(() => {
+                    // Confirmed offline
+                });
+            }
+        }, 30000); // Check every 30 seconds
+    </script>
+</body>
+</html>

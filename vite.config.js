@@ -17,7 +17,8 @@ export default defineConfig(({ command }) => ({
   plugins: [
     react({
       jsxRuntime: 'automatic',
-      jsxImportSource: 'react'
+      jsxImportSource: 'react',
+      jsxDevelopment: false
     }),
     tailwindcss(),
     visualizer({

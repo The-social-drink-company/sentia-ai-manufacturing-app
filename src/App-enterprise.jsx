@@ -1,6 +1,6 @@
 ﻿import { Suspense, lazy } from 'react'
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, RedirectToSignIn, useAuth } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import LandingPage from '@/components/LandingPage'
@@ -50,12 +50,30 @@ const RequireAuth = () => (
   </>
 )
 
+const SmartHome = () => {
+  const { isSignedIn, isLoaded } = useAuth()
+
+  // Show loading while Clerk initializes
+  if (!isLoaded) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-200">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return isSignedIn ? <Navigate to="/dashboard" replace /> : <LandingPage />
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>
         <Route path="/landing" element={<LandingPage />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<SmartHome />} />
         <Route path="/sign-in" element={<ClerkSignIn />} />
 
         <Route element={<RequireAuth />}>

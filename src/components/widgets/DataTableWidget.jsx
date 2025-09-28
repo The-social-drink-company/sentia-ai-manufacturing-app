@@ -60,7 +60,7 @@ const DataTableWidget = ({
       <div className={cn('bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6', className)}>
         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
         <div className="space-y-2">
-          {[...Array(5)].map((_, _i) => (
+          {[...Array(5)].map((_, i) => (
             <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
           ))}
         </div>
@@ -120,11 +120,7 @@ const DataTableWidget = ({
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-<<<<<<< HEAD
-              {paginatedData.map((row, __rowIndex) => (
-=======
-              {paginatedData.map((row, _rowIndex) => (
->>>>>>> development
+              {paginatedData.map((row, rowIndex) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   {columns.map((column) => (
                     <td

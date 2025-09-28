@@ -1,18 +1,59 @@
-const express = require('express');
-const path = require('path');
+/**
+ * Enterprise Static Server for Sentia Manufacturing Dashboard
+ * Serves the pre-built React dashboard with Clerk authentication
+ * Handles multiple deployment environments and path configurations
+ */
+
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
 console.log('🚀 Starting Sentia Manufacturing Dashboard Server...');
-console.log('📁 Serving from:', path.join(__dirname, 'dist'));
 console.log('🌍 Environment:', process.env.NODE_ENV || 'development');
 
 // Middleware for parsing JSON
 app.use(express.json());
 
-// Serve static files from dist directory
-app.use(express.static(path.join(__dirname, 'dist')));
+// Try multiple paths to find the dist folder
+const possiblePaths = [
+  path.join(__dirname, 'dist'),
+  path.join(__dirname, '../dist'),
+  path.join(process.cwd(), 'dist'),
+  '/opt/render/project/src/dist'
+];
+
+let staticPath = null;
+for (const testPath of possiblePaths) {
+  console.log(`Checking for dist at: ${testPath}`);
+  try {
+    const fs = await import('fs');
+    if (fs.existsSync(testPath)) {
+      staticPath = testPath;
+      console.log(`✅ Found dist folder at: ${staticPath}`);
+      break;
+    }
+  } catch (e) {
+    console.log(`❌ Path not accessible: ${testPath}`);
+  }
+}
+
+if (!staticPath) {
+  console.error('ERROR: Could not find dist folder in any expected location');
+  console.log('Current directory:', process.cwd());
+  console.log('Script directory:', __dirname);
+  process.exit(1);
+}
+
+console.log('📁 Serving static files from:', staticPath);
+
+// Serve static files
+app.use(express.static(staticPath));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -22,11 +63,12 @@ app.get('/health', (req, res) => {
     service: 'sentia-manufacturing-dashboard',
     version: '2.0.0-bulletproof',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    staticPath: staticPath
   });
 });
 
-// API endpoints that don't require Prisma for basic functionality
+// API status endpoint
 app.get('/api/status', (req, res) => {
   console.log('📊 API status check requested');
   res.status(200).json({
@@ -36,7 +78,8 @@ app.get('/api/status', (req, res) => {
       authentication: 'clerk-enabled',
       database: 'available'
     },
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    staticPath: staticPath
   });
 });
 
@@ -80,20 +123,29 @@ app.use('/api/*', (req, res, next) => {
 // Serve React app for all other routes (SPA routing)
 app.get('*', (req, res) => {
   console.log('📄 Serving React app for:', req.path);
-  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  const indexPath = path.join(staticPath, 'index.html');
   
   // Check if index.html exists
-  const fs = require('fs');
-  if (!fs.existsSync(indexPath)) {
-    console.error('❌ index.html not found at:', indexPath);
-    return res.status(404).json({
-      error: 'Application not found',
-      message: 'The React application build files are missing.',
-      path: indexPath
+  try {
+    const fs = await import('fs');
+    if (!fs.existsSync(indexPath)) {
+      console.error('❌ index.html not found at:', indexPath);
+      return res.status(404).json({
+        error: 'Application not found',
+        message: 'The React application build files are missing.',
+        path: indexPath
+      });
+    }
+    
+    res.sendFile(indexPath);
+  } catch (error) {
+    console.error('❌ Error serving index.html:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'Unable to serve the application.',
+      timestamp: new Date().toISOString()
     });
   }
-  
-  res.sendFile(indexPath);
 });
 
 // Error handling middleware
@@ -119,10 +171,24 @@ process.on('SIGINT', () => {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server running on port ${PORT}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔗 API status: http://localhost:${PORT}/api/status`);
-  console.log('🎉 Sentia Manufacturing Dashboard is ready!');
-  console.log('📱 Frontend: React with Clerk Authentication');
-  console.log('🔧 Backend: Express.js with API endpoints');
+  console.log(`
+    ========================================
+    SENTIA MANUFACTURING DASHBOARD
+    ========================================
+    Status: ✅ Server running successfully
+    Port: ${PORT}
+    Static Path: ${staticPath}
+    Environment: ${process.env.NODE_ENV || 'development'}
+    
+    URLs:
+    🌐 Application: http://localhost:${PORT}
+    🔍 Health Check: http://localhost:${PORT}/health
+    📊 API Status: http://localhost:${PORT}/api/status
+    
+    Features:
+    📱 Frontend: React with Clerk Authentication
+    🔧 Backend: Express.js with API endpoints
+    🗄️  Database: Ready for integration
+    ========================================
+  `);
 });

@@ -47,22 +47,22 @@ const initializeApp = async () => {
     devLog.log('[main.jsx] Creating React root...');
     const root = createRoot(rootElement);
 
-    // Try to load the full app
+    // Try to load the fixed app
     try {
-      devLog.log('[main.jsx] Attempting to load App-multistage...');
-      const { default: App } = await import('./App-multistage.jsx');
+      devLog.log('[main.jsx] Attempting to load App-fixed...');
+      const { default: App } = await import('./App-fixed.jsx');
 
-      devLog.log('[main.jsx] App-multistage loaded successfully, rendering...');
+      devLog.log('[main.jsx] App-fixed loaded successfully, rendering...');
       root.render(
         <StrictMode>
           <App />
         </StrictMode>
       );
-      devLog.log('[main.jsx] React app mounted successfully');
+      devLog.log('[main.jsx] React app mounted successfully with fixed app');
     } catch (appError) {
-      logError('[main.jsx] Failed to load App-multistage', appError);
+      logError('[main.jsx] Failed to load App-fixed', appError);
       devLog.log('[main.jsx] Falling back to simple app...');
-      
+
       root.render(
         <StrictMode>
           <FallbackApp />

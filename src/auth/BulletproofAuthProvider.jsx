@@ -17,23 +17,16 @@ import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 // Authentication context that always has a value
 const AuthContext = createContext(null);
 
-// Default fallback authentication state
-const FALLBACK_AUTH_STATE = {
+// No fallback - Clerk authentication required
+const NO_AUTH_STATE = {
   isLoaded: true,
   isSignedIn: false,
-  userId: 'guest_user',
-  sessionId: 'guest_session',
-  user: {
-    id: 'guest_user',
-    firstName: 'Guest',
-    lastName: 'User',
-    fullName: 'Guest User',
-    emailAddresses: [{ emailAddress: 'guest@sentia.local' }],
-    publicMetadata: { role: 'viewer' }
-  },
+  userId: null,
+  sessionId: null,
+  user: null,
   signOut: () => Promise.resolve(),
   getToken: () => Promise.resolve(null),
-  mode: 'fallback'
+  mode: 'clerk-required'
 };
 
 // Loading screen component
@@ -89,15 +82,7 @@ function ClerkAuthIntegration({ children }) {
   );
 }
 
-// Simple fallback auth provider that doesn't use Clerk hooks
-// This provides basic auth functionality when Clerk is not available
-function FallbackAuthProvider({ children }) {
-  return (
-    <AuthContext.Provider value={FALLBACK_AUTH_STATE}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+// No fallback auth provider - Clerk is required
 
 // Main bulletproof auth provider
 export function BulletproofAuthProvider({ children }) {
@@ -108,11 +93,10 @@ export function BulletproofAuthProvider({ children }) {
   // Get and validate Clerk key
   const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
-  // Your key: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
-  // This appears to be a valid Clerk test key
+  // Accept both production (pk_live_) and test (pk_test_) keys
   const isValidKey = Boolean(
     clerkKey &&
-    clerkKey.startsWith('pk_') &&
+    (clerkKey.startsWith('pk_live_') || clerkKey.startsWith('pk_test_')) &&
     clerkKey.length > 20 &&
     !clerkKey.includes('undefined') &&
     !clerkKey.includes('YOUR_KEY') &&
@@ -124,35 +108,31 @@ export function BulletproofAuthProvider({ children }) {
     setAuthMode('initializing');
 
     // Set a timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      logWarn('Authentication timeout - switching to fallback mode');
-      setAuthMode('fallback');
-    }, 3000); // 3 second timeout
+    // No timeout fallback - Clerk is required
 
     // Check if we should use Clerk or fallback
     if (isValidKey) {
-      // Force Clerk mode for valid keys
+      // Only use Clerk - no fallback
       logInfo('Valid Clerk key detected, initializing Clerk...');
       console.info('Key info:', {
         keyStart: clerkKey?.substring(0, 30) + '...',
         keyLength: clerkKey?.length,
-        domain: 'champion-bulldog-92.clerk.accounts.dev'
+        domain: 'clerk.financeflo.ai'
       });
-      clearTimeout(timeout);
-      // Force Clerk mode - DO NOT use fallback with valid key
+      // Force Clerk mode
       setAuthMode('clerk');
     } else {
-      clearTimeout(timeout);
-      logWarn('Invalid Clerk key - using fallback mode');
-      console.info('Clerk key status:', {
+      logError('Invalid Clerk key - authentication required');
+      console.error('Clerk key status:', {
         hasKey: !!clerkKey,
         keyStart: clerkKey?.substring(0, 20),
         keyLength: clerkKey?.length
       });
-      setAuthMode('fallback');
+      setError('Clerk authentication is required. Please check your configuration.');
+      setAuthMode('error');
     }
 
-    return () => clearTimeout(timeout);
+    // No cleanup needed
   }, [isValidKey, retryCount]);
 
   useEffect(() => {
@@ -165,7 +145,7 @@ export function BulletproofAuthProvider({ children }) {
   };
 
   // Show error screen if we have an error
-  if (error && authMode !== 'fallback') {
+  if (error || authMode === 'error') {
     return <AuthError error={error} onRetry={handleRetry} />;
   }
 
@@ -199,13 +179,22 @@ export function BulletproofAuthProvider({ children }) {
     }
   }
 
-  // Fallback mode - always works
+  // No fallback - Clerk is required
   return (
-    <AuthContext.Provider value={FALLBACK_AUTH_STATE}>
-      <div data-auth-mode="fallback" className="w-full h-full">
-        {children}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+        <h2 className="text-xl font-bold text-red-600 mb-4">Authentication Required</h2>
+        <p className="text-gray-700 dark:text-gray-300 mb-6">
+          Clerk authentication is not properly configured. Please check your environment variables.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Reload Page
+        </button>
       </div>
-    </AuthContext.Provider>
+    </div>
   );
 }
 
@@ -221,8 +210,8 @@ export function useBulletproofAuth() {
 
   // Note: Removed direct Clerk hook usage to prevent context errors
 
-  // Ultimate fallback - always return valid auth state
-  return FALLBACK_AUTH_STATE;
+  // No auth available - return null
+  return null;
 }
 
 // Helper hook to check auth mode
@@ -235,6 +224,19 @@ export function useAuthMode() {
 export function useAuthRole() {
   const auth = useBulletproofAuth();
 
+  if (!auth) {
+    return {
+      role: null,
+      permissions: [],
+      hasPermission: () => false,
+      isAdmin: false,
+      isManager: false,
+      isAuthenticated: false,
+      isLoading: false,
+      user: null
+    };
+  }
+
   const role = auth.user?.publicMetadata?.role || 'viewer';
   const permissions = getPermissionsForRole(role);
 
@@ -244,7 +246,9 @@ export function useAuthRole() {
     hasPermission: (permission) => permissions.includes(permission),
     isAdmin: role === 'admin',
     isManager: role === 'manager' || role === 'admin',
-    isAuthenticated: auth.isSignedIn
+    isAuthenticated: auth.isSignedIn,
+    isLoading: !auth.isLoaded,
+    user: auth.user
   };
 }
 

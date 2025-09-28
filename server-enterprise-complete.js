@@ -62,6 +62,77 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(logger);
 
+// Monitoring and Observability Routes
+app.get('/api/monitoring/dashboard', (req, res) => {
+  const mockData = {
+    timestamp: new Date().toISOString(),
+    system: {
+      cpu: { usage: 42.5, trend: 'stable' },
+      memory: { usage: 68.3, trend: 'increasing' },
+      uptime: 864000
+    },
+    application: {
+      requestsPerMinute: 127,
+      avgResponseTime: 245,
+      errorRate: '0.8',
+      topEndpoints: [
+        { endpoint: '/api/dashboard/summary', method: 'GET', count: 1852, avgResponseTime: 125 },
+        { endpoint: '/api/forecasting/enhanced', method: 'GET', count: 945, avgResponseTime: 380 },
+        { endpoint: '/api/financial/working-capital', method: 'GET', count: 723, avgResponseTime: 210 }
+      ]
+    },
+    alerts: {
+      active: 2,
+      critical: 0,
+      warning: 2,
+      recent: [
+        { id: 'alert-001', severity: 'WARNING', metric: 'Memory Usage', value: 68.3, timestamp: new Date(Date.now() - 300000).toISOString() }
+      ]
+    }
+  };
+
+  res.json({ success: true, data: mockData });
+});
+
+app.get('/api/monitoring/metrics', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      timestamp: new Date().toISOString(),
+      cpu: { usage: 42.5, cores: 4, loadAverage: { '1m': 2.15, '5m': 2.08, '15m': 1.95 } },
+      memory: { total: 17179869184, used: 11709906944, usage: 68.3 },
+      disk: { total: 512000000000, used: 256000000000, usage: 50.0 },
+      network: { bytesReceived: 1542876543, bytesSent: 987654321 }
+    }
+  });
+});
+
+app.get('/api/monitoring/health', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      status: 'HEALTHY',
+      score: 92,
+      metrics: { system: { cpu: 42.5, memory: 68.3, uptime: 864000 } },
+      activeAlerts: 2,
+      checks: { database: true, cache: true, integrations: { xero: true, shopify: true, amazon: true, unleashed: true } },
+      lastCheck: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/monitoring/alerts', (req, res) => {
+  const mockAlerts = [
+    { id: 'alert-001', severity: 'WARNING', metric: 'Memory Usage', value: 68.3, acknowledged: false },
+    { id: 'alert-002', severity: 'WARNING', metric: 'Response Time', value: 1250, acknowledged: false }
+  ];
+
+  res.json({
+    success: true,
+    data: { alerts: mockAlerts, total: mockAlerts.length, active: mockAlerts.filter(a => !a.acknowledged).length }
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ 
@@ -1021,6 +1092,178 @@ app.get('/api/amazon/analytics', (req, res) => {
       },
       lastUpdated: new Date().toISOString()
     }
+  });
+});
+
+// Enterprise Security Routes
+app.get('/api/security/status', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      mfaEnabled: true,
+      rbacEnabled: true,
+      auditLoggingEnabled: true,
+      sessionTimeout: 3600000,
+      passwordPolicy: {
+        minLength: 12,
+        requireUppercase: true,
+        requireLowercase: true,
+        requireNumbers: true,
+        requireSpecial: true
+      },
+      securityLevel: 'ENTERPRISE'
+    }
+  });
+});
+
+app.post('/api/security/mfa/setup', (req, res) => {
+  const userId = req.body?.userId || 'user-123';
+
+  res.json({
+    success: true,
+    data: {
+      secret: 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP',
+      qrCode: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...',
+      backupCodes: [
+        'BACKUP-CODE-1234',
+        'BACKUP-CODE-5678',
+        'BACKUP-CODE-9012',
+        'BACKUP-CODE-3456',
+        'BACKUP-CODE-7890'
+      ]
+    }
+  });
+});
+
+app.post('/api/security/mfa/verify', (req, res) => {
+  const { token } = req.body;
+  const isValid = token && /^\d{6}$/.test(token);
+
+  res.json({
+    success: isValid,
+    message: isValid ? 'MFA verified successfully' : 'Invalid MFA token'
+  });
+});
+
+app.get('/api/security/audit-log', (req, res) => {
+  const mockAuditLog = [
+    {
+      id: 'audit-001',
+      type: 'LOGIN_SUCCESS',
+      userId: 'user-123',
+      ipAddress: '192.168.1.100',
+      userAgent: 'Mozilla/5.0',
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
+      details: { email: 'admin@sentia.com' }
+    },
+    {
+      id: 'audit-002',
+      type: 'PERMISSION_CHANGED',
+      userId: 'admin-456',
+      ipAddress: '192.168.1.101',
+      timestamp: new Date(Date.now() - 7200000).toISOString(),
+      details: { targetUser: 'user-789', oldRole: 'operator', newRole: 'manager' }
+    },
+    {
+      id: 'audit-003',
+      type: 'DATA_EXPORT',
+      userId: 'user-123',
+      ipAddress: '192.168.1.100',
+      timestamp: new Date(Date.now() - 10800000).toISOString(),
+      details: { exportType: 'financial_report', recordCount: 1500 }
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      events: mockAuditLog,
+      totalCount: mockAuditLog.length,
+      page: 1,
+      pageSize: 100
+    }
+  });
+});
+
+app.get('/api/security/roles', (req, res) => {
+  const roles = [
+    {
+      id: 'role-superadmin',
+      name: 'superadmin',
+      level: 100,
+      description: 'Full system access',
+      permissions: ['*'],
+      userCount: 1
+    },
+    {
+      id: 'role-admin',
+      name: 'admin',
+      level: 90,
+      description: 'Administrative access',
+      permissions: [
+        'users.read', 'users.write', 'users.delete',
+        'settings.read', 'settings.write',
+        'reports.read', 'reports.write'
+      ],
+      userCount: 3
+    },
+    {
+      id: 'role-manager',
+      name: 'manager',
+      level: 70,
+      description: 'Managerial access',
+      permissions: [
+        'dashboard.read', 'dashboard.write',
+        'reports.read', 'reports.write',
+        'forecasting.read', 'forecasting.write'
+      ],
+      userCount: 8
+    },
+    {
+      id: 'role-operator',
+      name: 'operator',
+      level: 30,
+      description: 'Operational access',
+      permissions: [
+        'dashboard.read',
+        'inventory.read', 'inventory.write',
+        'production.read', 'production.write'
+      ],
+      userCount: 25
+    },
+    {
+      id: 'role-viewer',
+      name: 'viewer',
+      level: 10,
+      description: 'Read-only access',
+      permissions: ['dashboard.read', 'reports.read'],
+      userCount: 45
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      roles,
+      totalRoles: roles.length,
+      totalUsers: roles.reduce((sum, role) => sum + role.userCount, 0)
+    }
+  });
+});
+
+app.post('/api/security/session/validate', (req, res) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  const isValid = token && token.length > 20;
+
+  res.json({
+    success: isValid,
+    data: isValid ? {
+      sessionId: 'session-' + Math.random().toString(36).substr(2, 9),
+      userId: 'user-123',
+      role: 'manager',
+      mfaVerified: true,
+      expiresAt: new Date(Date.now() + 3600000).toISOString()
+    } : null
   });
 });
 

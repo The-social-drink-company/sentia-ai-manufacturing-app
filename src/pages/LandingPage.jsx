@@ -13,18 +13,10 @@ import {
   BoltIcon
 } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
-<<<<<<< HEAD
-
-import { SignInButton } from '../providers/ClerkAuthProvider'
-
-export default function LandingPage() {
-  // This landing page requires Clerk authentication - no guest access
-=======
-import { useAuth } from '@clerk/clerk-react'
+import { useAuth, SignInButton } from '@clerk/clerk-react'
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth()
->>>>>>> baed00d3308a0840f08ad991048d6e31660a3b56
 
   const features = [
     {
@@ -88,38 +80,11 @@ export default function LandingPage() {
               <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">Sentia Manufacturing</h1>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-<<<<<<< HEAD
               <SignInButton mode="modal">
                 <button className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base">
                   Sign In to Dashboard
                 </button>
               </SignInButton>
-=======
-              {isSignedIn ? (
-                <Link
-                  to="/dashboard"
-                  className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/sign-in"
-                    className="hidden sm:block px-4 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/sign-up"
-                    className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base"
-                  >
-                    <span className="hidden sm:inline">Get Started</span>
-                    <span className="sm:hidden">Start</span>
-                  </Link>
-                </>
-              )}
->>>>>>> baed00d3308a0840f08ad991048d6e31660a3b56
             </div>
           </div>
         </div>
@@ -141,7 +106,6 @@ export default function LandingPage() {
               and comprehensive production management for Sentia Spirits
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
-<<<<<<< HEAD
               <SignInButton mode="modal">
                 <button className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 font-medium text-base sm:text-lg shadow-lg">
                   Sign In to Dashboard
@@ -152,33 +116,6 @@ export default function LandingPage() {
                 <p>🔒 Secure enterprise authentication required</p>
                 <p>No guest access • Powered by Clerk</p>
               </div>
-=======
-              {isSignedIn ? (
-                <Link
-                  to="/dashboard"
-                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 font-medium text-base sm:text-lg shadow-lg"
-                >
-                  Open Dashboard
-                  <ArrowRightIcon className="w-4 sm:w-5 h-4 sm:h-5 ml-2" />
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/sign-up"
-                    className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 font-medium text-base sm:text-lg shadow-lg"
-                  >
-                    Start Free Trial
-                    <ArrowRightIcon className="w-4 sm:w-5 h-4 sm:h-5 ml-2" />
-                  </Link>
-                  <Link
-                    to="/sign-in"
-                    className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-700 rounded-lg border-2 border-gray-300 hover:border-gray-400 transition-colors font-medium text-base sm:text-lg shadow-md"
-                  >
-                    Sign In
-                  </Link>
-                </>
-              )}
->>>>>>> baed00d3308a0840f08ad991048d6e31660a3b56
             </div>
           </div>
         </div>
@@ -290,18 +227,9 @@ export default function LandingPage() {
           <p className="text-xl text-blue-100 mb-10">
             Join industry leaders using Sentia to optimize operations and drive growth
           </p>
-<<<<<<< HEAD
           <SignInButton mode="modal">
             <button className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 font-medium text-lg">
               Sign In to Dashboard
-=======
-          {isSignedIn ? (
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 font-medium text-lg"
-            >
-              Access Your Dashboard
->>>>>>> baed00d3308a0840f08ad991048d6e31660a3b56
               <ArrowRightIcon className="w-5 h-5 ml-2" />
             </button>
           </SignInButton>

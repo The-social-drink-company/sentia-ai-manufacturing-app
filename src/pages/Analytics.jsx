@@ -69,7 +69,7 @@ const Analytics = () => {
     return 'bg-red-500';
   };
 
-  const getTrendIcon = (_trend) => {
+  const getTrendIcon = (trend) => {
     switch (trend) {
       case 'improving':
         return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
@@ -375,11 +375,7 @@ const Analytics = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-1">Recommended Actions:</p>
                       <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-<<<<<<< HEAD
-                        {rec.actions.map((action, __actionIndex) => (
-=======
-                        {rec.actions.map((action, _actionIndex) => (
->>>>>>> development
+                        {rec.actions.map((action, actionIndex) => (
                           <li key={actionIndex}>{action}</li>
                         ))}
                       </ul>

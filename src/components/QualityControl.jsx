@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { useState,  } from 'react';
-=======
 import { useState } from 'react';
->>>>>>> development
 import {
   BeakerIcon,
   CheckCircleIcon,

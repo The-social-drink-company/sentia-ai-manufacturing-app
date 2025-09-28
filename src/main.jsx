@@ -1,1 +1,1 @@
-import { StrictMode, useEffect, useState } from 'react'
+import { StrictMode } from 'react'

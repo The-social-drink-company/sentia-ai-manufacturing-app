@@ -61,21 +61,30 @@ class APIService {
       // Try MCP server first
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/working-capital`);
       return data;
-    } catch (error) {\n      console.warn("[APIService] MCP working capital request failed, falling back to local API", error);\n      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/working-capital`);\n    }
+    } catch (error) {
+      console.warn("[APIService] MCP working capital request failed, falling back to local API", error);
+      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/working-capital`);
+    }
   }
 
   async getCashFlow() {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/cash-flow`);
       return data;
-    } catch (error) {\n      console.warn("[APIService] MCP cash flow request failed, falling back to local API", error);\n      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/cash-flow`);\n    }
+    } catch (error) {
+      console.warn("[APIService] MCP cash flow request failed, falling back to local API", error);
+      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/cash-flow`);
+    }
   }
 
   async getFinancialMetrics() {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/metrics`);
       return data;
-    } catch (error) {\n      console.warn("[APIService] MCP financial metrics request failed, falling back to local API", error);\n      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/metrics`);\n    }
+    } catch (error) {
+      console.warn("[APIService] MCP financial metrics request failed, falling back to local API", error);
+      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/metrics`);
+    }
   }
 
   // Production Data Methods
@@ -83,7 +92,8 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/production/metrics`);
       return data;
-    } catch (_error) {
+    } catch (error) {
+      console.warn("[APIService] MCP production metrics request failed, falling back to local API", error);
       return this.fetchWithAuth(`${this.apiBaseUrl}/production/metrics`);
     }
   }
@@ -92,7 +102,8 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/inventory/current`);
       return data;
-    } catch (_error) {
+    } catch (error) {
+      console.warn("[APIService] MCP inventory request failed, falling back to local API", error);
       return this.fetchWithAuth(`${this.apiBaseUrl}/inventory/current`);
     }
   }
@@ -101,7 +112,8 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/quality/metrics`);
       return data;
-    } catch (_error) {
+    } catch (error) {
+      console.warn("[APIService] MCP quality metrics request failed, falling back to local API", error);
       return this.fetchWithAuth(`${this.apiBaseUrl}/quality/metrics`);
     }
   }
@@ -111,7 +123,8 @@ class APIService {
     try {
       const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/dashboard/summary`);
       return data;
-    } catch (_error) {
+    } catch (error) {
+      console.warn("[APIService] MCP dashboard summary request failed, falling back to local API", error);
       return this.fetchWithAuth(`${this.apiBaseUrl}/dashboard/summary`);
     }
   }
@@ -164,5 +177,9 @@ const apiService = new APIService();
 
 export default apiService;
 export { APIService };
+
+
+
+
 
 

@@ -30,11 +30,11 @@ services:
           property: connectionString
       - key: MCP_SERVER_URL
         value: https://mcp-server-tkyu.onrender.com
-      # Clerk Authentication Variables - WORKING KEYS
+      # Clerk Authentication Variables - LIVE PRODUCTION KEYS
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
-        value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
       - key: VITE_CLERK_DOMAIN
         value: clerk.financeflo.ai
       - key: VITE_CLERK_SIGN_IN_URL
@@ -73,11 +73,11 @@ services:
           property: connectionString
       - key: MCP_SERVER_URL
         value: https://mcp-server-tkyu.onrender.com
-      # Clerk Authentication Variables - WORKING KEYS
+      # Clerk Authentication Variables - LIVE PRODUCTION KEYS
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
-        value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
       - key: VITE_CLERK_DOMAIN
         value: clerk.financeflo.ai
       - key: VITE_CLERK_SIGN_IN_URL
@@ -118,11 +118,11 @@ services:
         value: https://mcp-server-tkyu.onrender.com
       - key: LOG_LEVEL
         value: error
-      # Clerk Authentication Variables - WORKING KEYS
+      # Clerk Authentication Variables - LIVE PRODUCTION KEYS
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
-        value: sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
+        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
       - key: VITE_CLERK_DOMAIN
         value: clerk.financeflo.ai
       - key: VITE_CLERK_SIGN_IN_URL

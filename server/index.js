@@ -80,12 +80,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
-// Serve static files from dist directory
-const distPath = path.join(__dirname, '../dist');
-app.use(express.static(distPath));
-
+// IMPORTANT: Mount API routes BEFORE static files to prevent catch-all interference
 // Mount real API routes - NO MOCK DATA
 app.use('/api', realAPI);
+
+// Serve static files from dist directory (AFTER API routes)
+const distPath = path.join(__dirname, '../dist');
+app.use(express.static(distPath));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

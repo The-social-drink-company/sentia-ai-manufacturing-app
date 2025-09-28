@@ -9,7 +9,7 @@ import { logError } from '../services/observability/structuredLogger.js';
 const router = express.Router();
 
 // Check if feature is enabled
-const checkFeatureEnabled = (req, res, _next) => {
+const checkFeatureEnabled = (req, res, next) => {
   if (process.env.FEATURE_MODEL_REGISTRY !== 'true') {
     return res.status(403).json({
       success: false,
@@ -20,7 +20,7 @@ const checkFeatureEnabled = (req, res, _next) => {
 };
 
 // POST /models/artifacts - Register a new artifact
-router.post(_'/models/artifacts', checkFeatureEnabled, async (req, res) => {
+router.post('/models/artifacts', checkFeatureEnabled, async (req, res) => {
   try {
     const { type, runId, entityId, region, metrics, params, artifactUrl, tags, version } = req.body;
     
@@ -58,7 +58,7 @@ router.post(_'/models/artifacts', checkFeatureEnabled, async (req, res) => {
 });
 
 // GET /models/artifacts - Get artifacts
-router.get(_'/models/artifacts', checkFeatureEnabled, async (req, res) => {
+router.get('/models/artifacts', checkFeatureEnabled, async (req, res) => {
   try {
     const { type, entityId, region, from, to, status } = req.query;
     
@@ -86,7 +86,7 @@ router.get(_'/models/artifacts', checkFeatureEnabled, async (req, res) => {
 });
 
 // GET /models/baseline/:type - Get current baseline
-router.get(_'/models/baseline/:type', checkFeatureEnabled, async (req, res) => {
+router.get('/models/baseline/:type', checkFeatureEnabled, async (req, res) => {
   try {
     const { type } = req.params;
     const { entityId, region } = req.query;
@@ -108,7 +108,7 @@ router.get(_'/models/baseline/:type', checkFeatureEnabled, async (req, res) => {
 });
 
 // GET /models/baseline-history/:type - Get baseline history
-router.get(_'/models/baseline-history/:type', checkFeatureEnabled, async (req, res) => {
+router.get('/models/baseline-history/:type', checkFeatureEnabled, async (req, res) => {
   try {
     const { type } = req.params;
     const { entityId, region, limit = 10 } = req.query;
@@ -135,7 +135,7 @@ router.get(_'/models/baseline-history/:type', checkFeatureEnabled, async (req, r
 });
 
 // POST /models/baseline/propose - Propose baseline change
-router.post(_'/models/baseline/propose', checkFeatureEnabled, async (req, res) => {
+router.post('/models/baseline/propose', checkFeatureEnabled, async (req, res) => {
   try {
     const { type, artifactId, notes } = req.body;
     
@@ -175,7 +175,7 @@ router.post(_'/models/baseline/propose', checkFeatureEnabled, async (req, res) =
 });
 
 // POST /models/baseline/:id/rollback - Rollback baseline
-router.post(_'/models/baseline/:id/rollback', checkFeatureEnabled, async (req, res) => {
+router.post('/models/baseline/:id/rollback', checkFeatureEnabled, async (req, res) => {
   try {
     const { id } = req.params;
     const { reason } = req.body;
@@ -209,7 +209,7 @@ router.post(_'/models/baseline/:id/rollback', checkFeatureEnabled, async (req, r
 });
 
 // GET /models/trends/:type - Get performance trends
-router.get(_'/models/trends/:type', checkFeatureEnabled, async (req, res) => {
+router.get('/models/trends/:type', checkFeatureEnabled, async (req, res) => {
   try {
     const { type } = req.params;
     const { entityId, region, days = 30 } = req.query;
@@ -236,7 +236,7 @@ router.get(_'/models/trends/:type', checkFeatureEnabled, async (req, res) => {
 });
 
 // GET /models/export/baseline-note/:id - Export baseline change note
-router.get(_'/models/export/baseline-note/:id', checkFeatureEnabled, async (req, res) => {
+router.get('/models/export/baseline-note/:id', checkFeatureEnabled, async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -257,7 +257,7 @@ router.get(_'/models/export/baseline-note/:id', checkFeatureEnabled, async (req,
 });
 
 // POST /models/archive - Archive old artifacts
-router.post(_'/models/archive', checkFeatureEnabled, async (req, res) => {
+router.post('/models/archive', checkFeatureEnabled, async (req, res) => {
   try {
     // Admin only
     if (!req.user || req.user.role !== 'admin') {

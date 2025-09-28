@@ -1,6 +1,6 @@
 import xeroCompleteService from '../../services/integrations/xero-complete.js';
 import { PrismaClient } from '@prisma/client';
-import { logDebug, logInfo, logWarn, logError } from '../../services/observability/structuredLogger.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
 
 
 const prisma = new PrismaClient();

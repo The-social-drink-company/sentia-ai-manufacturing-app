@@ -173,7 +173,7 @@ class RateLimiterService {
    */
   createSlidingWindowLimiter(options) {
     return {
-      middleware: async (req, res, _next) => {
+      middleware: async (req, res, next) => {
         const key = this.generateKey(req);
         const windowMs = options.windowMs || 60000;
         const max = options.max || 100;
@@ -224,7 +224,7 @@ class RateLimiterService {
     }, refillInterval);
 
     return {
-      middleware: (req, res, _next) => {
+      middleware: (req, res, next) => {
         const key = this.generateKey(req);
 
         if (!buckets.has(key)) {
@@ -260,7 +260,7 @@ class RateLimiterService {
     };
 
     return {
-      middleware: async (req, res, _next) => {
+      middleware: async (req, res, next) => {
         const key = this.generateKey(req);
 
         // Calculate adaptive limit based on system metrics
@@ -304,7 +304,7 @@ class RateLimiterService {
 
     // Reduce limit if response time is high
     if (metrics.responseTime.length > 0) {
-      const avgResponseTime = metrics.responseTime.reduce((a, _b) => a + b, 0) / metrics.responseTime.length;
+      const avgResponseTime = metrics.responseTime.reduce((a, b) => a + b, 0) / metrics.responseTime.length;
       if (avgResponseTime > 1000) {
         multiplier *= Math.max(0.5, 1000 / avgResponseTime);
       }

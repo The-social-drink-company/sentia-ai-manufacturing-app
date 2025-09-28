@@ -13,7 +13,7 @@ const router = express.Router();
 /**
  * Test Shopify connections
  */
-router.get(_'/status', async (req, res) => {
+router.get('/status', async (req, res) => {
   try {
     const connections = await shopifyIntegration.testConnections();
 
@@ -35,7 +35,7 @@ router.get(_'/status', async (req, res) => {
 /**
  * Sync sales data from all Shopify stores
  */
-router.post(_'/sync', async (req, res) => {
+router.post('/sync', async (req, res) => {
   try {
     logInfo('Starting manual Shopify sync');
 
@@ -58,7 +58,7 @@ router.post(_'/sync', async (req, res) => {
 /**
  * Get current sales metrics
  */
-router.get(_'/metrics', async (req, res) => {
+router.get('/metrics', async (req, res) => {
   try {
     const metrics = await shopifyIntegration.getCurrentMetrics();
 
@@ -79,7 +79,7 @@ router.get(_'/metrics', async (req, res) => {
 /**
  * Get sales data for a specific time period
  */
-router.get(_'/sales', async (req, res) => {
+router.get('/sales', async (req, res) => {
   try {
     const { startDate, endDate, region } = req.query;
 
@@ -108,7 +108,7 @@ router.get(_'/sales', async (req, res) => {
 /**
  * Get inventory levels from Shopify
  */
-router.get(_'/inventory', async (req, res) => {
+router.get('/inventory', async (req, res) => {
   try {
     const results = {
       uk: null,
@@ -152,7 +152,7 @@ router.get(_'/inventory', async (req, res) => {
 /**
  * Get top selling products
  */
-router.get(_'/products/top', async (req, res) => {
+router.get('/products/top', async (req, res) => {
   try {
     const metrics = await shopifyIntegration.getCurrentMetrics();
 
@@ -199,7 +199,7 @@ router.get(_'/products/top', async (req, res) => {
 /**
  * Get sales by region
  */
-router.get(_'/sales/by-region', async (req, res) => {
+router.get('/sales/by-region', async (req, res) => {
   try {
     const metrics = await shopifyIntegration.getCurrentMetrics();
 
@@ -244,7 +244,7 @@ export function startShopifySync() {
     syncJob.stop();
   }
 
-  syncJob = cron.schedule('*/15 * * * _*', async () => {
+  syncJob = cron.schedule('*/15 * * * *', async () => {
     try {
       logInfo('Running scheduled Shopify sync');
       await shopifyIntegration.syncAllStores();

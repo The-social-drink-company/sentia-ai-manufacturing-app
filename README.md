@@ -48,7 +48,7 @@ World-class manufacturing dashboard with AI-powered analytics, real-time monitor
 ### Prerequisites
 
 - **Node.js** v24.4.1 (Required - use exact version)
-- **pnpm** (Required) for package management
+- **pnpm** (Preferred) or npm (Alternative)
 - **PostgreSQL** 16+ with pgvector extension (Optional for local development)
 - **Git** for version control
 
@@ -63,6 +63,8 @@ World-class manufacturing dashboard with AI-powered analytics, real-time monitor
 2. **Install dependencies**
    ```bash
    pnpm install
+   # or
+   npm install
    ```
 
 3. **Configure environment variables**
@@ -136,7 +138,7 @@ pnpm run db:studio        # Open Prisma Studio
 **Port conflicts:**
 ```bash
 # Kill processes on specific ports
-pnpm dlx kill-port 3000 5000 3001
+npx kill-port 3000 5000 3001
 ```
 
 **Node modules issues:**
@@ -196,9 +198,9 @@ sentia-manufacturing-dashboard/
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
+- Node.js 18+ and npm
 - Git
-- Railway CLI (for deployment) - Install with: pnpm dlx @railway/cli
+- Railway CLI (for deployment)
 
 ### 1. Clone and Setup
 
@@ -214,7 +216,7 @@ cp .env.development .env.local  # For local development
 ### 2. Install Dependencies
 
 ```bash
-pnpm install
+npm install
 ```
 
 ### 3. Development Setup
@@ -223,11 +225,11 @@ Start both frontend and backend in development mode:
 
 ```bash
 # Start both frontend (port 3000) and backend (port 5000)
-pnpm run dev
+npm run dev
 
 # Or run them separately:
-pnpm run dev:client    # Frontend only (Vite dev server)
-pnpm run dev:server    # Backend only (Express server)
+npm run dev:client    # Frontend only (Vite dev server)
+npm run dev:server    # Backend only (Express server)
 ```
 
 ### 4. Access the Application
@@ -263,35 +265,35 @@ The application uses **Prisma ORM** with **Render PostgreSQL** in a three-enviro
 #### Essential Commands:
 ```bash
 # Generate Prisma client
-pnpm run db:generate
+npm run db:generate
 
 # Push schema changes to database (development)
-pnpm run db:push
+npm run db:push
 
 # Create and apply migrations
-pnpm run db:migrate
+npm run db:migrate
 
 # Deploy migrations to production
-pnpm run db:migrate:deploy
+npm run db:migrate:deploy
 
 # Reset database (development only)
-pnpm run db:migrate:reset
+npm run db:migrate:reset
 
 # Open Prisma Studio (database GUI)
-pnpm run db:studio
+npm run db:studio
 
 # Seed database with sample data
-pnpm run db:seed
+npm run db:seed
 ```
 
 #### Migration Workflow:
 ```bash
 # 1. Make changes to prisma/schema.prisma
 # 2. Create migration
-pnpm run db:migrate
+npm run db:migrate
 
 # 3. Deploy to production
-pnpm run db:migrate:deploy
+npm run db:migrate:deploy
 ```
 
 ### Database Schema
@@ -394,8 +396,8 @@ The application is deployed on Railway with automatic branch deployments:
 **The deployment is configured exclusively through `nixpacks.toml`:**
 ```toml
 [build]
-# Uses pnpm install with frozen lockfile for reproducible builds
-cmds = ["pnpm install --frozen-lockfile", "pnpm run build"]
+# Uses npm ci with custom cache to avoid Docker mount conflicts
+cmds = ["npm ci --cache /tmp/.npm", "npm run build"]
 
 [start]
 # Starts the dedicated Railway server with health checks
@@ -407,7 +409,7 @@ NIXPACKS_NODE_VERSION = "22.12.0"
 ```
 
 **Why these configuration choices:**
-- `pnpm install --frozen-lockfile`: Maintains lockfile integrity with exact dependency versions
+- `npm ci --cache /tmp/.npm`: Maintains lockfile integrity while avoiding Docker cache mount conflicts
 - `railway-ultimate.js`: Dedicated server with Railway-specific health checks and monitoring
 - Node 22.12.0: Satisfies Vite's engine requirements (20.19+ or 22.12+)
 
@@ -415,7 +417,7 @@ NIXPACKS_NODE_VERSION = "22.12.0"
 
 ```bash
 # Install Railway CLI
-pnpm dlx @railway/cli
+npm install -g @railway/cli
 
 # Deploy to specific environment
 railway up --environment development
@@ -472,41 +474,41 @@ For detailed deployment configuration, see `context/deployment-configs/railway_s
 
 ### Development & Build
 ```bash
-pnpm run dev          # Start both frontend and backend
-pnpm run dev:client   # Start Vite dev server (frontend only)
-pnpm run dev:server   # Start Express server (backend only)
-pnpm run build        # Build production React app
-pnpm run preview      # Preview production build
-pnpm start            # Start production server
+npm run dev          # Start both frontend and backend
+npm run dev:client   # Start Vite dev server (frontend only)
+npm run dev:server   # Start Express server (backend only)
+npm run build        # Build production React app
+npm run preview      # Preview production build
+npm start            # Start production server
 ```
 
 ### Code Quality & Testing
 ```bash
-pnpm run lint         # Run ESLint
-pnpm run lint:fix     # Auto-fix ESLint issues
-pnpm run format       # Format code with Prettier
-pnpm run format:check # Check code formatting
-pnpm run typecheck    # Run TypeScript type checking
-pnpm run quality      # Run all quality checks (lint + format + typecheck)
-pnpm test             # Run Vitest unit tests
-pnpm run test:run     # Run tests once
-pnpm run test:coverage # Run tests with coverage
-pnpm run test:e2e     # Run Playwright E2E tests
+npm run lint         # Run ESLint
+npm run lint:fix     # Auto-fix ESLint issues
+npm run format       # Format code with Prettier
+npm run format:check # Check code formatting
+npm run typecheck    # Run TypeScript type checking
+npm run quality      # Run all quality checks (lint + format + typecheck)
+npm test             # Run Vitest unit tests
+npm run test:run     # Run tests once
+npm run test:coverage # Run tests with coverage
+npm run test:e2e     # Run Playwright E2E tests
 ```
 
 ### Development Setup (Enhanced)
 ```bash
 # Install dependencies
-pnpm install
+npm install
 
-# Setup pre-commit hooks (runs automatically after pnpm install)
-pnpm run prepare
+# Setup pre-commit hooks (runs automatically after npm install)
+npm run prepare
 
 # Copy environment template and configure
 cp .env.example .env.local
 
 # Run quality checks before committing
-pnpm run quality
+npm run quality
 ```
 
 ## Enhanced Features (v1.1)
@@ -599,9 +601,9 @@ curl http://localhost:5000/api/db-test
 
 Run tests (when test suite is added):
 ```bash
-pnpm test                # Run Jest tests
-pnpm run test:e2e       # Run Playwright E2E tests
-pnpm run test:coverage  # Run tests with coverage
+npm test                # Run Jest tests
+npm run test:e2e       # Run Playwright E2E tests
+npm run test:coverage  # Run tests with coverage
 ```
 
 ## Validation Steps
@@ -609,7 +611,7 @@ pnpm run test:coverage  # Run tests with coverage
 ### Local Development Test
 ```bash
 # 1. Start development environment
-pnpm run dev
+npm run dev
 
 # 2. Test frontend
 curl http://localhost:3000
@@ -654,8 +656,8 @@ taskkill /PID <process_id> /F
 **Dependencies issues:**
 ```bash
 # Clean and reinstall
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
+rm -rf node_modules package-lock.json
+npm install
 ```
 
 **Environment variables:**

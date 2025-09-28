@@ -41,7 +41,7 @@ class PerformanceOptimizationAgent {
       const { stdout } = await execAsync('npm run build 2>&1');
       
       // Extract bundle sizes
-      const sizeRegex = /(\\d+\.\\d+)\\s*(kB|MB)/g;
+      const sizeRegex = /(\\d+\\.\\d+)\\s*(kB|MB)/g;
       let match;
       const bundles = [];
       
@@ -64,7 +64,7 @@ class PerformanceOptimizationAgent {
       }
       
       // Check build time
-      const timeMatch = stdout.match(/built in (\\d+\.\\d+)s/);
+      const timeMatch = stdout.match(/built in (\\d+\\.\\d+)s/);
       if (timeMatch) {
         const buildTime = parseFloat(timeMatch[1]);
         if (buildTime > 10) {
@@ -82,7 +82,7 @@ class PerformanceOptimizationAgent {
     // Check for unoptimized images
     try {
       const { stdout } = await execAsync(
-        'find public src -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) -size +100k 2>/dev/null | head -10 || true'
+        'find public src -type f \\( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \\) -size +100k 2>/dev/null | head -10 || true'
       );
       
       const largeImages = stdout.trim().split('\\n').filter(Boolean);
@@ -253,7 +253,7 @@ class PerformanceOptimizationAgent {
           const content = await fs.readFile(file, 'utf-8');
           const updated = content.replace(
             /<img([^>]+)src=["']([^"']*${imageName}[^"']*)["']([^>]*)>/g,
-            (match, _before, src, after) => {
+            (match, before, src, after) => {
               if (!match.includes('loading=')) {
                 return `<img${before}src="${src}"${after} loading="lazy">`;
               }
@@ -287,7 +287,7 @@ class PerformanceOptimizationAgent {
           let updated = content;
           
           // Convert static imports to lazy imports for routes
-          const importRegex = /import (\w+) from ['"](.+/pages/.+)['"]/g;
+          const importRegex = /import (\w+) from ['"](.+\/pages\/.+)['"]/g;
           const lazyImports = [];
           
           updated = updated.replace(importRegex, (match, component, path) => {
@@ -341,9 +341,9 @@ class PerformanceOptimizationAgent {
         let updated = content;
         
         // Add React.memo to functional components
-        const componentRegex = /export (default )?function (\w+)\s*(/g;
+        const componentRegex = /export (default )?function (\w+)\s*\(/g;
         
-        updated = _updated.replace(componentRegex, (match, exportDefault, name) => {
+        updated = updated.replace(componentRegex, (match, exportDefault, name) => {
           if (!content.includes(`React.memo(${name})`)) {
             return `${match}\\n\\nexport ${exportDefault || ''}React.memo(${name})`;
           }

@@ -27,23 +27,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.12.0
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run unit tests
-        run: pnpm run test:run
+        run: npm run test:run
 
       - name: Generate coverage report
-        run: pnpm run test:coverage
+        run: npm run test:coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -76,30 +73,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run database migrations
-        run: pnpm dlx prisma migrate deploy
+        run: npx prisma migrate deploy
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/sentia_test
 
       - name: Seed test database
-        run: pnpm dlx prisma db seed
+        run: npx prisma db seed
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/sentia_test
 
       - name: Run integration tests
-        run: pnpm run test:integration
+        run: npm run test:integration
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/sentia_test
           NODE_ENV: test
@@ -112,26 +106,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Install Playwright browsers
-        run: pnpm dlx playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Build application
-        run: pnpm run build
+        run: npm run build
 
       - name: Run E2E tests
-        run: pnpm run test:e2e
+        run: npm run test:e2e
         env:
           CI: true
 
@@ -151,29 +142,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Build application
-        run: pnpm run build
+        run: npm run build
 
       - name: Run Lighthouse CI
         run: |
-          pnpm install -g @lhci/cli
-          lhci autorun --collect.startServerCommand="pnpm run preview" --collect.url="http://localhost:3000" || true
+          npm install -g @lhci/cli
+          lhci autorun --collect.startServerCommand="npm run preview" --collect.url="http://localhost:3000" || true
 
       - name: Check bundle size
         run: |
-          pnpm run build
+          npm run build
           echo "Bundle size report:"
           du -sh dist/
           find dist -name "*.js" -o -name "*.css" | xargs ls -lh
@@ -186,20 +174,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
-      - name: Run pnpm audit
-        run: pnpm audit --audit-level=moderate
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
         continue-on-error: true
 
       - name: Run Snyk security test
@@ -221,25 +206,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Build application
-        run: pnpm run build
+        run: npm run build
 
       - name: Run accessibility tests
         run: |
-          pnpm install -g @axe-core/cli
-          pnpm run preview &
+          npm install -g @axe-core/cli
+          npm run preview &
           sleep 10
           axe http://localhost:3000 --dir ./a11y-reports || true
 
@@ -258,27 +240,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.12.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Start API server
         run: |
-          pnpm run dev:server &
+          npm run dev:server &
           sleep 10
 
       - name: Run API tests
         run: |
           # Install Newman for Postman collection tests
-          pnpm install -g newman
+          npm install -g newman
           # Run API test collection if it exists
           if [ -f "./tests/api/collection.json" ]; then
             newman run ./tests/api/collection.json

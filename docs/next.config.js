@@ -1,5 +1,5 @@
 const withMDX = require('@next/mdx')({
-  extension: /.mdx?$/,
+  extension: /\.mdx?$/,
   options: {
     remarkPlugins: [require('remark-gfm')],
     rehypePlugins: [require('rehype-slug'), require('rehype-autolink-headings')],

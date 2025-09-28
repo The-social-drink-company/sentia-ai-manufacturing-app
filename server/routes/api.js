@@ -6,7 +6,7 @@ import xeroService from '../../services/xeroService.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { upload, handleUploadError } from '../middleware/upload.js';
 
-import { sendSSEEvent } from './sse.js';\r\nimport { ensureDatabaseConnection, getPrismaClient } from '../database/client.js';\r\nimport { buildTimeSeries, summarizeSeries, toCurrency, determineTrend } from '../utils/dataTransforms.js';\r\n\r\n
+import { sendSSEEvent } from './sse.js';\r\nimport { ensureDatabaseConnection } from '../database/client.js';\r\nimport { buildTimeSeries, summarizeSeries, toCurrency, determineTrend } from '../utils/dataTransforms.js';\r\n\r\n
 const router = express.Router();
 
 // In-memory data storage (replace with database in production)
@@ -587,6 +587,7 @@ function convertToCSV(data) {
 }
 
 export default router;
+
 
 
 

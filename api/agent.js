@@ -18,7 +18,7 @@ const router = express.Router();
 router.use(agentRateLimiter.middleware());
 
 // Check if agent feature is enabled
-const checkFeatureEnabled = (req, res, _next) => {
+const checkFeatureEnabled = (req, res, next) => {
   if (process.env.FEATURE_AGENT !== 'true') {
     return res.status(403).json({
       success: false,
@@ -29,7 +29,7 @@ const checkFeatureEnabled = (req, res, _next) => {
 };
 
 // POST /agent/validate-plan - Validate a plan before execution
-router.post(_'/agent/validate-plan', checkFeatureEnabled, async (req, res) => {
+router.post('/agent/validate-plan', checkFeatureEnabled, async (req, res) => {
   try {
     const { plan, scope, mode } = req.body;
     const userId = req.user?.id;
@@ -144,7 +144,7 @@ router.post('/agent/run', checkFeatureEnabled, policyMiddleware(), async (req, r
 });
 
 // GET /agent/runs/:runId - Get run status
-router.get(_'/agent/runs/:runId', checkFeatureEnabled, async (req, res) => {
+router.get('/agent/runs/:runId', checkFeatureEnabled, async (req, res) => {
   try {
     const { runId } = req.params;
     
@@ -172,7 +172,7 @@ router.get(_'/agent/runs/:runId', checkFeatureEnabled, async (req, res) => {
 });
 
 // POST /agent/runs/:runId/approve - Approve a step
-router.post(_'/agent/runs/:runId/approve', checkFeatureEnabled, async (req, res) => {
+router.post('/agent/runs/:runId/approve', checkFeatureEnabled, async (req, res) => {
   try {
     const { runId } = req.params;
     const { stepId } = req.body;
@@ -209,7 +209,7 @@ router.post(_'/agent/runs/:runId/approve', checkFeatureEnabled, async (req, res)
 });
 
 // GET /agent/tools - Get available tools
-router.get(_'/agent/tools', checkFeatureEnabled, async (req, res) => {
+router.get('/agent/tools', checkFeatureEnabled, async (req, res) => {
   try {
     const tools = toolCatalog.getAllTools();
 
@@ -228,7 +228,7 @@ router.get(_'/agent/tools', checkFeatureEnabled, async (req, res) => {
 });
 
 // GET /agent/tools/:toolId/schema - Get tool schema
-router.get(_'/agent/tools/:toolId/schema', checkFeatureEnabled, async (req, res) => {
+router.get('/agent/tools/:toolId/schema', checkFeatureEnabled, async (req, res) => {
   try {
     const { toolId } = req.params;
     const tool = toolCatalog.getTool(toolId);
@@ -262,7 +262,7 @@ router.get(_'/agent/tools/:toolId/schema', checkFeatureEnabled, async (req, res)
 });
 
 // POST /agent/eval - Run evaluation
-router.post(_'/agent/eval', checkFeatureEnabled, async (req, res) => {
+router.post('/agent/eval', checkFeatureEnabled, async (req, res) => {
   try {
     const { goal, preset_key, dataset_key, scope, thresholds_override } = req.body;
 
@@ -295,7 +295,7 @@ router.post(_'/agent/eval', checkFeatureEnabled, async (req, res) => {
 });
 
 // POST /agent/schedules - Create schedule
-router.post(_'/agent/schedules', checkFeatureEnabled, async (req, res) => {
+router.post('/agent/schedules', checkFeatureEnabled, async (req, res) => {
   try {
     if (process.env.FEATURE_AGENT_AUTOPILOT !== 'true') {
       return res.status(403).json({
@@ -321,7 +321,7 @@ router.post(_'/agent/schedules', checkFeatureEnabled, async (req, res) => {
 });
 
 // GET /agent/schedules - List schedules
-router.get(_'/agent/schedules', checkFeatureEnabled, async (req, res) => {
+router.get('/agent/schedules', checkFeatureEnabled, async (req, res) => {
   try {
     const schedules = await autopilotScheduler.getSchedules();
 
@@ -340,7 +340,7 @@ router.get(_'/agent/schedules', checkFeatureEnabled, async (req, res) => {
 });
 
 // PATCH /agent/schedules/:id - Update schedule
-router.patch(_'/agent/schedules/:id', checkFeatureEnabled, async (req, res) => {
+router.patch('/agent/schedules/:id', checkFeatureEnabled, async (req, res) => {
   try {
     const { id } = req.params;
     const schedule = await autopilotScheduler.updateSchedule(id, req.body);
@@ -360,7 +360,7 @@ router.patch(_'/agent/schedules/:id', checkFeatureEnabled, async (req, res) => {
 });
 
 // POST /agent/schedules/:id/run-now - Run schedule immediately
-router.post(_'/agent/schedules/:id/run-now', checkFeatureEnabled, async (req, res) => {
+router.post('/agent/schedules/:id/run-now', checkFeatureEnabled, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -389,7 +389,7 @@ router.post(_'/agent/schedules/:id/run-now', checkFeatureEnabled, async (req, re
 });
 
 // GET /agent/schedules/metrics - Get scheduler metrics
-router.get(_'/agent/schedules/metrics', checkFeatureEnabled, async (req, res) => {
+router.get('/agent/schedules/metrics', checkFeatureEnabled, async (req, res) => {
   try {
     const metrics = await autopilotScheduler.getMetrics();
 
@@ -408,7 +408,7 @@ router.get(_'/agent/schedules/metrics', checkFeatureEnabled, async (req, res) =>
 });
 
 // GET /agent/safety/metrics - Get safety metrics
-router.get(_'/agent/safety/metrics', checkFeatureEnabled, async (req, res) => {
+router.get('/agent/safety/metrics', checkFeatureEnabled, async (req, res) => {
   try {
     const days = parseInt(req.query.days) || 7;
     const metrics = await policyGuard.getSafetyMetrics(days);
@@ -428,7 +428,7 @@ router.get(_'/agent/safety/metrics', checkFeatureEnabled, async (req, res) => {
 });
 
 // GET /agent/policies - Get active policies
-router.get(_'/agent/policies', checkFeatureEnabled, async (req, res) => {
+router.get('/agent/policies', checkFeatureEnabled, async (req, res) => {
   try {
     const userId = req.user?.id;
     const userRole = req.user?.role || 'viewer';
@@ -450,7 +450,7 @@ router.get(_'/agent/policies', checkFeatureEnabled, async (req, res) => {
 });
 
 // POST /agent/policies - Create/update policy (admin only)
-router.post(_'/agent/policies', checkFeatureEnabled, async (req, res) => {
+router.post('/agent/policies', checkFeatureEnabled, async (req, res) => {
   try {
     if (!req.user || req.user.role !== 'admin') {
       return res.status(403).json({
@@ -477,7 +477,7 @@ router.post(_'/agent/policies', checkFeatureEnabled, async (req, res) => {
 });
 
 // POST /agent/step-up - Request step-up authentication
-router.post(_'/agent/step-up', checkFeatureEnabled, async (req, res) => {
+router.post('/agent/step-up', checkFeatureEnabled, async (req, res) => {
   try {
     const userId = req.user?.id;
     
@@ -508,7 +508,7 @@ router.post(_'/agent/step-up', checkFeatureEnabled, async (req, res) => {
 });
 
 // GET /agent/lint - Lint a plan and get suggestions
-router.post(_'/agent/lint', checkFeatureEnabled, async (req, res) => {
+router.post('/agent/lint', checkFeatureEnabled, async (req, res) => {
   try {
     const { plan, scope, mode } = req.body;
     const userId = req.user?.id;

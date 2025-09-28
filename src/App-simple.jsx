@@ -1,11 +1,29 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
-import { BulletproofAuthProvider } from './auth/BulletproofAuthProvider';
-import AIChatbot from './components/AIChatbot';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BulletproofAuthProvider, useBulletproofAuth } from './auth/BulletproofAuthProvider';
+import { SignIn, SignUp, useAuth } from '@clerk/clerk-react';
+import LandingPage from './pages/LandingPage';
+import ClerkSignIn from './pages/ClerkSignIn';
+// import AIChatbot from './components/AIChatbot'; // TODO: Add AI chatbot
+
+// Protected Route Component - Requires authentication
+const ProtectedRoute = ({ children }) => {
+  const auth = useBulletproofAuth();
+
+  // If not signed in, redirect to sign-in page
+  if (!auth.isSignedIn) {
+    console.log('[ProtectedRoute] User not signed in, redirecting to /sign-in');
+    return <Navigate to="/sign-in" replace />;
+  }
+
+  console.log('[ProtectedRoute] User authenticated, rendering protected content');
+  return children;
+};
 
 // Simple Dashboard Component with Real Data
 const Dashboard = () => {
   const [data, setData] = React.useState(null);
+  const auth = useBulletproofAuth();
 
   React.useEffect(() => {
     // Fetch real data from MCP server
@@ -26,11 +44,22 @@ const Dashboard = () => {
                 <h1 className="text-xl font-bold">Sentia Manufacturing</h1>
               </div>
               <div className="ml-10 flex items-baseline space-x-4">
-                <Link to="/dashboard" className="px-3 py-2 text-sm font-medium">Dashboard</Link>
-                <Link to="/working-capital" className="px-3 py-2 text-sm font-medium">Working Capital</Link>
-                <Link to="/production" className="px-3 py-2 text-sm font-medium">Production</Link>
-                <Link to="/inventory" className="px-3 py-2 text-sm font-medium">Inventory</Link>
+                <a href="/dashboard" className="px-3 py-2 text-sm font-medium">Dashboard</a>
+                <a href="/working-capital" className="px-3 py-2 text-sm font-medium">Working Capital</a>
+                <a href="/production" className="px-3 py-2 text-sm font-medium">Production</a>
+                <a href="/inventory" className="px-3 py-2 text-sm font-medium">Inventory</a>
               </div>
+            </div>
+            <div className="flex items-center">
+              <span className="text-sm text-gray-600 mr-4">
+                {auth.user?.email || 'Guest User'}
+              </span>
+              <button
+                onClick={() => auth.signOut()}
+                className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
@@ -97,9 +126,10 @@ const Dashboard = () => {
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-blue-800">System Status</h3>
                 <div className="mt-2 text-sm text-blue-700">
-                  <p>✓ Connected to MCP Server (AI Features Active)</p>
-                  <p>✓ PostgreSQL Database Connected</p>
-                  <p>✓ Real-time Data Updates Enabled</p>
+                  <p> Connected to MCP Server (AI Features Active)</p>
+                  <p> PostgreSQL Database Connected</p>
+                  <p> Real-time Data Updates Enabled</p>
+                  <p> User: {auth.user?.email || 'Guest'}</p>
                 </div>
               </div>
             </div>
@@ -131,20 +161,83 @@ const WorkingCapital = () => (
   </div>
 );
 
-// Main App Component
+// Sign Up Page Component
+const SignUpPage = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="w-full max-w-md">
+      <SignUp
+        path="/sign-up"
+        routing="path"
+        signInUrl="/sign-in"
+        afterSignUpUrl="/dashboard"
+        appearance={{
+          variables: {
+            colorPrimary: '#2563eb',
+            colorBackground: '#ffffff',
+            colorText: '#1f2937',
+            borderRadius: '0.5rem'
+          },
+          elements: {
+            formButtonPrimary: 'bg-blue-600 hover:bg-blue-700 text-white',
+            card: 'shadow-xl'
+          }
+        }}
+      />
+    </div>
+  </div>
+);
+
+// Main App Component with Authentication Flow
 function App() {
   return (
     <BulletproofAuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/working-capital" element={<WorkingCapital />} />
-          <Route path="/production" element={<Dashboard />} />
-          <Route path="/inventory" element={<Dashboard />} />
-          <Route path="*" element={<Dashboard />} />
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/sign-in" element={<ClerkSignIn />} />
+          <Route path="/sign-up" element={<SignUpPage />} />
+
+          {/* Protected Routes - Require Authentication */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/working-capital"
+            element={
+              <ProtectedRoute>
+                <WorkingCapital />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/inventory"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Default redirect */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-        <AIChatbot />
+
+        {/* AI Chatbot - TODO: Add when component is available */}
+        {/* <AIChatbot /> */}
       </BrowserRouter>
     </BulletproofAuthProvider>
   );

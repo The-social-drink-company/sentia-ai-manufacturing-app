@@ -644,6 +644,241 @@ app.get('/api/xero/balancesheet', (req, res) => {
   });
 });
 
+// Unleashed Inventory Integration Routes
+app.get('/api/unleashed/status', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      connected: true,
+      apiId: 'unleashed-api-123',
+      lastSync: new Date().toISOString(),
+      features: ['stock', 'products', 'sales_orders', 'purchase_orders', 'warehouses'],
+      itemsCount: 3245
+    }
+  });
+});
+
+app.get('/api/unleashed/stock', (req, res) => {
+  const mockStock = [
+    {
+      productCode: 'WIDGET-A',
+      productDescription: 'Premium Widget Type A',
+      warehouse: 'MAIN',
+      quantityOnHand: 1250,
+      allocatedQuantity: 300,
+      availableQuantity: 950,
+      averageCost: 45.50,
+      totalValue: 56875.00
+    },
+    {
+      productCode: 'WIDGET-B',
+      productDescription: 'Standard Widget Type B',
+      warehouse: 'MAIN',
+      quantityOnHand: 2100,
+      allocatedQuantity: 450,
+      availableQuantity: 1650,
+      averageCost: 32.25,
+      totalValue: 67725.00
+    },
+    {
+      productCode: 'COMPONENT-X',
+      productDescription: 'Electronic Component X',
+      warehouse: 'MAIN',
+      quantityOnHand: 5000,
+      allocatedQuantity: 1200,
+      availableQuantity: 3800,
+      averageCost: 8.75,
+      totalValue: 43750.00
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      items: mockStock,
+      summary: {
+        totalItems: mockStock.length,
+        totalValue: mockStock.reduce((sum, item) => sum + item.totalValue, 0),
+        totalQuantity: mockStock.reduce((sum, item) => sum + item.quantityOnHand, 0),
+        totalAvailable: mockStock.reduce((sum, item) => sum + item.availableQuantity, 0)
+      }
+    },
+    meta: {
+      warehouse: req.query.warehouse || 'ALL',
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/unleashed/products', (req, res) => {
+  const mockProducts = [
+    {
+      id: 'prod-001',
+      code: 'WIDGET-A',
+      description: 'Premium Widget Type A',
+      barcode: '1234567890123',
+      unitOfMeasure: 'EA',
+      averageLandedCost: 45.50,
+      category: 'Widgets',
+      supplier: 'Acme Supplies',
+      isActive: true,
+      lastCost: 44.00,
+      sellPrice: 89.99
+    },
+    {
+      id: 'prod-002',
+      code: 'WIDGET-B',
+      description: 'Standard Widget Type B',
+      barcode: '1234567890124',
+      unitOfMeasure: 'EA',
+      averageLandedCost: 32.25,
+      category: 'Widgets',
+      supplier: 'Global Parts Co',
+      isActive: true,
+      lastCost: 31.50,
+      sellPrice: 64.99
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      products: mockProducts,
+      totalCount: mockProducts.length,
+      categories: ['Widgets', 'Components', 'Raw Materials']
+    },
+    meta: {
+      page: parseInt(req.query.page) || 1,
+      pageSize: parseInt(req.query.pageSize) || 100,
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/unleashed/sales-orders', (req, res) => {
+  const mockOrders = [
+    {
+      orderNumber: 'SO-2025-001',
+      orderDate: '2025-01-15',
+      requiredDate: '2025-01-22',
+      customer: 'Retail Chain Inc',
+      status: 'Open',
+      subTotal: 4500.00,
+      tax: 450.00,
+      total: 4950.00,
+      lines: 1
+    },
+    {
+      orderNumber: 'SO-2025-002',
+      orderDate: '2025-01-18',
+      requiredDate: '2025-01-25',
+      customer: 'Online Retailer Ltd',
+      status: 'Dispatched',
+      subTotal: 3250.00,
+      tax: 325.00,
+      total: 3575.00,
+      lines: 1
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      orders: mockOrders,
+      summary: {
+        total: mockOrders.length,
+        openOrders: mockOrders.filter(o => o.status === 'Open').length,
+        totalValue: mockOrders.reduce((sum, o) => sum + o.total, 0)
+      }
+    },
+    meta: {
+      status: req.query.status || 'ALL',
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/unleashed/purchase-orders', (req, res) => {
+  const mockOrders = [
+    {
+      orderNumber: 'PO-2025-001',
+      orderDate: '2025-01-10',
+      requiredDate: '2025-01-20',
+      supplier: 'Acme Supplies',
+      status: 'Open',
+      subTotal: 22000.00,
+      tax: 2200.00,
+      total: 24200.00,
+      lines: 1
+    },
+    {
+      orderNumber: 'PO-2025-002',
+      orderDate: '2025-01-12',
+      requiredDate: '2025-01-22',
+      supplier: 'Global Parts Co',
+      status: 'Received',
+      subTotal: 15750.00,
+      tax: 1575.00,
+      total: 17325.00,
+      lines: 1
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      orders: mockOrders,
+      summary: {
+        total: mockOrders.length,
+        openOrders: mockOrders.filter(o => o.status === 'Open').length,
+        totalValue: mockOrders.reduce((sum, o) => sum + o.total, 0)
+      }
+    },
+    meta: {
+      status: req.query.status || 'ALL',
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
+app.get('/api/unleashed/warehouses', (req, res) => {
+  const mockWarehouses = [
+    {
+      code: 'MAIN',
+      name: 'Main Warehouse',
+      isDefault: true,
+      city: 'London',
+      country: 'United Kingdom',
+      stockValue: 168350.00,
+      itemCount: 8350
+    },
+    {
+      code: 'SECONDARY',
+      name: 'Secondary Distribution Center',
+      isDefault: false,
+      city: 'Manchester',
+      country: 'United Kingdom',
+      stockValue: 95200.00,
+      itemCount: 4200
+    }
+  ];
+
+  res.json({
+    success: true,
+    data: {
+      warehouses: mockWarehouses,
+      summary: {
+        totalWarehouses: mockWarehouses.length,
+        totalStockValue: mockWarehouses.reduce((sum, w) => sum + w.stockValue, 0),
+        totalItems: mockWarehouses.reduce((sum, w) => sum + w.itemCount, 0)
+      }
+    },
+    meta: {
+      lastUpdated: new Date().toISOString()
+    }
+  });
+});
+
 // Amazon SP-API Integration Routes
 app.get('/api/amazon/status', (req, res) => {
   res.json({

@@ -17,7 +17,10 @@ export default [
       'public/**',
       'node_modules/**',
       'spec-kit/**',
-      'agents/**',\n      'src/features/**',\n      'src/components/widgets/**',\n      'src/components/ui/*.test.*',
+      'agents/**',
+      'src/features/**',
+      'src/components/widgets/**',
+      'src/components/ui/*.test.*',
       'tests/**',
       'scripts/**',
       'api/**',
@@ -36,7 +39,6 @@ export default [
   {
     files: [
       'src/components/**/*.{js,jsx,ts,tsx}',
-      'src/features/**/*.{js,jsx,ts,tsx}',
       'src/hooks/**/*.{js,jsx,ts,tsx}',
       'src/pages/**/*.{js,jsx,ts,tsx}',
       'src/stores/**/*.{js,jsx,ts,tsx}',
@@ -78,4 +80,3 @@ export default [
     }
   }
 ]
-

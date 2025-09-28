@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { XeroClient } from 'xero-node';
 
 class XeroIntegration {

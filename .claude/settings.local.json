@@ -135,7 +135,8 @@
       "WebFetch(domain:clerk.com)",
       "Bash(xargs ls:*)",
       "Bash(set PORT=5001)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(git cherry-pick:*)"
     ],
     "deny": [],
     "ask": []

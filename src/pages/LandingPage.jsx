@@ -13,11 +13,10 @@ import {
   BoltIcon
 } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
-
-import { useAuthContext } from '../providers/AuthProvider.jsx'
+import { useAuth } from '@clerk/clerk-react'
 
 export default function LandingPage() {
-  const { isAuthenticated } = useAuthContext()
+  const { isSignedIn } = useAuth()
 
   const features = [
     {

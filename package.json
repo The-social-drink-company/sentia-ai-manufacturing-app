@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.10",
   "description": "Enterprise Manufacturing Dashboard with React/Vite frontend and Node.js backend",
-  "type": "module",
+  "type": "commonjs",
   "engines": {
     "node": ">=20.0.0 <25.0.0"
   },

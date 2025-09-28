@@ -350,6 +350,60 @@ app.get('/api/mcp/tools', async (req, res) => {
   }
 });
 
+// Business Intelligence API Routes
+app.get('/api/business-intelligence/summary', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      overallHealth: {
+        score: 8.7,
+        trend: 'up',
+        change: 0.8,
+        components: {
+          financial: 8.9,
+          operational: 8.5,
+          customer: 8.8,
+          innovation: 8.4
+        }
+      },
+      keyAlerts: [
+        {
+          type: 'warning',
+          title: 'Inventory Optimization Required',
+          description: 'Widget A excess inventory detected',
+          urgency: 'medium'
+        },
+        {
+          type: 'opportunity',
+          title: 'Revenue Growth Potential',
+          description: '23% revenue increase opportunity identified',
+          urgency: 'high'
+        }
+      ],
+      topRecommendations: [
+        {
+          title: 'Optimize Production Schedule',
+          impact: '$144K annually',
+          effort: 'medium',
+          roi: 4.8
+        },
+        {
+          title: 'Customer Segment Analysis',
+          impact: '$245K revenue',
+          effort: 'medium',
+          roi: 3.2
+        }
+      ],
+      aiModelPerformance: {
+        claude: { accuracy: 0.92, uptime: 0.998 },
+        gpt4: { accuracy: 0.89, uptime: 0.995 },
+        ensemble: { accuracy: 0.94, uptime: 0.997 }
+      }
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Enhanced Forecasting API Routes
 app.get('/api/forecasting/enhanced', (req, res) => {
   res.json({

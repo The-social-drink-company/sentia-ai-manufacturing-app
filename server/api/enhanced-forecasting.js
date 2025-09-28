@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Enhanced Forecasting API
  * Dual AI Model Integration for 88%+ accuracy
  * Supports 365-day forecasting horizon
@@ -41,11 +41,11 @@ router.get('/status', authenticateToken, async (req, res) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
-    logError('Enhanced forecasting status check failed', error);
+  } catch (_error) {
+    logError('Enhanced forecasting status check failed', _error);
     res.status(500).json({
       error: 'Failed to check forecasting service status',
-      details: error.message
+      details: _error.message
     });
   }
 });
@@ -128,11 +128,11 @@ router.post('/', authenticateToken, async (req, res) => {
 
     res.json(enhancedResponse);
 
-  } catch (error) {
-    logError('Enhanced forecast generation failed', error);
+  } catch (_error) {
+    logError('Enhanced forecast generation failed', _error);
     res.status(500).json({
       error: 'Forecast generation failed',
-      message: error.message,
+      message: _error.message,
       fallback: await generateFallbackForecast(req.body.horizon || 90)
     });
   }
@@ -170,8 +170,8 @@ router.get('/historical', authenticateToken, async (req, res) => {
       }
     });
 
-  } catch (error) {
-    logError('Historical forecast retrieval failed', error);
+  } catch (_error) {
+    logError('Historical forecast retrieval failed', _error);
     res.status(500).json({
       error: 'Failed to retrieve historical forecasts'
     });
@@ -233,11 +233,11 @@ router.post('/validate', authenticateToken, async (req, res) => {
       recommendations: generateImprovementRecommendations(validation)
     });
 
-  } catch (error) {
-    logError('Forecast validation failed', error);
+  } catch (_error) {
+    logError('Forecast validation failed', _error);
     res.status(500).json({
       error: 'Validation failed',
-      message: error.message
+      message: _error.message
     });
   }
 });
@@ -273,8 +273,8 @@ router.get('/models/comparison', authenticateToken, async (req, res) => {
       }
     });
 
-  } catch (error) {
-    logError('Model comparison failed', error);
+  } catch (_error) {
+    logError('Model comparison failed', _error);
     res.status(500).json({
       error: 'Model comparison failed'
     });
@@ -296,8 +296,8 @@ async function fetchHistoricalDemandData(source = 'database') {
       default:
         return await fetchDatabaseDemandData();
     }
-  } catch (error) {
-    logWarn('Failed to fetch historical data, using fallback');
+  } catch (_error) {
+    logWarn('Failed to fetch historical data, using fallback', _error);
     return generateFallbackHistoricalData();
   }
 }
@@ -367,8 +367,8 @@ async function storeForecastResults(forecastResult, userId) {
         createdAt: new Date()
       }
     });
-  } catch (error) {
-    logWarn('Failed to store forecast results', error);
+  } catch (_error) {
+    logWarn('Failed to store forecast results', _error);
   }
 }
 
@@ -399,7 +399,6 @@ function calculateBusinessImpact(forecastResult, businessContext) {
  */
 function generateActionableInsights(forecastResult) {
   const insights = [];
-  const analytics = forecastResult.analytics;
 
   // Accuracy insight
   if (forecastResult.confidence >= 0.88) {

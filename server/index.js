@@ -339,7 +339,7 @@ app.use((err, req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n========================================');
   console.log('SENTIA MANUFACTURING DASHBOARD');
-  console.log('   BULLETPROOF CONFIGURATION');
+  console.log('BULLETPROOF CONFIGURATION');
   console.log('========================================');
   console.log(`Server: http://localhost:${PORT}`);
   console.log(`Health: http://localhost:${PORT}/health`);

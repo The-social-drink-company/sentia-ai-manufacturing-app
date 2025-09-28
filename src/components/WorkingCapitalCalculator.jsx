@@ -1,340 +1,135 @@
-<<<<<<< HEAD
-import { useState,  } from 'react';
-
-=======
-import { useState, useEffect } from 'react'
->>>>>>> development
+﻿import { useMemo, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { 
-  Calculator, 
-  TrendingUp, 
-  DollarSign, 
-  Clock, 
-  Target,
-  Download,
-  RefreshCw,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Calculator, RefreshCw } from 'lucide-react'
 
 const WorkingCapitalCalculator = () => {
-  const [formData, setFormData] = useState({
-    annualRevenue: 2500000,
-    averageDebtorDays: 45,
-    averageCreditorDays: 30,
-    currentDebtors: 312500,
-    currentCreditors: 208333,
-    grossMargin: 35,
-    netMargin: 12,
-    ebitda: 300000,
-    currentCash: 150000,
-    averageBankBalance: 125000,
-    inventoryTurns: 8,
-    numberOfEmployees: 25,
-    revenueGrowth: 15,
-    reduceDebtorDays: 10,
-    extendCreditorDays: 5
+  const [form, setForm] = useState({
+    receivables: 325000,
+    payables: 210000,
+    inventory: 185000,
+    costOfGoodsSold: 1250000,
+    netSales: 1750000
   })
 
-  const [results, setResults] = useState({
-    cashUnlock90Days: 83000,
-    cashImprovement12Months: 334000,
-    daysToUnlock: 90,
-    workingCapitalEfficiency: 3,
-    cashConversionCycle: -46
-  })
+  const metrics = useMemo(() => {
+    const workingCapital = form.receivables + form.inventory - form.payables
+    const currentRatio = (form.receivables + form.inventory) / Math.max(form.payables, 1)
+    const inventoryDays = form.inventory / Math.max(form.costOfGoodsSold / 365, 1)
+    const receivableDays = form.receivables / Math.max(form.netSales / 365, 1)
+    const payableDays = form.payables / Math.max(form.costOfGoodsSold / 365, 1)
+    const cashConversionCycle = receivableDays + inventoryDays - payableDays
 
-  const [isCalculating, setIsCalculating] = useState(false)
+    return {
+      workingCapital,
+      currentRatio,
+      inventoryDays,
+      receivableDays,
+      payableDays,
+      cashConversionCycle
+    }
+  }, [form])
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
+  const handleChange = (field) => (event) => {
+    const value = Number.parseFloat(event.target.value || '0')
+    setForm((current) => ({ ...current, [field]: Number.isFinite(value) ? value : 0 }))
   }
 
-  const calculateWorkingCapital = async () => {
-    setIsCalculating(true)
-    
-    // Simulate API call with realistic calculations
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    const dailyRevenue = formData.annualRevenue / 365
-    const currentWorkingCapital = formData.currentDebtors - formData.currentCreditors
-    
-    // Calculate improved metrics
-    const improvedDebtorDays = formData.averageDebtorDays - formData.reduceDebtorDays
-    const improvedCreditorDays = formData.averageCreditorDays + formData.extendCreditorDays
-    
-    const improvedDebtors = dailyRevenue * improvedDebtorDays
-    const improvedCreditors = dailyRevenue * improvedCreditorDays
-    const improvedWorkingCapital = improvedDebtors - improvedCreditors
-    
-    const cashUnlock = currentWorkingCapital - improvedWorkingCapital
-    const annualImprovement = cashUnlock * 4 // Quarterly impact
-    
-    setResults({
-      cashUnlock90Days: Math.round(cashUnlock),
-      cashImprovement12Months: Math.round(annualImprovement),
-      daysToUnlock: 90,
-      workingCapitalEfficiency: Math.round(((cashUnlock / formData.annualRevenue) * 100) * 10) / 10,
-      cashConversionCycle: improvedDebtorDays - improvedCreditorDays
+  const resetForm = () => {
+    setForm({
+      receivables: 325000,
+      payables: 210000,
+      inventory: 185000,
+      costOfGoodsSold: 1250000,
+      netSales: 1750000
     })
-    
-    setIsCalculating(false)
   }
 
-  const workingCapitalLevers = [
-    "Improve invoicing discipline and collections process",
-    "Negotiate better payment terms with suppliers",
-    "Optimise inventory levels and reduce stock holding",
-    "Implement automated payment systems",
-    "Enhance credit management procedures"
-  ]
+  const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0
+  }).format(value)
 
-  const boardTalkingPoints = [
-    `Potential to unlock £${results.cashUnlock90Days.toLocaleString()} in working capital within 90 days`,
-    `12-month cash flow improvement of £${results.cashImprovement12Months.toLocaleString()} without new debt`,
-    `Working capital efficiency improvement of ${results.workingCapitalEfficiency}% of annual revenue`,
-    `Improved cash conversion cycle by ${results.cashConversionCycle} days`
-  ]
+  const formatNumber = (value) => new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 1
+  }).format(value)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Working Capital Calculator</h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Advanced cash flow analysis and optimization recommendations
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
-          <Button onClick={calculateWorkingCapital} disabled={isCalculating}>
-            {isCalculating ? (
-              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Calculator className="h-4 w-4 mr-2" />
-            )}
-            {isCalculating ? 'Calculating...' : 'Recalculate'}
-          </Button>
-        </div>
-      </div>
+    <section className="grid gap-6 lg:grid-cols-[420px_1fr]">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Calculator className="h-5 w-5" />
+            Working Capital Inputs
+          </CardTitle>
+          <CardDescription>Adjust balances to explore working capital scenarios.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="grid gap-4">
+            <Field label="Accounts Receivable" value={form.receivables} onChange={handleChange('receivables')} />
+            <Field label="Inventory" value={form.inventory} onChange={handleChange('inventory')} />
+            <Field label="Accounts Payable" value={form.payables} onChange={handleChange('payables')} />
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Input Form */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Financial Metrics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <DollarSign className="h-5 w-5 text-green-600" />
-                <span>Financial Metrics</span>
-              </CardTitle>
-              <CardDescription>Core financial data for working capital analysis</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="annualRevenue">Annual Revenue (GBP)</Label>
-                  <Input
-                    id="annualRevenue"
-                    type="number"
-                    value={formData.annualRevenue}
-                    onChange={(e) => handleInputChange('annualRevenue', parseInt(e.target.value))}
-                    className="text-right"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="currentCash">Current Cash on Hand (£)</Label>
-                  <Input
-                    id="currentCash"
-                    type="number"
-                    value={formData.currentCash}
-                    onChange={(e) => handleInputChange('currentCash', parseInt(e.target.value))}
-                    className="text-right"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="currentDebtors">Current Debtors (£)</Label>
-                  <Input
-                    id="currentDebtors"
-                    type="number"
-                    value={formData.currentDebtors}
-                    onChange={(e) => handleInputChange('currentDebtors', parseInt(e.target.value))}
-                    className="text-right"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="currentCreditors">Current Creditors (£)</Label>
-                  <Input
-                    id="currentCreditors"
-                    type="number"
-                    value={formData.currentCreditors}
-                    onChange={(e) => handleInputChange('currentCreditors', parseInt(e.target.value))}
-                    className="text-right"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <Separator />
 
-          {/* Payment Terms */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-blue-600" />
-                <span>Payment Terms</span>
-              </CardTitle>
-              <CardDescription>Days Sales Outstanding and Days Payable Outstanding</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>Average Debtor Days (DSO): {formData.averageDebtorDays} days</Label>
-                  <Slider
-                    value={[formData.averageDebtorDays]}
-                    onValueChange={(value) => handleInputChange('averageDebtorDays', value[0])}
-                    max={120}
-                    min={15}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Average Creditor Days (DPO): {formData.averageCreditorDays} days</Label>
-                  <Slider
-                    value={[formData.averageCreditorDays]}
-                    onValueChange={(value) => handleInputChange('averageCreditorDays', value[0])}
-                    max={90}
-                    min={15}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid gap-4">
+            <Field label="Net Sales (annual)" value={form.netSales} onChange={handleChange('netSales')} />
+            <Field label="Cost of Goods Sold (annual)" value={form.costOfGoodsSold} onChange={handleChange('costOfGoodsSold')} />
+          </div>
 
-          {/* Optimization Levers */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Target className="h-5 w-5 text-purple-600" />
-                <span>Optimization Levers</span>
-              </CardTitle>
-              <CardDescription>Adjust these parameters to see potential improvements</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>Reduce Debtor Days By: {formData.reduceDebtorDays} days</Label>
-                  <Slider
-                    value={[formData.reduceDebtorDays]}
-                    onValueChange={(value) => handleInputChange('reduceDebtorDays', value[0])}
-                    max={30}
-                    min={0}
-                    step={1}
-                    className="w-full"
-                  />
-                  <p className="text-xs text-slate-500">Get paid faster</p>
-                </div>
-                <div className="space-y-2">
-                  <Label>Extend Creditor Days By: {formData.extendCreditorDays} days</Label>
-                  <Slider
-                    value={[formData.extendCreditorDays]}
-                    onValueChange={(value) => handleInputChange('extendCreditorDays', value[0])}
-                    max={20}
-                    min={0}
-                    step={1}
-                    className="w-full"
-                  />
-                  <p className="text-xs text-slate-500">Pay suppliers later</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          <div className="flex justify-end">
+            <Button type="button" variant="ghost" size="sm" onClick={resetForm} className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Reset defaults
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Results Panel */}
-        <div className="space-y-6">
-          {/* Cash Unlock Results */}
-          <Card className="border-green-200 dark:border-green-800">
-            <CardHeader>
-              <CardTitle className="text-green-700 dark:text-green-300">
-                Estimated Cash Unlock in 90 Days
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center space-y-4">
-                <div className="text-4xl font-bold text-green-600">
-                  £{results.cashUnlock90Days.toLocaleString()}
-                </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Without new debt or external funding
-                </p>
-                <Separator />
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                  £{results.cashImprovement12Months.toLocaleString()}
-                </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  12-month improvement
-                </p>
-                <Badge variant="outline" className="text-green-600 border-green-600">
-                  {results.daysToUnlock} Days to unlock
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Key Metrics</CardTitle>
+          <CardDescription>Calculated from the latest input values.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <MetricRow label="Working Capital" value={formatCurrency(metrics.workingCapital)} />
+          <MetricRow label="Current Ratio" value={formatNumber(metrics.currentRatio)} helper="Target ≥ 1.2" />
+          <Separator />
+          <MetricRow label="Inventory Days" value={`${formatNumber(metrics.inventoryDays)} days`} />
+          <MetricRow label="Receivable Days" value={`${formatNumber(metrics.receivableDays)} days`} />
+          <MetricRow label="Payable Days" value={`${formatNumber(metrics.payableDays)} days`} />
+          <Separator />
+          <MetricRow
+            label="Cash Conversion Cycle"
+            value={`${formatNumber(metrics.cashConversionCycle)} days`}
+            helper="Receivable + Inventory − Payable"
+          />
+        </CardContent>
+      </Card>
+    </section>
+  )
+}
 
-          {/* Working Capital Levers */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Working Capital Levers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {workingCapitalLevers.map((lever, index) => (
-                  <div key={index} className="flex items-start space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-slate-700 dark:text-slate-300">{lever}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+const Field = ({ label, value, onChange }) => {
+  return (
+    <div className="grid gap-2">
+      <Label className="text-sm font-medium">{label}</Label>
+      <Input type="number" value={value} min={0} onChange={onChange} />
+    </div>
+  )
+}
 
-          {/* Board-Ready Talking Points */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-blue-600" />
-                <span>Board-Ready Talking Points</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {boardTalkingPoints.map((point, index) => (
-                  <div key={index} className="flex items-start space-x-2">
-                    <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-slate-700 dark:text-slate-300">{point}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+const MetricRow = ({ label, value, helper }) => {
+  return (
+    <div className="space-y-1">
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="text-xl font-semibold">{value}</p>
+      {helper ? <p className="text-xs text-muted-foreground">{helper}</p> : null}
     </div>
   )
 }

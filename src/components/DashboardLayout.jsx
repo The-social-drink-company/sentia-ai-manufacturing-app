@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
+import {
   BarChart3,
   TrendingUp,
   Package,
@@ -23,7 +23,8 @@ import {
   Search,
   MessageCircle,
   ChevronRight,
-  Activity
+  Activity,
+  Brain
 } from 'lucide-react'
 
 const DashboardLayout = ({ children }) => {
@@ -71,6 +72,12 @@ const DashboardLayout = ({ children }) => {
           label: "Quality Control",
           path: "/app/quality-control",
           badge: null
+        },
+        {
+          icon: Brain,
+          label: "Business Intelligence",
+          path: "/app/business-intelligence",
+          badge: "AI"
         }
       ]
     },
@@ -172,17 +179,13 @@ const DashboardLayout = ({ children }) => {
             {/* Navigation */}
             <ScrollArea className="flex-1 px-4 py-6">
               <nav className="space-y-6">
-                {navigationSections.map((section, __sectionIndex) => (
+                {navigationSections.map((section, sectionIndex) => (
                   <div key={section.title}>
                     <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-2">
                       {section.title}
                     </h3>
                     <div className="space-y-1">
-<<<<<<< HEAD
-                      {section.items.map((item, __itemIndex) => (
-=======
-                      {section.items.map((item, _itemIndex) => (
->>>>>>> development
+                      {section.items.map((item) => (
                         <motion.button
                           key={item.path}
                           onClick={() => handleNavigation(item.path)}

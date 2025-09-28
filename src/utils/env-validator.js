@@ -1,164 +1,121 @@
-<<<<<<< HEAD
-import { logDebug, logInfo, logWarn, logError } from 'logger';
+﻿/* eslint-env node */
 
-=======
-/* eslint-env node */
->>>>>>> development
-/**
- * Environment Variable Validator
- * Validates required environment variables on application startup
- * Implements TASK-002 from SpecKit specifications
- */
+const globalProcess = typeof globalThis !== 'undefined' && globalThis.process ? globalThis.process : null
 
-// Required environment variables for backend
 const requiredBackendEnvVars = [
   'CLERK_SECRET_KEY',
   'DATABASE_URL_DEVELOPMENT',
-  'DATABASE_URL_TESTING', 
+  'DATABASE_URL_TESTING',
   'DATABASE_URL_PRODUCTION'
-];
+]
 
-// Required environment variables for frontend
 const requiredFrontendEnvVars = [
   'VITE_CLERK_PUBLISHABLE_KEY',
   'VITE_CLERK_DOMAIN'
-];
+]
 
-/**
- * Validates backend environment variables
- * Called from server startup
- */
-export function validateBackendEnvironment() {
-  logDebug('🔍 Validating backend environment variables...');
-  
-  const missing = requiredBackendEnvVars.filter(
-    key => !process.env[key] || process.env[key].trim() === ''
-  );
+const defaultLogger = {
+  debug: (...args) => console.debug(...args),
+  info: (...args) => console.info(...args),
+  warn: (...args) => console.warn(...args),
+  error: (...args) => console.error(...args)
+}
 
+export function validateBackendEnvironment(logger = defaultLogger) {
+  const env = globalProcess ? globalProcess.env : null
+  if (!env) {
+    logger.warn('[env-validator] Backend environment unavailable; skipping checks')
+    return { valid: false, missing: requiredBackendEnvVars }
+  }
+
+  logger.debug('[env-validator] Validating backend environment variables')
+
+  const missing = requiredBackendEnvVars.filter((key) => !env[key] || env[key].trim() === '')
   if (missing.length > 0) {
-    logError('❌ CRITICAL: Missing required backend environment variables:');
-    missing.forEach(key => {
-      logError(`   - ${key}`);
-    });
-    logError('\n📋 Required environment variables:');
-    requiredBackendEnvVars.forEach(key => {
-      const status = process.env[key] ? '✅' : '❌';
-      const value = process.env[key] ? '[SET]' : '[MISSING]';
-      logError(`   ${status} ${key}: ${value}`);
-    });
-    logError('\n🔧 Please set these environment variables and restart the application.');
-    process.exit(1);
+    reportMissing(logger, 'backend', missing)
+    safeExit(1)
+    return { valid: false, missing }
   }
 
-  // Validate Clerk secret key format
-<<<<<<< HEAD
-  if (process.env.CLERK_SECRET_KEY && !process.env.CLERK_SECRET_KEY.startsWith('sk_')) {
-    logError('❌ CRITICAL: CLERK_SECRET_KEY must start with "sk_"');
-=======
-  if (process.env.CLERK_SECRET_KEY && !process.env.CLERK_SECRET_KEY.startsWith('sk')) {
-    console.error('❌ CRITICAL: CLERK_SECRET_KEY must start with "sk_"');
->>>>>>> development
-    process.exit(1);
+  if (env.CLERK_SECRET_KEY && !env.CLERK_SECRET_KEY.startsWith('sk_')) {
+    logger.error('[env-validator] CLERK_SECRET_KEY must start with "sk_"')
+    safeExit(1)
+    return { valid: false, missing: [] }
   }
 
-  // Validate database URLs format
-  const dbUrls = [
-    'DATABASE_URL_DEVELOPMENT',
-    'DATABASE_URL_TESTING', 
-    'DATABASE_URL_PRODUCTION'
-  ];
-
-  dbUrls.forEach(key => {
-    if (process.env[key] && !process.env[key].startsWith('postgresql://')) {
-      logError(`❌ CRITICAL: ${key} must be a valid PostgreSQL connection string`);
-      process.exit(1);
+  const dbKeys = ['DATABASE_URL_DEVELOPMENT', 'DATABASE_URL_TESTING', 'DATABASE_URL_PRODUCTION']
+  for (const key of dbKeys) {
+    if (env[key] && !env[key].startsWith('postgresql://')) {
+      logger.error(`[env-validator] ${key} must be a valid PostgreSQL connection string`)
+      safeExit(1)
+      return { valid: false, missing: [] }
     }
-  });
+  }
 
-  logDebug('✅ Backend environment validation passed');
-  
-  // Log configuration summary (without sensitive values)
-  logDebug('📋 Environment Configuration:');
-  logDebug(`   - CLERK_SECRET_KEY: ${process.env.CLERK_SECRET_KEY ? 'SET' : 'MISSING'}`);
-  logDebug(`   - DATABASE_URL_DEVELOPMENT: ${process.env.DATABASE_URL_DEVELOPMENT ? 'SET' : 'MISSING'}`);
-  logDebug(`   - DATABASE_URL_TESTING: ${process.env.DATABASE_URL_TESTING ? 'SET' : 'MISSING'}`);
-  logDebug(`   - DATABASE_URL_PRODUCTION: ${process.env.DATABASE_URL_PRODUCTION ? 'SET' : 'MISSING'}`);
+  logger.debug('[env-validator] Backend environment validation passed')
+  return { valid: true, missing: [] }
 }
 
-/**
- * Validates frontend environment variables
- * Called from React app startup
- */
-export function validateFrontendEnvironment() {
-  logDebug('🔍 Validating frontend environment variables...');
-  
-  const missing = requiredFrontendEnvVars.filter(
-    key => !import.meta.env[key] || import.meta.env[key].trim() === ''
-  );
+export function validateFrontendEnvironment(logger = defaultLogger) {
+  let env = null
+  try {
+    env = typeof import.meta !== 'undefined' ? import.meta.env : null
+  } catch {
+    env = null
+  }
+  if (!env) {
+    logger.warn('[env-validator] Frontend environment unavailable; skipping checks')
+    return { valid: false, missing: requiredFrontendEnvVars }
+  }
 
+  logger.debug('[env-validator] Validating frontend environment variables')
+
+  const missing = requiredFrontendEnvVars.filter((key) => !env[key] || env[key].trim() === '')
   if (missing.length > 0) {
-    logError('❌ CRITICAL: Missing required frontend environment variables:');
-    missing.forEach(key => {
-      logError(`   - ${key}`);
-    });
-    logError('\n📋 Required environment variables:');
-    requiredFrontendEnvVars.forEach(key => {
-      const status = import.meta.env[key] ? '✅' : '❌';
-      const value = import.meta.env[key] ? '[SET]' : '[MISSING]';
-      logError(`   ${status} ${key}: ${value}`);
-    });
-    logError('\n🔧 Please set these environment variables in .env.local and restart the application.');
-    
-    // For frontend, show user-friendly error instead of crashing
-    return false;
+    reportMissing(logger, 'frontend', missing)
+    return { valid: false, missing }
   }
 
-  // Validate Clerk publishable key format
-<<<<<<< HEAD
-  if (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && !import.meta.env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk_')) {
-    logError('❌ CRITICAL: VITE_CLERK_PUBLISHABLE_KEY must start with "pk_"');
-=======
-  if (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && !import.meta.env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk')) {
-    console.error('❌ CRITICAL: VITE_CLERK_PUBLISHABLE_KEY must start with "pk_"');
->>>>>>> development
-    return false;
+  if (env.VITE_CLERK_PUBLISHABLE_KEY && !env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk_')) {
+    logger.error('[env-validator] VITE_CLERK_PUBLISHABLE_KEY must start with "pk_"')
+    return { valid: false, missing: [] }
   }
 
-  logDebug('✅ Frontend environment validation passed');
-  
-  // Log configuration summary (without sensitive values)
-  logDebug('📋 Frontend Environment Configuration:');
-  logDebug(`   - VITE_CLERK_PUBLISHABLE_KEY: ${import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'MISSING'}`);
-  logDebug(`   - VITE_CLERK_DOMAIN: ${import.meta.env.VITE_CLERK_DOMAIN ? 'SET' : 'MISSING'}`);
-  
-  return true;
+  logger.debug('[env-validator] Frontend environment validation passed')
+  return { valid: true, missing: [] }
 }
 
-/**
- * Get environment validation status for health checks
- */
 export function getEnvironmentStatus() {
-  const backendStatus = requiredBackendEnvVars.every(
-    key => process.env[key] && process.env[key].trim() !== ''
-  );
-  
+  const backend = globalProcess ? globalProcess.env : null
+  const backendStatus = backend
+    ? requiredBackendEnvVars.every((key) => backend[key] && backend[key].trim() !== '')
+    : false
+
   return {
     backend: backendStatus,
     timestamp: new Date().toISOString()
-  };
+  }
 }
 
-/**
- * Validate specific environment variable
- */
 export function validateEnvVar(key, value, pattern = null) {
   if (!value || value.trim() === '') {
-    return { valid: false, error: `${key} is required but not set` };
+    return { valid: false, error: `${key} is required but not set` }
   }
-  
+
   if (pattern && !pattern.test(value)) {
-    return { valid: false, error: `${key} does not match required pattern` };
+    return { valid: false, error: `${key} does not match required pattern` }
   }
-  
-  return { valid: true };
+
+  return { valid: true }
+}
+
+function reportMissing(logger, scope, missing) {
+  logger.error(`[env-validator] Missing required ${scope} environment variables:`)
+  missing.forEach((key) => logger.error(`  - ${key}`))
+}
+
+function safeExit(code) {
+  if (globalProcess && typeof globalProcess.exit === 'function') {
+    globalProcess.exit(code)
+  }
 }

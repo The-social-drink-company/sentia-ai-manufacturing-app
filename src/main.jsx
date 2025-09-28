@@ -1,16 +1,9 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
-import * as ReactJSXDevRuntime from 'react/jsx-dev-runtime'
-import * as ReactJSXRuntime from 'react/jsx-runtime'
 import './index.css'
 import App from './App-enterprise.jsx'
 import LandingPageMarketing from './components/LandingPageMarketing.jsx'
-
-// Ensure jsxDEV exists even in production bundles
-if (typeof ReactJSXDevRuntime.jsxDEV !== 'function' && typeof ReactJSXRuntime.jsx === 'function') {
-  ReactJSXDevRuntime.jsxDEV = ReactJSXRuntime.jsx
-}
 
 // Global error handler
 window.addEventListener('error', (event) => {

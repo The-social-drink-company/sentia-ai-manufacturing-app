@@ -1,32 +1,67 @@
 /**
- * SENTIA MANUFACTURING DASHBOARD - ENTERPRISE SERVER
- * Serves the React application with proper static file handling
+ * BULLETPROOF ENTERPRISE SERVER
+ * Properly configured Express server with guaranteed API routing
  */
 
 import express from 'express';
-import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import fs from 'fs';
 import enhancedForecastingRouter from './server/api/enhanced-forecasting.js';
 
-// Load environment variables
-dotenv.config();
-
+// ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Enable CORS
+// Logging middleware
+const logger = (req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+};
+
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "https://clerk.financeflo.ai",
+        "https://*.clerk.accounts.dev",
+        "https://*.clerk.com"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com"
+      ],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: [
+        "'self'",
+        "https://clerk.financeflo.ai",
+        "https://*.clerk.accounts.dev",
+        "https://*.clerk.com",
+        "https://mcp-server-tkyu.onrender.com"
+      ]
+    }
+  }
+}));
+
+// Standard middleware
+app.use(compression());
 app.use(cors());
-
-// Parse JSON bodies
-app.use(express.json());
-
-// Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(logger);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

@@ -36,7 +36,7 @@ const useDashboardLoader = () => {
   const [progress, setProgress] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
   const { isSignedIn, isLoaded: authLoaded } = useAuth()
-  const { user, isLoaded: userLoaded } = useUser()
+  const { user: _user, isLoaded: userLoaded } = useUser()
 
   const phases = Object.values(LOADING_PHASES).filter(phase =>
     phase !== LOADING_PHASES.INITIAL && phase !== LOADING_PHASES.COMPLETE

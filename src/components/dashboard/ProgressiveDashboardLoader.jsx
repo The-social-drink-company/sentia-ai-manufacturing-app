@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress'
 
 const ProgressiveDashboardLoader = ({ children, onLoadingComplete }) => {
   const { isSignedIn, isLoaded: authLoaded } = useAuth()
-  const { user, isLoaded: userLoaded } = useUser()
+  const { user: _user, isLoaded: userLoaded } = useUser()
   const {
     isLoading,
     progress,

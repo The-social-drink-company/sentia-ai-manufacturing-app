@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "lint:check": "eslint . --max-warnings 0",
     "preview": "vite preview",
-    "start": "node server-enterprise-complete.js",
+    "start": "node server.js",
     "test": "echo 'No tests configured' && exit 0"
   },
   "dependencies": {

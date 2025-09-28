@@ -54,7 +54,7 @@ class AmazonIntegration {
    */
   generateSignature(method, url, headers, payload, region) {
     const service = 'execute-api';
-    const datetime = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
+    const datetime = new Date().toISOString().replace(/[:/-]|\.\d{3}/g, '').replace(/-/g, '');
     const date = datetime.substr(0, 8);
 
     // Create canonical request
@@ -169,7 +169,7 @@ class AmazonIntegration {
 
       const headers = {
         'x-amz-access-token': accessToken,
-        'x-amz-date': new Date().toISOString().replace(/[:\-]|\.\d{3}/g, ''),
+        'x-amz-date': new Date().toISOString().replace(/[:/-]|\.\d{3}/g, '').replace(/-/g, ''),
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         ...options.headers

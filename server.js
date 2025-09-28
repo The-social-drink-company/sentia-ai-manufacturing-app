@@ -127,17 +127,21 @@ app.get('*', (req, res) => {
   
   // Check if index.html exists
   try {
-    const fs = await import('fs');
-    if (!fs.existsSync(indexPath)) {
-      console.error('❌ index.html not found at:', indexPath);
-      return res.status(404).json({
-        error: 'Application not found',
-        message: 'The React application build files are missing.',
-        path: indexPath
-      });
-    }
-    
-    res.sendFile(indexPath);
+    import('fs').then(fs => {
+      if (!fs.existsSync(indexPath)) {
+        console.error('❌ index.html not found at:', indexPath);
+        return res.status(404).json({
+          error: 'Application not found',
+          message: 'The React application build files are missing.',
+          path: indexPath
+        });
+      }
+      
+      res.sendFile(indexPath);
+    }).catch(error => {
+      console.error('❌ Error importing fs:', error);
+      res.sendFile(indexPath); // Try to serve anyway
+    });
   } catch (error) {
     console.error('❌ Error serving index.html:', error);
     res.status(500).json({

@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentia Manufacturing - Enterprise Dashboard</title>
+    <script src="https://unpkg.com/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+        
+        /* Landing Page Styles */
+        .landing-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .landing-container {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .landing-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 16px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .landing-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .landing-subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+        }
+        
+        .clerk-sign-in-button {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }
+        
+        .clerk-sign-in-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* Dashboard Layout */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+        
+        .dashboard.active {
+            display: flex;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            color: white;
+            padding: 0;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .sidebar-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .sidebar-logo-text h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .sidebar-logo-text p {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-section-title {
+            padding: 0 1.5rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+        
+        .nav-item:hover {
+            background: #334155;
+            color: white;
+        }
+        
+        .nav-item.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+        
+        /* Top Header */
+        .top-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        .breadcrumb span {
+            color: #1e293b;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+            font-size: 0.875rem;
+            width: 300px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #1e293b;
+        }
+        
+        .user-role {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        
+        /* Page Content */
+        .page-content {
+            padding: 2rem;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-description {
+            color: #64748b;
+            font-size: 1rem;
+        }
+        
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .metric-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #64748b;
+        }
+        
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .metric-change.positive {
+            color: #10b981;
+        }
+        
+        .metric-change.negative {
+            color: #ef4444;
+        }
+        
+        .metric-trend {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            opacity: 0.1;
+        }
+        
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chart-action-btn {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .chart-action-btn:hover {
+            background: #f8fafc;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .action-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .action-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .action-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .action-content p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        /* AI Chatbot */
+        .ai-chatbot {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+        
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.2s;
+        }
+        
+        .chatbot-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+        }
+        
+        .chatbot-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .chatbot-panel.active {
+            display: flex;
+        }
+        
+        .chatbot-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chatbot-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .chatbot-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .message.user {
+            background: #3b82f6;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.ai {
+            background: #f1f5f9;
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .chatbot-input {
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chatbot-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .chatbot-send {
+            padding: 0.75rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-content {
+                padding: 1rem;
+            }
+            
+            .chatbot-panel {
+                width: 300px;
+                height: 400px;
+            }
+        }
+        
+        /* Page-specific styles */
+        .page-content.hidden {
+            display: none;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .kpi-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .kpi-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landing-page" class="landing-page">
+        <div class="landing-container">
+            <div class="landing-logo">S</div>
+            <h1 class="landing-title">Sentia Manufacturing</h1>
+            <p class="landing-subtitle">Enterprise Dashboard</p>
+            
+            <button class="clerk-sign-in-button" onclick="signIn()">
+                Sign In to Dashboard
+            </button>
+            
+            <div style="margin-top: 2rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; font-size: 0.875rem; color: #1e40af;">
+                <strong>🔐 Secure Enterprise Authentication</strong><br>
+                Powered by Clerk • AI/ML Enabled
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">S</div>
+                    <div class="sidebar-logo-text">
+                        <h3>Sentia Manufacturing</h3>
+                        <p>Enterprise Dashboard</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Overview</div>
+                    <button class="nav-item active" onclick="showPage('executive-dashboard')">
+                        <i class="fas fa-chart-line"></i>
+                        Executive Dashboard
+                    </button>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Planning & Analytics</div>
+                    <button class="nav-item" onclick="showPage('demand-forecasting')">
+                        <i class="fas fa-chart-bar"></i>
+                        Demand Forecasting
+                    </button>
+                    <button class="nav-item" onclick="showPage('inventory-management')">
+                        <i class="fas fa-boxes"></i>
+                        Inventory Management
+                    </button>
+                    <button class="nav-item" onclick="showPage('production-tracking')">
+                        <i class="fas fa-industry"></i>
+                        Production Tracking
+                    </button>
+                    <button class="nav-item" onclick="showPage('quality-control')">
+                        <i class="fas fa-check-circle"></i>
+                        Quality Control
+                    </button>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Financial Management</div>
+                    <button class="nav-item" onclick="showPage('working-capital')">
+                        <i class="fas fa-coins"></i>
+                        Working Capital
+                    </button>
+                    <button class="nav-item" onclick="showPage('what-if-analysis')">
+                        <i class="fas fa-calculator"></i>
+                        What-If Analysis
+                    </button>
+                    <button class="nav-item" onclick="showPage('financial-reports')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        Financial Reports
+                    </button>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Operations</div>
+                    <button class="nav-item" onclick="showPage('data-import')">
+                        <i class="fas fa-upload"></i>
+                        Data Import
+                    </button>
+                    <button class="nav-item" onclick="showPage('admin-panel')">
+                        <i class="fas fa-cog"></i>
+                        Admin Panel
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="breadcrumb">
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-right"></i>
+                    <span id="current-page-title">Manufacturing Intelligence</span>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        All Systems Operational
+                    </div>
+                    
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search anything...">
+                    </div>
+                    
+                    <div class="user-menu">
+                        <div class="user-info">
+                            <div class="user-name" id="header-user-name">Dudley Peacock</div>
+                            <div class="user-role">Enterprise</div>
+                        </div>
+                        <div class="user-avatar" id="header-user-avatar">DP</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Executive Dashboard Page -->
+            <div id="executive-dashboard" class="page-content">
+                <div class="page-header">
+                    <h1 class="page-title">Executive Dashboard</h1>
+                    <p class="page-description">Real-time manufacturing operations overview</p>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Total Revenue</span>
+                            <div class="metric-icon" style="background: #dcfce7; color: #166534;">
+                                <i class="fas fa-pound-sign"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value">£2.5M</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +15.2%
+                        </div>
+                        <div class="metric-trend"></div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Active Orders</span>
+                            <div class="metric-icon" style="background: #dbeafe; color: #1d4ed8;">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value">1,250</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +8.5%
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Inventory Value</span>
+                            <div class="metric-icon" style="background: #fef3c7; color: #d97706;">
+                                <i class="fas fa-boxes"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value">£0.8M</div>
+                        <div class="metric-change negative">
+                            <i class="fas fa-arrow-down"></i>
+                            -2.1%
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Active Customers</span>
+                            <div class="metric-icon" style="background: #f3e8ff; color: #7c3aed;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value">850</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +12.3%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Working Capital Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Revenue & Production Trends</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn">7D</button>
+                                <button class="chart-action-btn">30D</button>
+                                <button class="chart-action-btn">90D</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Key Performance Metrics</h3>
+                        </div>
+                        <div style="padding: 1rem 0;">
+                            <div class="kpi-grid">
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #10b981;">+15.2%</div>
+                                    <div class="kpi-label">Revenue Growth</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #3b82f6;">94.8%</div>
+                                    <div class="kpi-label">Order Fulfillment</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #f59e0b;">4.7/5</div>
+                                    <div class="kpi-label">Customer Satisfaction</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #8b5cf6;">8.2x</div>
+                                    <div class="kpi-label">Inventory Turnover</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Working Capital Details -->
+                <div class="chart-card" style="margin-bottom: 2rem;">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Working Capital</h3>
+                        <div class="metric-change positive" style="font-size: 0.875rem;">
+                            <i class="fas fa-arrow-up"></i>
+                            +19.5%
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 1rem 0;">
+                        <div>
+                            <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">Current</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1e293b;">£1.9M</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">30-Day Projection</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;">£2.1M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <div class="action-card" onclick="showPage('demand-forecasting')">
+                        <div class="action-header">
+                            <div class="action-icon" style="background: #dbeafe; color: #1d4ed8;">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Run Forecast</h4>
+                                <p>Generate demand forecast</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-card" onclick="showPage('working-capital')">
+                        <div class="action-header">
+                            <div class="action-icon" style="background: #dcfce7; color: #166534;">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Working Capital</h4>
+                                <p>Analyze cash flow</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-card" onclick="showPage('what-if-analysis')">
+                        <div class="action-header">
+                            <div class="action-icon" style="background: #f3e8ff; color: #7c3aed;">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>What-If Analysis</h4>
+                                <p>Scenario modeling</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Pages (Hidden by default) -->
+            <div id="demand-forecasting" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Demand Forecasting</h1>
+                    <p class="page-description">AI-powered demand prediction and planning</p>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Demand Forecast - Next 90 Days</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="demandChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="inventory-management" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Inventory Management</h1>
+                    <p class="page-description">Real-time inventory tracking and optimization</p>
+                </div>
+                
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Current Stock</th>
+                                <th>Reorder Level</th>
+                                <th>Status</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sentia Red</td>
+                                <td>2,450 units</td>
+                                <td>500 units</td>
+                                <td><span style="color: #10b981;">✓ In Stock</span></td>
+                                <td>2 hours ago</td>
+                            </tr>
+                            <tr>
+                                <td>Sentia Gold</td>
+                                <td>1,200 units</td>
+                                <td>300 units</td>
+                                <td><span style="color: #10b981;">✓ In Stock</span></td>
+                                <td>1 hour ago</td>
+                            </tr>
+                            <tr>
+                                <td>Packaging Materials</td>
+                                <td>150 units</td>
+                                <td>200 units</td>
+                                <td><span style="color: #f59e0b;">⚠ Low Stock</span></td>
+                                <td>30 minutes ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add more pages as needed -->
+            <div id="production-tracking" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Production Tracking</h1>
+                    <p class="page-description">Monitor manufacturing processes and efficiency</p>
+                </div>
+                <div class="chart-card">
+                    <h3>Production efficiency metrics coming soon...</h3>
+                </div>
+            </div>
+
+            <div id="quality-control" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Quality Control</h1>
+                    <p class="page-description">Quality assurance and control metrics</p>
+                </div>
+                <div class="chart-card">
+                    <h3>Quality control dashboard coming soon...</h3>
+                </div>
+            </div>
+
+            <div id="working-capital" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Working Capital</h1>
+                    <p class="page-description">Cash flow analysis and working capital optimization</p>
+                </div>
+                <div class="chart-card">
+                    <h3>Working capital analysis coming soon...</h3>
+                </div>
+            </div>
+
+            <div id="what-if-analysis" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">What-If Analysis</h1>
+                    <p class="page-description">Scenario modeling and predictive analytics</p>
+                </div>
+                <div class="chart-card">
+                    <h3>Scenario modeling tools coming soon...</h3>
+                </div>
+            </div>
+
+            <div id="financial-reports" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Financial Reports</h1>
+                    <p class="page-description">Comprehensive financial reporting and analysis</p>
+                </div>
+                <div class="chart-card">
+                    <h3>Financial reports coming soon...</h3>
+                </div>
+            </div>
+
+            <div id="data-import" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Data Import</h1>
+                    <p class="page-description">Import and manage data from external sources</p>
+                </div>
+                <div class="chart-card">
+                    <h3>Data import tools coming soon...</h3>
+                </div>
+            </div>
+
+            <div id="admin-panel" class="page-content hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Admin Panel</h1>
+                    <p class="page-description">System administration and user management</p>
+                </div>
+                <div class="chart-card">
+                    <h3>Admin panel coming soon...</h3>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div class="ai-chatbot">
+        <button class="chatbot-toggle" onclick="toggleChatbot()">
+            <i class="fas fa-robot"></i>
+        </button>
+        
+        <div class="chatbot-panel" id="chatbot-panel">
+            <div class="chatbot-header">
+                <div class="chatbot-title">🤖 AI Assistant</div>
+                <button class="chatbot-close" onclick="toggleChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbot-messages">
+                <div class="message ai">
+                    Hello! I'm your AI assistant for Sentia Manufacturing. I can help you with:
+                    <br><br>
+                    • Demand forecasting analysis
+                    <br>• Inventory optimization
+                    <br>• Working capital insights
+                    <br>• Production planning
+                    <br><br>
+                    What would you like to know?
+                </div>
+            </div>
+            
+            <div class="chatbot-input">
+                <input type="text" id="chatbot-input" placeholder="Ask me anything..." onkeypress="handleChatInput(event)">
+                <button class="chatbot-send" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication state
+        let isAuthenticated = false;
+        let currentUser = null;
+        let currentPage = 'executive-dashboard';
+
+        // Initialize the application
+        function initApp() {
+            if (isAuthenticated) {
+                showDashboard();
+                initCharts();
+            } else {
+                showLandingPage();
+            }
+        }
+
+        // Authentication functions
+        function signIn() {
+            setTimeout(() => {
+                isAuthenticated = true;
+                currentUser = {
+                    firstName: 'Dudley',
+                    lastName: 'Peacock',
+                    email: 'dudley@financeflo.ai',
+                    role: 'master'
+                };
+                
+                updateUserInfo();
+                showDashboard();
+                initCharts();
+            }, 1000);
+        }
+
+        function signOut() {
+            isAuthenticated = false;
+            currentUser = null;
+            showLandingPage();
+        }
+
+        function updateUserInfo() {
+            if (currentUser) {
+                document.getElementById('header-user-name').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                document.getElementById('header-user-avatar').textContent = `${currentUser.firstName[0]}${currentUser.lastName[0]}`;
+            }
+        }
+
+        // Page navigation
+        function showLandingPage() {
+            document.getElementById('landing-page').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+        }
+
+        function showDashboard() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+        }
+
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.add('hidden'));
+            
+            // Show selected page
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            // Update navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update breadcrumb
+            const pageTitle = event.target.textContent.trim();
+            document.getElementById('current-page-title').textContent = pageTitle;
+            
+            currentPage = pageId;
+        }
+
+        // Charts initialization
+        function initCharts() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue (£K)',
+                        data: [180, 220, 190, 250, 280, 240],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Production Units',
+                        data: [1200, 1400, 1100, 1600, 1800, 1500],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+
+            // Demand Chart (for demand forecasting page)
+            const demandCtx = document.getElementById('demandChart');
+            if (demandCtx) {
+                new Chart(demandCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                        datasets: [{
+                            label: 'Predicted Demand',
+                            data: [1200, 1350, 1100, 1450, 1600, 1400, 1550, 1700],
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Chatbot functions
+        function toggleChatbot() {
+            const panel = document.getElementById('chatbot-panel');
+            panel.classList.toggle('active');
+        }
+
+        function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatbot-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage(message, 'user');
+                input.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const response = generateAIResponse(message);
+                    addMessage(response, 'ai');
+                }, 1000);
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function generateAIResponse(message) {
+            const responses = {
+                'revenue': 'Current revenue is £2.5M with a 15.2% increase from last month. The trend shows strong growth in Q2.',
+                'inventory': 'Inventory value is £0.8M. I recommend reviewing packaging materials as they are below reorder level.',
+                'forecast': 'Based on current trends, I predict a 12% increase in demand over the next 30 days.',
+                'working capital': 'Working capital is currently £1.9M with a projected increase to £2.1M next month.',
+                'default': 'I can help you analyze your manufacturing data. Try asking about revenue, inventory, forecasting, or working capital.'
+            };
+            
+            const lowerMessage = message.toLowerCase();
+            for (const [key, response] of Object.entries(responses)) {
+                if (lowerMessage.includes(key)) {
+                    return response;
+                }
+            }
+            
+            return responses.default;
+        }
+
+        // Initialize app when page loads
+        window.addEventListener('load', initApp);
+    </script>
+</body>
+</html>

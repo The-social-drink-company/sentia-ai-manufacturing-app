@@ -23,7 +23,7 @@ services:
         value: https://mcp-server-tkyu.onrender.com
       # Clerk Authentication Variables
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
         value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
       - key: VITE_CLERK_DOMAIN
@@ -63,7 +63,7 @@ services:
         value: https://mcp-server-tkyu.onrender.com
       # Clerk Authentication Variables
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
         value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
       - key: VITE_CLERK_DOMAIN
@@ -105,7 +105,7 @@ services:
         value: error
       # Clerk Authentication Variables (TODO: Replace with production keys)
       - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: CLERK_SECRET_KEY
         value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
       - key: VITE_CLERK_DOMAIN

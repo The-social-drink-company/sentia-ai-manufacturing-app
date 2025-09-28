@@ -1,7 +1,7 @@
 {
   "name": "sentia-manufacturing-dashboard-bulletproof",
   "version": "2.0.0-bulletproof",
-  "description": "Sentia Manufacturing Dashboard - Enterprise working capital intelligence",
+  "description": "Sentia Manufacturing Dashboard - Enterprise React Application with Clerk Authentication",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -20,7 +20,8 @@
     "lint:check": "eslint src server --ext .js,.jsx",
     "lint:fix": "eslint src server --ext .js,.jsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,json}\" \"server/**/*.{js,json}\" \"*.{js,json,md}\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,json}\" \"server/**/*.{js,json}\" \"*.{js,json,md}\""
+    "format:check": "prettier --check \"src/**/*.{js,jsx,json}\" \"server/**/*.{js,json}\" \"*.{js,json,md}\"",
+    "postinstall": "echo 'Installation complete - ready for deployment'"
   },
   "dependencies": {
     "@azure/msal-browser": "^3.26.1",

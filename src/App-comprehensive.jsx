@@ -26,6 +26,9 @@ import ErrorFallback from './components/ui/ErrorFallback';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 const ClerkSignIn = lazy(() => import('./pages/ClerkSignIn'));
 
+// AI Components
+import AIChatbot from './components/AIChatbot';
+
 // Lazy-loaded Page Components - COMPREHENSIVE SET
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const EnterpriseDashboard = lazy(() => import('./pages/Dashboard'));
@@ -431,6 +434,9 @@ const AppComprehensive = () => {
             },
           }}
         />
+
+        {/* AI Chatbot - Always Available */}
+        <AIChatbot />
 
           {/* React Query DevTools - only in development */}
           {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}

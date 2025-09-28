@@ -47,28 +47,41 @@ const initializeApp = async () => {
     devLog.log('[main.jsx] Creating React root...');
     const root = createRoot(rootElement);
 
-    // Try to load the full app
+    // Try to load the comprehensive enterprise app
     try {
-      devLog.log('[main.jsx] Attempting to load App-multistage...');
-      const { default: App } = await import('./App-multistage.jsx');
+      devLog.log('[main.jsx] Attempting to load App-comprehensive...');
+      const { default: App } = await import('./App-comprehensive.jsx');
 
-      devLog.log('[main.jsx] App-multistage loaded successfully, rendering...');
+      devLog.log('[main.jsx] App-comprehensive loaded successfully, rendering...');
       root.render(
         <StrictMode>
           <App />
         </StrictMode>
       );
-      devLog.log('[main.jsx] React app mounted successfully');
+      devLog.log('[main.jsx] Enterprise app mounted successfully with AI features');
     } catch (appError) {
-      logError('[main.jsx] Failed to load App-multistage', appError);
-      devLog.log('[main.jsx] Falling back to simple app...');
-      
-      root.render(
-        <StrictMode>
-          <FallbackApp />
-        </StrictMode>
-      );
-      devLog.log('[main.jsx] Fallback app mounted successfully');
+      logError('[main.jsx] Failed to load App-comprehensive', appError);
+      devLog.log('[main.jsx] Attempting App-multistage fallback...');
+
+      try {
+        const { default: App } = await import('./App-multistage.jsx');
+        root.render(
+          <StrictMode>
+            <App />
+          </StrictMode>
+        );
+        devLog.log('[main.jsx] App-multistage mounted successfully');
+      } catch (multistageError) {
+        logError('[main.jsx] Failed to load App-multistage', multistageError);
+        devLog.log('[main.jsx] Falling back to simple app...');
+
+        root.render(
+          <StrictMode>
+            <FallbackApp />
+          </StrictMode>
+        );
+        devLog.log('[main.jsx] Fallback app mounted successfully');
+      }
     }
   } catch (error) {
     logError('[main.jsx] Critical error mounting React app', error);

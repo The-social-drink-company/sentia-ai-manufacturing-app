@@ -1,9 +1,6 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import MultiStageLoader from '@/components/MultiStageLoader'
 import {
   ChartBarIcon,
   CubeIcon,
@@ -56,27 +53,13 @@ const STATS = [
 
 const LandingPageWithFlow = () => {
   const navigate = useNavigate()
-  const { isSignedIn } = useAuth()
-  const [showDashboardLoader, setShowDashboardLoader] = useState(false)
 
   const handleGetStarted = () => {
-    if (isSignedIn) {
-      setShowDashboardLoader(true)
-    } else {
-      navigate('/sign-in')
-    }
-  }
-
-  const handleDashboardLoadingComplete = () => {
-    navigate('/dashboard')
+    navigate('/sign-in')
   }
 
   const handleViewDemo = () => {
-    setShowDashboardLoader(true)
-  }
-
-  if (showDashboardLoader) {
-    return <MultiStageLoader onComplete={handleDashboardLoadingComplete} />
+    navigate('/sign-in')
   }
 
   return (
@@ -91,23 +74,13 @@ const LandingPageWithFlow = () => {
             <span className="text-xl font-bold text-white">Sentia Manufacturing</span>
           </div>
           <div className="flex items-center space-x-4">
-            <SignedOut>
-              <Button
-                variant="ghost"
-                className="text-white hover:bg-white/10"
-                onClick={() => navigate('/sign-in')}
-              >
-                Sign In
-              </Button>
-            </SignedOut>
-            <SignedIn>
-              <Button
-                className="bg-gradient-to-r from-blue-500 to-cyan-400"
-                onClick={handleGetStarted}
-              >
-                Go to Dashboard
-              </Button>
-            </SignedIn>
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/10"
+              onClick={() => navigate('/sign-in')}
+            >
+              Sign In
+            </Button>
           </div>
         </nav>
       </header>

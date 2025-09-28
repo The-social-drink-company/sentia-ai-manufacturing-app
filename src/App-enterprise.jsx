@@ -3,7 +3,8 @@ import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom
 import { SignedIn, SignedOut, RedirectToSignIn, useAuth } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import LandingPage from '@/components/LandingPage'
+import LandingPageWithFlow from '@/components/LandingPageWithFlow'
+import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
 import ClerkSignIn from '@/pages/ClerkSignIn'
 import DashboardLayout from '@/components/DashboardLayout'
 
@@ -33,9 +34,11 @@ const Loader = () => (
 
 const ProtectedShell = () => (
   <SignedIn>
-    <DashboardLayout>
-      <Outlet />
-    </DashboardLayout>
+    <ProgressiveDashboardLoader>
+      <DashboardLayout>
+        <Outlet />
+      </DashboardLayout>
+    </ProgressiveDashboardLoader>
   </SignedIn>
 )
 
@@ -53,26 +56,20 @@ const RequireAuth = () => (
 const SmartHome = () => {
   const { isSignedIn, isLoaded } = useAuth()
 
-  // Show loading while Clerk initializes
-  if (!isLoaded) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-200">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Loading...</p>
-        </div>
-      </div>
-    )
+  // Always show landing page first - no loading spinner
+  // Only redirect if user is already signed in
+  if (isLoaded && isSignedIn) {
+    return <Navigate to="/dashboard" replace />
   }
 
-  return isSignedIn ? <Navigate to="/dashboard" replace /> : <LandingPage />
+  return <LandingPageWithFlow />
 }
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>
-        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/landing" element={<LandingPageWithFlow />} />
         <Route path="/" element={<SmartHome />} />
         <Route path="/sign-in" element={<ClerkSignIn />} />
 

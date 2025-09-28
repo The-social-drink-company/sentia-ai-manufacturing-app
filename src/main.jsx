@@ -47,20 +47,7 @@ if (!rootElement) {
   throw new Error('Root element not found')
 }
 
-// Show initial loading state
-rootElement.innerHTML = `
-  <div style="display: flex; min-height: 100vh; align-items: center; justify-content: center; background: #0f172a; color: #e2e8f0; font-family: system-ui;">
-    <div style="text-align: center;">
-      <div style="width: 3rem; height: 3rem; margin: 0 auto 1rem; border: 2px solid #0ea5e9; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-      <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.3em; color: #94a3b8;">Loading Dashboard...</p>
-    </div>
-  </div>
-  <style>
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
-`
+// No initial loading - let React render immediately
 
 console.log('[Clerk] Initializing with publishable key:', `${publishableKey.substring(0, 20)}...`)
 console.log('[Clerk] Full key length:', publishableKey.length)

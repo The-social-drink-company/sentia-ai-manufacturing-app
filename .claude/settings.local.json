@@ -61,7 +61,9 @@
       "Bash(timeout:*)",
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "WebFetch(domain:sentia-manufacturing-testing.onrender.com)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

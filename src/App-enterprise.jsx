@@ -24,7 +24,8 @@ const DemandForecasting = lazy(() => import('./components/analytics/DemandForeca
 const InventoryManagement = lazy(() => import('./components/inventory/InventoryDashboard'));
 const ProductionTracking = lazy(() => import('./components/production/ProductionDashboard'));
 const QualityControl = lazy(() => import('./components/quality/QualityDashboard'));
-const AIAnalytics = lazy(() => import('./components/ai/AIAnalyticsDashboard.jsx'));
+// Temporarily commented out due to build issues - will fix path alias
+// const AIAnalytics = lazy(() => import('./components/ai/AIAnalyticsDashboard.jsx'));
 const DataImport = lazy(() => import('./components/data/DataImportWidget'));
 const AdminPanel = lazy(() => import('./pages/Admin'));
 const SystemConfig = lazy(() => import('./components/admin/SystemConfig'));
@@ -364,7 +365,11 @@ function AppEnterprise() {
                 <SignedIn>
                   <MainLayout>
                     <Suspense fallback={<LoadingSpinner />}>
-                      <AIAnalytics />
+                      {/* Temporarily disabled - fixing AI component path alias */}
+                      <div className="p-8 text-center">
+                        <h2 className="text-2xl font-bold">AI Analytics</h2>
+                        <p className="text-gray-600 mt-2">Component temporarily disabled during deployment fix</p>
+                      </div>
                     </Suspense>
                   </MainLayout>
                 </SignedIn>

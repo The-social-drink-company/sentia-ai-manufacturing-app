@@ -12,14 +12,27 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import fs from 'fs';
-import pkg from '@prisma/client';
-const { PrismaClient } = pkg;
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import { createLogger, loggingMiddleware } from './src/services/logger/enterprise-logger.js';
 
-// Initialize logger
-const logger = createLogger('Server');
+// Initialize logger with fallback
+let logger;
+let createLogger, loggingMiddleware;
+try {
+  const loggerModule = await import('./src/services/logger/enterprise-logger.js');
+  createLogger = loggerModule.createLogger;
+  loggingMiddleware = loggerModule.loggingMiddleware;
+  logger = createLogger('Server');
+} catch (error) {
+  // Fallback logger
+  logger = {
+    info: (...args) => console.log('[INFO]', ...args),
+    warn: (...args) => console.warn('[WARN]', ...args),
+    error: (...args) => console.error('[ERROR]', ...args),
+    debug: (...args) => console.log('[DEBUG]', ...args)
+  };
+  loggingMiddleware = (req, res, next) => next();
+}
 
 // Load environment variables
 dotenv.config();
@@ -28,18 +41,33 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Initialize Prisma Client with proper database connection
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL || process.env[`${process.env.NODE_ENV?.toUpperCase()}_DATABASE_URL`] || process.env.DEV_DATABASE_URL
+// Initialize Prisma Client with graceful fallback
+let prisma = null;
+let PrismaClient = null;
+try {
+  const pkg = await import('@prisma/client');
+  PrismaClient = pkg.PrismaClient;
+  prisma = new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL || process.env[`${process.env.NODE_ENV?.toUpperCase()}_DATABASE_URL`] || process.env.DEV_DATABASE_URL
+      }
     }
-  }
-});
+  });
+  logger.info('Prisma client initialized successfully');
+} catch (error) {
+  logger.warn('Prisma client failed to initialize, running without database:', error.message);
+  prisma = null;
+}
 
 // Test database connection
 async function testDatabaseConnection() {
+  if (!prisma) {
+    logger.warn('Database connection test skipped - Prisma client not available');
+    return false;
+  }
+
   try {
     await prisma.$connect();
     const dbVersion = await prisma.$queryRaw`SELECT version()`;
@@ -162,7 +190,7 @@ app.get('/health', async (req, res) => {
   };
 
   // Test database connectivity
-  if (dbConnected) {
+  if (dbConnected && prisma) {
     try {
       await prisma.$queryRaw`SELECT 1`;
       health.database.status = 'operational';
@@ -170,6 +198,9 @@ app.get('/health', async (req, res) => {
       health.database.status = 'error';
       health.database.error = error.message;
     }
+  } else if (!prisma) {
+    health.database.status = 'unavailable';
+    health.database.error = 'Prisma client not initialized';
   }
 
   res.json(health);
@@ -584,7 +615,9 @@ process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down gracefully...');
 
   // Close database connection
-  await prisma.$disconnect();
+  if (prisma) {
+    await prisma.$disconnect();
+  }
 
   // Close MCP connection
   if (mcpClient) {

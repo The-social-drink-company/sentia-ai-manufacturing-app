@@ -58,8 +58,8 @@ export const RootApp = () => {
   if (!bootConfig) {
     return (
       <LandingPageMarketing
-        onRequestSignIn={() => setBootConfig({ targetPath: '/sign-in' })}
-        onRequestDemo={() => setBootConfig({ targetPath: '/landing?demo=1' })}
+        onRequestSignIn={() => setBootConfig({ targetPath: '/app/sign-in' })}
+        onRequestDemo={() => setBootConfig({ targetPath: '/app/dashboard?demo=1' })}
         onRequestContact={() => {
           window.location.href = 'mailto:sales@sentiamfg.com'
         }}

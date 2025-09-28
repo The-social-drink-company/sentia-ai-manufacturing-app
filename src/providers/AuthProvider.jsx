@@ -1,4 +1,4 @@
-import {
+﻿import {
   ClerkLoaded,
   ClerkProvider,
   RedirectToSignIn,
@@ -7,28 +7,11 @@ import {
   useAuth as useClerkAuth,
   useUser,
 } from '@clerk/clerk-react'
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo } from 'react'
 
-import { logInfo, logWarn } from '../utils/logger.js'
-
-const STORAGE_KEY = 'sentia-mock-auth-v1'
-const DEFAULT_USER = {
-  id: 'sentia-operator',
-  firstName: 'Sentia',
-  lastName: 'Operator',
-  email: 'operator@sentia.local',
-  role: 'manager',
-}
+import { logError, logWarn } from '../utils/logger.js'
 
 const AuthContext = createContext(null)
-
-const hasBrowserStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
-
-const shouldForceMock = () => import.meta.env?.VITE_FORCE_MOCK_AUTH === 'true'
-const hasClerkConfig = () => {
-  const publishableKey = import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY
-  return Boolean(publishableKey && publishableKey.length > 0 && publishableKey !== 'your-clerk-publishable-key-here')
-}
 
 const redirectToLogin = () => {
   if (typeof window !== 'undefined' && typeof window.location !== 'undefined') {
@@ -36,91 +19,6 @@ const redirectToLogin = () => {
   } else {
     logWarn('Attempted to redirect to /login outside of a browser environment')
   }
-}
-
-function loadStoredUser() {
-  if (!hasBrowserStorage()) {
-    return null
-  }
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) {
-      return null
-    }
-
-    return JSON.parse(raw)
-  } catch (error) {
-    logWarn('Unable to parse stored auth state', error)
-    return null
-  }
-}
-
-function persistUser(user) {
-  if (!hasBrowserStorage()) {
-    return
-  }
-
-  try {
-    if (!user) {
-      window.localStorage.removeItem(STORAGE_KEY)
-      return
-    }
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
-  } catch (error) {
-    logWarn('Unable to persist auth state', error)
-  }
-}
-
-function MockAuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    if (shouldForceMock()) {
-      return DEFAULT_USER
-    }
-
-    return loadStoredUser()
-  })
-
-  useEffect(() => {
-    if (!hasBrowserStorage()) {
-      return
-    }
-
-    persistUser(user)
-  }, [user])
-
-  const signIn = useCallback((payload = {}) => {
-    const nextUser = {
-      ...DEFAULT_USER,
-      ...payload,
-      id: payload.id ?? DEFAULT_USER.id,
-      role: payload.role ?? DEFAULT_USER.role,
-    }
-
-    logInfo('Mock sign-in complete', nextUser)
-    setUser(nextUser)
-    return Promise.resolve(nextUser)
-  }, [])
-
-  const signOut = useCallback(() => {
-    logInfo('Mock sign-out complete')
-    setUser(null)
-    return Promise.resolve()
-  }, [])
-
-  const value = useMemo(
-    () => ({
-      mode: 'mock',
-      isAuthenticated: Boolean(user),
-      user,
-      signIn,
-      signOut,
-    }),
-    [signIn, signOut, user]
-  )
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 function mapClerkUser(user) {
@@ -199,41 +97,49 @@ const signedOutValue = {
   signOut: () => Promise.resolve(),
 }
 
-function ClerkAuthProvider({ children }) {
-  const publishableKey = import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY
+function MissingClerkConfiguration() {
+  logError('Clerk publishable key not found. Authentication cannot be initialized.')
 
-  if (!publishableKey) {
-    logWarn('Clerk publishable key not found, falling back to mock authentication')
-    return <MockAuthProvider>{children}</MockAuthProvider>
-  }
-
-  try {
-    return (
-      <ClerkProvider publishableKey={publishableKey} afterSignOutUrl="/login">
-        <SignedIn>
-          <ClerkLoaded>
-            <ClerkSessionProvider>{children}</ClerkSessionProvider>
-          </ClerkLoaded>
-        </SignedIn>
-        <SignedOut>
-          <AuthContext.Provider value={signedOutValue}>
-            <RedirectToSignIn />
-          </AuthContext.Provider>
-        </SignedOut>
-      </ClerkProvider>
-    )
-  } catch (error) {
-    logWarn('Clerk initialization failed, falling back to mock authentication', error)
-    return <MockAuthProvider>{children}</MockAuthProvider>
-  }
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full bg-white shadow-lg rounded-xl p-8 text-center">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-3">Authentication Misconfigured</h1>
+        <p className="text-gray-600 mb-6">
+          Clerk environment keys are required for this application. Set `VITE_CLERK_PUBLISHABLE_KEY` and reload the page.
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="w-full rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 transition"
+        >
+          Reload after configuring Clerk
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export function AuthProvider({ children }) {
-  if (!shouldForceMock() && hasClerkConfig()) {
-    return <ClerkAuthProvider>{children}</ClerkAuthProvider>
+  const publishableKey = import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY
+
+  if (!publishableKey) {
+    return <MissingClerkConfiguration />
   }
 
-  return <MockAuthProvider>{children}</MockAuthProvider>
+  return (
+    <ClerkProvider publishableKey={publishableKey} afterSignOutUrl="/login">
+      <SignedIn>
+        <ClerkLoaded>
+          <ClerkSessionProvider>{children}</ClerkSessionProvider>
+        </ClerkLoaded>
+      </SignedIn>
+      <SignedOut>
+        <AuthContext.Provider value={signedOutValue}>
+          <RedirectToSignIn />
+        </AuthContext.Provider>
+      </SignedOut>
+    </ClerkProvider>
+  )
 }
 
 export function useAuthContext() {
@@ -247,7 +153,3 @@ export function useAuthContext() {
 }
 
 export { AuthContext }
-
-
-
-

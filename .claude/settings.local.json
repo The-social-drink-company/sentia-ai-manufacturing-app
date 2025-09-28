@@ -130,7 +130,10 @@
       "Bash(git rm:*)",
       "Bash(git merge:*)",
       "Bash(netstat:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Read(//c/Users/User/Downloads/**)",
+      "Bash(dir:*)",
+      "Bash(set PORT=10000)"
     ],
     "deny": [],
     "ask": []

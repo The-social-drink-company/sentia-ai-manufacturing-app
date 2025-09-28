@@ -588,12 +588,12 @@ process.on('SIGTERM', async () => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
-  logger.critical('Uncaught exception', error);
+  logger.error('Uncaught exception', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (error) => {
-  logger.critical('Unhandled rejection', error);
+  logger.error('Unhandled rejection', error);
   process.exit(1);
 });
 

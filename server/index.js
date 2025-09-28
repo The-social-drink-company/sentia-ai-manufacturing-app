@@ -17,6 +17,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 10000;
+const isClerkConfigured = Boolean(process.env.VITE_CLERK_PUBLISHABLE_KEY);
 
 // Logging middleware
 const logger = (req, res, next) => {
@@ -76,9 +77,23 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     clerk: {
-      configured: !!process.env.VITE_CLERK_PUBLISHABLE_KEY,
+      configured: isClerkConfigured,
       publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET'
     }
+  });
+});
+
+app.get('/ready', (req, res) => {
+  res.json({
+    status: 'ready',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/alive', (req, res) => {
+  res.json({
+    status: 'alive',
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -94,7 +109,7 @@ app.get('/api/status', (req, res) => {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       clerk: {
-        configured: !!process.env.VITE_CLERK_PUBLISHABLE_KEY
+        configured: isClerkConfigured
       }
     },
     meta: {
@@ -321,7 +336,11 @@ app.get('*', (req, res) => {
 });
 
 // Error handling middleware
+<<<<<<< HEAD
 app.use((err, req, res) => {
+=======
+app.use((err, req, res, _next) => {
+>>>>>>> branch-23-bulletproof
   console.error('Server error:', err);
 
   if (req.path.startsWith('/api/')) {
@@ -346,7 +365,11 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`API: http://localhost:${PORT}/api/status`);
   console.log(`Dashboard: http://localhost:${PORT}/api/dashboard/summary`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+<<<<<<< HEAD
   console.log(`Clerk: ${process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'Configured' : 'Not configured'}`);
+=======
+  console.log(`Clerk: ${isClerkConfigured ? 'Configured' : 'Not configured'}`);
+>>>>>>> branch-23-bulletproof
   console.log('========================================\n');
 });
 

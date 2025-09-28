@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -35,6 +36,36 @@ const inspectionStages = [
   { label: 'Final Inspection', progress: 91 },
   { label: 'Post-Shipment Audits', progress: 63 }
 ]
+=======
+import { useState } from 'react';
+import {
+  BeakerIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  XCircleIcon,
+  ChartBarIcon,
+  ClipboardDocumentCheckIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  FunnelIcon,
+  DocumentChartBarIcon,
+  CalendarDaysIcon,
+  ShieldCheckIcon
+} from '@heroicons/react/24/outline';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+>>>>>>> branch-23-bulletproof
 
 const QualityControl = () => {
   return (

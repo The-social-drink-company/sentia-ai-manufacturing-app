@@ -169,7 +169,11 @@ const fetchAICashFlowForecast = async (timeline) => {
         label: `Day ${idx + 1}`,
         value: Number((point.net ?? 0).toFixed(2))
       })),
+<<<<<<< HEAD
       confidence: 0.85,
+=======
+        confidence: 0.85,
+>>>>>>> branch-23-bulletproof
       scenarios: []
     }
   }

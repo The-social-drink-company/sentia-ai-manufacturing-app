@@ -2,11 +2,20 @@
 
 const router = express.Router()
 
+<<<<<<< HEAD
 const mockTrend = [
   { date: '2024-01-01', cash: 520000, inflow: 250000, outflow: 180000 },
   { date: '2024-02-01', cash: 545000, inflow: 260000, outflow: 190000 },
   { date: '2024-03-01', cash: 568000, inflow: 275000, outflow: 200000 }
 ]
+=======
+import { sendSSEEvent } from './sse.js';
+import { ensureDatabaseConnection } from '../database/client.js';
+import { buildTimeSeries, summarizeSeries, toCurrency, determineTrend } from '../utils/dataTransforms.js';
+
+
+const router = express.Router();
+>>>>>>> branch-23-bulletproof
 
 router.get('/dashboard/summary', (_req, res) => {
   res.json({

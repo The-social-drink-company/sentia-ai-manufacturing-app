@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 ﻿/* eslint-env node */
 
 const globalProcess = typeof globalThis !== 'undefined' && globalThis.process ? globalThis.process : null
+=======
+import { logDebug, logInfo, logWarn, logError } from 'logger';
+/**
+ * Environment Variable Validator
+ * Validates required environment variables on application startup
+ * Implements TASK-002 from SpecKit specifications
+ */
+>>>>>>> branch-23-bulletproof
 
 const requiredBackendEnvVars = [
   'CLERK_SECRET_KEY',
@@ -37,10 +46,17 @@ export function validateBackendEnvironment(logger = defaultLogger) {
     return { valid: false, missing }
   }
 
+<<<<<<< HEAD
   if (env.CLERK_SECRET_KEY && !env.CLERK_SECRET_KEY.startsWith('sk_')) {
     logger.error('[env-validator] CLERK_SECRET_KEY must start with "sk_"')
     safeExit(1)
     return { valid: false, missing: [] }
+=======
+  // Validate Clerk secret key format
+  if (process.env.CLERK_SECRET_KEY && !process.env.CLERK_SECRET_KEY.startsWith('sk_')) {
+    logError('❌ CRITICAL: CLERK_SECRET_KEY must start with "sk_"');
+    process.exit(1);
+>>>>>>> branch-23-bulletproof
   }
 
   const dbKeys = ['DATABASE_URL_DEVELOPMENT', 'DATABASE_URL_TESTING', 'DATABASE_URL_PRODUCTION']
@@ -76,9 +92,16 @@ export function validateFrontendEnvironment(logger = defaultLogger) {
     return { valid: false, missing }
   }
 
+<<<<<<< HEAD
   if (env.VITE_CLERK_PUBLISHABLE_KEY && !env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk_')) {
     logger.error('[env-validator] VITE_CLERK_PUBLISHABLE_KEY must start with "pk_"')
     return { valid: false, missing: [] }
+=======
+  // Validate Clerk publishable key format
+  if (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && !import.meta.env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk_')) {
+    logError('❌ CRITICAL: VITE_CLERK_PUBLISHABLE_KEY must start with "pk_"');
+    return false;
+>>>>>>> branch-23-bulletproof
   }
 
   logger.debug('[env-validator] Frontend environment validation passed')

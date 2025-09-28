@@ -1,6 +1,6 @@
 /**
- * Main server entry point
- * This file exists because Render auto-detects and runs server.js
+ * Render Deployment Entry Point
+ * This file imports and starts the enterprise server to match Render's start command expectations
  */
 
-import('./server-enterprise-complete.js');
+import './server-enterprise-complete.js';

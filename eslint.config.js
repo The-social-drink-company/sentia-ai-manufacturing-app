@@ -1,4 +1,4 @@
-﻿import js from '@eslint/js'
+import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
@@ -30,25 +30,19 @@ export default [
       'sentia-financial-lakehouse/**',
       'enterprise-server.js',
       'railway-simple.js',
-      'FORCE-MEMORY-FIX.js',
+      'FORCE-*.js',
+      'verify-*.js',
       'prisma-wrapper.js',
       '.eslintrc.enterprise.cjs'
     ]
   },
   {
-    files: [
-      'src/components/**/*.{js,jsx,ts,tsx}',
-      'src/hooks/**/*.{js,jsx,ts,tsx}',
-      'src/pages/**/*.{js,jsx,ts,tsx}',
-      'src/stores/**/*.{js,jsx,ts,tsx}',
-      'src/utils/**/*.{js,jsx,ts,tsx}'
-    ],
+    files: ['src/**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: globals.browser,
       parserOptions: {
-        ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true }
       }
     },
@@ -59,24 +53,18 @@ export default [
     rules: {
       ...sharedRules,
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true }
-      ]
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }]
     }
   },
   {
-    files: ['server/**/*.{js,jsx,ts,tsx}', 'vite.config.js'],
+    files: ['server/**/*.{js,jsx}', 'vite.config.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: {
-        ...globals.node
-      }
+      globals: globals.node
     },
     rules: {
       ...sharedRules
     }
   }
 ]
-

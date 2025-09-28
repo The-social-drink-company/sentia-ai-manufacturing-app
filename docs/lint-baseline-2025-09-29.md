@@ -1,0 +1,57 @@
+# Lint Baseline 2025-09-29
+
+## Totals by Rule
+- no-unused-vars: 215
+- no-undef: 104
+- unknown: 12
+- react-refresh/only-export-components: 11
+- react-hooks/exhaustive-deps: 8
+- react-hooks/rules-of-hooks: 3
+- no-extra-boolean-cast: 1
+- no-useless-escape: 1
+
+## Totals by Directory
+- src/components: 94
+  - no-unused-vars: 56
+  - no-undef: 27
+  - react-refresh/only-export-components: 5
+  - react-hooks/exhaustive-deps: 3
+  - unknown: 3
+- src/features: 82
+  - no-unused-vars: 41
+  - no-undef: 28
+  - unknown: 7
+  - react-hooks/rules-of-hooks: 3
+  - react-hooks/exhaustive-deps: 3
+- src/pages: 81
+  - no-unused-vars: 61
+  - no-undef: 20
+- src/services: 39
+  - no-unused-vars: 28
+  - no-undef: 10
+  - no-useless-escape: 1
+- src/utils: 19
+  - no-undef: 17
+  - no-unused-vars: 2
+- src/lib: 10
+  - no-unused-vars: 10
+- server/routes: 9
+  - no-unused-vars: 9
+- src/auth: 6
+  - no-unused-vars: 4
+  - react-refresh/only-export-components: 2
+- src/hooks: 5
+  - react-hooks/exhaustive-deps: 2
+  - no-unused-vars: 2
+  - unknown: 1
+- src/contexts: 4
+  - no-undef: 2
+  - no-unused-vars: 1
+  - react-refresh/only-export-components: 1
+- src/providers: 3
+  - react-refresh/only-export-components: 3
+- server: 2
+  - no-unused-vars: 1
+  - no-extra-boolean-cast: 1
+- src/context: 1
+  - unknown: 1

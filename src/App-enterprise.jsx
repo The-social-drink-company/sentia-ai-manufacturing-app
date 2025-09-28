@@ -24,7 +24,7 @@ const DemandForecasting = lazy(() => import('./components/analytics/DemandForeca
 const InventoryManagement = lazy(() => import('./components/inventory/InventoryDashboard'));
 const ProductionTracking = lazy(() => import('./components/production/ProductionDashboard'));
 const QualityControl = lazy(() => import('./components/quality/QualityDashboard'));
-const AIAnalytics = lazy(() => import('./components/ai/AIAnalyticsDashboard'));
+const AIAnalytics = lazy(() => import('./components/ai/AIAnalyticsDashboard.jsx'));
 const DataImport = lazy(() => import('./components/data/DataImportWidget'));
 const AdminPanel = lazy(() => import('./pages/Admin'));
 const SystemConfig = lazy(() => import('./components/admin/SystemConfig'));

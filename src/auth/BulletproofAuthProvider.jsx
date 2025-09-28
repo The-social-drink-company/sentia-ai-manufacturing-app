@@ -1,33 +1,43 @@
 /**
- * BulletproofAuthProvider - A permanent, unbreakable authentication solution
- *
- * This provider guarantees:
- * 1. Never shows blank screens
- * 2. Always provides fallback authentication
- * 3. Handles all Clerk failures gracefully
- * 4. Fast loading with timeout protection
- * 5. Single source of truth for authentication
+ * BulletproofAuthProvider - consolidated Clerk authentication with graceful fallbacks.
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from '@clerk/clerk-react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  ClerkProvider,
+  useAuth as useClerkAuth,
+  useUser as useClerkUser,
+} from '@clerk/clerk-react';
 
-// Authentication context that always has a value
-const AuthContext = createContext(null);
+export const DEFAULT_AUTH_STATE = {
+  isLoaded: false,
+  isSignedIn: false,
+  userId: null,
+  sessionId: null,
+  user: null,
+  signOut: async () => {},
+  getToken: async () => null,
+  mode: 'unavailable',
+};
 
-// No fallback - authentication is always required
+const AuthContext = createContext(DEFAULT_AUTH_STATE);
 
-// Loading screen component
 const LoadingScreen = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
     <div className="text-center">
-      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
       <p className="text-gray-600 dark:text-gray-400">Initializing authentication...</p>
     </div>
   </div>
 );
 
-// Enhanced error display component
 const AuthError = ({ error, onRetry }) => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
     <div className="max-w-md w-full p-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
@@ -39,211 +49,170 @@ const AuthError = ({ error, onRetry }) => (
         </div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Authentication Issue</h2>
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-          We're having trouble connecting to our authentication service.
+          We were unable to connect to Clerk. Please check your configuration and try again.
         </p>
       </div>
-
       <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
-        <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">{error}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400 font-mono break-words">
+          {error}
+        </p>
       </div>
-
       <div className="space-y-3">
         <button
           onClick={onRetry}
           className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          type="button"
         >
           Try Again
         </button>
         <button
-          onClick={() => window.location.href = '/'}
+          onClick={() => window.location.reload()}
           className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+          type="button"
         >
-          Return to Home
+          Reload Page
         </button>
       </div>
-
       <div className="mt-6 text-center">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          If this issue persists, please contact support or try refreshing the page.
+          Need assistance? Confirm environment variables and Render configuration before retrying.
         </p>
       </div>
     </div>
   </div>
 );
 
-// Clerk integration wrapper that provides proper authentication
+const isValidClerkKey = (key) =>
+  typeof key === 'string' &&
+  (key.startsWith('pk_live_') || key.startsWith('pk_test_')) &&
+  key.length > 20 &&
+  !key.includes('undefined') &&
+  !key.includes('YOUR_KEY') &&
+  !key.includes('your_key_here');
+
 function ClerkAuthIntegration({ children }) {
   const clerkAuth = useClerkAuth();
   const clerkUser = useClerkUser();
 
-  // Combine Clerk auth with our bulletproof system
-  const combinedAuth = {
-    ...clerkAuth,
-    user: clerkUser?.user || null,
-    mode: 'clerk'
-  };
-
-  return (
-    <AuthContext.Provider value={combinedAuth}>
-      {children}
-    </AuthContext.Provider>
+  const combinedAuth = useMemo(
+    () => ({
+      ...DEFAULT_AUTH_STATE,
+      ...clerkAuth,
+      user: clerkUser?.user ?? null,
+      isLoaded: Boolean(clerkAuth?.isLoaded),
+      isSignedIn: Boolean(clerkAuth?.isSignedIn),
+      mode: 'clerk',
+    }),
+    [clerkAuth, clerkUser?.user]
   );
+
+  return <AuthContext.Provider value={combinedAuth}>{children}</AuthContext.Provider>;
 }
 
-// Authentication is always required - no fallback provider
-
-// Main bulletproof auth provider
 export function BulletproofAuthProvider({ children }) {
   const [authMode, setAuthMode] = useState('initializing');
   const [error, setError] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
 
-  // Get and validate Clerk key
   const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-  // Accept both production (pk_live_) and test (pk_test_) keys
-  const isValidKey = Boolean(
-    clerkKey &&
-    (clerkKey.startsWith('pk_live_') || clerkKey.startsWith('pk_test_')) &&
-    clerkKey.length > 20 &&
-    !clerkKey.includes('undefined') &&
-    !clerkKey.includes('YOUR_KEY') &&
-    !clerkKey.includes('your_key_here')
-  );
+  const keyIsValid = isValidClerkKey(clerkKey);
 
   const initialize = useCallback(() => {
     setError(null);
-    setAuthMode('initializing');
 
-    // Set a timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      console.warn('Authentication timeout - Clerk is required');
-      setError('Authentication timeout. Please check your connection and try again.');
+    if (!keyIsValid) {
       setAuthMode('error');
-    }, 5000); // 5 second timeout
-
-    // ALWAYS use Clerk - no fallback allowed
-    clearTimeout(timeout);
-
-    if (!isValidKey) {
-      console.error('Invalid or missing Clerk key - authentication is required');
-      setError('Authentication configuration error. Please contact support.');
-      setAuthMode('error');
-    } else {
-      console.info('Clerk authentication initialized');
-      console.info('Key info:', {
-        keyStart: clerkKey?.substring(0, 30) + '...',
-        keyLength: clerkKey?.length,
-        domain: 'clerk.financeflo.ai'
-      });
-      // Force Clerk mode - NO FALLBACK
-      setAuthMode('clerk');
+      setError(
+        'Clerk publishable key missing or invalid. Set VITE_CLERK_PUBLISHABLE_KEY with a pk_live_ or pk_test_ value.'
+      );
+      return;
     }
 
-    return () => clearTimeout(timeout);
-  }, [isValidKey, retryCount]);
+    setAuthMode('clerk');
+  }, [keyIsValid]);
 
   useEffect(() => {
     initialize();
   }, [initialize]);
 
-  const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
+  const handleRetry = useCallback(() => {
     initialize();
-  };
+  }, [initialize]);
 
-  // Show error screen if we have an error or invalid config
-  if (error || authMode === 'error') {
-    return <AuthError error={error || 'Authentication is required to access this application'} onRetry={handleRetry} />;
-  }
-
-  // Show loading only briefly during initialization
   if (authMode === 'initializing') {
     return <LoadingScreen />;
   }
 
-  // Use Clerk if available and valid
-  if (authMode === 'clerk' && isValidKey) {
-    try {
-      return (
-        <ClerkProvider
-          publishableKey={clerkKey}
-          fallbackRedirectUrl="/dashboard"
-          signInFallbackRedirectUrl="/dashboard"
-          signUpFallbackRedirectUrl="/dashboard"
-          appearance={{
-            elements: {
-              rootBox: "w-full",
-              card: "shadow-none"
-            }
-          }}
-        >
-          <ClerkAuthIntegration>{children}</ClerkAuthIntegration>
-        </ClerkProvider>
-      );
-    } catch (err) {
-      console.error('Clerk initialization error:', err);
-      setAuthMode('fallback');
-    }
+  if (authMode === 'clerk' && keyIsValid) {
+    return (
+      <ClerkProvider
+        publishableKey={clerkKey}
+        fallbackRedirectUrl="/dashboard"
+        signInFallbackRedirectUrl="/dashboard"
+        signUpFallbackRedirectUrl="/dashboard"
+        appearance={{
+          elements: {
+            rootBox: 'w-full',
+            card: 'shadow-none',
+          },
+        }}
+      >
+        <ClerkAuthIntegration>{children}</ClerkAuthIntegration>
+      </ClerkProvider>
+    );
   }
 
-  // No fallback - show error if Clerk isn't working
-  return <AuthError
-    error="Authentication system is not available. Please ensure Clerk is properly configured."
-    onRetry={handleRetry}
-  />;
+  const message =
+    error ?? 'Authentication system is not available. Please ensure Clerk is properly configured.';
+
+  return <AuthError error={message} onRetry={handleRetry} />;
 }
 
-// Universal auth hook that ALWAYS works
 export function useBulletproofAuth() {
-  // Try to get auth from context first
-  const contextAuth = useContext(AuthContext);
-
-  // If we have context auth, return it
-  if (contextAuth) {
-    return contextAuth;
-  }
-
-  // Note: Removed direct Clerk hook usage to prevent context errors
-
-  // No fallback - authentication is required
-  return null;
+  const auth = useContext(AuthContext);
+  return auth ?? DEFAULT_AUTH_STATE;
 }
 
-// Helper hook to check auth mode
 export function useAuthMode() {
   const auth = useBulletproofAuth();
-  return auth.mode || 'unknown';
+  return auth.mode ?? 'unavailable';
 }
 
-// Helper hook for role-based access
 export function useAuthRole() {
   const auth = useBulletproofAuth();
 
-  const role = auth.user?.publicMetadata?.role || 'viewer';
-  const permissions = getPermissionsForRole(role);
+  const role = auth.user?.publicMetadata?.role ?? 'viewer';
+  const normalizedRole = typeof role === 'string' ? role : 'viewer';
+  const permissions = getPermissionsForRole(normalizedRole);
 
   return {
-    role,
+    role: normalizedRole,
     permissions,
-    hasPermission: (permission) => permissions.includes(permission),
-    isAdmin: role === 'admin',
-    isManager: role === 'manager' || role === 'admin',
-    isAuthenticated: auth.isSignedIn
+    hasPermission: (permission) =>
+      normalizedRole === 'master_admin' ||
+      normalizedRole === 'admin' ||
+      permissions.includes('*') ||
+      permissions.includes(permission),
+    isAdmin: normalizedRole === 'admin' || normalizedRole === 'master_admin',
+    isManager:
+      normalizedRole === 'manager' ||
+      normalizedRole === 'admin' ||
+      normalizedRole === 'master_admin',
+    isAuthenticated: Boolean(auth.isSignedIn),
+    isLoading: !auth.isLoaded,
+    user: auth.user,
   };
 }
 
-// Permission system
 function getPermissionsForRole(role) {
   const permissions = {
-    admin: ['*'], // All permissions
+    master_admin: ['*'],
+    admin: ['*'],
     manager: ['read', 'write', 'update', 'delete', 'manage_team'],
     operator: ['read', 'write', 'update'],
-    viewer: ['read']
+    viewer: ['read'],
   };
 
-  return permissions[role] || permissions.viewer;
+  return permissions[role] ?? permissions.viewer;
 }
 
-// Export everything needed
 export default BulletproofAuthProvider;

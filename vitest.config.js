@@ -7,6 +7,7 @@ export default defineConfig({
     include: ['tests/unit/**/*.test.jsx'],
     exclude: ['legacy/**'],
     environment: 'jsdom',
+    setupFiles: ['tests/setup.js'],
     globals: true,
     reporters: ['default', 'hanging-process'],
     maxWorkers: 1,
@@ -32,3 +33,4 @@ export default defineConfig({
     }
   }
 })
+

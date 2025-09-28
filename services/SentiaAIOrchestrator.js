@@ -264,28 +264,28 @@ class SentiaAIOrchestrator extends EventEmitter {
   setupCrossSystemIntegration() {
     // Digital Twin <-> Manufacturing Execution
     if (this.systems.digitalTwin && this.systems.execution) {
-      this.systems.digitalTwin.on('batchStarted', (data) => {
+      this.systems.digitalTwin.on(_'batchStarted', _(data) => {
         this.systems.execution.handleBatchStarted?.(data);
       });
     }
 
     // Quality System <-> Supply Chain
     if (this.systems.quality && this.systems.supplyChain) {
-      this.systems.quality.on('qualityAlert', (alert) => {
+      this.systems.quality.on(_'qualityAlert', _(alert) => {
         this.systems.supplyChain.handleQualityAlert?.(alert);
       });
     }
 
     // Forecasting <-> Manufacturing Execution
     if (this.systems.forecasting && this.systems.execution) {
-      this.systems.forecasting.on('forecastUpdated', (forecast) => {
+      this.systems.forecasting.on(_'forecastUpdated', _(forecast) => {
         this.systems.execution.updateProductionSchedule?.(forecast);
       });
     }
 
     // Maintenance <-> Digital Twin
     if (this.systems.maintenance && this.systems.digitalTwin) {
-      this.systems.maintenance.on('maintenanceRequired', (data) => {
+      this.systems.maintenance.on(_'maintenanceRequired', _(data) => {
         this.systems.digitalTwin.updateEquipmentStatus?.(data);
       });
     }
@@ -714,7 +714,7 @@ class SentiaAIOrchestrator extends EventEmitter {
   startSystemMonitoring() {
     const monitoringInterval = 60000; // 1 minute
 
-    setInterval(async () => {
+    setInterval(async _() => {
       try {
         // Perform health check
         const health = this.getSystemHealth();
@@ -852,7 +852,7 @@ class SentiaAIOrchestrator extends EventEmitter {
       lastHealthCheck: this.systemStatus.lastHealthCheck,
       activeAlerts: this.systemStatus.alerts.size,
       openIncidents: this.monitoring.incidents.filter(i => i.status === 'open').length,
-      modules: Object.keys(this.systems).reduce((acc, key) => {
+      modules: Object.keys(this.systems).reduce(_(acc, _key) => {
         acc[key] = this.systems[key] ? 'active' : 'inactive';
         return acc;
       }, {}),
@@ -891,7 +891,7 @@ class SentiaAIOrchestrator extends EventEmitter {
     ];
 
     // Register with basic monitoring system (backup)
-    agentConfigs.forEach(({ id, agent, critical, priority }) => {
+    agentConfigs.forEach(({ _id, agent, critical, priority }) => {
       if (agent) {
         agentMonitor.registerAgent(id, agent, {
           critical,
@@ -911,7 +911,7 @@ class SentiaAIOrchestrator extends EventEmitter {
     });
 
     // Setup comprehensive event listeners for monitoring events
-    agentMonitor.on('agent-failed', (event) => {
+    agentMonitor.on(_'agent-failed', _(event) => {
       logError(`💥 Critical agent failed: ${event.agentId}`);
       this.systemStatus.alerts.set(`agent-failure-${event.agentId}`, {
         type: 'agent-failure',
@@ -927,7 +927,7 @@ class SentiaAIOrchestrator extends EventEmitter {
       this.emit('agent-failure', event);
     });
 
-    agentMonitor.on('agent-restarted', (event) => {
+    agentMonitor.on(_'agent-restarted', _(event) => {
       logInfo(`🔄 Agent restarted successfully: ${event.agentId}`);
       
       // Clear failure alert
@@ -941,7 +941,7 @@ class SentiaAIOrchestrator extends EventEmitter {
       });
     });
 
-    agentMonitor.on('critical-agent-down', (event) => {
+    agentMonitor.on(_'critical-agent-down', _(event) => {
       logError(`🚨 CRITICAL ALERT: Essential agent down - ${event.agentId}`);
       
       // Store critical alert
@@ -963,7 +963,7 @@ class SentiaAIOrchestrator extends EventEmitter {
     });
 
     // Setup periodic health reporting
-    setInterval(() => {
+    setInterval(_() => {
       this.reportSystemHealth();
     }, 300000); // Every 5 minutes
 

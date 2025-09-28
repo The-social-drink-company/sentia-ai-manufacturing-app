@@ -24,7 +24,7 @@ class RenderDeploymentMonitor {
     if (!this.apiKey) {
       console.error('ERROR: RENDER_API_KEY environment variable not set');
       console.log('Please set your Render API key:');
-      console.log('  export RENDER_API_KEY=your-api-key-here');
+      console.log('  export RENDERAPI_KEY = your-api-key-here');
       console.log('\nYou can get your API key from:');
       console.log('  https://dashboard.render.com/u/settings/api-keys');
       process.exit(1);
@@ -32,7 +32,7 @@ class RenderDeploymentMonitor {
   }
 
   async makeRequest(path, method = 'GET') {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const options = {
         hostname: 'api.render.com',
         port: 443,
@@ -44,14 +44,14 @@ class RenderDeploymentMonitor {
         }
       };
 
-      const req = https.request(options, (res) => {
+      const req = https.request(options, _(res) => {
         let data = '';
 
-        res.on('data', (chunk) => {
+        res.on('data', _(chunk) => {
           data += chunk;
         });
 
-        res.on('end', () => {
+        res.on('end', _() => {
           try {
             resolve(JSON.parse(data));
           } catch (e) {
@@ -187,7 +187,7 @@ class RenderDeploymentMonitor {
     await this.monitorAllServices();
 
     // Set up interval
-    setInterval(() => {
+    setInterval(_() => {
       this.monitorAllServices();
     }, intervalMinutes * 60 * 1000);
   }

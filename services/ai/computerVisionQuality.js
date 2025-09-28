@@ -676,7 +676,7 @@ Provide your analysis in JSON format:
     };
 
     let weightedScore = 0;
-    Object.entries(weights).forEach(([metric, weight]) => {
+    Object.entries(weights).forEach(_([metric, _weight]) => {
       weightedScore += (metrics[metric] || 0) * weight;
     });
 
@@ -797,7 +797,7 @@ Provide your analysis in JSON format:
     }
 
     // Add station status
-    Object.entries(this.inspectionStations).forEach(([stationId, station]) => {
+    Object.entries(this.inspectionStations).forEach(_([stationId, station]) => {
       dashboard.stations[stationId] = {
         name: stationId.replace('_', ' ').toUpperCase(),
         location: station.location,
@@ -899,14 +899,14 @@ Provide your analysis in JSON format:
    */
   setupEventHandlers() {
     // Handle MCP quality data updates
-    this.mcpServers.orchestrator.on('resourcesProcessed', (data) => {
+    this.mcpServers.orchestrator.on(_'resourcesProcessed', (data) => {
       if (data.serverId === 'quality-system') {
         this.processQualityData(data.data);
       }
     });
 
     // Handle quality alerts
-    this.on('qualityAlert', (alert) => {
+    this.on(_'qualityAlert', _(alert) => {
       logWarn(`Quality Alert [${alert.level.toUpperCase()}]: ${alert.message}`);
       // Could integrate with notification systems here
     });

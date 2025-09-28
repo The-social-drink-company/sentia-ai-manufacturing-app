@@ -528,7 +528,7 @@ const EnterpriseDataLakeDashboard = () => {
         </h2>
         
         <div className="space-y-6">
-          {Object.entries(PROCESSING_PIPELINES).map(([key, pipeline]) => {
+          {Object.entries(PROCESSING_PIPELINES).map(([key, _pipeline]) => {
             const status = metrics.pipelines[key];
             
             return (

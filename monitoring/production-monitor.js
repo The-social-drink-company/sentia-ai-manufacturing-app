@@ -193,13 +193,13 @@ class MetricsStore {
     
     switch (aggregation) {
       case 'avg':
-        return values.reduce((a, b) => a + b, 0) / values.length;
+        return values.reduce((a, _b) => a + b, 0) / values.length;
       case 'min':
         return Math.min(...values);
       case 'max':
         return Math.max(...values);
       case 'sum':
-        return values.reduce((a, b) => a + b, 0);
+        return values.reduce((a, _b) => a + b, 0);
       default:
         return null;
     }
@@ -281,7 +281,7 @@ class ApplicationMonitor {
     
     const responseTimes = recentRequests.map(r => r.responseTime);
     const avgResponseTime = responseTimes.length > 0 
-      ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length 
+      ? responseTimes.reduce((a, _b) => a + b, 0) / responseTimes.length 
       : 0;
     
     return {
@@ -324,10 +324,10 @@ class BusinessMonitor {
 const appMonitor = new ApplicationMonitor();
 
 // Middleware to track requests
-const requestTracker = (req, res, next) => {
+const requestTracker = (req, res, _next) => {
   const startTime = performance.now();
   
-  res.on('finish', () => {
+  res.on(_'finish', () => {
     const responseTime = performance.now() - startTime;
     appMonitor.recordRequest(
       req.method,
@@ -358,7 +358,7 @@ setInterval(async () => {
 }, MONITORING_CONFIG.checkInterval);
 
 // API Routes
-router.get('/metrics/current', (req, res) => {
+router.get(_'/metrics/current', (req, res) => {
   const system = metricsStore.getMetrics('system', 300000);
   const application = metricsStore.getMetrics('application', 300000);
   const business = metricsStore.getMetrics('business', 300000);
@@ -371,7 +371,7 @@ router.get('/metrics/current', (req, res) => {
   });
 });
 
-router.get('/metrics/history', (req, res) => {
+router.get(_'/metrics/history', (req, res) => {
   const duration = parseInt(req.query.duration) || 3600000;
   
   res.json({
@@ -383,7 +383,7 @@ router.get('/metrics/history', (req, res) => {
   });
 });
 
-router.get('/metrics/alerts', (req, res) => {
+router.get(_'/metrics/alerts', (req, res) => {
   const duration = parseInt(req.query.duration) || 86400000; // 24 hours
   
   res.json({
@@ -392,7 +392,7 @@ router.get('/metrics/alerts', (req, res) => {
   });
 });
 
-router.get('/metrics/dashboard', (req, res) => {
+router.get(_'/metrics/dashboard', (req, res) => {
   const system = metricsStore.getMetrics('system', 300000);
   const application = metricsStore.getMetrics('application', 300000);
   const business = metricsStore.getMetrics('business', 300000);
@@ -413,10 +413,10 @@ router.get('/metrics/dashboard', (req, res) => {
 });
 
 // WebSocket support for real-time monitoring
-const setupWebSocket = (server) => {
+const setupWebSocket = (_server) => {
   const wss = new WebSocket.Server({ server, path: '/monitoring/ws' });
   
-  wss.on('connection', (ws) => {
+  wss.on(_'connection', (ws) => {
     console.log('Monitoring WebSocket connected');
     
     // Send current metrics immediately
@@ -438,7 +438,7 @@ const setupWebSocket = (server) => {
     const interval = setInterval(sendMetrics, 5000);
     sendMetrics();
     
-    ws.on('close', () => {
+    ws.on(_'close', () => {
       clearInterval(interval);
       console.log('Monitoring WebSocket disconnected');
     });

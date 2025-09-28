@@ -11,8 +11,8 @@ import { dirname, join } from 'path';
 import fs from 'fs';
 
 // Get __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(__filename);
 
 // Load environment variables
 dotenv.config({ path: join(__dirname, '..', '.env') });
@@ -24,7 +24,7 @@ console.log('');
 
 // Check deployment environment
 const isRender = !!process.env.RENDER;
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODEENV = == 'production';
 console.log('Deployment Platform:', isRender ? 'RENDER' : 'LOCAL');
 console.log('Environment:', process.env.NODE_ENV || 'not set');
 console.log('Port:', process.env.PORT || 'not set');
@@ -107,7 +107,7 @@ console.log('Environment Variables to Set:');
 console.log('  - DATABASE_URL (from Render PostgreSQL)');
 console.log('  - VITE_CLERK_PUBLISHABLE_KEY');
 console.log('  - CLERK_SECRET_KEY');
-console.log('  - NODE_ENV=production');
+console.log('  - NODEENV = production');
 
 console.log('');
 console.log('='.repeat(60));

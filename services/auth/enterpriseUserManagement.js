@@ -798,7 +798,7 @@ export class EnterpriseUserManagement extends EventEmitter {
   generateRoleId() { return `role_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`; }
   generateSessionId() { return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`; }
   findUserByEmail(email) { return Array.from(this.users.values()).find(u => u.email === email.toLowerCase()); }
-  isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+  isValidEmail(email) { return /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(email); }
   isPasswordComplex(password) { return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(password); }
   sanitizeUser(user) { const { password, mfa, ...sanitized } = user; return { ...sanitized, mfa: { enabled: mfa.enabled } }; }
   sanitizeSession(session) { const { ...sanitized } = session; return sanitized; }

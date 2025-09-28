@@ -509,7 +509,7 @@ export class AIFinancialPredictionService {
       let weightedSum = 0;
       let totalWeight = 0;
 
-      validPredictions.forEach((model, idx) => {
+      validPredictions.forEach((model, _idx) => {
         if (model.predictions[i] !== undefined) {
           weightedSum += model.predictions[i] * weights[idx];
           totalWeight += weights[idx];
@@ -550,7 +550,7 @@ export class AIFinancialPredictionService {
     });
 
     // Normalize weights
-    const sum = weights.reduce((a, b) => a + b, 0);
+    const sum = weights.reduce((a, _b) => a + b, 0);
     return weights.map(w => w / sum);
   }
 
@@ -638,7 +638,7 @@ export class AIFinancialPredictionService {
    */
   prepareTimeSeries(data) {
     // Convert to standardized time series format
-    return data.map((value, index) => ({
+    return data.map((value, _index) => ({
       timestamp: index,
       value: value,
       normalized: (value - this.calculateMean(data)) / this.calculateStdDev(data)
@@ -678,7 +678,7 @@ export class AIFinancialPredictionService {
     const mean = this.calculateMean(historical.map(h => h.value));
     const stdDev = this.calculateStdDev(historical.map(h => h.value));
 
-    projection.predictions.forEach((pred, index) => {
+    projection.predictions.forEach((pred, _index) => {
       const zScore = Math.abs((pred - mean) / stdDev);
       if (zScore > threshold) {
         anomalies.push({
@@ -711,7 +711,7 @@ export class AIFinancialPredictionService {
     const stdDev = this.calculateStdDev(values);
     const n = values.length;
 
-    const skew = values.reduce((sum, val) => {
+    const skew = values.reduce(_(sum, val) => {
       return sum + Math.pow((val - mean) / stdDev, 3);
     }, 0);
 
@@ -723,7 +723,7 @@ export class AIFinancialPredictionService {
     const stdDev = this.calculateStdDev(values);
     const n = values.length;
 
-    const kurt = values.reduce((sum, val) => {
+    const kurt = values.reduce(_(sum, val) => {
       return sum + Math.pow((val - mean) / stdDev, 4);
     }, 0);
 

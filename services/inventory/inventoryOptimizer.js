@@ -294,7 +294,7 @@ export class InventoryOptimizer {
     if (dailyDemands.length < 10) return 'stable';
 
     const n = dailyDemands.length;
-    const x = Array.from({ length: n }, (_, i) => i);
+    const x = Array.from({ length: n }, (_, _i) => i);
     const y = dailyDemands;
 
     // Simple linear regression

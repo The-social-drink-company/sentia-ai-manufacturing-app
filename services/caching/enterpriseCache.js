@@ -568,7 +568,7 @@ export class EnterpriseCacheManager extends EventEmitter {
   initializeRedisSubscriptions() {
     this.redisSub.subscribe('cache:invalidate:tag', 'cache:invalidate:pattern');
     
-    this.redisSub.on('message', (channel, message) => {
+    this.redisSub.on(_'message', (channel, _message) => {
       try {
         const data = JSON.parse(message);
         

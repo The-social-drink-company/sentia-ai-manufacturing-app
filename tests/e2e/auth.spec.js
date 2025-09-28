@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Authentication Flow', () => {
+test.describe('Authentication _Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
 
-  test('should redirect unauthenticated users to login page', async ({ page }) => {
+  test('should redirect unauthenticated users to login _page', async ({ page }) => {
     // Navigate to protected route
     await page.goto('/dashboard');
 
@@ -13,7 +13,7 @@ test.describe('Authentication Flow', () => {
     await expect(page).toHaveURL(/.*sign-in.*/);
   });
 
-  test('should show sign up option on login page', async ({ page }) => {
+  test('should show sign up option on login _page', async ({ page }) => {
     await page.goto('/auth/signin');
 
     // Check for sign up link
@@ -21,7 +21,7 @@ test.describe('Authentication Flow', () => {
     await expect(signUpLink).toBeVisible();
   });
 
-  test('should display login form elements', async ({ page }) => {
+  test('should display login form _elements', async ({ page }) => {
     await page.goto('/auth/signin');
 
     // Check for email input
@@ -33,7 +33,7 @@ test.describe('Authentication Flow', () => {
     await expect(passwordOrContinue.first()).toBeVisible();
   });
 
-  test('should handle invalid credentials', async ({ page }) => {
+  test('should handle invalid _credentials', async ({ page }) => {
     await page.goto('/auth/signin');
 
     // Enter invalid email
@@ -64,7 +64,7 @@ test.describe('Authentication Flow', () => {
     });
   });
 
-  test('should maintain auth state across page refreshes', async ({ page, context }) => {
+  test('should maintain auth state across page _refreshes', async ({ page, context }) => {
     // Mock authentication by setting a cookie (adjust based on Clerk's actual implementation)
     await context.addCookies([
       {
@@ -85,7 +85,7 @@ test.describe('Authentication Flow', () => {
     expect(url).toContain('/dashboard');
   });
 
-  test('should show user menu when authenticated', async ({ page, context }) => {
+  test('should show user menu when _authenticated', async ({ page, context }) => {
     // Mock authentication
     await context.addCookies([
       {
@@ -105,7 +105,7 @@ test.describe('Authentication Flow', () => {
     });
   });
 
-  test('should handle logout correctly', async ({ page, context }) => {
+  test('should handle logout _correctly', async ({ page, context }) => {
     // Mock authentication
     await context.addCookies([
       {

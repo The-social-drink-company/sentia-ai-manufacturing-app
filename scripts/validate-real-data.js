@@ -12,10 +12,10 @@ import { fileURLToPath } from 'url';
 import { glob } from 'glob';
 import chalk from 'chalk';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ==================== CONFIGURATION ====================
-const SCAN_PATTERNS = [
+const SCANPATTERNS = [
   'src/**/*.{js,jsx,ts,tsx}',
   'server*.js',
   'api/**/*.{js,jsx}',
@@ -23,7 +23,7 @@ const SCAN_PATTERNS = [
   'lib/**/*.js'
 ];
 
-const EXCLUDE_PATTERNS = [
+const EXCLUDEPATTERNS = [
   '**/node_modules/**',
   '**/dist/**',
   '**/build/**',
@@ -36,7 +36,7 @@ const EXCLUDE_PATTERNS = [
 ];
 
 // Forbidden patterns that indicate mock/fake data
-const FORBIDDEN_PATTERNS = [
+const FORBIDDENPATTERNS = [
   // Mock data patterns
   /\bMOCK_[A-Z_]+\b/g,
   /\bFAKE_[A-Z_]+\b/g,
@@ -58,11 +58,11 @@ const FORBIDDEN_PATTERNS = [
   /\bdummyData\b/g,
 
   // Function calls
-  /\bgetMockData\(/g,
-  /\bgenerateFakeData\(/g,
-  /\bcreateDemoData\(/g,
-  /\buseMockData\(/g,
-  /\buseFakeData\(/g,
+  /\bgetMockData(/g,
+  /\bgenerateFakeData(/g,
+  /\bcreateDemoData(/g,
+  /\buseMockData(/g,
+  /\buseFakeData(/g,
 
   // Imports
   /import.*mock/gi,
@@ -72,10 +72,10 @@ const FORBIDDEN_PATTERNS = [
   /from\s+['"].*fake.*['"]/gi,
 
   // Common mock libraries
-  /\bfaker\./g,
-  /\b@faker-js\/faker\b/g,
-  /\bcasual\./g,
-  /\bchance\./g,
+  /\bfaker./g,
+  /\b@faker-js/faker\b/g,
+  /\bcasual./g,
+  /\bchance./g,
 
   // Hardcoded data arrays
   /const\s+\w+\s*=\s*\[\s*['"][^'"]+['"]/g,
@@ -87,7 +87,7 @@ const FORBIDDEN_PATTERNS = [
 ];
 
 // Forbidden fallback patterns
-const FALLBACK_PATTERNS = [
+const FALLBACKPATTERNS = [
   /\|\|\s*\[\]/g,           // || []
   /\|\|\s*\{\}/g,           // || {}
   /\|\|\s*['"]['"]*/g,      // || "" or || ''
@@ -95,13 +95,13 @@ const FALLBACK_PATTERNS = [
   /\|\|\s*null/g,           // || null
   /\?\?\s*\[\]/g,           // ?? []
   /\?\?\s*\{\}/g,           // ?? {}
-  /withFallback\(/g,
+  /withFallback(/g,
   /fallback:/g,
   /defaultValue:/g
 ];
 
 // Required patterns for real data
-const REQUIRED_PATTERNS = {
+const REQUIREDPATTERNS = {
   components: [
     /useQuery/,
     /useMutation/,
@@ -111,12 +111,12 @@ const REQUIRED_PATTERNS = {
   services: [
     /axios/,
     /fetch/,
-    /pgPool\.query/,
-    /prisma\./
+    /pgPool.query/,
+    /prisma./
   ],
   api: [
-    /res\.status/,
-    /res\.json/,
+    /res.status/,
+    /res.json/,
     /await/,
     /try\s*{/
   ]
@@ -306,7 +306,7 @@ async function main() {
       byType[v.type].push(v);
     });
 
-    Object.entries(byType).forEach(([type, violations]) => {
+    Object.entries(byType).forEach(_([type, _violations]) => {
       console.log(chalk.bold.red(`\n${type} (${violations.length}):\n`));
       violations.forEach(v => console.log(formatViolation(v)));
     });

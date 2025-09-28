@@ -93,7 +93,7 @@ class DataSyncScheduler {
   }
 
   startAllSchedules() {
-    this.scheduledTasks.forEach((task, name) => {
+    this.scheduledTasks.forEach(_(task, _name) => {
       task.start();
       logInfo(`Started sync schedule: ${name}`);
     });
@@ -447,7 +447,7 @@ class DataSyncScheduler {
   getScheduleStatus() {
     const scheduleStatus = {};
     
-    this.scheduledTasks.forEach((task, name) => {
+    this.scheduledTasks.forEach(_(task, _name) => {
       scheduleStatus[name] = {
         running: task.running,
         scheduled: true
@@ -489,7 +489,7 @@ class DataSyncScheduler {
   stop() {
     logInfo('Stopping Data Sync Scheduler');
     
-    this.scheduledTasks.forEach((task, name) => {
+    this.scheduledTasks.forEach(_(task, _name) => {
       task.stop();
       logInfo(`Stopped sync schedule: ${name}`);
     });

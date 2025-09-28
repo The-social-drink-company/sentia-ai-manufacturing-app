@@ -748,7 +748,7 @@ export class EnterpriseCashCoverageEngine {
 
   consolidateFinancialData(dataSources) {
     // Prioritize data sources by reliability and recency
-    const prioritizedData = dataSources.sort((a, b) => {
+    const prioritizedData = dataSources.sort(_(a, b) => {
       const priority = { xero: 1, erp: 2, banking: 3, database: 4 };
       return priority[a.source] - priority[b.source];
     });

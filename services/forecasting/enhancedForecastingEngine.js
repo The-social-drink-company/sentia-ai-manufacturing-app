@@ -163,11 +163,11 @@ class EnhancedForecastingEngine extends EventEmitter {
         this.on('error', this.handleError.bind(this));
         
         // AI Orchestrator events
-        this.aiOrchestrator.on('forecast_complete', (result) => {
+        this.aiOrchestrator.on(_'forecast_complete', (result) => {
             this.emit('ai_forecast_complete', result);
         });
         
-        this.aiOrchestrator.on('metrics_updated', (metrics) => {
+        this.aiOrchestrator.on(_'metrics_updated', _(metrics) => {
             this.updateAIMetrics(metrics);
         });
     }
@@ -744,29 +744,29 @@ class EnhancedForecastingEngine extends EventEmitter {
         const normalizedWeights = weights.map(weight => weight / totalWeight);
         
         // Combine forecast values
-        const combinedValues = results[0].forecast.values.map((_, index) => {
-            return results.reduce((sum, result, resultIndex) => {
+        const combinedValues = results[0].forecast.values.map(_(_, index) => {
+            return results.reduce(_(sum, result, _resultIndex) => {
                 const value = result.forecast.values[index] || 0;
                 return sum + (value * normalizedWeights[resultIndex]);
             }, 0);
         });
         
         // Combine confidence intervals
-        const combinedLower = results[0].forecast.confidence_intervals.lower.map((_, index) => {
+        const combinedLower = results[0].forecast.confidence_intervals.lower.map(_(_, index) => {
             return Math.min(...results.map(result => result.forecast.confidence_intervals.lower[index] || 0));
         });
         
-        const combinedUpper = results[0].forecast.confidence_intervals.upper.map((_, index) => {
+        const combinedUpper = results[0].forecast.confidence_intervals.upper.map(_(_, index) => {
             return Math.max(...results.map(result => result.forecast.confidence_intervals.upper[index] || 0));
         });
         
         // Calculate weighted accuracy
-        const combinedAccuracy = results.reduce((sum, result, index) => {
+        const combinedAccuracy = results.reduce(_(sum, result, index) => {
             return sum + (result.accuracy * normalizedWeights[index]);
         }, 0);
         
         // Calculate weighted confidence
-        const combinedConfidence = results.reduce((sum, result, index) => {
+        const combinedConfidence = results.reduce(_(sum, result, index) => {
             return sum + (result.confidence * normalizedWeights[index]);
         }, 0);
         

@@ -15,7 +15,7 @@ describe('useDashboardSummary', () => {
     vi.clearAllMocks()
   })
 
-  it('should initialize with idle status', () => {
+  it('should initialize with idle _status', () => {
     const { result } = renderHook(() => useDashboardSummary())
 
     expect(result.current.status).toBe('idle')
@@ -23,7 +23,7 @@ describe('useDashboardSummary', () => {
     expect(result.current.source).toBe('mock')
   })
 
-  it('should fetch dashboard summary successfully from MCP', async () => {
+  it('should fetch dashboard summary successfully from _MCP', async () => {
     const mockData = {
       generatedAt: '2025-09-26T12:00:00Z',
       metrics: {
@@ -61,7 +61,7 @@ describe('useDashboardSummary', () => {
     expect(result.current.source).toBe('mock')
   })
 
-  it('should handle mock data fallback', async () => {
+  it('should handle mock data _fallback', async () => {
     const mockData = {
       generatedAt: new Date().toISOString(),
       metrics: {
@@ -84,7 +84,7 @@ describe('useDashboardSummary', () => {
     expect(result.current.source).toBe('mock')
   })
 
-  it('should set loading status while fetching', async () => {
+  it('should set loading status while _fetching', async () => {
     fetchDashboardSummary.mockImplementation(
       () => new Promise(resolve => setTimeout(() => resolve({
         source: 'mcp',
@@ -99,7 +99,7 @@ describe('useDashboardSummary', () => {
     })
   })
 
-  it('should cleanup on unmount', () => {
+  it('should cleanup on _unmount', () => {
     const { unmount } = renderHook(() => useDashboardSummary())
 
     unmount()

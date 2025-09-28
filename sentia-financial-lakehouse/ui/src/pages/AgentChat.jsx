@@ -19,7 +19,7 @@ const AgentChat = () => {
   }, [messages]);
   
   const queryMutation = useMutation({
-    mutationFn: async ({ query, capabilities }) => {
+    mutationFn: async ({ _query, capabilities }) => {
       const response = await axios.post(`${ORCHESTRATOR_URL}/query`, {
         query,
         capabilities,
@@ -143,7 +143,7 @@ const AgentChat = () => {
           </div>
         )}
         
-        {messages.map((message, index) => (
+        {messages.map((message, _index) => (
           <div key={index}>{renderMessage(message)}</div>
         ))}
         

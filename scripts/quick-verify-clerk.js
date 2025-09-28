@@ -8,7 +8,7 @@
 import https from 'https';
 
 // Critical variables to check
-const CRITICAL_VARS = [
+const CRITICALVARS = [
   {
     name: 'VITE_CLERK_PUBLISHABLE_KEY',
     expected: 'pk_live_REDACTED',
@@ -49,7 +49,7 @@ function checkLocalEnvironment() {
   
   let allCorrect = true;
   
-  CRITICAL_VARS.forEach(({ name, expected, description }) => {
+  CRITICAL_VARS.forEach(({ _name, expected, description }) => {
     const actual = process.env[name];
     
     if (!actual) {
@@ -74,7 +74,7 @@ function checkLocalEnvironment() {
 }
 
 function checkRemoteService(serviceName, url) {
-  return new Promise((resolve) => {
+  return new Promise(_(resolve) => {
     console.log(colors.cyan + colors.bold + `\n${serviceName.toUpperCase()} SERVICE CHECK` + colors.reset);
     console.log('=' .repeat(50));
     
@@ -87,7 +87,7 @@ function checkRemoteService(serviceName, url) {
         https.get(url, (res) => {
           let body = '';
           res.on('data', (chunk) => body += chunk);
-          res.on('end', () => {
+          res.on('end', _() => {
             if (body.includes('pk_live_')) {
               console.log(`${colors.green}✓${colors.reset} Clerk production key detected`);
               console.log(`${colors.green}✓${colors.reset} Authentication is configured`);
@@ -102,7 +102,7 @@ function checkRemoteService(serviceName, url) {
               resolve(false);
             }
           });
-        }).on('error', (err) => {
+        }).on('error', _(err) => {
           console.log(`${colors.red}✗${colors.reset} Failed to check authentication`);
           console.log(`  Error: ${err.message}`);
           resolve(false);
@@ -111,7 +111,7 @@ function checkRemoteService(serviceName, url) {
         console.log(`${colors.red}✗${colors.reset} Service not responding (HTTP ${res.statusCode})`);
         resolve(false);
       }
-    }).on('error', (err) => {
+    }).on('error', _(err) => {
       console.log(`${colors.red}✗${colors.reset} Service is offline`);
       console.log(`  Error: ${err.message}`);
       resolve(false);
@@ -138,7 +138,7 @@ async function runFullCheck() {
   console.log('=' .repeat(50));
   
   console.log('\nRequired Configuration:');
-  CRITICAL_VARS.forEach(({ name, expected }) => {
+  CRITICAL_VARS.forEach(({ _name, expected }) => {
     console.log(`${colors.cyan}${name}${colors.reset}`);
     console.log(`  ${colors.gray}${expected}${colors.reset}`);
   });
@@ -155,7 +155,7 @@ async function runFullCheck() {
     console.log('3. Click "Environment" tab');
     console.log('4. Add these environment variables:');
     console.log('');
-    CRITICAL_VARS.forEach(({ name, expected }) => {
+    CRITICAL_VARS.forEach(({ _name, expected }) => {
       console.log(`   ${name} = ${expected}`);
     });
     console.log('');

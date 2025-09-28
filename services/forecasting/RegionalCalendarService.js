@@ -90,7 +90,7 @@ class RegionalCalendarService {
     const end = new Date(endDate);
 
     // Check holidays
-    Object.entries(calendar.holidays).forEach(([eventName, event]) => {
+    Object.entries(calendar.holidays).forEach(_([eventName, _event]) => {
       if (event.date) {
         const eventDate = new Date(event.date);
         if (eventDate >= start && eventDate <= end) {
@@ -115,7 +115,7 @@ class RegionalCalendarService {
     });
 
     // Check seasonal patterns
-    Object.entries(calendar.seasonal_patterns).forEach(([season, pattern]) => {
+    Object.entries(calendar.seasonal_patterns).forEach(_([season, _pattern]) => {
       const currentMonth = start.getMonth() + 1;
       if (pattern.months.includes(currentMonth)) {
         events.push({
@@ -128,7 +128,7 @@ class RegionalCalendarService {
     });
 
     // Check regional events
-    Object.entries(calendar.regional_events).forEach(([eventName, event]) => {
+    Object.entries(calendar.regional_events).forEach(_([eventName, _event]) => {
       events.push({
         name: eventName,
         period: event.period || 'ongoing',
@@ -159,7 +159,7 @@ class RegionalCalendarService {
       let activeEvents = [];
 
       // Check seasonal patterns
-      Object.entries(calendar.seasonal_patterns).forEach(([season, pattern]) => {
+      Object.entries(calendar.seasonal_patterns).forEach(_([season, _pattern]) => {
         if (pattern.months.includes(month)) {
           const adjustment = this.parseImpactPercentage(pattern.impact);
           totalAdjustment *= adjustment;
@@ -172,7 +172,7 @@ class RegionalCalendarService {
       });
 
       // Check specific holidays
-      Object.entries(calendar.holidays).forEach(([eventName, event]) => {
+      Object.entries(calendar.holidays).forEach(_([eventName, _event]) => {
         if (event.date) {
           const eventDate = new Date(event.date);
           const daysDiff = Math.abs((forecastDate - eventDate) / (1000 * 60 * 60 * 24));
@@ -247,22 +247,22 @@ class RegionalCalendarService {
     };
 
     // Apply adjustments to forecasts
-    Object.entries(forecastData.forecasts).forEach(([model, values]) => {
-      adjustedData.forecasts[model] = values.map((value, index) => {
+    Object.entries(forecastData.forecasts).forEach(_([model, _values]) => {
+      adjustedData.forecasts[model] = values.map(_(value, _index) => {
         const adjustment = adjustments[index] ? adjustments[index].adjustmentFactor : 1.0;
         return value * adjustment;
       });
     });
 
     // Apply adjustments to prediction intervals
-    Object.entries(forecastData.predictionIntervals).forEach(([model, intervals]) => {
+    Object.entries(forecastData.predictionIntervals).forEach(_([model, _intervals]) => {
       adjustedData.predictionIntervals[model] = {
         ...intervals,
-        lower: intervals.lower.map((value, index) => {
+        lower: intervals.lower.map(_(value, _index) => {
           const adjustment = adjustments[index] ? adjustments[index].adjustmentFactor : 1.0;
           return value * adjustment;
         }),
-        upper: intervals.upper.map((value, index) => {
+        upper: intervals.upper.map(_(value, _index) => {
           const adjustment = adjustments[index] ? adjustments[index].adjustmentFactor : 1.0;
           return value * adjustment;
         })
@@ -311,7 +311,7 @@ class RegionalCalendarService {
     const calendar = this.calendars[region];
     
     if (calendar) {
-      Object.entries(calendar.seasonal_patterns).forEach(([season, pattern]) => {
+      Object.entries(calendar.seasonal_patterns).forEach(_([season, _pattern]) => {
         if (pattern.months.includes(currentMonth)) {
           insights.push({
             type: 'seasonal_period',

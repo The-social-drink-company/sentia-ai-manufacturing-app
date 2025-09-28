@@ -28,8 +28,8 @@ This guide provides step-by-step instructions for deploying the complete Sentia 
 ```yaml
 Name: sentia-manufacturing-production
 Environment: Node
-Build Command: npm install && npm run build
-Start Command: npm run start
+Build Command: pnpm install --frozen-lockfile && pnpm run build
+Start Command: pnpm run start
 ```
 
 #### Environment Variables
@@ -70,8 +70,8 @@ VITE_SSE_URL=https://sentia-manufacturing-production.onrender.com/api/events
 Name: sentia-mcp-server
 Root Directory: mcp-server
 Environment: Node
-Build Command: npm install
-Start Command: npm start
+Build Command: pnpm install --frozen-lockfile
+Start Command: pnpm start
 Port: 9000
 ```
 

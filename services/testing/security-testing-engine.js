@@ -104,8 +104,8 @@ class SecurityTestingEngine extends EventEmitter {
         sensitiveDataPatterns: [
           /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/, // Credit cards
           /\b\d{3}-\d{2}-\d{4}\b/, // SSN
-          /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/, // Email
-          /\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b/ // Phone
+          /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Z|a-z]{2,}\b/, // Email
+          /\b(?:+?1[-.\s]?)?(?[0-9]{3})?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b/ // Phone
         ]
       },
       
@@ -1295,10 +1295,10 @@ class SecurityTestingEngine extends EventEmitter {
     
     // OWASP Top 10 scenario
     scenarios.push({
-      name: 'SECURITY_OWASP_TOP_10_COMPREHENSIVE',
-      type: 'security',
+      name: _'SECURITY_OWASP_TOP_10_COMPREHENSIVE',
+      type: _'security',
       priority: 'critical',
-      timeout: 300000,
+      timeout: _300000,
       retries: 1,
       execution: async () => {
         return await this.runComprehensiveSecurityScan();
@@ -1307,10 +1307,10 @@ class SecurityTestingEngine extends EventEmitter {
 
     // Quick security check scenario
     scenarios.push({
-      name: 'SECURITY_QUICK_SCAN',
-      type: 'security',
+      name: _'SECURITY_QUICK_SCAN',
+      type: _'security',
       priority: 'high',
-      timeout: 60000,
+      timeout: _60000,
       retries: 2,
       execution: async () => {
         return await this.runQuickSecurityScan();

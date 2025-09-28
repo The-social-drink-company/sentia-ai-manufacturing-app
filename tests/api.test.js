@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('API Health Checks', () => {
+test.describe('API Health _Checks', () => {
   const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
 
-  test('API health check should return 200', async ({ request }) => {
+  test('API health check should return _200', async ({ request }) => {
     const response = await request.get(`${baseUrl}/api/health`);
     expect(response.ok()).toBeTruthy();
     expect(response.status()).toBe(200);
@@ -13,7 +13,7 @@ test.describe('API Health Checks', () => {
     expect(body.status).toBe('healthy');
   });
 
-  test('Personnel API should return data', async ({ request }) => {
+  test('Personnel API should return _data', async ({ request }) => {
     const response = await request.get(`${baseUrl}/api/personnel`);
     expect(response.ok()).toBeTruthy();
 
@@ -23,7 +23,7 @@ test.describe('API Health Checks', () => {
     expect(Array.isArray(body.data)).toBeTruthy();
   });
 
-  test('Financial dashboard API should return data', async ({ request }) => {
+  test('Financial dashboard API should return _data', async ({ request }) => {
     const response = await request.get(`${baseUrl}/api/financial/dashboard`);
 
     // Should return either 200 with data or 401 if auth required
@@ -35,14 +35,14 @@ test.describe('API Health Checks', () => {
     }
   });
 
-  test('Production metrics API should handle request', async ({ request }) => {
+  test('Production metrics API should handle _request', async ({ request }) => {
     const response = await request.get(`${baseUrl}/api/production/metrics`);
 
     // Should return either 200 with data or 401 if auth required
     expect([200, 401]).toContain(response.status());
   });
 
-  test('Working capital API should return data or auth error', async ({ request }) => {
+  test('Working capital API should return data or auth _error', async ({ request }) => {
     const response = await request.get(`${baseUrl}/api/financial/working-capital`);
 
     // Should return either 200 with data or 401 if auth required
@@ -58,10 +58,10 @@ test.describe('API Health Checks', () => {
   });
 });
 
-test.describe('API Performance', () => {
+test.describe('API _Performance', () => {
   const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
 
-  test('Health endpoint should respond within 1 second', async ({ request }) => {
+  test('Health endpoint should respond within 1 _second', async ({ request }) => {
     const startTime = Date.now();
     const response = await request.get(`${baseUrl}/api/health`);
     const endTime = Date.now();
@@ -71,7 +71,7 @@ test.describe('API Performance', () => {
     expect(response.ok()).toBeTruthy();
   });
 
-  test('Personnel API should respond within 5 seconds', async ({ request }) => {
+  test('Personnel API should respond within 5 _seconds', async ({ request }) => {
     const startTime = Date.now();
     const response = await request.get(`${baseUrl}/api/personnel`);
     const endTime = Date.now();
@@ -82,15 +82,15 @@ test.describe('API Performance', () => {
   });
 });
 
-test.describe('API Error Handling', () => {
+test.describe('API Error _Handling', () => {
   const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
 
-  test('Should handle invalid endpoints gracefully', async ({ request }) => {
+  test('Should handle invalid endpoints _gracefully', async ({ request }) => {
     const response = await request.get(`${baseUrl}/api/invalid-endpoint`);
     expect(response.status()).toBe(404);
   });
 
-  test('Should handle malformed requests', async ({ request }) => {
+  test('Should handle malformed _requests', async ({ request }) => {
     const response = await request.get(`${baseUrl}/api/personnel?role=invalid%20%20%20`);
     expect(response.ok()).toBeTruthy();
 

@@ -8,7 +8,6 @@ import {
   ChartBarIcon, 
   CpuChipIcon, 
   BoltIcon,
-  TrendingUpIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -482,7 +481,7 @@ const AdvancedAnalyticsDashboard = () => {
     }
   }, [analyticsEngine]);
 
-  const generateSampleData = (modelKey) => {
+  const generateSampleData = (_modelKey) => {
     switch (modelKey) {
       case 'demand_forecasting':
         return { historicalData: Array.from({length: 12}, () => Math.random() * 1000) };
@@ -576,7 +575,7 @@ const AdvancedAnalyticsDashboard = () => {
                 {(metrics.accuracyScore * 100).toFixed(1)}%
               </p>
             </div>
-            <TrendingUpIcon className="w-8 h-8 text-green-500" />
+            <ArrowTrendingUpIcon className="w-8 h-8 text-green-500" />
           </div>
         </div>
 
@@ -723,7 +722,7 @@ const AdvancedAnalyticsDashboard = () => {
                     <div className="space-y-1">
                       <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Recommended Actions:</p>
                       <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                        {insight.actions.slice(0, 3).map((action, index) => (
+                        {insight.actions.slice(0, 3).map((action, _index) => (
                           <li key={index}>• {action}</li>
                         ))}
                       </ul>

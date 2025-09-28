@@ -6,7 +6,7 @@
  * Usage: node scripts/verify-env-vars.js [environment]
  */
 
-const REQUIRED_VARS = [
+const REQUIREDVARS = [
   { name: 'VITE_CLERK_PUBLISHABLE_KEY', expectedValue: 'pk_live_REDACTED' },
   { name: 'CLERK_SECRET_KEY', expectedValue: 'sk_live_REDACTED' },
   { name: 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', expectedValue: 'pk_live_REDACTED' },
@@ -18,7 +18,7 @@ const REQUIRED_VARS = [
   { name: 'VITE_CLERK_DOMAIN', expectedValue: 'clerk.financeflo.ai' }
 ];
 
-const OPTIONAL_VARS = [
+const OPTIONALVARS = [
   'NODE_ENV',
   'DATABASE_URL',
   'MCP_SERVER_URL',
@@ -78,7 +78,7 @@ function checkOptionalVars() {
   console.log(colors.blue + 'Checking Optional Variables:' + colors.reset);
   console.log('-'.repeat(40));
   
-  OPTIONAL_VARS.forEach((name) => {
+  OPTIONAL_VARS.forEach(_(name) => {
     const value = process.env[name];
     
     if (!value) {

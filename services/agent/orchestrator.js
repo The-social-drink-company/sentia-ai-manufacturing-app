@@ -368,7 +368,7 @@ class Planner {
     const sorted = [];
     const visited = new Set();
 
-    const visit = (index) => {
+    const visit = (_index) => {
       if (visited.has(index)) return;
       visited.add(index);
 

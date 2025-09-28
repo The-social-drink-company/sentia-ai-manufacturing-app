@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 });
 
 // File filter for allowed file types
-const fileFilter = (req, file, cb) => {
+const fileFilter = (_req, file, cb) => {
   const allowedTypes = ['.csv', '.xlsx', '.xls'];
   const fileExt = path.extname(file.originalname).toLowerCase();
   
@@ -51,7 +51,7 @@ export const upload = multer({
 });
 
 // Error handling middleware for multer
-export const handleUploadError = (err, req, res, next) => {
+export const handleUploadError = (err, _req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
       logError('File size limit exceeded', { limit: '10MB' });

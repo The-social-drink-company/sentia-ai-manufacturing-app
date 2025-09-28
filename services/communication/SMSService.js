@@ -253,7 +253,7 @@ class SMSService {
    * Validate phone number format (basic E.164 validation)
    */
   isValidPhoneNumber(phoneNumber) {
-    const e164Regex = /^\+?[1-9]\d{1,14}$/;
+    const e164Regex = /^+?[1-9]\d{1,14}$/;
     return e164Regex.test(phoneNumber);
   }
 

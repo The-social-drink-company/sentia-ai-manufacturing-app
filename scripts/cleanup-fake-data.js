@@ -340,9 +340,9 @@ class DataCleanupService {
 
 // Add confirmation prompt
 async function confirmCleanup() {
-  return new Promise((resolve) => {
+  return new Promise(_(resolve) => {
     process.stdout.write('Do you want to proceed with removing all fake/test data? (yes/no): ');
-    process.stdin.once('data', (data) => {
+    process.stdin.once('data', _(data) => {
       const answer = data.toString().trim().toLowerCase();
       resolve(answer === 'yes' || answer === 'y');
     });

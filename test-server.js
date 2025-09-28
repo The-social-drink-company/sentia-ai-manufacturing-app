@@ -1,10 +1,13 @@
-import express from "express";
+import express from 'express';
+
 const app = express();
-const PORT = process.env.PORT || 5002;
-app.get("/api/health", (req, res) => {
-  res.json({ status: "healthy", environment: process.env.NODE_ENV || "development", port: PORT, timestamp: new Date().toISOString() });
+const PORT = 10001;
+
+app.get('/health', (req, res) => {
+  console.log('Health endpoint hit');
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-app.get("/api/production/overview", (req, res) => {
-  res.json({ status: "success", message: "Production API working", data: { test: true }, timestamp: new Date().toISOString() });
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Test server running on port ${PORT}`);
 });
-app.listen(PORT, () => { console.log(`Test server running on port ${PORT}`); });

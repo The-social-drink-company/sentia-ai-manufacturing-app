@@ -561,7 +561,7 @@ class XeroIntegrationService {
     }
 
     // Schedule sync every 30 minutes
-    this.syncJob = cron.schedule('*/30 * * * *', async () => {
+    this.syncJob = cron.schedule('*/30 * * * _*', async _() => {
       logInfo('Running automated Xero sync');
       try {
         await this.syncAllData();

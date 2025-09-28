@@ -61,7 +61,7 @@ async function createAdminUser() {
         
         if (error.errors && error.errors.length > 0) {
             console.error('Details:');
-            error.errors.forEach((err, index) => {
+            error.errors.forEach(_(err, index) => {
                 console.error(`  ${index + 1}. ${err.message} (${err.code})`);
             });
         }

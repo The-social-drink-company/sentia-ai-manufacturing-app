@@ -9,8 +9,9 @@ coverage/
 .nyc_output
 
 # Production
-# dist/ - Commented out to allow dist deployment for Render
+dist/
 build/
+assets/
 
 # Environment files
 .env
@@ -106,3 +107,4 @@ scripts/env-update.json
 scripts/install-render-cli.bat
 scripts/install-render-cli.ps1
 scripts/render.bat
+.pnpm-store/

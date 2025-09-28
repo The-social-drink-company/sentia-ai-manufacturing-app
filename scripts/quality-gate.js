@@ -291,8 +291,8 @@ class QualityGateEnforcer {
         const content = fs.readFileSync(file, 'utf8');
         
         // Simple regex to find functions and their documentation
-        const functionMatches = content.match(/(?:function\s+\w+|const\s+\w+\s*=\s*(?:async\s+)?\(|class\s+\w+)/g) || [];
-        const docMatches = content.match(/\/\*\*[\s\S]*?\*\//g) || [];
+        const functionMatches = content.match(/(?:function\s+\w+|const\s+\w+\s*=\s*(?:async\s+)?(|class\s+\w+)/g) || [];
+        const docMatches = content.match(//**[\s\S]*?*//g) || [];
         
         totalFunctions += functionMatches.length;
         documentedFunctions += Math.min(docMatches.length, functionMatches.length);
@@ -332,7 +332,7 @@ class QualityGateEnforcer {
       
       if (stat.isDirectory() && !item.startsWith('.') && item !== 'node_modules') {
         files.push(...this.findJSFiles(fullPath));
-      } else if (stat.isFile() && /\.(js|jsx|ts|tsx)$/.test(item)) {
+      } else if (stat.isFile() && /.(js|jsx|ts|tsx)$/.test(item)) {
         files.push(fullPath);
       }
     }

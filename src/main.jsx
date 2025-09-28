@@ -3,13 +3,14 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { AuthProvider } from './providers/AuthProvider.jsx'
 import { logInfo, logError, logDebug } from './utils/logger.js'
+import { devLog } from '@/utils/structuredLogger.js'
 
 // Simplified initialization
-console.log('Initializing Sentia Manufacturing Dashboard...');
+devLog.log('Initializing Sentia Manufacturing Dashboard...');
 
 // Simple fallback App component
 const FallbackApp = () => {
-  console.log('[FallbackApp] Rendering...');
+  devLog.log('[FallbackApp] Rendering...');
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-md w-full text-center">
@@ -45,43 +46,49 @@ const initializeApp = async () => {
   try {
     console.log('[main.jsx] Creating React root...');
     const root = createRoot(rootElement);
-    
-    // Try to load the full app
+
+    // Load the simple app directly for reliability
     try {
-      console.log('[main.jsx] Attempting to load App-multistage...');
-      const { default: App } = await import('./App-multistage.jsx');
-      
-      console.log('[main.jsx] App-multistage loaded successfully, rendering...');
+      console.log('[main.jsx] Loading App-simple...');
+      const { default: App } = await import('./App-simple.jsx');
+
+      console.log('[main.jsx] App-simple loaded successfully, rendering...');
       root.render(
         <StrictMode>
           <App />
         </StrictMode>
       );
-      console.log('[main.jsx] React app mounted successfully');
+      console.log('[main.jsx] App mounted successfully with AI features');
+
+      // Remove the fallback loader
+      const loader = document.getElementById('fallback-loader');
+      if (loader) {
+        loader.style.display = 'none';
+      }
     } catch (appError) {
-      console.error('[main.jsx] Failed to load App-multistage:', appError);
-      console.log('[main.jsx] Falling back to simple app...');
-      
+      console.error('[main.jsx] Failed to load App-simple', appError);
+
+      // Use fallback app
       root.render(
         <StrictMode>
           <FallbackApp />
         </StrictMode>
       );
-      console.log('[main.jsx] Fallback app mounted successfully');
+      console.log('[main.jsx] Fallback app mounted');
     }
   } catch (error) {
-    console.error('[main.jsx] Critical error mounting React app:', error);
+    console.error('[main.jsx] Critical error mounting React app', error);
     rootElement.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Critical Error: ' + error.message + '</div>';
   }
 };
 
 // Handle Service Worker errors
 window.addEventListener('error', (event) => {
-  console.error('[main.jsx] Global error:', event.error);
+  logError('[main.jsx] Global error', event.error);
 });
 
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('[main.jsx] Unhandled promise rejection:', event.reason);
+  logError('[main.jsx] Unhandled promise rejection', { reason: event.reason });
   // Don't prevent the default behavior, just log it
 });
 

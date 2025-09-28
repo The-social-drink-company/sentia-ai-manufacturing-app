@@ -65,9 +65,9 @@ git commit -m "chore: update dependencies"
 ```
 
 #### Before Committing Checklist
-- [ ] Run tests: `npm test`
-- [ ] Run linter: `npm run lint`
-- [ ] Build check: `npm run build`
+- [ ] Run tests: `pnpm test`
+- [ ] Run linter: `pnpm run lint`
+- [ ] Build check: `pnpm run build`
 - [ ] No console.log statements
 - [ ] No hardcoded secrets
 
@@ -194,10 +194,10 @@ curl https://mcp-server-tkyu.onrender.com/health
 ### Migrations
 ```bash
 # Development/Test (push schema)
-npx prisma db push --skip-generate
+pnpm dlx prisma db push --skip-generate
 
 # Production (use migrations)
-npx prisma migrate deploy
+pnpm dlx prisma migrate deploy
 ```
 
 ### Backup & Restore
@@ -264,8 +264,8 @@ Check at: https://github.com/The-social-drink-company/sentia-manufacturing-dashb
 
 | Issue | Solution |
 |-------|----------|
-| Build fails | Check `npm run build` locally |
-| Tests fail | Run `npm test` and fix issues |
+| Build fails | Check `pnpm run build` locally |
+| Tests fail | Run `pnpm test` and fix issues |
 | Deployment stuck | Check Render dashboard logs |
 | Database connection error | Verify DATABASE_URL in Render |
 | MCP server down | Restart service in Render |
@@ -318,18 +318,18 @@ git log --oneline --graph
 ### NPM Scripts
 ```bash
 # Development
-npm run dev           # Start full stack
-npm run dev:client    # Frontend only
-npm run dev:server    # Backend only
+pnpm run dev           # Start full stack
+pnpm run dev:client    # Frontend only
+pnpm run dev:server    # Backend only
 
 # Testing
-npm test             # Run tests
-npm run test:coverage # With coverage
-npm run lint         # Check code style
+pnpm test             # Run tests
+pnpm run test:coverage # With coverage
+pnpm run lint         # Check code style
 
 # Production
-npm run build        # Build for production
-npm start           # Start production server
+pnpm run build        # Build for production
+pnpm start           # Start production server
 ```
 
 ### PowerShell Scripts
@@ -365,7 +365,7 @@ npm start           # Start production server
 - Use environment variables
 - Validate user input
 - Sanitize outputs
-- Run `npm audit`
+- Run `pnpm audit`
 - Update dependencies
 
 ## Monthly Tasks

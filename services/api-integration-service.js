@@ -31,11 +31,11 @@ class APIIntegrationService {
     }
 
     // Listen for MCP Server events
-    this.mcpClient.on('api-update', (data) => {
+    this.mcpClient.on(_'api-update', (data) => {
       this.handleAPIUpdate(data);
     });
 
-    this.mcpClient.on('manufacturing-alert', (alert) => {
+    this.mcpClient.on(_'manufacturing-alert', (alert) => {
       this.handleManufacturingAlert(alert);
     });
   }

@@ -3,8 +3,8 @@
 // Script to update Render environment variables using API token
 import https from 'https';
 
-const RENDER_API_TOKEN = process.env.RENDER_API_TOKEN || 'YOUR_RENDER_API_TOKEN_HERE';
-const SERVICE_ID = 'srv-ctg8hkpu0jms73ab8m00'; // Your Render service ID
+const RENDERAPI_TOKEN = process.env.RENDER_API_TOKEN || 'YOUR_RENDER_API_TOKEN_HERE';
+const SERVICEID = 'srv-ctg8hkpu0jms73ab8m00'; // Your Render service ID
 
 // Environment variables to update
 const envVarsToUpdate = [
@@ -38,11 +38,11 @@ async function updateEnvVars() {
       }
     };
 
-    await new Promise((resolve, reject) => {
+    await new Promise((resolve, _reject) => {
       const req = https.request(options, (res) => {
         let responseData = '';
 
-        res.on('data', (chunk) => {
+        res.on('data', _(chunk) => {
           responseData += chunk;
         });
 
@@ -57,7 +57,7 @@ async function updateEnvVars() {
         });
       });
 
-      req.on('error', (error) => {
+      req.on('error', _(error) => {
         console.error(`ERROR updating ${envVar.key}:`, error.message);
         resolve(); // Continue with other vars
       });

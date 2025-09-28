@@ -11,7 +11,7 @@ class MicrosoftGraphService {
   // Initialize Graph client with access token
   initializeGraphClient(accessToken) {
     this.graphClient = Client.init({
-      authProvider: (done) => {
+      authProvider: _(done) => {
         done(null, accessToken);
       }
     });
@@ -121,7 +121,7 @@ class MicrosoftGraphService {
       // Process each worksheet
       workbook.worksheets.forEach(worksheet => {
         const jsonData = [];
-        worksheet.eachRow((row, rowNumber) => {
+        _worksheet.eachRow((row, _rowNumber) => {
           jsonData.push(row.values.slice(1)); // slice(1) because ExcelJS uses 1-based indexing
         });
         
@@ -215,7 +215,7 @@ class MicrosoftGraphService {
       excelData.data.forEach(row => {
         const record = {};
         
-        headers.forEach((header, index) => {
+        _headers.forEach((header, index) => {
           if (row[index] !== null && row[index] !== undefined) {
             record[header] = row[index];
           }
@@ -270,8 +270,8 @@ class MicrosoftGraphService {
     });
     
     // Check data types and ranges for manufacturing data
-    data.forEach((record, index) => {
-      Object.entries(record).forEach(([key, value]) => {
+    data.forEach(_(record, index) => {
+      Object.entries(record).forEach(_([key, _value]) => {
         if (key.includes('efficiency') && value !== null) {
           const numValue = parseFloat(value);
           if (isNaN(numValue) || numValue < 0 || numValue > 100) {

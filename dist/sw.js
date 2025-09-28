@@ -28,22 +28,22 @@ const STATIC_ASSETS = [
 
 // API endpoints that should be cached
 const CACHEABLE_API_PATTERNS = [
-  /\/api\/dashboard\//,
-  /\/api\/analytics\//,
-  /\/api\/inventory\//,
-  /\/api\/production\//,
-  /\/api\/quality\//,
-  /\/api\/forecasting\//,
-  /\/api\/working-capital\//
+  //api/dashboard//,
+  //api/analytics//,
+  //api/inventory//,
+  //api/production//,
+  //api/quality//,
+  //api/forecasting//,
+  //api/working-capital//
 ];
 
 // API endpoints that should never be cached
 const NON_CACHEABLE_API_PATTERNS = [
-  /\/api\/auth\//,
-  /\/api\/admin\/logs/,
-  /\/api\/real-time\//,
-  /\/api\/webhooks\//,
-  /\/api\/live-data\//
+  //api/auth//,
+  //api/admin/logs/,
+  //api/real-time//,
+  //api/webhooks//,
+  //api/live-data//
 ];
 
 // Install event - cache static assets
@@ -317,11 +317,11 @@ async function handleOfflineFallback(request) {
 
 // Utility functions
 function isStaticAsset(pathname) {
-  return /\.(js|css|woff|woff2|ttf|eot)$/.test(pathname);
+  return /.(js|css|woff|woff2|ttf|eot)$/.test(pathname);
 }
 
 function isImage(pathname) {
-  return /\.(png|jpg|jpeg|gif|svg|webp|ico)$/.test(pathname);
+  return /.(png|jpg|jpeg|gif|svg|webp|ico)$/.test(pathname);
 }
 
 // Background sync for offline actions

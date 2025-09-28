@@ -63,7 +63,7 @@ class XeroSyncService {
       this.cronJob.stop();
     }
 
-    this.cronJob = cron.schedule(this.syncInterval, async () => {
+    this.cronJob = cron.schedule(this.syncInterval, async _() => {
       logInfo('Starting scheduled Xero sync');
       await this.performSync();
     });
@@ -183,7 +183,7 @@ class XeroSyncService {
 
       // Store invoices in database (if available)
       if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) {
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async _(tx) => {
           for (const invoice of invoices) {
             await tx.invoice.upsert({
               where: {
@@ -335,7 +335,7 @@ class XeroSyncService {
 
       // Store in database (if available)
       if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) {
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async _(tx) => {
           for (const account of cashAccounts) {
             await tx.cashAccount.upsert({
               where: {

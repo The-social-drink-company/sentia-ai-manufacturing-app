@@ -11,7 +11,7 @@ import path from 'path';
 
 const execAsync = promisify(exec);
 
-const PRODUCTION_URL = 'https://sentia-manufacturing-production.onrender.com';
+const PRODUCTIONURL = 'https://sentia-manufacturing-production.onrender.com';
 
 class RenderProductionFixer {
   constructor() {
@@ -73,12 +73,12 @@ class RenderProductionFixer {
   }
 
   async checkEndpoint(path) {
-    return new Promise((resolve) => {
+    return new Promise(_(resolve) => {
       const url = `${PRODUCTION_URL}${path}`;
-      https.get(url, { timeout: 30000 }, (res) => {
+      https.get(url, { timeout: 30000 }, _(res) => {
         let data = '';
         res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
+        res.on('end', _() => {
           resolve({
             success: res.statusCode === 200,
             status: `${res.statusCode} ${res.statusMessage}`,
@@ -273,7 +273,7 @@ app.get('/health', (req, res) => {
 
     const staticServingCode = `
 // Serve static files from dist directory in production
-if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+if (process.env.NODEENV = == 'production' || process.env.RENDER) {
   app.use(express.static(path.join(__dirname, 'dist')));
 
   // Fallback to index.html for client-side routing

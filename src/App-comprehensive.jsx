@@ -14,6 +14,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 // Using bulletproof auth system instead of direct Clerk imports
 import { useAuthRole } from './hooks/useAuthRole.jsx';
 import { ThemeProvider } from './components/ui/ThemeProvider';
+import { logInfo, logError, devLog } from './utils/structuredLogger';
 
 // Core Layout Components
 import Header from './components/layout/Header';
@@ -25,22 +26,27 @@ import ErrorFallback from './components/ui/ErrorFallback';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 const ClerkSignIn = lazy(() => import('./pages/ClerkSignIn'));
 
+// AI Components
+import AIChatbot from './components/AIChatbot';
+
 // Lazy-loaded Page Components - COMPREHENSIVE SET
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-const EnterpriseDashboard = lazy(() => import('./pages/Dashboard/EnterpriseDashboard'));
-const WorldClassDashboard = lazy(() => import('./pages/WorldClassDashboard'));
+const EnterpriseDashboard = lazy(() => import('./pages/Dashboard'));
+// WorldClassDashboard component not available - using Dashboard instead
+const WorldClassDashboard = lazy(() => import('./pages/Dashboard'));
 const ExecutiveDashboard = lazy(() => import('./components/Executive/ExecutiveDashboard'));
+const NewExecutiveDashboard = lazy(() => import('./features/executive/ExecutiveDashboard'));
 
 // Financial Management
-const WorkingCapital = lazy(() => import('./components/WorkingCapital/WorkingCapital'));
-const WorkingCapitalExpert = lazy(() => import('./components/WorkingCapital/WorkingCapitalExpert'));
-const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
+const WorkingCapital = lazy(() => import('./pages/WorkingCapital'));
+const WorkingCapitalDashboard = lazy(() => import('./features/working-capital/WorkingCapitalDashboard'));
+const WhatIfAnalysis = lazy(() => import('./components/WhatIfAnalysis'));
 const FinancialReports = lazy(() => import('./pages/Financial/FinancialReports'));
 
 // Manufacturing Operations
 const Production = lazy(() => import('./pages/Production'));
 const Quality = lazy(() => import('./pages/Quality'));
-const QualityControlDashboard = lazy(() => import('./components/quality/QualityControlDashboard'));
+const QualityControl = lazy(() => import('./components/QualityControl.jsx'));
 const Inventory = lazy(() => import('./pages/Inventory'));
 const AdvancedInventoryManagement = lazy(() => import('./components/inventory/AdvancedInventoryManagement'));
 const Forecasting = lazy(() => import('./pages/Forecasting'));
@@ -116,8 +122,8 @@ const AuthenticatedApp = () => {
   const location = useLocation();
   
   // DEBUG: Add extensive logging
-  console.log('[AuthenticatedApp] Current location:', location.pathname);
-  console.log('[AuthenticatedApp] Auth state:', { isAuthenticated, isLoading, isSignedIn });
+  devLog.log('[AuthenticatedApp] Current location:', location.pathname);
+  devLog.log('[AuthenticatedApp] Auth state:', { isAuthenticated, isLoading, isSignedIn });
   
   // Compatibility with Clerk's isLoaded - bulletproof auth is always loaded
   const isLoaded = !isLoading;
@@ -139,17 +145,17 @@ const AuthenticatedApp = () => {
 
   // Show loading while auth is checking
   if (!isLoaded) {
-    console.log('[AuthenticatedApp] Auth still loading, showing PageLoader');
+    devLog.log('[AuthenticatedApp] Auth still loading, showing PageLoader');
     return <PageLoader />;
   }
 
   // Check if it's a fullscreen page first
   const isFullscreenPage = ['/sign-in', '/sign-up', '/landing'].includes(location.pathname);
-  console.log('[AuthenticatedApp] Is fullscreen page?', isFullscreenPage, 'for path:', location.pathname);
+  devLog.log('[AuthenticatedApp] Is fullscreen page?', isFullscreenPage, 'for path:', location.pathname);
 
   // Handle fullscreen pages (like sign-in) regardless of auth status
   if (isFullscreenPage) {
-    console.log('[AuthenticatedApp] Rendering fullscreen page routes');
+    devLog.log('[AuthenticatedApp] Rendering fullscreen page routes');
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -163,7 +169,7 @@ const AuthenticatedApp = () => {
 
   // Redirect to sign-in if not authenticated (only in Clerk mode)
   if (!isAuthenticated) {
-    console.log('[AuthenticatedApp] User not authenticated, redirecting to /sign-in');
+    logInfo('User not authenticated, redirecting to sign-in', { from: location.pathname });
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
@@ -206,6 +212,11 @@ const AuthenticatedApp = () => {
                     <ExecutiveDashboard />
                   </Fragment>
                 } />
+                <Route path="/executive" element={
+                  <ProtectedRoute requiredRoles={['executive', 'admin', 'manager']}>
+                    <NewExecutiveDashboard />
+                  </ProtectedRoute>
+                } />
                 <Route path="/dashboard/world-class" element={
                   <Fragment>
                     <WorldClassDashboard />
@@ -214,14 +225,9 @@ const AuthenticatedApp = () => {
 
                 {/* Financial Management */}
                 <Route path="/working-capital" element={
-                  <Fragment>
-                    <WorkingCapital />
-                  </Fragment>
-                } />
-                <Route path="/working-capital/expert" element={
-                  <Fragment>
-                    <WorkingCapitalExpert />
-                  </Fragment>
+                  <ProtectedRoute requiredRoles={['admin', 'manager', 'operator']}>
+                    <WorkingCapitalDashboard />
+                  </ProtectedRoute>
                 } />
                 <Route path="/what-if" element={
                   <Fragment>
@@ -242,7 +248,7 @@ const AuthenticatedApp = () => {
                 } />
                 <Route path="/quality" element={
                   <Fragment>
-                    <QualityControlDashboard />
+                    <QualityControl />
                   </Fragment>
                 } />
                 <Route path="/inventory" element={
@@ -389,8 +395,8 @@ const AppComprehensive = () => {
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
-      onError={(error, errorInfo) => {
-        console.error('Application error:', error, errorInfo);
+      onError = {(error, errorInfo) => {
+        logError('Application error in comprehensive app', { error: error.message, stack: error.stack, errorInfo });
         // Send to error tracking service
         if (import.meta.env.VITE_SENTRY_DSN) {
           // Sentry error reporting would go here
@@ -428,6 +434,9 @@ const AppComprehensive = () => {
             },
           }}
         />
+
+        {/* AI Chatbot - Always Available */}
+        <AIChatbot />
 
           {/* React Query DevTools - only in development */}
           {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}

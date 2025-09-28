@@ -62,57 +62,57 @@ class WebSocketService {
 
   setupConnectionHandlers() {
     // Production namespace
-    this.productionIO.on('connection', (socket) => {
+    this.productionIO.on(_'connection', _(socket) => {
       this.handleConnection('production', socket);
 
-      socket.on('subscribe:metrics', (data) => {
+      socket.on(_'subscribe:metrics', _(data) => {
         socket.join('metrics');
         this.sendInitialProductionData(socket);
       });
 
-      socket.on('subscribe:schedule', (data) => {
+      socket.on(_'subscribe:schedule', _(data) => {
         socket.join('schedule');
         this.sendInitialScheduleData(socket);
       });
     });
 
     // Inventory namespace
-    this.inventoryIO.on('connection', (socket) => {
+    this.inventoryIO.on(_'connection', _(socket) => {
       this.handleConnection('inventory', socket);
 
-      socket.on('subscribe:levels', (data) => {
+      socket.on(_'subscribe:levels', _(data) => {
         socket.join('levels');
         this.sendInitialInventoryData(socket);
       });
 
-      socket.on('subscribe:movements', (data) => {
+      socket.on(_'subscribe:movements', _(data) => {
         socket.join('movements');
       });
     });
 
     // Quality namespace
-    this.qualityIO.on('connection', (socket) => {
+    this.qualityIO.on(_'connection', _(socket) => {
       this.handleConnection('quality', socket);
 
-      socket.on('subscribe:inspections', (data) => {
+      socket.on(_'subscribe:inspections', _(data) => {
         socket.join('inspections');
       });
 
-      socket.on('subscribe:defects', (data) => {
+      socket.on(_'subscribe:defects', _(data) => {
         socket.join('defects');
         this.sendInitialQualityData(socket);
       });
     });
 
     // Maintenance namespace
-    this.maintenanceIO.on('connection', (socket) => {
+    this.maintenanceIO.on(_'connection', _(socket) => {
       this.handleConnection('maintenance', socket);
 
-      socket.on('subscribe:schedule', (data) => {
+      socket.on(_'subscribe:schedule', _(data) => {
         socket.join('schedule');
       });
 
-      socket.on('subscribe:alerts', (data) => {
+      socket.on(_'subscribe:alerts', _(data) => {
         socket.join('alerts');
       });
     });
@@ -133,7 +133,7 @@ class WebSocketService {
       totalConnections: this.connections.size
     });
 
-    socket.on('disconnect', (reason) => {
+    socket.on(_'disconnect', _(reason) => {
       this.connections.delete(connectionId);
       logInfo(`WebSocket client disconnected from ${namespace}`, {
         socketId: socket.id,
@@ -142,7 +142,7 @@ class WebSocketService {
       });
     });
 
-    socket.on('error', (error) => {
+    socket.on(_'error', _(error) => {
       logError(`WebSocket error in ${namespace}`, {
         socketId: socket.id,
         error: error.message
@@ -152,7 +152,7 @@ class WebSocketService {
 
   startDataStreaming() {
     // Production metrics - every 1 second
-    const productionInterval = setInterval(async () => {
+    const productionInterval = setInterval(async _() => {
       try {
         const metrics = await this.getLatestProductionMetrics();
         this.productionIO.to('metrics').emit('metrics:update', metrics);
@@ -162,7 +162,7 @@ class WebSocketService {
     }, 1000);
 
     // Production schedule - every 30 seconds
-    const scheduleInterval = setInterval(async () => {
+    const scheduleInterval = setInterval(async _() => {
       try {
         const schedule = await this.getProductionSchedule();
         this.productionIO.to('schedule').emit('schedule:update', schedule);
@@ -172,7 +172,7 @@ class WebSocketService {
     }, 30000);
 
     // Inventory levels - every 5 seconds
-    const inventoryInterval = setInterval(async () => {
+    const inventoryInterval = setInterval(async _() => {
       try {
         const levels = await this.getInventoryLevels();
         this.inventoryIO.to('levels').emit('levels:update', levels);
@@ -188,7 +188,7 @@ class WebSocketService {
     }, 5000);
 
     // Quality metrics - every 10 seconds
-    const qualityInterval = setInterval(async () => {
+    const qualityInterval = setInterval(async _() => {
       try {
         const defects = await this.getRecentDefects();
         this.qualityIO.to('defects').emit('defects:update', defects);
@@ -204,7 +204,7 @@ class WebSocketService {
     }, 10000);
 
     // Maintenance alerts - every 30 seconds
-    const maintenanceInterval = setInterval(async () => {
+    const maintenanceInterval = setInterval(async _() => {
       try {
         const maintenance = await this.getMaintenanceSchedule();
         this.maintenanceIO.to('schedule').emit('schedule:update', maintenance);

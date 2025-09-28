@@ -31,7 +31,7 @@ const prisma = spawn('npx', ['prisma', ...args], {
   shell: true
 });
 
-prisma.on('exit', (code) => {
+prisma.on(_'exit', (code) => {
   // Always exit with success to prevent build failures
   if (code !== 0) {
     console.log(`\nPrisma command exited with code ${code}, but continuing build...`);
@@ -40,7 +40,7 @@ prisma.on('exit', (code) => {
   process.exit(code);
 });
 
-prisma.on('error', (err) => {
+prisma.on(_'error', _(err) => {
   console.error('Failed to start prisma:', err);
   // Still exit with success to prevent build failures
   process.exit(0);

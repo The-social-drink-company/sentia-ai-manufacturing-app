@@ -3,7 +3,7 @@ import crypto from 'crypto';
 
 // Import Prisma for database access
 import { PrismaClient } from '@prisma/client';
-import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+import { logDebug, logInfo, logWarn, logError } from '../../services/observability/structuredLogger.js';
 
 const prisma = new PrismaClient();
 

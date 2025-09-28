@@ -31,6 +31,8 @@ export const useAuthRole = () => {
       };
     }
 
+    const effectiveIsSignedIn = mode === 'clerk' ? isSignedIn : true;
+
     // Get role from bulletproof system or user metadata
     const userRole = roleData?.role ||
                     user?.publicMetadata?.role ||
@@ -107,7 +109,7 @@ export const useAuthRole = () => {
 
     return {
       isLoading: false,
-      isAuthenticated: mode === 'clerk' ? isSignedIn : false,
+      isAuthenticated: effectiveIsSignedIn,
       authMode: mode,
       user: user || {
         id: 'guest',
@@ -125,7 +127,7 @@ export const useAuthRole = () => {
       getUserInitials,
       canAccess,
       // Backwards compatibility
-      isSignedIn: isSignedIn || false,
+      isSignedIn: effectiveIsSignedIn,
       userEmail,
       userName: displayName
     };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { logError } from '../utils/structuredLogger.js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -123,7 +123,7 @@ const WorkingCapitalCalculatorEnhanced = () => {
       
       setActiveTab('analysis')
     } catch (error) {
-      console.error('Error parsing CSV:', error)
+      logError('Error parsing CSV', error)
     } finally {
       setIsUploading(false)
     }

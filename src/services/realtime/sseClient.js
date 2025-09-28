@@ -3,6 +3,8 @@
  * Handles real-time updates from the server
  */
 
+import { logInfo, logError, logWarn, logDebug, devLog } from '../../utils/structuredLogger.js';
+
 const SSE_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '/events') || 'http://localhost:5000/events'
 
 class SSEClient {
@@ -26,14 +28,14 @@ class SSEClient {
       })
 
       this.eventSource.onopen = () => {
-        console.log('SSE connection established')
+        logInfo('SSE connection established')
         this.isConnected = true
         this.reconnectAttempts = 0
         this.notifyListeners('connection', { status: 'connected' })
       }
 
       this.eventSource.onerror = (error) => {
-        console.error('SSE connection error:', error)
+        logError('SSE connection error', error)
         this.isConnected = false
         this.notifyListeners('connection', { status: 'error', error })
 
@@ -47,14 +49,14 @@ class SSEClient {
           const data = JSON.parse(event.data)
           this.notifyListeners('message', data)
         } catch (error) {
-          console.error('Error parsing SSE message:', error)
+          logError('Error parsing SSE message', error)
         }
       }
 
       // Register specific event types
       this.registerEventTypes()
     } catch (error) {
-      console.error('Failed to create SSE connection:', error)
+      logError('Failed to create SSE connection', error)
       this.reconnect()
     }
   }
@@ -77,7 +79,7 @@ class SSEClient {
           const data = JSON.parse(event.data)
           this.notifyListeners(type, data)
         } catch (error) {
-          console.error(`Error parsing ${type} event:`, error)
+          logError('Error parsing event', { type, error })
         }
       })
     })
@@ -85,7 +87,7 @@ class SSEClient {
 
   reconnect() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('Max reconnection attempts reached')
+      logError('Max reconnection attempts reached')
       this.notifyListeners('connection', { status: 'failed' })
       return
     }
@@ -93,7 +95,7 @@ class SSEClient {
     this.reconnectAttempts++
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1)
 
-    console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`)
+    logInfo('Reconnecting SSE', { delay: `${delay}ms`, attempt: this.reconnectAttempts })
 
     setTimeout(() => {
       this.connect()
@@ -122,7 +124,7 @@ class SSEClient {
         try {
           callback(data)
         } catch (error) {
-          console.error('Error in SSE listener callback:', error)
+          logError('Error in SSE listener callback', error)
         }
       })
     }
@@ -134,7 +136,7 @@ class SSEClient {
         try {
           callback({ type: eventType, data })
         } catch (error) {
-          console.error('Error in wildcard SSE listener:', error)
+          logError('Error in wildcard SSE listener', error)
         }
       })
     }

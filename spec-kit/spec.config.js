@@ -84,7 +84,7 @@
       paths: ['src/lib/clerk-config.js', 'src/services/**/*.{js,jsx,ts,tsx}', 'server-fixed.js'],
       requirePatterns: ['ClerkProvider', 'requireAuth', 'getAuthToken'],
       forbidPatterns: ['mock auth', 'demo auth', 'fallback auth'],
-      forbidRegex: ['if\\s*\(.*fallback.*\)', 'mode\\s*===\\s*[\'\"]fallback[\'\"]']
+      forbidRegex: ['if\\s*(.*fallback.*)', 'mode\\s*===\\s*[\'\"]fallback[\'\"]']
     }
   ],
   specifications: {

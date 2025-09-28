@@ -85,7 +85,7 @@ class AIAnalyticsService {
     const efficiencyValues = data.map(d => parseFloat(d.efficiency || d.Efficiency || 0));
     const trend = efficiencyValues.length > 1 ? 
       (efficiencyValues[efficiencyValues.length - 1] > efficiencyValues[0] ? 'improving' : 'declining') : 'stable';
-    const mean = efficiencyValues.reduce((a, b) => a + b, 0) / efficiencyValues.length;
+    const mean = efficiencyValues.reduce((a, _b) => a + b, 0) / efficiencyValues.length;
     const variance = Math.sqrt(efficiencyValues.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / efficiencyValues.length);
     
     return { trend, variance: Math.round(variance * 100) / 100 };
@@ -347,7 +347,7 @@ class AIAnalyticsService {
     // Simple linear regression for next value prediction
     const n = values.length;
     const sumX = (n * (n + 1)) / 2;
-    const sumY = values.reduce((a, b) => a + b, 0);
+    const sumY = values.reduce((a, _b) => a + b, 0);
     const sumXY = values.reduce((sum, y, x) => sum + (x + 1) * y, 0);
     const sumXX = (n * (n + 1) * (2 * n + 1)) / 6;
     

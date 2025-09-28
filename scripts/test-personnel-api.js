@@ -17,7 +17,7 @@ console.log('');
 
 // Test functions
 async function makeRequest(path) {
-  return new Promise((resolve, reject) => {
+  return new Promise(_(resolve, _reject) => {
     const options = {
       hostname: HOST,
       port: PORT,
@@ -30,14 +30,14 @@ async function makeRequest(path) {
 
     console.log(`🔗 Testing: http://${HOST}:${PORT}${path}`);
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, _(res) => {
       let data = '';
 
-      res.on('data', (chunk) => {
+      res.on('data', _(chunk) => {
         data += chunk;
       });
 
-      res.on('end', () => {
+      res.on('end', _() => {
         resolve({
           statusCode: res.statusCode,
           headers: res.headers,
@@ -50,7 +50,7 @@ async function makeRequest(path) {
       reject(error);
     });
 
-    req.setTimeout(5000, () => {
+    req.setTimeout(_5000, _() => {
       req.destroy();
       reject(new Error('Request timeout after 5 seconds'));
     });

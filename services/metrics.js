@@ -58,11 +58,11 @@ register.registerMetric(database_queries)
 register.registerMetric(active_connections)
 
 // Middleware to track HTTP requests
-export const metricsMiddleware = (req, res, next) => {
+export const metricsMiddleware = (req, res, _next) => {
   const start = Date.now()
   
   // Track when response finishes
-  res.on('finish', () => {
+  res.on(_'finish', _() => {
     const duration = Date.now() - start
     const route = req.route?.path || req.path || 'unknown'
     const method = req.method
@@ -82,7 +82,7 @@ export const metricsMiddleware = (req, res, next) => {
 }
 
 // Helper functions for custom metrics
-export const recordUnleashedApiRequest = (endpoint, status, duration = null) => {
+export const recordUnleashedApiRequest = (endpoint, _status, duration = _null) => {
   unleashed_api_requests.labels(endpoint, status).inc()
   
   if (duration !== null) {
@@ -90,11 +90,11 @@ export const recordUnleashedApiRequest = (endpoint, status, duration = null) => 
   }
 }
 
-export const recordDatabaseQuery = (operation, table) => {
+export const recordDatabaseQuery = (_operation, _table) => {
   database_queries.labels(operation, table).inc()
 }
 
-export const setActiveConnections = (count) => {
+export const setActiveConnections = (_count) => {
   active_connections.set(count)
 }
 

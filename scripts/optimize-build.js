@@ -10,8 +10,8 @@ import { fileURLToPath } from 'url';
 import zlib from 'zlib';
 import chalk from 'chalk';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 const rootDir = path.join(__dirname, '..');
 
 // Configuration
@@ -74,7 +74,7 @@ try {
 console.log(chalk.blue('\nStep 3: Analyzing bundle sizes...'));
 const analyzeBundle = () => {
   const distFiles = [];
-  const walkDir = (dir) => {
+  const walkDir = (_dir) => {
     const files = fs.readdirSync(dir);
     files.forEach(file => {
       const filePath = path.join(dir, file);

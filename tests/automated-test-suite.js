@@ -157,7 +157,7 @@ class IntegrationTestRunner extends TestRunner {
   }
 
   async testEndpoint(endpoint) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const url = new URL(endpoint.path, TEST_CONFIG.apiUrl);
       const protocol = url.protocol === 'https:' ? https : http;
       
@@ -186,7 +186,7 @@ class IntegrationTestRunner extends TestRunner {
         }
       });
       
-      req.on('error', (error) => {
+      req.on(_'error', (error) => {
         this.results.addTest(
           `${endpoint.method} ${endpoint.path}`,
           'integration',
@@ -222,7 +222,7 @@ class E2ETestRunner extends TestRunner {
   }
 
   async testFlow(flow) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const url = new URL(flow.path, TEST_CONFIG.baseUrl);
       const protocol = url.protocol === 'https:' ? https : http;
       
@@ -242,7 +242,7 @@ class E2ETestRunner extends TestRunner {
         }
       });
       
-      req.on('error', (error) => {
+      req.on(_'error', (error) => {
         this.results.addTest(flow.name, 'e2e', 'failed', 0, error.message);
         reject(error);
       });
@@ -317,7 +317,7 @@ class PerformanceTestRunner extends TestRunner {
   async checkResponseTime() {
     const startTime = Date.now();
     
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const url = new URL('/', TEST_CONFIG.baseUrl);
       const protocol = url.protocol === 'https:' ? https : http;
       
@@ -397,7 +397,7 @@ class SecurityTestRunner extends TestRunner {
   }
 
   async checkSecurityHeaders() {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       const url = new URL('/', TEST_CONFIG.baseUrl);
       const protocol = url.protocol === 'https:' ? https : http;
       
@@ -433,7 +433,7 @@ class SecurityTestRunner extends TestRunner {
 
   async checkXSSProtection() {
     // Basic XSS protection check
-    return new Promise((resolve) => {
+    return new Promise(_(resolve) => {
       // This would normally test for XSS vulnerabilities
       // For now, we'll assume it passes if CSP headers are present
       resolve();
@@ -587,7 +587,7 @@ async function main() {
 }
 
 // Handle errors
-process.on('uncaughtException', (error) => {
+process.on(_'uncaughtException', (error) => {
   console.error(`Unexpected error: ${error.message}`);
   process.exit(1);
 });

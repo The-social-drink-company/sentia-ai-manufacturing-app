@@ -1,3 +1,0 @@
-# Keep this file to ensure the mcp-server directory is tracked in git
-# This ensures Railway Dashboard can find the mcp-server subdirectory
-# DEPLOYMENT TRIGGER: 2025-09-10 07:15:00 GMT - Force Railway redeploy

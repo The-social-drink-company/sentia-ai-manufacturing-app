@@ -8,12 +8,12 @@ console.log('='.repeat(60));
 // Set critical environment variables if missing
 if (!process.env.DATABASE_URL && process.env.RENDER) {
   console.log('WARNING: DATABASE_URL not set, using fallback');
-  process.env.DATABASE_URL = 'postgresql://render:render@localhost:5432/render';
+  process.env.DATABASEURL = 'postgresql://render:render@localhost:5432/render';
 }
 
 // Ensure NODE_ENV is set
 if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV = 'production';
+  process.env.NODEENV = 'production';
 }
 
 // Log environment for debugging
@@ -57,7 +57,7 @@ import('../server.js').catch(error => {
       });
     });
 
-    app.listen(PORT, () => {
+    app.listen(PORT, _() => {
       console.log(`Fallback server running on port ${PORT}`);
     });
   }).catch(err => {

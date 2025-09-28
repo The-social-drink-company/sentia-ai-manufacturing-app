@@ -3,7 +3,6 @@
   "version": "2.0.0-bulletproof",
   "description": "Sentia Manufacturing Dashboard - Pre-built for 100% successful deployment",
   "main": "server.js",
-  "type": "module",
   "scripts": {
     "start": "node server.js",
     "build": "echo 'Build not required - using pre-built application'"

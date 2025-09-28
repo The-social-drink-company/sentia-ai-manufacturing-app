@@ -1,45 +1,41 @@
-/**
- * SENTIA MANUFACTURING DASHBOARD - BULLETPROOF SERVER
- * Serves a pre-built React application with 100% reliability
- */
-
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Serve static files from the dist directory
+console.log('🚀 Starting Sentia Manufacturing Dashboard Server...');
+console.log('📁 Serving from:', path.join(__dirname, 'dist'));
+
+// Serve static files from dist directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  console.log('✅ Health check requested');
   res.status(200).json({ 
-    status: 'healthy', 
+    status: 'healthy',
     service: 'sentia-manufacturing-dashboard',
     version: '2.0.0-bulletproof',
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    clerk: {
-      configured: true,
-      publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET'
-    }
+    timestamp: new Date().toISOString()
   });
 });
 
-// Serve the React app for all other routes
+// Serve React app for all other routes
 app.get('*', (req, res) => {
+  console.log('📄 Serving React app for:', req.path);
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// Error handling
+app.use((err, req, res, next) => {
+  console.error('❌ Server error:', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Sentia Manufacturing Dashboard (Bulletproof) running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`✅ Server running on port ${PORT}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+  console.log('🎉 Sentia Manufacturing Dashboard is ready!');
 });

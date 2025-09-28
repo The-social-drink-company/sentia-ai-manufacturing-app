@@ -12,7 +12,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import fs from 'fs';
-import realAPI from './api/real-api.js';
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
@@ -83,9 +82,6 @@ app.use(logger);
 // Serve static files from dist directory
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));
-
-// Mount real API routes - NO MOCK DATA
-app.use('/api', realAPI);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

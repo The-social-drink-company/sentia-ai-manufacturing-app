@@ -128,7 +128,8 @@
       "Bash(npx babel:*)",
       "Bash(PORT=5001 pnpm run dev:server)",
       "Bash(pnpm install:*)",
-      "Bash(pnpm start:*)"
+      "Bash(pnpm start:*)",
+      "Bash(set PORT=10000)"
     ],
     "deny": [],
     "ask": []

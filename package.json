@@ -2,7 +2,7 @@
   "name": "sentia-manufacturing-dashboard-bulletproof",
   "version": "2.0.0-bulletproof",
   "description": "Sentia Manufacturing Dashboard - Enterprise working capital intelligence",
-  "main": "server-enterprise-complete.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"pnpm run dev:client\" \"pnpm run dev:server\"",
@@ -11,7 +11,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "build:test": "vite build --mode testing",
-    "start": "node server-enterprise-complete.js",
+    "start": "node server.js",
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",

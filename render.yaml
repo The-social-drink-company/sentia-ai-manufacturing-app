@@ -1,12 +1,12 @@
 services:
   - type: web
-    name: sentia-manufacturing-dashboard-final
+    name: sentia-manufacturing-dashboard
     env: node
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm run build"
-    startCommand: "node server-enterprise-complete.js"
+    buildCommand: "npm install && npm run build"
+    startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:

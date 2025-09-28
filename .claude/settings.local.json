@@ -49,7 +49,9 @@
       "Bash(TASKKILL /F /IM node.exe)",
       "Bash(Ctrl+C)",
       "Bash(findstr:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(gh pr view:*)"
     ],
     "deny": [],
     "ask": []

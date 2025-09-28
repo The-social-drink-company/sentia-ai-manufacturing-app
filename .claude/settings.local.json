@@ -11,7 +11,8 @@
       "Bash(timeout 10 pnpm run dev:client)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

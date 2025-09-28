@@ -6,7 +6,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "corepack enable && pnpm install --frozen-lockfile"
+    buildCommand: "corepack enable && pnpm install --frozen-lockfile && pnpm run build:dev"
     startCommand: "node server/index.js"
     healthCheckPath: /health
     autoDeploy: true

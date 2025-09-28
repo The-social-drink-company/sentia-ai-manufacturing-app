@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clerk Landing Page Test</title>
+    <script src="https://unpkg.com/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: #2563eb;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        h1 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+        }
+        .sign-in-button {
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .sign-in-button:hover {
+            background: #1d4ed8;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .feature {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .feature-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #1f2937;
+        }
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+        .status.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .status.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🏭</div>
+        <h1>Sentia Manufacturing Dashboard</h1>
+        <p class="subtitle">Enterprise Working Capital Intelligence</p>
+        
+        <div id="clerk-signin-button">
+            <button class="sign-in-button" onclick="signIn()">
+                Sign In to Dashboard
+            </button>
+        </div>
+        
+        <div id="user-info" style="display: none;">
+            <div class="status success">
+                <strong>✅ Authentication Successful!</strong><br>
+                Welcome, <span id="user-name"></span>
+            </div>
+            <button class="sign-in-button" onclick="signOut()" style="margin-top: 1rem;">
+                Sign Out
+            </button>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Analytics</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📦</div>
+                <div class="feature-title">Inventory</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏭</div>
+                <div class="feature-title">Production</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <div class="feature-title">Finance</div>
+            </div>
+        </div>
+        
+        <div id="status" class="status" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Initialize Clerk with your live key
+        const clerkPublishableKey = 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ';
+        
+        let clerk;
+        
+        async function initializeClerk() {
+            try {
+                clerk = new window.Clerk(clerkPublishableKey);
+                await clerk.load();
+                
+                // Check if user is already signed in
+                if (clerk.user) {
+                    showUserInfo(clerk.user);
+                } else {
+                    showSignInButton();
+                }
+                
+                showStatus('✅ Clerk initialized successfully', 'success');
+            } catch (error) {
+                console.error('Clerk initialization error:', error);
+                showStatus('❌ Clerk initialization failed: ' + error.message, 'error');
+            }
+        }
+        
+        async function signIn() {
+            try {
+                await clerk.openSignIn();
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showStatus('❌ Sign in failed: ' + error.message, 'error');
+            }
+        }
+        
+        async function signOut() {
+            try {
+                await clerk.signOut();
+                showSignInButton();
+                showStatus('✅ Signed out successfully', 'success');
+            } catch (error) {
+                console.error('Sign out error:', error);
+                showStatus('❌ Sign out failed: ' + error.message, 'error');
+            }
+        }
+        
+        function showUserInfo(user) {
+            document.getElementById('clerk-signin-button').style.display = 'none';
+            document.getElementById('user-info').style.display = 'block';
+            document.getElementById('user-name').textContent = user.firstName || user.emailAddresses[0].emailAddress;
+        }
+        
+        function showSignInButton() {
+            document.getElementById('clerk-signin-button').style.display = 'block';
+            document.getElementById('user-info').style.display = 'none';
+        }
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', initializeClerk);
+        
+        // Listen for Clerk events
+        window.addEventListener('clerk:loaded', () => {
+            console.log('Clerk loaded event');
+        });
+        
+        window.addEventListener('clerk:signedIn', (event) => {
+            console.log('User signed in:', event.detail);
+            showUserInfo(event.detail);
+            showStatus('✅ Successfully signed in!', 'success');
+        });
+        
+        window.addEventListener('clerk:signedOut', () => {
+            console.log('User signed out');
+            showSignInButton();
+        });
+    </script>
+</body>
+</html>

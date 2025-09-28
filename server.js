@@ -1,15 +1,6 @@
-/**
- * Enterprise Static Server for Sentia Manufacturing Dashboard
- * Serves the pre-built React dashboard with Clerk authentication
- * Handles multiple deployment environments and path configurations
- */
-
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -32,7 +23,6 @@ let staticPath = null;
 for (const testPath of possiblePaths) {
   console.log(`Checking for dist at: ${testPath}`);
   try {
-    const fs = await import('fs');
     if (fs.existsSync(testPath)) {
       staticPath = testPath;
       console.log(`✅ Found dist folder at: ${staticPath}`);
@@ -127,21 +117,16 @@ app.get('*', (req, res) => {
   
   // Check if index.html exists
   try {
-    import('fs').then(fs => {
-      if (!fs.existsSync(indexPath)) {
-        console.error('❌ index.html not found at:', indexPath);
-        return res.status(404).json({
-          error: 'Application not found',
-          message: 'The React application build files are missing.',
-          path: indexPath
-        });
-      }
-      
-      res.sendFile(indexPath);
-    }).catch(error => {
-      console.error('❌ Error importing fs:', error);
-      res.sendFile(indexPath); // Try to serve anyway
-    });
+    if (!fs.existsSync(indexPath)) {
+      console.error('❌ index.html not found at:', indexPath);
+      return res.status(404).json({
+        error: 'Application not found',
+        message: 'The React application build files are missing.',
+        path: indexPath
+      });
+    }
+    
+    res.sendFile(indexPath);
   } catch (error) {
     console.error('❌ Error serving index.html:', error);
     res.status(500).json({

@@ -6,7 +6,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm run build"
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma generate && pnpm run build"
     startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -46,7 +46,7 @@ services:
     plan: starter
     region: oregon
     branch: testing
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm run build"
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma generate && pnpm run build"
     startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -86,7 +86,7 @@ services:
     plan: starter
     region: oregon
     branch: production
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm run build"
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma generate && pnpm run build"
     startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true

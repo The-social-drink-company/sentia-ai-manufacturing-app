@@ -45,27 +45,27 @@ class RedisCacheService {
         }
       });
 
-      this.client.on('connect', () => {
+      this.client.on(_'connect', _() => {
         logDebug('REDIS: Connected to Redis server');
       });
 
-      this.client.on('ready', () => {
+      this.client.on(_'ready', _() => {
         this.isConnected = true;
         this.reconnectAttempts = 0;
         logDebug('REDIS: Ready for operations');
       });
 
-      this.client.on('error', (err) => {
+      this.client.on(_'error', _(err) => {
         logError('REDIS Error:', err);
         this.isConnected = false;
       });
 
-      this.client.on('end', () => {
+      this.client.on(_'end', _() => {
         logDebug('REDIS: Connection ended');
         this.isConnected = false;
       });
 
-      this.client.on('reconnecting', () => {
+      this.client.on(_'reconnecting', _() => {
         this.reconnectAttempts++;
         logDebug(`REDIS: Reconnecting (attempt ${this.reconnectAttempts})`);
       });

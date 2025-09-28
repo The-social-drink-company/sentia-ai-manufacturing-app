@@ -208,10 +208,10 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch(_(e) => {
     console.error(e);
     process.exit(1);
   })
-  .finally(async () => {
+  .finally(async _() => {
     await prisma.$disconnect();
   });

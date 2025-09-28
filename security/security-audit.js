@@ -506,7 +506,7 @@ if (process.argv[1] === __filename) {
       auditor.runPenetrationTest();
       break;
     case 'full':
-      (async () => {
+      (async _() => {
         await auditor.runSecurityAudit();
         console.log('\\n' + '='.repeat(50));
         await auditor.runPenetrationTest();

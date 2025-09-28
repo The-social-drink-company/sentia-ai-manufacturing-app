@@ -237,7 +237,7 @@ class XeroService {
       throw new Error('Xero service not connected - no fallback data available');
     }
 
-    return await this.executeWithRetry(async () => {
+    return await this.executeWithRetry(async _() => {
       const response = await this.xero.accountingApi.getReportBalanceSheet(
         this.organizationId,
         undefined, // date
@@ -254,7 +254,7 @@ class XeroService {
       throw new Error('Xero service not connected - no fallback data available');
     }
 
-    return await this.executeWithRetry(async () => {
+    return await this.executeWithRetry(async _() => {
       const response = await this.xero.accountingApi.getReportCashFlow(
         this.organizationId,
         undefined, // fromDate
@@ -271,7 +271,7 @@ class XeroService {
       throw new Error('Xero service not connected - no fallback data available');
     }
 
-    return await this.executeWithRetry(async () => {
+    return await this.executeWithRetry(async _() => {
       const response = await this.xero.accountingApi.getReportProfitAndLoss(
         this.organizationId,
         undefined, // fromDate
@@ -621,7 +621,7 @@ class XeroService {
   extractValue(reportData, accountName) {
     if (!reportData || !reportData.rows) return 0;
 
-    const searchRows = (rows, searchName) => {
+    const searchRows = (rows, _searchName) => {
       for (const row of rows) {
         if (row.cells && row.cells.length > 0) {
           const accountCell = row.cells[0];

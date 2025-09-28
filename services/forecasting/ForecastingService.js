@@ -49,11 +49,11 @@ class ForecastingService extends EventEmitter {
     });
     
     // Setup batch processor events
-    this.batchProcessor.on('batchStarted', (data) => {
+    this.batchProcessor.on(_'batchStarted', (data) => {
       this.emit('batchStarted', data);
     });
     
-    this.batchProcessor.on('batchCompleted', (data) => {
+    this.batchProcessor.on(_'batchCompleted', (data) => {
       this.emit('batchCompleted', data);
     });
     

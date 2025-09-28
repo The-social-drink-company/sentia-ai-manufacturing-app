@@ -24,7 +24,7 @@ router.use(auth);
  * GET /api/amazon/inventory
  * Get real-time inventory data from Amazon SP-API
  */
-router.get('/inventory', async (req, res) => {
+router.get(_'/inventory', async _(req, res) => {
   try {
     logDebug('📦 API Request: Amazon inventory data');
     
@@ -64,7 +64,7 @@ router.get('/inventory', async (req, res) => {
  * GET /api/amazon/orders
  * Get real-time order data from Amazon SP-API
  */
-router.get('/orders', async (req, res) => {
+router.get(_'/orders', async _(req, res) => {
   try {
     logDebug('📋 API Request: Amazon order data');
     
@@ -102,7 +102,7 @@ router.get('/orders', async (req, res) => {
  * GET /api/amazon/sales-velocity
  * Calculate sales velocity from Amazon data
  */
-router.get('/sales-velocity', async (req, res) => {
+router.get(_'/sales-velocity', async _(req, res) => {
   try {
     logDebug('📈 API Request: Amazon sales velocity');
     
@@ -141,7 +141,7 @@ router.get('/sales-velocity', async (req, res) => {
  * GET /api/amazon/fba
  * Get FBA stock and shipment data
  */
-router.get('/fba', async (req, res) => {
+router.get(_'/fba', async _(req, res) => {
   try {
     logDebug('🚚 API Request: Amazon FBA data');
     
@@ -168,7 +168,7 @@ router.get('/fba', async (req, res) => {
  * GET /api/amazon/reorder-alerts
  * Get reorder alerts based on inventory levels and sales velocity
  */
-router.get('/reorder-alerts', async (req, res) => {
+router.get(_'/reorder-alerts', async _(req, res) => {
   try {
     logDebug('🚨 API Request: Amazon reorder alerts');
     
@@ -210,7 +210,7 @@ router.get('/reorder-alerts', async (req, res) => {
  * POST /api/amazon/sync
  * Manually trigger Amazon data sync
  */
-router.post('/sync', async (req, res) => {
+router.post(_'/sync', async _(req, res) => {
   try {
     logDebug('🔄 API Request: Manual Amazon sync');
     
@@ -242,7 +242,7 @@ router.post('/sync', async (req, res) => {
  * GET /api/amazon/status
  * Get Amazon SP-API connection status
  */
-router.get('/status', async (req, res) => {
+router.get(_'/status', async _(req, res) => {
   try {
     const status = {
       connected: amazonSPAPIService.isConnected,

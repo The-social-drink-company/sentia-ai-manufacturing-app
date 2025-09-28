@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import { useState, , useRef  } from 'react';
 
+=======
+import { useState, useEffect, useRef } from 'react'
+>>>>>>> development
 import { logError } from '../utils/structuredLogger.js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'

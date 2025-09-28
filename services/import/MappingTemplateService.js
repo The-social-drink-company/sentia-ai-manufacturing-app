@@ -126,9 +126,9 @@ class MappingTemplateService {
     this.dataPatterns = {
       date: [
         /^\d{4}-\d{2}-\d{2}$/,           // YYYY-MM-DD
-        /^\d{2}\/\d{2}\/\d{4}$/,         // MM/DD/YYYY
+        /^\d{2}/\d{2}/\d{4}$/,         // MM/DD/YYYY
         /^\d{2}-\d{2}-\d{4}$/,           // DD-MM-YYYY
-        /^\d{2}\.\d{2}\.\d{4}$/          // DD.MM.YYYY
+        /^\d{2}.\d{2}.\d{4}$/          // DD.MM.YYYY
       ],
       currency: [
         /^[A-Z]{3}$/,                    // ISO 4217 codes
@@ -139,10 +139,10 @@ class MappingTemplateService {
         /^[A-Z]{2,5}-[A-Z0-9]{3,10}$/   // Prefix pattern
       ],
       email: [
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/     // Basic email pattern
+        /^[^\s@]+@[^\s@]+.[^\s@]+$/     // Basic email pattern
       ],
       phone: [
-        /^\+?[\d\s\-\(\)]{10,20}$/       // Phone number pattern
+        /^+?[\d\s\-()]{10,20}$/       // Phone number pattern
       ]
     };
   }
@@ -243,7 +243,7 @@ class MappingTemplateService {
       let bestScore = 0;
 
       // Check each target field for best match
-      Object.entries(mappings).forEach(([targetField, variations]) => {
+      Object.entries(mappings).forEach(_([targetField, _variations]) => {
         const score = this.calculateMatchScore(normalizedHeader, variations);
         if (score > bestScore) {
           bestScore = score;
@@ -367,7 +367,7 @@ class MappingTemplateService {
     const patterns = [];
 
     // Check against known patterns
-    Object.entries(this.dataPatterns).forEach(([patternType, regexes]) => {
+    Object.entries(this.dataPatterns).forEach(_([patternType, _regexes]) => {
       const matchCount = sampleValues.filter(value => {
         if (typeof value !== 'string') return false;
         return regexes.some(regex => regex.test(value.toString()));
@@ -479,7 +479,7 @@ class MappingTemplateService {
         typeScores.number += 1;
       }
       // Float check
-      else if (/^\d*\.\d+$/.test(strValue)) {
+      else if (/^\d*.\d+$/.test(strValue)) {
         typeScores.number += 1;
       }
       // Date check
@@ -520,7 +520,7 @@ class MappingTemplateService {
       headerCounts[header] = (headerCounts[header] || 0) + 1;
     });
 
-    Object.entries(headerCounts).forEach(([header, count]) => {
+    Object.entries(headerCounts).forEach(_([header, _count]) => {
       if (count > 1) {
         issues.push({
           type: 'duplicate_headers',
@@ -571,9 +571,9 @@ class MappingTemplateService {
     const strValue = value.toString();
 
     if (/^\d+$/.test(strValue)) return 'integer';
-    if (/^\d*\.\d+$/.test(strValue)) return 'decimal';
+    if (/^\d*.\d+$/.test(strValue)) return 'decimal';
     if (/^\d{4}-\d{2}-\d{2}$/.test(strValue)) return 'date_iso';
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(strValue)) return 'date_us';
+    if (/^\d{2}/\d{2}/\d{4}$/.test(strValue)) return 'date_us';
     if (/^[A-Z]{3}$/.test(strValue)) return 'currency_code';
     if (strValue.includes('@')) return 'email_like';
     
@@ -700,7 +700,7 @@ class MappingTemplateService {
   applyTemplateToHeaders(templateMapping, currentHeaders, columnPatterns) {
     const appliedMapping = {};
 
-    Object.entries(templateMapping).forEach(([targetField, templateSourceField]) => {
+    Object.entries(templateMapping).forEach(_([targetField, _templateSourceField]) => {
       // Try exact match first
       const exactMatch = currentHeaders.find(header => 
         this.normalizeColumnName(header) === this.normalizeColumnName(templateSourceField)

@@ -66,25 +66,25 @@ class AutoSyncManager {
 
   setupEventListeners() {
     // Listen for API updates that require sync
-    this.wsMonitor.on('api-update-received', (event) => {
+    this.wsMonitor.on(_'api-update-received', (event) => {
       if (event.service && event.requiresSync) {
         this.triggerSync(event.service, 'api-update');
       }
     });
 
     // Listen for manufacturing alerts
-    this.wsMonitor.on('manufacturing-alert-received', (alert) => {
+    this.wsMonitor.on(_'manufacturing-alert-received', (alert) => {
       if (alert.severity === 'critical') {
         this.triggerFullSync('critical-alert');
       }
     });
 
     // Listen for connection status
-    this.wsMonitor.on('connection-established', () => {
+    this.wsMonitor.on(_'connection-established', () => {
       logDebug('WebSocket connected - Auto-sync ready');
     });
 
-    this.wsMonitor.on('connection-lost', () => {
+    this.wsMonitor.on(_'connection-lost', () => {
       logDebug('WebSocket disconnected - Auto-sync may be delayed');
     });
   }
@@ -144,7 +144,7 @@ class AutoSyncManager {
       this.syncJobs.get(service).stop();
     }
 
-    const job = cron.schedule(cronExpression, async () => {
+    const job = cron.schedule(_cronExpression, async () => {
       await this.executeSyncWithRetry(service, syncFunction);
     }, {
       scheduled: true,

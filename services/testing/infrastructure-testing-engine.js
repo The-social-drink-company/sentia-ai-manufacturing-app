@@ -913,7 +913,7 @@ locals {
   }
   
   test_categories = {
-${Object.entries(report.tests).map(([category, results]) => {
+${Object.entries(report.tests).map(_([category, results]) => {
   const summary = results.summary || {};
   return `    ${category} = {
       passed  = ${summary.passed || 0}

@@ -849,10 +849,10 @@ class EnterpriseSecurityFramework extends EventEmitter {
     cleanupRateLimiters() {
         const now = Date.now();
         
-        this.rateLimiters.forEach((rateLimiter, type) => {
+        this.rateLimiters.forEach(_(rateLimiter, type) => {
             const windowStart = now - rateLimiter.config.window;
             
-            rateLimiter.requests.forEach((requests, identifier) => {
+            rateLimiter.requests.forEach((requests, _identifier) => {
                 const validRequests = requests.filter(time => time > windowStart);
                 
                 if (validRequests.length === 0) {
@@ -942,7 +942,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
     cleanupSuspiciousActivities() {
         const cutoff = Date.now() - 3600000; // 1 hour ago
         
-        this.suspiciousActivities.forEach((attempts, key) => {
+        this.suspiciousActivities.forEach(_(attempts, key) => {
             const recentAttempts = attempts.filter(attempt => attempt.timestamp > cutoff);
             
             if (recentAttempts.length === 0) {
@@ -1212,7 +1212,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             const threats = [];
             
             // Check for suspicious activities
-            this.suspiciousActivities.forEach((attempts, ip) => {
+            this.suspiciousActivities.forEach(_(attempts, ip) => {
                 const recentAttempts = attempts.filter(attempt => 
                     Date.now() - attempt.timestamp < 300000 // Last 5 minutes
                 );
@@ -1228,7 +1228,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             });
             
             // Check active sessions for anomalies
-            this.activeSessions.forEach((session, sessionId) => {
+            this.activeSessions.forEach(_(session, sessionId) => {
                 const sessionAge = Date.now() - session.createdAt.getTime();
                 if (sessionAge > this.config.auth.sessionTimeout * 2) {
                     threats.push({
@@ -1377,7 +1377,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
         // Placeholder for ML model initialization
         return {
             predict: (features) => Math.random() * 100,
-            update: (features, label) => {}
+            update: (_features, _label) => {}
         };
     }
     
@@ -1385,7 +1385,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
         // Placeholder for ML model initialization
         return {
             predict: (features) => Math.random() * 100,
-            update: (features, label) => {}
+            update: (_features, _label) => {}
         };
     }
     
@@ -1393,7 +1393,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
         // Placeholder for ML model initialization
         return {
             predict: (features) => Math.random() * 100,
-            update: (features, label) => {}
+            update: (_features, _label) => {}
         };
     }
     

@@ -27,6 +27,9 @@ import ChatBot from './components/Chatbot';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 const ClerkSignIn = lazy(() => import('./pages/ClerkSignIn'));
 
+// AI Components
+import AIChatbot from './components/AIChatbot';
+
 // Lazy-loaded Page Components - COMPREHENSIVE SET
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const EnterpriseDashboard = lazy(() => import('./pages/Dashboard'));
@@ -395,7 +398,7 @@ const AppComprehensive = () => {
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
-      onError={(error, errorInfo) => {
+      onError = {(error, errorInfo) => {
         logError('Application error in comprehensive app', { error: error.message, stack: error.stack, errorInfo });
         // Send to error tracking service
         if (import.meta.env.VITE_SENTRY_DSN) {
@@ -434,6 +437,9 @@ const AppComprehensive = () => {
             },
           }}
         />
+
+        {/* AI Chatbot - Always Available */}
+        <AIChatbot />
 
           {/* React Query DevTools - only in development */}
           {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}

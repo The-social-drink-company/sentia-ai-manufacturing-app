@@ -33,7 +33,7 @@ export class ComplianceMonitor extends EventEmitter {
     this.isRunning = true;
     const checkInterval = interval || this.config.interval;
 
-    this.monitoringInterval = setInterval(async () => {
+    this.monitoringInterval = setInterval(async _() => {
       await this.runMonitoringCycle(complianceEngine);
     }, checkInterval);
 

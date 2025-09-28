@@ -220,7 +220,7 @@ class FreshDataImporter {
     console.log(`Errors: ${this.importResults.errors.length}`);
 
     console.log('\nIMPORT BREAKDOWN:');
-    Object.entries(this.importResults.imports).forEach(([source, result]) => {
+    Object.entries(this.importResults.imports).forEach(_([source, _result]) => {
       if (result.success) {
         const records = result.recordsProcessed || result.created || result.updated || 0;
         console.log(`  ✅ ${source.toUpperCase()}: ${records} records`);

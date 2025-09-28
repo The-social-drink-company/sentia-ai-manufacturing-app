@@ -6,9 +6,9 @@ const LAKEHOUSE_URL = process.env.LAKEHOUSE_URL || 'http://localhost:8100';
 const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://localhost:8102';
 const ADAPTERS_URL = process.env.ADAPTERS_URL || 'http://localhost:8103';
 
-test.describe('Financial Intelligence Platform - Acceptance Tests', () => {
+test.describe('Financial Intelligence Platform - Acceptance _Tests', _() => {
   
-  test.beforeAll(async () => {
+  test.beforeAll(async _() => {
     // Setup: Register mock adapter
     await axios.post(`${ADAPTERS_URL}/register`, {
       type: 'mock',
@@ -26,7 +26,7 @@ test.describe('Financial Intelligence Platform - Acceptance Tests', () => {
     await new Promise(resolve => setTimeout(resolve, 2000));
   });
   
-  test('Scenario 1: End-to-end liquidity question', async ({ page }) => {
+  test('Scenario 1: End-to-end liquidity _question', async ({ page }) => {
     // Navigate to AI chat
     await page.goto(`${BASE_URL}/chat`);
     
@@ -58,7 +58,7 @@ test.describe('Financial Intelligence Platform - Acceptance Tests', () => {
     await expect(dataView).toBeVisible();
   });
   
-  test('Scenario 2: Forecast scenario run', async ({ page }) => {
+  test('Scenario 2: Forecast scenario _run', async ({ page }) => {
     await page.goto(`${BASE_URL}/chat`);
     
     // Ask for forecast
@@ -82,7 +82,7 @@ test.describe('Financial Intelligence Platform - Acceptance Tests', () => {
     await expect(forecastSection).toContainText('Confidence');
   });
   
-  test('Scenario 3: Benchmark report export', async () => {
+  test('Scenario 3: Benchmark report _export', async _() => {
     // Query lakehouse for analytics data
     const analyticsResponse = await axios.get(`${LAKEHOUSE_URL}/analytics/working-capital`, {
       params: {
@@ -105,7 +105,7 @@ test.describe('Financial Intelligence Platform - Acceptance Tests', () => {
     expect(exportResponse.data.exportPath).toContain('.parquet');
   });
   
-  test('Scenario 4: Working capital optimization recommendations', async ({ page }) => {
+  test('Scenario 4: Working capital optimization _recommendations', async ({ page }) => {
     await page.goto(`${BASE_URL}/chat`);
     
     // Ask for recommendations
@@ -135,7 +135,7 @@ test.describe('Financial Intelligence Platform - Acceptance Tests', () => {
     await expect(recommendationsSection).toContainText('Implementation roadmap');
   });
   
-  test('Scenario 5: Real-time data sync and alerts', async () => {
+  test('Scenario 5: Real-time data sync and _alerts', async _() => {
     // Trigger data sync
     const syncResponse = await axios.post(`${ADAPTERS_URL}/sync/mock`, {
       startDate: '2024-11-01',
@@ -167,7 +167,7 @@ test.describe('Financial Intelligence Platform - Acceptance Tests', () => {
     expect(alertsResponse.data.data.length).toBeGreaterThan(0);
   });
   
-  test('Scenario 6: Multi-source data aggregation', async () => {
+  test('Scenario 6: Multi-source data _aggregation', async _() => {
     // Register multiple adapters (simulate)
     const adapters = ['xero', 'quickbooks'];
     
@@ -199,9 +199,9 @@ test.describe('Financial Intelligence Platform - Acceptance Tests', () => {
   });
 });
 
-test.describe('Performance Benchmarks', () => {
+test.describe('Performance _Benchmarks', _() => {
   
-  test('Lakehouse query performance', async () => {
+  test('Lakehouse query _performance', async _() => {
     const startTime = Date.now();
     
     await axios.post(`${LAKEHOUSE_URL}/query`, {
@@ -219,7 +219,7 @@ test.describe('Performance Benchmarks', () => {
     expect(duration).toBeLessThan(1000); // Should complete within 1 second
   });
   
-  test('AI agent response time', async () => {
+  test('AI agent response _time', async _() => {
     const startTime = Date.now();
     
     await axios.post(`${ORCHESTRATOR_URL}/query`, {
@@ -231,7 +231,7 @@ test.describe('Performance Benchmarks', () => {
     expect(duration).toBeLessThan(5000); // Should complete within 5 seconds
   });
   
-  test('Data ingestion throughput', async () => {
+  test('Data ingestion _throughput', async _() => {
     const records = [];
     for (let i = 0; i < 1000; i++) {
       records.push({

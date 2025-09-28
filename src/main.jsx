@@ -1,48 +1,33 @@
+<<<<<<< HEAD
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { AuthProvider } from './providers/AuthProvider.jsx'
 import { logInfo, logError, logDebug } from './utils/logger.js'
 import { devLog } from './utils/structuredLogger.js'
+=======
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
+import { ClerkProvider } from "@clerk/clerk-react"
+import "./index.css"
+import App from "./App-enterprise.jsx"
+>>>>>>> development
 
-// Simplified initialization
-devLog.log('Initializing Sentia Manufacturing Dashboard...');
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-// Simple fallback App component
-const FallbackApp = () => {
-  devLog.log('[FallbackApp] Rendering...');
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md w-full text-center">
-        <div className="bg-white shadow-xl rounded-lg p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Sentia Manufacturing Dashboard
-          </h1>
-          <p className="text-gray-600 mb-6">
-            System Loading...
-          </p>
-          <a
-            href="/dashboard"
-            className="block w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Continue to Dashboard
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-};
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key")
+}
 
-const initializeApp = async () => {
-  const rootElement = document.getElementById('root');
-  if (!rootElement) {
-    logError('Root element not found');
-    document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Error: Root element not found</div>';
-    return;
-  }
+// Remove fallback loader once React loads
+const fallbackLoader = document.getElementById("fallback-loader")
+if (fallbackLoader) {
+  fallbackLoader.style.display = "none"
+}
 
-  devLog.log('Root element found, mounting React app...');
+console.log("[Clerk] Initializing with publishable key:", PUBLISHABLE_KEY?.substring(0, 20) + "...")
 
+<<<<<<< HEAD
   try {
     devLog.log('[main.jsx] Creating React root...');
     const root = createRoot(rootElement);
@@ -88,3 +73,40 @@ window.addEventListener('unhandledrejection', (event) => {
 
 // Initialize app
 initializeApp();
+=======
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      navigate={(to) => window.location.href = to}
+      appearance={{
+        baseTheme: undefined,
+        variables: {
+          colorPrimary: "#2563eb",
+          colorTextOnPrimaryBackground: "#ffffff",
+          colorBackground: "#ffffff",
+          colorInputBackground: "#ffffff",
+          colorInputText: "#1f2937",
+          fontFamily: "\"Inter\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+          borderRadius: "0.5rem"
+        },
+        elements: {
+          card: {
+            boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+            border: "1px solid #e5e7eb"
+          },
+          headerTitle: {
+            fontSize: "1.5rem",
+            fontWeight: "600"
+          },
+          headerSubtitle: {
+            color: "#6b7280"
+          }
+        }
+      }}
+    >
+      <App />
+    </ClerkProvider>
+  </StrictMode>,
+)
+>>>>>>> development

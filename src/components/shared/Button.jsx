@@ -21,15 +21,15 @@ const buttonSizes = {
 }
 
 const Button = forwardRef(({
-  className,
+  _className,
   variant = 'primary',
   size = 'md',
   disabled = false,
   loading = false,
   fullWidth = false,
-  children,
+  _children,
   ...props
-}, ref) => {
+}, _ref) => {
   return (
     <button
       ref={ref}

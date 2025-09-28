@@ -4,7 +4,6 @@ import { requireAuth, requireRole, requireManager } from '../middleware/clerkAut
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
-import qualityService from '../../services/quality/qualityService.js';
 
 const router = express.Router();
 
@@ -71,25 +70,6 @@ const qualitySchemas = {
     })
   }
 };
-
-/**
- * GET /api/quality/dashboard
- * Get quality dashboard metrics using quality service
- */
-router.get('/dashboard',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
-    const { timeRange = '7d' } = req.query;
-
-    const metrics = await qualityService.getQualityMetrics(timeRange);
-
-    res.json({
-      success: true,
-      data: metrics
-    });
-  })
-);
 
 /**
  * GET /api/quality/inspections
@@ -546,100 +526,6 @@ router.post('/spc/calculate',
                  m.value > uwl || m.value < lwl ? 'warning' : 'normal'
         }))
       }
-    });
-  })
-);
-
-/**
- * POST /api/quality/checks
- * Create new quality check using quality service
- */
-router.post('/checks',
-  requireAuth,
-  requireRole(['admin', 'manager', 'quality', 'operator']),
-  rateLimiters.write,
-  asyncHandler(async (req, res) => {
-    const qualityCheck = await qualityService.createQualityCheck(req.body);
-
-    res.status(201).json({
-      success: true,
-      data: qualityCheck
-    });
-  })
-);
-
-/**
- * GET /api/quality/checks/:productionId
- * Get quality checks for a specific production job
- */
-router.get('/checks/:productionId',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
-    const { productionId } = req.params;
-
-    const result = await qualityService.getProductionQualityChecks(productionId);
-
-    res.json({
-      success: true,
-      data: result
-    });
-  })
-);
-
-/**
- * GET /api/quality/checklists
- * Get quality control checklist templates
- */
-router.get('/checklists',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
-    const checklists = await qualityService.getQualityChecklists();
-
-    res.json({
-      success: true,
-      data: checklists
-    });
-  })
-);
-
-/**
- * POST /api/quality/reports
- * Generate quality report using quality service
- */
-router.post('/reports',
-  requireAuth,
-  requireRole(['admin', 'manager', 'quality']),
-  rateLimiters.expensive,
-  asyncHandler(async (req, res) => {
-    const { timeRange = '30d', reportType = 'summary' } = req.body;
-
-    const report = await qualityService.generateQualityReport(timeRange, reportType);
-
-    res.json({
-      success: true,
-      data: report
-    });
-  })
-);
-
-/**
- * GET /api/quality/export
- * Export quality data using quality service
- */
-router.get('/export',
-  requireAuth,
-  requireRole(['admin', 'manager', 'quality']),
-  rateLimiters.expensive,
-  asyncHandler(async (req, res) => {
-    const { format = 'json', timeRange = '30d' } = req.query;
-
-    const exportData = await qualityService.exportQualityData(format, timeRange);
-
-    res.json({
-      success: true,
-      data: exportData
     });
   })
 );

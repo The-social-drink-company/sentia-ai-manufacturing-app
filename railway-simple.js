@@ -10,7 +10,7 @@ console.log('Starting ultra-simple server...');
 console.log('PORT:', PORT);
 console.log('NODE_ENV:', process.env.NODE_ENV);
 
-app.get('/health', (req, res) => {
+app.get(_'/health', _(req, res) => {
   res.json({
     status: 'healthy',
     message: 'Ultra-simple server working',
@@ -19,7 +19,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.get('/', (req, res) => {
+app.get(_'/', _(req, res) => {
   res.send(`
     <h1>Railway Simple Server</h1>
     <p>If you see this, Railway deployment is working!</p>
@@ -29,13 +29,13 @@ app.get('/', (req, res) => {
   `);
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, _'0.0.0.0', _() => {
   console.log(`Ultra-simple server listening on http://0.0.0.0:${PORT}`);
   console.log('Server is ready to accept connections');
 });
 
 // Keep process alive
-process.on('SIGTERM', () => {
+process.on(_'SIGTERM', _() => {
   console.log('SIGTERM received, shutting down gracefully');
   process.exit(0);
 });

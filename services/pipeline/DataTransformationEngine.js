@@ -37,8 +37,8 @@ export class DataTransformationEngine {
    */
   initializeTransformations() {
     // Financial data transformations
-    this.transformations.set('normalizeFinancialData', {
-      description: 'Normalize financial data to standard format',
+    this.transformations.set(_'normalizeFinancialData', {
+      description: 'Normalize financial data to standard _format',
       transform: (data) => {
         return {
           transactionId: data.id || data.transactionId || data.txn_id,
@@ -64,8 +64,8 @@ export class DataTransformationEngine {
     });
 
     // Inventory transformations
-    this.transformations.set('normalizeInventoryData', {
-      description: 'Normalize inventory data to standard format',
+    this.transformations.set(_'normalizeInventoryData', {
+      description: 'Normalize inventory data to standard _format',
       transform: (data) => {
         return {
           movementId: data.id || data.movementId || this.generateId('INV'),
@@ -89,8 +89,8 @@ export class DataTransformationEngine {
     });
 
     // Sales order transformations
-    this.transformations.set('normalizeSalesOrder', {
-      description: 'Normalize sales order data to standard format',
+    this.transformations.set(_'normalizeSalesOrder', {
+      description: 'Normalize sales order data to standard _format',
       transform: (data) => {
         const items = this.normalizeOrderItems(data.items || data.lineItems || []);
         const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
@@ -122,8 +122,8 @@ export class DataTransformationEngine {
     });
 
     // Production batch transformations
-    this.transformations.set('normalizeProductionBatch', {
-      description: 'Normalize production batch data to standard format',
+    this.transformations.set(_'normalizeProductionBatch', {
+      description: 'Normalize production batch data to standard _format',
       transform: (data) => {
         return {
           batchId: data.id || data.batchId || data.batchNumber || this.generateId('BATCH'),
@@ -162,8 +162,8 @@ export class DataTransformationEngine {
     });
 
     // Cash flow transformations
-    this.transformations.set('normalizeCashFlow', {
-      description: 'Normalize cash flow data to standard format',
+    this.transformations.set(_'normalizeCashFlow', {
+      description: 'Normalize cash flow data to standard _format',
       transform: (data) => {
         const receipts = this.normalizeReceipts(data.receipts || data.inflows || {});
         const payments = this.normalizePayments(data.payments || data.outflows || {});
@@ -200,9 +200,9 @@ export class DataTransformationEngine {
    */
   initializeAggregations() {
     // Financial aggregations
-    this.aggregations.set('aggregateFinancialsByPeriod', {
-      description: 'Aggregate financial data by time period',
-      aggregate: (data, period = 'month') => {
+    this.aggregations.set(_'aggregateFinancialsByPeriod', {
+      description: 'Aggregate financial data by time _period',
+      aggregate: (data, period = _'month') => {
         const grouped = new Map();
 
         data.forEach(record => {
@@ -239,8 +239,8 @@ export class DataTransformationEngine {
     });
 
     // Inventory aggregations
-    this.aggregations.set('aggregateInventoryLevels', {
-      description: 'Aggregate current inventory levels by product',
+    this.aggregations.set(_'aggregateInventoryLevels', {
+      description: 'Aggregate current inventory levels by _product',
       aggregate: (data) => {
         const inventory = new Map();
 
@@ -290,8 +290,8 @@ export class DataTransformationEngine {
     });
 
     // Sales aggregations
-    this.aggregations.set('aggregateSalesByCustomer', {
-      description: 'Aggregate sales data by customer',
+    this.aggregations.set(_'aggregateSalesByCustomer', {
+      description: 'Aggregate sales data by _customer',
       aggregate: (data) => {
         const customers = new Map();
 
@@ -334,8 +334,8 @@ export class DataTransformationEngine {
     });
 
     // Production aggregations
-    this.aggregations.set('aggregateProductionMetrics', {
-      description: 'Aggregate production metrics',
+    this.aggregations.set(_'aggregateProductionMetrics', {
+      description: 'Aggregate production _metrics',
       aggregate: (data) => {
         const metrics = {
           totalBatches: data.length,
@@ -401,8 +401,8 @@ export class DataTransformationEngine {
    */
   initializeEnrichments() {
     // Financial enrichments
-    this.enrichments.set('enrichFinancialMetrics', {
-      description: 'Enrich financial data with calculated metrics',
+    this.enrichments.set(_'enrichFinancialMetrics', {
+      description: 'Enrich financial data with calculated _metrics',
       enrich: (data) => {
         return {
           ...data,
@@ -429,8 +429,8 @@ export class DataTransformationEngine {
     });
 
     // Inventory enrichments
-    this.enrichments.set('enrichInventoryAnalytics', {
-      description: 'Enrich inventory data with analytics',
+    this.enrichments.set(_'enrichInventoryAnalytics', {
+      description: 'Enrich inventory data with _analytics',
       enrich: (data) => {
         const historicalDemand = this.calculateHistoricalDemand(data);
         const leadTime = this.calculateLeadTime(data);
@@ -451,8 +451,8 @@ export class DataTransformationEngine {
     });
 
     // Customer enrichments
-    this.enrichments.set('enrichCustomerAnalytics', {
-      description: 'Enrich customer data with analytics',
+    this.enrichments.set(_'enrichCustomerAnalytics', {
+      description: 'Enrich customer data with _analytics',
       enrich: (data) => {
         return {
           ...data,
@@ -467,8 +467,8 @@ export class DataTransformationEngine {
     });
 
     // Production enrichments
-    this.enrichments.set('enrichProductionAnalytics', {
-      description: 'Enrich production data with analytics',
+    this.enrichments.set(_'enrichProductionAnalytics', {
+      description: 'Enrich production data with _analytics',
       enrich: (data) => {
         return {
           ...data,
@@ -592,8 +592,8 @@ export class DataTransformationEngine {
   createStreamingPipeline(transformations) {
     const transforms = transformations.map(config => {
       return new Transform({
-        objectMode: true,
-        transform: async (chunk, encoding, callback) => {
+        objectMode: _true,
+        transform: async _(chunk, _encoding, _callback) => {
           try {
             const transformed = await this.transformData(config.type, chunk);
             callback(null, transformed);
@@ -774,7 +774,7 @@ export class DataTransformationEngine {
   }
 
   sumObject(obj) {
-    return Object.values(obj).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+    return Object.values(obj).reduce((sum, _val) => sum + (parseFloat(val) || 0), 0);
   }
 
   calculateYield(batch) {

@@ -217,7 +217,7 @@ export class EnterpriseSecurityFramework {
 
   // Security monitoring middleware
   securityMonitoringMiddleware() {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       const securityContext = {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
@@ -245,9 +245,9 @@ export class EnterpriseSecurityFramework {
       // SQL injection attempts
       /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|CREATE)\b)/i,
       // XSS attempts
-      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+      /<script\b[^<]*(?:(?!</script>)<[^<]*)*</script>/gi,
       // Path traversal
-      /\.\.\//g,
+      /..//g,
       // Command injection
       /[;&|`$()]/g
     ];
@@ -296,7 +296,7 @@ export class EnterpriseSecurityFramework {
 
   // IP blocking middleware
   ipBlockingMiddleware() {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       if (this.blockedIPs.has(req.ip)) {
         logWarn('Blocked IP attempted access', { ip: req.ip });
         return res.status(403).json({
@@ -310,7 +310,7 @@ export class EnterpriseSecurityFramework {
 
   // CSRF protection
   csrfProtection() {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
         const token = req.headers['x-csrf-token'] || req.body._csrf;
         const sessionToken = req.session?.csrfToken;
@@ -338,7 +338,7 @@ export class EnterpriseSecurityFramework {
 
   // API key authentication
   apiKeyAuth() {
-    return async (req, res, next) => {
+    return async (req, res, _next) => {
       const apiKey = req.headers['x-api-key'];
       
       if (!apiKey) {
@@ -381,7 +381,7 @@ export class EnterpriseSecurityFramework {
 
   // Security headers middleware
   securityHeaders() {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       // Custom security headers
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('X-Frame-Options', 'DENY');

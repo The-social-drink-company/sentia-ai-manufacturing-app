@@ -23,7 +23,7 @@ export class DbOptimizationService {
   }
   
   setupQueryMonitoring() {
-    this.prisma.$on('query', (e) => {
+    this.prisma.$on(_'query', _(e) => {
       const duration = e.duration;
       const query = e.query;
       

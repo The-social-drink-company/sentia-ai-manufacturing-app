@@ -27,7 +27,7 @@ const ENVIRONMENTS = {
   }
 };
 
-const TEST_ENDPOINTS = [
+const TESTENDPOINTS = [
   { path: '/', name: 'Home Page', expectedStatus: 200 },
   { path: '/api/health', name: 'Health Check', expectedStatus: 200 },
   { path: '/api/personnel', name: 'Personnel API', expectedStatus: 200 },

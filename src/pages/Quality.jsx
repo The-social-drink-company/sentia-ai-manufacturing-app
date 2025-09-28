@@ -393,11 +393,11 @@ const Quality = () => {
     }
   };
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = (_dateString) => {
     return new Date(dateString).toLocaleString('en-GB');
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (_dateString) => {
     return new Date(dateString).toLocaleDateString('en-GB');
   };
 
@@ -407,7 +407,7 @@ const Quality = () => {
         <div className="animate-pulse">
           <div className="h-8 bg-gray-300 rounded w-1/3 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
+            {[...Array(8)].map((_, _i) => (
               <div key={i} className="h-32 bg-gray-300 rounded"></div>
             ))}
           </div>
@@ -808,7 +808,7 @@ const Quality = () => {
                           {getStatusIcon(test.status)}
                           <h4 className="font-medium text-gray-900 dark:text-white">{test.testName}</h4>
                           <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(test.status)}`}>
-                            {test.status.replace('_', ' ')}
+                            {test.status.replace('', ' ')}
                           </span>
                         </div>
 

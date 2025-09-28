@@ -1,202 +1,92 @@
-/**
- * Structured Logger Utility
- *
- * Enterprise-grade logging system with environment-aware levels
- * Replaces console.log statements throughout the application
- *
- * Usage:
- * import { logInfo, logWarn, logError, logDebug } from '@/utils/structuredLogger';
- *
- * logInfo('Operation completed', { userId, operation: 'data_sync' });
- * logWarn('Fallback triggered', { reason, fallbackType });
- * logError('Critical failure', error);
- */
+// Structured logging utility for production environment
+const isProduction = import.meta.env.MODE === 'production';
+const isDevelopment = import.meta.env.MODE === 'development';
 
-const LOG_LEVELS = {
-  DEBUG: 0,
-  INFO: 1,
-  WARN: 2,
-  ERROR: 3,
-  NONE: 4
-};
-
-// Determine log level based on environment
-const getCurrentLogLevel = () => {
-  const env = import.meta.env?.MODE || process?.env?.NODE_ENV || 'development';
-
-  switch (env) {
-    case 'production':
-      return LOG_LEVELS.WARN; // Only warnings and errors in production
-    case 'test':
-    case 'testing':
-      return LOG_LEVELS.ERROR; // Only errors in test
-    case 'development':
-    default:
-      return LOG_LEVELS.DEBUG; // Everything in development
-  }
-};
-
-const currentLogLevel = getCurrentLogLevel();
-const isDevelopment = import.meta.env?.DEV || process?.env?.NODE_ENV === 'development';
-
-/**
- * Format log message with timestamp and level
- */
-const formatMessage = (level, message, context) => {
-  const timestamp = new Date().toISOString();
-  const levelName = Object.keys(LOG_LEVELS).find(key => LOG_LEVELS[key] === level);
-
-  return {
-    timestamp,
-    level: levelName,
-    message,
-    ...(context && { context }),
-    environment: import.meta.env?.MODE || process?.env?.NODE_ENV || 'unknown'
-  };
-};
-
-/**
- * Send log to monitoring service (if configured)
- */
-const sendToMonitoring = (logData) => {
-  // In production, send to monitoring service
-  if (typeof window !== 'undefined' && window.sentryCapture) {
-    window.sentryCapture(logData);
-  }
-
-  // Could also send to custom logging endpoint
-  if (import.meta.env?.VITE_LOGGING_ENDPOINT) {
-    // Non-blocking log sending
-    fetch(import.meta.env.VITE_LOGGING_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(logData)
-    }).catch(() => {
-      // Silently fail - don't break app if logging fails
-    });
-  }
-};
-
-/**
- * Core logging function
- */
-const log = (level, message, context) => {
-  if (level < currentLogLevel) return;
-
-  const logData = formatMessage(level, message, context);
-
-  // Console output in development
-  if (isDevelopment || level >= LOG_LEVELS.WARN) {
-    const consoleMethod = level === LOG_LEVELS.ERROR ? 'error' :
-                         level === LOG_LEVELS.WARN ? 'warn' :
-                         level === LOG_LEVELS.DEBUG ? 'debug' : 'log';
-
-    // Use structured output in development
+// Development logger - only logs in development
+export const devLog = {
+  log: (...args) => {
     if (isDevelopment) {
-      console[consoleMethod](`[${logData.level}] ${logData.message}`, context || '');
-    } else {
-      // Simple output in production
-      console[consoleMethod](logData.message);
+      console.log(...args);
+    }
+  },
+  warn: (...args) => {
+    if (isDevelopment) {
+      console.warn(...args);
+    }
+  },
+  error: (...args) => {
+    if (isDevelopment) {
+      console.error(...args);
+    }
+  },
+  info: (...args) => {
+    if (isDevelopment) {
+      console.info(...args);
+    }
+  },
+  debug: (...args) => {
+    if (isDevelopment) {
+      console.debug(...args);
     }
   }
+};
 
-  // Send errors and warnings to monitoring
-  if (level >= LOG_LEVELS.WARN) {
-    sendToMonitoring(logData);
+// Structured logging functions for production
+export function logInfo(message, data = {}) {
+  if (!isProduction || import.meta.env.VITE_ENABLE_LOGGING === 'true') {
+    console.log(JSON.stringify({
+      level: 'info',
+      message,
+      timestamp: new Date().toISOString(),
+      ...data
+    }));
   }
-};
+}
 
-/**
- * Public logging functions
- */
-export const logDebug = (message, context) => {
-  log(LOG_LEVELS.DEBUG, message, context);
-};
+export function logWarn(message, data = {}) {
+  console.warn(JSON.stringify({
+    level: 'warn',
+    message,
+    timestamp: new Date().toISOString(),
+    ...data
+  }));
+}
 
-export const logInfo = (message, context) => {
-  log(LOG_LEVELS.INFO, message, context);
-};
+export function logError(message, error = null, data = {}) {
+  const errorData = {
+    level: 'error',
+    message,
+    timestamp: new Date().toISOString(),
+    ...data
+  };
 
-export const logWarn = (message, context) => {
-  log(LOG_LEVELS.WARN, message, context);
-};
-
-export const logError = (message, errorOrContext) => {
-  // Handle both Error objects and context objects
-  let context = errorOrContext;
-
-  if (errorOrContext instanceof Error) {
-    context = {
-      error: errorOrContext.message,
-      stack: errorOrContext.stack,
-      name: errorOrContext.name,
-      ...(errorOrContext.cause && { cause: errorOrContext.cause })
+  if (error) {
+    errorData.error = {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
     };
   }
 
-  log(LOG_LEVELS.ERROR, message, context);
-};
+  console.error(JSON.stringify(errorData));
+}
 
-/**
- * Performance logging utility
- */
-export const logPerformance = (operation, duration, metadata) => {
-  const context = {
-    operation,
-    duration: `${duration}ms`,
-    ...metadata
-  };
-
-  if (duration > 1000) {
-    logWarn(`Slow operation: ${operation}`, context);
-  } else if (isDevelopment) {
-    logDebug(`Performance: ${operation}`, context);
+export function logDebug(message, data = {}) {
+  if (isDevelopment) {
+    console.debug(JSON.stringify({
+      level: 'debug',
+      message,
+      timestamp: new Date().toISOString(),
+      ...data
+    }));
   }
-};
+}
 
-/**
- * Development-only logger (completely removed in production)
- */
-export const devLog = {
-  log: (...args) => {
-    if (isDevelopment) console.log(...args);
-  },
-  warn: (...args) => {
-    if (isDevelopment) console.warn(...args);
-  },
-  error: (...args) => {
-    if (isDevelopment) console.error(...args);
-  },
-  table: (...args) => {
-    if (isDevelopment) console.table(...args);
-  },
-  time: (label) => {
-    if (isDevelopment) console.time(label);
-  },
-  timeEnd: (label) => {
-    if (isDevelopment) console.timeEnd(label);
-  }
-};
-
-/**
- * Create a scoped logger for specific modules
- */
-export const createLogger = (scope) => {
-  return {
-    debug: (message, context) => logDebug(`[${scope}] ${message}`, context),
-    info: (message, context) => logInfo(`[${scope}] ${message}`, context),
-    warn: (message, context) => logWarn(`[${scope}] ${message}`, context),
-    error: (message, context) => logError(`[${scope}] ${message}`, context)
-  };
-};
-
-// Default export for convenience
+// Export default logger
 export default {
-  debug: logDebug,
   info: logInfo,
   warn: logWarn,
   error: logError,
-  performance: logPerformance,
-  createLogger,
-  devLog
+  debug: logDebug,
+  dev: devLog
 };

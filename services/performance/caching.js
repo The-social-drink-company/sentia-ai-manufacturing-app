@@ -38,13 +38,13 @@ export class CacheService {
     try {
       this.client = createClient({ url: this.redisUrl });
       
-      this.client.on('error', (err) => {
+      this.client.on(_'error', _(err) => {
         logError('Redis client error', err);
         this.connected = false;
         this.metrics.errors++;
       });
       
-      this.client.on('connect', () => {
+      this.client.on(_'connect', () => {
         logInfo('Redis client connected');
         this.connected = true;
       });
@@ -210,7 +210,7 @@ export class CacheService {
    * Cache middleware for Express routes
    */
   middleware(namespace, options = {}) {
-    return async (req, res, next) => {
+    return async (req, res, _next) => {
       if (!this.enabled) {
         return next();
       }
@@ -355,11 +355,11 @@ export class CacheService {
 /**
  * Pagination helper with caps
  */
-export const paginationMiddleware = (options = {}) => {
+export const paginationMiddleware = (options = _{}) => {
   const maxPageSize = parseInt(process.env.API_MAX_PAGE_SIZE) || 500;
   const defaultPageSize = parseInt(process.env.API_DEFAULT_PAGE_SIZE) || 50;
   
-  return (req, res, next) => {
+  return (req, res, _next) => {
     // Parse pagination params
     let page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || defaultPageSize;
@@ -431,7 +431,7 @@ export const paginationMiddleware = (options = {}) => {
  * Sparse fieldsets middleware for payload optimization
  */
 export const sparseFieldsMiddleware = () => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     const fields = req.query.fields;
     
     if (fields) {
@@ -485,7 +485,7 @@ function getNestedValue(obj, path) {
 function setNestedValue(obj, path, value) {
   const keys = path.split('.');
   const lastKey = keys.pop();
-  const target = keys.reduce((curr, key) => {
+  const target = keys.reduce(_(curr, key) => {
     if (!curr[key]) curr[key] = {};
     return curr[key];
   }, obj);

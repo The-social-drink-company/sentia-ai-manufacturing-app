@@ -7,19 +7,44 @@ import {
   MoonIcon,
   SunIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  ShieldCheckIcon,
+  UserIcon,
+  BuildingOfficeIcon
 } from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuthRole } from '../../hooks/useAuthRole.jsx'
 
 import { cn } from '../../utils/cn'
 
-const Header = ({ onMenuToggle, isSidebarOpen }) => {
+const Header = ({ _onMenuToggle, isSidebarOpen }) => {
   const { user } = useUser()
   const { signOut } = useClerk()
+  const { role, getUserDisplayName } = useAuthRole()
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [notifications] = useState([])
+
+  // Get role display information
+  const getRoleInfo = (userRole) => {
+    switch(userRole) {
+      case 'master_admin':
+        return { label: 'Master Admin', icon: ShieldCheckIcon, color: 'text-purple-600' }
+      case 'admin':
+        return { label: 'Administrator', icon: ShieldCheckIcon, color: 'text-red-600' }
+      case 'manager':
+        return { label: 'Manager', icon: BuildingOfficeIcon, color: 'text-blue-600' }
+      case 'operator':
+        return { label: 'Operator', icon: UserIcon, color: 'text-green-600' }
+      case 'viewer':
+        return { label: 'Viewer', icon: UserIcon, color: 'text-gray-600' }
+      default:
+        return { label: 'User', icon: UserIcon, color: 'text-gray-600' }
+    }
+  }
+
+  const roleInfo = getRoleInfo(role)
 
   useEffect(() => {
     // Load theme preference
@@ -138,31 +163,71 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                 )}
                 <div className="hidden md:block text-left">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {user?.fullName || user?.username || 'User'}
+                    {user?.fullName || user?.username || getUserDisplayName() || 'User'}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {user?.primaryEmailAddress?.emailAddress}
-                  </p>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {user?.primaryEmailAddress?.emailAddress}
+                    </span>
+                    {role && (
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 ${roleInfo.color}`}>
+                        <roleInfo.icon className="w-3 h-3 mr-1" />
+                        {roleInfo.label}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </button>
 
-              {/* Dropdown menu */}
+              {/* Enhanced Dropdown menu */}
               {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50">
+                  {/* User Info Header */}
+                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {user?.fullName || user?.username || 'User'}
+                    </p>
+                    <div className="flex items-center mt-1">
+                      <roleInfo.icon className={`w-3 h-3 mr-1 ${roleInfo.color}`} />
+                      <span className={`text-xs font-medium ${roleInfo.color}`}>
+                        {roleInfo.label}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setIsProfileOpen(false)}
                   >
+                    <UserIcon className="h-4 w-4 mr-2" />
                     Your Profile
                   </Link>
                   <Link
-                    to="/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    to="/user-preferences"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setIsProfileOpen(false)}
                   >
-                    Settings
+                    <Cog6ToothIcon className="h-4 w-4 mr-2" />
+                    Preferences
                   </Link>
+
+                  {/* Admin-only options */}
+                  {(role === 'admin' || role === 'master_admin') && (
+                    <>
+                      <hr className="my-1 border-gray-200 dark:border-gray-700" />
+                      <Link
+                        to="/admin"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <ShieldCheckIcon className="h-4 w-4 mr-2" />
+                        Admin Panel
+                      </Link>
+                    </>
+                  )}
+
                   <hr className="my-1 border-gray-200 dark:border-gray-700" />
                   <button
                     onClick={handleSignOut}

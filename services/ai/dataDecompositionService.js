@@ -126,7 +126,7 @@ class DataDecompositionService {
       
       if (this.isValidIMF(imf)) {
         imfs.push(imf);
-        residue = residue.map((val, idx) => val - imf[idx]);
+        residue = residue.map((val, _idx) => val - imf[idx]);
         imfCount++;
       } else {
         break;
@@ -161,12 +161,12 @@ class DataDecompositionService {
       const lowerEnvelope = this.createSplineEnvelope(h, minima);
       
       // Calculate mean envelope
-      const meanEnvelope = upperEnvelope.map((upper, idx) => 
+      const meanEnvelope = upperEnvelope.map((upper, _idx) => 
         (upper + lowerEnvelope[idx]) / 2
       );
       
       // Subtract mean from signal
-      const newH = h.map((val, idx) => val - meanEnvelope[idx]);
+      const newH = h.map((val, _idx) => val - meanEnvelope[idx]);
       
       // Check IMF criteria
       if (this.satisfiesIMFCriteria(newH)) {
@@ -277,7 +277,7 @@ class DataDecompositionService {
     const upperEnvelope = this.createSplineEnvelope(signal, maxima);
     const lowerEnvelope = this.createSplineEnvelope(signal, minima);
     
-    const meanEnvelope = upperEnvelope.map((upper, idx) => 
+    const meanEnvelope = upperEnvelope.map((upper, _idx) => 
       (upper + lowerEnvelope[idx]) / 2
     );
     

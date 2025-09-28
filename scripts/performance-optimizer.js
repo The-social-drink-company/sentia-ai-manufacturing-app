@@ -13,8 +13,8 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(__filename);
 
 // Colors for console output
 const colors = {
@@ -664,7 +664,7 @@ async function main() {
 }
 
 // Handle errors
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', _(error) => {
   log(`\nUnexpected error: ${error.message}`, 'red');
   process.exit(1);
 });

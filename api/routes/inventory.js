@@ -1,10 +1,10 @@
 import express from 'express';
 import NodeCache from 'node-cache';
+import prisma from '../../lib/prisma.js';
 import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
-import inventoryService from '../../services/inventory/inventoryService.js';
 
 import {
   inventoryLevelSchema,

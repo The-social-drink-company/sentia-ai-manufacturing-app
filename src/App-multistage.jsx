@@ -12,7 +12,11 @@ const ComprehensiveApp = lazy(() => import('./App-comprehensive'));
 import { BulletproofAuthProvider } from './auth/BulletproofAuthProvider';
 
 const AppMultiStage = () => {
+<<<<<<< HEAD
   const [appState, setAppState] = useState('landing'); // Start with landing page as user requested
+=======
+  const [appState, setAppState] = useState('landing'); // Start with landing page for proper UX
+>>>>>>> development
   const [clerkLoaded, setClerkLoaded] = useState(false); // Load Clerk when user clicks Get Started
   const [loadingProgress, setLoadingProgress] = useState(0);
 
@@ -36,7 +40,11 @@ const AppMultiStage = () => {
     setAppState('authenticated');
   };
 
+<<<<<<< HEAD
   // Progressive loading with proper timing
+=======
+  // Enhanced loading with progress tracking
+>>>>>>> development
   React.useEffect(() => {
     if (appState === 'loading') {
       const progressInterval = setInterval(() => {
@@ -64,7 +72,7 @@ const AppMultiStage = () => {
   // Multi-stage loading
   if (appState === 'loading') {
     devLog.log('[AppMultiStage] Rendering loading stage');
-    return <MultiStageLoader onComplete={handleLoadingComplete} />;
+    return <MultiStageLoader onComplete={handleLoadingComplete} progress={loadingProgress} />;
   }
 
   // Authenticated app with bulletproof auth

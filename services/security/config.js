@@ -11,7 +11,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // CORS Configuration
 export const corsOptions = {
-  origin: (origin, callback) => {
+  origin: (origin, _callback) => {
     const allowedOrigins = (process.env.CORS_ORIGINS || '')
       .split(',')
       .map(o => o.trim())
@@ -98,7 +98,7 @@ export const helmetConfig = helmet({
 });
 
 // Rate Limiting Configurations
-export const createRateLimiter = (options = {}) => {
+export const createRateLimiter = (options = _{}) => {
   const defaults = {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60000, // 1 minute
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
@@ -147,7 +147,7 @@ export const exportLimiter = createRateLimiter({
 });
 
 // Webhook signature verification
-export const verifyWebhookSignature = (secret, body, signature) => {
+export const verifyWebhookSignature = (_secret, body, signature) => {
   const expectedSignature = crypto
     .createHmac('sha256', secret)
     .update(JSON.stringify(body))
@@ -160,14 +160,14 @@ export const verifyWebhookSignature = (secret, body, signature) => {
 };
 
 // Request sanitization middleware
-export const sanitizeRequest = (req, res, next) => {
+export const sanitizeRequest = (req, res, _next) => {
   // Sanitize query parameters
   if (req.query) {
     Object.keys(req.query).forEach(key => {
       if (typeof req.query[key] === 'string') {
         // Remove any script tags or potential XSS vectors
         req.query[key] = req.query[key]
-          .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+          .replace(/<script\b[^<]*(?:(?!</script>)<[^<]*)*</script>/gi, '')
           .replace(/javascript:/gi, '')
           .replace(/on\w+\s*=/gi, '');
       }
@@ -180,7 +180,7 @@ export const sanitizeRequest = (req, res, next) => {
       Object.keys(obj).forEach(key => {
         if (typeof obj[key] === 'string') {
           obj[key] = obj[key]
-            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/<script\b[^<]*(?:(?!</script>)<[^<]*)*</script>/gi, '')
             .replace(/javascript:/gi, '')
             .replace(/on\w+\s*=/gi, '');
         } else if (typeof obj[key] === 'object' && obj[key] !== null) {
@@ -213,7 +213,7 @@ export const sessionConfig = {
 };
 
 // API Key validation middleware
-export const validateApiKey = (req, res, next) => {
+export const validateApiKey = (req, res, _next) => {
   const apiKey = req.headers['x-api-key'] || req.query.api_key;
   
   if (!apiKey) {
@@ -232,8 +232,8 @@ export const validateApiKey = (req, res, next) => {
 };
 
 // IP allowlist middleware
-export const ipAllowlist = (allowedIPs = []) => {
-  return (req, res, next) => {
+export const ipAllowlist = (allowedIPs = _[]) => {
+  return (req, res, _next) => {
     if (allowedIPs.length === 0 || isDevelopment) {
       return next();
     }
@@ -250,7 +250,7 @@ export const ipAllowlist = (allowedIPs = []) => {
 };
 
 // Security headers middleware
-export const securityHeaders = (req, res, next) => {
+export const securityHeaders = (req, res, _next) => {
   // Additional security headers
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -270,8 +270,8 @@ export const securityHeaders = (req, res, next) => {
 };
 
 // Audit logging middleware
-export const auditLog = (action) => {
-  return (req, res, next) => {
+export const auditLog = (_action) => {
+  return (req, res, _next) => {
     const auditEntry = {
       timestamp: new Date().toISOString(),
       action,
@@ -286,7 +286,7 @@ export const auditLog = (action) => {
     logger.info('Audit log', auditEntry);
     
     // Store audit log in database (async, don't block request)
-    process.nextTick(async () => {
+    process.nextTick(async _() => {
       try {
         // TODO: Store in database
       } catch (error) {

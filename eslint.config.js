@@ -3,6 +3,7 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
+<<<<<<< HEAD
 const commonLanguageOptions = {
   ecmaVersion: 'latest',
   parserOptions: {
@@ -38,11 +39,14 @@ const commonRules = {
   'no-duplicate-imports': 'error'
 }
 
+=======
+>>>>>>> development
 export default [
   { ignores: ['dist'] },
   {
-    files: ['src/**/*.{js,jsx}', 'tests/**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx}'],
     languageOptions: {
+<<<<<<< HEAD
       ...commonLanguageOptions,
       globals: {
         ...globals.browser,
@@ -63,33 +67,29 @@ export default [
         vi: 'readonly',
         vitest: 'readonly'
       }
+=======
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
     },
-    plugins: commonPlugins,
-    rules: commonRules
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+>>>>>>> development
+    },
   },
-  {
-    files: [
-      'server/**/*.{js,jsx}',
-      'scripts/**/*.{js,jsx}',
-      '*.config.js',
-      '*.config.cjs',
-      '*.config.mjs',
-      'vite.config.js',
-      'vite.config.mjs',
-      'vitest.config.js',
-      'vitest.config.mjs',
-      'postcss.config.js',
-      'tailwind.config.js',
-      'eslint.config.js'
-    ],
-    languageOptions: {
-      ...commonLanguageOptions,
-      globals: {
-        ...globals.node,
-        ...globals.commonjs
-      }
-    },
-    plugins: commonPlugins,
-    rules: commonRules
-  }
 ]
+

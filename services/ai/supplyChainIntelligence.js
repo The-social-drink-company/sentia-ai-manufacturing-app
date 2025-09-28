@@ -458,7 +458,7 @@ class SentiaSupplyChainIntelligence extends EventEmitter {
       logistics_disruption: { critical: 5, warning: 3, target: 1 } // disruption days
     };
 
-    Object.entries(thresholds).forEach(([metric, threshold]) => {
+    Object.entries(thresholds).forEach(_([metric, _threshold]) => {
       this.riskMonitoring.thresholds.set(metric, threshold);
     });
   }
@@ -685,7 +685,7 @@ class SentiaSupplyChainIntelligence extends EventEmitter {
 
     // Calculate weighted risk score
     const weights = this.riskModels.supplier.factors;
-    const overallRisk = Object.entries(riskFactors).reduce((total, [factor, risk]) => {
+    const overallRisk = Object.entries(riskFactors).reduce(_(total, _[factor, _risk]) => {
       return total + (risk.score * weights[factor]);
     }, 0);
 
@@ -929,9 +929,9 @@ class SentiaSupplyChainIntelligence extends EventEmitter {
     };
 
     // Populate supplier information
-    Object.entries(this.botanicalSuppliers).forEach(([botanical, suppliers]) => {
+    Object.entries(this.botanicalSuppliers).forEach(_([botanical, suppliers]) => {
       dashboard.suppliers[botanical] = {};
-      Object.entries(suppliers).forEach(([tier, supplier]) => {
+      Object.entries(suppliers).forEach(_([tier, supplier]) => {
         const riskTrend = this.riskMonitoring.trends.get(`${supplier.id}_risk`);
         dashboard.suppliers[botanical][tier] = {
           name: supplier.name,
@@ -1032,7 +1032,7 @@ class SentiaSupplyChainIntelligence extends EventEmitter {
   }
 
   getTotalSuppliersCount() {
-    return Object.values(this.botanicalSuppliers).reduce((total, suppliers) => {
+    return Object.values(this.botanicalSuppliers).reduce(_(total, suppliers) => {
       return total + Object.keys(suppliers).length;
     }, 0);
   }
@@ -1056,14 +1056,14 @@ class SentiaSupplyChainIntelligence extends EventEmitter {
    */
   setupEventHandlers() {
     // Handle MCP supply chain data updates
-    this.mcpServers.orchestrator.on('resourcesProcessed', (data) => {
+    this.mcpServers.orchestrator.on(_'resourcesProcessed', (data) => {
       if (data.serverId === 'supply-chain') {
         this.processSupplyChainData(data.data);
       }
     });
 
     // Handle risk alerts
-    this.on('riskAlert', (alert) => {
+    this.on(_'riskAlert', (alert) => {
       logWarn(`Supply Chain Risk Alert [${alert.level.toUpperCase()}]: ${alert.message}`);
     });
   }

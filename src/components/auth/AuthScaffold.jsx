@@ -1,51 +1,39 @@
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-export default function AuthScaffold({
-  heading,
-  subheading,
-  children,
-  footer,
+const AuthScaffold = ({
+  heading = 'Welcome to Sentia',
+  subheading = 'Sign in to your account',
+  cardClassName = '',
   maxWidth = 'max-w-md',
-  cardClassName = 'p-1',
-  containerClassName = '',
-  showHomeLink = true,
-  homeHref = '/',
-  homeLabel = 'Back to homepage',
-}) {
-  const containerClasses = ['w-full', maxWidth, containerClassName].filter(Boolean).join(' ')
-  const cardClasses = [
-    'rounded-2xl border border-crystal-border/15 bg-quantum-overlay/80 shadow-glow-blue backdrop-blur',
-    cardClassName,
-  ]
-    .filter(Boolean)
-    .join(' ')
-
+  footer,
+  children
+}) => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-quantum px-4 py-12">
-      <div className={containerClasses}>
-        <div className="mb-8 text-center">
-          <Link to="/" className="mb-6 inline-flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-brand text-xl font-bold text-quantum-space shadow-glow-blue">
-              S
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className={`${maxWidth} w-full p-8 bg-white rounded-lg shadow-xl ${cardClassName}`}>
+        <div className="text-center mb-6">
+          <Link to="/" className="inline-flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">S</span>
             </div>
-            <h1 className="text-lg font-semibold text-crystal-pure">Sentia Manufacturing</h1>
           </Link>
-          <h2 className="text-2xl font-bold text-crystal-pure">{heading}</h2>
-          {subheading ? <p className="mt-2 text-sm text-crystal-border/80">{subheading}</p> : null}
+          {heading && <h2 className="text-2xl font-bold text-gray-900 mb-2">{heading}</h2>}
+          {subheading && <p className="text-gray-600">{subheading}</p>}
         </div>
 
-        <div className={cardClasses}>{children}</div>
+        <div className="mt-6">
+          {children}
+        </div>
 
-        {footer ? <div className="mt-6 text-center text-sm text-crystal-border/80">{footer}</div> : null}
-
-        {showHomeLink ? (
-          <div className="mt-8 text-center">
-            <Link to={homeHref} className="text-sm text-crystal-border/70 transition hover:text-crystal-pure">
-              {homeLabel}
-            </Link>
+        {footer && (
+          <div className="mt-6 text-center text-sm text-gray-600">
+            {footer}
           </div>
-        ) : null}
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default AuthScaffold;

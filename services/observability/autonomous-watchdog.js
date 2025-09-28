@@ -119,16 +119,16 @@ class AutonomousWatchdog {
       component.pid = process.pid;
       
       // Handle process output
-      process.stdout.on('data', (data) => {
+      process.stdout.on(_'data', _(data) => {
         this.log(`[${component.name}] ${data.toString().trim()}`, 'DEBUG');
       });
 
-      process.stderr.on('data', (data) => {
+      process.stderr.on(_'data', _(data) => {
         this.log(`[${component.name}] ERROR: ${data.toString().trim()}`, 'ERROR');
       });
 
       // Handle process exit
-      process.on('exit', async (code, signal) => {
+      process.on(_'exit', async (code, signal) => {
         await this.log(`${component.name} exited with code ${code}, signal ${signal}`, 'WARN');
         component.process = null;
         component.pid = null;
@@ -139,7 +139,7 @@ class AutonomousWatchdog {
         }
       });
 
-      process.on('error', async (error) => {
+      process.on(_'error', async _(error) => {
         await this.log(`${component.name} process error: ${error.message}`, 'ERROR');
         await this.handleComponentFailure(componentId);
       });
@@ -185,7 +185,7 @@ class AutonomousWatchdog {
     const delay = Math.min(5000 * Math.pow(2, component.restartCount - 1), 60000);
     await this.log(`Restarting ${component.name} in ${delay}ms...`, 'INFO');
     
-    setTimeout(async () => {
+    setTimeout(async _() => {
       const success = await this.startComponent(componentId);
       if (!success) {
         await this.handleComponentFailure(componentId);
@@ -231,12 +231,12 @@ class AutonomousWatchdog {
 
   startHealthMonitoring() {
     // Check component health every 30 seconds
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.performHealthCheck();
     }, 30000);
 
     // Detailed health check every 5 minutes
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.performDetailedHealthCheck();
     }, 300000);
   }
@@ -369,7 +369,7 @@ class AutonomousWatchdog {
 
   startResourceMonitoring() {
     // Monitor resources every 2 minutes
-    setInterval(async () => {
+    setInterval(async _() => {
       const resources = await this.getResourceUsage();
       await this.logResourceUsage(resources);
       
@@ -385,7 +385,7 @@ class AutonomousWatchdog {
     
     // Get system memory info (Windows specific)
     return new Promise((resolve) => {
-      exec('wmic OS get TotalVisibleMemorySize,FreePhysicalMemory /value', (error, stdout) => {
+      exec('wmic OS get _TotalVisibleMemorySize,FreePhysicalMemory _/value', _(error, stdout) => {
         let memoryPercent = 0;
         
         if (!error) {
@@ -538,7 +538,7 @@ class AutonomousWatchdog {
             component.process.kill('SIGTERM');
             
             // Force kill after 10 seconds
-            setTimeout(() => {
+            setTimeout(_() => {
               if (component.process) {
                 component.process.kill('SIGKILL');
               }

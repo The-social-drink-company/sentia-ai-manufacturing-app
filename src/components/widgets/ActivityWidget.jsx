@@ -116,12 +116,12 @@ export default function ActivityWidget({ activities = [], maxItems = 10 }) {
     return () => clearInterval(interval);
   }, [activities, maxItems]);
 
-  const getIcon = (type) => {
+  const getIcon = (_type) => {
     const Icon = activityIcons[type] || activityIcons.default;
     return Icon;
   };
 
-  const getColorClasses = (type) => {
+  const getColorClasses = (_type) => {
     const color = activityColors[type] || activityColors.default;
     return {
       bg: `bg-${color}-50 dark:bg-${color}-900/20`,
@@ -137,7 +137,7 @@ export default function ActivityWidget({ activities = [], maxItems = 10 }) {
           Recent Activity
         </h3>
         <div className="space-y-3">
-          {[...Array(3)].map((_, i) => (
+          {[...Array(3)].map((_, _i) => (
             <div key={i} className="animate-pulse">
               <div className="flex items-start space-x-3">
                 <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>

@@ -7,8 +7,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 
 console.log('Railway Environment Variable Validator');
 console.log('======================================\n');
@@ -38,7 +38,7 @@ lines.forEach((line, index) => {
     if (key.includes(' ')) {
       issues.push(`Line ${index + 1}: Key "${key}" contains spaces`);
     }
-    if (key.startsWith('_') || key.endsWith('_')) {
+    if (key.startsWith('') || key.endsWith('_')) {
       issues.push(`Line ${index + 1}: Key "${key}" starts or ends with underscore`);
     }
     if (value.includes('\t')) {

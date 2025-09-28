@@ -259,7 +259,7 @@ class AdapterFactory {
 const adapters = new Map();
 
 // Health check
-app.get('/health', (req, res) => {
+app.get(_'/health', _(req, res) => {
   res.json({
     status: 'healthy',
     service: 'adapters',
@@ -270,7 +270,7 @@ app.get('/health', (req, res) => {
 });
 
 // Register adapter
-app.post('/register', async (req, res) => {
+app.post(_'/register', async _(req, res) => {
   try {
     const config = req.body;
     
@@ -297,7 +297,7 @@ app.post('/register', async (req, res) => {
 });
 
 // Sync data from adapter
-app.post('/sync/:adapter', async (req, res) => {
+app.post(_'/sync/:adapter', async _(req, res) => {
   try {
     const { adapter: adapterName } = req.params;
     const { startDate, endDate } = req.body;
@@ -326,7 +326,7 @@ app.post('/sync/:adapter', async (req, res) => {
 });
 
 // Process sync jobs
-syncQueue.process(async (job) => {
+syncQueue.process(async _(job) => {
   const { adapter: adapterName, startDate, endDate } = job.data;
   
   logger.info(`Processing sync job for ${adapterName}`);
@@ -361,7 +361,7 @@ syncQueue.process(async (job) => {
     recordsSync};})};
 
 const PORT = process.env.ADAPTERS_PORT || 8103;
-app.listen(PORT, () => {
+app.listen(PORT, _() => {
   logger.info(`Adapters service running on port ${PORT}`);
   
   // Auto-register mock adapter for testing

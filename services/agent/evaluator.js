@@ -358,7 +358,7 @@ export class AgentEvaluator {
     ].filter(s => s !== null && s !== undefined);
 
     scorecard.overall = {
-      score: scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0,
+      score: scores.length > 0 ? scores.reduce((a, _b) => a + b, 0) / scores.length : 0,
       passed: scores.length > 0 && scores.every(s => s >= 0.5)
     };
 

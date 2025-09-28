@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useState,  } from 'react';
+=======
+import { useState } from 'react';
+>>>>>>> development
 import {
   BeakerIcon,
   CheckCircleIcon,
@@ -512,9 +516,9 @@ const QualityControl = () => {
                           <td className="text-right p-2">{point.lcl}</td>
                           <td className="text-right p-2">
                             {point.value > point.ucl || point.value < point.lcl ? (
-                              <Badge variant="destructive">Out of Control</Badge>
+                              <Badge className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800">Out of Control</Badge>
                             ) : (
-                              <Badge variant="success">In Control</Badge>
+                              <Badge className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">In Control</Badge>
                             )}
                           </td>
                         </tr>

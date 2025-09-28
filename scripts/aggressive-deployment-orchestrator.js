@@ -85,7 +85,7 @@ class AggressiveDeploymentOrchestrator {
           // Optimize Redis configurations
           const redisOptimizations = `
 // Enhanced Redis performance settings
-export const REDIS_CONFIG = {
+export const REDISCONFIG = {
   maxMemoryPolicy: 'allkeys-lru',
   maxMemorySize: '512mb',
   persistenceMode: 'rdb',
@@ -135,7 +135,7 @@ export const enterpriseSecurityMiddleware = [
   }),
   rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: process.env.NODE_ENV === 'production' ? 1000 : 10000,
+    max: process.env.NODEENV = == 'production' ? 1000 : 10000,
     message: 'Too many requests, please try again later',
     standardHeaders: true,
     legacyHeaders: false
@@ -329,7 +329,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     await this.executeAggressiveCycle();
     
     // Schedule subsequent cycles every 5 minutes
-    setInterval(async () => {
+    setInterval(async _() => {
       if (this.isRunning) {
         await this.executeAggressiveCycle();
       }
@@ -347,13 +347,13 @@ const orchestrator = new AggressiveDeploymentOrchestrator();
 orchestrator.start().catch(console.error);
 
 // Handle graceful shutdown
-process.on('SIGINT', async () => {
+process.on('SIGINT', async _() => {
   console.log('\nShutting down aggressive deployment orchestrator...');
   await orchestrator.stop();
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
+process.on('SIGTERM', async _() => {
   await orchestrator.stop();
   process.exit(0);
 });

@@ -1,10 +1,10 @@
 import express from 'express';
 import NodeCache from 'node-cache';
+import prisma from '../../lib/prisma.js';
 import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
-import productionService from '../../services/production/productionService.js';
 
 import {
   productionMetricsSchema,
@@ -26,10 +26,11 @@ router.get('/metrics',
   requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
-    const { timeRange = '24h', line = 'all', shift = 'current' } = req.query;
+    // Validate query parameters
+    const query = productionMetricsSchema.query.parse(req.query);
 
     // Generate cache key based on query params
-    const cacheKey = `production-metrics-${timeRange}-${line}-${shift}`;
+    const cacheKey = `production-metrics-${JSON.stringify(query)}`;
     const cached = cache.get(cacheKey);
 
     if (cached) {
@@ -37,24 +38,80 @@ router.get('/metrics',
       return res.json(cached);
     }
 
-    logDebug('[Cache Miss] Production metrics - fetching from service');
+    logDebug('[Cache Miss] Production metrics - fetching from database');
 
-    // Get metrics from production service
-    const metrics = await productionService.getProductionMetrics(timeRange);
+    // Build where clause
+    const where = {};
+    if (query.startDate || query.endDate) {
+      where.timestamp = {};
+      if (query.startDate) where.timestamp.gte = new Date(query.startDate);
+      if (query.endDate) where.timestamp.lte = new Date(query.endDate);
+    }
+    if (query.lineId) where.lineId = query.lineId;
+    if (query.productId) where.productId = query.productId;
+
+    // Fetch metrics with optimized fields
+    const metrics = await prisma.productionMetrics.findMany({
+      where,
+      take: Math.min(query.limit, 100), // Limit max results to 100
+      skip: query.offset,
+      orderBy: { timestamp: 'desc' },
+      select: {
+        id: true,
+        timestamp: true,
+        lineId: true,
+        productId: true,
+        unitsProduced: true,
+        efficiency: true,
+        quality: true,
+        oee: true,
+        downtime: true,
+        line: {
+          select: {
+            id: true,
+            name: true,
+            status: true
+          }
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            sku: true
+          }
+        }
+      }
+    });
+
+    // Calculate aggregates
+    const aggregates = await prisma.productionMetrics.aggregate({
+      where,
+      _avg: {
+        efficiency: true,
+        quality: true,
+        oee: true
+      },
+      _sum: {
+        unitsProduced: true,
+        downtime: true
+      }
+    });
 
     const result = {
       success: true,
-      data: metrics
+      data: {
+        metrics,
+        aggregates,
+        pagination: {
+          limit: query.limit,
+          offset: query.offset,
+          total: await prisma.productionMetrics.count({ where })
+        }
+      }
     };
 
     // Cache the result
     cache.set(cacheKey, result);
-
-    logInfo('Production metrics fetched', {
-      timeRange,
-      totalJobs: metrics.summary?.totalJobs,
-      oee: metrics.oee?.overall
-    });
 
     res.json(result);
   })
@@ -100,33 +157,48 @@ router.get('/schedule',
   requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
-    const { daysAhead = 30 } = req.query;
+    // Validate query parameters
+    const query = productionScheduleSchema.query.parse(req.query);
 
-    const cacheKey = `production-schedule-${daysAhead}`;
-    const cached = cache.get(cacheKey);
-
-    if (cached) {
-      logDebug('[Cache Hit] Production schedule');
-      return res.json(cached);
+    // Build where clause
+    const where = {};
+    if (query.date) {
+      const date = new Date(query.date);
+      where.scheduledDate = {
+        gte: new Date(date.setHours(0, 0, 0, 0)),
+        lt: new Date(date.setHours(23, 59, 59, 999))
+      };
+    } else if (query.startDate || query.endDate) {
+      where.scheduledDate = {};
+      if (query.startDate) where.scheduledDate.gte = new Date(query.startDate);
+      if (query.endDate) where.scheduledDate.lte = new Date(query.endDate);
+    } else {
+      // Default to next 7 days
+      where.scheduledDate = {
+        gte: new Date(),
+        lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      };
     }
+    if (query.lineId) where.lineId = query.lineId;
+    if (query.status) where.status = query.status;
 
-    // Get schedule from production service
-    const schedule = await productionService.getProductionSchedule(parseInt(daysAhead));
-
-    const result = {
-      success: true,
-      data: schedule
-    };
-
-    // Cache the result
-    cache.set(cacheKey, result);
-
-    logInfo('Production schedule fetched', {
-      daysAhead,
-      totalJobs: schedule.totalJobs
+    // Fetch schedule
+    const schedule = await prisma.productionSchedule.findMany({
+      where,
+      orderBy: [
+        { scheduledDate: 'asc' },
+        { priority: 'desc' }
+      ],
+      include: {
+        product: true,
+        line: true
+      }
     });
 
-    res.json(result);
+    res.json({
+      success: true,
+      data: schedule
+    });
   })
 );
 
@@ -425,187 +497,6 @@ router.get('/downtime',
       success: true,
       data: result
     });
-  })
-);
-
-/**
- * GET /api/production/machines
- * Get machine metrics and status
- */
-router.get('/machines',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
-    const cacheKey = 'production-machines';
-    const cached = cache.get(cacheKey);
-
-    if (cached) {
-      logDebug('[Cache Hit] Machine metrics');
-      return res.json(cached);
-    }
-
-    // Get machine metrics from production service
-    const machineMetrics = await productionService.getMachineMetrics();
-
-    const result = {
-      success: true,
-      data: machineMetrics
-    };
-
-    // Cache the result
-    cache.set(cacheKey, result, 30); // 30 second cache for machine data
-
-    logInfo('Machine metrics fetched', {
-      totalMachines: machineMetrics.summary?.totalMachines,
-      activeMachines: machineMetrics.summary?.activeMachines
-    });
-
-    res.json(result);
-  })
-);
-
-/**
- * POST /api/production/jobs
- * Create new production job
- */
-router.post('/jobs',
-  requireAuth,
-  requireRole(['admin', 'manager']),
-  rateLimiters.write,
-  asyncHandler(async (req, res) => {
-    const jobData = req.body;
-
-    // Create job using production service
-    const job = await productionService.createProductionJob({
-      ...jobData,
-      createdBy: req.userId
-    });
-
-    logInfo('Production job created', {
-      jobNumber: job.jobNumber,
-      productName: job.productName,
-      quantity: job.quantity
-    });
-
-    res.status(201).json({
-      success: true,
-      data: job
-    });
-  })
-);
-
-/**
- * PUT /api/production/jobs/:id
- * Update production job
- */
-router.put('/jobs/:id',
-  requireAuth,
-  requireRole(['admin', 'manager', 'operator']),
-  rateLimiters.write,
-  asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const updateData = req.body;
-
-    // Update job using production service
-    const job = await productionService.updateProductionJob(id, {
-      ...updateData,
-      updatedBy: req.userId
-    });
-
-    logInfo('Production job updated', {
-      jobId: id,
-      status: job.status
-    });
-
-    res.json({
-      success: true,
-      data: job
-    });
-  })
-);
-
-/**
- * GET /api/production/quality
- * Get quality metrics for production
- */
-router.get('/quality',
-  requireAuth,
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
-    const { timeRange = '7d' } = req.query;
-
-    const cacheKey = `production-quality-${timeRange}`;
-    const cached = cache.get(cacheKey);
-
-    if (cached) {
-      logDebug('[Cache Hit] Production quality metrics');
-      return res.json(cached);
-    }
-
-    // Import quality service
-    const qualityService = (await import('../../services/quality/qualityService.js')).default;
-
-    // Get quality metrics
-    const qualityMetrics = await qualityService.getQualityMetrics(timeRange);
-
-    const result = {
-      success: true,
-      data: qualityMetrics
-    };
-
-    // Cache the result
-    cache.set(cacheKey, result);
-
-    logInfo('Production quality metrics fetched', {
-      timeRange,
-      firstPassYield: qualityMetrics.summary?.firstPassYield
-    });
-
-    res.json(result);
-  })
-);
-
-/**
- * GET /api/production/export
- * Export production data
- */
-router.get('/export',
-  requireAuth,
-  requireRole(['admin', 'manager']),
-  rateLimiters.read,
-  asyncHandler(async (req, res) => {
-    const { format = 'json', timeRange = '30d' } = req.query;
-
-    // Export data using production service
-    const exportData = await productionService.exportProductionData(format, timeRange);
-
-    logInfo('Production data exported', {
-      format,
-      timeRange,
-      recordCount: exportData.productions?.length || 0
-    });
-
-    // Set appropriate headers for download
-    const filename = `production-data-${new Date().toISOString().split('T')[0]}.${format}`;
-
-    switch (format) {
-      case 'csv':
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        // Convert to CSV (simplified)
-        const csvData = exportData.productions.map(p =>
-          `${p.jobNumber},${p.productName},${p.status},${p.completedQuantity},${p.efficiency}`
-        ).join('\n');
-        res.send(`Job Number,Product Name,Status,Completed Quantity,Efficiency\n${csvData}`);
-        break;
-      default:
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        res.json({
-          success: true,
-          data: exportData
-        });
-    }
   })
 );
 

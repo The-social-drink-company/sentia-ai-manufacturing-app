@@ -80,7 +80,7 @@ export default function AlertWidget({
     // Set up auto-hide if enabled
     if (autoHide) {
       const timers = visibleAlerts.map(alert => {
-        return setTimeout(() => {
+        return _setTimeout(() => {
           handleDismiss(alert.id);
         }, autoHideDelay);
       });
@@ -132,7 +132,7 @@ export default function AlertWidget({
     ];
   };
 
-  const handleDismiss = (alertId) => {
+  const handleDismiss = (_alertId) => {
     setDismissedAlerts(prev => new Set(prev).add(alertId));
     setVisibleAlerts(prev => prev.filter(alert => alert.id !== alertId));
 
@@ -141,7 +141,7 @@ export default function AlertWidget({
     }
   };
 
-  const formatTimestamp = (timestamp) => {
+  const formatTimestamp = (_timestamp) => {
     if (!timestamp) return '';
 
     const date = new Date(timestamp);
@@ -171,7 +171,7 @@ export default function AlertWidget({
           <BellIcon className="h-5 w-5 text-gray-400" />
         </div>
         <div className="space-y-3">
-          {[...Array(2)].map((_, i) => (
+          {[...Array(2)].map((_, _i) => (
             <div key={i} className="animate-pulse">
               <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
             </div>

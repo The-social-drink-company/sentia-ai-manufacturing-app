@@ -493,7 +493,7 @@ class FeatureFlagsService extends EventEmitter {
    * Start periodic refresh
    */
   startRefresh() {
-    this.refreshTimer = setInterval(() => {
+    this.refreshTimer = setInterval(_() => {
       this.loadFlags().catch(console.error);
     }, this.refreshInterval);
   }
@@ -516,12 +516,12 @@ class FeatureFlagsService extends EventEmitter {
 
     const eventSource = new EventSource('/api/feature-flags/stream');
 
-    eventSource.addEventListener('flag-update', (event) => {
+    eventSource.addEventListener(_'flag-update', (event) => {
       const data = JSON.parse(event.data);
       this.handleFlagUpdate(data);
     });
 
-    eventSource.addEventListener('error', (error) => {
+    eventSource.addEventListener(_'error', _(error) => {
       logError('Feature flags stream error:', error);
     });
 
@@ -623,7 +623,7 @@ export function useFeatureFlag(flagKey, context = {}) {
       featureFlags.isEnabled(flagKey, context)
     );
 
-    window.React.useEffect(() => {
+    window.React.useEffect(_() => {
       const handleUpdate = () => {
         setEnabled(featureFlags.isEnabled(flagKey, context));
       };

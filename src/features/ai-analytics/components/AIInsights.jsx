@@ -69,7 +69,7 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
     return categoryMatch && severityMatch
   }) || []
 
-  const getTimeAgo = (timestamp) => {
+  const getTimeAgo = (_timestamp) => {
     const now = new Date()
     const time = new Date(timestamp)
     const diffInMinutes = Math.floor((now - time) / (1000 * 60))

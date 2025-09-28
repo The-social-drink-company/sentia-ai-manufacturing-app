@@ -106,7 +106,7 @@ const chains = {
 };
 
 // Multi-agent orchestration
-const orchestrateAgents = async (request) => {
+const orchestrateAgents = async (_request) => {
   const { query, context, capabilities = ['analyze'] } = request;
   
   // Fetch relevant data from lakehouse
@@ -155,7 +155,7 @@ const orchestrateAgents = async (request) => {
 };
 
 // Health check
-app.get('/health', (req, res) => {
+app.get(_'/health', _(req, res) => {
   res.json({
     status: 'healthy',
     service: 'orchestrator',
@@ -165,7 +165,7 @@ app.get('/health', (req, res) => {
 });
 
 // Agent query endpoint
-app.post('/query', async (req, res) => {
+app.post(_'/query', async _(req, res) => {
   try {
     const { query, context, capabilities } = req.body;
     
@@ -185,7 +185,7 @@ app.post('/query', async (req, res) => {
 });
 
 // Specific agent endpoints
-app.post('/analyze', async (req, res) => {
+app.post(_'/analyze', async _(req, res) => {
   try {
     const { data, query } = req.body;
     
@@ -201,7 +201,7 @@ app.post('/analyze', async (req, res) => {
   }
 });
 
-app.post('/forecast', async (req, res) => {
+app.post(_'/forecast', async _(req, res) => {
   try {
     const { data, period, assumptions } = req.body;
     
@@ -221,7 +221,7 @@ app.post('/forecast', async (req, res) => {
   }
 });
 
-app.post('/recommend', async (req, res) => {
+app.post(_'/recommend', async _(req, res) => {
   try {
     const { currentState, forecast, constraints } = req.body;
     

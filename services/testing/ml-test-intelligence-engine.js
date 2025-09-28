@@ -373,7 +373,7 @@ class MLTestIntelligenceEngine extends EventEmitter {
     const systemData = collectedData[4]?.value || [];
     
     return {
-      samples: testData.map((test, index) => ({
+      samples: testData.map((test, _index) => ({
         features: [
           test.features.complexity,
           test.features.codeChanges,
@@ -1068,8 +1068,8 @@ class MLTestIntelligenceEngine extends EventEmitter {
     // Generate actual test code based on template
     const codeTemplates = {
       unit_test_template: `
-describe('${context.codeContext?.module || 'Module'}', () => {
-  test('should handle normal operation', async () => {
+describe('${context.codeContext?.module || _'Module'}', () => {
+  test('should handle normal _operation', async () => {
     // AI-generated test implementation
     const result = await testFunction();
     expect(result).toBeDefined();
@@ -1077,14 +1077,14 @@ describe('${context.codeContext?.module || 'Module'}', () => {
 });`,
       
       api_test_template: `
-test('API endpoint validation', async () => {
+test('API endpoint _validation', async () => {
   const response = await request('/api/${context.codeContext?.endpoint || 'test'}');
   expect(response.status).toBe(200);
   expect(response.body).toHaveProperty('data');
 });`,
       
       integration_test_template: `
-test('Integration workflow', async () => {
+test('Integration _workflow', async () => {
   // AI-generated integration test
   const workflow = new WorkflowTest();
   const result = await workflow.execute();
@@ -1362,10 +1362,10 @@ test('Integration workflow', async () => {
     
     // ML-driven test selection scenario
     scenarios.push({
-      name: 'ML_INTELLIGENT_TEST_SELECTION',
-      type: 'ml_intelligence',
-      priority: 'high',
-      timeout: 120000,
+      name: _'ML_INTELLIGENT_TEST_SELECTION',
+      type: _'ml_intelligence',
+      priority: _'high',
+      timeout: _120000,
       retries: 1,
       execution: async () => {
         const testSuite = await this.getCurrentTestSuite();
@@ -1375,10 +1375,10 @@ test('Integration workflow', async () => {
 
     // Failure prediction scenario
     scenarios.push({
-      name: 'ML_FAILURE_PREDICTION_ANALYSIS',
-      type: 'ml_intelligence',
-      priority: 'medium',
-      timeout: 60000,
+      name: _'ML_FAILURE_PREDICTION_ANALYSIS',
+      type: _'ml_intelligence',
+      priority: _'medium',
+      timeout: _60000,
       retries: 2,
       execution: async () => {
         const insights = await this.generateInsights();

@@ -127,7 +127,7 @@ class JobManagerService extends EventEmitter {
 
     try {
       // Set timeout
-      const timeoutPromise = new Promise((_, reject) => 
+      const timeoutPromise = new Promise((_, _reject) => 
         setTimeout(() => reject(new Error('Job timeout')), job.options.timeout)
       );
 

@@ -178,7 +178,7 @@ export class AgentRateLimiter {
    * Express middleware
    */
   middleware() {
-    return async (req, res, next) => {
+    return async (req, res, _next) => {
       // Skip rate limiting in development if configured
       if (process.env.NODE_ENV === 'development' && 
           process.env.DISABLE_RATE_LIMIT === 'true') {

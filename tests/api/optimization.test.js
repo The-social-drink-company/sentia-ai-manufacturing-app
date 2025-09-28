@@ -19,7 +19,7 @@ const app = express();
 app.use(express.json());
 app.use('/api/optimization', optimizationRouter);
 
-describe('Optimization API Endpoints', () => {
+describe('Optimization API _Endpoints', () => {
   let mockSKU;
   let mockSKUBatch;
 
@@ -48,9 +48,9 @@ describe('Optimization API Endpoints', () => {
     ];
   });
 
-  describe('Core Optimization Endpoints', () => {
-    describe('POST /api/optimization/sku/optimize', () => {
-      it('should optimize single SKU successfully', async () => {
+  describe('Core Optimization _Endpoints', () => {
+    describe('POST _/api/optimization/sku/optimize', () => {
+      it('should optimize single SKU _successfully', async () => {
         const response = await request(app)
           .post('/api/optimization/sku/optimize')
           .send({ sku: mockSKU })
@@ -72,7 +72,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.result.outputs.recommendedOrderQty).toBeGreaterThanOrEqual(0);
       });
 
-      it('should include explanation when diagnostics enabled', async () => {
+      it('should include explanation when diagnostics _enabled', async () => {
         const response = await request(app)
           .post('/api/optimization/sku/optimize')
           .send({ sku: mockSKU })
@@ -83,7 +83,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.explanation).toHaveProperty('mathematicalRationale');
       });
 
-      it('should handle constraints correctly', async () => {
+      it('should handle constraints _correctly', async () => {
         const constraints = {
           workingCapitalLimit: 10000,
           maxOrderSize: 200
@@ -101,7 +101,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.success).toBe(true);
       });
 
-      it('should return 400 for missing SKU data', async () => {
+      it('should return 400 for missing SKU _data', async () => {
         const response = await request(app)
           .post('/api/optimization/sku/optimize')
           .send({})
@@ -111,7 +111,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.required).toEqual(expect.any(Array));
       });
 
-      it('should return 400 for invalid SKU data', async () => {
+      it('should return 400 for invalid SKU _data', async () => {
         const invalidSKU = { ...mockSKU };
         delete invalidSKU.skuId;
 
@@ -124,8 +124,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('POST /api/optimization/batch/optimize', () => {
-      it('should optimize batch of SKUs successfully', async () => {
+    describe('POST _/api/optimization/batch/optimize', () => {
+      it('should optimize batch of SKUs _successfully', async () => {
         const response = await request(app)
           .post('/api/optimization/batch/optimize')
           .send({ skus: mockSKUBatch })
@@ -145,7 +145,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.results).toHaveLength(3);
       });
 
-      it('should apply global constraints', async () => {
+      it('should apply global _constraints', async () => {
         const globalConstraints = {
           workingCapitalLimit: 1000, // Very low limit
           capacityLimit: 100
@@ -163,7 +163,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.constraintsApplied).toBe(true);
       });
 
-      it('should return 400 for empty SKUs array', async () => {
+      it('should return 400 for empty SKUs _array', async () => {
         const response = await request(app)
           .post('/api/optimization/batch/optimize')
           .send({ skus: [] })
@@ -172,7 +172,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.error).toBe('Missing or empty SKUs array');
       });
 
-      it('should return 400 for missing SKUs', async () => {
+      it('should return 400 for missing _SKUs', async () => {
         const response = await request(app)
           .post('/api/optimization/batch/optimize')
           .send({})
@@ -183,9 +183,9 @@ describe('Optimization API Endpoints', () => {
     });
   });
 
-  describe('Job Management Endpoints', () => {
-    describe('POST /api/optimization/jobs/create', () => {
-      it('should create SKU optimization job', async () => {
+  describe('Job Management _Endpoints', () => {
+    describe('POST _/api/optimization/jobs/create', () => {
+      it('should create SKU optimization _job', async () => {
         const jobPayload = {
           jobType: 'SKU_OPTIMIZATION',
           payload: {
@@ -215,7 +215,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should create batch optimization job', async () => {
+      it('should create batch optimization _job', async () => {
         const jobPayload = {
           jobType: 'BATCH_OPTIMIZATION',
           payload: {
@@ -233,7 +233,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.job.jobId).toMatch(/^OPT-/);
       });
 
-      it('should return 400 for invalid job type', async () => {
+      it('should return 400 for invalid job _type', async () => {
         const response = await request(app)
           .post('/api/optimization/jobs/create')
           .send({
@@ -246,7 +246,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.validTypes).toEqual(expect.any(Array));
       });
 
-      it('should return 400 for missing required fields', async () => {
+      it('should return 400 for missing required _fields', async () => {
         const response = await request(app)
           .post('/api/optimization/jobs/create')
           .send({})
@@ -257,8 +257,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('GET /api/optimization/jobs/:jobId/status', () => {
-      it('should return 404 for non-existent job', async () => {
+    describe('GET _/api/optimization/jobs/:jobId/status', () => {
+      it('should return 404 for non-existent _job', async () => {
         const response = await request(app)
           .get('/api/optimization/jobs/NON_EXISTENT_JOB/status')
           .expect(404);
@@ -267,8 +267,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('GET /api/optimization/queue/status', () => {
-      it('should return queue status', async () => {
+    describe('GET _/api/optimization/queue/status', () => {
+      it('should return queue _status', async () => {
         const response = await request(app)
           .get('/api/optimization/queue/status')
           .expect(200);
@@ -290,9 +290,9 @@ describe('Optimization API Endpoints', () => {
     });
   });
 
-  describe('Multi-Warehouse Endpoints', () => {
-    describe('POST /api/optimization/multi-warehouse/optimize', () => {
-      it('should optimize multi-warehouse plan', async () => {
+  describe('Multi-Warehouse _Endpoints', () => {
+    describe('POST _/api/optimization/multi-warehouse/optimize', () => {
+      it('should optimize multi-warehouse _plan', async () => {
         const demandByRegion = {
           uk: mockSKUBatch.slice(0, 2),
           eu: mockSKUBatch.slice(1),
@@ -323,7 +323,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 400 for missing required fields', async () => {
+      it('should return 400 for missing required _fields', async () => {
         const response = await request(app)
           .post('/api/optimization/multi-warehouse/optimize')
           .send({})
@@ -334,8 +334,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('POST /api/optimization/multi-warehouse/source-selection', () => {
-      it('should select optimal source warehouse', async () => {
+    describe('POST _/api/optimization/multi-warehouse/source-selection', () => {
+      it('should select optimal source _warehouse', async () => {
         const availableSources = [
           { warehouse: 'WH_UK_001', region: 'uk', currency: 'GBP' },
           { warehouse: 'WH_EU_001', region: 'eu', currency: 'EUR' },
@@ -362,7 +362,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 400 for missing parameters', async () => {
+      it('should return 400 for missing _parameters', async () => {
         const response = await request(app)
           .post('/api/optimization/multi-warehouse/source-selection')
           .send({})
@@ -373,8 +373,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('GET /api/optimization/multi-warehouse/config/:region', () => {
-      it('should return warehouse config for valid region', async () => {
+    describe('GET _/api/optimization/multi-warehouse/config/:region', () => {
+      it('should return warehouse config for valid _region', async () => {
         const response = await request(app)
           .get('/api/optimization/multi-warehouse/config/uk')
           .expect(200);
@@ -391,7 +391,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 404 for invalid region', async () => {
+      it('should return 404 for invalid _region', async () => {
         const response = await request(app)
           .get('/api/optimization/multi-warehouse/config/invalid')
           .expect(404);
@@ -402,9 +402,9 @@ describe('Optimization API Endpoints', () => {
     });
   });
 
-  describe('Working Capital Endpoints', () => {
-    describe('POST /api/optimization/working-capital/analyze', () => {
-      it('should analyze working capital requirements', async () => {
+  describe('Working Capital _Endpoints', () => {
+    describe('POST _/api/optimization/working-capital/analyze', () => {
+      it('should analyze working capital _requirements', async () => {
         const orderPlan = [
           {
             orderId: 'ORD-001',
@@ -441,7 +441,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 400 for invalid order plan', async () => {
+      it('should return 400 for invalid order _plan', async () => {
         const response = await request(app)
           .post('/api/optimization/working-capital/analyze')
           .send({ orderPlan: 'invalid' })
@@ -451,8 +451,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('GET /api/optimization/working-capital/limits/:region', () => {
-      it('should return WC limits for valid region', async () => {
+    describe('GET _/api/optimization/working-capital/limits/:region', () => {
+      it('should return WC limits for valid _region', async () => {
         const response = await request(app)
           .get('/api/optimization/working-capital/limits/uk')
           .expect(200);
@@ -469,7 +469,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 404 for invalid region', async () => {
+      it('should return 404 for invalid _region', async () => {
         const response = await request(app)
           .get('/api/optimization/working-capital/limits/invalid')
           .expect(404);
@@ -480,9 +480,9 @@ describe('Optimization API Endpoints', () => {
     });
   });
 
-  describe('CFO Reporting Endpoints', () => {
-    describe('POST /api/optimization/reports/board-pack', () => {
-      it('should generate CFO board pack', async () => {
+  describe('CFO Reporting _Endpoints', () => {
+    describe('POST _/api/optimization/reports/board-pack', () => {
+      it('should generate CFO board _pack', async () => {
         const mockOptimizationData = mockSKUBatch.map(sku => ({
           skuId: sku.skuId,
           inputs: sku,
@@ -514,7 +514,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 400 for invalid optimization data', async () => {
+      it('should return 400 for invalid optimization _data', async () => {
         const response = await request(app)
           .post('/api/optimization/reports/board-pack')
           .send({ optimizationData: 'invalid' })
@@ -524,8 +524,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('POST /api/optimization/reports/export', () => {
-      it('should export board pack to PDF', async () => {
+    describe('POST _/api/optimization/reports/export', () => {
+      it('should export board pack to _PDF', async () => {
         const mockBoardPack = {
           executiveSummary: { title: 'Test Report' },
           financialImpact: { totalInvestment: 100000 }
@@ -549,7 +549,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 400 for invalid format', async () => {
+      it('should return 400 for invalid _format', async () => {
         const response = await request(app)
           .post('/api/optimization/reports/export')
           .send({
@@ -562,7 +562,7 @@ describe('Optimization API Endpoints', () => {
         expect(response.body.validFormats).toEqual(['json', 'pdf', 'excel', 'powerpoint']);
       });
 
-      it('should return 400 for missing board pack', async () => {
+      it('should return 400 for missing board _pack', async () => {
         const response = await request(app)
           .post('/api/optimization/reports/export')
           .send({ format: 'pdf' })
@@ -573,9 +573,9 @@ describe('Optimization API Endpoints', () => {
     });
   });
 
-  describe('Diagnostics Endpoints', () => {
-    describe('POST /api/optimization/diagnostics/explain', () => {
-      it('should generate decision explanation', async () => {
+  describe('Diagnostics _Endpoints', () => {
+    describe('POST _/api/optimization/diagnostics/explain', () => {
+      it('should generate decision _explanation', async () => {
         const mockOptimizationResult = {
           skuId: 'SKU-TEST-001',
           inputs: mockSKU,
@@ -603,7 +603,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 400 for missing optimization result', async () => {
+      it('should return 400 for missing optimization _result', async () => {
         const response = await request(app)
           .post('/api/optimization/diagnostics/explain')
           .send({})
@@ -613,8 +613,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('POST /api/optimization/diagnostics/report', () => {
-      it('should generate diagnostic report', async () => {
+    describe('POST _/api/optimization/diagnostics/report', () => {
+      it('should generate diagnostic _report', async () => {
         const mockOptimizationResults = [
           {
             skuId: 'SKU-001',
@@ -647,7 +647,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should return 400 for invalid optimization results', async () => {
+      it('should return 400 for invalid optimization _results', async () => {
         const response = await request(app)
           .post('/api/optimization/diagnostics/report')
           .send({ optimizationResults: 'invalid' })
@@ -657,8 +657,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('GET /api/optimization/diagnostics/history/:skuId', () => {
-      it('should return empty history for new SKU', async () => {
+    describe('GET _/api/optimization/diagnostics/history/:skuId', () => {
+      it('should return empty history for new _SKU', async () => {
         const response = await request(app)
           .get('/api/optimization/diagnostics/history/SKU-NEW-001')
           .expect(200);
@@ -671,7 +671,7 @@ describe('Optimization API Endpoints', () => {
         });
       });
 
-      it('should respect limit parameter', async () => {
+      it('should respect limit _parameter', async () => {
         const response = await request(app)
           .get('/api/optimization/diagnostics/history/SKU-TEST-001?limit=5')
           .expect(200);
@@ -682,9 +682,9 @@ describe('Optimization API Endpoints', () => {
     });
   });
 
-  describe('System Endpoints', () => {
-    describe('GET /api/optimization/health', () => {
-      it('should return system health', async () => {
+  describe('System _Endpoints', () => {
+    describe('GET _/api/optimization/health', () => {
+      it('should return system _health', async () => {
         const response = await request(app)
           .get('/api/optimization/health')
           .expect(200);
@@ -703,8 +703,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('GET /api/optimization/version', () => {
-      it('should return API version info', async () => {
+    describe('GET _/api/optimization/version', () => {
+      it('should return API version _info', async () => {
         const response = await request(app)
           .get('/api/optimization/version')
           .expect(200);
@@ -725,8 +725,8 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    describe('DELETE /api/optimization/cache', () => {
-      it('should clear cache successfully', async () => {
+    describe('DELETE _/api/optimization/cache', () => {
+      it('should clear cache _successfully', async () => {
         const response = await request(app)
           .delete('/api/optimization/cache')
           .expect(200);
@@ -740,8 +740,8 @@ describe('Optimization API Endpoints', () => {
     });
   });
 
-  describe('Error Handling', () => {
-    it('should handle internal server errors gracefully', async () => {
+  describe('Error _Handling', () => {
+    it('should handle internal server errors _gracefully', async () => {
       // Mock an endpoint that will throw an error
       const malformedSKU = {
         // Missing required fields to trigger error
@@ -760,7 +760,7 @@ describe('Optimization API Endpoints', () => {
       });
     });
 
-    it('should handle malformed JSON gracefully', async () => {
+    it('should handle malformed JSON _gracefully', async () => {
       const response = await request(app)
         .post('/api/optimization/sku/optimize')
         .send('{ invalid json')
@@ -770,7 +770,7 @@ describe('Optimization API Endpoints', () => {
     });
   });
 
-  describe('Feature Flag Behavior', () => {
+  describe('Feature Flag _Behavior', () => {
     beforeAll(() => {
       // Test with features disabled
       process.env.FEATURE_MULTI_WAREHOUSE = 'false';

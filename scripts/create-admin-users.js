@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
+const CLERKSECRET_KEY = process.env.CLERK_SECRET_KEY;
 
 if (!CLERK_SECRET_KEY) {
   console.error('ERROR: CLERK_SECRET_KEY not found in environment variables');

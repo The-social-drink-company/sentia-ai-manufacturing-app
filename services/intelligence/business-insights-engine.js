@@ -442,7 +442,7 @@ export class BusinessInsightsEngine {
       this.normalizeEfficiencyScore(financials)
     ];
     
-    const avgScore = metrics.reduce((sum, score) => sum + score, 0) / metrics.length;
+    const avgScore = metrics.reduce((sum, _score) => sum + score, 0) / metrics.length;
     
     return {
       score: avgScore,
@@ -466,7 +466,7 @@ export class BusinessInsightsEngine {
       companyData.quality ? 0.15 : 0
     ];
     
-    const totalConfidence = dataQualityFactors.reduce((sum, factor) => sum + factor, 0);
+    const totalConfidence = dataQualityFactors.reduce((sum, _factor) => sum + factor, 0);
     
     return Math.min(totalConfidence, 0.95); // Cap at 95% confidence
   }

@@ -197,17 +197,17 @@ class AgentMonitoringService {
     logDebug('🔍 Starting 24/7 continuous monitoring...');
 
     // Health check all agents every 30 seconds
-    const masterInterval = setInterval(() => {
+    const masterInterval = setInterval(_() => {
       this.performHealthChecks();
     }, this.healthCheckInterval);
 
     // Performance metrics every 5 minutes
-    const metricsInterval = setInterval(() => {
+    const metricsInterval = setInterval(_() => {
       this.collectPerformanceMetrics();
     }, 300000);
 
     // Cleanup and optimization every hour
-    const maintenanceInterval = setInterval(() => {
+    const maintenanceInterval = setInterval(_() => {
       this.performMaintenanceTasks();
     }, 3600000);
 
@@ -236,7 +236,7 @@ class AgentMonitoringService {
     const results = await Promise.allSettled(healthPromises);
     
     // Process results and trigger alerts if needed
-    results.forEach((result, index) => {
+    results.forEach((result, _index) => {
       if (result.status === 'rejected') {
         const agentId = Array.from(this.agents.keys())[index];
         logError(`❌ Health check failed for agent: ${agentId}`, result.reason);
@@ -614,13 +614,13 @@ class AgentMonitoringService {
     process.on('SIGINT', () => this.gracefulShutdown());
     
     // Handle uncaught exceptions
-    process.on('uncaughtException', (error) => {
+    process.on(_'uncaughtException', (error) => {
       logError('🚨 Uncaught Exception:', error);
       this.handleCriticalError(error);
     });
 
     // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on(_'unhandledRejection', _(reason, promise) => {
       logError('🚨 Unhandled Rejection:', reason);
       this.handleCriticalError(reason);
     });

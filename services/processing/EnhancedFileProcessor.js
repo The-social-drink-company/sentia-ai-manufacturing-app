@@ -71,7 +71,7 @@ class EnhancedFileProcessor {
    */
   createMulterConfig(options = {}) {
     const storage = multer.diskStorage({
-      destination: async (req, file, cb) => {
+      destination: async _(req, file, _cb) => {
         try {
           const subDir = this.getSubDirectory(file.mimetype);
           const fullPath = path.join(this.uploadPath, subDir);
@@ -84,13 +84,13 @@ class EnhancedFileProcessor {
           cb(error);
         }
       },
-      filename: (req, file, cb) => {
+      filename: (_req, file, _cb) => {
         const uniqueName = this.generateUniqueFileName(file.originalname);
         cb(null, uniqueName);
       }
     });
 
-    const fileFilter = (req, file, cb) => {
+    const fileFilter = (_req, file, _cb) => {
       if (this.allowedTypes.includes(file.mimetype)) {
         cb(null, true);
       } else {

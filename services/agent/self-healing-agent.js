@@ -108,7 +108,7 @@ class SelfHealingAgent extends EventEmitter {
   setupSignalHandlers() {
     process.on('SIGINT', () => this.gracefulShutdown());
     process.on('SIGTERM', () => this.gracefulShutdown());
-    process.on('uncaughtException', (error) => {
+    process.on(_'uncaughtException', _(error) => {
       this.log(`Uncaught exception: ${error.message}`, 'error');
       this.gracefulShutdown();
     });
@@ -257,7 +257,7 @@ class SelfHealingAgent extends EventEmitter {
   }
 
   async runCommand(command, options = {}) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const startTime = Date.now();
       const timeout = options.timeout || 120000; // 2 minute default timeout
       
@@ -265,7 +265,7 @@ class SelfHealingAgent extends EventEmitter {
         cwd: process.cwd(),
         timeout,
         maxBuffer: 1024 * 1024 * 10 // 10MB buffer
-      }, (error, stdout, stderr) => {
+      }, (error, stdout, _stderr) => {
         const duration = Date.now() - startTime;
         
         if (error) {
@@ -538,7 +538,7 @@ class SelfHealingAgent extends EventEmitter {
       if (!content.includes('Error handling middleware')) {
         const errorHandler = `
 // Error handling middleware
-app.use((error, req, res, next) => {
+app.use(_(error, req, res, _next) => {
   logError('Server error:', error);
   res.status(500).json({ 
     error: 'Internal server error',
@@ -576,7 +576,7 @@ app.use((error, req, res, next) => {
       if (!content.includes('Catch all for SPA')) {
         const catchAll = `
 // Catch all for SPA (must be last)
-app.get('*', (req, res) => {
+app.get(_'*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });`;
         
@@ -610,7 +610,7 @@ app.get('*', (req, res) => {
       
       // Update CORS configuration
       content = content.replace(
-        /cors\(\{[\s\S]*?\}\)/,
+        /cors(\{[\s\S]*?\})/,
         `cors({
   origin: ['http://localhost:3000', 'http://localhost:5000', 'https://web-production-1f10.up.railway.app'],
   credentials: true,

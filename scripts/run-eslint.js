@@ -9,8 +9,8 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(__filename);
 const projectRoot = join(__dirname, '..');
 
 // Get command line arguments (skip first two: node and script path)
@@ -34,11 +34,11 @@ const eslint = spawn('cmd.exe', ['/c', eslintPath, ...eslintArgs], {
   shell: false
 });
 
-eslint.on('close', (code) => {
+eslint.on('close', _(code) => {
   process.exit(code);
 });
 
-eslint.on('error', (err) => {
+eslint.on('error', _(err) => {
   console.error('Failed to run ESLint:', err.message);
   process.exit(1);
 });

@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import { logDebug, logInfo, logWarn, logError } from 'logger';
 
+=======
+/* eslint-env node */
+>>>>>>> development
 /**
  * Environment Variable Validator
  * Validates required environment variables on application startup
@@ -47,8 +51,13 @@ export function validateBackendEnvironment() {
   }
 
   // Validate Clerk secret key format
+<<<<<<< HEAD
   if (process.env.CLERK_SECRET_KEY && !process.env.CLERK_SECRET_KEY.startsWith('sk_')) {
     logError('❌ CRITICAL: CLERK_SECRET_KEY must start with "sk_"');
+=======
+  if (process.env.CLERK_SECRET_KEY && !process.env.CLERK_SECRET_KEY.startsWith('sk')) {
+    console.error('❌ CRITICAL: CLERK_SECRET_KEY must start with "sk_"');
+>>>>>>> development
     process.exit(1);
   }
 
@@ -105,8 +114,13 @@ export function validateFrontendEnvironment() {
   }
 
   // Validate Clerk publishable key format
+<<<<<<< HEAD
   if (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && !import.meta.env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk_')) {
     logError('❌ CRITICAL: VITE_CLERK_PUBLISHABLE_KEY must start with "pk_"');
+=======
+  if (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && !import.meta.env.VITE_CLERK_PUBLISHABLE_KEY.startsWith('pk')) {
+    console.error('❌ CRITICAL: VITE_CLERK_PUBLISHABLE_KEY must start with "pk_"');
+>>>>>>> development
     return false;
   }
 

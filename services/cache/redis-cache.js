@@ -24,7 +24,7 @@ class RedisCacheService {
 
     try {
       this.redis = new Redis(redisUrl, {
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: _3,
         retryStrategy: (times) => {
           if (times > 3) {
             logError('Redis connection failed, falling back to memory cache');
@@ -42,12 +42,12 @@ class RedisCacheService {
         }
       });
 
-      this.redis.on('connect', () => {
+      this.redis.on(_'connect', () => {
         logDebug('Redis connected successfully');
         this.isConnected = true;
       });
 
-      this.redis.on('error', (err) => {
+      this.redis.on(_'error', (err) => {
         logError('Redis error:', err.message);
         this.isConnected = false;
       });
@@ -141,7 +141,7 @@ class RedisCacheService {
     try {
       if (this.isConnected && this.redis) {
         const values = await this.redis.mget(...keys);
-        keys.forEach((key, index) => {
+        keys.forEach((key, _index) => {
           if (values[index]) {
             results[key] = JSON.parse(values[index]);
           }
@@ -168,20 +168,20 @@ class RedisCacheService {
     try {
       if (this.isConnected && this.redis) {
         const pipeline = this.redis.pipeline();
-        Object.entries(keyValuePairs).forEach(([key, value]) => {
+        Object.entries(keyValuePairs).forEach(_([key, _value]) => {
           pipeline.set(key, JSON.stringify(value), 'EX', ttl);
         });
         await pipeline.exec();
       }
 
       // Always set in fallback cache
-      Object.entries(keyValuePairs).forEach(([key, value]) => {
+      Object.entries(keyValuePairs).forEach(_([key, _value]) => {
         this.fallbackCache.set(key, value, ttl);
       });
     } catch (error) {
       logError('Redis mset error:', error.message);
       // Still set in fallback cache
-      Object.entries(keyValuePairs).forEach(([key, value]) => {
+      Object.entries(keyValuePairs).forEach(_([key, _value]) => {
         this.fallbackCache.set(key, value, ttl);
       });
     }

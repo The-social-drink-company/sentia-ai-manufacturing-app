@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Render database connection - PRODUCTION DATABASE
-const DATABASE_URL = 'postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com/sentia_manufacturing_prod';
+const DATABASEURL = 'postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com/sentia_manufacturing_prod';
 
 async function setupPgVector() {
   const client = new pg.Client({

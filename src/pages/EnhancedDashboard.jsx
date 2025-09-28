@@ -99,7 +99,7 @@ export default function EnhancedDashboard() {
       case 'inventory':
         return (
           <div className="space-y-6">
-            <InventoryHeatmap onCellClick={(sku, location) => {
+            <InventoryHeatmap _onCellClick={(sku, _location) => {
               console.log('Clicked:', sku, location)
             }} />
           </div>
@@ -108,7 +108,7 @@ export default function EnhancedDashboard() {
       case 'scenarios':
         return (
           <div className="space-y-6">
-            <ScenarioBuilder onScenarioChange={(scenario) => {
+            <ScenarioBuilder _onScenarioChange={(scenario) => {
               console.log('Scenario changed:', scenario)
             }} />
           </div>

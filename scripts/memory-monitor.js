@@ -15,8 +15,8 @@ const ENVIRONMENTS = {
   production: 'https://sentia-manufacturing-production.onrender.com'
 };
 
-const CHECK_INTERVAL = 60000; // 1 minute
-const LOG_FILE = path.join(process.cwd(), 'memory-report.log');
+const CHECKINTERVAL = 60000; // 1 minute
+const LOGFILE = path.join(process.cwd(), 'memory-report.log');
 
 class MemoryMonitor {
   constructor() {

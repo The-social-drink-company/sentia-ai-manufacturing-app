@@ -106,4 +106,3 @@ scripts/env-update.json
 scripts/install-render-cli.bat
 scripts/install-render-cli.ps1
 scripts/render.bat
-.pnpm-store/

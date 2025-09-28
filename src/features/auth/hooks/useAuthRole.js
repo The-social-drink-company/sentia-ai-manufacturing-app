@@ -16,19 +16,19 @@ export function useAuthRole() {
     admin: 3
   }
 
-  const hasRole = (requiredRole) => {
+  const hasRole = (_requiredRole) => {
     if (!isLoaded || !isSignedIn) return false
     return roleHierarchy[userRole] >= roleHierarchy[requiredRole]
   }
 
-  const hasPermission = (permission) => {
+  const hasPermission = (_permission) => {
     if (!isLoaded || !isSignedIn) return false
 
     const permissions = sessionClaims?.metadata?.permissions || []
     return permissions.includes(permission)
   }
 
-  const canAccess = (resource) => {
+  const canAccess = (_resource) => {
     const accessMap = {
       dashboard: ['viewer', 'operator', 'manager', 'admin'],
       workingCapital: ['manager', 'admin'],

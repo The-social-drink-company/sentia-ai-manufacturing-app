@@ -1,29 +1,24 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { ClerkProvider } from '@clerk/clerk-react'
 import './index.css'
 import App from './App.jsx'
 
-// TEMPORARILY BYPASS CLERK FOR URGENT FIX
-const BYPASS_CLERK = true;
+// Clerk publishable key
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ'
 
-if (BYPASS_CLERK) {
-  // Direct render without Clerk
-  createRoot(document.getElementById('root')).render(
-    <StrictMode>
+console.log('Initializing Clerk with key:', PUBLISHABLE_KEY ? 'Found' : 'Missing')
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+    >
       <App />
-    </StrictMode>,
-  )
-} else {
-  // Original Clerk implementation (currently not working)
-  import('@clerk/clerk-react').then(({ ClerkProvider }) => {
-    const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ'
-
-    createRoot(document.getElementById('root')).render(
-      <StrictMode>
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-          <App />
-        </ClerkProvider>
-      </StrictMode>,
-    )
-  })
-}
+    </ClerkProvider>
+  </StrictMode>,
+)

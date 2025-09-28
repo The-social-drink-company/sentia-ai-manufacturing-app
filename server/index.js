@@ -4,8 +4,7 @@ import { fileURLToPath } from 'url';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import { PrismaClient } from '@prisma/client';
-
+import { PrismaClient } from '@prisma/client';\nimport fs from 'fs';\n
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -442,15 +441,7 @@ app.get('*', (req, res) => {
     });
   }
   
-  // For all other routes, serve progressive enhancement HTML
-  const progressiveHTML = generateProgressiveHTML();
-  
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  
-  res.send(progressiveHTML);
+  const indexPath = path.join(__dirname, '../dist/index.html');\n\n  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');\n  res.setHeader('Pragma', 'no-cache');\n  res.setHeader('Expires', '0');\n\n  if (fs.existsSync(indexPath)) {\n    res.sendFile(indexPath);\n    return;\n  }\n\n  const progressiveHTML = generateProgressiveHTML();\n  res.setHeader('Content-Type', 'text/html; charset=utf-8');\n  res.send(progressiveHTML);
 });
 
 // Enhanced error handling
@@ -501,4 +492,4 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🛡️ Bulletproof design - no more blank screens!`);
 });
 
-export default app;
+export default app;\n

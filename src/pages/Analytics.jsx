@@ -11,6 +11,8 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import { manufacturingAnalyticsService } from '../services/ManufacturingAnalyticsService.js';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+
 
 const Analytics = () => {
   const [analyticsData, setAnalyticsData] = useState(null);
@@ -28,7 +30,7 @@ const Analytics = () => {
         setError(null);
       } catch (err) {
         setError(`Failed to initialize analytics: ${err.message}`);
-        console.error('Analytics initialization error:', err);
+        logError('Analytics initialization error:', err);
       } finally {
         setLoading(false);
       }
@@ -45,7 +47,7 @@ const Analytics = () => {
       setError(null);
     } catch (err) {
       setError(`Failed to fetch analytics data: ${err.message}`);
-      console.error('Analytics data error:', err);
+      logError('Analytics data error:', err);
     }
   };
 
@@ -343,7 +345,7 @@ const Analytics = () => {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Improvement Recommendations</h2>
           <div className="space-y-4">
-            {analyticsData.recommendations.map((rec, __index) => (
+            {analyticsData.recommendations.map((rec, index) => (
               <div
                 key={index}
                 className={`border-l-4 p-4 rounded-lg ${

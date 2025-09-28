@@ -320,7 +320,7 @@ const MachineStatusGrid = memo(function MachineStatusGrid({ machines = [] }) {
               Active Alerts
             </h5>
             <div className="space-y-2">
-              {machine.alerts.map((alert, __index) => (
+              {machine.alerts.map((alert, index) => (
                 <div key={index} className={`flex items-start p-2 rounded ${
                   alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20 border border-red-200' :
                   alert.severity === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200' :

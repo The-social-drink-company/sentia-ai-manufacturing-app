@@ -270,7 +270,7 @@ const MonitoringDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {alerts.slice(0, 5).map((alert, __index) => (
+              {alerts.slice(0, 5).map((alert, index) => (
                 <div
                   key={index}
                   className={`p-3 rounded-lg border ${getSeverityColor(alert.severity)}`}
@@ -336,7 +336,7 @@ const MonitoringDashboard = () => {
                 <div className="mt-4">
                   <h4 className="text-sm font-medium text-gray-900 mb-2">Check Status</h4>
                   <div className="space-y-2">
-                    {systemHealth.checks.slice(0, 5).map((check, __index) => (
+                    {systemHealth.checks.slice(0, 5).map((check, index) => (
                       <div key={index} className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 capitalize">
                           {check.name?.replace('_', ' ')}
@@ -467,7 +467,7 @@ const MonitoringDashboard = () => {
                 <div className="mt-4 pt-4 border-t">
                   <h4 className="text-sm font-medium text-gray-900 mb-2">Top Threats</h4>
                   <div className="space-y-2">
-                    {securityData.topThreats.slice(0, 3).map((threat, __index) => (
+                    {securityData.topThreats.slice(0, 3).map((threat, index) => (
                       <div key={index} className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 capitalize">
                           {threat.threat.replace('_', ' ')}

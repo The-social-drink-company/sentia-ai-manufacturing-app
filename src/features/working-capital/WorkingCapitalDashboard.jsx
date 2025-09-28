@@ -264,7 +264,7 @@ export default function WorkingCapitalDashboard() {
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Alerts</h2>
             <div className="space-y-3">
-              {alerts.map((alert, __index) => (
+              {alerts.map((alert, index) => (
                 <div
                   key={index}
                   className={`p-4 rounded-lg border flex items-start ${

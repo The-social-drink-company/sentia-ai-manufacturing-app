@@ -498,7 +498,7 @@ export default function AdvancedInventoryManagement() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {categoryData.map((entry, __index) => (
+                    {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -507,7 +507,7 @@ export default function AdvancedInventoryManagement() {
               </ResponsiveContainer>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-4">
-              {categoryData.map((category, __index) => (
+              {categoryData.map((category, index) => (
                 <div key={category.name} className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div

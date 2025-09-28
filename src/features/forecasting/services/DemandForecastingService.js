@@ -464,7 +464,7 @@ export class DemandForecastingService {
    * Apply scenario multipliers to base forecast
    */
   applyScenarioMultipliers(forecast, multipliers) {
-    return forecast.map((point, __index) => {
+    return forecast.map((point, index) => {
       if (point.isForecast) {
         const growthFactor = Math.pow(multipliers.growth, index - forecast.findIndex(p => p.isForecast) + 1)
         const randomFactor = 1 + (Math.random() - 0.5) * 0.1 * multipliers.volatility

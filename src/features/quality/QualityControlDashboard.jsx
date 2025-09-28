@@ -214,7 +214,7 @@ const QualityControlDashboard = () => {
                   <div className="bg-gray-50 p-6 rounded-lg">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Quality Trend (7 Days)</h3>
                     <div className="space-y-2">
-                      {qualityMetrics.qualityTrends.slice(-5).map((trend, __index) => (
+                      {qualityMetrics.qualityTrends.slice(-5).map((trend, index) => (
                         <div key={index} className="flex items-center justify-between">
                           <span className="text-sm text-gray-600">{trend.date}</span>
                           <div className="flex items-center space-x-4">

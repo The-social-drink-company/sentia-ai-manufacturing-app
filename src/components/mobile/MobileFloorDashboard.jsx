@@ -268,7 +268,7 @@ export default function MobileFloorDashboard() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {statusData.map((entry, __index) => (
+                    {statusData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -277,7 +277,7 @@ export default function MobileFloorDashboard() {
               </ResponsiveContainer>
             </div>
             <div className="grid grid-cols-2 gap-2 mt-3">
-              {statusData.filter(d => d.value > 0).map((status, __index) => (
+              {statusData.filter(d => d.value > 0).map((status, index) => (
                 <div key={status.name} className="flex items-center">
                   <div
                     className="w-3 h-3 rounded mr-2"

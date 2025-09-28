@@ -120,7 +120,7 @@ export default function QualityMetrics({ data }) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {categories.map((category, __index) => {
+            {categories.map((category, index) => {
               const percentage = totalDefects > 0 ? (category.count / totalDefects) * 100 : 0
               cumulativePercentage += percentage
 
@@ -221,7 +221,7 @@ export default function QualityMetrics({ data }) {
 
             {/* Simplified trend visualization */}
             <div className="space-y-2">
-              {trends.map((trend, __index) => (
+              {trends.map((trend, index) => (
                 <div key={trend.hour} className="flex items-center space-x-2">
                   <span className="text-xs w-8 text-gray-600 dark:text-gray-400">
                     {String(trend.hour).padStart(2, '0')}:00

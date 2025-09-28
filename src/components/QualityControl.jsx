@@ -503,7 +503,7 @@ const QualityControl = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {controlChartData.map((point, __index) => (
+                      {controlChartData.map((point, index) => (
                         <tr key={index} className="border-b">
                           <td className="p-2">{point.date}</td>
                           <td className="text-right p-2">{point.value}</td>

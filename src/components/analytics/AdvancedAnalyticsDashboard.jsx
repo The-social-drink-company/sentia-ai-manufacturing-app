@@ -202,7 +202,7 @@ export default function AdvancedAnalyticsDashboard() {
 
       {/* KPI Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {kpiData.map((kpi, __index) => (
+        {kpiData.map((kpi, index) => (
           <div key={kpi.name} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div className="flex-1">
@@ -373,7 +373,7 @@ export default function AdvancedAnalyticsDashboard() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Prediction Confidence & Maintenance</h3>
             <div className="space-y-6">
-              {predictiveData.map((item, __index) => (
+              {predictiveData.map((item, index) => (
                 <div key={item.week} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
@@ -522,7 +522,7 @@ export default function AdvancedAnalyticsDashboard() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Factor Impact Analysis</h3>
             <div className="space-y-4">
-              {correlationData.map((factor, __index) => (
+              {correlationData.map((factor, index) => (
                 <div key={factor.factor} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">

@@ -236,7 +236,7 @@ export default function StockMovementForecast({ data, period = 'current' }) {
         </h4>
         <div className="relative h-24 bg-gray-50 dark:bg-gray-900 rounded-lg p-2">
           <div className="flex h-full items-end justify-between">
-            {sortedDailyTotals.slice(0, 14).map((day, __index) => {
+            {sortedDailyTotals.slice(0, 14).map((day, index) => {
               const maxMovement = Math.max(...sortedDailyTotals.map(d => d.totalMovement))
               const height = (day.totalMovement / maxMovement) * 100
 

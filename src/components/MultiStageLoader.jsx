@@ -113,7 +113,7 @@ const MultiStageLoader = ({ onComplete }) => {
 
           {/* Stage Grid */}
           <div className="grid grid-cols-5 gap-3">
-            {LOADING_STAGES.map((stage, __index) => (
+            {LOADING_STAGES.map((stage, index) => (
               <div
                 key={stage.id}
                 className={`

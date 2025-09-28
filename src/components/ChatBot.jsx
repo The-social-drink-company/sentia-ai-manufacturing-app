@@ -100,7 +100,7 @@ const ChatBot = () => {
                 <div className="px-4 pb-2">
                   <p className="text-xs text-gray-500 mb-2">Quick suggestions:</p>
                   <div className="space-y-1">
-                    {quickSuggestions.map((suggestion, __index) => (
+                    {quickSuggestions.map((suggestion, index) => (
                       <button
                         key={index}
                         onClick={() => handleSuggestionClick(suggestion)}

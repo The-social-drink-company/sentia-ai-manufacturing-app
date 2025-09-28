@@ -111,7 +111,7 @@ export default function APAgingChart({ data }) {
         <div className="pt-4 border-t">
           <h4 className="text-sm font-semibold mb-2">Top Outstanding Suppliers</h4>
           <div className="space-y-2">
-            {data.topSuppliers.slice(0, 3).map((supplier, __index) => (
+            {data.topSuppliers.slice(0, 3).map((supplier, index) => (
               <div key={index} className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">{supplier.name}</span>
                 <div className="text-right">

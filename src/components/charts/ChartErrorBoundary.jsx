@@ -5,6 +5,7 @@ import {
   ChartBarIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 export default class ChartErrorBoundary extends React.Component {
   constructor(props) {
@@ -27,7 +28,7 @@ export default class ChartErrorBoundary extends React.Component {
 
     // Log error for monitoring
     if (process.env.NODE_ENV === 'development') {
-      console.error('ChartErrorBoundary caught an error:', error, errorInfo);
+      logError('ChartErrorBoundary caught an error:', error, errorInfo);
     }
 
     // You can integrate with error reporting service here

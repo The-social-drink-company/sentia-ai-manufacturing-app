@@ -53,7 +53,7 @@ export default function ABCAnalysis({ data, title }) {
     )
 
     let cumulativeValue = 0
-    const classifiedItems = sortedItems.map((item, __index) => {
+    const classifiedItems = sortedItems.map((item, index) => {
       const itemValue = (item.unitCost || 0) * (item.quantity || 0)
       cumulativeValue += itemValue
       const cumulativePercentage = (cumulativeValue / totalValue) * 100
@@ -189,7 +189,7 @@ export default function ABCAnalysis({ data, title }) {
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4">
           <p className="text-gray-900 dark:text-white font-medium mb-2">{label}</p>
-          {payload.map((entry, __index) => (
+          {payload.map((entry, index) => (
             <div key={index} className="flex items-center justify-between min-w-40">
               <div className="flex items-center">
                 <div
@@ -272,7 +272,7 @@ export default function ABCAnalysis({ data, title }) {
               fill="#8884d8"
               dataKey="value"
             >
-              {pieData.map((entry, __index) => (
+              {pieData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
@@ -380,7 +380,7 @@ export default function ABCAnalysis({ data, title }) {
           </tr>
         </thead>
         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          {sortedData.slice(0, 50).map((item, __index) => {
+          {sortedData.slice(0, 50).map((item, index) => {
             const colors = getCategoryColor(item.category)
             return (
               <tr key={item.id || index} className="hover:bg-gray-50 dark:hover:bg-gray-700">

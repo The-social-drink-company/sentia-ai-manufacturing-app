@@ -337,7 +337,7 @@ export default function RealTimeProductionMonitor() {
               { label: 'Emergency Stop', icon: StopIcon, color: 'red' },
               { label: 'Schedule Maintenance', icon: WrenchScrewdriverIcon, color: 'yellow' },
               { label: 'View Reports', icon: ChartBarIcon, color: 'blue' }
-            ].map((action, __index) => (
+            ].map((action, index) => (
               <button
                 key={index}
                 className={`flex items-center justify-center space-x-2 p-3 rounded-lg border-2 border-dashed border-${action.color}-200 hover:border-${action.color}-400 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200`}

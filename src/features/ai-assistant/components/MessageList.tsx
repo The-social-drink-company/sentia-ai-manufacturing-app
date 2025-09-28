@@ -22,7 +22,7 @@ export function MessageList({ messages, isProcessing }: MessageListProps) {
               <div className="mt-3 space-y-2 text-xs text-blue-600">
                 <p className="font-semibold uppercase tracking-wide text-blue-400">Sources</p>
                 <ul className="space-y-1">
-                  {message.citations.map((citation, __index) => (
+                  {message.citations.map((citation, index) => (
                     <li key={index}>
                       {citation.url ? (
                         <a

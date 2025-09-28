@@ -370,7 +370,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
     color: COLORS[Object.keys(analyticsData.markets).indexOf(key)]
   }));
 
-  const seasonalityData = analyticsData.markets.UK.seasonality.map((value, __index) => ({
+  const seasonalityData = analyticsData.markets.UK.seasonality.map((value, index) => ({
     month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index],
     UK: analyticsData.markets.UK.seasonality[index],
     EU: analyticsData.markets.EU.seasonality[index],
@@ -523,7 +523,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
               <div className="mt-4">
                 <h4 className="font-semibold text-sm mb-2">Risk Factors:</h4>
                 <div className="space-y-1">
-                  {market.riskFactors.map((risk, __index) => (
+                  {market.riskFactors.map((risk, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <span className="text-xs text-gray-600">{risk.factor}:</span>
                       <Badge className={getRiskColor(risk.severity)} size="sm">
@@ -557,7 +557,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
                   dataKey="value"
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 >
-                  {pieChartData.map((entry, __index) => (
+                  {pieChartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -633,7 +633,7 @@ const MultiMarketAnalytics = ({ data, onRefresh, onAnalyze, loading = false }) =
         </div>
 
         <div className="space-y-4">
-          {analyticsData.crossMarketInsights.arbitrageOpportunities.map((opportunity, __index) => (
+          {analyticsData.crossMarketInsights.arbitrageOpportunities.map((opportunity, index) => (
             <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex-1">

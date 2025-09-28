@@ -170,7 +170,7 @@ const ExecutiveDashboard = () => {
               <CardTitle>Key Performance Metrics</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {kpis.map((kpi, __index) => (
+              {kpis.map((kpi, index) => (
                 <div key={kpi.label} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{kpi.label}</span>
@@ -197,7 +197,7 @@ const ExecutiveDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {quickActions.map((action, __index) => (
+              {quickActions.map((action, index) => (
                 <Button
                   key={action.title}
                   variant="outline"

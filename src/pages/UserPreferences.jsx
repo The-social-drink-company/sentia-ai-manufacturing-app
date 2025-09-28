@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 const UserPreferences = () => {
   const { user, isLoaded } = useUser();
@@ -106,7 +107,7 @@ const UserPreferences = () => {
           const parsed = JSON.parse(savedPrefs);
           setPreferences(prev => ({ ...prev, ...parsed }));
         } catch (e) {
-          console.error('Failed to load preferences:', e);
+          logError('Failed to load preferences:', e);
         }
       }
     }

@@ -122,7 +122,7 @@ export class MLModelTrainingPipeline {
       .sort((a, b) => new Date(a.date) - new Date(b.date))
 
     // Add time-based features
-    processed = processed.map((item, __index) => {
+    processed = processed.map((item, index) => {
       const date = new Date(item.date)
 
       return {

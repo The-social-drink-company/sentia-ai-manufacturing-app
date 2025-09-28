@@ -20,7 +20,7 @@ const ImportTemplates = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templates.map((template, __index) => (
+        {templates.map((template, index) => (
           <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">

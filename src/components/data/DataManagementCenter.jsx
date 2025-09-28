@@ -379,7 +379,7 @@ export default function DataManagementCenter() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {storageData.map((entry, __index) => (
+                    {storageData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -388,7 +388,7 @@ export default function DataManagementCenter() {
               </ResponsiveContainer>
             </div>
             <div className="mt-4 grid grid-cols-1 gap-2">
-              {storageData.map((item, __index) => (
+              {storageData.map((item, index) => (
                 <div key={item.name} className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div

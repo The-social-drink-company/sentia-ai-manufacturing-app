@@ -1,128 +1,24 @@
 services:
-  # Development Environment
   - type: web
-    name: sentia-manufacturing-development
+    name: sentia-manufacturing-dashboard-final
     env: node
     plan: starter
     region: oregon
-    branch: development
-    buildCommand: "corepack enable && pnpm install --frozen-lockfile && pnpm run build:dev"
-    startCommand: "node server-enterprise-complete.js"
-    healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: development
-      - key: BRANCH
-        value: development
-      - key: PORT
-        value: 10000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-development
-          property: connectionString
-      - key: MCP_SERVER_URL
-        value: https://mcp-server-tkyu.onrender.com
-      # Clerk Authentication Variables
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
-      - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-      - key: VITE_CLERK_DOMAIN
-        value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
-
-  # Testing Environment
-  - type: web
-    name: sentia-manufacturing-testing
-    env: node
-    plan: starter
-    region: oregon
-    branch: testing
-    buildCommand: "corepack enable && pnpm install --frozen-lockfile && pnpm run build:test"
-    startCommand: "node server-enterprise-complete.js"
-    healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: testing
-      - key: BRANCH
-        value: testing
-      - key: PORT
-        value: 10000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-testing
-          property: connectionString
-      - key: MCP_SERVER_URL
-        value: https://mcp-server-tkyu.onrender.com
-      # Clerk Authentication Variables
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
-      - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-      - key: VITE_CLERK_DOMAIN
-        value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
-
-  # Production Environment
-  - type: web
-    name: sentia-manufacturing-production
-    env: node
-    plan: starter
-    region: oregon
-    branch: production
+    branch: branch-23-bulletproof
     buildCommand: "corepack enable && pnpm install --frozen-lockfile && pnpm run build"
-    startCommand: "node server-enterprise-complete.js"
+    startCommand: "npm start"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
-      - key: BRANCH
-        value: production
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
       - key: PORT
         value: 10000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-production
-          property: connectionString
-      - key: MCP_SERVER_URL
-        value: https://mcp-server-tkyu.onrender.com
-      - key: LOG_LEVEL
-        value: error
-      # Clerk Authentication Variables (TODO: Replace with production keys)
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
       - key: CLERK_SECRET_KEY
         value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
       - key: VITE_CLERK_DOMAIN
         value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      - key: MCP_SERVER_URL
+        value: https://mcp-server-tkyu.onrender.com

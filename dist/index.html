@@ -16,6 +16,12 @@
         .spinner { border: 4px solid #f3f4f6; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .sidebar-dark { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
+        .chatbot-float { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+        .metric-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .nav-item { transition: all 0.2s ease; }
+        .nav-item:hover { background: rgba(59, 130, 246, 0.1); }
+        .nav-item.active { background: #3b82f6; }
     </style>
 </head>
 <body>
@@ -38,7 +44,7 @@
             const [isLoading, setIsLoading] = useState(true);
             const [isClerkLoaded, setIsClerkLoaded] = useState(false);
             const [user, setUser] = useState(null);
-            const [currentPage, setCurrentPage] = useState('landing');
+            const [currentView, setCurrentView] = useState('landing');
 
             useEffect(() => {
                 // Initialize Clerk
@@ -67,7 +73,14 @@
                         await clerk.openSignIn();
                     } catch (error) {
                         console.error('Sign in error:', error);
+                        // Fallback for demo
+                        setUser({ firstName: 'Demo', lastName: 'User' });
+                        setCurrentView('dashboard');
                     }
+                } else {
+                    // Demo mode fallback
+                    setUser({ firstName: 'Demo', lastName: 'User' });
+                    setCurrentView('dashboard');
                 }
             };
 
@@ -77,7 +90,14 @@
                         await clerk.openSignUp();
                     } catch (error) {
                         console.error('Sign up error:', error);
+                        // Fallback for demo
+                        setUser({ firstName: 'Demo', lastName: 'User' });
+                        setCurrentView('dashboard');
                     }
+                } else {
+                    // Demo mode fallback
+                    setUser({ firstName: 'Demo', lastName: 'User' });
+                    setCurrentView('dashboard');
                 }
             };
 
@@ -86,10 +106,13 @@
                     try {
                         await clerk.signOut();
                         setUser(null);
-                        setCurrentPage('landing');
+                        setCurrentView('landing');
                     } catch (error) {
                         console.error('Sign out error:', error);
                     }
+                } else {
+                    setUser(null);
+                    setCurrentView('landing');
                 }
             };
 
@@ -104,178 +127,13 @@
             }
 
             // Landing Page
-            if (currentPage === 'landing' && !user) {
-                return (
-                    <div className="min-h-screen gradient-bg">
-                        {/* Navigation */}
-                        <nav className="bg-white bg-opacity-10 backdrop-blur-md">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="flex justify-between items-center py-4">
-                                    <div className="flex items-center">
-                                        <h1 className="text-2xl font-bold text-white">Sentia Manufacturing</h1>
-                                        <span className="ml-2 px-2 py-1 bg-white bg-opacity-20 text-white text-xs font-medium rounded">Enterprise</span>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <button 
-                                            onClick={handleSignIn}
-                                            className="text-white hover:text-gray-200 px-3 py-2 text-sm font-medium"
-                                        >
-                                            Sign In
-                                        </button>
-                                        <button 
-                                            onClick={handleSignUp}
-                                            className="bg-white text-purple-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-                                        >
-                                            Get Started
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </nav>
-
-                        {/* Hero Section */}
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                            <div className="text-center">
-                                <h1 className="text-5xl font-bold text-white mb-6">
-                                    Enterprise Working Capital Intelligence
-                                </h1>
-                                <p className="text-xl text-white text-opacity-90 mb-8 max-w-3xl mx-auto">
-                                    Transform your manufacturing operations with AI-powered insights, real-time analytics, 
-                                    and intelligent working capital management for Sentia Spirits.
-                                </p>
-                                <div className="flex justify-center space-x-4">
-                                    <button 
-                                        onClick={handleSignUp}
-                                        className="bg-white text-purple-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition duration-300"
-                                    >
-                                        Start Free Trial
-                                    </button>
-                                    <button 
-                                        onClick={() => setCurrentPage('demo')}
-                                        className="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-purple-600 transition duration-300"
-                                    >
-                                        View Demo
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Features Section */}
-                        <div className="bg-white py-20">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="text-center mb-16">
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                                        Powerful Features for Manufacturing Excellence
-                                    </h2>
-                                    <p className="text-lg text-gray-600">
-                                        Everything you need to optimize your manufacturing operations
-                                    </p>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="text-center p-6">
-                                        <div className="text-4xl mb-4">📊</div>
-                                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Real-time Analytics</h3>
-                                        <p className="text-gray-600">Monitor production, sales, and financial metrics in real-time with interactive dashboards.</p>
-                                    </div>
-                                    <div className="text-center p-6">
-                                        <div className="text-4xl mb-4">💰</div>
-                                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Working Capital Optimization</h3>
-                                        <p className="text-gray-600">Optimize cash flow with intelligent DSO, DIO, and DPO management.</p>
-                                    </div>
-                                    <div className="text-center p-6">
-                                        <div className="text-4xl mb-4">🤖</div>
-                                        <h3 className="text-xl font-semibold text-gray-900 mb-2">AI-Powered Insights</h3>
-                                        <p className="text-gray-600">Get intelligent recommendations and forecasts powered by machine learning.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            // Demo Page
-            if (currentPage === 'demo') {
-                return (
-                    <div className="min-h-screen bg-gray-50">
-                        {/* Header */}
-                        <header className="bg-white shadow-sm border-b">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="flex justify-between items-center py-4">
-                                    <div className="flex items-center">
-                                        <button 
-                                            onClick={() => setCurrentPage('landing')}
-                                            className="text-purple-600 hover:text-purple-700 mr-4"
-                                        >
-                                            ← Back
-                                        </button>
-                                        <h1 className="text-2xl font-bold text-gray-900">Sentia Manufacturing</h1>
-                                        <span className="ml-2 px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded">Demo</span>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <button 
-                                            onClick={handleSignIn}
-                                            className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-                                        >
-                                            Sign In
-                                        </button>
-                                        <button 
-                                            onClick={handleSignUp}
-                                            className="bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700"
-                                        >
-                                            Get Started
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </header>
-
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                            <div className="text-center mb-8">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-4">Dashboard Demo</h2>
-                                <p className="text-lg text-gray-600">Experience the power of Sentia Manufacturing Dashboard</p>
-                            </div>
-
-                            {/* Demo Dashboard */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                                <div className="bg-white p-6 rounded-lg shadow">
-                                    <h3 className="text-sm font-medium text-gray-500">Total Revenue</h3>
-                                    <p className="text-2xl font-bold text-gray-900">£2.4M</p>
-                                    <p className="text-sm text-green-600">+12% from last month</p>
-                                </div>
-                                <div className="bg-white p-6 rounded-lg shadow">
-                                    <h3 className="text-sm font-medium text-gray-500">Working Capital</h3>
-                                    <p className="text-2xl font-bold text-gray-900">£450K</p>
-                                    <p className="text-sm text-blue-600">Optimized</p>
-                                </div>
-                                <div className="bg-white p-6 rounded-lg shadow">
-                                    <h3 className="text-sm font-medium text-gray-500">Production Efficiency</h3>
-                                    <p className="text-2xl font-bold text-gray-900">94%</p>
-                                    <p className="text-sm text-green-600">+3% this week</p>
-                                </div>
-                                <div className="bg-white p-6 rounded-lg shadow">
-                                    <h3 className="text-sm font-medium text-gray-500">Active Orders</h3>
-                                    <p className="text-2xl font-bold text-gray-900">1,247</p>
-                                    <p className="text-sm text-gray-600">Shopify + Amazon</p>
-                                </div>
-                            </div>
-
-                            <div className="text-center">
-                                <button 
-                                    onClick={handleSignUp}
-                                    className="bg-purple-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-purple-700 transition duration-300"
-                                >
-                                    Sign Up to Access Full Dashboard
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                );
+            if (currentView === 'landing' && !user) {
+                return <LandingPage onSignIn={handleSignIn} onSignUp={handleSignUp} />;
             }
 
             // Authenticated Dashboard
-            if (user) {
-                return <AuthenticatedDashboard user={user} onSignOut={handleSignOut} />;
+            if (user || currentView === 'dashboard') {
+                return <EnterpriseDashboard user={user} onSignOut={handleSignOut} />;
             }
 
             // Fallback
@@ -285,7 +143,7 @@
                         <h1 className="text-2xl font-bold text-gray-900 mb-4">Welcome to Sentia Manufacturing</h1>
                         <button 
                             onClick={handleSignIn}
-                            className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700"
+                            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
                         >
                             Sign In to Continue
                         </button>
@@ -294,194 +152,449 @@
             );
         }
 
-        function AuthenticatedDashboard({ user, onSignOut }) {
-            const [currentPage, setCurrentPage] = useState('dashboard');
-
+        function LandingPage({ onSignIn, onSignUp }) {
             return (
-                <div className="min-h-screen bg-gray-50">
-                    {/* Header */}
-                    <header className="bg-white shadow-sm border-b">
+                <div className="min-h-screen gradient-bg">
+                    {/* Navigation */}
+                    <nav className="bg-white bg-opacity-10 backdrop-blur-md">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between items-center py-4">
                                 <div className="flex items-center">
-                                    <h1 className="text-2xl font-bold text-gray-900">Sentia Manufacturing</h1>
-                                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">Live</span>
+                                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                        <span className="text-white font-bold text-sm">S</span>
+                                    </div>
+                                    <div>
+                                        <h1 className="text-xl font-bold text-white">Sentia Manufacturing</h1>
+                                        <p className="text-xs text-white text-opacity-80">Enterprise Dashboard</p>
+                                    </div>
                                 </div>
                                 <div className="flex items-center space-x-4">
-                                    <span className="text-sm text-gray-700">Welcome, {user?.firstName || 'User'}</span>
                                     <button 
-                                        onClick={onSignOut}
-                                        className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700"
+                                        onClick={onSignIn}
+                                        className="text-white hover:text-gray-200 px-3 py-2 text-sm font-medium"
                                     >
-                                        Sign Out
+                                        Sign In
+                                    </button>
+                                    <button 
+                                        onClick={onSignUp}
+                                        className="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
+                                    >
+                                        Get Started
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </header>
+                    </nav>
 
-                    <div className="flex">
-                        {/* Sidebar */}
-                        <nav className="w-64 bg-white shadow-sm h-screen">
-                            <div className="p-4">
-                                <ul className="space-y-2">
-                                    <li>
-                                        <button 
-                                            onClick={() => setCurrentPage('dashboard')}
-                                            className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium ${currentPage === 'dashboard' ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100'}`}
-                                        >
-                                            📊 Executive Dashboard
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button 
-                                            onClick={() => setCurrentPage('working-capital')}
-                                            className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium ${currentPage === 'working-capital' ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100'}`}
-                                        >
-                                            💰 Working Capital
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button 
-                                            onClick={() => setCurrentPage('production')}
-                                            className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium ${currentPage === 'production' ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100'}`}
-                                        >
-                                            🏭 Production
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button 
-                                            onClick={() => setCurrentPage('analytics')}
-                                            className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium ${currentPage === 'analytics' ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100'}`}
-                                        >
-                                            📈 AI Analytics
-                                        </button>
-                                    </li>
-                                </ul>
+                    {/* Hero Section */}
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                        <div className="text-center">
+                            <h1 className="text-5xl font-bold text-white mb-6">
+                                Enterprise Working Capital Intelligence
+                            </h1>
+                            <p className="text-xl text-white text-opacity-90 mb-8 max-w-3xl mx-auto">
+                                Transform your manufacturing operations with AI-powered insights, real-time analytics, 
+                                and intelligent working capital management for Sentia Spirits.
+                            </p>
+                            <div className="flex justify-center space-x-4">
+                                <button 
+                                    onClick={onSignUp}
+                                    className="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition duration-300"
+                                >
+                                    Start Free Trial
+                                </button>
+                                <button 
+                                    onClick={onSignIn}
+                                    className="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-300"
+                                >
+                                    Access Dashboard
+                                </button>
                             </div>
-                        </nav>
+                        </div>
 
-                        {/* Main Content */}
-                        <main className="flex-1 p-8">
-                            {currentPage === 'dashboard' && (
+                        {/* Key Metrics Preview */}
+                        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                            <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 text-center">
+                                <h3 className="text-2xl font-bold text-white">£2.5M</h3>
+                                <p className="text-white text-opacity-80">Monthly Revenue</p>
+                            </div>
+                            <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 text-center">
+                                <h3 className="text-2xl font-bold text-white">£1.9M</h3>
+                                <p className="text-white text-opacity-80">Working Capital</p>
+                            </div>
+                            <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 text-center">
+                                <h3 className="text-2xl font-bold text-white">94.8%</h3>
+                                <p className="text-white text-opacity-80">Efficiency Rate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function EnterpriseDashboard({ user, onSignOut }) {
+            const [currentPage, setCurrentPage] = useState('executive-dashboard');
+            const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+
+            const menuItems = [
+                {
+                    section: 'OVERVIEW',
+                    items: [
+                        { id: 'executive-dashboard', label: 'Executive Dashboard', icon: '📊', active: true }
+                    ]
+                },
+                {
+                    section: 'PLANNING & ANALYTICS',
+                    items: [
+                        { id: 'demand-forecasting', label: 'Demand Forecasting', icon: '📈' },
+                        { id: 'inventory-management', label: 'Inventory Management', icon: '📦' },
+                        { id: 'production-tracking', label: 'Production Tracking', icon: '🏭' },
+                        { id: 'quality-control', label: 'Quality Control', icon: '✅' }
+                    ]
+                },
+                {
+                    section: 'FINANCIAL MANAGEMENT',
+                    items: [
+                        { id: 'working-capital', label: 'Working Capital', icon: '💰' },
+                        { id: 'what-if-analysis', label: 'What-If Analysis', icon: '🔍' },
+                        { id: 'financial-reports', label: 'Financial Reports', icon: '📋' }
+                    ]
+                },
+                {
+                    section: 'OPERATIONS',
+                    items: [
+                        { id: 'data-import', label: 'Data Import', icon: '📥' },
+                        { id: 'admin-panel', label: 'Admin Panel', icon: '⚙️' }
+                    ]
+                }
+            ];
+
+            return (
+                <div className="min-h-screen bg-gray-100 flex">
+                    {/* Sidebar */}
+                    <div className="w-80 sidebar-dark text-white flex flex-col">
+                        {/* Logo */}
+                        <div className="p-6 border-b border-gray-700">
+                            <div className="flex items-center">
+                                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                    <span className="text-white font-bold">S</span>
+                                </div>
                                 <div>
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-6">Executive Dashboard</h2>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                                        <div className="bg-white p-6 rounded-lg shadow">
-                                            <h3 className="text-sm font-medium text-gray-500">Total Revenue</h3>
-                                            <p className="text-2xl font-bold text-gray-900">£2.4M</p>
-                                            <p className="text-sm text-green-600">+12% from last month</p>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-lg shadow">
-                                            <h3 className="text-sm font-medium text-gray-500">Working Capital</h3>
-                                            <p className="text-2xl font-bold text-gray-900">£450K</p>
-                                            <p className="text-sm text-blue-600">Optimized</p>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-lg shadow">
-                                            <h3 className="text-sm font-medium text-gray-500">Production Efficiency</h3>
-                                            <p className="text-2xl font-bold text-gray-900">94%</p>
-                                            <p className="text-sm text-green-600">+3% this week</p>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-lg shadow">
-                                            <h3 className="text-sm font-medium text-gray-500">Shopify Orders</h3>
-                                            <p className="text-2xl font-bold text-gray-900">1,247</p>
-                                            <p className="text-sm text-gray-600">UK + USA stores</p>
-                                        </div>
+                                    <h1 className="text-lg font-bold">Sentia Manufacturing</h1>
+                                    <p className="text-xs text-gray-400">Enterprise Dashboard</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Navigation */}
+                        <div className="flex-1 overflow-y-auto p-4">
+                            {menuItems.map((section, sectionIndex) => (
+                                <div key={sectionIndex} className="mb-6">
+                                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                        {section.section}
+                                    </h3>
+                                    <ul className="space-y-1">
+                                        {section.items.map((item) => (
+                                            <li key={item.id}>
+                                                <button
+                                                    onClick={() => setCurrentPage(item.id)}
+                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium nav-item flex items-center ${
+                                                        currentPage === item.id ? 'active text-white' : 'text-gray-300 hover:text-white'
+                                                    }`}
+                                                >
+                                                    <span className="mr-3">{item.icon}</span>
+                                                    {item.label}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* User Info */}
+                        <div className="p-4 border-t border-gray-700">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                                        <span className="text-white text-sm font-bold">
+                                            {user?.firstName?.[0] || 'U'}
+                                        </span>
                                     </div>
-                                    <div className="bg-white p-6 rounded-lg shadow">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">🔗 MCP Server Status</h3>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="flex items-center">
-                                                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-                                                <span className="text-sm">Xero Accounting</span>
-                                            </div>
-                                            <div className="flex items-center">
-                                                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-                                                <span className="text-sm">Shopify UK/USA</span>
-                                            </div>
-                                            <div className="flex items-center">
-                                                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-                                                <span className="text-sm">Unleashed ERP</span>
-                                            </div>
-                                            <div className="flex items-center">
-                                                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-                                                <span className="text-sm">Hugging Face AI</span>
-                                            </div>
-                                        </div>
+                                    <div>
+                                        <p className="text-sm font-medium">{user?.firstName || 'User'} • Enterprise</p>
+                                        <p className="text-xs text-gray-400">All Systems Operational</p>
                                     </div>
                                 </div>
-                            )}
+                                <button
+                                    onClick={onSignOut}
+                                    className="text-gray-400 hover:text-white text-sm"
+                                >
+                                    Sign Out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                            {currentPage === 'working-capital' && (
+                    {/* Main Content */}
+                    <div className="flex-1 flex flex-col">
+                        {/* Header */}
+                        <header className="bg-white shadow-sm border-b px-8 py-4">
+                            <div className="flex justify-between items-center">
                                 <div>
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-6">Working Capital Management</h2>
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                        <div className="bg-white p-6 rounded-lg shadow">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Days Sales Outstanding (DSO)</h3>
-                                            <p className="text-3xl font-bold text-blue-600">32 days</p>
-                                            <p className="text-sm text-gray-600 mt-2">Industry average: 45 days</p>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-lg shadow">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Days Inventory Outstanding (DIO)</h3>
-                                            <p className="text-3xl font-bold text-orange-600">28 days</p>
-                                            <p className="text-sm text-gray-600 mt-2">Target: 25 days</p>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-lg shadow">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Days Payable Outstanding (DPO)</h3>
-                                            <p className="text-3xl font-bold text-green-600">42 days</p>
-                                            <p className="text-sm text-gray-600 mt-2">Optimized payment terms</p>
-                                        </div>
-                                    </div>
+                                    <h1 className="text-2xl font-bold text-gray-900">
+                                        {currentPage === 'executive-dashboard' && 'Executive Dashboard'}
+                                        {currentPage === 'working-capital' && 'Working Capital Management'}
+                                        {currentPage === 'demand-forecasting' && 'Demand Forecasting'}
+                                        {currentPage === 'inventory-management' && 'Inventory Management'}
+                                        {currentPage === 'production-tracking' && 'Production Tracking'}
+                                        {currentPage === 'quality-control' && 'Quality Control'}
+                                        {currentPage === 'what-if-analysis' && 'What-If Analysis'}
+                                        {currentPage === 'financial-reports' && 'Financial Reports'}
+                                        {currentPage === 'data-import' && 'Data Import'}
+                                        {currentPage === 'admin-panel' && 'Admin Panel'}
+                                    </h1>
+                                    <p className="text-gray-600">Real-time manufacturing operations overview</p>
                                 </div>
-                            )}
+                                <div className="flex items-center space-x-4">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                        <span className="text-sm text-gray-600">All Systems Operational</span>
+                                    </div>
+                                    <span className="text-sm text-gray-500">18:24:24</span>
+                                </div>
+                            </div>
+                        </header>
 
-                            {currentPage === 'production' && (
-                                <div>
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-6">Production Overview</h2>
-                                    <div className="bg-white p-6 rounded-lg shadow">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Production Status</h3>
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-gray-700">Gin Production Line</span>
-                                                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Active</span>
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-gray-700">Vodka Production Line</span>
-                                                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Active</span>
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-gray-700">Packaging Line</span>
-                                                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Maintenance</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {currentPage === 'analytics' && (
-                                <div>
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-6">AI-Powered Business Analytics</h2>
-                                    <div className="bg-white p-6 rounded-lg shadow">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">🤖 Intelligent Insights</h3>
-                                        <div className="space-y-4">
-                                            <div className="p-4 bg-blue-50 rounded-lg">
-                                                <p className="text-blue-800 font-medium">💡 AI Recommendation</p>
-                                                <p className="text-blue-700 mt-1">Consider increasing gin production by 15% based on demand forecasting from Shopify data.</p>
-                                            </div>
-                                            <div className="p-4 bg-green-50 rounded-lg">
-                                                <p className="text-green-800 font-medium">📈 Cash Flow Opportunity</p>
-                                                <p className="text-green-700 mt-1">Working capital optimization could free up £75K in cash flow through improved payment terms.</p>
-                                            </div>
-                                            <div className="p-4 bg-yellow-50 rounded-lg">
-                                                <p className="text-yellow-800 font-medium">⚠️ Inventory Alert</p>
-                                                <p className="text-yellow-700 mt-1">Premium bottle inventory from Unleashed ERP shows low stock levels - reorder recommended.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                        {/* Page Content */}
+                        <main className="flex-1 p-8 overflow-y-auto">
+                            <PageContent currentPage={currentPage} />
                         </main>
                     </div>
+
+                    {/* Chatbot */}
+                    <div className="chatbot-float">
+                        <button
+                            onClick={() => setIsChatbotOpen(!isChatbotOpen)}
+                            className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 transition-colors"
+                        >
+                            🤖
+                        </button>
+                        {isChatbotOpen && (
+                            <div className="absolute bottom-16 right-0 w-80 h-96 bg-white rounded-lg shadow-xl border">
+                                <div className="p-4 border-b">
+                                    <h3 className="font-semibold">AI Assistant</h3>
+                                    <p className="text-sm text-gray-600">How can I help you today?</p>
+                                </div>
+                                <div className="p-4 h-64 overflow-y-auto">
+                                    <div className="space-y-3">
+                                        <div className="bg-gray-100 p-3 rounded-lg">
+                                            <p className="text-sm">💡 Your working capital efficiency is at 94.8%. Consider optimizing payment terms to improve cash flow.</p>
+                                        </div>
+                                        <div className="bg-blue-100 p-3 rounded-lg">
+                                            <p className="text-sm">📈 Production forecasting suggests increasing gin production by 15% next quarter.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="p-4 border-t">
+                                    <input
+                                        type="text"
+                                        placeholder="Ask me anything..."
+                                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function PageContent({ currentPage }) {
+            if (currentPage === 'executive-dashboard') {
+                return (
+                    <div className="space-y-6">
+                        {/* Key Metrics */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="metric-card">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-sm font-medium text-gray-500">Total Revenue</h3>
+                                    <span className="text-green-600 text-sm">+15.2%</span>
+                                </div>
+                                <p className="text-3xl font-bold text-gray-900">£2.5M</p>
+                                <p className="text-sm text-gray-600">Monthly recurring revenue</p>
+                            </div>
+                            <div className="metric-card">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-sm font-medium text-gray-500">Active Orders</h3>
+                                    <span className="text-green-600 text-sm">+8.5%</span>
+                                </div>
+                                <p className="text-3xl font-bold text-gray-900">1,250</p>
+                                <p className="text-sm text-gray-600">Orders in production</p>
+                            </div>
+                            <div className="metric-card">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-sm font-medium text-gray-500">Inventory Value</h3>
+                                    <span className="text-red-600 text-sm">-2.1%</span>
+                                </div>
+                                <p className="text-3xl font-bold text-gray-900">£0.8M</p>
+                                <p className="text-sm text-gray-600">Current stock valuation</p>
+                            </div>
+                            <div className="metric-card">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-sm font-medium text-gray-500">Active Customers</h3>
+                                    <span className="text-green-600 text-sm">+12.3%</span>
+                                </div>
+                                <p className="text-3xl font-bold text-gray-900">850</p>
+                                <p className="text-sm text-gray-600">Customers with active orders</p>
+                            </div>
+                        </div>
+
+                        {/* Working Capital Section */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="metric-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Working Capital</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-sm text-gray-600">Current</span>
+                                            <span className="text-green-600 text-sm">+19.5%</span>
+                                        </div>
+                                        <p className="text-2xl font-bold text-gray-900">£1.9M</p>
+                                        <p className="text-sm text-gray-500">30-day Projection: £2.1M</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="metric-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Performance Metrics</h3>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-700">Revenue Growth</span>
+                                        <span className="font-semibold">+15.2%</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-700">Order Fulfillment</span>
+                                        <span className="font-semibold">94.8%</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-700">Customer Satisfaction</span>
+                                        <span className="font-semibold">4.7/5</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-700">Inventory Turnover</span>
+                                        <span className="font-semibold">8.2x</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="metric-card">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 transition-colors">
+                                    <div className="text-blue-600 text-2xl mb-2">📊</div>
+                                    <h4 className="font-medium text-gray-900">Run Forecast</h4>
+                                    <p className="text-sm text-gray-600">Generate demand forecast</p>
+                                </button>
+                                <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 transition-colors">
+                                    <div className="text-green-600 text-2xl mb-2">💰</div>
+                                    <h4 className="font-medium text-gray-900">Working Capital</h4>
+                                    <p className="text-sm text-gray-600">Analyze cash flow</p>
+                                </button>
+                                <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 transition-colors">
+                                    <div className="text-purple-600 text-2xl mb-2">🔍</div>
+                                    <h4 className="font-medium text-gray-900">What-If Analysis</h4>
+                                    <p className="text-sm text-gray-600">Scenario modeling</p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (currentPage === 'working-capital') {
+                return (
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="metric-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Days Sales Outstanding (DSO)</h3>
+                                <p className="text-4xl font-bold text-blue-600 mb-2">32 days</p>
+                                <p className="text-sm text-gray-600">Industry average: 45 days</p>
+                                <div className="mt-4 bg-blue-100 rounded-full h-2">
+                                    <div className="bg-blue-600 h-2 rounded-full" style={{width: '71%'}}></div>
+                                </div>
+                            </div>
+                            <div className="metric-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Days Inventory Outstanding (DIO)</h3>
+                                <p className="text-4xl font-bold text-orange-600 mb-2">28 days</p>
+                                <p className="text-sm text-gray-600">Target: 25 days</p>
+                                <div className="mt-4 bg-orange-100 rounded-full h-2">
+                                    <div className="bg-orange-600 h-2 rounded-full" style={{width: '89%'}}></div>
+                                </div>
+                            </div>
+                            <div className="metric-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Days Payable Outstanding (DPO)</h3>
+                                <p className="text-4xl font-bold text-green-600 mb-2">42 days</p>
+                                <p className="text-sm text-gray-600">Optimized payment terms</p>
+                                <div className="mt-4 bg-green-100 rounded-full h-2">
+                                    <div className="bg-green-600 h-2 rounded-full" style={{width: '95%'}}></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="metric-card">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Cash Conversion Cycle</h3>
+                            <div className="text-center">
+                                <p className="text-5xl font-bold text-purple-600 mb-2">18 days</p>
+                                <p className="text-gray-600">DSO + DIO - DPO = 32 + 28 - 42 = 18 days</p>
+                                <p className="text-sm text-green-600 mt-2">Excellent - Industry average: 35 days</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="metric-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Working Capital Trend</h3>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-700">Current Month</span>
+                                        <span className="font-semibold text-green-600">£1.9M</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-700">Previous Month</span>
+                                        <span className="font-semibold">£1.6M</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-700">Change</span>
+                                        <span className="font-semibold text-green-600">+18.8%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="metric-card">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Optimization Opportunities</h3>
+                                <div className="space-y-3">
+                                    <div className="p-3 bg-blue-50 rounded-lg">
+                                        <p className="text-blue-800 font-medium">💡 Payment Terms</p>
+                                        <p className="text-blue-700 text-sm">Extend supplier payment terms by 5 days</p>
+                                    </div>
+                                    <div className="p-3 bg-green-50 rounded-lg">
+                                        <p className="text-green-800 font-medium">📈 Inventory</p>
+                                        <p className="text-green-700 text-sm">Reduce slow-moving inventory by 15%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Default content for other pages
+            return (
+                <div className="metric-card text-center py-12">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                        {currentPage.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Page
+                    </h3>
+                    <p className="text-gray-600">This page is under development. Full functionality coming soon.</p>
                 </div>
             );
         }

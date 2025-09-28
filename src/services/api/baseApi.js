@@ -139,4 +139,4 @@ class BaseApi {
 }
 
 export const api = new BaseApi()
-export { ApiError }
+export { ApiError, getApiBaseUrl }

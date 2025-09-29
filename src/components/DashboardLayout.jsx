@@ -13,7 +13,7 @@ import {
   DatabaseIcon,
   ShieldCheckIcon
 } from 'lucide-react'
-import ChatWidget from '@/components/chat/ChatWidget'
+import EnterpriseAIChatbot from '@/components/EnterpriseAIChatbot'
 import CommandPalette from '@/components/dashboard/CommandPalette'
 
 const NAV_SECTIONS = [
@@ -123,7 +123,7 @@ const DashboardLayout = ({ children }) => {
       </div>
 
       <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} />
-      <ChatWidget />
+      <EnterpriseAIChatbot />
     </div>
   )
 }

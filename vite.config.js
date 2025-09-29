@@ -9,16 +9,25 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, mode }) => ({
   define: {
-    "process.env.NODE_ENV": JSON.stringify(command === "build" ? "production" : (process.env.NODE_ENV || "development"))
+    "process.env.NODE_ENV": JSON.stringify(mode === "production" || command === "build" ? "production" : "development"),
+    "__DEV__": mode !== "production" && command !== "build"
   },
   root: '.', // Explicitly set root to current directory
   plugins: [
     react({
       jsxRuntime: 'automatic',
       jsxImportSource: 'react',
-      jsxDevelopment: command === 'serve'
+      babel: {
+        plugins: [
+          ['@babel/plugin-transform-react-jsx', {
+            runtime: 'automatic',
+            development: false,
+            importSource: 'react'
+          }]
+        ]
+      }
     }),
     // tailwindcss handled via postcss.config.js
     visualizer({

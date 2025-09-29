@@ -13,7 +13,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "rm -rf node_modules package-lock.json pnpm-lock.yaml && corepack enable && pnpm install && pnpm prisma generate && pnpm run build"
-    startCommand: "pnpm prisma migrate resolve --rolled-back 20250909_api_keys_management && pnpm prisma migrate deploy && node server-enterprise-complete.js"
+    startCommand: "pnpm run start:render"
     healthCheckPath: /health
     autoDeploy: true
     envVars:

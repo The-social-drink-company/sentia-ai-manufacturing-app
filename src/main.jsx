@@ -1,9 +1,7 @@
-import { StrictMode, useEffect, useState } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { ClerkProvider } from '@clerk/clerk-react'
 import './index.css'
 import App from './App-enterprise.jsx'
-import LandingPageMarketing from './components/LandingPageMarketing.jsx'
 
 // Global error handler
 window.addEventListener('error', (event) => {
@@ -34,91 +32,14 @@ function showErrorFallback(title, message) {
 
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-const rootElement = document.getElementById('root')
-if (!rootElement) {
-  throw new Error('Root element not found')
+if (!publishableKey) {
+  console.warn('Missing VITE_CLERK_PUBLISHABLE_KEY, Clerk features will be disabled')
 }
 
-export const RootApp = () => {
-  const [bootConfig, setBootConfig] = useState(null)
+console.log('[Clerk] Initializing with publishable key:', publishableKey?.substring(0, 20) + '...')
 
-  useEffect(() => {
-    if (bootConfig?.targetPath) {
-      window.history.replaceState({}, '', bootConfig.targetPath)
-    }
-  }, [bootConfig])
-
-  if (!bootConfig) {
-    return (
-      <LandingPageMarketing
-        onRequestSignIn={() => setBootConfig({ targetPath: '/app/sign-in' })}
-        onRequestDemo={() => setBootConfig({ targetPath: '/app/dashboard?demo=1' })}
-        onRequestContact={() => {
-          window.location.href = 'mailto:sales@sentiamfg.com'
-        }}
-      />
-    )
-  }
-
-  if (!publishableKey || publishableKey.length < 20) {
-    console.warn('[Clerk] Invalid VITE_CLERK_PUBLISHABLE_KEY, falling back to demo mode:', publishableKey)
-    console.log('[Clerk] Available environment variables:', Object.keys(import.meta.env))
-
-    // Fallback to demo mode instead of crashing
-    return (
-      <LandingPageMarketing
-        onRequestSignIn={() => setBootConfig({ targetPath: '/app/sign-in' })}
-        onRequestDemo={() => setBootConfig({ targetPath: '/app/dashboard?demo=1' })}
-        onRequestContact={() => {
-          window.location.href = 'mailto:sales@sentiamfg.com'
-        }}
-      />
-    )
-  }
-
-  console.log('[Clerk] Initializing with publishable key:', `${publishableKey.substring(0, 20)}...`)
-  console.log('[Clerk] Full key length:', publishableKey.length)
-  console.log('[Clerk] Key ends with:', publishableKey.slice(-10))
-
-  return (
-    <ClerkProvider
-      publishableKey={publishableKey}
-      navigate={(to) => {
-        window.location.href = to
-      }}
-      appearance={{
-        baseTheme: undefined,
-        variables: {
-          colorPrimary: '#2563eb',
-          colorTextOnPrimaryBackground: '#ffffff',
-          colorBackground: '#ffffff',
-          colorInputBackground: '#ffffff',
-          colorInputText: '#1f2937',
-          fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          borderRadius: '0.5rem'
-        },
-        elements: {
-          card: {
-            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-            border: '1px solid #e5e7eb'
-          },
-          headerTitle: {
-            fontSize: '1.5rem',
-            fontWeight: '600'
-          },
-          headerSubtitle: {
-            color: '#6b7280'
-          }
-        }
-      }}
-    >
-      <App />
-    </ClerkProvider>
-  )
-}
-
-createRoot(rootElement).render(
+createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RootApp />
+    <App />
   </StrictMode>
 )

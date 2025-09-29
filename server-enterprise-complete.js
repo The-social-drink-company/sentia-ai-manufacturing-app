@@ -45,20 +45,31 @@ const __dirname = path.dirname(__filename);
 let prisma = null;
 let PrismaClient = null;
 
+// Multiple possible runtime locations for Prisma
 const prismaRuntimePaths = [
   path.join(__dirname, '.prisma', 'client'),
-  path.join(__dirname, 'node_modules', '.prisma', 'client')
+  path.join(__dirname, 'node_modules', '.prisma', 'client'),
+  path.join(__dirname, 'node_modules', '.pnpm', '@prisma+client@6.16.2_prisma@6.16.2', 'node_modules', '.prisma', 'client')
 ];
+
+logger.info('Checking Prisma runtime locations...');
+prismaRuntimePaths.forEach((runtimePath, index) => {
+  const exists = fs.existsSync(runtimePath);
+  logger.info(`Path ${index + 1}: ${runtimePath} - ${exists ? 'EXISTS' : 'NOT FOUND'}`);
+});
+
 const prismaRuntimeAvailable = prismaRuntimePaths.some((runtimePath) => fs.existsSync(runtimePath));
 
 if (prismaRuntimeAvailable) {
   try {
+    logger.info('Attempting to import Prisma client...');
     const pkg = await import('@prisma/client');
     PrismaClient = pkg?.PrismaClient ?? null;
 
     if (PrismaClient) {
+      logger.info('Creating Prisma client instance...');
       prisma = new PrismaClient({
-        log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+        log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['warn', 'error'],
         datasources: {
           db: {
             url:
@@ -69,15 +80,18 @@ if (prismaRuntimeAvailable) {
         }
       });
       logger.info('Prisma client initialized successfully');
+      logger.info(`Using database URL: ${process.env.DATABASE_URL ? 'FROM_ENV' : 'FALLBACK'}`);
     } else {
       logger.warn('Prisma client module did not export PrismaClient constructor');
     }
   } catch (error) {
-    logger.warn('Prisma client failed to initialize, running without database:', error.message);
+    logger.error('Prisma client failed to initialize:', error.message);
+    logger.error('Stack trace:', error.stack);
     prisma = null;
   }
 } else {
-  logger.warn('Prisma runtime (.prisma/client) not found - skipping database initialization');
+  logger.warn('Prisma runtime (.prisma/client) not found in any expected location');
+  logger.warn('This will prevent database operations from working');
 }
 // Test database connection
 async function testDatabaseConnection() {

@@ -57,10 +57,10 @@ CREATE TABLE IF NOT EXISTS "ApiUsageLog" (
 CREATE INDEX "ApiUsageLog_organizationId_service_timestamp_idx" ON "ApiUsageLog"("organizationId", "service", "timestamp");
 CREATE INDEX "ApiUsageLog_timestamp_idx" ON "ApiUsageLog"("timestamp");
 
--- Update existing User table if it exists to support organization context
+-- Update existing users table if it exists to support organization context
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'User' AND column_name = 'organizationId') THEN
-        ALTER TABLE "User" ADD COLUMN "organizationId" TEXT DEFAULT 'default';
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'organizationId') THEN
+        ALTER TABLE "users" ADD COLUMN "organizationId" TEXT DEFAULT 'default';
     END IF;
 END $$;

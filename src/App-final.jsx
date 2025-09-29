@@ -16,7 +16,7 @@ import {
   ComposedChart, FunnelChart, Funnel, Treemap
 } from 'recharts'
 
-import LandingPage from './components/LandingPage'
+import LandingPage from './LandingPage'
 
 const queryClient = new QueryClient()
 

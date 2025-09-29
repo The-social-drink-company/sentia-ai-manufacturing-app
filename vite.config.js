@@ -18,7 +18,7 @@ export default defineConfig(({ command }) => ({
     react({
       jsxRuntime: 'automatic',
       jsxImportSource: 'react',
-      jsxDevelopment: false
+      jsxDevelopment: command === 'serve'
     }),
     // tailwindcss handled via postcss.config.js
     visualizer({

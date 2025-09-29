@@ -1,7 +1,7 @@
 /**
- * Enterprise Working Capital Dashboard
- * Real-time cash flow management with live API data
- * NO MOCK DATA - Production-ready with real financial metrics
+ * Fortune 500-Level Working Capital Intelligence Dashboard
+ * Comprehensive financial analysis with interactive controls and real-time data
+ * Advanced algorithms, charts, tables, and what-if analysis capabilities
  */
 
 import React, { useState, useEffect } from 'react';

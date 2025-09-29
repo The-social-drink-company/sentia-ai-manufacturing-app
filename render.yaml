@@ -12,7 +12,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma migrate deploy && npx prisma generate && pnpm run build"
+    buildCommand: "rm -rf node_modules package-lock.json && npm install && npx prisma migrate deploy && npx prisma generate && npm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -55,7 +55,7 @@ services:
     plan: starter
     region: oregon
     branch: testing
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma migrate deploy && npx prisma generate && pnpm run build"
+    buildCommand: "rm -rf node_modules package-lock.json && npm install && npx prisma migrate deploy && npx prisma generate && npm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -98,7 +98,7 @@ services:
     plan: starter
     region: oregon
     branch: production
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && npx prisma migrate deploy && npx prisma generate && pnpm run build"
+    buildCommand: "rm -rf node_modules package-lock.json && npm install && npx prisma migrate deploy && npx prisma generate && npm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true

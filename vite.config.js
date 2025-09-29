@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
-import tailwindcss from '@tailwindcss/vite'
+// Remove @tailwindcss/vite - using standard postcss setup instead
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -20,7 +20,7 @@ export default defineConfig(({ command }) => ({
       jsxImportSource: 'react',
       jsxDevelopment: false
     }),
-    tailwindcss(),
+    // tailwindcss handled via postcss.config.js
     visualizer({
       filename: "dist/stats.html",
       template: "treemap",

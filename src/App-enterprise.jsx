@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
@@ -91,9 +91,6 @@ const clerkAppearance = {
 const App = () => (
   <ClerkProvider
     publishableKey={publishableKey}
-    navigate={(to) => {
-      window.location.href = to
-    }}
     appearance={clerkAppearance}
   >
     <QueryClientProvider client={queryClient}>
@@ -103,8 +100,9 @@ const App = () => (
           <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
           
-          {/* Authentication Route */}
+          {/* Authentication Routes */}
           <Route path="/app/sign-in" element={<ClerkSignIn />} />
+          <Route path="/app/sign-up" element={<ClerkSignIn />} />
           
           {/* Protected Dashboard Routes */}
           <Route path="/app/dashboard" element={

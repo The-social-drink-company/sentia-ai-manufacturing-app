@@ -1,6 +1,11 @@
-import { SignIn } from '@clerk/clerk-react'
+import { SignIn, SignUp } from '@clerk/clerk-react'
+import { useLocation } from 'react-router-dom'
 
-const ClerkSignIn = () => (
+const ClerkSignIn = () => {
+  const location = useLocation()
+  const isSignUp = location.pathname === '/app/sign-up'
+  
+  return (
   <div className="flex min-h-screen flex-col bg-slate-950 text-white lg:flex-row">
     <div className="flex flex-1 flex-col justify-center space-y-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-10">
       <p className="text-xs uppercase tracking-[0.4em] text-sky-400">Sentia Manufacturing</p>
@@ -16,10 +21,15 @@ const ClerkSignIn = () => (
     </div>
     <div className="flex flex-1 items-center justify-center bg-slate-900/80 p-10">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950/90 p-6 shadow-2xl">
-        <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" afterSignInUrl="/dashboard" />
+        {isSignUp ? (
+          <SignUp />
+        ) : (
+          <SignIn />
+        )}
       </div>
     </div>
   </div>
-)
+  )
+}
 
 export default ClerkSignIn

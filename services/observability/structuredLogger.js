@@ -17,18 +17,18 @@ export const getCorrelationId = () => {
 };
 
 // Set correlation ID in context
-export const withCorrelationId = (correlationId, _fn) => {
+export const withCorrelationId = (correlationId, fn) => {
   return asyncLocalStorage.run({ correlationId }, fn);
 };
 
 // Structured log format
 const structuredFormat = winston.format.printf(({ 
   level, 
-  _message, 
-  _timestamp, 
+  message, 
+  timestamp, 
   correlationId,
-  _service,
-  _environment,
+  service,
+  environment,
   version,
   ...metadata 
 }) => {
@@ -200,7 +200,7 @@ export const logHttpRequest = (req, res, duration) => {
 };
 
 // Database query logging
-export const logDatabaseQuery = (query, _params, duration, error = null) => {
+export const logDatabaseQuery = (query, params, duration, error = null) => {
   const metadata = {
     query: query.substring(0, 500), // Limit query length
     duration,
@@ -215,7 +215,7 @@ export const logDatabaseQuery = (query, _params, duration, error = null) => {
 };
 
 // External API call logging
-export const logApiCall = (_service, _endpoint, _method, duration, statusCode, error = null) => {
+export const logApiCall = (service, endpoint, method, duration, statusCode, error = null) => {
   const metadata = {
     service,
     endpoint,

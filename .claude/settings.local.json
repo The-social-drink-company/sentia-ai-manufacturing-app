@@ -57,14 +57,14 @@
       "Bash(done)",
       "Bash(git restore:*)",
       "Bash(gh pr list:*)",
-      "WebFetch(domain:sentia-manufacturing-dashboard.onrender.com)",
+      "WebFetch(domain:sentia-manufacturing-dashboard-621h.onrender.com)",
       "Bash(timeout:*)",
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
       "Bash(cat:*)",
-      "WebFetch(domain:sentia-manufacturing-testing.onrender.com)",
+      "WebFetch(domain:sentia-manufacturing-dashboard-test.onrender.com)",
       "Bash(rm:*)",
-      "WebFetch(domain:sentia-manufacturing-development.onrender.com)"
+      "WebFetch(domain:sentia-manufacturing-dashboard-621h.onrender.com)"
     ],
     "deny": [],
     "ask": []

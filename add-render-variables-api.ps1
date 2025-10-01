@@ -53,7 +53,7 @@ Write-Host "`n[STEP 2] Configuring Environment Variables..." -ForegroundColor Gr
 $allVariables = @{
     "NODE_ENV" = @{ dev = "development"; test = "test"; prod = "production" }
     "PORT" = "3000"
-    "CORS_ORIGINS" = "https://sentia-manufacturing-dashboard.onrender.com"
+    "CORS_ORIGINS" = "https://sentia-manufacturing-dashboard-621h.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com"
     
     # Database (Render PostgreSQL)
     "DATABASE_URL" = "postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a/sentia_manufacturing_prod"
@@ -69,7 +69,7 @@ $allVariables = @{
     # Xero
     "XERO_CLIENT_ID" = "9C0CAB921C134476A249E48BBECB8C4B"
     "XERO_CLIENT_SECRET" = "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5"
-    "XERO_REDIRECT_URI" = "https://sentia-manufacturing-dashboard.onrender.com/api/xero/callback"
+    "XERO_REDIRECT_URI" = "https://sentia-manufacturing-dashboard-production.onrender.com/api/xero/callback"
     
     # Shopify UK
     "SHOPIFY_UK_API_KEY" = "7a30cd84e7a106b852c8e0fb789de10e"
@@ -125,7 +125,7 @@ $allVariables = @{
     "AUTO_DEPLOY_ENABLED" = "false"
     
     # Application
-    "VITE_API_BASE_URL" = "https://sentia-manufacturing-dashboard.onrender.com/api"
+    "VITE_API_BASE_URL" = "/api"
     "VITE_APP_TITLE" = "Sentia Manufacturing Dashboard"
     "VITE_APP_VERSION" = "1.0.0"
 }
@@ -238,8 +238,8 @@ Write-Host "`nAll environment variables have been added via API!" -ForegroundCol
 Write-Host "Services are now redeploying with new configuration." -ForegroundColor Yellow
 
 Write-Host "`nYour services will be available at:" -ForegroundColor Cyan
-Write-Host "  Development: https://sentia-manufacturing-development.onrender.com" -ForegroundColor White
-Write-Host "  Testing: https://sentia-manufacturing-testing.onrender.com" -ForegroundColor White
-Write-Host "  Production: https://sentia-manufacturing-production.onrender.com" -ForegroundColor White
+Write-Host "  Development: https://sentia-manufacturing-dashboard-621h.onrender.com" -ForegroundColor White
+Write-Host "  Testing: https://sentia-manufacturing-dashboard-test.onrender.com" -ForegroundColor White
+Write-Host "  Production: https://sentia-manufacturing-dashboard-production.onrender.com" -ForegroundColor White
 
 Write-Host "`nPlease wait 5-10 minutes for deployments to complete." -ForegroundColor Yellow

@@ -44,9 +44,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Issue**: Not following world-class enterprise workflow with proper development → testing → production progression.
 
 **Solution Implemented** (`ENTERPRISE_GIT_WORKFLOW.md`):
-- **Development Branch**: Active coding and development area (https://sentia-manufacturing-development.up.railway.app)
-- **Test Branch**: User Acceptance Testing environment (https://sentia-manufacturing-testing.up.railway.app)
-- **Production Branch**: Live production for daily operations (https://sentia-manufacturing-production.up.railway.app)
+- **Development Branch**: Active coding and development area (https://sentia-manufacturing-dashboard-621h.onrender.com)
+- **Test Branch**: User Acceptance Testing environment (https://sentia-manufacturing-dashboard-test.onrender.com)
+- **Production Branch**: Live production for daily operations (https://sentia-manufacturing-dashboard-production.onrender.com)
 - **Quality Gates**: Formal UAT process, client approval required before production
 - **Documentation**: Complete workflow documentation with checklists and procedures
 
@@ -145,9 +145,9 @@ app.use(clerkMiddleware({
 All development, testing, and production runs exclusively on Render.
 
 ### Live Environments
-- **Development**: https://sentia-manufacturing-development.onrender.com
-- **Testing**: https://sentia-manufacturing-testing.onrender.com
-- **Production**: https://sentia-manufacturing-production.onrender.com
+- **Development**: https://sentia-manufacturing-dashboard-621h.onrender.com
+- **Testing**: https://sentia-manufacturing-dashboard-test.onrender.com
+- **Production**: https://sentia-manufacturing-dashboard-production.onrender.com
 - **MCP Server**: https://mcp-server-tkyu.onrender.com
 
 ### Deployment Commands
@@ -334,9 +334,9 @@ scripts/               # Utility scripts
 ### Render Deployment Configuration
 
 #### Main Application Deployments
-- **Development**: sentia-manufacturing-development.onrender.com [primary deployment of all code changes]
-- **Testing**: sentia-manufacturing-testing.onrender.com [test environment for users]
-- **Production**: sentia-manufacturing-production.onrender.com [live environment updated after test has passed after UAT]
+- **Development**: sentia-manufacturing-dashboard-621h.onrender.com [primary deployment of all code changes]
+- **Testing**: sentia-manufacturing-dashboard-test.onrender.com [test environment for users]
+- **Production**: sentia-manufacturing-dashboard-production.onrender.com [live environment updated after test has passed after UAT]
 
 #### MCP Server (AI Central Nervous System)
 - **MCP Server**: mcp-server-tkyu.onrender.com
@@ -349,9 +349,9 @@ scripts/               # Utility scripts
 ### Development Workflow (Implemented)
 **Enterprise Git Workflow**: Proper development → testing → production progression:
 
-1. **Development Branch**: All coding, fixing, and development work happens in `development` branch (sentia-manufacturing-development.up.railway.app)
-2. **Test Branch**: Push to `test` branch for user acceptance testing at sentia-manufacturing-testing.up.railway.app
-3. **Production Branch**: Only push to `production` when software is ready to go live at sentia-manufacturing-production.up.railway.app
+1. **Development Branch**: All coding, fixing, and development work happens in `development` branch (sentia-manufacturing-dashboard-621h.onrender.com)
+2. **Test Branch**: Push to `test` branch for user acceptance testing at sentia-manufacturing-dashboard-test.onrender.com
+3. **Production Branch**: Only push to `production` when software is ready to go live at sentia-manufacturing-dashboard-production.onrender.com
 
 **Quality Gates**: Formal UAT process with client approval required before production deployment.
 
@@ -669,9 +669,9 @@ const navigationItems = [
 **SUCCESS**: Proper development → testing → production workflow documented and implemented:
 
 #### Git Branch Strategy
-- **development**: Primary coding branch (Railway: sentia-manufacturing-development.up.railway.app)
-- **test**: UAT environment for client testing (Railway: sentia-manufacturing-testing.up.railway.app)
-- **production**: Live operations branch (Railway: sentia-manufacturing-production.up.railway.app)
+- **development**: Primary coding branch (Render: sentia-manufacturing-dashboard-621h.onrender.com)
+- **test**: UAT environment for client testing (Render: sentia-manufacturing-dashboard-test.onrender.com)
+- **production**: Live operations branch (Render: sentia-manufacturing-dashboard-production.onrender.com)
 
 #### Quality Gates Established
 ```markdown

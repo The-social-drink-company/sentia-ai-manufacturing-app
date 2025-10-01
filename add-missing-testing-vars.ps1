@@ -9,7 +9,7 @@ Write-Host ""
 # Missing variables that need to be added to testing environment
 $missingVars = @{
     # API URLs
-    "VITE_API_BASE_URL" = "https://sentia-manufacturing-testing.onrender.com/api"
+    "VITE_API_BASE_URL" = "https://sentia-manufacturing-dashboard-test.onrender.com/api"
     "VITE_APP_TITLE" = "Sentia Manufacturing Dashboard"
     "VITE_APP_VERSION" = "1.0.0"
 

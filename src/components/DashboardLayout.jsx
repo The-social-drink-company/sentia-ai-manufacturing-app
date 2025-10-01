@@ -19,30 +19,30 @@ import CommandPalette from '@/components/dashboard/CommandPalette'
 const NAV_SECTIONS = [
   {
     title: 'Overview',
-    items: [{ to: '/dashboard', label: 'Executive Dashboard', icon: LayoutDashboardIcon }]
+    items: [{ to: '/app/dashboard', label: 'Executive Dashboard', icon: LayoutDashboardIcon }]
   },
   {
     title: 'Planning & Analytics',
     items: [
-      { to: '/forecasting', label: 'Demand Forecasting', icon: LineChartIcon },
-      { to: '/inventory', label: 'Inventory Management', icon: Package2Icon },
-      { to: '/production', label: 'Production Tracking', icon: FactoryIcon },
-      { to: '/quality', label: 'Quality Control', icon: FlaskConicalIcon },
-      { to: '/analytics', label: 'AI Analytics', icon: BrainIcon }
+      { to: '/app/forecasting', label: 'Demand Forecasting', icon: LineChartIcon },
+      { to: '/app/inventory', label: 'Inventory Management', icon: Package2Icon },
+      { to: '/app/production', label: 'Production Tracking', icon: FactoryIcon },
+      { to: '/app/quality', label: 'Quality Control', icon: FlaskConicalIcon },
+      { to: '/app/analytics', label: 'AI Analytics', icon: BrainIcon }
     ]
   },
   {
     title: 'Financial',
     items: [
-      { to: '/working-capital', label: 'Working Capital', icon: DollarSignIcon },
-      { to: '/what-if', label: 'What-If Analysis', icon: LayersIcon }
+      { to: '/app/working-capital', label: 'Working Capital', icon: DollarSignIcon },
+      { to: '/app/what-if', label: 'What-If Analysis', icon: LayersIcon }
     ]
   },
   {
     title: 'Operations',
     items: [
-      { to: '/data-import', label: 'Data Import', icon: DatabaseIcon },
-      { to: '/admin', label: 'Admin Panel', icon: ShieldCheckIcon }
+      { to: '/app/data-import', label: 'Data Import', icon: DatabaseIcon },
+      { to: '/app/admin', label: 'Admin Panel', icon: ShieldCheckIcon }
     ]
   }
 ]

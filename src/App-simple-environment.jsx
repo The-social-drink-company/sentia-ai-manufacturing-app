@@ -6,6 +6,8 @@ import LandingPage from '@/components/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'
 import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
 import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import DebugPanel from '@/components/DebugPanel'
 
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
 const WorkingCapital = lazy(() => import('@/pages/WorkingCapitalEnterprise'))
@@ -194,122 +196,151 @@ const App = () => {
   console.log('[App] Starting with development mode:', isDevelopmentMode)
   
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/landing" element={<LandingPage />} />
-            
-            {/* Authentication Routes */}
-            <Route path="/app/sign-in" element={<ClerkSignInEnvironmentAware />} />
-            <Route path="/app/sign-up" element={<ClerkSignInEnvironmentAware />} />
-            
-            {/* Protected Dashboard Routes */}
-            <Route path="/app/dashboard" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <Dashboard />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/working-capital" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <WorkingCapital />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/forecasting" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <Forecasting />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/production" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <Production />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/analytics" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <Analytics />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/inventory" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <Inventory />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/quality" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <Quality />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/data-import" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <DataImport />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/admin" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <AdminPanel />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/what-if" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <WhatIf />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/scenarios" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <ScenarioPlanner />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/app/assistant" element={
-              <ProtectedRoute>
-                <Suspense fallback={<Loader />}>
-                  <AssistantPanel />
-                </Suspense>
-              </ProtectedRoute>
-            } />
-            
-            {/* Default redirects */}
-            <Route path="/app/*" element={<Navigate to="/app/dashboard" replace />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </AuthProvider>
+    <ErrorBoundary fallbackMessage="The Sentia Manufacturing Dashboard encountered an unexpected error. Please try refreshing the page.">
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/landing" element={<LandingPage />} />
+              
+              {/* Authentication Routes */}
+              <Route path="/app/sign-in" element={<ClerkSignInEnvironmentAware />} />
+              <Route path="/app/sign-up" element={<ClerkSignInEnvironmentAware />} />
+              
+              {/* Protected Dashboard Routes */}
+              <Route path="/app/dashboard" element={
+                <ErrorBoundary fallbackMessage="Dashboard failed to load. Please check your connection and try again.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <Dashboard />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/working-capital" element={
+                <ErrorBoundary fallbackMessage="Working Capital module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <WorkingCapital />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/forecasting" element={
+                <ErrorBoundary fallbackMessage="Forecasting module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <Forecasting />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/production" element={
+                <ErrorBoundary fallbackMessage="Production module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <Production />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/analytics" element={
+                <ErrorBoundary fallbackMessage="Analytics module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <Analytics />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/inventory" element={
+                <ErrorBoundary fallbackMessage="Inventory module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <Inventory />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/quality" element={
+                <ErrorBoundary fallbackMessage="Quality Control module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <Quality />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/data-import" element={
+                <ErrorBoundary fallbackMessage="Data Import module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <DataImport />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/admin" element={
+                <ErrorBoundary fallbackMessage="Admin Panel failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <AdminPanel />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/what-if" element={
+                <ErrorBoundary fallbackMessage="What-If Analysis module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <WhatIf />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/scenarios" element={
+                <ErrorBoundary fallbackMessage="Scenario Planner module failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <ScenarioPlanner />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              <Route path="/app/assistant" element={
+                <ErrorBoundary fallbackMessage="AI Assistant failed to load.">
+                  <ProtectedRoute>
+                    <Suspense fallback={<Loader />}>
+                      <AssistantPanel />
+                    </Suspense>
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              } />
+              
+              {/* Default redirects */}
+              <Route path="/app/*" element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </AuthProvider>
+      
+      {/* Development Debug Panel */}
+      <DebugPanel />
+    </ErrorBoundary>
   )
 }
 

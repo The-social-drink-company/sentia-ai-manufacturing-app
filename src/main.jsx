@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App-environment-aware.jsx'
+import App from './App-simple-environment.jsx'
 
 // Global error handler
 window.addEventListener('error', (event) => {
@@ -30,13 +30,23 @@ function showErrorFallback(title, message) {
   }
 }
 
+// Environment detection
+const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
-if (!publishableKey) {
-  console.warn('Missing VITE_CLERK_PUBLISHABLE_KEY, Clerk features will be disabled')
-}
+console.log('[Environment] Development Mode:', isDevelopmentMode)
+console.log('[Environment] Node Environment:', import.meta.env.NODE_ENV)
 
-console.log('[Clerk] Initializing with publishable key:', publishableKey?.substring(0, 20) + '...')
+if (isDevelopmentMode) {
+  console.log('[Authentication] Using Development Mode - Authentication Bypassed')
+} else {
+  console.log('[Authentication] Using Production Mode - Clerk Authentication Enabled')
+  if (!publishableKey) {
+    console.warn('[Clerk] Missing VITE_CLERK_PUBLISHABLE_KEY, Clerk features will be disabled')
+  } else {
+    console.log('[Clerk] Initializing with publishable key:', publishableKey?.substring(0, 20) + '...')
+  }
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

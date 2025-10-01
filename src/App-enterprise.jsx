@@ -1,25 +1,9 @@
 import { Suspense, lazy } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-// Conditional imports based on environment
-const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
-
-// Import authentication provider based on environment
-let ClerkProvider, SignedIn, SignedOut, RedirectToSignIn
-if (isDevelopmentMode) {
-  const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
-  ClerkProvider = devAuth.ClerkProvider
-  SignedIn = devAuth.SignedIn
-  SignedOut = devAuth.SignedOut
-  RedirectToSignIn = devAuth.RedirectToSignIn
-} else {
-  const clerkAuth = await import('@clerk/clerk-react')
-  ClerkProvider = clerkAuth.ClerkProvider
-  SignedIn = clerkAuth.SignedIn
-  SignedOut = clerkAuth.SignedOut
-  RedirectToSignIn = clerkAuth.RedirectToSignIn
-}
+// Static imports - conditional loading handled in components
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 
 import LandingPage from '@/components/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'

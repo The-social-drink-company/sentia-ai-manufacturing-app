@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import LandingPage from '@/components/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'
 import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
-import ClerkSignIn from '@/pages/ClerkSignIn'
+import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
 
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
 const WorkingCapital = lazy(() => import('@/pages/WorkingCapitalEnterprise'))
@@ -208,8 +208,8 @@ const App = () => (
           <Route path="/landing" element={<LandingPage />} />
           
           {/* Authentication Routes */}
-          <Route path="/app/sign-in" element={<ClerkSignIn />} />
-          <Route path="/app/sign-up" element={<ClerkSignIn />} />
+          <Route path="/app/sign-in" element={<ClerkSignInEnvironmentAware />} />
+          <Route path="/app/sign-up" element={<ClerkSignInEnvironmentAware />} />
           
           {/* Protected Dashboard Routes */}
           <Route path="/app/dashboard" element={

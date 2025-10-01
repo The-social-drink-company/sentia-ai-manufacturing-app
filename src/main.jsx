@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App-enterprise.jsx'
+import App from './App-environment-aware.jsx'
 
 // Global error handler
 window.addEventListener('error', (event) => {

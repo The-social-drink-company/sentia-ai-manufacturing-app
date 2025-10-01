@@ -18,6 +18,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 10000;
 const isClerkConfigured = Boolean(process.env.VITE_CLERK_PUBLISHABLE_KEY);
+const isDevelopmentMode = process.env.VITE_DEVELOPMENT_MODE === 'true';
 
 // Logging middleware
 const logger = (req, res, next) => {
@@ -79,6 +80,10 @@ app.get('/health', (req, res) => {
     clerk: {
       configured: isClerkConfigured,
       publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET'
+    },
+    authentication: {
+      mode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
+      developmentMode: isDevelopmentMode
     }
   });
 });
@@ -110,6 +115,10 @@ app.get('/api/status', (req, res) => {
       memory: process.memoryUsage(),
       clerk: {
         configured: isClerkConfigured
+      },
+      authentication: {
+        mode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
+        developmentMode: isDevelopmentMode
       }
     },
     meta: {
@@ -361,6 +370,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`API: http://localhost:${PORT}/api/status`);
   console.log(`Dashboard: http://localhost:${PORT}/api/dashboard/summary`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Authentication: ${isDevelopmentMode ? 'Development Bypass' : 'Production Clerk'}`);
   console.log(`Clerk: ${isClerkConfigured ? 'Configured' : 'Not configured'}`);
   console.log('========================================\n');
 });

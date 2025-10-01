@@ -1,25 +1,6 @@
-import { Suspense, lazy } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { Suspense, lazy, useState, useEffect } from 'react'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-// Conditional imports based on environment
-const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
-
-// Import authentication provider based on environment
-let ClerkProvider, SignedIn, SignedOut, RedirectToSignIn
-if (isDevelopmentMode) {
-  const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
-  ClerkProvider = devAuth.ClerkProvider
-  SignedIn = devAuth.SignedIn
-  SignedOut = devAuth.SignedOut
-  RedirectToSignIn = devAuth.RedirectToSignIn
-} else {
-  const clerkAuth = await import('@clerk/clerk-react')
-  ClerkProvider = clerkAuth.ClerkProvider
-  SignedIn = clerkAuth.SignedIn
-  SignedOut = clerkAuth.SignedOut
-  RedirectToSignIn = clerkAuth.RedirectToSignIn
-}
 
 import LandingPage from '@/components/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'
@@ -59,58 +40,166 @@ const Loader = () => (
   </div>
 )
 
-const ProtectedRoute = ({ children }) => (
-  <>
-    <SignedIn>
-      <ProgressiveDashboardLoader>
-        <DashboardLayout>
-          {children}
-        </DashboardLayout>
-      </ProgressiveDashboardLoader>
-    </SignedIn>
-    <SignedOut>
-      <RedirectToSignIn />
-    </SignedOut>
-  </>
-)
+// Environment detection
+const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
 
-const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+// Authentication Components Loader
+const AuthenticationProvider = ({ children }) => {
+  const [authComponents, setAuthComponents] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-if (!publishableKey) {
-  console.warn('Missing VITE_CLERK_PUBLISHABLE_KEY, Clerk features will be disabled')
-}
+  useEffect(() => {
+    const loadAuthProvider = async () => {
+      try {
+        if (isDevelopmentMode) {
+          console.log('[Environment] Loading Development Authentication Provider')
+          const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
+          setAuthComponents({
+            ClerkProvider: devAuth.ClerkProvider,
+            SignedIn: devAuth.SignedIn,
+            SignedOut: devAuth.SignedOut,
+            RedirectToSignIn: devAuth.RedirectToSignIn
+          })
+        } else {
+          console.log('[Environment] Loading Production Clerk Authentication Provider')
+          const clerkAuth = await import('@clerk/clerk-react')
+          setAuthComponents({
+            ClerkProvider: clerkAuth.ClerkProvider,
+            SignedIn: clerkAuth.SignedIn,
+            SignedOut: clerkAuth.SignedOut,
+            RedirectToSignIn: clerkAuth.RedirectToSignIn
+          })
+        }
+      } catch (error) {
+        console.error('[Environment] Failed to load authentication provider:', error)
+        // Fallback to development mode on error
+        const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
+        setAuthComponents({
+          ClerkProvider: devAuth.ClerkProvider,
+          SignedIn: devAuth.SignedIn,
+          SignedOut: devAuth.SignedOut,
+          RedirectToSignIn: devAuth.RedirectToSignIn
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
 
-const clerkAppearance = {
-  baseTheme: undefined,
-  variables: {
-    colorPrimary: '#2563eb',
-    colorTextOnPrimaryBackground: '#ffffff',
-    colorBackground: '#ffffff',
-    colorInputBackground: '#ffffff',
-    colorInputText: '#1f2937',
-    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    borderRadius: '0.5rem'
-  },
-  elements: {
-    card: {
-      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-      border: '1px solid #e5e7eb'
+    loadAuthProvider()
+  }, [])
+
+  if (loading || !authComponents) {
+    return <Loader />
+  }
+
+  const { ClerkProvider } = authComponents
+  const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+  // Development mode doesn't need publishable key validation
+  if (!isDevelopmentMode && !publishableKey) {
+    console.warn('Missing VITE_CLERK_PUBLISHABLE_KEY, Clerk features will be disabled')
+  }
+
+  const clerkAppearance = {
+    baseTheme: undefined,
+    variables: {
+      colorPrimary: '#2563eb',
+      colorTextOnPrimaryBackground: '#ffffff',
+      colorBackground: '#ffffff',
+      colorInputBackground: '#ffffff',
+      colorInputText: '#1f2937',
+      fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      borderRadius: '0.5rem'
     },
-    headerTitle: {
-      fontSize: '1.5rem',
-      fontWeight: '600'
-    },
-    headerSubtitle: {
-      color: '#6b7280'
+    elements: {
+      card: {
+        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        border: '1px solid #e5e7eb'
+      },
+      headerTitle: {
+        fontSize: '1.5rem',
+        fontWeight: '600'
+      },
+      headerSubtitle: {
+        color: '#6b7280'
+      }
     }
   }
+
+  return (
+    <ClerkProvider
+      publishableKey={publishableKey}
+      appearance={clerkAppearance}
+    >
+      {children}
+    </ClerkProvider>
+  )
+}
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const [authComponents, setAuthComponents] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadAuthComponents = async () => {
+      try {
+        if (isDevelopmentMode) {
+          const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
+          setAuthComponents({
+            SignedIn: devAuth.SignedIn,
+            SignedOut: devAuth.SignedOut,
+            RedirectToSignIn: devAuth.RedirectToSignIn
+          })
+        } else {
+          const clerkAuth = await import('@clerk/clerk-react')
+          setAuthComponents({
+            SignedIn: clerkAuth.SignedIn,
+            SignedOut: clerkAuth.SignedOut,
+            RedirectToSignIn: clerkAuth.RedirectToSignIn
+          })
+        }
+      } catch (error) {
+        console.error('[ProtectedRoute] Failed to load auth components:', error)
+        // Fallback to development mode
+        const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
+        setAuthComponents({
+          SignedIn: devAuth.SignedIn,
+          SignedOut: devAuth.SignedOut,
+          RedirectToSignIn: devAuth.RedirectToSignIn
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadAuthComponents()
+  }, [])
+
+  if (loading || !authComponents) {
+    return <Loader />
+  }
+
+  const { SignedIn, SignedOut, RedirectToSignIn } = authComponents
+
+  return (
+    <>
+      <SignedIn>
+        <ProgressiveDashboardLoader>
+          <DashboardLayout>
+            {children}
+          </DashboardLayout>
+        </ProgressiveDashboardLoader>
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  )
 }
 
 const App = () => (
-  <ClerkProvider
-    publishableKey={publishableKey}
-    appearance={clerkAppearance}
-  >
+  <AuthenticationProvider>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
@@ -225,7 +314,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
-  </ClerkProvider>
+  </AuthenticationProvider>
 )
 
 export default App

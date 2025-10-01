@@ -84,7 +84,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Reference: `/docs/reference/` - Component APIs, hooks, backend utilities
 - Platform-Specific: React, Next.js, Express integration examples
 
-## CLERK AUTHENTICATION SYSTEM (PRODUCTION)
+## AUTHENTICATION SYSTEM (BRANCH-SPECIFIC)
+
+### 🔧 **Development Branch Authentication Bypass**
+**CRITICAL RULE**: Development branch bypasses Clerk authentication entirely for faster development workflow.
+
+**Environment Variable**: `VITE_DEVELOPMENT_MODE=true`
+**Implementation**: Custom `DevelopmentAuthProvider` replaces `ClerkProvider`
+**Mock User**: Automatic admin user with full permissions
+**Access**: Direct dashboard access without sign-in flow
+
+**Key Components**:
+- `src/auth/DevelopmentAuthProvider.jsx` - Mock authentication provider
+- `src/auth/MockUser.js` - Mock user data with admin permissions
+- `src/App-environment-aware.jsx` - Environment-aware App component
+- `src/hooks/useAuthRole.jsx` - Environment-aware authentication hook
 
 ### 🔐 **Production Clerk Configuration**
 **Domain**: clerk.financeflo.ai
@@ -133,11 +147,17 @@ app.use(clerkMiddleware({
 - **Operator**: Production operations, quality control, inventory
 - **Viewer**: Read-only dashboard access (default role)
 
+### Branch-Specific Authentication Configuration
+**Development Branch**: `VITE_DEVELOPMENT_MODE=true` - Authentication bypassed
+**Testing Branch**: `VITE_DEVELOPMENT_MODE=false` - Full Clerk authentication with test keys
+**Production Branch**: `VITE_DEVELOPMENT_MODE=false` - Full Clerk authentication with production keys
+
 ### Security Best Practices
 1. **Authorized Parties**: Configured to prevent subdomain cookie leaking
 2. **CSP Headers**: Properly configured for Clerk domains
 3. **Session Validation**: Token verification on each protected route
 4. **Webhook Security**: HMAC signature validation for all webhooks
+5. **Development Security**: Authentication bypass only enabled in development branch
 
 ## RENDER-ONLY DEPLOYMENT (NO LOCAL DEVELOPMENT)
 
@@ -163,8 +183,8 @@ git push origin production
 ```
 
 ### Render Build Commands (Automated - Do Not Run Locally)
-- `npm run render:build` - Used by Render for building
-- `npm run render:start` - Used by Render for starting
+- `pnpm run build` - Used by Render for building
+- `pnpm run start:render` - Used by Render for starting
 - These run automatically on Render after git push
 
 ### ❌ DEPRECATED - DO NOT USE
@@ -355,6 +375,28 @@ scripts/               # Utility scripts
 
 **Quality Gates**: Formal UAT process with client approval required before production deployment.
 
+### 🚨 **CRITICAL DEPLOYMENT RULE**
+**NEVER AUTOMATICALLY COMMIT, PUSH, OR CREATE PULL REQUESTS TO TESTING/PRODUCTION BRANCHES**
+
+Claude must ONLY work in the `development` branch. Any commits, pushes, or PRs to `test` or `production` branches require explicit manual instruction from the user.
+
+**Allowed in Development Branch**:
+- ✅ Make commits to `development` branch
+- ✅ Push to `development` branch  
+- ✅ Create PRs within `development` branch
+
+**FORBIDDEN Without Explicit Instruction**:
+- ❌ Commit to `test` branch
+- ❌ Commit to `production` branch
+- ❌ Push to `test` branch
+- ❌ Push to `production` branch
+- ❌ Create PRs to `test` branch
+- ❌ Create PRs to `production` branch
+- ❌ Merge to `test` branch
+- ❌ Merge to `production` branch
+
+**Exception**: Only when user explicitly says "commit to test", "push to production", "create PR to production", etc.
+
 ## Development Methodology
 
 ### Context-Driven Development
@@ -544,6 +586,9 @@ try {
 - NEVER proactively create documentation files unless explicitly requested
 - NEVER add Unicode characters in console output - use ASCII alternatives only
 - Always check existing code patterns and follow the established architecture
+
+### 🚨 **CRITICAL GIT DEPLOYMENT RULE**
+**MANDATORY**: Claude must NEVER automatically commit, push, or create pull requests to `test` or `production` branches without explicit user instruction. Only work in `development` branch unless specifically told otherwise.
 
 ### Pre-Development Checklist
 1. **Check ESLint configuration** - Ensure proper exclusions and globals

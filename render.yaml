@@ -13,7 +13,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "rm -rf node_modules package-lock.json pnpm-lock.yaml && corepack enable && pnpm install && pnpm prisma generate && pnpm run build"
-    startCommand: "pnpm run start:render"
+    startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -30,23 +30,9 @@ services:
           property: connectionString
       - key: MCP_SERVER_URL
         value: https://mcp-server-tkyu.onrender.com
-      # Clerk Authentication Variables - LIVE PRODUCTION KEYS
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-      - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-      - key: VITE_CLERK_DOMAIN
-        value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
 
   # Testing Environment
   - type: web
@@ -73,23 +59,9 @@ services:
           property: connectionString
       - key: MCP_SERVER_URL
         value: https://mcp-server-tkyu.onrender.com
-      # Clerk Authentication Variables - LIVE PRODUCTION KEYS
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-      - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-      - key: VITE_CLERK_DOMAIN
-        value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
 
   # Production Environment
   - type: web
@@ -118,20 +90,6 @@ services:
         value: https://mcp-server-tkyu.onrender.com
       - key: LOG_LEVEL
         value: error
-      # Clerk Authentication Variables - LIVE PRODUCTION KEYS
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-      - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-      - key: VITE_CLERK_DOMAIN
-        value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET

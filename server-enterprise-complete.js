@@ -37,6 +37,10 @@ try {
 // Load environment variables
 dotenv.config();
 
+// Import and run environment validation (SECURITY FIX 2025)
+import { validateEnvironmentOnStartup, getEnvironmentStatus } from './api/middleware/environmentValidation.js';
+validateEnvironmentOnStartup();
+
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -214,6 +218,7 @@ app.get('/health', async (req, res) => {
       connected: mcpConnected,
       url: process.env.MCP_SERVER_URL || 'Not configured'
     },
+    environment: getEnvironmentStatus(),
     memory: {
       rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + ' MB',
       heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',

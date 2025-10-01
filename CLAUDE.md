@@ -68,6 +68,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Action Required**: Address security issues before production deployment
 - **Location**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/security/dependabot
 
+### **CLERK DOCUMENTATION RESOURCE** 📚
+**Documentation Folder**: `clerk-docs/` (excluded from Git)
+- **Comprehensive Coverage**: Complete Clerk authentication documentation crawled from clerk.com
+- **Platform Support**: React, Next.js, Express, Nuxt, Vue, Go, iOS, Android guides
+- **Authentication Flows**: OAuth, social connections, enterprise SSO, multi-factor authentication
+- **Organization Management**: Role-based access control, team management, domain verification
+- **Security Features**: Bot protection, session management, JWT verification, password policies
+- **Integration Guides**: Custom flows, API references, webhooks, billing integration
+- **Deployment**: Production setup, environment management, troubleshooting guides
+
+**Key Documentation Areas**:
+- Getting Started: `/docs/getting-started/` - Setup and core concepts
+- Guides: `/docs/guides/` - Authentication strategies, customization, security
+- Reference: `/docs/reference/` - Component APIs, hooks, backend utilities
+- Platform-Specific: React, Next.js, Express integration examples
+
 ## CLERK AUTHENTICATION SYSTEM (PRODUCTION)
 
 ### 🔐 **Production Clerk Configuration**

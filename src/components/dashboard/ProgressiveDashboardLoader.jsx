@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import { useAuth, useUser } from '@clerk/clerk-react'
+import useEnvironmentAuth from '@/hooks/useEnvironmentAuth'
+import useEnvironmentUser from '@/hooks/useEnvironmentUser'
 import useDashboardLoader from '@/hooks/useDashboardLoader'
 import { Progress } from '@/components/ui/progress'
 
 const ProgressiveDashboardLoader = ({ children, onLoadingComplete }) => {
-  const { isSignedIn, isLoaded: authLoaded } = useAuth()
-  const { user: _user, isLoaded: userLoaded } = useUser()
+  const { isSignedIn, isLoaded: authLoaded } = useEnvironmentAuth()
+  const { user: _user, isLoaded: userLoaded } = useEnvironmentUser()
   const {
     isLoading,
     progress,

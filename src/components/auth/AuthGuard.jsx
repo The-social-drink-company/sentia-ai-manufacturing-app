@@ -1,8 +1,8 @@
 ﻿import { Navigate } from 'react-router-dom'
-import { useAuth } from '@clerk/clerk-react'
+import useEnvironmentAuth from '@/hooks/useEnvironmentAuth'
 
 const AuthGuard = ({ children }) => {
-  const { isSignedIn } = useAuth()
+  const { isSignedIn } = useEnvironmentAuth()
 
   if (isSignedIn === true) {
     return children

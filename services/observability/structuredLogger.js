@@ -121,7 +121,7 @@ const createStructuredLogger = () => {
 const structuredLogger = createStructuredLogger();
 
 // Log with correlation ID
-export const log = (level, _message, metadata = _{}) => {
+export const log = (level, message, metadata = {}) => {
   structuredLogger.log(level, message, {
     correlationId: getCorrelationId(),
     ...metadata
@@ -129,11 +129,11 @@ export const log = (level, _message, metadata = _{}) => {
 };
 
 // Convenience methods
-export const logInfo = (_message, metadata = _{}) => {
+export const logInfo = (message, metadata = {}) => {
   log('info', message, metadata);
 };
 
-export const logError = (_message, error = _null, metadata = _{}) => {
+export const logError = (message, error = null, metadata = {}) => {
   const errorMeta = error ? {
     error: {
       message: error.message,
@@ -146,11 +146,11 @@ export const logError = (_message, error = _null, metadata = _{}) => {
   log('error', message, { ...errorMeta, ...metadata });
 };
 
-export const logWarn = (_message, metadata = _{}) => {
+export const logWarn = (message, metadata = {}) => {
   log('warn', message, metadata);
 };
 
-export const logDebug = (_message, metadata = _{}) => {
+export const logDebug = (message, metadata = {}) => {
   log('debug', message, metadata);
 };
 
@@ -200,7 +200,7 @@ export const logHttpRequest = (req, res, duration) => {
 };
 
 // Database query logging
-export const logDatabaseQuery = (query, _params, duration, error = _null) => {
+export const logDatabaseQuery = (query, _params, duration, error = null) => {
   const metadata = {
     query: query.substring(0, 500), // Limit query length
     duration,
@@ -215,7 +215,7 @@ export const logDatabaseQuery = (query, _params, duration, error = _null) => {
 };
 
 // External API call logging
-export const logApiCall = (_service, _endpoint, _method, duration, statusCode, error = _null) => {
+export const logApiCall = (_service, _endpoint, _method, duration, statusCode, error = null) => {
   const metadata = {
     service,
     endpoint,
@@ -232,7 +232,7 @@ export const logApiCall = (_service, _endpoint, _method, duration, statusCode, e
 };
 
 // Performance logging
-export const logPerformance = (_operation, duration, metadata = _{}) => {
+export const logPerformance = (operation, duration, metadata = {}) => {
   logInfo(`Performance: ${operation}`, {
     operation,
     duration,
@@ -241,7 +241,7 @@ export const logPerformance = (_operation, duration, metadata = _{}) => {
 };
 
 // Security event logging
-export const logSecurityEvent = (event, severity, metadata = _{}) => {
+export const logSecurityEvent = (event, severity, metadata = {}) => {
   const level = severity === 'critical' ? 'error' 
     : severity === 'high' ? 'warn' 
     : 'info';
@@ -254,7 +254,7 @@ export const logSecurityEvent = (event, severity, metadata = _{}) => {
 };
 
 // Business event logging
-export const logBusinessEvent = (event, metadata = _{}) => {
+export const logBusinessEvent = (event, metadata = {}) => {
   logInfo(`Business event: ${event}`, {
     businessEvent: event,
     ...metadata
@@ -262,7 +262,7 @@ export const logBusinessEvent = (event, metadata = _{}) => {
 };
 
 // Audit logging
-export const logAudit = (_action, _resource, _userId, _result, metadata = _{}) => {
+export const logAudit = (action, resource, userId, result, metadata = {}) => {
   logInfo('Audit event', {
     audit: {
       action,

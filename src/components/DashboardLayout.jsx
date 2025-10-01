@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { UserButton } from '@clerk/clerk-react'
+import UserButtonEnvironmentAware from '@/components/auth/UserButtonEnvironmentAware'
 import {
   LayoutDashboardIcon,
   LineChartIcon,
@@ -111,7 +111,7 @@ const DashboardLayout = ({ children }) => {
               <span>Search</span>
               <span className="rounded border border-white/10 bg-white/10 px-1">⌘K</span>
             </button>
-            <UserButton appearance={{ elements: { avatarBox: 'h-10 w-10' } }} />
+            <UserButtonEnvironmentAware />
           </div>
         </header>
 

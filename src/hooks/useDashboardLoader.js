@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useAuth, useUser } from '@clerk/clerk-react'
+import useEnvironmentAuth from '@/hooks/useEnvironmentAuth'
+import useEnvironmentUser from '@/hooks/useEnvironmentUser'
 
 const LOADING_PHASES = {
   INITIAL: 'initial',
@@ -35,8 +36,8 @@ const useDashboardLoader = () => {
   const [loadingPhase, setLoadingPhase] = useState(LOADING_PHASES.INITIAL)
   const [progress, setProgress] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
-  const { isSignedIn, isLoaded: authLoaded } = useAuth()
-  const { user: _user, isLoaded: userLoaded } = useUser()
+  const { isSignedIn, isLoaded: authLoaded } = useEnvironmentAuth()
+  const { user: _user, isLoaded: userLoaded } = useEnvironmentUser()
 
   const phases = Object.values(LOADING_PHASES).filter(phase =>
     phase !== LOADING_PHASES.INITIAL && phase !== LOADING_PHASES.COMPLETE

@@ -9,11 +9,15 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // https://vite.dev/config/
-export default defineConfig(({ command, mode }) => ({
-  define: {
-    "process.env.NODE_ENV": JSON.stringify(mode === "production" || command === "build" ? "production" : "development"),
-    "__DEV__": mode !== "production" && command !== "build"
-  },
+export default defineConfig(({ command, mode }) => {
+  const isDevelopmentMode = process.env.VITE_DEVELOPMENT_MODE === 'true'
+  
+  return {
+    define: {
+      "process.env.NODE_ENV": JSON.stringify(mode === "production" || command === "build" ? "production" : "development"),
+      "__DEV__": mode !== "production" && command !== "build",
+      "process.env.VITE_DEVELOPMENT_MODE": JSON.stringify(process.env.VITE_DEVELOPMENT_MODE || 'false')
+    },
   root: '.', // Explicitly set root to current directory
   plugins: [
     react({
@@ -46,10 +50,13 @@ export default defineConfig(({ command, mode }) => ({
     outDir: 'dist', // Explicitly set output directory
     emptyOutDir: true,
     rollupOptions: {
+      // Exclude Clerk from development builds entirely
+      external: isDevelopmentMode ? ['@clerk/clerk-react'] : [],
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('@clerk')) {
+            // Don't create clerk chunk in development mode since it's excluded
+            if (id.includes('@clerk') && !isDevelopmentMode) {
               return 'clerk';
             }
             if (id.includes('recharts') || id.includes('framer-motion') || id.includes('embla')) {
@@ -70,4 +77,5 @@ export default defineConfig(({ command, mode }) => ({
       },
     },
   },
-}))
+  }
+})

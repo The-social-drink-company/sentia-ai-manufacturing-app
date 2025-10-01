@@ -27,8 +27,10 @@ export const initSentry = (_app) => {
         // Set sampling rates
         tracingOrigins: [
           'localhost',
-          /^https://.*.railway.app/,
-          /^https://sentia-manufacturing/
+          'railway.app',
+          'sentia-manufacturing-development.onrender.com',
+          'sentia-manufacturing-testing.onrender.com',
+          'sentia-manufacturing-production.onrender.com'
         ],
         // Performance Monitoring
         routingInstrumentation: Sentry.reactRouterV6Instrumentation(
@@ -163,7 +165,7 @@ export const SentryProfiler = Sentry.Profiler;
 /**
  * Custom error capture with additional context
  */
-export const captureError = (error, context = _{}) => {
+export const captureError = (error, context = {}) => {
   Sentry.withScope((scope) => {
     // Add custom context
     Object.keys(context).forEach(key => {
@@ -189,7 +191,7 @@ export const captureError = (error, context = _{}) => {
 /**
  * Performance transaction monitoring
  */
-export const measurePerformance = (name, _operation) => {
+export const measurePerformance = (name, operation) => {
   const transaction = Sentry.startTransaction({
     op: 'function',
     name,
@@ -213,7 +215,7 @@ export const measurePerformance = (name, _operation) => {
           transaction.setStatus('internal_error');
           throw err;
         })
-        .finally(_() => {
+        .finally(() => {
           transaction.finish();
         });
     } else {
@@ -231,7 +233,7 @@ export const measurePerformance = (name, _operation) => {
 /**
  * Custom metrics tracking
  */
-export const trackMetric = (name, _value, unit = _'none', tags = _{}) => {
+export const trackMetric = (name, value, unit = 'none', tags = {}) => {
   Sentry.metrics.increment(name, value, { 
     unit,
     tags: {
@@ -244,7 +246,7 @@ export const trackMetric = (name, _value, unit = _'none', tags = _{}) => {
 /**
  * User feedback widget
  */
-export const showUserFeedback = (options = _{}) => {
+export const showUserFeedback = (options = {}) => {
   const user = Sentry.getCurrentHub().getScope().getUser();
   
   Sentry.showReportDialog({
@@ -259,7 +261,7 @@ export const showUserFeedback = (options = _{}) => {
 /**
  * Add custom breadcrumb
  */
-export const addBreadcrumb = (_message, category = _'custom', level = _'info', data = _{}) => {
+export const addBreadcrumb = (message, category = 'custom', level = 'info', data = {}) => {
   Sentry.addBreadcrumb({
     message,
     category,
@@ -306,7 +308,7 @@ export const setTags = (tags) => {
 /**
  * Monitor API calls
  */
-export const monitorAPI = async (_url, options = _{}) => {
+export const monitorAPI = async (url, options = {}) => {
   const transaction = Sentry.startTransaction({
     op: 'http.client',
     name: `${options.method || 'GET'} ${url}`,

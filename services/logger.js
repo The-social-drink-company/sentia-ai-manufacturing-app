@@ -93,11 +93,11 @@ if (process.env.NODE_ENV !== 'production' || isRailwayOrRender) {
 }
 
 // Helper functions for different log levels
-export const logInfo = (_message, meta = _{}) => {
+export const logInfo = (message, meta = {}) => {
   logger.info(message, meta)
 }
 
-export const logError = (_message, error = _null, meta = _{}) => {
+export const logError = (message, error = null, meta = {}) => {
   if (error) {
     logger.error(message, { error: error.message, stack: error.stack, ...meta })
   } else {
@@ -105,15 +105,15 @@ export const logError = (_message, error = _null, meta = _{}) => {
   }
 }
 
-export const logWarn = (_message, meta = _{}) => {
+export const logWarn = (message, meta = {}) => {
   logger.warn(message, meta)
 }
 
-export const logDebug = (_message, meta = _{}) => {
+export const logDebug = (message, meta = {}) => {
   logger.debug(message, meta)
 }
 
-export const logHttp = (_message, meta = _{}) => {
+export const logHttp = (message, meta = {}) => {
   logger.http(message, meta)
 }
 

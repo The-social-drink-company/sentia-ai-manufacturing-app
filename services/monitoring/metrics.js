@@ -168,13 +168,13 @@ export const updateCacheHitRate = (cacheType, rate) => {
 };
 
 // Auth metrics
-export const trackAuthEvent = (_event, role = _'unknown') => {
+export const trackAuthEvent = (event, role = 'unknown') => {
   authEvents.inc({ event, role });
 };
 
 // Business metrics
 export const updateBusinessMetrics = (metrics) => {
-  Object.entries(metrics).forEach(_([key, _value]) => {
+  Object.entries(metrics).forEach(([key, value]) => {
     businessMetrics.set({ metric: key }, value);
   });
 };

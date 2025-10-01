@@ -245,7 +245,7 @@ export class EnterpriseSecurityFramework {
       // SQL injection attempts
       /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|CREATE)\b)/i,
       // XSS attempts
-      /<script\b[^<]*(?:(?!</script>)<[^<]*)*</script>/gi,
+      /<script[^>]*>[\s\S]*?<\/script>/gi,
       // Path traversal
       /..//g,
       // Command injection

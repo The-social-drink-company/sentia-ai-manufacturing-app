@@ -276,7 +276,7 @@ export const logAudit = (action, resource, userId, result, metadata = {}) => {
 };
 
 // Express middleware for correlation ID
-export const correlationIdMiddleware = (req, res, _next) => {
+export const correlationIdMiddleware = (req, res, next) => {
   const correlationId = req.headers['x-correlation-id'] || 
                         req.headers['x-request-id'] || 
                         generateCorrelationId();
@@ -284,13 +284,13 @@ export const correlationIdMiddleware = (req, res, _next) => {
   req.correlationId = correlationId;
   res.setHeader('X-Correlation-ID', correlationId);
   
-  withCorrelationId(correlationId, _() => {
+  withCorrelationId(correlationId, () => {
     next();
   });
 };
 
 // Express middleware for request logging
-export const requestLoggingMiddleware = (req, res, _next) => {
+export const requestLoggingMiddleware = (req, res, next) => {
   const start = Date.now();
   const skipLogging = shouldSkipRequestLogging(req);
 
@@ -318,7 +318,7 @@ export const requestLoggingMiddleware = (req, res, _next) => {
 };
 
 // Error logging middleware
-export const errorLoggingMiddleware = (_err, req, res, _next) => {
+export const errorLoggingMiddleware = (err, req, res, next) => {
   logError('Unhandled error in request', err, {
     method: req.method,
     path: req.path,

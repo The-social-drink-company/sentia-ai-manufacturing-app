@@ -85,15 +85,19 @@ const RealWorkingCapital = () => {
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               <span className="text-green-800 font-medium">Live Data Connected</span>
             </div>
-            <div className="text-right text-sm text-green-700">
-              <p>Last updated: {new Date(metadata.lastUpdated).toLocaleString()}</p>
-              <p>Response time: {metadata.responseTime}</p>
+            {metadata && (
+              <div className="text-right text-sm text-green-700">
+                <p>Last updated: {new Date(metadata.lastUpdated).toLocaleString()}</p>
+                <p>Response time: {metadata.responseTime}</p>
+              </div>
+            )}
+          </div>
+          {metadata && metadata.services && (
+            <div className="mt-2 flex gap-4 text-xs text-green-600">
+              <span>🟢 MCP Server: {metadata.services.mcpServer?.status || 'unknown'}</span>
+              <span>🟢 Xero API: {metadata.services.xero?.status || 'unknown'}</span>
             </div>
-          </div>
-          <div className="mt-2 flex gap-4 text-xs text-green-600">
-            <span>🟢 MCP Server: {metadata.services.mcpServer.status}</span>
-            <span>🟢 Xero API: {metadata.services.xero.status}</span>
-          </div>
+          )}
         </CardContent>
       </Card>
 

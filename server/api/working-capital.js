@@ -2,6 +2,7 @@
 import axios from 'axios'
 import { PrismaClient } from '@prisma/client'
 import { authenticateToken } from '../middleware/auth.js'
+import { getMCPClient } from '../../services/mcp-client.js'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -260,29 +261,22 @@ router.get('/', async (req, res) => {
     console.log('📊 Working capital data requested from MCP integration')
     
     // Try to connect to MCP server for live data
-    if (process.env.MCP_JWT_SECRET) {
-      try {
-        const mcpResponse = await axios.post(
-          `${MCP_SERVER_URL}/api/ai/manufacturing-request`,
-          {
-            request: 'Get current working capital metrics',
-            type: 'financial_analysis',
-            timestamp: new Date().toISOString()
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.MCP_JWT_SECRET}`,
-              'Content-Type': 'application/json'
-            },
-            timeout: 10000
-          }
-        )
+    const mcpClient = getMCPClient()
+    
+    try {
+      // Check MCP server health first
+      const health = await mcpClient.checkHealth()
+      console.log('🔍 MCP Health Check:', health)
+      
+      if (health.status === 'healthy') {
+        // Request working capital analysis from MCP
+        const result = await mcpClient.processManufacturingRequest('Get current working capital metrics and financial analysis')
         
-        if (mcpResponse.data) {
+        if (result) {
           console.log('✅ MCP server data received successfully')
           return res.json({
             success: true,
-            data: mcpResponse.data,
+            data: result,
             metadata: {
               source: 'mcp-server',
               timestamp: new Date().toISOString(),
@@ -290,61 +284,37 @@ router.get('/', async (req, res) => {
             }
           })
         }
-      } catch (mcpError) {
-        console.error('❌ MCP server connection failed:', mcpError.message)
-        
-        // Return MCP connection error details
-        return res.status(503).json({
-          success: false,
-          error: 'Service connection failed',
-          message: `Unable to connect to financial services: MCP error ${mcpError.code || -32000}: ${mcpError.message || 'Connection closed'}`,
-          userAction: 'Check network connection and try again',
-          retryIn: '1 minute',
-          timestamp: new Date().toISOString(),
-          debug: {
-            mcpServer: MCP_SERVER_URL,
-            errorCode: mcpError.code,
-            errorMessage: mcpError.message
-          }
-        })
       }
-    }
-    
-    // Fallback to database if MCP not available
-    console.log('⚠️ MCP not configured, using database fallback')
-    const history = await prisma.workingCapital.findMany({
-      orderBy: { date: 'desc' },
-      take: 12
-    })
-    
-    if (!history.length) {
-      return res.status(404).json({
+    } catch (mcpError) {
+      console.error('❌ MCP server connection failed:', mcpError.message)
+      
+      // Return specific MCP connection error for diagnosis
+      return res.status(503).json({
         success: false,
-        error: 'No data available',
-        message: 'No working capital data found in database',
-        userAction: 'Contact system administrator'
+        error: 'Service connection failed',
+        message: `Unable to connect to financial services: MCP error ${mcpError.code || -32000}: ${mcpError.message || 'Connection closed'}`,
+        userAction: 'Check network connection and try again',
+        retryIn: '1 minute',
+        timestamp: new Date().toISOString(),
+        debug: {
+          mcpServer: MCP_SERVER_URL,
+          errorType: mcpError.name || 'UnknownError',
+          errorMessage: mcpError.message,
+          mcpClientHealth: mcpClient.isHealthy ? mcpClient.isHealthy() : 'unknown'
+        }
       })
     }
     
-    const latest = history[0]
-    const fallbackData = {
-      metrics: {
-        cashPosition: toNumber(latest.cash),
-        workingCapital: toNumber(latest.currentAssets - latest.currentLiabilities),
-        currentRatio: toNumber(latest.workingCapitalRatio),
-        quickRatio: toNumber(latest.quickRatio)
-      },
-      history: buildWorkingCapitalTrend(history),
-      timestamp: new Date().toISOString()
-    }
-    
-    return res.json({
-      success: true,
-      data: fallbackData,
-      metadata: {
-        source: 'database',
-        timestamp: new Date().toISOString(),
-        dataSource: 'historical'
+    // If we reach here, MCP didn't provide data but no error occurred
+    return res.status(503).json({
+      success: false,
+      error: 'Service unavailable',
+      message: 'MCP server is reachable but not providing working capital data',
+      userAction: 'Contact system administrator to check MCP configuration',
+      timestamp: new Date().toISOString(),
+      debug: {
+        mcpServer: MCP_SERVER_URL,
+        mcpHealth: 'reachable-but-no-data'
       }
     })
     
@@ -355,7 +325,11 @@ router.get('/', async (req, res) => {
       error: 'Internal server error',
       message: 'Failed to retrieve working capital data',
       userAction: 'Please try again in a few moments',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      debug: {
+        errorType: error.name,
+        errorMessage: error.message
+      }
     })
   }
 })

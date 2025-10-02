@@ -6,7 +6,7 @@
     region: oregon
     plan: standard # /month for production reliability
 
-    repo: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
+    repo: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
     branch: development
     rootDir: mcp-server
 

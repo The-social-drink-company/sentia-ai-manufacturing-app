@@ -8,7 +8,7 @@ import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashbo
 import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
 
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
-const WorkingCapital = lazy(() => import('@/pages/WorkingCapitalEnterprise'))
+const WorkingCapital = lazy(() => import('@/components/WorkingCapital/RealWorkingCapital'))
 const Forecasting = lazy(() => import('@/pages/Forecasting'))
 const Production = lazy(() => import('@/pages/Production'))
 const Analytics = lazy(() => import('@/pages/Analytics'))

@@ -214,17 +214,17 @@ const DebugPanel = () => {
               <div className="text-xs space-y-1">
                 <div className="flex justify-between">
                   <span>Mode:</span>
-                  <Badge variant="outline" className="text-xs bg-blue-600">
-                    Static Data
+                  <Badge variant="default" className="text-xs bg-green-600">
+                    Live API
                   </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span>Source:</span>
-                  <span className="text-slate-400">Local Components</span>
+                  <span className="text-slate-400">MCP Server + Xero API</span>
                 </div>
                 <div className="flex justify-between">
                   <span>API Integration:</span>
-                  <span className="text-slate-400">Disabled (Rollback Mode)</span>
+                  <span className="text-slate-400">Enabled (Real Data)</span>
                 </div>
               </div>
             </div>

@@ -1,0 +1,1 @@
+import{ab as e}from"./vendor-if_euMW7.js";const t=()=>e.jsx("div",{className:"rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground",children:"Inventory metrics will display here once data integrations are connected."});export{t as default};

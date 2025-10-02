@@ -3,109 +3,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { RefreshCwIcon, WifiIcon, WifiOffIcon } from 'lucide-react'
-import { useDashboardSummary, useWorkingCapital, useAnalyticsKPIs } from '@/hooks/useDashboardData.js'
-import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates.js'
+import { useDashboardSummary, useWorkingCapital, useAnalyticsKPIs } from '@/hooks/useDashboardData'
+import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates'
 
 const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
-const KPIWidget = lazy(() => import('@/components/widgets/KPIWidget'))
+const KPIWidget = lazy(() => import('@/components/dashboard/KPIWidget'))
 const ProductionMetrics = lazy(() => import('@/components/dashboard/ProductionMetrics'))
 const InventoryOverview = lazy(() => import('@/components/dashboard/InventoryOverview'))
 
-// Detailed error component for QueryClient issues
-const QueryClientErrorFallback = ({ error, componentName, hookName }) => (
-  <div className="min-h-screen bg-slate-900 p-6">
-    <div className="max-w-4xl mx-auto">
-      <div className="bg-red-900/20 border border-red-500 rounded-lg p-6">
-        <h1 className="text-red-400 text-xl font-bold mb-4">Dashboard Initialization Error</h1>
-        <div className="space-y-4 text-slate-300">
-          <p><strong>Error:</strong> {error?.message || 'Unknown QueryClient error'}</p>
-          <p><strong>Component:</strong> {componentName}</p>
-          <p><strong>Hook:</strong> {hookName}</p>
-          <p><strong>Environment:</strong> Development Mode</p>
-          <p><strong>Timestamp:</strong> {new Date().toISOString()}</p>
-          <p><strong>QueryClient Status:</strong> Not Available</p>
-          
-          <div className="bg-slate-800 p-4 rounded border-l-4 border-yellow-500">
-            <h3 className="text-yellow-400 font-semibold">Troubleshooting Steps:</h3>
-            <ul className="list-disc list-inside mt-2 space-y-1">
-              <li>Check if QueryClientProvider is properly wrapping the component</li>
-              <li>Verify React Query version compatibility</li>
-              <li>Ensure imports are using correct file extensions (.js not .jsx)</li>
-              <li>Check browser console for additional errors</li>
-              <li>Verify that the component is wrapped in the proper provider hierarchy</li>
-            </ul>
-          </div>
-          
-          <div className="bg-slate-800 p-4 rounded border-l-4 border-blue-500">
-            <h3 className="text-blue-400 font-semibold">Error Stack:</h3>
-            <pre className="text-xs mt-2 text-slate-400 overflow-x-auto">
-              {error?.stack || 'No stack trace available'}
-            </pre>
-          </div>
-          
-          <button 
-            onClick={() => window.location.reload()} 
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white mr-4"
-          >
-            Reload Application
-          </button>
-          <button 
-            onClick={() => console.log('Error Details:', { error, componentName, hookName })} 
-            className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-white"
-          >
-            Log Error Details
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)
-
 const DashboardEnterprise = () => {
-  // Safe hook usage with detailed error handling
-  let summaryData, summaryLoading, summaryError
-  let workingCapitalData, wcLoading
-  let analyticsData, analyticsLoading
-  let connectionStatus, isConnected, refreshAll, lastUpdate
+  // API data hooks
+  const { data: summaryData, isLoading: summaryLoading, error: summaryError } = useDashboardSummary()
+  const { data: workingCapitalData, isLoading: wcLoading } = useWorkingCapital()
+  const { data: analyticsData, isLoading: analyticsLoading } = useAnalyticsKPIs()
 
-  try {
-    const summaryResult = useDashboardSummary()
-    summaryData = summaryResult.data
-    summaryLoading = summaryResult.isLoading
-    summaryError = summaryResult.error
-  } catch (error) {
-    console.error('[DashboardEnterprise] useDashboardSummary error:', error)
-    return <QueryClientErrorFallback error={error} componentName="DashboardEnterprise" hookName="useDashboardSummary" />
-  }
-
-  try {
-    const workingCapitalResult = useWorkingCapital()
-    workingCapitalData = workingCapitalResult.data
-    wcLoading = workingCapitalResult.isLoading
-  } catch (error) {
-    console.error('[DashboardEnterprise] useWorkingCapital error:', error)
-    return <QueryClientErrorFallback error={error} componentName="DashboardEnterprise" hookName="useWorkingCapital" />
-  }
-
-  try {
-    const analyticsResult = useAnalyticsKPIs()
-    analyticsData = analyticsResult.data
-    analyticsLoading = analyticsResult.isLoading
-  } catch (error) {
-    console.error('[DashboardEnterprise] useAnalyticsKPIs error:', error)
-    return <QueryClientErrorFallback error={error} componentName="DashboardEnterprise" hookName="useAnalyticsKPIs" />
-  }
-
-  try {
-    const realtimeResult = useRealtimeUpdates()
-    connectionStatus = realtimeResult.connectionStatus
-    isConnected = realtimeResult.isConnected
-    refreshAll = realtimeResult.refreshAll
-    lastUpdate = realtimeResult.lastUpdate
-  } catch (error) {
-    console.error('[DashboardEnterprise] useRealtimeUpdates error:', error)
-    return <QueryClientErrorFallback error={error} componentName="DashboardEnterprise" hookName="useRealtimeUpdates" />
-  }
+  // Real-time updates
+  const { connectionStatus, isConnected, refreshAll, lastUpdate } = useRealtimeUpdates()
 
   // Format data for display
   const formatCurrency = (value) => {

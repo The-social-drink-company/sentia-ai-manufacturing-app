@@ -7,7 +7,7 @@ import { useDashboardSummary, useWorkingCapital, useAnalyticsKPIs } from '@/hook
 import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates'
 
 const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
-const KPIWidget = lazy(() => import('@/components/dashboard/KPIWidget'))
+const KPIWidget = lazy(() => import('@/components/widgets/KPIWidget'))
 const ProductionMetrics = lazy(() => import('@/components/dashboard/ProductionMetrics'))
 const InventoryOverview = lazy(() => import('@/components/dashboard/InventoryOverview'))
 

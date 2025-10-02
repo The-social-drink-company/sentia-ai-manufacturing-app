@@ -334,12 +334,12 @@ const App = () => {
               <Route path="/app/*" element={<Navigate to="/app/dashboard" replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            
+            {/* Development Debug Panel */}
+            <DebugPanel />
           </BrowserRouter>
         </QueryClientProvider>
       </AuthProvider>
-      
-      {/* Development Debug Panel */}
-      <DebugPanel />
     </ErrorBoundary>
   )
 }

@@ -1,6 +1,6 @@
 {
   "name": "sentia-manufacturing-dashboard",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Sentia Manufacturing Dashboard - Enterprise working capital intelligence",
   "private": true,
   "type": "module",

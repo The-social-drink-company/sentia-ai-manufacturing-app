@@ -193,6 +193,7 @@ const AuthProvider = ({ children }) => {
 }
 
 const App = () => {
+  // Force cache invalidation - Build: 2025-01-02T15:30:00Z
   console.log('[App] Starting with development mode:', isDevelopmentMode)
   
   return (

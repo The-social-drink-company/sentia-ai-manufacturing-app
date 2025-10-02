@@ -1,1 +1,0 @@
-import{ag as e}from"./vendor-DTSBDxuz.js";const t=()=>e.jsx("div",{className:"rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground",children:"Inventory metrics will display here once data integrations are connected."});export{t as default};

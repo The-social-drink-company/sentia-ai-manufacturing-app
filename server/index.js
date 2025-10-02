@@ -257,7 +257,7 @@ app.get('/api/mcp/status', async (req, res) => {
     res.json({
       connected: false,
       error: error.message,
-      url: 'https://mcp-server-tkyu.onrender.com'
+      url: 'https://mcp-server-yacx.onrender.com'
     });
   }
 });

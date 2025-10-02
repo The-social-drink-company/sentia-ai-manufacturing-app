@@ -30,11 +30,11 @@
 
       # AI Services - Claude (Anthropic)
       - key: ANTHROPIC_API_KEY
-        value: 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
+        sync: false # Set via Render dashboard for security
 
       # AI Services - OpenAI
       - key: OPENAI_API_KEY
-        value: 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
+        sync: false # Set via Render dashboard for security
 
       # Google AI (Optional)
       - key: GOOGLE_AI_API_KEY
@@ -51,33 +51,52 @@
       # The connection string will be provided via environment group
       - key: DATABASE_URL
         sync: false # Will be set from Render environment group or dashboard
+      
+      # MCP Server specific environment variables
+      - key: MCP_SERVER_PORT
+        value: 3001
+      - key: MCP_HTTP_PORT
+        value: 3002
+      - key: MCP_VECTOR_TABLE
+        value: Embeddings
+      - key: MCP_VECTOR_DIM
+        value: 1536
+      - key: BRANCH
+        value: development
 
       # External Service APIs (For unified interface)
+      # SECURITY: All API keys set via Render dashboard for security
       - key: XERO_CLIENT_ID
-        value: 9C0CAB921C134476A249E48BBECB8C4B
+        sync: false
       - key: XERO_CLIENT_SECRET
-        value: f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5
+        sync: false
 
       - key: SHOPIFY_UK_API_KEY
-        value: 7a30cd84e7a106b852c8e0fb789de10e
+        sync: false
       - key: SHOPIFY_UK_ACCESS_TOKEN
-        value: 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
+        sync: false
       - key: SHOPIFY_UK_SHOP_URL
-        value: sentiaspirits.myshopify.com
+        sync: false
+      - key: SHOPIFY_USA_API_KEY
+        sync: false
+      - key: SHOPIFY_USA_ACCESS_TOKEN
+        sync: false
+      - key: SHOPIFY_USA_SHOP_URL
+        sync: false
 
       - key: AMAZON_UK_MARKETPLACE_ID
-        value: A1F83G8C2ARO7P
+        sync: false
       - key: AMAZON_USA_MARKETPLACE_ID
-        value: ATVPDKIKX0DER
+        sync: false
 
       - key: UNLEASHED_API_ID
-        value: d5313df6-db35-430c-a69e-ae27dffe0c5a
+        sync: false
       - key: UNLEASHED_API_KEY
-        value: 2bJcHlDhIV04ScdqT60c3zlnG7hOER7aoPSh2IF2hWQluOi7ZaGkeu4SGeseYexAqOGfcRmyl9c6QYueJHyQ==
+        sync: false
 
-      # CORS Settings
+      # CORS Settings - Updated to match actual Render URLs
       - key: CORS_ORIGINS
-        value: https://sentia-manufacturing-development.onrender.com,https://sentia-manufacturing-testing.onrender.com,https://sentia-manufacturing-production.onrender.com
+        value: https://sentia-manufacturing-dashboard-621h.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com
 
       # WebSocket Configuration
       - key: ENABLE_WEBSOCKET

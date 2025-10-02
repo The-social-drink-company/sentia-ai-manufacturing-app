@@ -10,14 +10,19 @@ import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import pg from 'pg';
 import cors from 'cors';
-import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger.js';
+// Simple console-based logging for MCP server
+const logDebug = (...args) => console.log('[DEBUG]', new Date().toISOString(), ...args);
+const logInfo = (...args) => console.info('[INFO]', new Date().toISOString(), ...args);
+const logWarn = (...args) => console.warn('[WARN]', new Date().toISOString(), ...args);
+const logError = (...args) => console.error('[ERROR]', new Date().toISOString(), ...args);
 
 
 config();
 
 const {
-  MCP_SERVER_PORT = 3001,
-  MCP_HTTP_PORT = 3002,
+  PORT = 10000,
+  MCP_SERVER_PORT = process.env.PORT || 10000,
+  MCP_HTTP_PORT = process.env.PORT || 10000,
   MCP_API_KEY,
   MCP_VECTOR_TABLE = 'Embeddings',
   MCP_VECTOR_DIM = '1536',
@@ -25,7 +30,7 @@ const {
   OPENAI_API_KEY,
   ANTHROPIC_API_KEY,
   GOOGLE_AI_API_KEY,
-  CORS_ORIGINS = 'https://sentia-manufacturing-development.onrender.com'
+  CORS_ORIGINS = 'https://sentia-manufacturing-dashboard-621h.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com'
 } = process.env;
 
 const VECTOR_DIM = Number(MCP_VECTOR_DIM) || 1536;
@@ -107,10 +112,20 @@ app.get('/health', async (_req, res) => {
   const database = await checkDatabaseConnection();
   res.json({
     status: 'healthy',
+    server: 'sentia-enterprise-mcp-server',
+    version: '2.0.0-enterprise-simple',
+    protocol: '2024-11-05',
     uptime: process.uptime(),
+    connections: wss.clients.size,
+    features: {
+      manufacturing: true,
+      multiProvider: true,
+      aiIntegration: true,
+      realTime: true,
+      enterprise: true
+    },
     providers: checkProviderStatus(),
     database,
-    activeConnections: wss.clients.size,
     metrics: {
       activeConnections: metrics.activeConnections,
       totalRequests: metrics.totalRequests,
@@ -118,12 +133,24 @@ app.get('/health', async (_req, res) => {
       failedRequests: metrics.failedRequests,
       averageLatencyMs: metrics.averageLatencyMs,
       providerCalls: metrics.providerCalls
-    }
+    },
+    timestamp: new Date().toISOString()
   });
 });
 
-const httpServer = app.listen(Number(MCP_HTTP_PORT), () => {
-  logDebug(`Sentia MCP health server listening on port ${MCP_HTTP_PORT}`);
+// Alternative health check endpoint for Render compatibility
+app.get('/healthz', async (_req, res) => {
+  const database = await checkDatabaseConnection();
+  const isHealthy = database.status === 'healthy';
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'healthy' : 'degraded',
+    database: database.status,
+    timestamp: new Date().toISOString()
+  });
+});
+
+const httpServer = app.listen(Number(PORT), () => {
+  logDebug(`Sentia MCP server listening on port ${PORT}`);
 });
 
 async function runHealthCheck() {
@@ -775,7 +802,7 @@ function getSubscriptionPredicate(topics = []) {
   };
 }
 
-const wss = new WebSocketServer({ port: Number(MCP_SERVER_PORT) });
+const wss = new WebSocketServer({ server: httpServer });
 
 wss.on('connection', (socket, req) => {
   const url = new URL(req.url ?? '/', 'http://localhost');
@@ -858,7 +885,7 @@ const heartbeatInterval = setInterval(() => {
   });
 }, HEARTBEAT_INTERVAL_MS);
 
-logDebug(`Sentia MCP WebSocket server listening on port ${MCP_SERVER_PORT}`);
+logDebug(`Sentia MCP WebSocket server attached to HTTP server on port ${PORT}`);
 
 async function shutdown() {
   logDebug('Shutting down Sentia MCP server...');

@@ -1,7 +1,7 @@
 /**
  * MCP Server Client Integration
- * Connects to Railway-hosted MCP Server for AI orchestration
- * Service ID: 99691282-de66-45b2-98cf-317083dd11ba
+ * Connects to Render-hosted MCP Server for AI orchestration
+ * Service: mcp-server-yacx.onrender.com
  */
 
 import axios from 'axios';
@@ -13,8 +13,8 @@ import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
 class MCPServerClient extends EventEmitter {
   constructor() {
     super();
-    this.baseURL = process.env.MCP_SERVER_URL || 'https://web-production-99691282.up.railway.app';
-    this.serviceId = process.env.MCP_SERVER_SERVICE_ID || '99691282-de66-45b2-98cf-317083dd11ba';
+    this.baseURL = process.env.MCP_SERVER_URL || 'https://mcp-server-yacx.onrender.com';
+    this.serviceId = process.env.MCP_SERVER_SERVICE_ID || 'mcp-server-yacx';
     this.apiEndpoint = `${this.baseURL}/mcp`;
     this.healthEndpoint = `${this.baseURL}/health`;
     this.wsEndpoint = this.baseURL.replace('https:', 'wss:') + '/ws';
@@ -179,7 +179,7 @@ class MCPServerClient extends EventEmitter {
     try {
       const response = await this.client.post('/mcp/tools/optimize-inventory', {
         ...parameters,
-        database: process.env.NEON_BRANCH
+        database: process.env.BRANCH || 'development'
       });
       return response.data;
     } catch (error) {
@@ -191,7 +191,7 @@ class MCPServerClient extends EventEmitter {
     try {
       const response = await this.client.post('/mcp/tools/forecast-demand', {
         ...parameters,
-        database: process.env.NEON_BRANCH
+        database: process.env.BRANCH || 'development'
       });
       return response.data;
     } catch (error) {
@@ -233,7 +233,7 @@ class MCPServerClient extends EventEmitter {
   async syncXeroData() {
     try {
       const response = await this.client.post('/mcp/integrations/xero/sync', {
-        database: process.env.NEON_BRANCH
+        database: process.env.BRANCH || 'development'
       });
       return response.data;
     } catch (error) {
@@ -244,7 +244,7 @@ class MCPServerClient extends EventEmitter {
   async syncShopifyData() {
     try {
       const response = await this.client.post('/mcp/integrations/shopify/sync', {
-        database: process.env.NEON_BRANCH
+        database: process.env.BRANCH || 'development'
       });
       return response.data;
     } catch (error) {
@@ -255,7 +255,7 @@ class MCPServerClient extends EventEmitter {
   async syncAmazonData() {
     try {
       const response = await this.client.post('/mcp/integrations/amazon/sync', {
-        database: process.env.NEON_BRANCH
+        database: process.env.BRANCH || 'development'
       });
       return response.data;
     } catch (error) {
@@ -271,8 +271,8 @@ class MCPServerClient extends EventEmitter {
     try {
       const response = await this.client.post('/mcp/database/query', {
         query,
-        branch: branch || process.env.NEON_BRANCH,
-        projectId: process.env.NEON_PROJECT_ID
+        branch: branch || process.env.BRANCH || 'development',
+        databaseUrl: process.env.DATABASE_URL
       });
       return response.data;
     } catch (error) {
@@ -284,7 +284,11 @@ class MCPServerClient extends EventEmitter {
     try {
       const response = await this.client.post('/mcp/database/sync-branches', {
         branches: ['development', 'testing', 'production'],
-        projectId: process.env.NEON_PROJECT_ID
+        databaseUrls: {
+          development: process.env.DATABASE_URL,
+          testing: process.env.TEST_DATABASE_URL,
+          production: process.env.PROD_DATABASE_URL
+        }
       });
       return response.data;
     } catch (error) {
@@ -344,7 +348,7 @@ class MCPServerClient extends EventEmitter {
       const response = await this.client.post('/mcp/decision/recommend', {
         type,
         parameters,
-        database: process.env.NEON_BRANCH
+        database: process.env.BRANCH || 'development'
       });
       return response.data;
     } catch (error) {

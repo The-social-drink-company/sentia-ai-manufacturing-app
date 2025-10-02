@@ -10,6 +10,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import fs from 'fs';
+import workingCapitalRouter from './api/working-capital.js';
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
@@ -51,7 +52,7 @@ app.use(helmet({
         "https://clerk.financeflo.ai",
         "https://*.clerk.accounts.dev",
         "https://*.clerk.com",
-        "https://mcp-server-tkyu.onrender.com"
+        "https://mcp-server-yacx.onrender.com"
       ]
     }
   }
@@ -188,6 +189,9 @@ app.get('/api/financial/working-capital', (req, res) => {
   });
 });
 
+// Mount working capital router for MCP integration
+app.use('/api/working-capital', workingCapitalRouter);
+
 // Cash Flow endpoint
 app.get('/api/financial/cash-flow', (req, res) => {
   res.json({
@@ -232,7 +236,7 @@ app.get('/api/forecasting/enhanced', (req, res) => {
 // MCP Status endpoint
 app.get('/api/mcp/status', async (req, res) => {
   try {
-    const response = await fetch('https://mcp-server-tkyu.onrender.com/health', {
+    const response = await fetch('https://mcp-server-yacx.onrender.com/health', {
       signal: AbortSignal.timeout(5000)
     });
 
@@ -246,7 +250,7 @@ app.get('/api/mcp/status', async (req, res) => {
       res.json({
         connected: false,
         error: `MCP Server returned ${response.status}`,
-        url: 'https://mcp-server-tkyu.onrender.com'
+        url: 'https://mcp-server-yacx.onrender.com'
       });
     }
   } catch (error) {

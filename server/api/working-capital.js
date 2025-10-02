@@ -6,7 +6,7 @@ import { authenticateToken } from '../middleware/auth.js'
 const router = express.Router()
 const prisma = new PrismaClient()
 
-const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com'
+const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://mcp-server-yacx.onrender.com'
 const XERO_API_URL = 'https://api.xero.com/api.xro/2.0'
 
 const toNumber = (value, fallback = 0) => {
@@ -253,6 +253,112 @@ const calculateDaysInventory = (summary) => {
   const turnover = summary.turnoverRate <= 0 ? 0 : summary.turnoverRate
   return turnover ? Number((365 / turnover).toFixed(0)) : 0
 }
+
+// Main working capital endpoint for frontend integration
+router.get('/', async (req, res) => {
+  try {
+    console.log('📊 Working capital data requested from MCP integration')
+    
+    // Try to connect to MCP server for live data
+    if (process.env.MCP_JWT_SECRET) {
+      try {
+        const mcpResponse = await axios.post(
+          `${MCP_SERVER_URL}/api/ai/manufacturing-request`,
+          {
+            request: 'Get current working capital metrics',
+            type: 'financial_analysis',
+            timestamp: new Date().toISOString()
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.MCP_JWT_SECRET}`,
+              'Content-Type': 'application/json'
+            },
+            timeout: 10000
+          }
+        )
+        
+        if (mcpResponse.data) {
+          console.log('✅ MCP server data received successfully')
+          return res.json({
+            success: true,
+            data: mcpResponse.data,
+            metadata: {
+              source: 'mcp-server',
+              timestamp: new Date().toISOString(),
+              dataSource: 'live'
+            }
+          })
+        }
+      } catch (mcpError) {
+        console.error('❌ MCP server connection failed:', mcpError.message)
+        
+        // Return MCP connection error details
+        return res.status(503).json({
+          success: false,
+          error: 'Service connection failed',
+          message: `Unable to connect to financial services: MCP error ${mcpError.code || -32000}: ${mcpError.message || 'Connection closed'}`,
+          userAction: 'Check network connection and try again',
+          retryIn: '1 minute',
+          timestamp: new Date().toISOString(),
+          debug: {
+            mcpServer: MCP_SERVER_URL,
+            errorCode: mcpError.code,
+            errorMessage: mcpError.message
+          }
+        })
+      }
+    }
+    
+    // Fallback to database if MCP not available
+    console.log('⚠️ MCP not configured, using database fallback')
+    const history = await prisma.workingCapital.findMany({
+      orderBy: { date: 'desc' },
+      take: 12
+    })
+    
+    if (!history.length) {
+      return res.status(404).json({
+        success: false,
+        error: 'No data available',
+        message: 'No working capital data found in database',
+        userAction: 'Contact system administrator'
+      })
+    }
+    
+    const latest = history[0]
+    const fallbackData = {
+      metrics: {
+        cashPosition: toNumber(latest.cash),
+        workingCapital: toNumber(latest.currentAssets - latest.currentLiabilities),
+        currentRatio: toNumber(latest.workingCapitalRatio),
+        quickRatio: toNumber(latest.quickRatio)
+      },
+      history: buildWorkingCapitalTrend(history),
+      timestamp: new Date().toISOString()
+    }
+    
+    return res.json({
+      success: true,
+      data: fallbackData,
+      metadata: {
+        source: 'database',
+        timestamp: new Date().toISOString(),
+        dataSource: 'historical'
+      }
+    })
+    
+  } catch (error) {
+    console.error('💥 Working capital endpoint error:', error)
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Failed to retrieve working capital data',
+      userAction: 'Please try again in a few moments',
+      timestamp: new Date().toISOString()
+    })
+  }
+})
 
 router.get('/metrics', authenticateToken, async (_req, res) => {
   try {

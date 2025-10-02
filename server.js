@@ -1,6 +1,21 @@
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Import MCP client for live data integration
+let getMCPClient = null;
+try {
+  const mcpModule = await import('./services/mcp-client.js');
+  getMCPClient = mcpModule.getMCPClient;
+  console.log('✅ MCP Client imported successfully');
+} catch (error) {
+  console.warn('⚠️ MCP Client import failed:', error.message);
+}
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -73,27 +88,130 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Mock API endpoints for development/demo purposes
-app.get('/api/dashboard/summary', (req, res) => {
-  console.log('📈 Dashboard summary requested');
-  res.status(200).json({
-    workingCapital: {
-      current: 2450000,
-      trend: 'positive',
-      change: 12.5
-    },
-    cashFlow: {
-      current: 890000,
-      trend: 'stable',
-      change: 2.1
-    },
-    inventory: {
-      turnover: 8.2,
-      trend: 'positive',
-      change: 5.3
-    },
-    lastUpdated: new Date().toISOString()
-  });
+// Working Capital API with MCP integration - NO FALLBACK DATA
+app.get('/api/working-capital', async (req, res) => {
+  console.log('💰 Working capital data requested');
+  
+  const startTime = Date.now();
+  const errors = [];
+  let mcpServerOnline = false;
+  let xeroApiConnected = false;
+  
+  // NO FALLBACK DATA - only real data or error messages
+  let workingCapitalData = null;
+  
+  // Try to get live data from MCP server
+  if (!getMCPClient) {
+    return res.status(503).json({
+      success: false,
+      error: 'MCP Client not available',
+      message: 'Financial data service is not configured. Please check server setup.',
+      timestamp: new Date().toISOString(),
+      userAction: 'Contact system administrator'
+    });
+  }
+  
+  try {
+    const mcpClient = getMCPClient();
+    
+    // Check MCP server health first
+    const healthCheck = await mcpClient.checkHealth();
+    mcpServerOnline = healthCheck.status === 'healthy';
+    
+    if (!mcpServerOnline) {
+      return res.status(503).json({
+        success: false,
+        error: 'MCP Server offline',
+        message: 'Financial data service is currently unavailable.',
+        timestamp: new Date().toISOString(),
+        userAction: 'Please try again in a few minutes or contact support',
+        retryIn: '30 seconds'
+      });
+    }
+    
+    console.log('✅ MCP Server is online, fetching working capital data...');
+    
+    // Try to get working capital data through MCP
+    const mcpResponse = await mcpClient.callUnifiedAPI(
+      'xero', 
+      'GET', 
+      '/working-capital-summary',
+      null
+    );
+    
+    if (!mcpResponse || !mcpResponse.success) {
+      return res.status(502).json({
+        success: false,
+        error: 'Xero API failed',
+        message: 'Unable to retrieve financial data from Xero. Check API connection.',
+        timestamp: new Date().toISOString(),
+        userAction: 'Verify Xero API credentials and try again',
+        retryIn: '5 minutes'
+      });
+    }
+    
+    // Validate that we have the required data
+    if (!mcpResponse.data || typeof mcpResponse.data.workingCapital === 'undefined') {
+      return res.status(502).json({
+        success: false,
+        error: 'Invalid data received',
+        message: 'Xero API returned incomplete working capital data.',
+        timestamp: new Date().toISOString(),
+        userAction: 'Check Xero account configuration',
+        retryIn: '5 minutes'
+      });
+    }
+    
+    workingCapitalData = {
+      workingCapital: mcpResponse.data.workingCapital,
+      currentRatio: mcpResponse.data.currentRatio,
+      quickRatio: mcpResponse.data.quickRatio,
+      cash: mcpResponse.data.cash,
+      receivables: mcpResponse.data.receivables,
+      payables: mcpResponse.data.payables,
+      lastCalculated: new Date().toISOString()
+    };
+    
+    xeroApiConnected = true;
+    console.log('✅ Retrieved live working capital data from Xero via MCP');
+    
+  } catch (mcpError) {
+    console.error('❌ MCP operation failed:', mcpError.message);
+    return res.status(503).json({
+      success: false,
+      error: 'Service connection failed',
+      message: `Unable to connect to financial services: ${mcpError.message}`,
+      timestamp: new Date().toISOString(),
+      userAction: 'Check network connection and try again',
+      retryIn: '1 minute'
+    });
+  }
+  
+  const responseTime = Date.now() - startTime;
+  
+  // Success response with live data only
+  const response = {
+    success: true,
+    data: workingCapitalData,
+    metadata: {
+      dataSource: 'live',
+      lastUpdated: new Date().toISOString(),
+      responseTime: `${responseTime}ms`,
+      services: {
+        mcpServer: {
+          status: 'online',
+          responseTime: `${responseTime}ms`
+        },
+        xero: {
+          status: 'connected',
+          lastSync: new Date().toISOString()
+        }
+      }
+    }
+  };
+  
+  console.log('📊 Live working capital data served successfully');
+  res.status(200).json(response);
 });
 
 // Catch-all handler for API routes that might require Prisma

@@ -68,14 +68,14 @@ class MCPServerClient extends EventEmitter {
         }
       });
 
-      this.ws.on(_'open', _() => {
+      this.ws.on('open', () => {
         logDebug('WebSocket connection established with MCP Server');
         this.isConnected = true;
         this.reconnectAttempts = 0;
         this.emit('connected');
       });
 
-      this.ws.on(_'message', _(data) => {
+      this.ws.on('message', (data) => {
         try {
           const message = JSON.parse(data);
           this.handleWebSocketMessage(message);
@@ -84,14 +84,14 @@ class MCPServerClient extends EventEmitter {
         }
       });
 
-      this.ws.on(_'close', _() => {
+      this.ws.on('close', () => {
         logDebug('WebSocket connection closed');
         this.isConnected = false;
         this.emit('disconnected');
         this.scheduleReconnect();
       });
 
-      this.ws.on(_'error', _(error) => {
+      this.ws.on('error', (error) => {
         logError('WebSocket error:', error);
         this.emit('error', error);
       });
@@ -127,7 +127,7 @@ class MCPServerClient extends EventEmitter {
       this.reconnectAttempts++;
       logDebug(`Scheduling reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
 
-      setTimeout(_() => {
+      setTimeout(() => {
         this.initialize();
       }, this.reconnectInterval * this.reconnectAttempts);
     } else {

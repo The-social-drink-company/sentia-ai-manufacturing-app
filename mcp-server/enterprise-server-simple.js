@@ -10,7 +10,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import pg from 'pg';
 import cors from 'cors';
-import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger.js';
 
 
 config();

@@ -17,8 +17,6 @@ import {
   ChevronDownIcon,
   ChevronRightIcon
 } from 'lucide-react'
-import { useConnectionStatus } from '@/hooks/useRealtimeUpdates'
-import { useMCPServerStatus } from '@/hooks/useDashboardData'
 import { useQueryClient } from '@tanstack/react-query'
 
 const DebugPanel = () => {
@@ -26,9 +24,11 @@ const DebugPanel = () => {
   const [apiHealth, setApiHealth] = useState(null)
   const [systemInfo, setSystemInfo] = useState({})
   
-  const { status: sseStatus, connectionDetails } = useConnectionStatus()
-  const { data: mcpStatus, isLoading: mcpLoading, error: mcpError } = useMCPServerStatus()
   const queryClient = useQueryClient()
+  
+  // Simplified status for rollback version - no MCP dependencies
+  const sseStatus = 'offline'
+  const connectionDetails = { readyState: 'N/A', reconnectAttempts: 0 }
 
   // Only show in development mode
   const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true' || 
@@ -205,41 +205,27 @@ const DebugPanel = () => {
               </div>
             </div>
 
-            {/* MCP Server Status */}
+            {/* Data Source Status */}
             <div>
               <h4 className="font-medium text-sm mb-2 flex items-center">
                 <ServerIcon className="w-4 h-4 mr-1" />
-                MCP Server (Live Data)
+                Data Source
               </h4>
               <div className="text-xs space-y-1">
-                {mcpLoading ? (
-                  <div className="text-slate-500">Checking MCP server...</div>
-                ) : mcpError ? (
-                  <div className="text-red-400">MCP Error: {mcpError.message}</div>
-                ) : mcpStatus ? (
-                  <>
-                    <div className="flex justify-between">
-                      <span>Status:</span>
-                      <Badge variant="default" className="text-xs bg-green-600">
-                        Connected
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>URL:</span>
-                      <span className="text-slate-400 truncate">mcp-server-tkyu.onrender.com</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>AI Models:</span>
-                      <span className="text-green-400">Active</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Data Source:</span>
-                      <span className="text-blue-400">Live Manufacturing</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-red-400">MCP Server Unavailable</div>
-                )}
+                <div className="flex justify-between">
+                  <span>Mode:</span>
+                  <Badge variant="outline" className="text-xs bg-blue-600">
+                    Static Data
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>Source:</span>
+                  <span className="text-slate-400">Local Components</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>API Integration:</span>
+                  <span className="text-slate-400">Disabled (Rollback Mode)</span>
+                </div>
               </div>
             </div>
 

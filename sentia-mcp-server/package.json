@@ -20,14 +20,17 @@
     "@modelcontextprotocol/sdk": "^1.0.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
     "dotenv": "^17.2.2",
     "express": "^4.21.1",
     "express-rate-limit": "^7.4.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "node-cache": "^5.1.2",
     "pg": "^8.11.3",
     "uuid": "^11.0.4",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "xero-node": "^13.1.0"
   },
   "devDependencies": {
     "eslint": "^9.26.0",

@@ -52,36 +52,6 @@ class HealthChecker {
       }
     });
 
-    // MCP Server check
-    this.registerCheck('mcp_server', async () => {
-      try {
-        const start = performance.now();
-        const response = await fetch('https://mcp-server-tkyu.onrender.com/health', {
-          signal: AbortSignal.timeout(5000),
-        });
-        const latency = performance.now() - start;
-
-        if (response.ok) {
-          return {
-            status: HealthStatus.HEALTHY,
-            latency: Math.round(latency),
-            details: 'MCP Server is responsive',
-          };
-        } else {
-          return {
-            status: HealthStatus.DEGRADED,
-            latency: Math.round(latency),
-            details: `MCP Server returned ${response.status}`,
-          };
-        }
-      } catch (error) {
-        return {
-          status: HealthStatus.UNHEALTHY,
-          error: error.message,
-          details: 'MCP Server is unreachable',
-        };
-      }
-    });
 
     // Memory check
     this.registerCheck('memory', async () => {
@@ -281,7 +251,7 @@ class HealthChecker {
 
   async getReadiness() {
     // Check if all critical services are ready
-    const criticalChecks = ['database', 'mcp_server'];
+    const criticalChecks = ['database'];
     const results = {
       ready: true,
       timestamp: new Date().toISOString(),

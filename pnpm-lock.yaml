@@ -38,9 +38,6 @@ importers:
       '@microsoft/microsoft-graph-types':
         specifier: ^2.40.0
         version: 2.40.0
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.11.3
-        version: 1.11.3
       '@prisma/client':
         specifier: ^6.16.2
         version: 6.16.2(prisma@6.16.2)

@@ -346,20 +346,5 @@ router.get('/quality/metrics', async (req, res) => {
   }
 });
 
-// MCP Server Status (for monitoring)
-router.get('/mcp/status', async (req, res) => {
-  try {
-    const response = await axios.get('https://mcp-server-tkyu.onrender.com/health');
-    res.json({
-      connected: true,
-      ...response.data
-    });
-  } catch (error) {
-    res.json({
-      connected: false,
-      error: error.message
-    });
-  }
-});
 
 export default router;

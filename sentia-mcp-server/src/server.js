@@ -38,6 +38,8 @@ import { createLogger } from './utils/logger.js';
 import { globalErrorHandler } from './utils/error-handler.js';
 import dashboardRoutes from './routes/dashboard-integration.js';
 import { handleDashboardErrors } from './middleware/dashboard-integration.js';
+import { registerShopifyTools } from './tools/shopify-integration.js';
+import { registerXeroTools } from './tools/xero-integration.js';
 
 // Load environment variables
 config();
@@ -248,6 +250,9 @@ export class SentiaMCPServer {
     // Load default system tools
     this.loadSystemTools();
     this.loadPromptTemplates();
+    
+    // Load integration tools
+    await this.loadIntegrationTools();
   }
 
   /**
@@ -346,6 +351,38 @@ export class SentiaMCPServer {
         return await this.executeReadOnlyQuery(params.query, params.params || []);
       }
     });
+  }
+
+  /**
+   * Load integration tools (Shopify, Xero, etc.)
+   */
+  async loadIntegrationTools() {
+    try {
+      logger.info('Loading integration tools...');
+
+      // Load Shopify integration
+      try {
+        await registerShopifyTools(this);
+        logger.info('Shopify integration loaded successfully');
+      } catch (error) {
+        logger.warn('Failed to load Shopify integration', { error: error.message });
+      }
+
+      // Load Xero integration
+      try {
+        await registerXeroTools(this);
+        logger.info('Xero integration loaded successfully');
+      } catch (error) {
+        logger.warn('Failed to load Xero integration', { error: error.message });
+      }
+
+      logger.info('Integration tools loading completed');
+
+    } catch (error) {
+      logger.error('Failed to load integration tools', {
+        error: error.message
+      });
+    }
   }
 
   /**

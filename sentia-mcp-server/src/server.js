@@ -41,6 +41,7 @@ import { handleDashboardErrors } from './middleware/dashboard-integration.js';
 import { registerShopifyTools } from './tools/shopify-integration.js';
 import { registerXeroTools } from './tools/xero-integration.js';
 import { registerAmazonTools } from './tools/amazon-integration.js';
+import { registerAnthropicTools } from './tools/anthropic-integration.js';
 
 // Load environment variables
 config();
@@ -383,6 +384,14 @@ export class SentiaMCPServer {
         logger.info('Amazon integration loaded successfully');
       } catch (error) {
         logger.warn('Failed to load Amazon integration', { error: error.message });
+      }
+
+      // Load Anthropic integration
+      try {
+        await registerAnthropicTools(this);
+        logger.info('Anthropic integration loaded successfully');
+      } catch (error) {
+        logger.warn('Failed to load Anthropic integration', { error: error.message });
       }
 
       logger.info('Integration tools loading completed');

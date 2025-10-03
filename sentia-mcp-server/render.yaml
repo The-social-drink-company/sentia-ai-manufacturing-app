@@ -1,0 +1,124 @@
+# Render deployment configuration for Sentia MCP Server
+# Standalone deployment separate from the main dashboard
+
+services:
+  # Development Environment MCP Server
+  - type: web
+    name: sentia-mcp-server-development
+    env: node
+    plan: starter
+    region: oregon
+    branch: development
+    rootDir: sentia-mcp-server
+    buildCommand: "npm install && npm run lint"
+    startCommand: "node scripts/start-mcp-server.js"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: MCP_SERVER_NAME
+        value: sentia-mcp-development
+      - key: MCP_SERVER_PORT
+        value: 3001
+      - key: MCP_TRANSPORT
+        value: dual
+      - key: LOG_LEVEL
+        value: debug
+      - key: AUTH_REQUIRED
+        value: false
+      - key: RATE_LIMIT_MAX
+        value: 1000
+      # Database connection - shared with main dashboard
+      - key: DATABASE_URL
+        value: postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require
+      # CORS origins - allow dashboard connections
+      - key: CORS_ORIGINS
+        value: https://sentia-manufacturing-development.onrender.com,http://localhost:3000,http://localhost:5173
+      # JWT secret for inter-service communication
+      - key: JWT_SECRET
+        value: dev-mcp-server-secret-key-not-for-production
+
+  # Testing Environment MCP Server
+  - type: web
+    name: sentia-mcp-server-testing
+    env: node
+    plan: starter
+    region: oregon
+    branch: testing
+    rootDir: sentia-mcp-server
+    buildCommand: "npm install && npm run lint"
+    startCommand: "node scripts/start-mcp-server.js"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: testing
+      - key: MCP_SERVER_NAME
+        value: sentia-mcp-testing
+      - key: MCP_SERVER_PORT
+        value: 3001
+      - key: MCP_TRANSPORT
+        value: dual
+      - key: LOG_LEVEL
+        value: info
+      - key: AUTH_REQUIRED
+        value: true
+      - key: RATE_LIMIT_MAX
+        value: 500
+      # Database connection - shared with main dashboard
+      - key: DATABASE_URL
+        value: postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require
+      # CORS origins - allow dashboard connections
+      - key: CORS_ORIGINS
+        value: https://sentia-manufacturing-testing.onrender.com,http://localhost:3000
+      # JWT secret for inter-service communication
+      - key: JWT_SECRET
+        value: test-mcp-server-secret-key-change-in-production
+
+  # Production Environment MCP Server
+  - type: web
+    name: sentia-mcp-server-production
+    env: node
+    plan: standard
+    region: oregon
+    branch: production
+    rootDir: sentia-mcp-server
+    buildCommand: "npm install --production && npm run lint"
+    startCommand: "node scripts/start-mcp-server.js"
+    healthCheckPath: /health
+    autoDeploy: false  # Manual deployment for production
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MCP_SERVER_NAME
+        value: sentia-mcp-production
+      - key: MCP_SERVER_PORT
+        value: 3001
+      - key: MCP_TRANSPORT
+        value: dual
+      - key: LOG_LEVEL
+        value: warn
+      - key: AUTH_REQUIRED
+        value: true
+      - key: RATE_LIMIT_MAX
+        value: 100
+      # Database connection - shared with main dashboard
+      - key: DATABASE_URL
+        value: postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require
+      # CORS origins - allow dashboard connections
+      - key: CORS_ORIGINS
+        value: https://sentia-manufacturing-production.onrender.com
+      # JWT secret for inter-service communication
+      # TODO: Set this via Render dashboard with a secure value
+      - key: JWT_SECRET
+        value: CHANGE_THIS_IN_PRODUCTION_VIA_RENDER_DASHBOARD
+      # Production monitoring and caching
+      - key: CACHE_TYPE
+        value: memory  # Upgrade to Redis for production if needed
+      - key: MONITORING_ENABLED
+        value: true
+      - key: COLLECT_SYSTEM_METRICS
+        value: true
+      - key: COLLECT_TOOL_METRICS
+        value: true

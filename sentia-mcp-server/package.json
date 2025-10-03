@@ -1,0 +1,57 @@
+{
+  "name": "sentia-mcp-server",
+  "version": "3.0.0",
+  "description": "Sentia Manufacturing MCP Server - Standalone Model Context Protocol server for manufacturing intelligence",
+  "type": "module",
+  "main": "src/server.js",
+  "bin": {
+    "sentia-mcp": "./scripts/start-mcp-server.js"
+  },
+  "scripts": {
+    "start": "node scripts/start-mcp-server.js",
+    "dev": "nodemon scripts/start-mcp-server.js",
+    "debug": "node --inspect scripts/start-mcp-server.js --log-level debug",
+    "test": "node --test tests/*.test.js",
+    "health": "curl -f http://localhost:3001/health || exit 1",
+    "lint": "eslint src scripts --ext .js",
+    "lint:fix": "eslint src scripts --ext .js --fix"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3",
+    "uuid": "^11.0.4",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.26.0",
+    "nodemon": "^3.1.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "manufacturing",
+    "ai",
+    "claude",
+    "anthropic",
+    "business-intelligence",
+    "automation"
+  ],
+  "author": "Sentia Manufacturing Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git",
+    "directory": "sentia-mcp-server"
+  },
+  "homepage": "https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/tree/main/sentia-mcp-server#readme"
+}

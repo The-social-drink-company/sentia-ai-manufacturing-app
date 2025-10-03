@@ -60,6 +60,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **WebSocket Broadcasting**: Live analytics responses pushed to all clients
 - **Production Deployment**: Complete integration deployed to Render with health monitoring
 
+### **MCP SERVER ARCHITECTURE** ✅
+**Issue**: MCP server was integrated into main dashboard, lacking modularity and independent scaling.
+
+**Solution Implemented** (October 2025):
+- **Modular Architecture**: Complete separation into `sentia-mcp-server/` directory
+- **Independent Deployment**: Separate Render services for dashboard and MCP server
+- **Dashboard Integration**: Secure HTTP API with JWT authentication for inter-service communication
+- **Tool Management**: Dynamic tool loading system with comprehensive error handling
+- **Production Ready**: Enterprise-grade configuration, monitoring, logging, and health checks
+- **Claude Desktop**: Standalone integration via stdio transport for direct Claude access
+
+**Technical Implementation**:
+- **Location**: `./sentia-mcp-server/` (complete standalone project)
+- **Dependencies**: Minimal MCP-specific packages (9 core dependencies)
+- **API Endpoints**: `/api/dashboard/*` for secure dashboard integration
+- **Transport Support**: Dual transport (stdio + HTTP) for maximum compatibility
+- **Deployment URLs**: 
+  - Development: `sentia-mcp-server-development.onrender.com`
+  - Testing: `sentia-mcp-server-testing.onrender.com`
+  - Production: `sentia-mcp-server-production.onrender.com`
+
 ### **SECURITY VULNERABILITIES IDENTIFIED** ⚠️
 **GitHub Security Alert**: 4 vulnerabilities detected (1 critical, 1 high, 2 moderate)
 - **Action Required**: Address security issues before production deployment
@@ -279,7 +300,7 @@ Required environment variables:
 ## Project Structure
 
 ```
-src/
+src/                    # Frontend React application
 ├── components/          # React components
 │   ├── auth/           # Authentication components
 │   ├── layout/         # Layout components (Header, Sidebar, Grid)
@@ -293,6 +314,20 @@ src/
 ├── styles/             # CSS files
 └── utils/              # Helper utilities
 
+sentia-mcp-server/      # Standalone MCP Server (NEW)
+├── src/
+│   ├── server.js       # Main MCP server implementation
+│   ├── config/         # Server configuration
+│   ├── utils/          # Server utilities (logger, error handling)
+│   ├── middleware/     # Dashboard integration middleware
+│   ├── routes/         # API routes for dashboard communication
+│   └── tools/          # Dynamic MCP tools
+├── scripts/            # Startup and utility scripts
+├── tests/              # MCP server tests
+├── docs/               # MCP server documentation
+├── package.json        # MCP-specific dependencies
+├── render.yaml         # Separate deployment configuration
+└── Dockerfile          # Container configuration
 
 context/
 ├── api-documentation/      # External API docs

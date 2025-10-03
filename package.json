@@ -9,9 +9,6 @@
     "dev": "concurrently \"pnpm run dev:client\" \"pnpm run dev:server\"",
     "dev:client": "vite --host --port 3000",
     "dev:server": "nodemon server/index.js",
-    "mcp:dev": "nodemon --exec node scripts/start-mcp-server.js",
-    "mcp:start": "node scripts/start-mcp-server.js",
-    "mcp:prod": "NODE_ENV=production node scripts/start-mcp-server.js",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "build:test": "vite build --mode testing",
@@ -30,9 +27,6 @@
     "postinstall": "prisma generate && node scripts/sync-prisma-client.mjs"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "express-rate-limit": "^7.4.1",
-    "uuid": "^11.0.4",
     "@azure/msal-browser": "^3.26.1",
     "@azure/msal-react": "^2.1.1",
     "@clerk/clerk-react": "^5.49.0",

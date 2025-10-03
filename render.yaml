@@ -12,7 +12,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "rm -rf node_modules package-lock.json pnpm-lock.yaml && corepack enable && pnpm install && pnpm prisma generate && pnpm run build"
+    buildCommand: "corepack enable && pnpm install && pnpm prisma generate && pnpm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -39,7 +39,7 @@ services:
     plan: starter
     region: oregon
     branch: testing
-    buildCommand: "rm -rf node_modules package-lock.json pnpm-lock.yaml && corepack enable && pnpm install && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
+    buildCommand: "corepack enable && pnpm install && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -66,7 +66,7 @@ services:
     plan: starter
     region: oregon
     branch: production
-    buildCommand: "rm -rf node_modules package-lock.json pnpm-lock.yaml && corepack enable && pnpm install && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
+    buildCommand: "corepack enable && pnpm install && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true

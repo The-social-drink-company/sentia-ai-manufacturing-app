@@ -11,8 +11,6 @@ test('MCP Server instantiation', async () => {
   
   assert(server instanceof SentiaMCPServer, 'Server should be instance of SentiaMCPServer');
   assert(server.tools instanceof Map, 'Server should have tools Map');
-  assert(server.resources instanceof Map, 'Server should have resources Map');
-  assert(server.prompts instanceof Map, 'Server should have prompts Map');
   assert(server.connections instanceof Map, 'Server should have connections Map');
   assert(typeof server.metrics === 'object', 'Server should have metrics object');
 });

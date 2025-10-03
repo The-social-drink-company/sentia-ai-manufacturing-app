@@ -71,16 +71,12 @@ export class SentiaMCPServer {
       },
       {
         capabilities: {
-          tools: {},
-          resources: {},
-          prompts: {}
+          tools: {}
         }
       }
     );
     
     this.tools = new Map();
-    this.resources = new Map();
-    this.prompts = new Map();
     this.connections = new Map();
     this.metrics = {
       requests: 0,
@@ -91,8 +87,6 @@ export class SentiaMCPServer {
     };
     
     this.setupToolHandlers();
-    this.setupResourceHandlers();
-    this.setupPromptHandlers();
     this.loadTools();
     this.initializeExpress();
   }
@@ -192,106 +186,7 @@ export class SentiaMCPServer {
     });
   }
 
-  /**
-   * Set up MCP resource handlers for file operations
-   */
-  setupResourceHandlers() {
-    this.server.setRequestHandler('resources/list', async () => {
-      return {
-        resources: Array.from(this.resources.keys()).map(uri => ({
-          uri,
-          name: this.resources.get(uri).name,
-          description: this.resources.get(uri).description,
-          mimeType: this.resources.get(uri).mimeType
-        }))
-      };
-    });
 
-    this.server.setRequestHandler('resources/read', async (request) => {
-      const { uri } = request.params;
-      const correlationId = uuidv4();
-
-      try {
-        if (!this.resources.has(uri)) {
-          throw new Error(`Resource ${uri} not found`);
-        }
-
-        const resource = this.resources.get(uri);
-        const content = await resource.read();
-
-        logger.info('Resource read', {
-          correlationId,
-          uri,
-          contentType: resource.mimeType
-        });
-
-        return {
-          contents: [
-            {
-              uri,
-              mimeType: resource.mimeType,
-              text: content
-            }
-          ]
-        };
-
-      } catch (error) {
-        logger.error('Resource read failed', {
-          correlationId,
-          uri,
-          error: error.message
-        });
-
-        throw error;
-      }
-    });
-  }
-
-  /**
-   * Set up MCP prompt handlers for common operations
-   */
-  setupPromptHandlers() {
-    this.server.setRequestHandler('prompts/list', async () => {
-      return {
-        prompts: Array.from(this.prompts.values()).map(prompt => ({
-          name: prompt.name,
-          description: prompt.description,
-          arguments: prompt.arguments || []
-        }))
-      };
-    });
-
-    this.server.setRequestHandler('prompts/get', async (request) => {
-      const { name, arguments: args } = request.params;
-      const correlationId = uuidv4();
-
-      try {
-        if (!this.prompts.has(name)) {
-          throw new Error(`Prompt ${name} not found`);
-        }
-
-        const prompt = this.prompts.get(name);
-        const messages = await prompt.generate(args);
-
-        logger.info('Prompt generated', {
-          correlationId,
-          promptName: name,
-          messagesCount: messages.length
-        });
-
-        return { messages };
-
-      } catch (error) {
-        logger.error('Prompt generation failed', {
-          correlationId,
-          promptName: name,
-          error: error.message
-        });
-
-        throw error;
-      }
-    });
-  }
 
   /**
    * Dynamically load tools from tools directory

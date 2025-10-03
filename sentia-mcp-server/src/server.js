@@ -38,6 +38,14 @@ import { createLogger } from './utils/logger.js';
 import { globalErrorHandler } from './utils/error-handler.js';
 import dashboardRoutes from './routes/dashboard-integration.js';
 import { handleDashboardErrors } from './middleware/dashboard-integration.js';
+
+// Import new authentication and security modules
+import { authenticateRequest, requireAuthentication, requireRole } from './middleware/auth.js';
+import { requirePermission, requireToolPermissions } from './middleware/permissions.js';
+import { securityMonitoringMiddleware } from './middleware/security-monitoring.js';
+import { auditLogger, AUDIT_EVENTS, AUDIT_SEVERITY } from './utils/audit-logger.js';
+
+// Import existing integration modules
 import { registerShopifyTools } from './tools/shopify-integration.js';
 import { registerXeroTools } from './tools/xero-integration.js';
 import { registerAmazonTools } from './tools/amazon-integration.js';
@@ -558,6 +566,9 @@ export class SentiaMCPServer {
       next();
     });
 
+    // Security monitoring middleware (includes development bypass)
+    this.app.use(securityMonitoringMiddleware);
+
     // Request logging
     this.app.use((req, res, next) => {
       logger.info('HTTP request', {
@@ -616,63 +627,121 @@ export class SentiaMCPServer {
       });
     });
 
-    // Tool execution endpoint
-    this.app.post('/api/tools/:toolName', this.authenticateRequest.bind(this), async (req, res) => {
-      const { toolName } = req.params;
-      const correlationId = req.correlationId;
-      const startTime = Date.now();
+    // Tool execution endpoint with enhanced security
+    this.app.post('/api/tools/:toolName', 
+      this.authenticateRequest.bind(this),
+      requireToolPermissions(), // Add tool permission checking
+      async (req, res) => {
+        const { toolName } = req.params;
+        const correlationId = req.correlationId;
+        const startTime = Date.now();
 
-      try {
-        if (!this.tools.has(toolName)) {
-          return res.status(404).json({
-            error: `Tool ${toolName} not found`,
+        try {
+          // Log tool execution attempt
+          await auditLogger.logEvent(AUDIT_EVENTS.TOOL_EXECUTION_START, {
+            toolName,
+            parameters: Object.keys(req.body || {}),
+            userAgent: req.headers['user-agent']
+          }, {
+            severity: AUDIT_SEVERITY.LOW,
+            userId: req.user?.id,
+            sessionId: req.user?.sessionId,
+            correlationId,
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent'],
+            resource: 'tool',
+            action: 'execute'
+          });
+
+          if (!this.tools.has(toolName)) {
+            await auditLogger.logEvent(AUDIT_EVENTS.TOOL_EXECUTION_FAILURE, {
+              toolName,
+              reason: 'tool_not_found'
+            }, {
+              severity: AUDIT_SEVERITY.MEDIUM,
+              userId: req.user?.id,
+              correlationId,
+              outcome: 'failure'
+            });
+
+            return res.status(404).json({
+              error: `Tool ${toolName} not found`,
+              correlationId
+            });
+          }
+
+          const tool = this.tools.get(toolName);
+          
+          // Validate parameters
+          if (tool.inputSchema) {
+            this.validateToolParameters(req.body, tool.inputSchema);
+          }
+
+          const result = await tool.execute({
+            ...req.body,
+            correlationId,
+            timestamp: new Date().toISOString(),
+            environment: SERVER_CONFIG.server.environment,
+            user: req.user,
+            authContext: req.authContext
+          });
+
+          const executionTime = Date.now() - startTime;
+          this.updateMetrics('toolExecution', executionTime);
+
+          // Log successful execution
+          await auditLogger.logEvent(AUDIT_EVENTS.TOOL_EXECUTION_SUCCESS, {
+            toolName,
+            executionTime,
+            resultSize: typeof result === 'string' ? result.length : JSON.stringify(result).length
+          }, {
+            severity: AUDIT_SEVERITY.LOW,
+            userId: req.user?.id,
+            sessionId: req.user?.sessionId,
+            correlationId,
+            outcome: 'success'
+          });
+
+          res.json({
+            success: true,
+            result,
+            executionTime,
             correlationId
           });
+
+        } catch (error) {
+          const executionTime = Date.now() - startTime;
+          this.updateMetrics('error', executionTime);
+
+          // Log failed execution
+          await auditLogger.logEvent(AUDIT_EVENTS.TOOL_EXECUTION_FAILURE, {
+            toolName,
+            error: error.message,
+            executionTime
+          }, {
+            severity: AUDIT_SEVERITY.MEDIUM,
+            userId: req.user?.id,
+            sessionId: req.user?.sessionId,
+            correlationId,
+            outcome: 'failure'
+          });
+
+          logger.error('HTTP tool execution failed', {
+            correlationId,
+            toolName,
+            userId: req.user?.id,
+            error: error.message,
+            stack: error.stack
+          });
+
+          res.status(500).json({
+            success: false,
+            error: error.message,
+            correlationId,
+            executionTime
+          });
         }
-
-        const tool = this.tools.get(toolName);
-        
-        // Validate parameters
-        if (tool.inputSchema) {
-          this.validateToolParameters(req.body, tool.inputSchema);
-        }
-
-        const result = await tool.execute({
-          ...req.body,
-          correlationId,
-          timestamp: new Date().toISOString(),
-          environment: SERVER_CONFIG.server.environment
-        });
-
-        const executionTime = Date.now() - startTime;
-        this.updateMetrics('toolExecution', executionTime);
-
-        res.json({
-          success: true,
-          result,
-          executionTime,
-          correlationId
-        });
-
-      } catch (error) {
-        const executionTime = Date.now() - startTime;
-        this.updateMetrics('error', executionTime);
-
-        logger.error('HTTP tool execution failed', {
-          correlationId,
-          toolName,
-          error: error.message,
-          stack: error.stack
-        });
-
-        res.status(500).json({
-          success: false,
-          error: error.message,
-          correlationId,
-          executionTime
-        });
-      }
-    });
+      });
 
     // Tools list endpoint
     this.app.get('/api/tools', (req, res) => {
@@ -761,41 +830,12 @@ export class SentiaMCPServer {
   }
 
   /**
-   * JWT Authentication middleware
+   * Enhanced Authentication middleware (replaced with new security system)
+   * CRITICAL: Development bypass maintained for fast development workflow
    */
   async authenticateRequest(req, res, next) {
-    try {
-      const authHeader = req.headers.authorization;
-      
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        // In development, allow unauthenticated requests
-        if (SERVER_CONFIG.server.environment === 'development') {
-          return next();
-        }
-        
-        return res.status(401).json({
-          error: 'Authentication required',
-          correlationId: req.correlationId
-        });
-      }
-
-      const token = authHeader.substring(7);
-      const decoded = jwt.verify(token, SERVER_CONFIG.security.jwtSecret);
-      
-      req.user = decoded;
-      next();
-
-    } catch (error) {
-      logger.warn('Authentication failed', {
-        correlationId: req.correlationId,
-        error: error.message
-      });
-
-      res.status(401).json({
-        error: 'Invalid token',
-        correlationId: req.correlationId
-      });
-    }
+    // Use the new authentication middleware
+    return authenticateRequest(req, res, next);
   }
 
   /**
@@ -998,12 +1038,25 @@ export class SentiaMCPServer {
   async start() {
     try {
       // Start HTTP server
-      const httpServer = this.app.listen(SERVER_CONFIG.server.port, () => {
+      const httpServer = this.app.listen(SERVER_CONFIG.server.port, async () => {
         logger.info('MCP Server started', {
           port: SERVER_CONFIG.server.port,
           environment: SERVER_CONFIG.server.environment,
           version: SERVER_CONFIG.server.version,
           toolsLoaded: this.tools.size
+        });
+
+        // Log system startup event
+        await auditLogger.logEvent(AUDIT_EVENTS.SYSTEM_START, {
+          port: SERVER_CONFIG.server.port,
+          environment: SERVER_CONFIG.server.environment,
+          version: SERVER_CONFIG.server.version,
+          toolsLoaded: this.tools.size,
+          authenticationEnabled: SERVER_CONFIG.security.authentication.enabled,
+          developmentBypass: SERVER_CONFIG.security.authentication.developmentBypass
+        }, {
+          severity: AUDIT_SEVERITY.MEDIUM,
+          outcome: 'success'
         });
       });
 

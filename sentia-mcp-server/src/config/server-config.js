@@ -53,19 +53,85 @@ export const SERVER_CONFIG = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-ID']
   },
 
-  // Security configuration
+  // Security configuration (Enhanced with new authentication system)
   security: {
+    // Legacy settings (maintained for backward compatibility)
     jwtSecret: process.env.JWT_SECRET || 'fallback-secret-for-dev-only',
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
     authRequired: process.env.AUTH_REQUIRED === 'true',
     rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX) || 100,
     rateLimitWindow: parseInt(process.env.RATE_LIMIT_WINDOW) || 15 * 60 * 1000, // 15 minutes
+    
+    // Enhanced authentication settings
+    authentication: {
+      enabled: process.env.AUTH_ENABLED !== 'false',
+      developmentBypass: process.env.NODE_ENV === 'development' || process.env.VITE_DEVELOPMENT_MODE === 'true',
+      requireMFA: process.env.REQUIRE_MFA === 'true',
+      sessionTimeout: parseInt(process.env.SESSION_TIMEOUT) || 3600000, // 1 hour
+      maxConcurrentSessions: parseInt(process.env.MAX_CONCURRENT_SESSIONS) || 5
+    },
+    
+    // API Key management
+    apiKeys: {
+      enabled: process.env.API_KEYS_ENABLED !== 'false',
+      expirationDays: parseInt(process.env.API_KEY_EXPIRATION_DAYS) || 90,
+      maxKeysPerUser: parseInt(process.env.MAX_API_KEYS_PER_USER) || 5,
+      rotationWarningDays: parseInt(process.env.API_KEY_ROTATION_WARNING_DAYS) || 7
+    },
+    
+    // Data encryption
+    encryption: {
+      enabled: process.env.DATA_ENCRYPTION_ENABLED !== 'false',
+      developmentBypass: process.env.NODE_ENV === 'development' || process.env.VITE_DEVELOPMENT_MODE === 'true',
+      algorithm: 'aes-256-gcm',
+      keyRotationDays: parseInt(process.env.ENCRYPTION_KEY_ROTATION_DAYS) || 90
+    },
+    
+    // Enhanced rate limiting
     rateLimiting: {
       enabled: process.env.RATE_LIMITING_ENABLED !== 'false',
       windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) || 15 * 60 * 1000, // 15 minutes
       max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
-      message: 'Too many requests from this IP, please try again later.'
+      message: 'Too many requests from this IP, please try again later.',
+      
+      // Per-user rate limiting
+      perUser: {
+        enabled: process.env.PER_USER_RATE_LIMITING_ENABLED !== 'false',
+        windowMs: parseInt(process.env.USER_RATE_LIMIT_WINDOW) || 15 * 60 * 1000,
+        max: parseInt(process.env.USER_RATE_LIMIT_MAX) || 200
+      },
+      
+      // Tool-specific rate limiting
+      tools: {
+        enabled: process.env.TOOL_RATE_LIMITING_ENABLED !== 'false',
+        defaultLimitPerHour: parseInt(process.env.DEFAULT_TOOL_LIMIT_PER_HOUR) || 1000,
+        expensiveToolsLimitPerHour: parseInt(process.env.EXPENSIVE_TOOLS_LIMIT_PER_HOUR) || 100
+      }
     },
+    
+    // Security monitoring
+    monitoring: {
+      enabled: process.env.SECURITY_MONITORING_ENABLED !== 'false',
+      developmentBypass: process.env.NODE_ENV === 'development' || process.env.VITE_DEVELOPMENT_MODE === 'true',
+      
+      // Failed authentication tracking
+      failedAuth: {
+        maxAttempts: parseInt(process.env.MAX_AUTH_ATTEMPTS) || 5,
+        lockoutDuration: parseInt(process.env.AUTH_LOCKOUT_DURATION) || 900000, // 15 minutes
+        trackByIP: process.env.TRACK_FAILED_AUTH_BY_IP !== 'false',
+        trackByUser: process.env.TRACK_FAILED_AUTH_BY_USER !== 'false'
+      },
+      
+      // Suspicious activity detection
+      suspiciousActivity: {
+        enabled: process.env.SUSPICIOUS_ACTIVITY_DETECTION === 'true',
+        multipleLocationThreshold: parseInt(process.env.MULTIPLE_LOCATION_THRESHOLD) || 2,
+        rapidRequestThreshold: parseInt(process.env.RAPID_REQUEST_THRESHOLD) || 100,
+        timeWindowMs: parseInt(process.env.ACTIVITY_TIME_WINDOW) || 60000 // 1 minute
+      }
+    },
+    
+    // Security headers and CSP
     helmet: {
       enabled: process.env.HELMET_ENABLED !== 'false',
       contentSecurityPolicy: {
@@ -78,6 +144,26 @@ export const SERVER_CONFIG = {
           connectSrc: ["'self'", "https:", "wss:"]
         }
       }
+    },
+    
+    // Audit logging
+    audit: {
+      enabled: process.env.AUDIT_LOGGING_ENABLED !== 'false',
+      level: process.env.AUDIT_LOG_LEVEL || 'info',
+      events: [
+        'authentication',
+        'authorization', 
+        'tool_execution',
+        'data_access',
+        'configuration_change',
+        'user_management',
+        'security_violation'
+      ],
+      retention: {
+        days: parseInt(process.env.AUDIT_RETENTION_DAYS) || 90,
+        maxSizeMB: parseInt(process.env.AUDIT_MAX_SIZE_MB) || 1000
+      },
+      encryption: process.env.AUDIT_ENCRYPTION_ENABLED !== 'false'
     }
   },
 

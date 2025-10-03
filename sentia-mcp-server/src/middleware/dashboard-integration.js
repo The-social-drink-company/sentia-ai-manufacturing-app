@@ -9,6 +9,8 @@ import jwt from 'jsonwebtoken';
 import { createLogger } from '../utils/logger.js';
 import { SERVER_CONFIG } from '../config/server-config.js';
 import { AuthenticationError, AuthorizationError } from '../utils/error-handler.js';
+import { auditLogger, AUDIT_EVENTS, AUDIT_SEVERITY } from '../utils/audit-logger.js';
+import { isDevelopmentEnvironment } from '../config/auth-config.js';
 
 const logger = createLogger();
 
@@ -16,22 +18,45 @@ const logger = createLogger();
  * Dashboard authentication middleware
  * Validates JWT tokens from the main dashboard
  */
-export function authenticateDashboard(req, res, next) {
+export async function authenticateDashboard(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
+    const correlationId = req.correlationId;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      // Allow requests from development dashboard without auth
-      if (SERVER_CONFIG.server.environment === 'development') {
+      // CRITICAL: Development bypass for dashboard integration
+      if (isDevelopmentEnvironment()) {
         req.dashboardUser = {
-          id: 'dev-user',
+          id: 'dev-dashboard-user',
+          email: 'dashboard@sentia.com',
           role: 'admin',
           permissions: ['*'],
-          source: 'development'
+          source: 'development-dashboard',
+          organization: 'development-org'
         };
+
+        logger.debug('Dashboard authentication bypassed in development', {
+          correlationId,
+          userId: req.dashboardUser.id,
+          source: req.dashboardUser.source
+        });
+
         return next();
       }
       
+      // Log failed authentication attempt
+      await auditLogger.logEvent(AUDIT_EVENTS.AUTH_FAILURE, {
+        source: 'dashboard',
+        reason: 'missing_authorization_header',
+        userAgent: req.headers['user-agent']
+      }, {
+        severity: AUDIT_SEVERITY.MEDIUM,
+        correlationId,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        outcome: 'failure'
+      });
+
       throw new AuthenticationError('Dashboard authentication required');
     }
 
@@ -40,12 +65,39 @@ export function authenticateDashboard(req, res, next) {
     
     // Validate token structure for dashboard requests
     if (!decoded.source || decoded.source !== 'dashboard') {
+      await auditLogger.logEvent(AUDIT_EVENTS.AUTH_FAILURE, {
+        source: 'dashboard',
+        reason: 'invalid_token_source',
+        tokenSource: decoded.source
+      }, {
+        severity: AUDIT_SEVERITY.HIGH,
+        correlationId,
+        ipAddress: req.ip,
+        outcome: 'failure'
+      });
+
       throw new AuthenticationError('Invalid token source');
     }
     
     req.dashboardUser = decoded;
+
+    // Log successful authentication
+    await auditLogger.logEvent(AUDIT_EVENTS.AUTH_SUCCESS, {
+      source: 'dashboard',
+      userId: decoded.id,
+      role: decoded.role,
+      organization: decoded.organization
+    }, {
+      severity: AUDIT_SEVERITY.LOW,
+      userId: decoded.id,
+      correlationId,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      outcome: 'success'
+    });
+
     logger.info('Dashboard authentication successful', {
-      correlationId: req.correlationId,
+      correlationId,
       userId: decoded.id,
       role: decoded.role,
       source: decoded.source
@@ -60,7 +112,19 @@ export function authenticateDashboard(req, res, next) {
       userAgent: req.headers['user-agent']
     });
 
+    // Additional audit logging for different error types
     if (error instanceof jwt.JsonWebTokenError) {
+      await auditLogger.logEvent(AUDIT_EVENTS.AUTH_FAILURE, {
+        source: 'dashboard',
+        reason: 'invalid_jwt_token',
+        errorType: error.constructor.name
+      }, {
+        severity: AUDIT_SEVERITY.MEDIUM,
+        correlationId: req.correlationId,
+        ipAddress: req.ip,
+        outcome: 'failure'
+      });
+
       return res.status(401).json({
         error: 'Invalid authentication token',
         correlationId: req.correlationId

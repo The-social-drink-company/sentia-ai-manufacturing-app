@@ -222,14 +222,117 @@ export const SERVER_CONFIG = {
     cleanupInterval: parseInt(process.env.CLEANUP_INTERVAL) || 3600000 // 1 hour
   },
 
-  // Monitoring and metrics
+  // Advanced Monitoring and metrics
   monitoring: {
     enabled: process.env.MONITORING_ENABLED !== 'false',
     metricsEndpoint: process.env.METRICS_ENDPOINT || '/metrics',
     healthEndpoint: process.env.HEALTH_ENDPOINT || '/health',
     collectSystemMetrics: process.env.COLLECT_SYSTEM_METRICS !== 'false',
     collectToolMetrics: process.env.COLLECT_TOOL_METRICS !== 'false',
-    retentionPeriod: parseInt(process.env.METRICS_RETENTION_PERIOD) || 7 * 24 * 60 * 60 * 1000 // 7 days
+    retentionPeriod: parseInt(process.env.METRICS_RETENTION_PERIOD) || 7 * 24 * 60 * 60 * 1000, // 7 days
+    
+    // Advanced performance monitoring
+    performance: {
+      enabled: process.env.PERFORMANCE_MONITORING_ENABLED !== 'false',
+      sampleRate: parseFloat(process.env.PERFORMANCE_SAMPLE_RATE) || 1.0,
+      responseTimeThresholds: {
+        warning: parseInt(process.env.PERF_WARNING_THRESHOLD) || 1000,
+        critical: parseInt(process.env.PERF_CRITICAL_THRESHOLD) || 5000
+      },
+      memoryThresholds: {
+        warning: parseInt(process.env.MEMORY_WARNING_THRESHOLD) || 80,
+        critical: parseInt(process.env.MEMORY_CRITICAL_THRESHOLD) || 95
+      }
+    },
+    
+    // Business analytics configuration
+    businessAnalytics: {
+      enabled: process.env.BUSINESS_ANALYTICS_ENABLED !== 'false',
+      retentionDays: parseInt(process.env.BUSINESS_ANALYTICS_RETENTION_DAYS) || 90,
+      costTracking: process.env.COST_TRACKING_ENABLED !== 'false',
+      userAnalytics: process.env.USER_ANALYTICS_ENABLED !== 'false',
+      manufacturingKPIs: process.env.MANUFACTURING_KPIS_ENABLED !== 'false'
+    },
+    
+    // Alert engine configuration
+    alerting: {
+      enabled: process.env.ALERTING_ENABLED !== 'false',
+      stormProtection: process.env.ALERT_STORM_PROTECTION !== 'false',
+      maxAlertsPerMinute: parseInt(process.env.MAX_ALERTS_PER_MINUTE) || 10,
+      deduplicationWindow: parseInt(process.env.ALERT_DEDUPLICATION_WINDOW) || 300000, // 5 minutes
+      escalationTimeout: parseInt(process.env.ALERT_ESCALATION_TIMEOUT) || 1800000, // 30 minutes
+      
+      // Notification channels
+      notifications: {
+        webhook: {
+          enabled: process.env.WEBHOOK_NOTIFICATIONS_ENABLED === 'true',
+          url: process.env.WEBHOOK_URL,
+          secret: process.env.WEBHOOK_SECRET
+        },
+        email: {
+          enabled: process.env.EMAIL_NOTIFICATIONS_ENABLED === 'true',
+          recipients: process.env.EMAIL_RECIPIENTS?.split(',') || [],
+          smtp: {
+            host: process.env.SMTP_HOST,
+            port: parseInt(process.env.SMTP_PORT) || 587,
+            secure: process.env.SMTP_SECURE === 'true',
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS
+            }
+          }
+        },
+        slack: {
+          enabled: process.env.SLACK_NOTIFICATIONS_ENABLED === 'true',
+          webhookUrl: process.env.SLACK_WEBHOOK_URL,
+          channel: process.env.SLACK_CHANNEL || '#alerts',
+          username: process.env.SLACK_USERNAME || 'Sentia MCP Bot'
+        },
+        sms: {
+          enabled: process.env.SMS_NOTIFICATIONS_ENABLED === 'true',
+          provider: process.env.SMS_PROVIDER || 'twilio',
+          apiKey: process.env.SMS_API_KEY,
+          apiSecret: process.env.SMS_API_SECRET,
+          recipients: process.env.SMS_RECIPIENTS?.split(',') || []
+        }
+      }
+    },
+    
+    // Log management configuration
+    logManagement: {
+      enabled: process.env.LOG_MANAGEMENT_ENABLED !== 'false',
+      retentionDays: parseInt(process.env.LOG_RETENTION_DAYS) || 90,
+      maxSizeMB: parseInt(process.env.LOG_MAX_SIZE_MB) || 1000,
+      compressionEnabled: process.env.LOG_COMPRESSION_ENABLED !== 'false',
+      searchIndexEnabled: process.env.LOG_SEARCH_INDEX_ENABLED !== 'false'
+    },
+    
+    // Metrics storage configuration
+    storage: {
+      type: process.env.METRICS_STORAGE_TYPE || 'memory', // 'memory', 'postgresql', 'redis'
+      postgresql: {
+        enabled: process.env.METRICS_STORAGE_POSTGRESQL_ENABLED === 'true',
+        tableName: process.env.METRICS_TABLE_NAME || 'metrics',
+        batchSize: parseInt(process.env.METRICS_BATCH_SIZE) || 100,
+        flushInterval: parseInt(process.env.METRICS_FLUSH_INTERVAL) || 60000 // 1 minute
+      },
+      redis: {
+        enabled: process.env.METRICS_STORAGE_REDIS_ENABLED === 'true',
+        keyPrefix: process.env.METRICS_REDIS_PREFIX || 'metrics:',
+        ttl: parseInt(process.env.METRICS_REDIS_TTL) || 86400 // 24 hours
+      }
+    },
+    
+    // Prometheus integration
+    prometheus: {
+      enabled: process.env.PROMETHEUS_ENABLED === 'true',
+      endpoint: process.env.PROMETHEUS_ENDPOINT || '/prometheus',
+      defaultLabels: {
+        service: 'sentia-mcp-server',
+        version: '3.0.0',
+        environment: process.env.NODE_ENV || 'development'
+      }
+    }
   },
 
   // Cache configuration (Redis or in-memory)

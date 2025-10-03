@@ -42,6 +42,7 @@ import { registerShopifyTools } from './tools/shopify-integration.js';
 import { registerXeroTools } from './tools/xero-integration.js';
 import { registerAmazonTools } from './tools/amazon-integration.js';
 import { registerAnthropicTools } from './tools/anthropic-integration.js';
+import { registerUnleashedTools } from './tools/unleashed-integration.js';
 import { registerOpenAITools } from './tools/openai-integration.js';
 
 // Load environment variables
@@ -401,6 +402,14 @@ export class SentiaMCPServer {
         logger.info('OpenAI integration loaded successfully');
       } catch (error) {
         logger.warn('Failed to load OpenAI integration', { error: error.message });
+      }
+
+      // Load Unleashed integration
+      try {
+        await registerUnleashedTools(this);
+        logger.info('Unleashed integration loaded successfully');
+      } catch (error) {
+        logger.warn('Failed to load Unleashed integration', { error: error.message });
       }
 
       logger.info('Integration tools loading completed');

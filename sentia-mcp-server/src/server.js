@@ -40,6 +40,7 @@ import dashboardRoutes from './routes/dashboard-integration.js';
 import { handleDashboardErrors } from './middleware/dashboard-integration.js';
 import { registerShopifyTools } from './tools/shopify-integration.js';
 import { registerXeroTools } from './tools/xero-integration.js';
+import { registerAmazonTools } from './tools/amazon-integration.js';
 
 // Load environment variables
 config();
@@ -374,6 +375,14 @@ export class SentiaMCPServer {
         logger.info('Xero integration loaded successfully');
       } catch (error) {
         logger.warn('Failed to load Xero integration', { error: error.message });
+      }
+
+      // Load Amazon integration
+      try {
+        await registerAmazonTools(this);
+        logger.info('Amazon integration loaded successfully');
+      } catch (error) {
+        logger.warn('Failed to load Amazon integration', { error: error.message });
       }
 
       logger.info('Integration tools loading completed');

@@ -41,7 +41,7 @@ import { handleDashboardErrors } from './middleware/dashboard-integration.js';
 
 // Import new authentication and security modules
 import { authenticateRequest, requireAuthentication, requireRole } from './middleware/auth.js';
-import { requirePermission, requireToolPermissions } from './middleware/permissions.js';
+import { requirePermissions, requireToolPermissions } from './middleware/permissions.js';
 import { securityMonitoringMiddleware } from './middleware/security-monitoring.js';
 import { auditLogger, AUDIT_EVENTS, AUDIT_SEVERITY } from './utils/audit-logger.js';
 

@@ -93,7 +93,7 @@ RUN mkdir -p logs tmp src/tools cache config/runtime && \
 
 # Set optimized environment variables for production
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=2048 --gc-global --gc-concurrent --use-largepages=silent"
+ENV NODE_OPTIONS="--max-old-space-size=2048 --use-largepages=silent"
 ENV MCP_SERVER_PORT=3001
 ENV MCP_SERVER_HOST=0.0.0.0
 ENV TZ=UTC

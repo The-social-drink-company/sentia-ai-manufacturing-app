@@ -50,7 +50,7 @@ services:
         value: 1000
       # Performance optimization
       - key: NODE_OPTIONS
-        value: "--max-old-space-size=2048 --gc-concurrent"
+        value: "--max-old-space-size=2048"
       - key: UV_THREADPOOL_SIZE
         value: 16
       # Caching configuration
@@ -129,7 +129,7 @@ services:
         value: 500
       # Performance optimization
       - key: NODE_OPTIONS
-        value: "--max-old-space-size=2048 --gc-concurrent"
+        value: "--max-old-space-size=2048"
       - key: UV_THREADPOOL_SIZE
         value: 16
       # Caching configuration
@@ -216,7 +216,7 @@ services:
         value: 100
       # Production performance optimization
       - key: NODE_OPTIONS
-        value: "--max-old-space-size=4096 --gc-concurrent --optimize-for-size"
+        value: "--max-old-space-size=4096 --optimize-for-size"
       - key: UV_THREADPOOL_SIZE
         value: 32
       - key: MALLOC_ARENA_MAX

@@ -2,10 +2,13 @@
  * Server Configuration Management
  * 
  * Centralized configuration for the MCP server with environment-aware settings
- * and validation.
+ * and advanced validation engine with schema-based validation, cross-parameter
+ * validation, and environment-specific validation rules.
  */
 
 import { config } from 'dotenv';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 
 // Load environment variables
 config();
@@ -391,9 +394,523 @@ export const SERVER_CONFIG = {
 };
 
 /**
- * Validate required configuration values
+ * Advanced Configuration Validation Schema
  */
-export function validateConfig() {
+const configurationSchema = {
+  type: 'object',
+  properties: {
+    server: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', minLength: 1, maxLength: 100 },
+        version: { type: 'string', pattern: '^\\d+\\.\\d+\\.\\d+$' },
+        environment: { 
+          type: 'string', 
+          enum: ['development', 'staging', 'testing', 'production', 'local'] 
+        },
+        port: { type: 'integer', minimum: 1, maximum: 65535 },
+        host: { type: 'string', format: 'hostname' }
+      },
+      required: ['name', 'version', 'environment', 'port', 'host'],
+      additionalProperties: false
+    },
+    transport: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', enum: ['stdio', 'http', 'dual'] },
+        stdio: {
+          type: 'object',
+          properties: {
+            enabled: { type: 'boolean' }
+          },
+          required: ['enabled']
+        },
+        http: {
+          type: 'object',
+          properties: {
+            enabled: { type: 'boolean' },
+            port: { type: 'integer', minimum: 1, maximum: 65535 }
+          },
+          required: ['enabled', 'port']
+        },
+        sse: {
+          type: 'object',
+          properties: {
+            enabled: { type: 'boolean' },
+            heartbeatInterval: { type: 'integer', minimum: 1000, maximum: 300000 }
+          },
+          required: ['enabled', 'heartbeatInterval']
+        }
+      },
+      required: ['type', 'stdio', 'http', 'sse']
+    },
+    database: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', minLength: 1 },
+        maxConnections: { type: 'integer', minimum: 1, maximum: 1000 },
+        idleTimeoutMillis: { type: 'integer', minimum: 1000 },
+        connectionTimeoutMillis: { type: 'integer', minimum: 1000 },
+        enableQueryLogging: { type: 'boolean' },
+        slowQueryThreshold: { type: 'integer', minimum: 100 }
+      },
+      required: ['maxConnections', 'idleTimeoutMillis', 'connectionTimeoutMillis']
+    },
+    security: {
+      type: 'object',
+      properties: {
+        jwtSecret: { type: 'string', minLength: 32 },
+        jwtExpiresIn: { type: 'string', pattern: '^\\d+[smhd]$' },
+        authRequired: { type: 'boolean' },
+        rateLimitMax: { type: 'integer', minimum: 1 },
+        rateLimitWindow: { type: 'integer', minimum: 1000 }
+      },
+      required: ['jwtSecret', 'jwtExpiresIn', 'authRequired']
+    },
+    cache: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', enum: ['memory', 'redis'] },
+        redis: {
+          type: 'object',
+          properties: {
+            url: { type: 'string' },
+            keyPrefix: { type: 'string' },
+            retryDelayOnFailover: { type: 'integer', minimum: 1 },
+            maxRetriesPerRequest: { type: 'integer', minimum: 1 }
+          }
+        },
+        memory: {
+          type: 'object',
+          properties: {
+            maxSize: { type: 'integer', minimum: 1 },
+            checkPeriod: { type: 'integer', minimum: 60 }
+          }
+        }
+      },
+      required: ['type']
+    }
+  },
+  required: ['server', 'transport', 'database', 'security', 'cache']
+};
+
+/**
+ * Initialize AJV validator with formats
+ */
+const ajv = new Ajv({ allErrors: true, strict: false });
+addFormats(ajv);
+
+// Add custom formats
+ajv.addFormat('hostname', {
+  type: 'string',
+  validate: (value) => {
+    const hostnameRegex = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$|^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^localhost$|^0\.0\.0\.0$/;
+    return hostnameRegex.test(value);
+  }
+});
+
+const validateConfigSchema = ajv.compile(configurationSchema);
+
+/**
+ * Enhanced Configuration Validation Engine
+ */
+export class ConfigurationValidator {
+  constructor() {
+    this.validationRules = new Map();
+    this.crossValidationRules = [];
+    this.environmentRules = new Map();
+    this.warnings = [];
+    this.errors = [];
+  }
+
+  /**
+   * Add custom validation rule for a configuration path
+   */
+  addValidationRule(path, validator, options = {}) {
+    if (!this.validationRules.has(path)) {
+      this.validationRules.set(path, []);
+    }
+    
+    this.validationRules.get(path).push({
+      validator,
+      severity: options.severity || 'error',
+      message: options.message || 'Validation failed',
+      environments: options.environments || null
+    });
+  }
+
+  /**
+   * Add cross-parameter validation rule
+   */
+  addCrossValidationRule(validator, options = {}) {
+    this.crossValidationRules.push({
+      validator,
+      severity: options.severity || 'error',
+      message: options.message || 'Cross-validation failed',
+      environments: options.environments || null
+    });
+  }
+
+  /**
+   * Add environment-specific validation rule
+   */
+  addEnvironmentRule(environment, validator, options = {}) {
+    if (!this.environmentRules.has(environment)) {
+      this.environmentRules.set(environment, []);
+    }
+    
+    this.environmentRules.get(environment).push({
+      validator,
+      severity: options.severity || 'error',
+      message: options.message || 'Environment validation failed'
+    });
+  }
+
+  /**
+   * Validate configuration with comprehensive checks
+   */
+  async validateConfiguration(config, environment = null) {
+    this.warnings = [];
+    this.errors = [];
+    
+    const env = environment || config.server?.environment || 'development';
+    
+    try {
+      // 1. Schema validation
+      await this.performSchemaValidation(config);
+      
+      // 2. Custom path validation
+      await this.performPathValidation(config, env);
+      
+      // 3. Cross-parameter validation
+      await this.performCrossValidation(config, env);
+      
+      // 4. Environment-specific validation
+      await this.performEnvironmentValidation(config, env);
+      
+      // 5. Security validation
+      await this.performSecurityValidation(config, env);
+      
+      // 6. Performance validation
+      await this.performPerformanceValidation(config, env);
+      
+      // 7. Integration validation
+      await this.performIntegrationValidation(config, env);
+      
+      const result = {
+        valid: this.errors.length === 0,
+        errors: this.errors,
+        warnings: this.warnings,
+        environment: env,
+        timestamp: new Date().toISOString()
+      };
+      
+      if (!result.valid) {
+        throw new Error(`Configuration validation failed:\n${this.errors.join('\n')}`);
+      }
+      
+      if (this.warnings.length > 0) {
+        console.warn(`Configuration warnings:\n${this.warnings.join('\n')}`);
+      }
+      
+      return result;
+      
+    } catch (error) {
+      throw new Error(`Configuration validation error: ${error.message}`);
+    }
+  }
+
+  /**
+   * Perform JSON schema validation
+   */
+  async performSchemaValidation(config) {
+    const valid = validateConfigSchema(config);
+    
+    if (!valid) {
+      validateConfigSchema.errors.forEach(error => {
+        const path = error.instancePath.replace(/^\//, '').replace(/\//g, '.');
+        this.errors.push(`Schema validation failed at '${path}': ${error.message}`);
+      });
+    }
+  }
+
+  /**
+   * Perform custom path validation
+   */
+  async performPathValidation(config, environment) {
+    for (const [path, rules] of this.validationRules) {
+      const value = this.getValueAtPath(config, path);
+      
+      for (const rule of rules) {
+        // Check if rule applies to current environment
+        if (rule.environments && !rule.environments.includes(environment)) {
+          continue;
+        }
+        
+        try {
+          const result = await rule.validator(value, config, path);
+          
+          if (result !== true) {
+            const message = result || rule.message;
+            
+            if (rule.severity === 'warning') {
+              this.warnings.push(`${path}: ${message}`);
+            } else {
+              this.errors.push(`${path}: ${message}`);
+            }
+          }
+        } catch (error) {
+          this.errors.push(`${path}: Validation error - ${error.message}`);
+        }
+      }
+    }
+  }
+
+  /**
+   * Perform cross-parameter validation
+   */
+  async performCrossValidation(config, environment) {
+    for (const rule of this.crossValidationRules) {
+      // Check if rule applies to current environment
+      if (rule.environments && !rule.environments.includes(environment)) {
+        continue;
+      }
+      
+      try {
+        const result = await rule.validator(config, environment);
+        
+        if (result !== true) {
+          const message = result || rule.message;
+          
+          if (rule.severity === 'warning') {
+            this.warnings.push(`Cross-validation: ${message}`);
+          } else {
+            this.errors.push(`Cross-validation: ${message}`);
+          }
+        }
+      } catch (error) {
+        this.errors.push(`Cross-validation error: ${error.message}`);
+      }
+    }
+  }
+
+  /**
+   * Perform environment-specific validation
+   */
+  async performEnvironmentValidation(config, environment) {
+    const rules = this.environmentRules.get(environment) || [];
+    
+    for (const rule of rules) {
+      try {
+        const result = await rule.validator(config, environment);
+        
+        if (result !== true) {
+          const message = result || rule.message;
+          
+          if (rule.severity === 'warning') {
+            this.warnings.push(`Environment (${environment}): ${message}`);
+          } else {
+            this.errors.push(`Environment (${environment}): ${message}`);
+          }
+        }
+      } catch (error) {
+        this.errors.push(`Environment validation error: ${error.message}`);
+      }
+    }
+  }
+
+  /**
+   * Perform security validation
+   */
+  async performSecurityValidation(config, environment) {
+    // Production security requirements
+    if (environment === 'production') {
+      if (!config.security?.authRequired) {
+        this.errors.push('Authentication must be enabled in production');
+      }
+      
+      if (!config.security?.jwtSecret || 
+          config.security.jwtSecret.includes('dev') || 
+          config.security.jwtSecret.includes('test') ||
+          config.security.jwtSecret.length < 32) {
+        this.errors.push('Production JWT secret must be properly configured and at least 32 characters');
+      }
+      
+      if (config.logging?.level === 'debug') {
+        this.warnings.push('Debug logging should be disabled in production');
+      }
+      
+      if (!config.security?.helmet?.enabled) {
+        this.warnings.push('Security headers (Helmet) should be enabled in production');
+      }
+    }
+    
+    // Security best practices
+    if (config.cors?.origins?.includes('*')) {
+      this.warnings.push('CORS should not allow all origins in production');
+    }
+    
+    if (config.server?.host === '0.0.0.0' && environment === 'production') {
+      this.warnings.push('Consider binding to specific IP instead of 0.0.0.0 in production');
+    }
+  }
+
+  /**
+   * Perform performance validation
+   */
+  async performPerformanceValidation(config, environment) {
+    // Database connection pool validation
+    if (config.database?.maxConnections > 100 && environment !== 'production') {
+      this.warnings.push('High database connection count may not be necessary for non-production environments');
+    }
+    
+    // Cache configuration validation
+    if (environment === 'production' && config.cache?.type === 'memory') {
+      this.warnings.push('Consider using Redis cache in production for better performance');
+    }
+    
+    // Rate limiting validation
+    if (config.security?.rateLimitMax > 10000) {
+      this.warnings.push('Very high rate limits may not provide adequate protection');
+    }
+    
+    // Monitoring validation
+    if (environment === 'production' && !config.monitoring?.enabled) {
+      this.warnings.push('Monitoring should be enabled in production');
+    }
+  }
+
+  /**
+   * Perform integration validation
+   */
+  async performIntegrationValidation(config, environment) {
+    // Check integration configurations
+    const integrations = config.integrations || {};
+    
+    for (const [service, serviceConfig] of Object.entries(integrations)) {
+      if (!serviceConfig?.apiKey && !serviceConfig?.clientId && !serviceConfig?.accessToken) {
+        this.warnings.push(`${service} integration may not be properly configured`);
+      }
+      
+      // Service-specific validation
+      switch (service) {
+        case 'xero':
+          if (!serviceConfig.clientId || !serviceConfig.clientSecret) {
+            this.warnings.push('Xero integration requires both clientId and clientSecret');
+          }
+          break;
+          
+        case 'shopify':
+          if (!serviceConfig.accessToken || !serviceConfig.shopDomain) {
+            this.warnings.push('Shopify integration requires accessToken and shopDomain');
+          }
+          break;
+          
+        case 'amazon':
+          if (!serviceConfig.sellerId || !serviceConfig.clientId || !serviceConfig.refreshToken) {
+            this.warnings.push('Amazon integration requires sellerId, clientId, and refreshToken');
+          }
+          break;
+      }
+    }
+  }
+
+  /**
+   * Get value at configuration path
+   */
+  getValueAtPath(config, path) {
+    if (!path) return config;
+    
+    const keys = path.split('.');
+    let current = config;
+    
+    for (const key of keys) {
+      if (current && typeof current === 'object' && key in current) {
+        current = current[key];
+      } else {
+        return undefined;
+      }
+    }
+    
+    return current;
+  }
+
+  /**
+   * Get validation summary
+   */
+  getValidationSummary() {
+    return {
+      valid: this.errors.length === 0,
+      errorCount: this.errors.length,
+      warningCount: this.warnings.length,
+      errors: this.errors,
+      warnings: this.warnings
+    };
+  }
+}
+
+/**
+ * Global configuration validator instance
+ */
+export const configValidator = new ConfigurationValidator();
+
+// Add default validation rules
+configValidator.addValidationRule('database.url', (value) => {
+  if (!value) return 'Database URL is required';
+  if (!value.startsWith('postgresql://') && !value.startsWith('postgres://')) {
+    return 'Database URL must be a PostgreSQL connection string';
+  }
+  return true;
+});
+
+configValidator.addValidationRule('security.jwtSecret', (value, config) => {
+  if (config.security?.authRequired && !value) {
+    return 'JWT secret is required when authentication is enabled';
+  }
+  if (value && value.length < 32) {
+    return 'JWT secret must be at least 32 characters long';
+  }
+  return true;
+});
+
+configValidator.addCrossValidationRule((config) => {
+  if (config.cache?.type === 'redis' && !config.cache?.redis?.url) {
+    return 'Redis URL is required when using Redis cache';
+  }
+  return true;
+});
+
+configValidator.addCrossValidationRule((config) => {
+  if (config.transport?.http?.port === config.server?.port) {
+    return 'HTTP transport port cannot be the same as server port';
+  }
+  return true;
+});
+
+// Environment-specific rules
+configValidator.addEnvironmentRule('production', (config) => {
+  if (!config.database?.ssl) {
+    return 'SSL should be enabled for database connections in production';
+  }
+  return true;
+}, { severity: 'warning' });
+
+/**
+ * Enhanced validate function with comprehensive validation
+ */
+export async function validateConfig(config = SERVER_CONFIG, environment = null) {
+  try {
+    const result = await configValidator.validateConfiguration(config, environment);
+    return result;
+  } catch (error) {
+    throw new Error(`Configuration validation failed: ${error.message}`);
+  }
+}
+
+/**
+ * Legacy validate function for backward compatibility
+ */
+export function validateConfigLegacy() {
   const errors = [];
 
   // Validate required environment variables
@@ -530,9 +1047,9 @@ export function getMergedConfig(environment) {
  */
 export const CONFIG = getMergedConfig(SERVER_CONFIG.server.environment);
 
-// Validate configuration on import
+// Validate configuration on import (using legacy function for backward compatibility)
 try {
-  validateConfig();
+  validateConfigLegacy();
 } catch (error) {
   console.error('Configuration validation failed:', error.message);
   if (process.env.NODE_ENV === 'production') {

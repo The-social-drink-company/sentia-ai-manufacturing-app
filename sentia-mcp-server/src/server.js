@@ -47,7 +47,7 @@ import { auditLogger, AUDIT_EVENTS, AUDIT_SEVERITY } from './utils/audit-logger.
 
 // Import existing integration modules
 import { registerShopifyTools } from './tools/shopify-integration.js';
-import { registerXeroTools } from './tools/xero-integration.js';
+import { xeroTools, initializeXeroIntegration } from './tools/xero-integration.js';
 import { registerAmazonTools } from './tools/amazon-integration.js';
 import { registerAnthropicTools } from './tools/anthropic-integration.js';
 import { registerUnleashedTools } from './tools/unleashed-integration.js';
@@ -382,7 +382,8 @@ export class SentiaMCPServer {
 
       // Load Xero integration
       try {
-        await registerXeroTools(this);
+        await initializeXeroIntegration();
+        xeroTools.forEach(tool => this.addTool(tool));
         logger.info('Xero integration loaded successfully');
       } catch (error) {
         logger.warn('Failed to load Xero integration', { error: error.message });

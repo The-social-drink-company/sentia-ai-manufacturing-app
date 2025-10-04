@@ -46,6 +46,8 @@
     "@anthropic-ai/sdk": "^0.24.3",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@shopify/shopify-api": "^12.0.0",
+    "ajv-formats": "^3.0.1",
+    "amazon-sp-api": "^1.1.7",
     "aws-sdk": "^2.1691.0",
     "axios": "^1.12.2",
     "compression": "^1.8.1",
@@ -79,8 +81,8 @@
     "retire": "^5.0.0",
     "snyk": "^1.1291.0",
     "supertest": "^6.3.4",
-    "vitest": "^1.6.0",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "vitest": "^1.6.0"
   },
   "engines": {
     "node": ">=18.0.0"

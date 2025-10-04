@@ -7,7 +7,8 @@
  * @version 1.0.0
  */
 
-import { SellingPartnerAPI } from 'amazon-sp-api';
+import pkg from 'amazon-sp-api';
+const { SellingPartnerAPI } = pkg;
 import crypto from 'crypto';
 import { createLogger } from '../../../utils/logger.js';
 

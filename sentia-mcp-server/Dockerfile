@@ -25,7 +25,7 @@ COPY pnpm-lock.yaml* ./
 # Install pnpm and dependencies with security audit
 RUN npm install -g pnpm@latest && \
     pnpm config set store-dir ~/.pnpm-store && \
-    pnpm install --frozen-lockfile && \
+    pnpm install --no-frozen-lockfile && \
     pnpm audit --audit-level moderate || true
 
 # Copy source code for build optimization analysis
@@ -70,7 +70,7 @@ COPY --chown=mcpserver:nodejs pnpm-lock.yaml* ./
 
 # Install pnpm and production dependencies with cache optimization
 RUN npm install -g pnpm@latest && \
-    pnpm install --prod --frozen-lockfile && \
+    pnpm install --prod --no-frozen-lockfile && \
     pnpm store prune && \
     rm -rf ~/.pnpm-store ~/.npm && \
     # Clean npm cache to reduce image size

@@ -567,6 +567,154 @@ router.get('/stream/sse', (req, res) => {
 });
 
 /**
+ * Prometheus-specific metrics endpoint
+ * GET /metrics/prometheus
+ */
+router.get('/prometheus', async (req, res) => {
+  try {
+    const prometheusData = monitoring.exportPrometheusMetrics();
+    
+    res.set({
+      'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.send(prometheusData);
+    
+    logger.debug('Prometheus metrics served');
+    
+  } catch (error) {
+    logger.error('Failed to serve Prometheus metrics', { error });
+    res.status(500).send('# Error generating metrics\n');
+  }
+});
+
+/**
+ * Node.js process metrics for Prometheus
+ * GET /metrics/process
+ */
+router.get('/process', async (req, res) => {
+  try {
+    const processMetrics = monitoring.getProcessMetrics();
+    
+    res.set({
+      'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.send(processMetrics);
+    
+  } catch (error) {
+    logger.error('Failed to serve process metrics', { error });
+    res.status(500).send('# Error generating process metrics\n');
+  }
+});
+
+/**
+ * Business metrics for Prometheus
+ * GET /metrics/business
+ */
+router.get('/business', async (req, res) => {
+  try {
+    const { include_costs, include_roi } = req.query;
+    
+    const businessMetrics = businessAnalytics.exportPrometheusMetrics({
+      includeCosts: include_costs === 'true',
+      includeROI: include_roi === 'true'
+    });
+    
+    res.set({
+      'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.send(businessMetrics);
+    
+  } catch (error) {
+    logger.error('Failed to serve business metrics', { error });
+    res.status(500).send('# Error generating business metrics\n');
+  }
+});
+
+/**
+ * Integration-specific metrics for Prometheus
+ * GET /metrics/integrations
+ */
+router.get('/integrations', async (req, res) => {
+  try {
+    const integrationMetrics = monitoring.getIntegrationMetrics();
+    
+    res.set({
+      'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.send(integrationMetrics);
+    
+  } catch (error) {
+    logger.error('Failed to serve integration metrics', { error });
+    res.status(500).send('# Error generating integration metrics\n');
+  }
+});
+
+/**
+ * Security metrics for Prometheus
+ * GET /metrics/security
+ */
+router.get('/security', async (req, res) => {
+  try {
+    const { include_auth_events, include_rate_limiting } = req.query;
+    
+    const securityMetrics = monitoring.getSecurityMetrics({
+      includeAuthEvents: include_auth_events === 'true',
+      includeRateLimiting: include_rate_limiting === 'true'
+    });
+    
+    res.set({
+      'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.send(securityMetrics);
+    
+  } catch (error) {
+    logger.error('Failed to serve security metrics', { error });
+    res.status(500).send('# Error generating security metrics\n');
+  }
+});
+
+/**
+ * Performance metrics with detailed breakdown for Prometheus
+ * GET /metrics/performance
+ */
+router.get('/performance', async (req, res) => {
+  try {
+    const { 
+      include_percentiles, 
+      include_gc_metrics, 
+      include_memory_details 
+    } = req.query;
+    
+    const performanceMetrics = performanceMonitor.exportPrometheusMetrics({
+      includePercentiles: include_percentiles === 'true',
+      includeGCMetrics: include_gc_metrics === 'true',
+      includeMemoryDetails: include_memory_details === 'true'
+    });
+    
+    res.set({
+      'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.send(performanceMetrics);
+    
+  } catch (error) {
+    logger.error('Failed to serve performance metrics', { error });
+    res.status(500).send('# Error generating performance metrics\n');
+  }
+});
+
+/**
  * Get custom metric queries
  * POST /metrics/query
  */

@@ -9,7 +9,21 @@ export default {
   server: {
     environment: 'production',
     host: '0.0.0.0',
-    port: process.env.PORT || 3001
+    port: process.env.PORT || 3001,
+    // Performance optimizations
+    keepAliveTimeout: 65000,
+    headersTimeout: 66000,
+    maxHeadersCount: 2000,
+    // Cluster settings
+    cluster: {
+      enabled: process.env.CLUSTER_MODE === 'true',
+      workers: process.env.CLUSTER_WORKERS || 'auto'
+    },
+    // HTTP/2 support
+    http2: {
+      enabled: process.env.HTTP2_ENABLED === 'true',
+      allowHTTP1: true
+    }
   },
 
   // Production feature flags
@@ -25,7 +39,18 @@ export default {
     enableRateLimiting: true,
     enableCompression: true,
     enableHealthChecks: true,
-    enableMetrics: true
+    enableMetrics: true,
+    // Advanced performance features
+    enableRequestCoalescing: true,
+    enableResponseStreaming: true,
+    enableConnectionPooling: true,
+    enableKeepAlive: true,
+    enableGzipCompression: true,
+    enableBrotliCompression: true,
+    enableETagCaching: true,
+    enableHTTP2Push: false,
+    enablePrefetching: true,
+    enableLazyLoading: true
   },
 
   // Production security (hardened)
@@ -226,31 +251,65 @@ export default {
       lazyConnect: true,
       keepAlive: 30000,
       family: 4,
-      compression: 'gzip'
+      compression: 'gzip',
+      // Advanced Redis performance settings
+      db: 0,
+      maxMemoryPolicy: 'allkeys-lru',
+      enableOfflineQueue: false,
+      enablePipelining: true,
+      maxRetriesPerRequest: 3,
+      retryDelayOnFailover: 100,
+      enableTlsForSentinelMode: false,
+      sentinelRetryDelayOnFailover: 100,
+      enableClusterRetryDelayOnFailover: true,
+      // Connection pool settings
+      pool: {
+        min: 5,
+        max: 20,
+        acquireTimeoutMillis: 10000,
+        createTimeoutMillis: 10000,
+        destroyTimeoutMillis: 5000,
+        idleTimeoutMillis: 300000,
+        reapIntervalMillis: 1000,
+        createRetryIntervalMillis: 200
+      }
     },
     memory: {
-      maxSize: 5000, // Fallback memory cache
-      checkPeriod: 600
+      maxSize: 10000, // Increased fallback memory cache
+      checkPeriod: 300, // More frequent cleanup
+      deleteOnExpire: true,
+      useClones: false // Better performance, less memory
     },
     production: {
       enableDistributedCache: true,
       enableCacheCompression: true,
       enableCacheEncryption: true,
       enableCacheMetrics: true,
-      enableCacheReplication: false // Enable when multi-region
+      enableCacheReplication: false, // Enable when multi-region
+      enableCachePartitioning: true,
+      enableCacheWarmup: true,
+      enablePreloading: true,
+      ttlOptimization: {
+        enabled: true,
+        shortTTL: 300,    // 5 minutes for frequent data
+        mediumTTL: 1800,  // 30 minutes for moderate data
+        longTTL: 3600     // 1 hour for stable data
+      }
     }
   },
 
   // Production tools configuration
   tools: {
     timeout: 30000,
-    maxConcurrent: 10,
+    maxConcurrent: 15, // Increased for better throughput
     enableProfiling: false,
     caching: {
       enabled: true,
       defaultTTL: 300, // 5 minutes
-      maxSize: 5000,
-      enableCompression: true
+      maxSize: 10000, // Increased cache size
+      enableCompression: true,
+      compressionThreshold: 1024, // Compress responses > 1KB
+      enableIntelligentTTL: true
     },
     production: {
       enableCircuitBreaker: true,
@@ -260,7 +319,23 @@ export default {
       maxRetries: 3,
       retryDelay: 1000,
       enableBulkOperations: true,
-      enableAsyncProcessing: true
+      enableAsyncProcessing: true,
+      // Advanced production features
+      enableRequestDeduplication: true,
+      enableResultCaching: true,
+      enableBackgroundProcessing: true,
+      enablePrioritization: true,
+      enableLoadShedding: true,
+      loadSheddingThreshold: 90, // Drop requests when CPU > 90%
+      enableGracefulDegradation: true,
+      enableFailFast: true,
+      // Performance optimizations
+      enableConnectionReuse: true,
+      enableRequestBatching: true,
+      maxBatchSize: 100,
+      batchTimeout: 1000,
+      enableResultStreaming: true,
+      enablePrefetching: true
     }
   },
 
@@ -357,11 +432,45 @@ export default {
     },
     prometheus: {
       enabled: process.env.PROMETHEUS_ENABLED === 'true',
-      endpoint: '/prometheus',
+      endpoint: '/api/metrics/prometheus',
+      port: process.env.PROMETHEUS_PORT || 9090,
+      collectDefaultMetrics: true,
+      collectCustomMetrics: true,
       defaultLabels: {
         service: 'sentia-mcp-server',
         version: '3.0.0',
-        environment: 'production'
+        environment: 'production',
+        instance: process.env.RENDER_INSTANCE_ID || 'unknown',
+        region: process.env.RENDER_REGION || 'unknown'
+      },
+      // Performance metrics configuration
+      metrics: {
+        httpDuration: {
+          enabled: true,
+          buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10]
+        },
+        httpRequestTotal: {
+          enabled: true,
+          labelNames: ['method', 'route', 'status_code']
+        },
+        memoryUsage: {
+          enabled: true,
+          collectInterval: 30000 // 30 seconds
+        },
+        cpuUsage: {
+          enabled: true,
+          collectInterval: 30000
+        },
+        toolExecutions: {
+          enabled: true,
+          labelNames: ['tool_name', 'status', 'integration']
+        },
+        businessMetrics: {
+          enabled: true,
+          collectRevenue: true,
+          collectCosts: true,
+          collectROI: true
+        }
       }
     }
   },
@@ -476,15 +585,45 @@ export default {
   resources: {
     maxFileSize: '10mb',
     tempDirectory: 'tmp/production',
-    cleanupInterval: 3600000, // 1 hour
+    cleanupInterval: 1800000, // 30 minutes - more frequent cleanup
     maxMemoryUsage: '2gb',
     maxCPUUsage: 80, // 80%
+    // Memory management
+    memory: {
+      heapLimit: '2048mb',
+      gcAggressive: true,
+      gcInterval: 60000, // Force GC every minute if needed
+      memoryLeakDetection: true,
+      enableV8Options: true,
+      v8Options: [
+        '--max-old-space-size=2048',
+        '--gc-concurrent',
+        '--optimize-for-size',
+        '--max-semi-space-size=128'
+      ]
+    },
+    // CPU optimization
+    cpu: {
+      enableAffinity: false,
+      threadPoolSize: process.env.UV_THREADPOOL_SIZE || 16,
+      enableTurbo: true,
+      optimizationLevel: 'O3'
+    },
     production: {
       enableResourceMonitoring: true,
       enableAutoScaling: false, // Enable when supported
       enableLoadBalancing: false, // Enable when multi-instance
       enableResourceOptimization: true,
-      enableGarbageCollection: true
+      enableGarbageCollection: true,
+      // Advanced resource management
+      enableMemoryProfiling: false,
+      enableCPUProfiling: false,
+      enableResourceScheduling: true,
+      enablePriorityQueues: true,
+      enableResourceQuotas: true,
+      enableBackpressure: true,
+      backpressureThreshold: 85,
+      enableResourceThrottling: true
     }
   },
 
@@ -546,12 +685,80 @@ export default {
       minInstances: 2,
       maxInstances: 10,
       targetCPU: 70,
-      targetMemory: 80
+      targetMemory: 80,
+      scaleUpCooldown: 300000,   // 5 minutes
+      scaleDownCooldown: 600000, // 10 minutes
+      enablePredictiveScaling: true
     },
     vertical: {
       enabled: true,
       maxMemory: '4gb',
-      maxCPU: '2000m'
+      maxCPU: '2000m',
+      enableDynamicAdjustment: true,
+      adjustmentInterval: 300000 // 5 minutes
+    },
+    // Performance-based scaling
+    performance: {
+      enableLatencyBasedScaling: true,
+      targetLatency: 500, // milliseconds
+      enableThroughputBasedScaling: true,
+      targetThroughput: 1000, // requests per minute
+      enableQueueBasedScaling: true,
+      maxQueueLength: 100
+    }
+  },
+
+  // Advanced production optimizations
+  optimization: {
+    // Network optimizations
+    network: {
+      enableTCPNoDelay: true,
+      enableTCPKeepAlive: true,
+      keepAliveInitialDelay: 30000,
+      socketTimeout: 60000,
+      enableCompression: true,
+      compressionLevel: 6,
+      enableContentNegotiation: true,
+      enableHTTPCaching: true,
+      maxAge: 3600 // 1 hour
+    },
+    // I/O optimizations
+    io: {
+      enableAsyncIO: true,
+      enableBuffering: true,
+      bufferSize: 65536, // 64KB
+      enableStreamProcessing: true,
+      enableFileSystemCache: true,
+      fsWatchOptions: {
+        persistent: false,
+        recursive: false
+      }
+    },
+    // JavaScript engine optimizations
+    v8: {
+      enableJITOptimization: true,
+      enableInlining: true,
+      enableTurboFan: true,
+      enableLiftoff: true,
+      enableSparkplug: true,
+      maxOptimizationAttempts: 10
+    },
+    // Memory optimizations
+    memory: {
+      enableObjectPooling: true,
+      enableStringDeduplication: true,
+      enableWeakReferences: true,
+      enableMemoryCompaction: true,
+      compactionInterval: 3600000 // 1 hour
+    },
+    // Request/Response optimizations
+    requestResponse: {
+      enableResponseCaching: true,
+      enableRequestCoalescing: true,
+      enableResponseCompression: true,
+      enableEarlyFlush: true,
+      enableKeepAlive: true,
+      keepAliveTimeout: 65000
     }
   }
 };

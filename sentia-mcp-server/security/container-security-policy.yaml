@@ -1,0 +1,427 @@
+# Container Security Policy for Sentia MCP Server
+# Kubernetes Pod Security Standards and Docker Security Configuration
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentia-mcp-security-policy
+  namespace: sentia-manufacturing
+  labels:
+    app: sentia-mcp-server
+    security.level: restricted
+    compliance: "soc2,gdpr"
+data:
+  # Pod Security Standards Configuration
+  podSecurityPolicy: |
+    apiVersion: policy/v1beta1
+    kind: PodSecurityPolicy
+    metadata:
+      name: sentia-mcp-restricted
+      annotations:
+        seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
+        seccomp.security.alpha.kubernetes.io/defaultProfileName: 'runtime/default'
+        apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+        apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+    spec:
+      # Prevent privilege escalation
+      allowPrivilegeEscalation: false
+      
+      # Require running as non-root user
+      runAsUser:
+        rule: 'MustRunAsNonRoot'
+      
+      # Require specific user ID
+      runAsGroup:
+        rule: 'MustRunAs'
+        ranges:
+          - min: 1001
+            max: 1001
+      
+      # File system permissions
+      fsGroup:
+        rule: 'MustRunAs'
+        ranges:
+          - min: 1001
+            max: 1001
+      
+      # Deny privileged containers
+      privileged: false
+      
+      # Read-only root filesystem
+      readOnlyRootFilesystem: true
+      
+      # Allowed capabilities (minimal set)
+      allowedCapabilities: []
+      
+      # Required capabilities to drop
+      requiredDropCapabilities:
+        - ALL
+      
+      # Volume restrictions
+      volumes:
+        - 'configMap'
+        - 'emptyDir'
+        - 'projected'
+        - 'secret'
+        - 'downwardAPI'
+        - 'persistentVolumeClaim'
+      
+      # Host restrictions
+      hostNetwork: false
+      hostIPC: false
+      hostPID: false
+      hostPorts: []
+      
+      # SELinux
+      seLinux:
+        rule: 'RunAsAny'
+
+  # Docker Security Configuration
+  dockerSecurityOpts: |
+    # Security options for Docker runtime
+    --security-opt=no-new-privileges:true
+    --security-opt=seccomp:unconfined
+    --cap-drop=ALL
+    --cap-add=CHOWN
+    --cap-add=SETGID
+    --cap-add=SETUID
+    --cap-add=NET_BIND_SERVICE
+    --read-only
+    --tmpfs=/tmp:rw,noexec,nosuid,size=100m
+    --tmpfs=/var/run:rw,noexec,nosuid,size=100m
+    --user=1001:1001
+
+  # Network Security Policies
+  networkSecurityPolicy: |
+    apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: sentia-mcp-network-policy
+    spec:
+      podSelector:
+        matchLabels:
+          app: sentia-mcp-server
+      policyTypes:
+      - Ingress
+      - Egress
+      ingress:
+      - from:
+        - namespaceSelector:
+            matchLabels:
+              name: sentia-manufacturing
+        - podSelector:
+            matchLabels:
+              app: sentia-dashboard
+        ports:
+        - protocol: TCP
+          port: 3001
+        - protocol: TCP
+          port: 3002
+      egress:
+      - to:
+        - namespaceSelector:
+            matchLabels:
+              name: sentia-manufacturing
+        ports:
+        - protocol: TCP
+          port: 5432  # PostgreSQL
+        - protocol: TCP
+          port: 6379  # Redis
+      - to: []
+        ports:
+        - protocol: TCP
+          port: 443   # HTTPS
+        - protocol: TCP
+          port: 80    # HTTP (for external APIs)
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sentia-mcp-security-config
+  namespace: sentia-manufacturing
+  labels:
+    app: sentia-mcp-server
+    security.level: high
+type: Opaque
+stringData:
+  # Security Headers Configuration
+  security-headers.json: |
+    {
+      "helmet": {
+        "contentSecurityPolicy": {
+          "directives": {
+            "defaultSrc": ["'self'"],
+            "scriptSrc": ["'self'", "'unsafe-inline'"],
+            "styleSrc": ["'self'", "'unsafe-inline'"],
+            "imgSrc": ["'self'", "data:", "https:"],
+            "connectSrc": ["'self'", "wss:", "ws:"],
+            "fontSrc": ["'self'"],
+            "objectSrc": ["'none'"],
+            "mediaSrc": ["'self'"],
+            "frameSrc": ["'none'"]
+          },
+          "reportOnly": false
+        },
+        "crossOriginEmbedderPolicy": false,
+        "crossOriginOpenerPolicy": false,
+        "crossOriginResourcePolicy": {
+          "policy": "same-origin"
+        },
+        "dnsPrefetchControl": true,
+        "frameguard": {
+          "action": "deny"
+        },
+        "hidePoweredBy": true,
+        "hsts": {
+          "maxAge": 31536000,
+          "includeSubDomains": true,
+          "preload": true
+        },
+        "ieNoOpen": true,
+        "noSniff": true,
+        "originAgentCluster": true,
+        "permittedCrossDomainPolicies": false,
+        "referrerPolicy": {
+          "policy": "strict-origin-when-cross-origin"
+        },
+        "xssFilter": true
+      }
+    }
+
+  # Rate Limiting Configuration
+  rate-limiting.json: |
+    {
+      "windowMs": 900000,
+      "max": 100,
+      "message": {
+        "error": "Too many requests",
+        "retryAfter": "15 minutes"
+      },
+      "standardHeaders": true,
+      "legacyHeaders": false,
+      "skipSuccessfulRequests": false,
+      "skipFailedRequests": false,
+      "keyGenerator": "function(req) { return req.ip + ':' + req.user?.id; }",
+      "onLimitReached": "function(req, res, options) { logger.warn('Rate limit exceeded', { ip: req.ip, user: req.user?.id }); }"
+    }
+
+  # Input Validation Rules
+  input-validation.json: |
+    {
+      "strict": true,
+      "sanitization": {
+        "enabled": true,
+        "removeScripts": true,
+        "removeHtml": true,
+        "maxLength": 10000
+      },
+      "schemas": {
+        "metricName": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$",
+          "maxLength": 100
+        },
+        "metricValue": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "labels": {
+          "type": "object",
+          "maxProperties": 20,
+          "patternProperties": {
+            "^[a-zA-Z][a-zA-Z0-9_]*$": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        }
+      }
+    }
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentia-mcp-security-monitoring
+  namespace: sentia-manufacturing
+  labels:
+    app: sentia-mcp-server
+    component: security-monitoring
+data:
+  # Security Event Detection Rules
+  security-rules.yaml: |
+    rules:
+      - name: "authentication_failures"
+        pattern: "authentication failed"
+        severity: "medium"
+        threshold: 5
+        timeWindow: "5m"
+        action: "alert"
+        
+      - name: "rate_limit_violations"
+        pattern: "rate limit exceeded"
+        severity: "medium"
+        threshold: 10
+        timeWindow: "1m"
+        action: "alert"
+        
+      - name: "privilege_escalation_attempt"
+        pattern: "privilege escalation"
+        severity: "high"
+        threshold: 1
+        timeWindow: "1m"
+        action: "block"
+        
+      - name: "sql_injection_attempt"
+        pattern: "(union|select|insert|delete|drop|exec|script)"
+        severity: "high"
+        threshold: 1
+        timeWindow: "1m"
+        action: "block"
+        
+      - name: "xss_attempt"
+        pattern: "(<script|javascript:|onerror=|onload=)"
+        severity: "high"
+        threshold: 1
+        timeWindow: "1m"
+        action: "block"
+        
+      - name: "unusual_api_access_pattern"
+        pattern: "api access pattern anomaly"
+        severity: "medium"
+        threshold: 3
+        timeWindow: "10m"
+        action: "alert"
+
+  # Threat Detection Configuration
+  threat-detection.yaml: |
+    detection:
+      enabled: true
+      realTime: true
+      logAnalysis: true
+      
+    patterns:
+      knownAttacks:
+        - "CVE-2023-*"
+        - "Log4Shell"
+        - "Spring4Shell"
+        - "Ghost"
+        
+      suspiciousIPs:
+        - "ranges": ["10.0.0.0/8", "192.168.0.0/16"]
+          action: "monitor"
+        - "countries": ["CN", "RU", "KP"]
+          action: "alert"
+          
+      userAgents:
+        - "Nmap"
+        - "SQLMap"
+        - "Burp"
+        - "OWASP ZAP"
+        
+    response:
+      autoBlock: true
+      alertThreshold: 3
+      blockDuration: "24h"
+      escalationLevels:
+        - "warning"
+        - "alert" 
+        - "critical"
+        - "emergency"
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sentia-mcp-security-scan
+  namespace: sentia-manufacturing
+  labels:
+    app: sentia-mcp-server
+    component: security-scanner
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            fsGroup: 1001
+          containers:
+          - name: security-scanner
+            image: aquasec/trivy:latest
+            imagePullPolicy: Always
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting security scan..."
+              trivy image --severity HIGH,CRITICAL sentia-mcp-server:latest
+              trivy fs --severity HIGH,CRITICAL /app
+              echo "Security scan completed"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                - ALL
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+            volumeMounts:
+            - name: app-volume
+              mountPath: /app
+              readOnly: true
+          volumes:
+          - name: app-volume
+            persistentVolumeClaim:
+              claimName: sentia-mcp-app-storage
+          restartPolicy: OnFailure
+          
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sentia-mcp-security-service-account
+  namespace: sentia-manufacturing
+  labels:
+    app: sentia-mcp-server
+    component: security
+automountServiceAccountToken: false
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: sentia-manufacturing
+  name: sentia-mcp-security-role
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sentia-mcp-security-role-binding
+  namespace: sentia-manufacturing
+subjects:
+- kind: ServiceAccount
+  name: sentia-mcp-security-service-account
+  namespace: sentia-manufacturing
+roleRef:
+  kind: Role
+  name: sentia-mcp-security-role
+  apiGroup: rbac.authorization.k8s.io

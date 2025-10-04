@@ -1,19 +1,38 @@
 # Render deployment configuration for Sentia MCP Server
-# Standalone deployment separate from the main dashboard
+# Enterprise-grade standalone deployment with auto-scaling, caching, and monitoring
+# Version: 3.0.0 - Production Ready with Redis Cache Integration
 
 services:
+  # Redis Cache for Development Environment
+  - type: redis
+    name: sentia-mcp-cache-development
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
   # Development Environment MCP Server
   - type: web
     name: sentia-mcp-server-development
-    env: node
-    plan: starter
+    env: docker
+    plan: standard
     region: oregon
     branch: development
     rootDir: sentia-mcp-server
-    buildCommand: "npm install && npm run lint"
-    startCommand: "node scripts/start-mcp-server.js"
+    dockerfile: Dockerfile
     healthCheckPath: /health
     autoDeploy: true
+    # Auto-scaling configuration
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetCPUPercent: 70
+      targetMemoryPercent: 80
+    # Resource limits
+    disk:
+      name: sentia-mcp-dev-disk
+      sizeGB: 10
+      mountPath: /app/data
     envVars:
       - key: NODE_ENV
         value: development
@@ -29,6 +48,18 @@ services:
         value: false
       - key: RATE_LIMIT_MAX
         value: 1000
+      # Performance optimization
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=2048 --gc-concurrent"
+      - key: UV_THREADPOOL_SIZE
+        value: 16
+      # Caching configuration
+      - key: CACHE_TYPE
+        value: redis
+      - key: CACHE_TTL
+        value: 300000
+      - key: CACHE_MAX_SIZE
+        value: 1000
       # Database connection - shared with main dashboard
       - key: DATABASE_URL
         value: postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require
@@ -38,19 +69,49 @@ services:
       # JWT secret for inter-service communication
       - key: JWT_SECRET
         value: dev-mcp-server-secret-key-not-for-production
+      # Monitoring and observability
+      - key: MONITORING_ENABLED
+        value: true
+      - key: METRICS_ENDPOINT_ENABLED
+        value: true
+      - key: HEALTH_CHECK_VERBOSE
+        value: true
+      # Security headers
+      - key: SECURITY_HEADERS_ENABLED
+        value: true
+      - key: RATE_LIMITING_ENABLED
+        value: true
+
+  # Redis Cache for Testing Environment
+  - type: redis
+    name: sentia-mcp-cache-testing
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
 
   # Testing Environment MCP Server
   - type: web
     name: sentia-mcp-server-testing
-    env: node
-    plan: starter
+    env: docker
+    plan: standard
     region: oregon
     branch: testing
     rootDir: sentia-mcp-server
-    buildCommand: "npm install && npm run lint"
-    startCommand: "node scripts/start-mcp-server.js"
+    dockerfile: Dockerfile
     healthCheckPath: /health
     autoDeploy: true
+    # Auto-scaling configuration
+    scaling:
+      minInstances: 1
+      maxInstances: 5
+      targetCPUPercent: 70
+      targetMemoryPercent: 80
+    # Resource limits
+    disk:
+      name: sentia-mcp-test-disk
+      sizeGB: 20
+      mountPath: /app/data
     envVars:
       - key: NODE_ENV
         value: testing
@@ -66,6 +127,18 @@ services:
         value: true
       - key: RATE_LIMIT_MAX
         value: 500
+      # Performance optimization
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=2048 --gc-concurrent"
+      - key: UV_THREADPOOL_SIZE
+        value: 16
+      # Caching configuration
+      - key: CACHE_TYPE
+        value: redis
+      - key: CACHE_TTL
+        value: 300000
+      - key: CACHE_MAX_SIZE
+        value: 1000
       # Database connection - shared with main dashboard
       - key: DATABASE_URL
         value: postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require
@@ -75,19 +148,57 @@ services:
       # JWT secret for inter-service communication
       - key: JWT_SECRET
         value: test-mcp-server-secret-key-change-in-production
+      # Monitoring and observability
+      - key: MONITORING_ENABLED
+        value: true
+      - key: METRICS_ENDPOINT_ENABLED
+        value: true
+      - key: PERFORMANCE_MONITORING_ENABLED
+        value: true
+      # Security configuration
+      - key: SECURITY_HEADERS_ENABLED
+        value: true
+      - key: RATE_LIMITING_ENABLED
+        value: true
+      - key: INPUT_VALIDATION_STRICT
+        value: true
+      - key: AUDIT_LOGGING_ENABLED
+        value: true
+
+  # Redis Cache for Production Environment
+  - type: redis
+    name: sentia-mcp-cache-production
+    plan: pro
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
 
   # Production Environment MCP Server
   - type: web
     name: sentia-mcp-server-production
-    env: node
-    plan: standard
+    env: docker
+    plan: pro
     region: oregon
     branch: production
     rootDir: sentia-mcp-server
-    buildCommand: "npm install --production && npm run lint"
-    startCommand: "node scripts/start-mcp-server.js"
+    dockerfile: Dockerfile
     healthCheckPath: /health
     autoDeploy: false  # Manual deployment for production
+    # Production auto-scaling
+    scaling:
+      minInstances: 2
+      maxInstances: 10
+      targetCPUPercent: 60
+      targetMemoryPercent: 70
+    # Production resource allocation
+    disk:
+      name: sentia-mcp-prod-disk
+      sizeGB: 50
+      mountPath: /app/data
+    # Blue-green deployment
+    deployment:
+      strategy: blue-green
+      healthCheckGracePeriod: 300s
     envVars:
       - key: NODE_ENV
         value: production
@@ -103,9 +214,29 @@ services:
         value: true
       - key: RATE_LIMIT_MAX
         value: 100
+      # Production performance optimization
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=4096 --gc-concurrent --optimize-for-size"
+      - key: UV_THREADPOOL_SIZE
+        value: 32
+      - key: MALLOC_ARENA_MAX
+        value: 2
+      # Production caching with Redis
+      - key: CACHE_TYPE
+        value: redis
+      - key: CACHE_TTL
+        value: 600000
+      - key: CACHE_MAX_SIZE
+        value: 10000
+      - key: ENABLE_CACHE_COMPRESSION
+        value: true
       # Database connection - shared with main dashboard
       - key: DATABASE_URL
         value: postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require
+      - key: DATABASE_POOL_MAX
+        value: 20
+      - key: DATABASE_POOL_MIN
+        value: 5
       # CORS origins - allow dashboard connections
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-production.onrender.com
@@ -113,12 +244,45 @@ services:
       # TODO: Set this via Render dashboard with a secure value
       - key: JWT_SECRET
         value: CHANGE_THIS_IN_PRODUCTION_VIA_RENDER_DASHBOARD
-      # Production monitoring and caching
-      - key: CACHE_TYPE
-        value: memory  # Upgrade to Redis for production if needed
+      # Production monitoring and observability
       - key: MONITORING_ENABLED
+        value: true
+      - key: METRICS_ENDPOINT_ENABLED
+        value: true
+      - key: PERFORMANCE_MONITORING_ENABLED
+        value: true
+      - key: BUSINESS_ANALYTICS_ENABLED
         value: true
       - key: COLLECT_SYSTEM_METRICS
         value: true
       - key: COLLECT_TOOL_METRICS
+        value: true
+      - key: PROMETHEUS_METRICS_ENABLED
+        value: true
+      # Production security hardening
+      - key: SECURITY_HEADERS_ENABLED
+        value: true
+      - key: RATE_LIMITING_ENABLED
+        value: true
+      - key: INPUT_VALIDATION_STRICT
+        value: true
+      - key: AUDIT_LOGGING_ENABLED
+        value: true
+      - key: ENCRYPTION_ENABLED
+        value: true
+      - key: MFA_ENABLED
+        value: true
+      # Production alerting
+      - key: ALERTING_ENABLED
+        value: true
+      - key: ALERT_WEBHOOK_ENABLED
+        value: true
+      - key: ALERT_EMAIL_ENABLED
+        value: true
+      # Backup and recovery
+      - key: BACKUP_ENABLED
+        value: true
+      - key: BACKUP_RETENTION_DAYS
+        value: 30
+      - key: AUTO_RECOVERY_ENABLED
         value: true

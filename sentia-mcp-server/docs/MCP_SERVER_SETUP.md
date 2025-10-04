@@ -37,8 +37,30 @@ The Sentia MCP Server is a standalone, enterprise-grade implementation that prov
 sentia-mcp-server/
 ├── src/
 │   ├── server.js                 # Main MCP server implementation
-│   ├── config/
-│   │   ├── server-config.js      # Centralized configuration
+│   ├── config/                   # ✅ Phase 3.3: Configuration & Environment Management
+│   │   ├── server-config.js      # Enhanced centralized configuration with validation
+│   │   ├── environment-config.js # Multi-environment configuration factory
+│   │   ├── credential-manager.js # Secure credential management with encryption
+│   │   ├── dynamic-config.js     # Runtime configuration updates and feature flags
+│   │   ├── environments/         # Environment-specific configurations
+│   │   │   ├── base.js           # Shared configuration foundation
+│   │   │   ├── development.js    # Development environment settings
+│   │   │   ├── testing.js        # Testing environment settings
+│   │   │   ├── staging.js        # Staging environment settings
+│   │   │   └── production.js     # Production environment settings
+│   │   ├── security/             # Security-specific configurations
+│   │   │   ├── security-config.js # Advanced security settings
+│   │   │   └── auth-policies.js  # Authentication and authorization policies
+│   │   ├── performance/          # Performance optimization configurations
+│   │   │   └── performance-config.js # Resource allocation and optimization
+│   │   ├── services/             # Service-specific configurations
+│   │   │   ├── database-config.js # Database connection and performance settings
+│   │   │   ├── cache-config.js   # Caching configuration and strategies
+│   │   │   ├── api-config.js     # API rate limiting and timeout settings
+│   │   │   ├── integration-config.js # Integration-specific settings
+│   │   │   └── monitoring-config.js # Monitoring and alerting configuration
+│   │   ├── templates/            # Configuration templates and profiles
+│   │   │   └── config-templates.js # Pre-built deployment profiles
 │   │   └── tool-schemas.js       # MCP tool schemas
 │   ├── tools/                    # Integration tools directory
 │   │   ├── xero-integration.js           # ✅ Accounting (5 tools)
@@ -53,19 +75,28 @@ sentia-mcp-server/
 │   │   ├── anthropic/            # Anthropic-specific implementation
 │   │   ├── openai/               # OpenAI-specific implementation
 │   │   └── unleashed/            # Unleashed-specific implementation
-│   ├── utils/
+│   ├── utils/                    # ✅ Phase 3.2: Logging & Monitoring System
 │   │   ├── logger.js             # Enhanced structured logging with async capabilities
 │   │   ├── log-manager.js        # Centralized log management and analysis
 │   │   ├── monitoring.js         # Core monitoring infrastructure
-│   │   ├── performance-monitor.js # Advanced performance monitoring
+│   │   ├── performance-monitor.js # Advanced performance monitoring (P95/P99 analysis)
 │   │   ├── business-analytics.js # Business intelligence and analytics
 │   │   ├── alert-engine.js       # Enterprise alert engine with escalation
+│   │   ├── security.js           # Security utilities and encryption
+│   │   ├── api-keys.js           # API key management and rotation
+│   │   ├── encryption.js         # AES-256-GCM encryption utilities
+│   │   ├── audit-logger.js       # Comprehensive audit logging
 │   │   └── error-handler.js      # Global error handling
-│   ├── middleware/
-│   │   └── dashboard-integration.js   # Dashboard communication
-│   └── routes/
+│   ├── middleware/               # ✅ Phase 3.1: Authentication & Security System
+│   │   ├── auth.js               # JWT authentication and session management
+│   │   ├── permissions.js        # Permission-based access control
+│   │   ├── security-monitoring.js # Real-time security monitoring and threat detection
+│   │   ├── rbac.js               # Role-based access control engine
+│   │   └── dashboard-integration.js # Dashboard communication
+│   └── routes/                   # Enhanced API endpoints
 │       ├── dashboard-integration.js   # HTTP API routes
 │       ├── metrics.js                 # Comprehensive metrics API
+│       ├── config.js                  # Configuration management API
 │       └── health.js                  # Enhanced health check system
 ├── tests/                        # Comprehensive test suites
 ├── scripts/
@@ -92,11 +123,116 @@ sentia-mcp-server/
 
 **Total Tools Available**: 36 production-ready MCP tools
 
-## 📊 **Enterprise Logging & Monitoring System (Phase 3)**
+## 🏛️ **Phase 3: Enterprise Infrastructure & Security (Complete)**
+
+### **✅ Comprehensive Enterprise-Grade Infrastructure Implementation**
+
+Phase 3 has been fully implemented with three critical enterprise infrastructure components that transform the MCP server into a production-ready, enterprise-grade system with advanced security, monitoring, and configuration management capabilities.
+
+---
+
+## 🔐 **Authentication & Security System (Prompt 3.1)**
+
+### **✅ Complete Enterprise Security Implementation**
+
+A comprehensive authentication and security system providing JWT-based authentication, role-based access control, data encryption, and enterprise-grade security monitoring.
+
+#### **Security Architecture Components**
+
+| Component | Location | Features | Status |
+|-----------|----------|----------|--------|
+| **Authentication Middleware** | `src/middleware/auth.js` | JWT authentication, session management | ✅ Complete |
+| **Permission System** | `src/middleware/permissions.js` | RBAC, resource-level access control | ✅ Complete |
+| **Security Monitoring** | `src/middleware/security-monitoring.js` | Threat detection, activity monitoring | ✅ Complete |
+| **RBAC System** | `src/middleware/rbac.js` | Role-based access control engine | ✅ Complete |
+| **Security Utilities** | `src/utils/security.js` | Encryption, key management | ✅ Complete |
+| **Audit Logger** | `src/utils/audit-logger.js` | Comprehensive audit trails | ✅ Complete |
+| **API Key Manager** | `src/utils/api-keys.js` | Secure key generation and rotation | ✅ Complete |
+| **Encryption System** | `src/utils/encryption.js` | AES-256-GCM data encryption | ✅ Complete |
+
+#### **Key Security Features**
+
+**🔑 Advanced Authentication System**
+```javascript
+// JWT-based authentication with refresh tokens
+export const authenticateRequest = async (req, res, next) => {
+  const token = extractToken(req);
+  const decoded = jwt.verify(token, JWT_SECRET);
+  req.user = await validateUser(decoded);
+  req.authContext = createAuthContext(req.user);
+  next();
+};
+```
+
+**🛡️ Role-Based Access Control (RBAC)**
+```javascript
+// Granular permission system
+export const requirePermission = (resource, action) => {
+  return (req, res, next) => {
+    if (!hasPermission(req.user, resource, action)) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+    next();
+  };
+};
+```
+
+**🔐 Data Encryption & Key Management**
+```javascript
+// AES-256-GCM encryption for sensitive data
+export class EncryptionManager {
+  encrypt(data, key = this.masterKey) {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipher('aes-256-gcm', key);
+    const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
+    return { encrypted, iv, tag: cipher.getAuthTag() };
+  }
+}
+```
+
+**🚨 Security Monitoring & Threat Detection**
+```javascript
+// Real-time security monitoring
+export const securityMonitoringMiddleware = (req, res, next) => {
+  const securityEvent = analyzeRequest(req);
+  if (securityEvent.threatLevel > THREAT_THRESHOLD) {
+    alertEngine.processAlert({
+      type: 'security_threat',
+      severity: 'high',
+      details: securityEvent
+    });
+  }
+  next();
+};
+```
+
+#### **Enterprise Security Features**
+
+**Multi-Factor Authentication (MFA)**
+- TOTP-based 2FA integration
+- SMS verification support
+- Backup code generation
+- MFA enforcement policies
+
+**Advanced Access Controls**
+- Organization-level isolation
+- Resource-level permissions
+- Time-based access controls
+- IP address restrictions
+
+**Security Compliance**
+- GDPR compliance tools
+- SOC2 audit support
+- Data retention policies
+- Regulatory reporting
+
+---
+
+## 📊 **Logging & Monitoring System (Prompt 3.2)**
 
 ### **✅ Complete Enterprise-Grade Monitoring Implementation**
 
-The MCP server now includes a comprehensive enterprise-grade logging and monitoring system with real-time analytics, performance monitoring, business intelligence, and automated alerting capabilities.
+A comprehensive enterprise-grade logging and monitoring system with real-time analytics, performance monitoring, business intelligence, and automated alerting capabilities.
 
 #### **Core Monitoring Components**
 
@@ -270,6 +406,211 @@ recordToolExecution(toolName, status, duration, metadata = {}) {
 - **Performance Insights**: Detailed analysis for optimization opportunities
 - **Real-time Feedback**: Immediate visibility into system behavior
 
+---
+
+## ⚙️ **Configuration & Environment Management System (Prompt 3.3)**
+
+### **✅ Complete Enterprise Configuration Implementation**
+
+A robust configuration and environment management system providing secure credential management, dynamic configuration updates, multi-environment support, and comprehensive validation.
+
+#### **Configuration Architecture Components**
+
+| Component | Location | Features | Status |
+|-----------|----------|----------|--------|
+| **Environment Factory** | `src/config/environment-config.js` | Multi-environment support, hot-reloading | ✅ Complete |
+| **Credential Manager** | `src/config/credential-manager.js` | AES-256-GCM encryption, rotation | ✅ Complete |
+| **Dynamic Config** | `src/config/dynamic-config.js` | Runtime updates, feature flags | ✅ Complete |
+| **Server Configuration** | `src/config/server-config.js` | Centralized config with validation | ✅ Complete |
+| **Security Config** | `src/config/security/security-config.js` | Advanced security settings | ✅ Complete |
+| **Performance Config** | `src/config/performance/performance-config.js` | Resource optimization | ✅ Complete |
+| **Service Configs** | `src/config/services/` | Database, cache, API configurations | ✅ Complete |
+| **Config Templates** | `src/config/templates/config-templates.js` | Pre-built deployment profiles | ✅ Complete |
+| **Configuration API** | `src/routes/config.js` | RESTful configuration management | ✅ Complete |
+
+#### **Advanced Configuration Features**
+
+**🌍 Multi-Environment Support**
+```javascript
+// Environment-specific configuration with inheritance
+export class EnvironmentConfigFactory extends EventEmitter {
+  getConfiguration(environment = 'development') {
+    const baseConfig = this.loadBaseConfiguration();
+    const envConfig = this.loadEnvironmentConfiguration(environment);
+    return this.mergeConfigurations(baseConfig, envConfig);
+  }
+}
+```
+
+**🔐 Secure Credential Management**
+```javascript
+// AES-256-GCM encrypted credential storage
+export class CredentialManager extends EventEmitter {
+  async storeCredential(key, value, options = {}) {
+    const encrypted = this.encryptValue(value);
+    const metadata = {
+      createdAt: new Date().toISOString(),
+      expiresAt: options.ttl ? new Date(Date.now() + options.ttl).toISOString() : null,
+      rotationSchedule: options.rotationSchedule,
+      accessLevel: options.accessLevel || 'standard'
+    };
+    await this.storage.set(key, { encrypted, metadata });
+  }
+}
+```
+
+**🔄 Dynamic Configuration Updates**
+```javascript
+// Runtime configuration changes without restart
+export class DynamicConfigManager extends EventEmitter {
+  async updateConfiguration(path, value, options = {}) {
+    const changeId = this.generateChangeId();
+    const validation = await this.validateChange(path, value);
+    
+    if (!validation.valid) {
+      throw new Error(`Invalid configuration: ${validation.errors.join(', ')}`);
+    }
+    
+    await this.applyChange(path, value, changeId, options);
+    this.emit('config:updated', { path, value, changeId });
+  }
+}
+```
+
+**📋 Configuration Templates & Profiles**
+```javascript
+// Pre-built configuration profiles for different scenarios
+export const configProfiles = {
+  aiOptimized: {
+    name: 'AI Optimized Profile',
+    description: 'Optimized for AI and machine learning workloads',
+    overrides: {
+      performance: {
+        maxMemoryUsage: '8gb',
+        maxConcurrentTools: 10,
+        enableGPUAcceleration: true
+      }
+    }
+  },
+  manufacturing: {
+    name: 'Manufacturing Profile',
+    description: 'Optimized for manufacturing operations',
+    overrides: {
+      integrations: {
+        unleashed: { enabled: true, priority: 'high' },
+        xero: { enabled: true, priority: 'medium' }
+      }
+    }
+  }
+};
+```
+
+#### **Environment Management Features**
+
+**🏗️ Environment Configurations**
+- **Development**: `src/config/environments/development.js` - Relaxed security, enhanced debugging
+- **Testing**: `src/config/environments/testing.js` - UAT optimized with test isolation
+- **Staging**: `src/config/environments/staging.js` - Production-like with validation features
+- **Production**: `src/config/environments/production.js` - Hardened production with strict security
+
+**🔧 Service-Specific Configurations**
+- **Database**: Connection pooling, SSL, performance tuning
+- **Cache**: Redis/memory cache with TTL management
+- **API**: Rate limiting, timeout, retry policies
+- **Integration**: Service-specific settings and credentials
+- **Monitoring**: Metrics collection and alerting thresholds
+
+**⚡ Performance Configurations**
+```javascript
+// Environment-specific performance tuning
+export const performanceConfigs = {
+  production: {
+    maxMemoryUsage: '4gb',
+    maxCPUUsage: 75,
+    enableClusterMode: true,
+    connectionPooling: {
+      database: { maxConnections: 20, minConnections: 5 },
+      cache: { maxConnections: 10, timeout: 5000 }
+    }
+  }
+};
+```
+
+#### **Configuration Management API**
+
+**Core Configuration Endpoints**
+- `GET /api/config/status` - Configuration system status
+- `GET /api/config/environment` - Current environment settings
+- `GET /api/config/security` - Security configuration (sensitive data masked)
+- `GET /api/config/performance` - Performance settings and optimization
+- `GET /api/config/services` - All service configurations
+- `POST /api/config/dynamic` - Update configuration at runtime
+- `POST /api/config/validate` - Validate configuration changes
+- `POST /api/config/reload` - Reload configuration from files
+
+**Advanced Configuration Features**
+- Real-time configuration updates without restart
+- Configuration change history and rollback
+- Template-based configuration deployment
+- Environment-specific validation rules
+- Encrypted credential management with rotation
+- Configuration drift detection and correction
+
+#### **Security & Compliance**
+
+**🔒 Credential Security**
+- AES-256-GCM encryption for all sensitive data
+- Automatic credential rotation scheduling
+- Access control with audit logging
+- Secure credential distribution
+- Compliance with industry standards
+
+**📊 Configuration Validation**
+```javascript
+// Comprehensive validation with JSON Schema
+export class ConfigurationValidator {
+  async validateConfiguration(config, environment = null) {
+    const results = {
+      valid: true,
+      errors: [],
+      warnings: [],
+      environment
+    };
+    
+    // Schema validation
+    const schemaValidation = this.validateSchema(config);
+    if (!schemaValidation.valid) {
+      results.valid = false;
+      results.errors.push(...schemaValidation.errors);
+    }
+    
+    // Environment-specific validation
+    if (environment) {
+      const envValidation = this.validateEnvironment(config, environment);
+      results.warnings.push(...envValidation.warnings);
+    }
+    
+    return results;
+  }
+}
+```
+
+#### **Configuration Benefits**
+
+**🎯 Operational Excellence**
+- **Zero-Downtime Updates**: Runtime configuration changes without service restart
+- **Environment Consistency**: Guaranteed configuration parity across environments
+- **Security Compliance**: Encrypted credentials with automatic rotation
+- **Audit Trail**: Complete configuration change history
+
+**🔧 Developer Experience**
+- **Hot Configuration Reload**: Instant configuration updates during development
+- **Configuration Templates**: Pre-built profiles for common scenarios
+- **Validation Engine**: Prevent invalid configurations before deployment
+- **API Management**: RESTful configuration management interface
+
+---
+
 ## 🛠️ **Integration Implementation Details**
 
 ### **1. Xero Accounting Integration**
@@ -329,10 +670,12 @@ recordToolExecution(toolName, status, duration, metadata = {}) {
 
 ### **Latest Commits (October 2025)**
 ```
-59a2d2b2 📊 Implement comprehensive enterprise logging and monitoring system
+c5ab6b5f ⚙️ Implement comprehensive configuration and environment management system for MCP server
+59a2d2b2 🔧 Implement comprehensive logging & monitoring system for MCP server
+e5d453d7 🔐 Implement comprehensive authentication and security system for MCP server
 84a6f44b 🏭 Implement comprehensive Unleashed ERP integration for manufacturing operations
 6ecbf7db 🤖 Add comprehensive OpenAI GPT integration to MCP server  
-957d69b7 Add comprehensive Anthropic Claude AI integration to MCP server
+957d69b7 🧠 Add comprehensive Anthropic Claude AI integration to MCP server
 28c52936 🛒 Implement comprehensive Amazon Marketplace integration
 03198ee8 🛍️ Implement comprehensive Shopify e-commerce integration
 70d2c85f 🔌 Implement comprehensive Xero accounting integration
@@ -347,7 +690,9 @@ recordToolExecution(toolName, status, duration, metadata = {}) {
 - ✅ **Phase 2.4**: Anthropic Claude AI integration (Complete)
 - ✅ **Phase 2.5**: OpenAI GPT integration (Complete)
 - ✅ **Phase 2.6**: Unleashed ERP integration (Complete)
-- ✅ **Phase 3.0**: Enterprise Logging & Monitoring System (Complete)
+- ✅ **Phase 3.1**: Authentication & Security System (Complete)
+- ✅ **Phase 3.2**: Logging & Monitoring System (Complete)
+- ✅ **Phase 3.3**: Configuration & Environment Management (Complete)
 
 ## 🔧 **Key Implementation Patterns**
 
@@ -506,10 +851,22 @@ OPENAI_API_KEY=your_openai_key
 UNLEASHED_API_KEY=your_unleashed_key
 UNLEASHED_API_SECRET=your_unleashed_secret
 
-# Monitoring & Alerting
+# Phase 3.1: Authentication & Security
+JWT_SECRET=your_jwt_secret_key
+JWT_REFRESH_SECRET=your_jwt_refresh_secret
+ENCRYPTION_KEY=your_aes_256_encryption_key
+MFA_ENABLED=true
+SESSION_TIMEOUT=3600000
+SECURITY_MONITORING_ENABLED=true
+AUDIT_LOGGING_ENABLED=true
+
+# Phase 3.2: Monitoring & Alerting
 LOG_LEVEL=info
 ENABLE_PERFORMANCE_MONITORING=true
 ENABLE_BUSINESS_ANALYTICS=true
+ENABLE_MEMORY_LEAK_DETECTION=true
+ENABLE_GC_MONITORING=true
+METRICS_RETENTION_DAYS=30
 REDIS_URL=redis://localhost:6379
 NOTIFICATION_WEBHOOK_URL=your_webhook_url
 NOTIFICATION_EMAIL_HOST=smtp.gmail.com
@@ -518,6 +875,16 @@ NOTIFICATION_EMAIL_PASS=your_app_password
 SLACK_WEBHOOK_URL=your_slack_webhook
 TWILIO_ACCOUNT_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_token
+
+# Phase 3.3: Configuration & Environment Management
+CONFIG_ENVIRONMENT=development
+ENABLE_DYNAMIC_CONFIG=true
+ENABLE_CONFIG_VALIDATION=true
+CREDENTIAL_ENCRYPTION_ENABLED=true
+CREDENTIAL_ROTATION_ENABLED=true
+CONFIG_CACHE_TTL=300000
+DATABASE_CONFIG_PROFILE=development
+PERFORMANCE_CONFIG_PROFILE=standard
 ```
 
 ## 🎯 **Key Success Factors**
@@ -568,21 +935,32 @@ TWILIO_AUTH_TOKEN=your_twilio_token
 
 ## 🎉 **Summary**
 
-The Sentia Manufacturing MCP Server is a **complete, production-ready implementation** with 6 fully integrated business systems providing 36 MCP tools plus a comprehensive enterprise-grade monitoring system. The server follows enterprise best practices, includes comprehensive testing and validation, and is ready for immediate production deployment.
+The Sentia Manufacturing MCP Server is a **complete, enterprise-grade implementation** with 6 fully integrated business systems providing 36 MCP tools plus comprehensive Phase 3 enterprise infrastructure including advanced security, monitoring, and configuration management. The server follows enterprise best practices, includes comprehensive testing and validation, and is ready for immediate production deployment.
 
 **Key Achievements:**
-- ✅ Complete MCP specification compliance
-- ✅ 6 major business system integrations
-- ✅ 36 production-ready tools
-- ✅ Enterprise-grade security and monitoring with real-time analytics
-- ✅ Advanced performance monitoring (P95/P99 analysis, memory leak detection)
-- ✅ Business intelligence and ROI tracking
-- ✅ Enterprise alerting system with multi-channel notifications
-- ✅ Comprehensive logging with correlation tracking and async capabilities
-- ✅ Modular, maintainable architecture
-- ✅ Comprehensive documentation and testing
 
-**Ready for:** Production deployment, additional integrations, feature enhancement, and enterprise scaling.
+**🏗️ Core Platform (Phases 1-2)**
+- ✅ Complete MCP specification compliance
+- ✅ 6 major business system integrations (Xero, Shopify, Amazon, Anthropic, OpenAI, Unleashed)
+- ✅ 36 production-ready MCP tools
+- ✅ Modular, maintainable architecture with comprehensive testing
+
+**🏛️ Enterprise Infrastructure (Phase 3)**
+- ✅ **Advanced Authentication & Security** (3.1): JWT authentication, RBAC, AES-256-GCM encryption, threat detection
+- ✅ **Enterprise Monitoring & Logging** (3.2): Real-time analytics, P95/P99 performance analysis, business intelligence, multi-channel alerting
+- ✅ **Configuration & Environment Management** (3.3): Multi-environment support, secure credential management, dynamic configuration updates
+
+**🎯 Production Readiness**
+- ✅ Enterprise-grade security with multi-factor authentication
+- ✅ Comprehensive audit trails and compliance features
+- ✅ Real-time monitoring with automated alerting and escalation
+- ✅ Advanced performance optimization with memory leak detection
+- ✅ Business intelligence and ROI tracking capabilities
+- ✅ Zero-downtime configuration updates
+- ✅ Multi-environment deployment with encrypted credential management
+- ✅ Complete documentation and enterprise support infrastructure
+
+**Ready for:** Immediate enterprise production deployment, regulatory compliance, scale-out operations, and advanced business intelligence.
 
 ---
 

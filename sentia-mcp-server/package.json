@@ -11,10 +11,27 @@
     "start": "node scripts/start-mcp-server.js",
     "dev": "nodemon scripts/start-mcp-server.js",
     "debug": "node --inspect scripts/start-mcp-server.js --log-level debug",
-    "test": "node --test tests/*.test.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --config vitest.unit.config.js",
+    "test:integration": "vitest run --config vitest.integration.config.js",
+    "test:security": "vitest run --config vitest.security.config.js",
+    "test:performance": "k6 run tests/performance/*.js",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:contract": "node tests/contract/api-contract-tests.js",
+    "test:load": "k6 run tests/load/load-test.js",
     "health": "curl -f http://localhost:3001/health || exit 1",
+    "health:advanced": "node scripts/health-check-advanced.js",
     "lint": "eslint src scripts --ext .js",
-    "lint:fix": "eslint src scripts --ext .js --fix"
+    "lint:fix": "eslint src scripts --ext .js --fix",
+    "lint:check": "eslint src scripts --ext .js --max-warnings 0",
+    "format": "prettier --write \"src/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\"",
+    "format:check": "prettier --check \"src/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\"",
+    "security:scan": "npm audit --audit-level=moderate && retire",
+    "security:deps": "snyk test",
+    "build:docker": "docker build -t sentia-mcp-server:latest .",
+    "build:docker:security": "docker build -t sentia-mcp-server:latest . && trivy image sentia-mcp-server:latest"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
@@ -43,8 +60,18 @@
     "xero-node": "^13.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.42.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/ui": "^1.6.0",
     "eslint": "^9.26.0",
-    "nodemon": "^3.1.7"
+    "jsdom": "^24.0.0",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.2.5",
+    "retire": "^5.0.0",
+    "snyk": "^1.1291.0",
+    "supertest": "^6.3.4",
+    "vitest": "^1.6.0",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "engines": {
     "node": ">=18.0.0"

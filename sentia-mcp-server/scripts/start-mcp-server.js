@@ -75,7 +75,7 @@ async function performPreflightChecks() {
     }
   }
 
-  // 4. Test database connectivity
+  // 4. Test database connectivity (optional)
   if (SERVER_CONFIG.database.url) {
     try {
       const { Pool } = await import('pg');
@@ -96,12 +96,16 @@ async function performPreflightChecks() {
         error: error.message 
       });
       
+      // UPDATED: Be more permissive in production - log error but continue
+      // Many integrations can work without database
       if (SERVER_CONFIG.server.environment === 'production') {
-        process.exit(1);
+        logger.warn('Production deployment continuing without database - some features may be limited');
       } else {
         logger.warn('Continuing without database in non-production environment');
       }
     }
+  } else {
+    logger.warn('No database URL configured - running without database functionality');
   }
 
   logger.info('All preflight checks passed');

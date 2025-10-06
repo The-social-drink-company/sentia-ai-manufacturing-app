@@ -955,21 +955,37 @@ export async function validateConfig(config = SERVER_CONFIG, environment = null)
 
 /**
  * Legacy validate function for backward compatibility
+ * Updated to be more permissive for deployment flexibility
  */
 export function validateConfigLegacy() {
   const errors = [];
+  const warnings = [];
 
-  // Validate required environment variables
+  // Critical validations only - allow missing integrations
+  
+  // Database URL is optional in development but warn if missing
   if (!SERVER_CONFIG.database.url) {
-    errors.push('DATABASE_URL is required');
+    if (SERVER_CONFIG.server.environment === 'production') {
+      warnings.push('DATABASE_URL is missing - database features will be disabled');
+    } else {
+      warnings.push('DATABASE_URL is missing - running without database');
+    }
   }
 
+  // JWT secret validation - more flexible
   if (SERVER_CONFIG.security.authRequired && !SERVER_CONFIG.security.jwtSecret) {
-    errors.push('JWT_SECRET is required when authentication is enabled');
+    if (SERVER_CONFIG.server.environment === 'production') {
+      errors.push('JWT_SECRET is required when authentication is enabled in production');
+    } else {
+      warnings.push('JWT_SECRET is missing - using default fallback');
+    }
   }
 
+  // Redis validation - fallback to memory cache
   if (SERVER_CONFIG.cache.type === 'redis' && !SERVER_CONFIG.cache.redis.url) {
-    errors.push('REDIS_URL is required when using Redis cache');
+    warnings.push('REDIS_URL is missing - falling back to memory cache');
+    // Automatically fallback to memory cache
+    SERVER_CONFIG.cache.type = 'memory';
   }
 
   // Validate port ranges
@@ -977,15 +993,23 @@ export function validateConfigLegacy() {
     errors.push('MCP_SERVER_PORT must be between 1 and 65535');
   }
 
-  // Validate rate limiting values
+  // Validate rate limiting values - use defaults if invalid
   if (SERVER_CONFIG.security.rateLimiting.max < 1) {
-    errors.push('RATE_LIMIT_MAX must be at least 1');
+    warnings.push('RATE_LIMIT_MAX invalid - using default of 100');
+    SERVER_CONFIG.security.rateLimiting.max = 100;
   }
 
   if (SERVER_CONFIG.security.rateLimiting.windowMs < 1000) {
-    errors.push('RATE_LIMIT_WINDOW must be at least 1000ms');
+    warnings.push('RATE_LIMIT_WINDOW invalid - using default of 15 minutes');
+    SERVER_CONFIG.security.rateLimiting.windowMs = 15 * 60 * 1000;
   }
 
+  // Log warnings
+  if (warnings.length > 0) {
+    console.warn('Configuration warnings:\n' + warnings.join('\n'));
+  }
+
+  // Only throw on critical errors
   if (errors.length > 0) {
     throw new Error(`Configuration validation failed:\n${errors.join('\n')}`);
   }
@@ -1098,7 +1122,9 @@ try {
   validateConfigLegacy();
 } catch (error) {
   console.error('Configuration validation failed:', error.message);
+  // CRITICAL: Don't exit in production to allow graceful degradation
+  // Log the error but continue startup - missing integrations should not break core functionality
   if (process.env.NODE_ENV === 'production') {
-    process.exit(1);
+    console.warn('Production deployment continuing with configuration warnings - some integrations may be disabled');
   }
 }

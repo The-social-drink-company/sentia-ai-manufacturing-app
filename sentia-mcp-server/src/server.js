@@ -62,14 +62,25 @@ const __dirname = dirname(__filename);
 // Create logger instance
 const logger = createLogger();
 
-// Database Pool
-const dbPool = new Pool({
-  connectionString: SERVER_CONFIG.database.url,
-  max: SERVER_CONFIG.database.maxConnections,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
-  ssl: SERVER_CONFIG.server.environment === 'production' ? { rejectUnauthorized: false } : false
-});
+// Database Pool - Optional initialization
+let dbPool = null;
+if (SERVER_CONFIG.database.url) {
+  try {
+    dbPool = new Pool({
+      connectionString: SERVER_CONFIG.database.url,
+      max: SERVER_CONFIG.database.maxConnections,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+      ssl: SERVER_CONFIG.server.environment === 'production' ? { rejectUnauthorized: false } : false
+    });
+    logger.info('Database pool initialized');
+  } catch (error) {
+    logger.warn('Database pool initialization failed', { error: error.message });
+    dbPool = null;
+  }
+} else {
+  logger.warn('No database URL provided - database features disabled');
+}
 
 /**
  * Main MCP Server Class
@@ -933,6 +944,14 @@ export class SentiaMCPServer {
    * Check database connectivity and performance
    */
   async checkDatabaseHealth() {
+    if (!dbPool) {
+      return {
+        connected: false,
+        error: 'Database pool not initialized',
+        timestamp: new Date().toISOString()
+      };
+    }
+
     try {
       const startTime = Date.now();
       const result = await dbPool.query('SELECT NOW(), version()');
@@ -960,6 +979,10 @@ export class SentiaMCPServer {
    * Execute read-only database queries
    */
   async executeReadOnlyQuery(query, params = []) {
+    if (!dbPool) {
+      throw new Error('Database not available - pool not initialized');
+    }
+
     // Ensure query is read-only
     const readOnlyPattern = /^\s*(SELECT|WITH|EXPLAIN)\s+/i;
     if (!readOnlyPattern.test(query.trim())) {
@@ -1092,8 +1115,10 @@ export class SentiaMCPServer {
       });
 
       // Close database connections
-      await dbPool.end();
-      logger.info('Database connections closed');
+      if (dbPool) {
+        await dbPool.end();
+        logger.info('Database connections closed');
+      }
 
       // Close all SSE connections
       for (const [connectionId, res] of this.connections) {

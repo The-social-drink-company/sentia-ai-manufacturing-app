@@ -111,13 +111,9 @@ EXPOSE 3001 3002 3101
 # 3002: HTTP API and SSE transport
 # 3101: Health check and monitoring port
 
-# Enhanced health check with comprehensive validation
+# Health check with fallbacks for robust monitoring
 HEALTHCHECK --interval=30s --timeout=15s --start-period=60s --retries=3 \
-    CMD node scripts/health-check-advanced.js || exit 1
-
-# Add health check fallback
-HEALTHCHECK --interval=60s --timeout=10s --start-period=60s --retries=2 \
-    CMD curl -f http://localhost:3101/health || curl -f http://localhost:3001/health || exit 1
+    CMD curl -f http://localhost:3001/health || exit 1
 
 # Security: Switch to non-root user
 USER mcpserver

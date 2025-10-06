@@ -1,4 +1,4 @@
-# 🏢 Sentia Manufacturing Dashboard
+# 🏢 Sentia AI Manufacturing App
 
 [![Security Review](https://img.shields.io/badge/Security-A%2B-green)](./security)
 [![Code Quality](https://img.shields.io/badge/Code%20Quality-95%25-blue)](./docs)
@@ -8,7 +8,7 @@
 
 ## 🎯 Enterprise Manufacturing Intelligence Platform
 
-World-class manufacturing dashboard with AI-powered analytics, real-time monitoring, and comprehensive business intelligence for Sentia Spirits.
+World-class AI manufacturing application with AI-powered analytics, real-time monitoring, and comprehensive business intelligence for Sentia Spirits.
 
 ## 🛠️ Technology Stack
 

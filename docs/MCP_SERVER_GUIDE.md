@@ -1,8 +1,8 @@
-# Sentia Manufacturing MCP Server Guide
+# Sentia AI Manufacturing App MCP Server Guide
 
 ## 🏭 Overview
 
-The Sentia Manufacturing MCP (Model Context Protocol) Server is an enterprise-grade AI orchestration system that provides comprehensive business intelligence capabilities for manufacturing operations. Built with the official `@modelcontextprotocol/sdk`, it offers seamless integration with Claude Desktop and other MCP-compatible clients.
+The Sentia AI Manufacturing App MCP (Model Context Protocol) Server is an enterprise-grade AI orchestration system that provides comprehensive business intelligence capabilities for manufacturing operations. Built with the official `@modelcontextprotocol/sdk`, it offers seamless integration with Claude Desktop and other MCP-compatible clients.
 
 ## 🚀 Features
 

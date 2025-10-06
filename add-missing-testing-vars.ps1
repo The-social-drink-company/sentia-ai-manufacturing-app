@@ -19,7 +19,7 @@ $missingVars = @{
 
     # MCP Server Configuration
     "MCP_SERVER_PORT" = "3001"
-    "MCP_SERVER_URL" = "https://mcp-server-tkyu.onrender.com"
+    "MCP_SERVER_URL" = "https://sentia-ai-manufacturing-app.onrender.com"
     "MCP_JWT_SECRET" = "UCL2hGcrBa4GdF32izKAd2dTBDJ5WidLVuV5r3uPTOc="
     "MCP_SERVER_HEALTH_CHECK_INTERVAL" = "30000"
     "MCP_ENABLE_WEBSOCKET" = "true"

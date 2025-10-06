@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "sentia-manufacturing": {
+    "sentia-ai-manufacturing": {
       "command": "node",
       "args": [
         "scripts/start-mcp-server.js"

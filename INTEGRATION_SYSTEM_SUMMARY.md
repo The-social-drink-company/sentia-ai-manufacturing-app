@@ -91,9 +91,7 @@ Extended Prisma schema with comprehensive models:
 - **Production**: `sentia-manufacturing-dashboard-production.onrender.com`
 
 ### MCP Server Architecture
-- **Development**: `sentia-mcp-server-development.onrender.com`
-- **Testing**: `sentia-mcp-server-testing.onrender.com`
-- **Production**: `sentia-mcp-server-production.onrender.com`
+- **Production**: `sentia-ai-manufacturing-app.onrender.com`
 
 ### Database Configuration
 - PostgreSQL with pgvector extension for all environments

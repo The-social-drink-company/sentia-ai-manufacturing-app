@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 const SystemConfig = () => {
   const [config, setConfig] = useState({
-    mcpServer: 'https://mcp-server-tkyu.onrender.com',
+    mcpServer: 'https://sentia-ai-manufacturing-app.onrender.com',
     apiTimeout: 30000,
     refreshInterval: 60000,
     enableAI: true,

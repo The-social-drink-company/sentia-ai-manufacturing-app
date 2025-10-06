@@ -77,14 +77,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **API Endpoints**: `/api/dashboard/*` for secure dashboard integration
 - **Transport Support**: Dual transport (stdio + HTTP) for maximum compatibility
 - **Deployment URLs**: 
-  - Development: `sentia-mcp-server-development.onrender.com`
-  - Testing: `sentia-mcp-server-testing.onrender.com`
-  - Production: `sentia-mcp-server-production.onrender.com`
+  - Production: `sentia-ai-manufacturing-app.onrender.com`
 
 ### **SECURITY VULNERABILITIES IDENTIFIED** ⚠️
 **GitHub Security Alert**: 4 vulnerabilities detected (1 critical, 1 high, 2 moderate)
 - **Action Required**: Address security issues before production deployment
-- **Location**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/security/dependabot
+- **Location**: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/security/dependabot
 
 ### **CLERK DOCUMENTATION RESOURCE** 📚
 **Documentation Folder**: `clerk-docs/` (excluded from Git)

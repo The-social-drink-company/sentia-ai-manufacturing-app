@@ -6,7 +6,7 @@
 class APIIntegration {
   constructor() {
     this.baseURLs = {
-      mcp: process.env.VITE_MCP_SERVER_URL || 'https://sentia-ai-manufacturing-app.onrender.com',
+      mcp: process.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com',
       shopifyUK: process.env.VITE_SHOPIFY_UK_SHOP_URL || 'https://sentiaspirits.myshopify.com',
       shopifyUSA: process.env.VITE_SHOPIFY_USA_SHOP_URL || 'https://ussentiaspirits.myshopify.com',
       xero: 'https://api.xero.com/api.xro/2.0',

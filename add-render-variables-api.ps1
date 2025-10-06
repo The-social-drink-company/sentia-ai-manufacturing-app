@@ -104,7 +104,7 @@ $allVariables = @{
     "MICROSOFT_DATA_EMAIL" = "data@app.sentiaspirits.com"
     
     # MCP Server
-    "MCP_SERVER_URL" = "https://sentia-ai-manufacturing-app.onrender.com"
+    "MCP_SERVER_URL" = "https://sentia-mcp-production.onrender.com"
     "MCP_SERVER_SERVICE_ID" = "99691282-de66-45b2-98cf-317083dd11ba"
     "MCP_ENABLE_WEBSOCKET" = "true"
     "MCP_SERVER_PORT" = "3001"

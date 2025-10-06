@@ -44,8 +44,8 @@ export const ENVIRONMENT_TEMPLATES = {
     VITE_APP_VERSION: '1.0.10',
 
     // MCP Server Configuration
-    MCP_SERVER_URL: 'https://mcp-server-yacx.onrender.com',
-    VITE_MCP_SERVER_URL: 'https://mcp-server-yacx.onrender.com',
+    MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
+    VITE_MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
     MCP_JWT_SECRET: '${GENERATE_MCP_JWT_SECRET}',
     MCP_ENABLE_WEBSOCKET: 'true',
     MCP_SERVER_HEALTH_CHECK_INTERVAL: '30000',
@@ -142,8 +142,8 @@ export const ENVIRONMENT_TEMPLATES = {
     VITE_APP_VERSION: '1.0.10-testing',
 
     // MCP Server Configuration
-    MCP_SERVER_URL: 'https://mcp-server-yacx.onrender.com',
-    VITE_MCP_SERVER_URL: 'https://mcp-server-yacx.onrender.com',
+    MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
+    VITE_MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
     MCP_JWT_SECRET: '${GENERATE_MCP_JWT_SECRET}',
     MCP_ENABLE_WEBSOCKET: 'true',
     MCP_SERVER_HEALTH_CHECK_INTERVAL: '15000',
@@ -216,8 +216,8 @@ export const ENVIRONMENT_TEMPLATES = {
     VITE_APP_VERSION: '1.0.10-development',
 
     // MCP Server Configuration
-    MCP_SERVER_URL: 'https://mcp-server-yacx.onrender.com',
-    VITE_MCP_SERVER_URL: 'https://mcp-server-yacx.onrender.com',
+    MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
+    VITE_MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
     MCP_JWT_SECRET: '${GENERATE_MCP_JWT_SECRET}',
     MCP_ENABLE_WEBSOCKET: 'true',
     MCP_SERVER_HEALTH_CHECK_INTERVAL: '10000',

@@ -10,7 +10,7 @@ class FinancialAlgorithms {
       shopifyUK: process.env.VITE_SHOPIFY_UK_API_URL || '/api/shopify-uk',
       shopifyUSA: process.env.VITE_SHOPIFY_USA_API_URL || '/api/shopify-usa',
       unleashed: process.env.VITE_UNLEASHED_API_URL || '/api/unleashed',
-      mcp: process.env.VITE_MCP_SERVER_URL || 'https://sentia-ai-manufacturing-app.onrender.com'
+      mcp: process.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
     }
     
     this.cache = new Map()

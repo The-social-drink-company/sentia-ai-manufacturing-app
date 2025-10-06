@@ -1,6 +1,6 @@
 import { logWarn } from '../utils/structuredLogger.js'
 
-const DEFAULT_MCP_BASE_URL = 'https://sentia-ai-manufacturing-app.onrender.com'
+const DEFAULT_MCP_BASE_URL = 'https://sentia-mcp-production.onrender.com'
 const DASHBOARD_SUMMARY_PATH = '/v1/dashboard/summary'
 
 const MOCK_DASHBOARD_SUMMARY = {

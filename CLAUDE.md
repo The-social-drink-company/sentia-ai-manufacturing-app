@@ -77,7 +77,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **API Endpoints**: `/api/dashboard/*` for secure dashboard integration
 - **Transport Support**: Dual transport (stdio + HTTP) for maximum compatibility
 - **Deployment URLs**: 
-  - Production: `sentia-ai-manufacturing-app.onrender.com`
+  - Production: `sentia-mcp-production.onrender.com`
 
 ### **SECURITY VULNERABILITIES IDENTIFIED** ⚠️
 **GitHub Security Alert**: 4 vulnerabilities detected (1 critical, 1 high, 2 moderate)

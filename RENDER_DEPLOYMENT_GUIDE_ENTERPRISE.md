@@ -155,8 +155,8 @@ Development → Testing → Production
 #### **1.1 Repository Configuration**
 ```bash
 # Clone repository
-git clone https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
-cd sentia-manufacturing-dashboard
+git clone https://github.com/The-social-drink-company/sentia-ai-manufacturing-app.git
+cd sentia-ai-manufacturing-app
 
 # Verify branch structure
 git branch -a

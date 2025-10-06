@@ -11,8 +11,6 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// MCP Server URL for AI integration
-const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'https://mcp-server-tkyu.onrender.com';
 
 /**
  * Dashboard Summary - Real Production Data
@@ -315,27 +313,6 @@ router.get('/quality/metrics', async (req, res) => {
   }
 });
 
-/**
- * MCP Server Status
- */
-router.get('/mcp/status', async (req, res) => {
-  try {
-    const response = await axios.get(`${MCP_SERVER_URL}/health`, {
-      timeout: 5000
-    });
-
-    res.json({
-      connected: true,
-      ...response.data
-    });
-  } catch (error) {
-    res.json({
-      connected: false,
-      error: error.message,
-      url: MCP_SERVER_URL
-    });
-  }
-});
 
 /**
  * AI Insights from MCP Server
@@ -343,7 +320,7 @@ router.get('/mcp/status', async (req, res) => {
 router.post('/ai/insights', async (req, res) => {
   try {
     // For now, return a structured response
-    // In production, this would connect to the MCP server's AI tools
+    // AI insights generated from internal algorithms
     res.json({
       insights: [
         {

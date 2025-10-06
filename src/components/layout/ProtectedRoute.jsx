@@ -1,4 +1,4 @@
-import { RedirectToSignIn } from '@clerk/clerk-react'
+import RedirectToSignInEnvironmentAware from '@/components/auth/RedirectToSignInEnvironmentAware'
 import { Navigate, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../../hooks/useAuth.js'
@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children }) {
 
   if (mode === 'clerk' && !isAuthenticated) {
     const redirectUrl = `${location.pathname}${location.search}${location.hash}` || '/dashboard'
-    return <RedirectToSignIn redirectUrl={redirectUrl} />
+    return <RedirectToSignInEnvironmentAware redirectUrl={redirectUrl} />
   }
 
   if (!isAuthenticated) {

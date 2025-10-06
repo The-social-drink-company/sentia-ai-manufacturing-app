@@ -1,0 +1,791 @@
+# Enhanced Security Scanning Workflow
+# Comprehensive security analysis with multiple scanners and vulnerability assessment
+
+name: 🛡️ Enhanced Security Scanning
+
+on:
+  push:
+    branches: [development, testing, production]
+  pull_request:
+    branches: [development, testing, production]
+  schedule:
+    # Daily security scan at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      scan_depth:
+        description: 'Security scan depth'
+        required: true
+        type: choice
+        default: 'standard'
+        options:
+          - basic
+          - standard
+          - comprehensive
+          - penetration
+      target_environment:
+        description: 'Target environment to scan'
+        required: true
+        type: choice
+        default: 'development'
+        options:
+          - development
+          - testing
+          - production
+
+env:
+  NODE_VERSION: '18'
+  SECURITY_BASELINE_BRANCH: 'production'
+  SARIF_UPLOAD_ENABLED: true
+
+# Security permissions for vulnerability scanning
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  issues: write
+  pull-requests: write
+
+# Prevent concurrent security scans
+concurrency:
+  group: security-scan-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Job 1: Dependency and Supply Chain Security
+  dependency-security:
+    name: 🔍 Dependency Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    outputs:
+      vulnerabilities-found: ${{ steps.vulnerability-summary.outputs.found }}
+      critical-count: ${{ steps.vulnerability-summary.outputs.critical }}
+      high-count: ${{ steps.vulnerability-summary.outputs.high }}
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies (Main Dashboard)
+        run: |
+          npm ci --legacy-peer-deps
+          npm audit --audit-level=info --json > main-audit.json || true
+      
+      - name: 📦 Install dependencies (MCP Server)
+        working-directory: ./sentia-mcp-server
+        run: |
+          npm ci
+          npm audit --audit-level=info --json > mcp-audit.json || true
+      
+      - name: 🔍 NPM Audit Analysis
+        id: npm-audit
+        run: |
+          echo "Analyzing npm audit results..."
+          
+          # Main dashboard audit
+          MAIN_CRITICAL=$(cat main-audit.json | jq '.metadata.vulnerabilities.critical // 0')
+          MAIN_HIGH=$(cat main-audit.json | jq '.metadata.vulnerabilities.high // 0')
+          MAIN_MODERATE=$(cat main-audit.json | jq '.metadata.vulnerabilities.moderate // 0')
+          
+          # MCP server audit
+          MCP_CRITICAL=$(cat sentia-mcp-server/mcp-audit.json | jq '.metadata.vulnerabilities.critical // 0')
+          MCP_HIGH=$(cat sentia-mcp-server/mcp-audit.json | jq '.metadata.vulnerabilities.high // 0')
+          MCP_MODERATE=$(cat sentia-mcp-server/mcp-audit.json | jq '.metadata.vulnerabilities.moderate // 0')
+          
+          TOTAL_CRITICAL=$((MAIN_CRITICAL + MCP_CRITICAL))
+          TOTAL_HIGH=$((MAIN_HIGH + MCP_HIGH))
+          TOTAL_MODERATE=$((MAIN_MODERATE + MCP_MODERATE))
+          
+          echo "critical=$TOTAL_CRITICAL" >> $GITHUB_OUTPUT
+          echo "high=$TOTAL_HIGH" >> $GITHUB_OUTPUT
+          echo "moderate=$TOTAL_MODERATE" >> $GITHUB_OUTPUT
+          
+          echo "Main Dashboard - Critical: $MAIN_CRITICAL, High: $MAIN_HIGH, Moderate: $MAIN_MODERATE"
+          echo "MCP Server - Critical: $MCP_CRITICAL, High: $MCP_HIGH, Moderate: $MCP_MODERATE"
+          echo "Total - Critical: $TOTAL_CRITICAL, High: $TOTAL_HIGH, Moderate: $TOTAL_MODERATE"
+      
+      - name: 🔐 Snyk Security Scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=medium --json > snyk-results.json
+        continue-on-error: true
+      
+      - name: 🔍 Retire.js Security Scan
+        run: |
+          npx retire --outputformat json --outputpath retire-results.json || true
+          npx retire --path ./sentia-mcp-server --outputformat json --outputpath retire-mcp-results.json || true
+      
+      - name: 📊 License Compliance Check
+        run: |
+          npx license-checker --production --json > licenses-main.json
+          cd sentia-mcp-server && npx license-checker --production --json > ../licenses-mcp.json
+          
+          # Check for prohibited licenses
+          node -e "
+          const licenses = require('./licenses-main.json');
+          const prohibited = ['GPL-2.0', 'GPL-3.0', 'AGPL-1.0', 'AGPL-3.0'];
+          const violations = Object.entries(licenses).filter(([pkg, info]) => 
+            prohibited.includes(info.licenses)
+          );
+          if (violations.length > 0) {
+            console.log('License violations found:', violations);
+            process.exit(1);
+          }
+          "
+      
+      - name: 📋 SBOM Generation
+        run: |
+          # Generate Software Bill of Materials
+          npx @cyclonedx/cyclonedx-npm --output-file sbom-main.json
+          cd sentia-mcp-server && npx @cyclonedx/cyclonedx-npm --output-file ../sbom-mcp.json
+      
+      - name: 📊 Vulnerability Summary
+        id: vulnerability-summary
+        run: |
+          CRITICAL=${{ steps.npm-audit.outputs.critical }}
+          HIGH=${{ steps.npm-audit.outputs.high }}
+          
+          echo "found=$([ $CRITICAL -gt 0 ] || [ $HIGH -gt 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+          
+          # Fail build if critical vulnerabilities found
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "::error::$CRITICAL critical vulnerabilities found"
+            if [ "${{ github.event.inputs.scan_depth }}" != "basic" ]; then
+              exit 1
+            fi
+          fi
+          
+          if [ "$HIGH" -gt 5 ]; then
+            echo "::warning::$HIGH high-severity vulnerabilities found"
+          fi
+      
+      - name: 📋 Upload Security Scan Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-security-results
+          path: |
+            main-audit.json
+            sentia-mcp-server/mcp-audit.json
+            snyk-results.json
+            retire-results.json
+            retire-mcp-results.json
+            licenses-*.json
+            sbom-*.json
+          retention-days: 30
+
+  # Job 2: Static Code Analysis Security
+  static-analysis:
+    name: 🔍 Static Code Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: dependency-security
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          cd sentia-mcp-server && npm ci
+      
+      - name: 🔍 CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+          queries: security-and-quality,security-experimental
+      
+      - name: 🏗️ Autobuild
+        uses: github/codeql-action/autobuild@v3
+      
+      - name: 🔍 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"
+      
+      - name: 🔐 Semgrep Security Scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+            p/javascript
+            p/nodejs
+          generateSarif: "1"
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+      
+      - name: 🔍 ESLint Security Plugin
+        run: |
+          npx eslint . --ext .js,.jsx --config .eslintrc-security.js --format json --output-file eslint-security.json || true
+          cd sentia-mcp-server && npx eslint . --ext .js --format json --output-file ../eslint-security-mcp.json || true
+        continue-on-error: true
+      
+      - name: 🔐 Secrets Detection (TruffleHog)
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+      
+      - name: 🔍 Secrets Detection (GitLeaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      
+      - name: 📊 Security Hotspots Analysis
+        run: |
+          # Analyze security hotspots and patterns
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+          
+          const securityPatterns = [
+            { pattern: /eval\s*\(/, severity: 'high', description: 'eval() usage detected' },
+            { pattern: /innerHTML\s*=/, severity: 'medium', description: 'innerHTML assignment detected' },
+            { pattern: /document\.write/, severity: 'medium', description: 'document.write usage detected' },
+            { pattern: /\$\{.*\}/, severity: 'low', description: 'Template literal injection possible' },
+            { pattern: /process\.env\[\w+\]/, severity: 'info', description: 'Environment variable access' },
+            { pattern: /crypto\.createHash\('md5'\)/, severity: 'medium', description: 'Weak hash algorithm MD5' },
+            { pattern: /Math\.random\(\)/, severity: 'low', description: 'Non-cryptographic random' }
+          ];
+          
+          function scanFile(filePath) {
+            const content = fs.readFileSync(filePath, 'utf8');
+            const issues = [];
+            
+            securityPatterns.forEach(({ pattern, severity, description }) => {
+              const matches = content.match(pattern);
+              if (matches) {
+                issues.push({
+                  file: filePath,
+                  severity,
+                  description,
+                  matches: matches.length
+                });
+              }
+            });
+            
+            return issues;
+          }
+          
+          function scanDirectory(dir) {
+            const issues = [];
+            const files = fs.readdirSync(dir);
+            
+            files.forEach(file => {
+              const filePath = path.join(dir, file);
+              const stat = fs.statSync(filePath);
+              
+              if (stat.isDirectory() && !file.startsWith('.') && file !== 'node_modules') {
+                issues.push(...scanDirectory(filePath));
+              } else if (file.endsWith('.js') || file.endsWith('.jsx')) {
+                issues.push(...scanFile(filePath));
+              }
+            });
+            
+            return issues;
+          }
+          
+          const allIssues = [
+            ...scanDirectory('./src'),
+            ...scanDirectory('./server'),
+            ...scanDirectory('./sentia-mcp-server/src')
+          ];
+          
+          fs.writeFileSync('security-hotspots.json', JSON.stringify(allIssues, null, 2));
+          
+          const highSeverity = allIssues.filter(i => i.severity === 'high');
+          if (highSeverity.length > 0) {
+            console.log('High severity security hotspots found:');
+            highSeverity.forEach(issue => console.log(\`- \${issue.file}: \${issue.description}\`));
+          }
+          "
+      
+      - name: 📋 Upload Static Analysis Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: static-analysis-results
+          path: |
+            eslint-security.json
+            eslint-security-mcp.json
+            security-hotspots.json
+          retention-days: 30
+
+  # Job 3: Container Security Scanning
+  container-security:
+    name: 🐳 Container Security Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/testing' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: 🏗️ Build MCP Server Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./sentia-mcp-server
+          file: ./sentia-mcp-server/Dockerfile
+          push: false
+          tags: sentia-mcp-server:security-scan
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: 🔍 Trivy Container Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'sentia-mcp-server:security-scan'
+          format: 'sarif'
+          output: 'trivy-container-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+      
+      - name: 🔍 Grype Container Scan
+        uses: anchore/scan-action@v3
+        with:
+          image: 'sentia-mcp-server:security-scan'
+          output-format: sarif
+          output-file: grype-container-results.sarif
+          severity-cutoff: medium
+      
+      - name: 🔍 Docker Scout Security Scan
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: sentia-mcp-server:security-scan
+          sarif-file: scout-container-results.sarif
+          summary: true
+        continue-on-error: true
+      
+      - name: 📊 Container Security Summary
+        run: |
+          echo "Container Security Scan Results:"
+          
+          # Parse Trivy results
+          TRIVY_CRITICAL=$(cat trivy-container-results.sarif | jq '.runs[0].results | map(select(.level == "error")) | length')
+          TRIVY_HIGH=$(cat trivy-container-results.sarif | jq '.runs[0].results | map(select(.level == "warning")) | length')
+          
+          echo "Trivy - Critical: $TRIVY_CRITICAL, High: $TRIVY_HIGH"
+          
+          # Fail if critical vulnerabilities found
+          if [ "$TRIVY_CRITICAL" -gt 0 ]; then
+            echo "::error::$TRIVY_CRITICAL critical container vulnerabilities found"
+            if [ "${{ github.event.inputs.scan_depth }}" != "basic" ]; then
+              exit 1
+            fi
+          fi
+          
+          if [ "$TRIVY_HIGH" -gt 10 ]; then
+            echo "::warning::$TRIVY_HIGH high-severity container vulnerabilities found"
+          fi
+      
+      - name: 📋 Upload Container Security Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-container-results.sarif
+          category: container-security-trivy
+      
+      - name: 📋 Upload Container Scan Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: container-security-results
+          path: |
+            trivy-container-results.sarif
+            grype-container-results.sarif
+            scout-container-results.sarif
+          retention-days: 30
+
+  # Job 4: Infrastructure Security Scanning
+  infrastructure-security:
+    name: 🏗️ Infrastructure Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🔍 Terraform/IaC Security Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-iac-results.sarif'
+      
+      - name: 🔍 Docker Compose Security Check
+        run: |
+          # Check for security issues in Docker Compose files
+          find . -name "docker-compose*.yml" -exec docker run --rm -v $(pwd):/project goodwithtech/dockle:latest analyze --input /project/{} \; || true
+      
+      - name: 🔍 GitHub Actions Security
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      
+      - name: 🔐 Kubernetes Security Policies
+        run: |
+          # Validate Kubernetes security policies if they exist
+          if [ -d "./k8s" ] || [ -d "./kubernetes" ]; then
+            echo "Kubernetes manifests found, validating security policies..."
+            
+            # Use Polaris for Kubernetes security validation
+            docker run --rm -v $(pwd):/workdir quay.io/fairwinds/polaris:latest validate --config /workdir/.polaris.yml --audit-path /workdir/k8s/ || true
+          else
+            echo "No Kubernetes manifests found, skipping K8s security check"
+          fi
+      
+      - name: 📋 Upload Infrastructure Security Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-iac-results.sarif
+          category: infrastructure-security
+
+  # Job 5: Runtime Security Testing
+  runtime-security:
+    name: 🚀 Runtime Security Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event.inputs.scan_depth == 'comprehensive' || github.event.inputs.scan_depth == 'penetration'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: test_database
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        working-directory: ./sentia-mcp-server
+        run: npm ci
+      
+      - name: 🚀 Start MCP Server for Security Testing
+        working-directory: ./sentia-mcp-server
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_database
+          REDIS_URL: redis://localhost:6379
+        run: |
+          npm start &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          
+          # Wait for server to start
+          for i in {1..30}; do
+            if curl -f http://localhost:3001/health; then
+              echo "Server started successfully"
+              break
+            fi
+            sleep 2
+          done
+      
+      - name: 🔐 Run Security Test Suite
+        working-directory: ./sentia-mcp-server
+        env:
+          NODE_ENV: test
+        run: |
+          npm run test:security
+      
+      - name: 🔍 OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:3001'
+          cmd_options: '-a -j -m 5 -T 15'
+          allow_issue_writing: false
+      
+      - name: 🔍 OWASP ZAP Full Scan
+        if: github.event.inputs.scan_depth == 'penetration'
+        uses: zaproxy/action-full-scan@v0.8.0
+        with:
+          target: 'http://localhost:3001'
+          cmd_options: '-a -j -m 5 -T 30'
+          allow_issue_writing: false
+      
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          if [ ! -z "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
+      
+      - name: 📋 Upload Runtime Security Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: runtime-security-results
+          path: |
+            sentia-mcp-server/test-results/security-results.json
+            report_html.html
+            report_md.md
+            report_json.json
+          retention-days: 30
+
+  # Job 6: Security Report Generation
+  security-report:
+    name: 📋 Security Report Generation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [dependency-security, static-analysis, container-security, infrastructure-security]
+    if: always()
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 📋 Download all security artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: security-results
+      
+      - name: 📊 Generate Comprehensive Security Report
+        run: |
+          cat << 'EOF' > security-report.md
+          # 🛡️ Security Scan Report
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Branch**: ${{ github.ref_name }}
+          **Commit**: ${{ github.sha }}
+          **Scan Depth**: ${{ github.event.inputs.scan_depth || 'standard' }}
+          
+          ## Summary
+          
+          | Scan Type | Status | Critical | High | Medium | Low |
+          |-----------|--------|----------|------|--------|-----|
+          | Dependencies | ${{ needs.dependency-security.result }} | ${{ needs.dependency-security.outputs.critical-count || '0' }} | ${{ needs.dependency-security.outputs.high-count || '0' }} | - | - |
+          | Static Analysis | ${{ needs.static-analysis.result }} | - | - | - | - |
+          | Container Security | ${{ needs.container-security.result }} | - | - | - | - |
+          | Infrastructure | ${{ needs.infrastructure-security.result }} | - | - | - | - |
+          
+          ## Dependency Security Analysis
+          
+          EOF
+          
+          if [ "${{ needs.dependency-security.outputs.vulnerabilities-found }}" == "true" ]; then
+            echo "⚠️ **Vulnerabilities Found**" >> security-report.md
+            echo "" >> security-report.md
+            echo "- Critical: ${{ needs.dependency-security.outputs.critical-count }}" >> security-report.md
+            echo "- High: ${{ needs.dependency-security.outputs.high-count }}" >> security-report.md
+          else
+            echo "✅ **No High/Critical Vulnerabilities Found**" >> security-report.md
+          fi
+          
+          cat << 'EOF' >> security-report.md
+          
+          ## Recommendations
+          
+          1. **Immediate Actions**:
+             - Review and fix all critical vulnerabilities
+             - Update dependencies with known security issues
+             - Implement security headers and policies
+          
+          2. **Medium-term Actions**:
+             - Regular security scanning in CI/CD
+             - Implement security monitoring
+             - Security training for development team
+          
+          3. **Long-term Actions**:
+             - Security architecture review
+             - Penetration testing
+             - Security compliance assessment
+          
+          ## Next Steps
+          
+          - [ ] Review detailed vulnerability reports
+          - [ ] Create security fix tickets
+          - [ ] Update security documentation
+          - [ ] Schedule security training
+          
+          ---
+          
+          *Generated by Sentia Manufacturing Security Pipeline*
+          EOF
+          
+          echo "Security report generated"
+          cat security-report.md
+      
+      - name: 📋 Upload Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.md
+          retention-days: 90
+      
+      - name: 💬 Comment Security Report on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('security-report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🛡️ Security Scan Results\n\n${report}`
+            });
+      
+      - name: 🚨 Create Security Issue
+        if: needs.dependency-security.outputs.vulnerabilities-found == 'true' && github.ref == 'refs/heads/production'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('security-report.md', 'utf8');
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Security Vulnerabilities Found - ${new Date().toISOString().split('T')[0]}`,
+              body: `${report}\n\n**Automated security scan detected vulnerabilities that require immediate attention.**`,
+              labels: ['security', 'critical', 'automated']
+            });
+
+  # Job 7: Security Notification
+  security-notification:
+    name: 📢 Security Notifications
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [dependency-security, static-analysis, container-security, infrastructure-security, security-report]
+    if: always()
+    
+    steps:
+      - name: 📊 Prepare Notification Data
+        id: notification-data
+        run: |
+          VULNERABILITIES_FOUND="${{ needs.dependency-security.outputs.vulnerabilities-found }}"
+          CRITICAL_COUNT="${{ needs.dependency-security.outputs.critical-count || '0' }}"
+          HIGH_COUNT="${{ needs.dependency-security.outputs.high-count || '0' }}"
+          
+          if [ "$VULNERABILITIES_FOUND" == "true" ]; then
+            SEVERITY="critical"
+            MESSAGE="🚨 Security vulnerabilities found: $CRITICAL_COUNT critical, $HIGH_COUNT high"
+            COLOR="danger"
+          else
+            SEVERITY="success"
+            MESSAGE="✅ Security scan completed - No critical vulnerabilities found"
+            COLOR="good"
+          fi
+          
+          echo "severity=$SEVERITY" >> $GITHUB_OUTPUT
+          echo "message=$MESSAGE" >> $GITHUB_OUTPUT
+          echo "color=$COLOR" >> $GITHUB_OUTPUT
+      
+      - name: 📧 Email Notification
+        if: needs.dependency-security.outputs.vulnerabilities-found == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: 🚨 Security Alert - Vulnerabilities Found in ${{ github.repository }}
+          body: |
+            Security vulnerabilities have been detected in the Sentia Manufacturing Dashboard.
+            
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Critical: ${{ needs.dependency-security.outputs.critical-count }}
+            High: ${{ needs.dependency-security.outputs.high-count }}
+            
+            Please review the security scan results and take immediate action.
+            
+            View details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.SECURITY_EMAIL }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+      
+      - name: 📱 Slack Notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "text": "${{ steps.notification-data.outputs.message }}",
+              "color": "${{ steps.notification-data.outputs.color }}",
+              "fields": [
+                {
+                  "title": "Repository",
+                  "value": "${{ github.repository }}",
+                  "short": true
+                },
+                {
+                  "title": "Branch",
+                  "value": "${{ github.ref_name }}",
+                  "short": true
+                },
+                {
+                  "title": "Scan Results",
+                  "value": "Critical: ${{ needs.dependency-security.outputs.critical-count || '0' }}, High: ${{ needs.dependency-security.outputs.high-count || '0' }}",
+                  "short": false
+                },
+                {
+                  "title": "View Results",
+                  "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click here>",
+                  "short": false
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

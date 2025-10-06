@@ -1,12 +1,12 @@
 import React from 'react'
-import { useAuth, SignIn, SignUp } from '@clerk/clerk-react'
+import useEnvironmentAuth from '@/hooks/useEnvironmentAuth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Shield, Building2, Users, TrendingUp, BarChart3 } from 'lucide-react'
 
 export default function ClerkAuthGuard({ children }) {
-  const { isLoaded, isSignedIn } = useAuth()
+  const { isLoaded, isSignedIn } = useEnvironmentAuth()
 
   if (!isLoaded) {
     return (
@@ -59,21 +59,29 @@ export default function ClerkAuthGuard({ children }) {
                     
                     <TabsContent value="signin" className="space-y-4">
                       <div className="flex justify-center">
-                        <SignIn 
-                          routing="hash"
-                          signUpUrl="#signup"
-                          afterSignInUrl="/"
-                        />
+                        <div className="text-center text-white">
+                          <p className="mb-4">Development Mode Active</p>
+                          <Button 
+                            onClick={() => window.location.href = '/app/dashboard'}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            Continue to Dashboard
+                          </Button>
+                        </div>
                       </div>
                     </TabsContent>
                     
                     <TabsContent value="signup" className="space-y-4">
                       <div className="flex justify-center">
-                        <SignUp 
-                          routing="hash"
-                          signInUrl="#signin"
-                          afterSignUpUrl="/"
-                        />
+                        <div className="text-center text-white">
+                          <p className="mb-4">Development Mode Active</p>
+                          <Button 
+                            onClick={() => window.location.href = '/app/dashboard'}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            Continue to Dashboard
+                          </Button>
+                        </div>
                       </div>
                     </TabsContent>
                   </Tabs>

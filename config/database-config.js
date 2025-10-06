@@ -10,56 +10,41 @@ const BRANCH = process.env.BRANCH || process.env.RENDER_GIT_BRANCH || NODE_ENV;
 
 // MCP Server Configuration (shared across all branches)
 export const MCP_CONFIG = {
-  url: 'https://mcp-server-tkyu.onrender.com',
-  websocketUrl: 'wss://mcp-server-tkyu.onrender.com',
+  url: process.env.MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com',
+  websocketUrl: process.env.MCP_WEBSOCKET_URL || 'wss://sentia-mcp-production.onrender.com',
   healthCheckEndpoint: '/health',
   apiVersion: 'v1',
-  timeout: 30000,
-  retryAttempts: 3,
-  retryDelay: 1000
+  timeout: parseInt(process.env.MCP_TIMEOUT) || 30000,
+  retryAttempts: parseInt(process.env.MCP_RETRY_ATTEMPTS) || 3,
+  retryDelay: parseInt(process.env.MCP_RETRY_DELAY) || 1000,
+  jwtSecret: process.env.MCP_JWT_SECRET || 'sentia-mcp-secret-key'
 };
 
-// Database configurations per branch/environment
+// Database configurations using environment variables
 const DATABASE_CONFIGS = {
   development: {
-    // Development Database
-    internal: 'postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a/sentia_manufacturing_dev',
-    external: 'postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_dev',
-    host: 'dpg-d344rkfdiees73a20c50-a',
-    database: 'sentia_manufacturing_dev',
-    username: 'sentia_dev',
-    password: 'nZ4vtXienMAwxahr0GJByc2qXFIFSoYL',
-    port: 5432
+    // Use DATABASE_URL from environment, fallback to current development URL from render.yaml
+    connectionString: process.env.DATABASE_URL || 'postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require',
+    database: 'sentia_manufacturing_dev_hl6w',
+    environment: 'development'
   },
   test: {
-    // Testing Database
-    internal: 'postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a/sentia_manufacturing_test',
-    external: 'postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a.oregon-postgres.render.com/sentia_manufacturing_test',
-    host: 'dpg-d344rkfdiees73a20c40-a',
-    database: 'sentia_manufacturing_test',
-    username: 'sentia_test',
-    password: 'He45HKApt8BjbCXXVPtEhIxbaBXxk3we',
-    port: 5432
+    // Use DATABASE_URL from environment, fallback to current testing URL from render.yaml  
+    connectionString: process.env.DATABASE_URL || 'postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require',
+    database: 'sentia_manufacturing_test_4fky',
+    environment: 'testing'
   },
   testing: {
-    // Alias for test
-    internal: 'postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a/sentia_manufacturing_test',
-    external: 'postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a.oregon-postgres.render.com/sentia_manufacturing_test',
-    host: 'dpg-d344rkfdiees73a20c40-a',
-    database: 'sentia_manufacturing_test',
-    username: 'sentia_test',
-    password: 'He45HKApt8BjbCXXVPtEhIxbaBXxk3we',
-    port: 5432
+    // Alias for test - use same configuration
+    connectionString: process.env.DATABASE_URL || 'postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require',
+    database: 'sentia_manufacturing_test_4fky',
+    environment: 'testing'
   },
   production: {
-    // Production Database
-    internal: 'postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a/sentia_manufacturing_prod',
-    external: 'postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com/sentia_manufacturing_prod',
-    host: 'dpg-d344rkfdiees73a20c30-a',
-    database: 'sentia_manufacturing_prod',
-    username: 'sentia_prod',
-    password: 'nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2',
-    port: 5432
+    // Use DATABASE_URL from environment, fallback to current production URL from render.yaml
+    connectionString: process.env.DATABASE_URL || 'postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require',
+    database: 'sentia_manufacturing_prod_7lgf',
+    environment: 'production'
   }
 };
 
@@ -68,19 +53,19 @@ export function getDatabaseConfig() {
   const env = BRANCH.toLowerCase();
   const config = DATABASE_CONFIGS[env] || DATABASE_CONFIGS.development;
 
-  // Use internal connection if running on Render, external otherwise
-  const isRender = process.env.RENDER === 'true';
-  const connectionString = isRender ? config.internal : config.external;
+  // Always use DATABASE_URL environment variable first, then fallback
+  const connectionString = process.env.DATABASE_URL || config.connectionString;
 
   console.log(`[Database Config] Environment: ${env}`);
-  console.log(`[Database Config] Using ${isRender ? 'internal' : 'external'} connection`);
   console.log(`[Database Config] Database: ${config.database}`);
+  console.log(`[Database Config] Using environment DATABASE_URL: ${!!process.env.DATABASE_URL}`);
   console.log(`[Database Config] MCP Server: ${MCP_CONFIG.url}`);
 
   return {
     connectionString,
-    ...config,
-    ssl: !isRender ? { rejectUnauthorized: false } : false,
+    database: config.database,
+    environment: config.environment,
+    ssl: { rejectUnauthorized: false },
     pool: {
       min: 2,
       max: 10,

@@ -87,8 +87,8 @@ export const securityHeaders = () => {
 };
 
 // Webhook signature verification
-export const verifyWebhookSignature = (_secret, signatureHeader = _'x-webhook-signature') => {
-  return (req, res, _next) => {
+export const verifyWebhookSignature = (secret, signatureHeader = 'x-webhook-signature') => {
+  return (req, res, next) => {
     const signature = req.headers[signatureHeader];
     
     if (!signature) {

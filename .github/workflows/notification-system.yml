@@ -1,0 +1,498 @@
+name: Advanced Notification System
+
+on:
+  workflow_call:
+    inputs:
+      notification_type:
+        description: 'Type of notification (success, failure, warning, info)'
+        required: true
+        type: string
+      title:
+        description: 'Notification title'
+        required: true
+        type: string
+      message:
+        description: 'Notification message'
+        required: true
+        type: string
+      workflow_name:
+        description: 'Name of the triggering workflow'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment (development, testing, production)'
+        required: true
+        type: string
+      include_artifacts:
+        description: 'Include workflow artifacts in notification'
+        required: false
+        type: boolean
+        default: false
+      priority:
+        description: 'Notification priority (low, medium, high, critical)'
+        required: false
+        type: string
+        default: 'medium'
+    secrets:
+      SLACK_WEBHOOK_URL:
+        description: 'Slack webhook URL for notifications'
+        required: false
+      TEAMS_WEBHOOK_URL:
+        description: 'Microsoft Teams webhook URL for notifications'
+        required: false
+      DISCORD_WEBHOOK_URL:
+        description: 'Discord webhook URL for notifications'
+        required: false
+      EMAIL_SMTP_HOST:
+        description: 'SMTP host for email notifications'
+        required: false
+      EMAIL_SMTP_USER:
+        description: 'SMTP username for email notifications'
+        required: false
+      EMAIL_SMTP_PASS:
+        description: 'SMTP password for email notifications'
+        required: false
+      PAGERDUTY_INTEGRATION_KEY:
+        description: 'PagerDuty integration key for critical alerts'
+        required: false
+
+env:
+  NOTIFICATION_TYPE: ${{ inputs.notification_type }}
+  WORKFLOW_NAME: ${{ inputs.workflow_name }}
+  ENVIRONMENT: ${{ inputs.environment }}
+  PRIORITY: ${{ inputs.priority }}
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+jobs:
+  prepare-notification:
+    name: Prepare Notification Data
+    runs-on: ubuntu-latest
+    outputs:
+      slack_payload: ${{ steps.prepare.outputs.slack_payload }}
+      teams_payload: ${{ steps.prepare.outputs.teams_payload }}
+      discord_payload: ${{ steps.prepare.outputs.discord_payload }}
+      email_payload: ${{ steps.prepare.outputs.email_payload }}
+      pagerduty_payload: ${{ steps.prepare.outputs.pagerduty_payload }}
+      should_notify_slack: ${{ steps.prepare.outputs.should_notify_slack }}
+      should_notify_teams: ${{ steps.prepare.outputs.should_notify_teams }}
+      should_notify_discord: ${{ steps.prepare.outputs.should_notify_discord }}
+      should_notify_email: ${{ steps.prepare.outputs.should_notify_email }}
+      should_notify_pagerduty: ${{ steps.prepare.outputs.should_notify_pagerduty }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          npm install axios dayjs
+          
+      - name: Prepare notification payloads
+        id: prepare
+        run: |
+          node -e "
+          const axios = require('axios');
+          const dayjs = require('dayjs');
+          
+          // Notification configuration
+          const notificationConfig = {
+            type: '${{ env.NOTIFICATION_TYPE }}',
+            title: '${{ inputs.title }}',
+            message: '${{ inputs.message }}',
+            workflow: '${{ env.WORKFLOW_NAME }}',
+            environment: '${{ env.ENVIRONMENT }}',
+            priority: '${{ env.PRIORITY }}',
+            runUrl: '${{ env.RUN_URL }}',
+            timestamp: dayjs().format('YYYY-MM-DD HH:mm:ss UTC'),
+            actor: '${{ github.actor }}',
+            repository: '${{ github.repository }}',
+            branch: '${{ github.ref_name }}',
+            commit: '${{ github.sha }}',
+            commitMessage: '${{ github.event.head_commit.message || \"N/A\" }}'
+          };
+          
+          // Color mapping for different notification types
+          const colors = {
+            success: '#28a745',
+            failure: '#dc3545',
+            warning: '#ffc107',
+            info: '#17a2b8'
+          };
+          
+          // Priority emoji mapping
+          const priorityEmojis = {
+            low: '🔵',
+            medium: '🟡',
+            high: '🟠',
+            critical: '🔴'
+          };
+          
+          // Status emoji mapping
+          const statusEmojis = {
+            success: '✅',
+            failure: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+          };
+          
+          // Prepare Slack payload
+          const slackPayload = {
+            username: 'Sentia CI/CD',
+            icon_emoji: ':robot_face:',
+            attachments: [{
+              color: colors[notificationConfig.type] || '#6c757d',
+              title: \`\${statusEmojis[notificationConfig.type]} \${notificationConfig.title}\`,
+              title_link: notificationConfig.runUrl,
+              text: notificationConfig.message,
+              fields: [
+                {
+                  title: 'Workflow',
+                  value: notificationConfig.workflow,
+                  short: true
+                },
+                {
+                  title: 'Environment',
+                  value: notificationConfig.environment,
+                  short: true
+                },
+                {
+                  title: 'Priority',
+                  value: \`\${priorityEmojis[notificationConfig.priority]} \${notificationConfig.priority.toUpperCase()}\`,
+                  short: true
+                },
+                {
+                  title: 'Actor',
+                  value: notificationConfig.actor,
+                  short: true
+                },
+                {
+                  title: 'Repository',
+                  value: notificationConfig.repository,
+                  short: true
+                },
+                {
+                  title: 'Branch',
+                  value: notificationConfig.branch,
+                  short: true
+                },
+                {
+                  title: 'Commit',
+                  value: \`\`\`\${notificationConfig.commit.substring(0, 8)}\`\`\`,
+                  short: true
+                },
+                {
+                  title: 'Timestamp',
+                  value: notificationConfig.timestamp,
+                  short: true
+                }
+              ],
+              footer: 'Sentia Manufacturing Dashboard',
+              footer_icon: 'https://github.com/favicon.ico',
+              ts: Math.floor(Date.now() / 1000)
+            }]
+          };
+          
+          // Prepare Teams payload
+          const teamsPayload = {
+            '@type': 'MessageCard',
+            '@context': 'https://schema.org/extensions',
+            summary: notificationConfig.title,
+            themeColor: colors[notificationConfig.type] || '6c757d',
+            sections: [{
+              activityTitle: \`\${statusEmojis[notificationConfig.type]} \${notificationConfig.title}\`,
+              activitySubtitle: notificationConfig.message,
+              activityImage: 'https://github.com/favicon.ico',
+              facts: [
+                { name: 'Workflow', value: notificationConfig.workflow },
+                { name: 'Environment', value: notificationConfig.environment },
+                { name: 'Priority', value: \`\${priorityEmojis[notificationConfig.priority]} \${notificationConfig.priority.toUpperCase()}\` },
+                { name: 'Actor', value: notificationConfig.actor },
+                { name: 'Repository', value: notificationConfig.repository },
+                { name: 'Branch', value: notificationConfig.branch },
+                { name: 'Commit', value: notificationConfig.commit.substring(0, 8) },
+                { name: 'Timestamp', value: notificationConfig.timestamp }
+              ]
+            }],
+            potentialAction: [{
+              '@type': 'OpenUri',
+              name: 'View Workflow Run',
+              targets: [{ os: 'default', uri: notificationConfig.runUrl }]
+            }]
+          };
+          
+          // Prepare Discord payload
+          const discordPayload = {
+            username: 'Sentia CI/CD',
+            avatar_url: 'https://github.com/favicon.ico',
+            embeds: [{
+              title: \`\${statusEmojis[notificationConfig.type]} \${notificationConfig.title}\`,
+              description: notificationConfig.message,
+              color: parseInt(colors[notificationConfig.type].replace('#', ''), 16),
+              url: notificationConfig.runUrl,
+              fields: [
+                { name: 'Workflow', value: notificationConfig.workflow, inline: true },
+                { name: 'Environment', value: notificationConfig.environment, inline: true },
+                { name: 'Priority', value: \`\${priorityEmojis[notificationConfig.priority]} \${notificationConfig.priority.toUpperCase()}\`, inline: true },
+                { name: 'Actor', value: notificationConfig.actor, inline: true },
+                { name: 'Repository', value: notificationConfig.repository, inline: true },
+                { name: 'Branch', value: notificationConfig.branch, inline: true },
+                { name: 'Commit', value: \`\\\`\${notificationConfig.commit.substring(0, 8)}\\\`\`, inline: true },
+                { name: 'Timestamp', value: notificationConfig.timestamp, inline: true }
+              ],
+              footer: { text: 'Sentia Manufacturing Dashboard' },
+              timestamp: new Date().toISOString()
+            }]
+          };
+          
+          // Prepare email payload
+          const emailPayload = {
+            subject: \`[\${notificationConfig.environment.toUpperCase()}] \${notificationConfig.title}\`,
+            html: \`
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; }
+                  .header { background-color: \${colors[notificationConfig.type]}; color: white; padding: 20px; text-align: center; }
+                  .content { padding: 20px; }
+                  .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                  .info-table th, .info-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                  .info-table th { background-color: #f2f2f2; }
+                  .button { display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0; }
+                </style>
+              </head>
+              <body>
+                <div class='header'>
+                  <h1>\${statusEmojis[notificationConfig.type]} \${notificationConfig.title}</h1>
+                </div>
+                <div class='content'>
+                  <p><strong>Message:</strong> \${notificationConfig.message}</p>
+                  
+                  <table class='info-table'>
+                    <tr><th>Workflow</th><td>\${notificationConfig.workflow}</td></tr>
+                    <tr><th>Environment</th><td>\${notificationConfig.environment}</td></tr>
+                    <tr><th>Priority</th><td>\${priorityEmojis[notificationConfig.priority]} \${notificationConfig.priority.toUpperCase()}</td></tr>
+                    <tr><th>Actor</th><td>\${notificationConfig.actor}</td></tr>
+                    <tr><th>Repository</th><td>\${notificationConfig.repository}</td></tr>
+                    <tr><th>Branch</th><td>\${notificationConfig.branch}</td></tr>
+                    <tr><th>Commit</th><td>\${notificationConfig.commit}</td></tr>
+                    <tr><th>Timestamp</th><td>\${notificationConfig.timestamp}</td></tr>
+                  </table>
+                  
+                  <a href='\${notificationConfig.runUrl}' class='button'>View Workflow Run</a>
+                </div>
+              </body>
+              </html>
+            \`
+          };
+          
+          // Prepare PagerDuty payload
+          const pagerdutyPayload = {
+            routing_key: process.env.PAGERDUTY_INTEGRATION_KEY,
+            event_action: notificationConfig.type === 'failure' ? 'trigger' : 'resolve',
+            dedup_key: \`sentia-\${notificationConfig.workflow}-\${notificationConfig.environment}\`,
+            payload: {
+              summary: \`\${notificationConfig.title} - \${notificationConfig.workflow}\`,
+              source: 'GitHub Actions',
+              severity: notificationConfig.priority === 'critical' ? 'critical' : 
+                       notificationConfig.priority === 'high' ? 'error' :
+                       notificationConfig.priority === 'medium' ? 'warning' : 'info',
+              component: notificationConfig.workflow,
+              group: notificationConfig.environment,
+              class: 'CI/CD Pipeline',
+              custom_details: {
+                workflow: notificationConfig.workflow,
+                environment: notificationConfig.environment,
+                actor: notificationConfig.actor,
+                repository: notificationConfig.repository,
+                branch: notificationConfig.branch,
+                commit: notificationConfig.commit,
+                message: notificationConfig.message,
+                run_url: notificationConfig.runUrl
+              }
+            },
+            links: [{
+              href: notificationConfig.runUrl,
+              text: 'View Workflow Run'
+            }]
+          };
+          
+          // Determine which notifications to send based on environment variables
+          const shouldNotifySlack = '${{ secrets.SLACK_WEBHOOK_URL }}' !== '';
+          const shouldNotifyTeams = '${{ secrets.TEAMS_WEBHOOK_URL }}' !== '';
+          const shouldNotifyDiscord = '${{ secrets.DISCORD_WEBHOOK_URL }}' !== '';
+          const shouldNotifyEmail = '${{ secrets.EMAIL_SMTP_HOST }}' !== '' && '${{ secrets.EMAIL_SMTP_USER }}' !== '';
+          const shouldNotifyPagerduty = '${{ secrets.PAGERDUTY_INTEGRATION_KEY }}' !== '' && 
+                                       (notificationConfig.type === 'failure' || notificationConfig.priority === 'critical');
+          
+          // Set outputs
+          console.log(\`::set-output name=slack_payload::\${JSON.stringify(slackPayload)}\`);
+          console.log(\`::set-output name=teams_payload::\${JSON.stringify(teamsPayload)}\`);
+          console.log(\`::set-output name=discord_payload::\${JSON.stringify(discordPayload)}\`);
+          console.log(\`::set-output name=email_payload::\${JSON.stringify(emailPayload)}\`);
+          console.log(\`::set-output name=pagerduty_payload::\${JSON.stringify(pagerdutyPayload)}\`);
+          console.log(\`::set-output name=should_notify_slack::\${shouldNotifySlack}\`);
+          console.log(\`::set-output name=should_notify_teams::\${shouldNotifyTeams}\`);
+          console.log(\`::set-output name=should_notify_discord::\${shouldNotifyDiscord}\`);
+          console.log(\`::set-output name=should_notify_email::\${shouldNotifyEmail}\`);
+          console.log(\`::set-output name=should_notify_pagerduty::\${shouldNotifyPagerduty}\`);
+          "
+
+  send-slack-notification:
+    name: Send Slack Notification
+    runs-on: ubuntu-latest
+    needs: prepare-notification
+    if: ${{ needs.prepare-notification.outputs.should_notify_slack == 'true' }}
+    
+    steps:
+      - name: Send Slack notification
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '${{ needs.prepare-notification.outputs.slack_payload }}' \
+            '${{ secrets.SLACK_WEBHOOK_URL }}'
+
+  send-teams-notification:
+    name: Send Teams Notification
+    runs-on: ubuntu-latest
+    needs: prepare-notification
+    if: ${{ needs.prepare-notification.outputs.should_notify_teams == 'true' }}
+    
+    steps:
+      - name: Send Teams notification
+        run: |
+          curl -X POST -H 'Content-Type: application/json' \
+            --data '${{ needs.prepare-notification.outputs.teams_payload }}' \
+            '${{ secrets.TEAMS_WEBHOOK_URL }}'
+
+  send-discord-notification:
+    name: Send Discord Notification
+    runs-on: ubuntu-latest
+    needs: prepare-notification
+    if: ${{ needs.prepare-notification.outputs.should_notify_discord == 'true' }}
+    
+    steps:
+      - name: Send Discord notification
+        run: |
+          curl -X POST -H 'Content-Type: application/json' \
+            --data '${{ needs.prepare-notification.outputs.discord_payload }}' \
+            '${{ secrets.DISCORD_WEBHOOK_URL }}'
+
+  send-email-notification:
+    name: Send Email Notification
+    runs-on: ubuntu-latest
+    needs: prepare-notification
+    if: ${{ needs.prepare-notification.outputs.should_notify_email == 'true' }}
+    
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install nodemailer
+        run: npm install nodemailer
+        
+      - name: Send email notification
+        run: |
+          node -e "
+          const nodemailer = require('nodemailer');
+          const emailPayload = JSON.parse('${{ needs.prepare-notification.outputs.email_payload }}');
+          
+          const transporter = nodemailer.createTransporter({
+            host: '${{ secrets.EMAIL_SMTP_HOST }}',
+            port: 587,
+            secure: false,
+            auth: {
+              user: '${{ secrets.EMAIL_SMTP_USER }}',
+              pass: '${{ secrets.EMAIL_SMTP_PASS }}'
+            }
+          });
+          
+          const mailOptions = {
+            from: '${{ secrets.EMAIL_SMTP_USER }}',
+            to: 'devops@sentia-manufacturing.com',
+            subject: emailPayload.subject,
+            html: emailPayload.html
+          };
+          
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log('Error sending email:', error);
+              process.exit(1);
+            } else {
+              console.log('Email sent successfully:', info.response);
+            }
+          });
+          "
+
+  send-pagerduty-alert:
+    name: Send PagerDuty Alert
+    runs-on: ubuntu-latest
+    needs: prepare-notification
+    if: ${{ needs.prepare-notification.outputs.should_notify_pagerduty == 'true' }}
+    
+    steps:
+      - name: Send PagerDuty alert
+        run: |
+          curl -X POST -H 'Content-Type: application/json' \
+            --data '${{ needs.prepare-notification.outputs.pagerduty_payload }}' \
+            'https://events.pagerduty.com/v2/enqueue'
+
+  notification-summary:
+    name: Notification Summary
+    runs-on: ubuntu-latest
+    needs: [prepare-notification, send-slack-notification, send-teams-notification, send-discord-notification, send-email-notification, send-pagerduty-alert]
+    if: always()
+    
+    steps:
+      - name: Generate notification summary
+        run: |
+          echo "## Notification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Notification Type:** ${{ inputs.notification_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Title:** ${{ inputs.title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Message:** ${{ inputs.message }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** ${{ inputs.workflow_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Priority:** ${{ inputs.priority }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Notification Channels" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.prepare-notification.outputs.should_notify_slack }}" == "true" ]; then
+            echo "- ✅ Slack: Notification sent" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ Slack: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.prepare-notification.outputs.should_notify_teams }}" == "true" ]; then
+            echo "- ✅ Microsoft Teams: Notification sent" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ Microsoft Teams: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.prepare-notification.outputs.should_notify_discord }}" == "true" ]; then
+            echo "- ✅ Discord: Notification sent" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ Discord: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.prepare-notification.outputs.should_notify_email }}" == "true" ]; then
+            echo "- ✅ Email: Notification sent" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ Email: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.prepare-notification.outputs.should_notify_pagerduty }}" == "true" ]; then
+            echo "- ✅ PagerDuty: Alert triggered" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ PagerDuty: Not applicable" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow Run:** [View Details](${{ env.RUN_URL }})" >> $GITHUB_STEP_SUMMARY

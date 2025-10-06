@@ -454,7 +454,7 @@ export const ipBlocker = new IPBlocker();
 /**
  * Security Event Logger
  */
-export const logSecurityEvent = (eventType, req, details = _{}) => {
+export const logSecurityEvent = (eventType, req, details = {}) => {
   const event = {
     type: eventType,
     timestamp: new Date().toISOString(),

@@ -200,9 +200,9 @@ export class DataTransformationEngine {
    */
   initializeAggregations() {
     // Financial aggregations
-    this.aggregations.set(_'aggregateFinancialsByPeriod', {
-      description: 'Aggregate financial data by time _period',
-      aggregate: (data, period = _'month') => {
+    this.aggregations.set('aggregateFinancialsByPeriod', {
+      description: 'Aggregate financial data by time period',
+      aggregate: (data, period = 'month') => {
         const grouped = new Map();
 
         data.forEach(record => {

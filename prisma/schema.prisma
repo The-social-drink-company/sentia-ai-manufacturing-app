@@ -272,6 +272,203 @@ model MCPRequest {
   @@index([createdAt], name: "idx_mcp_request_created_at")
 }
 
+// ===== EXTERNAL API INTEGRATION MODELS =====
+
+// Unleashed Integration Models
+model UnleashedProduct {
+  id                String   @id @default(cuid())
+  unleashedId       String   @unique
+  productCode       String   @unique
+  productDescription String
+  unitOfMeasure     String?
+  packSize          Float?
+  width             Float?
+  height            Float?
+  depth             Float?
+  weight            Float?
+  defaultPurchasePrice Float?
+  defaultSellPrice  Float?
+  barcode           String?
+  binLocation       String?
+  notes             String?
+  obsolete          Boolean  @default(false)
+  lastSyncAt        DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  stockLevels UnleashedStockLevel[]
+  salesOrderLines UnleashedSalesOrderLine[]
+  purchaseOrderLines UnleashedPurchaseOrderLine[]
+
+  @@index([unleashedId], name: "idx_unleashed_product_unleashed_id")
+  @@index([productCode], name: "idx_unleashed_product_code")
+  @@index([obsolete], name: "idx_unleashed_product_obsolete")
+  @@index([lastSyncAt], name: "idx_unleashed_product_sync")
+}
+
+model UnleashedStockLevel {
+  id                   String             @id @default(cuid())
+  productId            String
+  product              UnleashedProduct   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse            String
+  qtyOnHand            Float
+  qtyAllocated         Float
+  qtyAvailable         Float
+  qtyOnOrder           Float
+  qtyStockTake         Float?
+  lastCostPrice        Float?
+  averageCostPrice     Float?
+  lastSyncAt           DateTime           @default(now())
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@unique([productId, warehouse])
+  @@index([productId], name: "idx_unleashed_stock_level_product")
+  @@index([warehouse], name: "idx_unleashed_stock_level_warehouse")
+  @@index([qtyAvailable], name: "idx_unleashed_stock_level_available")
+  @@index([lastSyncAt], name: "idx_unleashed_stock_level_sync")
+}
+
+model UnleashedSalesOrder {
+  id                String   @id @default(cuid())
+  unleashedId       String   @unique
+  orderNumber       String   @unique
+  orderDate         DateTime
+  orderStatus       String
+  customer          Json
+  deliveryAddress   Json?
+  subtotal          Float
+  taxTotal          Float
+  total             Float
+  completedDate     DateTime?
+  notes             String?
+  lastSyncAt        DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  lines UnleashedSalesOrderLine[]
+
+  @@index([unleashedId], name: "idx_unleashed_sales_order_unleashed_id")
+  @@index([orderNumber], name: "idx_unleashed_sales_order_number")
+  @@index([orderStatus], name: "idx_unleashed_sales_order_status")
+  @@index([orderDate], name: "idx_unleashed_sales_order_date")
+  @@index([lastSyncAt], name: "idx_unleashed_sales_order_sync")
+}
+
+model UnleashedSalesOrderLine {
+  id            String                @id @default(cuid())
+  orderId       String
+  order         UnleashedSalesOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       UnleashedProduct?     @relation(fields: [productId], references: [id])
+  lineNumber    Int
+  orderQuantity Float
+  unitPrice     Float
+  lineTotal     Float
+  comments      String?
+
+  @@index([orderId], name: "idx_unleashed_sales_order_line_order")
+  @@index([productId], name: "idx_unleashed_sales_order_line_product")
+}
+
+model UnleashedPurchaseOrder {
+  id                String   @id @default(cuid())
+  unleashedId       String   @unique
+  orderNumber       String   @unique
+  orderDate         DateTime
+  orderStatus       String
+  supplier          Json
+  deliveryAddress   Json?
+  subtotal          Float
+  taxTotal          Float
+  total             Float
+  completedDate     DateTime?
+  notes             String?
+  lastSyncAt        DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  lines UnleashedPurchaseOrderLine[]
+
+  @@index([unleashedId], name: "idx_unleashed_purchase_order_unleashed_id")
+  @@index([orderNumber], name: "idx_unleashed_purchase_order_number")
+  @@index([orderStatus], name: "idx_unleashed_purchase_order_status")
+  @@index([orderDate], name: "idx_unleashed_purchase_order_date")
+  @@index([lastSyncAt], name: "idx_unleashed_purchase_order_sync")
+}
+
+model UnleashedPurchaseOrderLine {
+  id            String                   @id @default(cuid())
+  orderId       String
+  order         UnleashedPurchaseOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       UnleashedProduct?        @relation(fields: [productId], references: [id])
+  lineNumber    Int
+  orderQuantity Float
+  unitPrice     Float
+  lineTotal     Float
+  comments      String?
+
+  @@index([orderId], name: "idx_unleashed_purchase_order_line_order")
+  @@index([productId], name: "idx_unleashed_purchase_order_line_product")
+}
+
+// Data Synchronization Tracking
+model SyncLog {
+  id          String   @id @default(cuid())
+  service     String   // 'xero', 'shopify_uk', 'shopify_usa', 'amazon_uk', 'amazon_usa', 'unleashed'
+  syncType    String   // 'full', 'incremental', 'manual'
+  status      String   // 'pending', 'running', 'completed', 'failed'
+  startTime   DateTime @default(now())
+  endTime     DateTime?
+  recordsSync Int      @default(0)
+  errors      Json?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([service, status], name: "idx_sync_log_service_status")
+  @@index([startTime], name: "idx_sync_log_start_time")
+}
+
+// API Rate Limiting and Health
+model ApiHealth {
+  id              String   @id @default(cuid())
+  service         String   @unique
+  status          String   // 'healthy', 'degraded', 'down'
+  lastCheckTime   DateTime @default(now())
+  responseTime    Int?     // milliseconds
+  errorRate       Float    @default(0)
+  requestCount    Int      @default(0)
+  quotaRemaining  Int?
+  quotaResetTime  DateTime?
+  lastError       String?
+  metadata        Json?
+  updatedAt       DateTime @updatedAt
+
+  @@index([service, status], name: "idx_api_health_service_status")
+  @@index([lastCheckTime], name: "idx_api_health_check_time")
+}
+
+// Webhook Event Logging
+model WebhookLog {
+  id             String   @id @default(cuid())
+  service        String   // 'shopify_uk', 'shopify_usa', 'xero', 'amazon_uk', 'amazon_usa', 'unleashed'
+  event          String   // Event type/topic
+  data           Json     // Webhook payload
+  headers        Json?    // Request headers
+  source         String?  // Source identifier (shop domain, etc.)
+  receivedAt     DateTime @default(now())
+  processed      Boolean  @default(false)
+  processingTime Int?     // Processing time in milliseconds
+  error          String?  // Error message if processing failed
+  retryCount     Int      @default(0)
+  lastRetryAt    DateTime?
+
+  @@index([service, event], name: "idx_webhook_log_service_event")
+  @@index([receivedAt], name: "idx_webhook_log_received_at")
+  @@index([processed], name: "idx_webhook_log_processed")
+}
+
 model CashLedger {
   id               String   @id @default(cuid())
   date             DateTime @default(now())
@@ -1017,4 +1214,71 @@ model ProductionOrder {
   @@index([status], name: "idx_production_order_status")
   @@index([priority], name: "idx_production_order_priority")
   @@index([scheduledStart], name: "idx_production_order_scheduled")
+}
+
+// ===== SECURITY MODELS =====
+model ApiKey {
+  id            String    @id @default(cuid())
+  keyId         String    @unique // Unique identifier for the key
+  service       String    // Service name (xero, shopify, amazon, etc.)
+  keyName       String    // Key type (api_key, client_secret, etc.)
+  encryptedKey  String    // AES-256-GCM encrypted key
+  isActive      Boolean   @default(true)
+  expiresAt     DateTime? // Key expiration date
+  lastUsed      DateTime? // Last time key was accessed
+  deactivatedAt DateTime? // When key was deactivated
+  metadata      Json?     // Additional key metadata
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([service, keyName], name: "idx_api_key_service_name")
+  @@index([isActive], name: "idx_api_key_active")
+  @@index([expiresAt], name: "idx_api_key_expires")
+  @@index([lastUsed], name: "idx_api_key_last_used")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  operation String   // Operation type (API_KEY_STORE, API_KEY_ACCESS, etc.)
+  service   String?  // Service involved
+  userId    String?  // User who performed the operation
+  ipAddress String?  // IP address of the request
+  details   Json?    // Additional operation details
+  timestamp DateTime @default(now())
+
+  @@index([operation], name: "idx_audit_log_operation")
+  @@index([service], name: "idx_audit_log_service")
+  @@index([userId], name: "idx_audit_log_user")
+  @@index([timestamp], name: "idx_audit_log_timestamp")
+}
+
+// ===== MONITORING MODELS =====
+model SystemMetric {
+  id          String   @id @default(cuid())
+  type        String   // Metric type (performance, resources, health)
+  data        Json     // Metric data as JSON
+  environment String   // Environment (development, test, production)
+  timestamp   DateTime @default(now())
+
+  @@index([type], name: "idx_system_metric_type")
+  @@index([environment], name: "idx_system_metric_environment")
+  @@index([timestamp], name: "idx_system_metric_timestamp")
+}
+
+model SystemAlert {
+  id          String   @id @default(cuid())
+  type        String   // Alert type (PERFORMANCE_DB_SLOW, HEALTH_SYSTEM_UNHEALTHY, etc.)
+  severity    String   // Alert severity (low, medium, high, critical)
+  message     String   // Human-readable alert message
+  details     Json?    // Additional alert details
+  isResolved  Boolean  @default(false)
+  resolvedAt  DateTime?
+  environment String   // Environment (development, test, production)
+  timestamp   DateTime @default(now())
+
+  @@index([type], name: "idx_system_alert_type")
+  @@index([severity], name: "idx_system_alert_severity")
+  @@index([isResolved], name: "idx_system_alert_resolved")
+  @@index([environment], name: "idx_system_alert_environment")
+  @@index([timestamp], name: "idx_system_alert_timestamp")
 }

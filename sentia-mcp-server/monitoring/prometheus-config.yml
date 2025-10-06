@@ -1,0 +1,262 @@
+# Prometheus Configuration for Sentia MCP Server Monitoring
+# Enterprise-grade metrics collection and alerting
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  external_labels:
+    cluster: 'sentia-manufacturing'
+    environment: '{{ .Environment }}'
+    service: 'mcp-server'
+
+# Rule files for alerting
+rule_files:
+  - "alert-rules.yml"
+  - "recording-rules.yml"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Scrape configurations
+scrape_configs:
+  # Sentia MCP Server metrics
+  - job_name: 'sentia-mcp-server'
+    static_configs:
+      - targets: ['localhost:3001']
+    metrics_path: '/api/metrics/prometheus'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:3001
+
+  # Health check endpoint
+  - job_name: 'sentia-mcp-health'
+    static_configs:
+      - targets: ['localhost:3101']
+    metrics_path: '/health'
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: health_endpoint
+
+  # Node.js process metrics
+  - job_name: 'sentia-mcp-process'
+    static_configs:
+      - targets: ['localhost:3001']
+    metrics_path: '/api/metrics/process'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Business metrics for manufacturing operations
+  - job_name: 'sentia-mcp-business'
+    static_configs:
+      - targets: ['localhost:3001']
+    metrics_path: '/api/metrics/business'
+    scrape_interval: 60s
+    scrape_timeout: 15s
+    params:
+      include_costs: ['true']
+      include_roi: ['true']
+
+  # Integration-specific metrics
+  - job_name: 'sentia-mcp-integrations'
+    static_configs:
+      - targets: ['localhost:3001']
+    metrics_path: '/api/metrics/integrations'
+    scrape_interval: 60s
+    scrape_timeout: 15s
+    metric_relabel_configs:
+      - source_labels: [integration_name]
+        target_label: integration
+      - source_labels: [tool_name]
+        target_label: tool
+
+  # Security metrics
+  - job_name: 'sentia-mcp-security'
+    static_configs:
+      - targets: ['localhost:3001']
+    metrics_path: '/api/metrics/security'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    params:
+      include_auth_events: ['true']
+      include_rate_limiting: ['true']
+
+  # Performance metrics with detailed breakdown
+  - job_name: 'sentia-mcp-performance'
+    static_configs:
+      - targets: ['localhost:3001']
+    metrics_path: '/api/metrics/performance'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    params:
+      include_percentiles: ['true']
+      include_gc_metrics: ['true']
+      include_memory_details: ['true']
+
+# Remote write configuration for long-term storage
+remote_write:
+  - url: "{{ .PrometheusRemoteWriteURL }}"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500
+    metadata_config:
+      send: true
+      send_interval: 30s
+
+# Remote read configuration for federated queries
+remote_read:
+  - url: "{{ .PrometheusRemoteReadURL }}"
+    read_recent: true
+
+# Recording rules for efficient querying
+recording_rules:
+  - name: sentia_mcp_aggregations
+    interval: 30s
+    rules:
+      # Request rate aggregations
+      - record: sentia_mcp:request_rate_5m
+        expr: rate(sentia_mcp_requests_total[5m])
+      
+      - record: sentia_mcp:request_rate_15m
+        expr: rate(sentia_mcp_requests_total[15m])
+      
+      # Error rate calculations
+      - record: sentia_mcp:error_rate_5m
+        expr: rate(sentia_mcp_errors_total[5m]) / rate(sentia_mcp_requests_total[5m])
+      
+      # Response time percentiles
+      - record: sentia_mcp:response_time_p95_5m
+        expr: histogram_quantile(0.95, rate(sentia_mcp_request_duration_seconds_bucket[5m]))
+      
+      - record: sentia_mcp:response_time_p99_5m
+        expr: histogram_quantile(0.99, rate(sentia_mcp_request_duration_seconds_bucket[5m]))
+      
+      # Memory usage trends
+      - record: sentia_mcp:memory_usage_trend_1h
+        expr: avg_over_time(sentia_mcp_memory_usage_bytes[1h])
+      
+      # Tool execution success rates
+      - record: sentia_mcp:tool_success_rate_1h
+        expr: |
+          (
+            rate(sentia_mcp_tool_executions_total{status="success"}[1h]) /
+            rate(sentia_mcp_tool_executions_total[1h])
+          ) * 100
+      
+      # Business value metrics
+      - record: sentia_mcp:business_value_per_hour
+        expr: sum(rate(sentia_mcp_business_value_total[1h]))
+      
+      # Cost efficiency metrics
+      - record: sentia_mcp:cost_per_request_5m
+        expr: |
+          rate(sentia_mcp_costs_total[5m]) / rate(sentia_mcp_requests_total[5m])
+
+# Alert rules for proactive monitoring
+alert_rules:
+  - name: sentia_mcp_critical_alerts
+    rules:
+      # High error rate alert
+      - alert: SentiaMCPHighErrorRate
+        expr: sentia_mcp:error_rate_5m > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: sentia-mcp-server
+        annotations:
+          summary: "High error rate detected in Sentia MCP Server"
+          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+      
+      # High response time alert
+      - alert: SentiaMCPHighResponseTime
+        expr: sentia_mcp:response_time_p95_5m > 5
+        for: 3m
+        labels:
+          severity: warning
+          service: sentia-mcp-server
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s"
+      
+      # Memory usage alert
+      - alert: SentiaMCPHighMemoryUsage
+        expr: sentia_mcp_memory_usage_bytes / sentia_mcp_memory_limit_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: sentia-mcp-server
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }} of limit"
+      
+      # Integration failure alert
+      - alert: SentiaMCPIntegrationFailure
+        expr: sentia_mcp_integration_status == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: sentia-mcp-server
+        annotations:
+          summary: "Integration {{ $labels.integration }} is down"
+          description: "Integration {{ $labels.integration }} has been failing for more than 1 minute"
+      
+      # Low tool success rate
+      - alert: SentiaMCPLowToolSuccessRate
+        expr: sentia_mcp:tool_success_rate_1h < 95
+        for: 10m
+        labels:
+          severity: warning
+          service: sentia-mcp-server
+        annotations:
+          summary: "Low tool success rate"
+          description: "Tool success rate is {{ $value }}% over the last hour"
+      
+      # Database connectivity issues
+      - alert: SentiaMCPDatabaseDown
+        expr: sentia_mcp_database_status == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: sentia-mcp-server
+        annotations:
+          summary: "Database connectivity lost"
+          description: "Cannot connect to the database"
+      
+      # Security alerts
+      - alert: SentiaMCPSecurityThreat
+        expr: increase(sentia_mcp_security_events_total{severity="high"}[5m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+          service: sentia-mcp-server
+        annotations:
+          summary: "Security threat detected"
+          description: "{{ $value }} high-severity security events in the last 5 minutes"
+
+# Metric collection optimization
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 50GB
+    wal-compression: true
+    
+# Feature flags
+feature_flags:
+  - name: enable-new-service-discovery
+  - name: enable-exemplars
+  - name: enable-remote-write-receiver

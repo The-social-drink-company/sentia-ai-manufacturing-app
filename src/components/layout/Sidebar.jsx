@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useUser } from '@clerk/clerk-react';
+import useEnvironmentUser from '@/hooks/useEnvironmentUser';
 import {
   HomeIcon,
   ChartBarIcon,
@@ -75,7 +75,7 @@ const navigation = [
 
 const Sidebar = ({ isOpen, onToggle }) => {
   const location = useLocation();
-  const { user } = useUser();
+  const { user } = useEnvironmentUser();
   const { role } = useAuthRole();
 
   // State management

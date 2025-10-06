@@ -10,6 +10,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import fs from 'fs';
+import workingCapitalRouter from './api/working-capital.js';
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
@@ -18,6 +19,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 10000;
 const isClerkConfigured = Boolean(process.env.VITE_CLERK_PUBLISHABLE_KEY);
+const isDevelopmentMode = process.env.VITE_DEVELOPMENT_MODE === 'true';
 
 // Logging middleware
 const logger = (req, res, next) => {
@@ -50,7 +52,7 @@ app.use(helmet({
         "https://clerk.financeflo.ai",
         "https://*.clerk.accounts.dev",
         "https://*.clerk.com",
-        "https://mcp-server-tkyu.onrender.com"
+        "https://mcp-server-yacx.onrender.com"
       ]
     }
   }
@@ -79,6 +81,10 @@ app.get('/health', (req, res) => {
     clerk: {
       configured: isClerkConfigured,
       publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET'
+    },
+    authentication: {
+      mode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
+      developmentMode: isDevelopmentMode
     }
   });
 });
@@ -110,6 +116,10 @@ app.get('/api/status', (req, res) => {
       memory: process.memoryUsage(),
       clerk: {
         configured: isClerkConfigured
+      },
+      authentication: {
+        mode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
+        developmentMode: isDevelopmentMode
       }
     },
     meta: {
@@ -179,6 +189,9 @@ app.get('/api/financial/working-capital', (req, res) => {
   });
 });
 
+// Mount working capital router for MCP integration
+app.use('/api/working-capital', workingCapitalRouter);
+
 // Cash Flow endpoint
 app.get('/api/financial/cash-flow', (req, res) => {
   res.json({
@@ -223,7 +236,7 @@ app.get('/api/forecasting/enhanced', (req, res) => {
 // MCP Status endpoint
 app.get('/api/mcp/status', async (req, res) => {
   try {
-    const response = await fetch('https://mcp-server-tkyu.onrender.com/health', {
+    const response = await fetch('https://mcp-server-yacx.onrender.com/health', {
       signal: AbortSignal.timeout(5000)
     });
 
@@ -237,14 +250,14 @@ app.get('/api/mcp/status', async (req, res) => {
       res.json({
         connected: false,
         error: `MCP Server returned ${response.status}`,
-        url: 'https://mcp-server-tkyu.onrender.com'
+        url: 'https://mcp-server-yacx.onrender.com'
       });
     }
   } catch (error) {
     res.json({
       connected: false,
       error: error.message,
-      url: 'https://mcp-server-tkyu.onrender.com'
+      url: 'https://mcp-server-yacx.onrender.com'
     });
   }
 });
@@ -361,6 +374,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`API: http://localhost:${PORT}/api/status`);
   console.log(`Dashboard: http://localhost:${PORT}/api/dashboard/summary`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Authentication: ${isDevelopmentMode ? 'Development Bypass' : 'Production Clerk'}`);
   console.log(`Clerk: ${isClerkConfigured ? 'Configured' : 'Not configured'}`);
   console.log('========================================\n');
 });

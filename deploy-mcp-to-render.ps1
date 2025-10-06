@@ -134,16 +134,16 @@ $deployInstructions = @"
    - Render will detect render.yaml automatically
 
 3. **Service will be available at:**
-   https://sentia-mcp-server.onrender.com
+   https://sentia-mcp-production.onrender.com
 
 ## API Endpoints:
-- Health: https://sentia-mcp-server.onrender.com/health
-- MCP Status: https://sentia-mcp-server.onrender.com/mcp/status
-- AI Request: https://sentia-mcp-server.onrender.com/mcp/ai/request
+- Health: https://sentia-mcp-production.onrender.com/health
+- MCP Status: https://sentia-mcp-production.onrender.com/mcp/status
+- AI Request: https://sentia-mcp-production.onrender.com/mcp/ai/request
 
 ## Connection from Main App:
 Update these environment variables in your main services:
-- MCP_SERVER_URL=https://sentia-mcp-server.onrender.com
+- MCP_SERVER_URL=https://sentia-mcp-production.onrender.com
 - MCP_JWT_SECRET=[same as MCP server]
 "@
 
@@ -154,7 +154,7 @@ Write-Host "`n[STEP 3] Updating main application to connect to Render MCP..." -F
 
 # Update main app render.yaml to point to new MCP server
 $mainAppUpdate = @{
-    "MCP_SERVER_URL" = "https://sentia-mcp-server.onrender.com"
+    "MCP_SERVER_URL" = "https://sentia-mcp-production.onrender.com"
     "MCP_ENABLE_WEBSOCKET" = "true"
     "MCP_SERVER_PORT" = "3001"
 }
@@ -183,7 +183,7 @@ Write-Host "4. Set root directory to: mcp-server" -ForegroundColor White
 Write-Host "5. Click 'Create Web Service'" -ForegroundColor White
 
 Write-Host "`nYour MCP server will be available at:" -ForegroundColor Green
-Write-Host "https://sentia-mcp-server.onrender.com" -ForegroundColor Cyan
+Write-Host "https://sentia-mcp-production.onrender.com" -ForegroundColor Cyan
 
 Write-Host "`nPress Enter to open Render Dashboard..." -ForegroundColor Yellow
 Read-Host

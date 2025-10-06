@@ -389,7 +389,7 @@ app.use(cors({
     }
 
     // Sort corrections by priority and risk
-    corrections.sort(_(a, b) => {
+    corrections.sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
@@ -633,7 +633,7 @@ app.use(cors({
       input_validation: 12000
     };
     
-    const totalMs = corrections.reduce(_(sum, correction) => {
+    const totalMs = corrections.reduce((sum, correction) => {
       return sum + (durations[correction.type] || 10000);
     }, 0);
     

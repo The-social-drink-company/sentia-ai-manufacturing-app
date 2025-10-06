@@ -5,7 +5,23 @@
 
 import { logInfo, logError } from '../../utils/structuredLogger.js'
 
-const SSE_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '/events') || 'http://localhost:5000/events'
+// Determine SSE URL based on environment
+const getSSEUrl = () => {
+  // Use VITE_API_BASE_URL if available
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL + '/events'
+  }
+
+  // Production fallback: use current domain with /api/events
+  if (import.meta.env.PROD) {
+    return `${window.location.origin}/api/events`
+  }
+
+  // Development fallback
+  return 'http://localhost:5000/api/events'
+}
+
+const SSE_URL = getSSEUrl()
 
 class SSEClient {
   constructor() {

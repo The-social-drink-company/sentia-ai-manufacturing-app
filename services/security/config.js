@@ -98,7 +98,7 @@ export const helmetConfig = helmet({
 });
 
 // Rate Limiting Configurations
-export const createRateLimiter = (options = _{}) => {
+export const createRateLimiter = (options = {}) => {
   const defaults = {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60000, // 1 minute
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
@@ -167,7 +167,7 @@ export const sanitizeRequest = (req, res, _next) => {
       if (typeof req.query[key] === 'string') {
         // Remove any script tags or potential XSS vectors
         req.query[key] = req.query[key]
-          .replace(/<script\b[^<]*(?:(?!</script>)<[^<]*)*</script>/gi, '')
+          .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
           .replace(/javascript:/gi, '')
           .replace(/on\w+\s*=/gi, '');
       }
@@ -180,7 +180,7 @@ export const sanitizeRequest = (req, res, _next) => {
       Object.keys(obj).forEach(key => {
         if (typeof obj[key] === 'string') {
           obj[key] = obj[key]
-            .replace(/<script\b[^<]*(?:(?!</script>)<[^<]*)*</script>/gi, '')
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
             .replace(/javascript:/gi, '')
             .replace(/on\w+\s*=/gi, '');
         } else if (typeof obj[key] === 'object' && obj[key] !== null) {
@@ -232,8 +232,8 @@ export const validateApiKey = (req, res, _next) => {
 };
 
 // IP allowlist middleware
-export const ipAllowlist = (allowedIPs = _[]) => {
-  return (req, res, _next) => {
+export const ipAllowlist = (allowedIPs = []) => {
+  return (req, res, next) => {
     if (allowedIPs.length === 0 || isDevelopment) {
       return next();
     }
@@ -286,7 +286,7 @@ export const auditLog = (_action) => {
     logger.info('Audit log', auditEntry);
     
     // Store audit log in database (async, don't block request)
-    process.nextTick(async _() => {
+    process.nextTick(async () => {
       try {
         // TODO: Store in database
       } catch (error) {

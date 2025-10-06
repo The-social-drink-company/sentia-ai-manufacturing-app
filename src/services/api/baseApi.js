@@ -3,7 +3,23 @@
  * Enterprise-grade API client with error handling, retries, and interceptors
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+// Determine API base URL based on environment
+const getApiBaseUrl = () => {
+  // Use VITE_API_BASE_URL if available
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL
+  }
+
+  // Production fallback: use current domain
+  if (import.meta.env.PROD) {
+    return `${window.location.origin}/api`
+  }
+
+  // Development fallback
+  return 'http://localhost:5000/api'
+}
+
+const API_BASE_URL = getApiBaseUrl()
 const MAX_RETRIES = 3
 const RETRY_DELAY = 1000
 
@@ -123,4 +139,4 @@ class BaseApi {
 }
 
 export const api = new BaseApi()
-export { ApiError }
+export { ApiError, getApiBaseUrl }

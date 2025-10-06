@@ -1,4 +1,4 @@
-# 🏢 Sentia Manufacturing Dashboard
+# 🏢 Sentia AI Manufacturing App
 
 [![Security Review](https://img.shields.io/badge/Security-A%2B-green)](./security)
 [![Code Quality](https://img.shields.io/badge/Code%20Quality-95%25-blue)](./docs)
@@ -8,7 +8,7 @@
 
 ## 🎯 Enterprise Manufacturing Intelligence Platform
 
-World-class manufacturing dashboard with AI-powered analytics, real-time monitoring, and comprehensive business intelligence for Sentia Spirits.
+World-class AI manufacturing application with AI-powered analytics, real-time monitoring, and comprehensive business intelligence for Sentia Spirits.
 
 ## 🛠️ Technology Stack
 
@@ -714,3 +714,4 @@ For technical issues or questions:
 # Force redeploy Tue, Sep  9, 2025  6:51:53 PM
 # MCP Server restart - Tue, Sep 10, 2025  7:03:00 AM
 # Latest deployment: Wed, Sep 10, 2025  2:47:08 PM
+# Deployment trigger Sun Sep 28 17:34:36 EDT 2025

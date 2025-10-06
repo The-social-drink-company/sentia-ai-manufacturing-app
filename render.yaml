@@ -1,3 +1,9 @@
+databases:
+  - name: sentia-manufacturing-db
+    databaseName: sentia_manufacturing
+    user: sentia_user
+    plan: free
+
 services:
   # Development Environment
   - type: web
@@ -6,7 +12,7 @@ services:
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "corepack enable && pnpm install --frozen-lockfile && pnpm run build:dev"
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma generate && pnpm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -18,28 +24,13 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-development
+        value: postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require
+      # fromDatabase:
+          name: sentia-manufacturing-db
           property: connectionString
-      - key: MCP_SERVER_URL
-        value: https://mcp-server-tkyu.onrender.com
-      # Clerk Authentication Variables
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
-      - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-      - key: VITE_CLERK_DOMAIN
-        value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
 
   # Testing Environment
   - type: web
@@ -48,7 +39,7 @@ services:
     plan: starter
     region: oregon
     branch: testing
-    buildCommand: "corepack enable && pnpm install --frozen-lockfile && pnpm run build:test"
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -60,28 +51,13 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-testing
+        value: postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require
+      # fromDatabase:
+          name: sentia-manufacturing-db
           property: connectionString
-      - key: MCP_SERVER_URL
-        value: https://mcp-server-tkyu.onrender.com
-      # Clerk Authentication Variables
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
-      - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-      - key: VITE_CLERK_DOMAIN
-        value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
 
   # Production Environment
   - type: web
@@ -90,7 +66,7 @@ services:
     plan: starter
     region: oregon
     branch: production
-    buildCommand: "corepack enable && pnpm install --frozen-lockfile && pnpm run build"
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
     startCommand: "node server-enterprise-complete.js"
     healthCheckPath: /health
     autoDeploy: true
@@ -102,27 +78,12 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-production
+        value: postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require
+      # fromDatabase:
+          name: sentia-manufacturing-db
           property: connectionString
-      - key: MCP_SERVER_URL
-        value: https://mcp-server-tkyu.onrender.com
       - key: LOG_LEVEL
         value: error
-      # Clerk Authentication Variables (TODO: Replace with production keys)
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        value: pk_live_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
-      - key: CLERK_SECRET_KEY
-        value: sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-      - key: VITE_CLERK_DOMAIN
-        value: clerk.financeflo.ai
-      - key: VITE_CLERK_SIGN_IN_URL
-        value: /sign-in
-      - key: VITE_CLERK_SIGN_UP_URL
-        value: /sign-up
-      - key: VITE_CLERK_AFTER_SIGN_IN_URL
-        value: /dashboard
-      - key: VITE_CLERK_AFTER_SIGN_UP_URL
-        value: /dashboard
-      - key: CLERK_WEBHOOK_SECRET
-        value: whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET

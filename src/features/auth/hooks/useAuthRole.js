@@ -1,11 +1,11 @@
-import { useAuth } from '@clerk/clerk-react'
+import useEnvironmentAuth from '@/hooks/useEnvironmentAuth'
 
 /**
  * Custom hook for role-based access control
  * Provides utility functions for checking user permissions
  */
 export function useAuthRole() {
-  const { isLoaded, isSignedIn, sessionClaims } = useAuth()
+  const { isLoaded, isSignedIn, sessionClaims } = useEnvironmentAuth()
 
   const userRole = sessionClaims?.metadata?.role || 'viewer'
 
@@ -16,19 +16,19 @@ export function useAuthRole() {
     admin: 3
   }
 
-  const hasRole = (_requiredRole) => {
+  const hasRole = (requiredRole) => {
     if (!isLoaded || !isSignedIn) return false
     return roleHierarchy[userRole] >= roleHierarchy[requiredRole]
   }
 
-  const hasPermission = (_permission) => {
+  const hasPermission = (permission) => {
     if (!isLoaded || !isSignedIn) return false
 
     const permissions = sessionClaims?.metadata?.permissions || []
     return permissions.includes(permission)
   }
 
-  const canAccess = (_resource) => {
+  const canAccess = (resource) => {
     const accessMap = {
       dashboard: ['viewer', 'operator', 'manager', 'admin'],
       workingCapital: ['manager', 'admin'],

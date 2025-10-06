@@ -14,7 +14,12 @@ DATABASE_URL=postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rk
 
 ## Authentication Configuration
 
-### Clerk Authentication (Production Keys)
+### Development Authentication Bypass
+```
+VITE_DEVELOPMENT_MODE=true  # Bypasses Clerk authentication for development
+```
+
+### Clerk Authentication (Production Keys - Used when VITE_DEVELOPMENT_MODE=false)
 ```
 CLERK_ENVIRONMENT=production
 CLERK_SECRET_KEY=sk_live_REDACTED

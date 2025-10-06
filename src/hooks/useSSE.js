@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 
 import { sseClient } from '../services/realtime/sseClient'
 
@@ -7,6 +7,15 @@ import { sseClient } from '../services/realtime/sseClient'
  * Provides real-time updates to React components
  */
 export function useSSE(eventTypes = [], options = {}) {
+  const normalizedEventTypes = useMemo(() => {
+    if (!eventTypes) {
+      return [];
+    }
+
+    return Array.isArray(eventTypes) ? eventTypes : [eventTypes];
+  }, [eventTypes]);
+
+  const { onEvent, disconnectOnUnmount = false } = options;
   const [data, setData] = useState({})
   const [isConnected, setIsConnected] = useState(false)
   const [lastUpdate, setLastUpdate] = useState(null)
@@ -23,7 +32,7 @@ export function useSSE(eventTypes = [], options = {}) {
     })
 
     // Subscribe to specified event types
-    const unsubscribers = eventTypes.map(eventType => {
+    const unsubscribers = normalizedEventTypes.map(eventType => {
       return sseClient.subscribe(eventType, (eventData) => {
         setData(prevData => ({
           ...prevData,
@@ -32,8 +41,8 @@ export function useSSE(eventTypes = [], options = {}) {
         setLastUpdate(new Date())
 
         // Call custom handler if provided
-        if (options.onEvent) {
-          options.onEvent(eventType, eventData)
+        if (onEvent) {
+          onEvent(eventType, eventData);
         }
       })
     })
@@ -47,11 +56,11 @@ export function useSSE(eventTypes = [], options = {}) {
       unsubscribers.forEach(unsub => unsub())
 
       // Disconnect if no other components are using SSE
-      if (options.disconnectOnUnmount) {
-        sseClient.disconnect()
+      if (disconnectOnUnmount) {
+        sseClient.disconnect();
       }
     }
-  }, [eventTypes.join(','), options.disconnectOnUnmount])
+  }, [normalizedEventTypes, disconnectOnUnmount, onEvent])
 
   const reconnect = useCallback(() => {
     sseClient.connect()
@@ -95,3 +104,6 @@ export function useSSEEvent(eventType, handler) {
 
   return lastData
 }
+
+
+

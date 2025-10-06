@@ -1,12 +1,25 @@
-import { ChevronUpIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { MagnifyingGlassIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
+import { cn } from '@/lib/utils'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-import { cn } from '../../utils/cn'
+const SAMPLE_COLUMNS = [
+  { key: 'name', label: 'SKU' },
+  { key: 'revenue', label: 'Revenue' },
+  { key: 'margin', label: 'Margin' },
+  { key: 'risk', label: 'Risk' }
+]
+
+const SAMPLE_ROWS = [
+  { name: 'SKU-145', revenue: '$182K', margin: '38%', risk: 'Low' },
+  { name: 'SKU-278', revenue: '$156K', margin: '42%', risk: 'Medium' },
+  { name: 'SKU-412', revenue: '$211K', margin: '35%', risk: 'Low' }
+]
 
 const DataTableWidget = ({
-  title,
-  columns = [],
-  data = [],
+  title = 'Key Items',
+  columns = SAMPLE_COLUMNS,
+  data = SAMPLE_ROWS,
   searchable = true,
   sortable = true,
   pagination = true,
@@ -14,95 +27,124 @@ const DataTableWidget = ({
   loading = false,
   className = ''
 }) => {
+  const activeColumns = columns.length ? columns : SAMPLE_COLUMNS
+  const activeData = data.length ? data : SAMPLE_ROWS
+
   const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState(null)
   const [sortDirection, setSortDirection] = useState('asc')
   const [currentPage, setCurrentPage] = useState(1)
 
-  // Filter data based on search term
-  const filteredData = data.filter(row =>
-    Object.values(row).some(value =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = useMemo(() => {
+    if (!searchable || !searchTerm.trim()) {
+      return activeData
+    }
+
+    const needle = searchTerm.toLowerCase()
+    return activeData.filter((row) =>
+      Object.values(row).some((value) =>
+        String(value).toLowerCase().includes(needle)
+      )
     )
-  )
+  }, [activeData, searchable, searchTerm])
 
-  // Sort data
-  const sortedData = sortable && sortColumn
-    ? [...filteredData].sort((a, b) => {
-        const aVal = a[sortColumn]
-        const bVal = b[sortColumn]
-        if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1
-        if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1
-        return 0
-      })
-    : filteredData
+  const sortedData = useMemo(() => {
+    if (!sortable || !sortColumn) {
+      return filteredData
+    }
 
-  // Paginate data
-  const totalPages = Math.ceil(sortedData.length / pageSize)
-  const startIndex = (currentPage - 1) * pageSize
+    const columnKey = sortColumn
+    const direction = sortDirection
+
+    return [...filteredData].sort((a, b) => {
+      const aVal = a[columnKey]
+      const bVal = b[columnKey]
+
+      if (aVal === bVal) return 0
+      if (aVal == null) return direction === 'asc' ? -1 : 1
+      if (bVal == null) return direction === 'asc' ? 1 : -1
+
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [filteredData, sortable, sortColumn, sortDirection])
+
+  const totalPages = pagination ? Math.max(1, Math.ceil(sortedData.length / pageSize)) : 1
+  const currentPageSafe = Math.min(currentPage, totalPages)
+  const startIndex = (currentPageSafe - 1) * pageSize
   const paginatedData = pagination
     ? sortedData.slice(startIndex, startIndex + pageSize)
     : sortedData
 
-  const handleSort = (column) => {
+  const handleSort = (columnKey) => {
     if (!sortable) return
 
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    if (sortColumn === columnKey) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
-      setSortColumn(column)
+      setSortColumn(columnKey)
       setSortDirection('asc')
     }
   }
 
+  const renderLoadingState = () => (
+    <Card className={cn('bg-white dark:bg-gray-800 shadow-sm', className)}>
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {[...Array(6)].map((_, index) => (
+          <div
+            key={index}
+            className="h-10 w-full animate-pulse rounded-md bg-gray-200 dark:bg-gray-700"
+          />
+        ))}
+      </CardContent>
+    </Card>
+  )
+
   if (loading) {
-    return (
-      <div className={cn('bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6', className)}>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
-        <div className="space-y-2">
-          {[...Array(5)].map((_, _i) => (
-            <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-          ))}
-        </div>
-      </div>
-    )
+    return renderLoadingState()
   }
 
   return (
-    <div className={cn('bg-white dark:bg-gray-800 rounded-xl shadow-sm', className)}>
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {title}
-          </h3>
-          {searchable && (
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value)
-                  setCurrentPage(1)
-                }}
-                className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          )}
-        </div>
+    <Card className={cn('bg-white dark:bg-gray-800 shadow-sm', className)}>
+      <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+          {title}
+        </CardTitle>
+        {searchable && (
+          <div className="relative w-full sm:w-64">
+            <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(event) => {
+                setSearchTerm(event.target.value)
+                setCurrentPage(1)
+              }}
+              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-4 text-sm text-gray-900 shadow-inner outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            />
+          </div>
+        )}
+      </CardHeader>
 
+      <CardContent className="p-0">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead>
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                {columns.map((column) => (
+                {activeColumns.map((column) => (
                   <th
                     key={column.key}
                     onClick={() => handleSort(column.key)}
                     className={cn(
-                      'px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider',
-                      sortable && 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700'
+                      'px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400',
+                      sortable && 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800'
                     )}
                   >
                     <div className="flex items-center space-x-1">
@@ -119,17 +161,13 @@ const DataTableWidget = ({
                 ))}
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-<<<<<<< HEAD
-              {paginatedData.map((row, __rowIndex) => (
-=======
-              {paginatedData.map((row, _rowIndex) => (
->>>>>>> development
+            <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+              {paginatedData.map((row, rowIndex) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  {columns.map((column) => (
+                  {activeColumns.map((column) => (
                     <td
                       key={column.key}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300"
+                      className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300"
                     >
                       {column.render ? column.render(row[column.key], row) : row[column.key]}
                     </td>
@@ -139,8 +177,8 @@ const DataTableWidget = ({
               {paginatedData.length === 0 && (
                 <tr>
                   <td
-                    colSpan={columns.length}
-                    className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
+                    colSpan={activeColumns.length}
+                    className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                   >
                     No data available
                   </td>
@@ -151,30 +189,30 @@ const DataTableWidget = ({
         </div>
 
         {pagination && totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4">
-            <div className="text-sm text-gray-700 dark:text-gray-300">
+          <div className="flex flex-col items-center justify-between gap-3 px-6 py-4 text-sm text-gray-700 dark:text-gray-300 sm:flex-row">
+            <span>
               Showing {startIndex + 1} to {Math.min(startIndex + pageSize, sortedData.length)} of {sortedData.length} results
-            </div>
+            </span>
             <div className="flex space-x-2">
               <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPageSafe === 1}
+                className="rounded-md border border-gray-300 px-3 py-1 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Previous
               </button>
               <button
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={currentPageSafe === totalPages}
+                className="rounded-md border border-gray-300 px-3 py-1 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Next
               </button>
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 

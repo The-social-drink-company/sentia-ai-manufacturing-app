@@ -7,8 +7,13 @@
 // Environment configuration
 // Check if we're in a browser (Vite) or Node.js environment
 const isBrowser = typeof window !== 'undefined';
-const NODE_ENV = isBrowser ? (import.meta.env?.MODE || 'development') : (process.env.NODE_ENV || 'development');
-const LOG_LEVEL = isBrowser ? (import.meta.env?.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug')) : (process.env.LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug'));
+const nodeProcess = typeof globalThis !== 'undefined' ? globalThis.process : undefined;
+const processEnv = nodeProcess && nodeProcess.env ? nodeProcess.env : undefined;
+
+const rawNodeEnv = processEnv ? processEnv.NODE_ENV : undefined;
+const NODE_ENV = isBrowser ? (import.meta.env?.MODE || 'development') : (rawNodeEnv || 'development');
+const rawLogLevel = processEnv ? processEnv.LOG_LEVEL : undefined;
+const LOG_LEVEL = isBrowser ? (import.meta.env?.VITE_LOG_LEVEL || (NODE_ENV === 'production' ? 'info' : 'debug')) : (rawLogLevel || (NODE_ENV === 'production' ? 'info' : 'debug'));
 
 // Log levels
 const LOG_LEVELS = {
@@ -81,8 +86,10 @@ class EnterpriseLogger {
         logs.push(logData);
         if (logs.length > 100) logs.shift();
         localStorage.setItem('app_logs', JSON.stringify(logs));
-      } catch (e) {
-        // Ignore localStorage errors
+      } catch (error) {
+        if (isBrowser && NODE_ENV === 'development') {
+          console.warn('[LOGGER] Failed to persist log history', error);
+        }
       }
     }
   }
@@ -152,26 +159,55 @@ export const createLogger = (name) => {
   };
 };
 
+const HEALTH_LOG_PATHS = [
+  '/health',
+  '/health/live',
+  '/health/ready',
+  '/health/detailed',
+  '/health/history',
+  '/health/liveness',
+  '/health/readiness',
+  '/api/health',
+  '/api/health/live',
+  '/api/health/ready',
+  '/api/health/detailed'
+];
+
+const isHealthEndpoint = req => {
+  const path = (req?.path || req?.originalUrl || '').toLowerCase();
+
+  if (!path) {
+    return false;
+  }
+
+  return HEALTH_LOG_PATHS.some(target => path === target || path.startsWith(`${target}/`));
+};
+
 // Express middleware for logging
 export const loggingMiddleware = (req, res, next) => {
   const start = Date.now();
 
-  // Log request
-  logger.info(`${req.method} ${req.path}`, {
-    method: req.method,
-    path: req.path,
-    query: req.query,
-    ip: req.ip
-  });
+  const skipLogging = isHealthEndpoint(req);
+
+  if (!skipLogging) {
+    logger.info(`${req.method} ${req.path}`, {
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      ip: req.ip
+    });
+  }
 
   // Capture response
   const originalSend = res.send;
-  res.send = function(data) {
+  res.send = function sendWithLogging(data) {
     const duration = Date.now() - start;
-    logger.info(`Response sent: ${req.method} ${req.path}`, {
-      statusCode: res.statusCode,
-      duration: `${duration}ms`
-    });
+    if (!skipLogging) {
+      logger.info(`Response sent: ${req.method} ${req.path}`, {
+        statusCode: res.statusCode,
+        duration: `${duration}ms`
+      });
+    }
     return originalSend.call(this, data);
   };
 
@@ -180,3 +216,4 @@ export const loggingMiddleware = (req, res, next) => {
 
 // Default export
 export default logger;
+

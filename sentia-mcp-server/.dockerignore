@@ -1,0 +1,207 @@
+# Sentia MCP Server Docker Build Context Optimization
+# Exclude unnecessary files to reduce build time and image size
+
+# Version control
+.git
+.gitignore
+.gitattributes
+.github/
+
+# Documentation (keep essential docs but exclude extras)
+*.md
+!README.md
+!docs/MCP_SERVER_SETUP.md
+docs/examples/
+docs/archive/
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Logs and runtime data
+logs/
+*.log
+*.log.*
+log-*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output/
+
+# Grunt intermediate storage
+.grunt/
+
+# Bower dependency directory
+bower_components/
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm/
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.local
+.env.development
+.env.staging
+.env.production
+
+# parcel-bundler cache
+.cache/
+.parcel-cache/
+
+# Next.js build output
+.next/
+
+# Nuxt.js build / generate output
+.nuxt/
+dist/
+
+# Gatsby files
+.cache/
+public/
+
+# Storybook build outputs
+.out/
+.storybook-out/
+
+# Temporary folders
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Testing
+test-results/
+test-reports/
+.jest/
+
+# Local development files
+*.local
+local-*
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+*.atom-*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker files (except Dockerfile)
+docker-compose.yml
+docker-compose.*.yml
+!docker-compose.production.yml
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Test files and validation scripts
+test-*.js
+validate-*.js
+*-test.js
+integration-test.js
+final-test.js
+final-validation.js
+
+# Development specific files
+.eslintrc.*
+.prettierrc.*
+.editorconfig
+.nvmrc
+.node-version
+
+# Security and sensitive files
+*.key
+*.pem
+*.crt
+*.p12
+secrets/
+.secrets/
+
+# Render specific
+render.yaml
+
+# Performance test files
+benchmark/
+load-test/
+stress-test/
+
+# Archive and compressed files
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# Development database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Claude Desktop config (development only)
+claude-desktop-config.json
+
+# Package lock files (we'll copy them explicitly in Dockerfile)
+# package-lock.json
+# pnpm-lock.yaml
+
+# Keep essential files for production build
+!package.json
+!src/
+!scripts/start-mcp-server.js
+!scripts/health-check-advanced.js

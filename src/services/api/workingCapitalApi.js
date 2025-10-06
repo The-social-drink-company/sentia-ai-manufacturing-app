@@ -1,40 +1,32 @@
-import { api } from './baseApi'
+﻿import { api } from './baseApi'
 
 /**
  * Working Capital API Service
- * Handles financial and working capital related API calls
+ * Uses real backend endpoints only – no mock data.
  */
 class WorkingCapitalApi {
-  async getCashFlow(params = {}) {
-    return api.get('/working-capital/cash-flow', params)
+  async getWorkingCapital(period) {
+    return api.get('/financial/working-capital', period ? { period } : {})
   }
 
-  async getReceivables() {
-    return api.get('/working-capital/receivables')
+  async getCashFlow() {
+    return api.get('/financial/cash-flow')
   }
 
-  async getPayables() {
-    return api.get('/working-capital/payables')
+  async getFinancialMetrics() {
+    return api.get('/financial/metrics')
   }
 
-  async getInventoryMetrics() {
-    return api.get('/working-capital/inventory')
+  async getDashboardSummary() {
+    return api.get('/dashboard/summary')
   }
 
-  async getCashConversionCycle() {
-    return api.get('/working-capital/cash-conversion')
+  async getMcpStatus() {
+    return api.get('/mcp/status')
   }
 
-  async getForecasts(horizon = '90d') {
-    return api.get('/working-capital/forecasts', { horizon })
-  }
-
-  async runScenarioAnalysis(scenario) {
-    return api.post('/working-capital/scenarios', scenario)
-  }
-
-  async getHistoricalData(startDate, endDate) {
-    return api.get('/working-capital/historical', { startDate, endDate })
+  async requestAiInsights(payload) {
+    return api.post('/ai/insights', payload)
   }
 }
 

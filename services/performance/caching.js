@@ -355,11 +355,11 @@ export class CacheService {
 /**
  * Pagination helper with caps
  */
-export const paginationMiddleware = (options = _{}) => {
+export const paginationMiddleware = (options = {}) => {
   const maxPageSize = parseInt(process.env.API_MAX_PAGE_SIZE) || 500;
   const defaultPageSize = parseInt(process.env.API_DEFAULT_PAGE_SIZE) || 50;
   
-  return (req, res, _next) => {
+  return (req, res, next) => {
     // Parse pagination params
     let page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || defaultPageSize;
@@ -431,7 +431,7 @@ export const paginationMiddleware = (options = _{}) => {
  * Sparse fieldsets middleware for payload optimization
  */
 export const sparseFieldsMiddleware = () => {
-  return (req, res, _next) => {
+  return (req, res, next) => {
     const fields = req.query.fields;
     
     if (fields) {

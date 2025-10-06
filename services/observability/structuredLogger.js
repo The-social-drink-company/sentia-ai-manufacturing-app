@@ -17,18 +17,18 @@ export const getCorrelationId = () => {
 };
 
 // Set correlation ID in context
-export const withCorrelationId = (correlationId, _fn) => {
+export const withCorrelationId = (correlationId, fn) => {
   return asyncLocalStorage.run({ correlationId }, fn);
 };
 
 // Structured log format
 const structuredFormat = winston.format.printf(({ 
   level, 
-  _message, 
-  _timestamp, 
+  message, 
+  timestamp, 
   correlationId,
-  _service,
-  _environment,
+  service,
+  environment,
   version,
   ...metadata 
 }) => {
@@ -121,7 +121,7 @@ const createStructuredLogger = () => {
 const structuredLogger = createStructuredLogger();
 
 // Log with correlation ID
-export const log = (level, _message, metadata = _{}) => {
+export const log = (level, message, metadata = {}) => {
   structuredLogger.log(level, message, {
     correlationId: getCorrelationId(),
     ...metadata
@@ -129,11 +129,11 @@ export const log = (level, _message, metadata = _{}) => {
 };
 
 // Convenience methods
-export const logInfo = (_message, metadata = _{}) => {
+export const logInfo = (message, metadata = {}) => {
   log('info', message, metadata);
 };
 
-export const logError = (_message, error = _null, metadata = _{}) => {
+export const logError = (message, error = null, metadata = {}) => {
   const errorMeta = error ? {
     error: {
       message: error.message,
@@ -146,12 +146,36 @@ export const logError = (_message, error = _null, metadata = _{}) => {
   log('error', message, { ...errorMeta, ...metadata });
 };
 
-export const logWarn = (_message, metadata = _{}) => {
+export const logWarn = (message, metadata = {}) => {
   log('warn', message, metadata);
 };
 
-export const logDebug = (_message, metadata = _{}) => {
+export const logDebug = (message, metadata = {}) => {
   log('debug', message, metadata);
+};
+
+const HEALTH_LOG_PATHS = [
+  '/health',
+  '/health/live',
+  '/health/ready',
+  '/health/detailed',
+  '/health/history',
+  '/health/liveness',
+  '/health/readiness',
+  '/api/health',
+  '/api/health/live',
+  '/api/health/ready',
+  '/api/health/detailed'
+];
+
+const shouldSkipRequestLogging = req => {
+  const path = (req?.path || req?.originalUrl || '').toLowerCase();
+
+  if (!path) {
+    return false;
+  }
+
+  return HEALTH_LOG_PATHS.some(target => path === target || path.startsWith(`${target}/`));
 };
 
 // HTTP request logging
@@ -176,7 +200,7 @@ export const logHttpRequest = (req, res, duration) => {
 };
 
 // Database query logging
-export const logDatabaseQuery = (query, _params, duration, error = _null) => {
+export const logDatabaseQuery = (query, params, duration, error = null) => {
   const metadata = {
     query: query.substring(0, 500), // Limit query length
     duration,
@@ -191,7 +215,7 @@ export const logDatabaseQuery = (query, _params, duration, error = _null) => {
 };
 
 // External API call logging
-export const logApiCall = (_service, _endpoint, _method, duration, statusCode, error = _null) => {
+export const logApiCall = (service, endpoint, method, duration, statusCode, error = null) => {
   const metadata = {
     service,
     endpoint,
@@ -208,7 +232,7 @@ export const logApiCall = (_service, _endpoint, _method, duration, statusCode, e
 };
 
 // Performance logging
-export const logPerformance = (_operation, duration, metadata = _{}) => {
+export const logPerformance = (operation, duration, metadata = {}) => {
   logInfo(`Performance: ${operation}`, {
     operation,
     duration,
@@ -217,7 +241,7 @@ export const logPerformance = (_operation, duration, metadata = _{}) => {
 };
 
 // Security event logging
-export const logSecurityEvent = (event, severity, metadata = _{}) => {
+export const logSecurityEvent = (event, severity, metadata = {}) => {
   const level = severity === 'critical' ? 'error' 
     : severity === 'high' ? 'warn' 
     : 'info';
@@ -230,7 +254,7 @@ export const logSecurityEvent = (event, severity, metadata = _{}) => {
 };
 
 // Business event logging
-export const logBusinessEvent = (event, metadata = _{}) => {
+export const logBusinessEvent = (event, metadata = {}) => {
   logInfo(`Business event: ${event}`, {
     businessEvent: event,
     ...metadata
@@ -238,7 +262,7 @@ export const logBusinessEvent = (event, metadata = _{}) => {
 };
 
 // Audit logging
-export const logAudit = (_action, _resource, _userId, _result, metadata = _{}) => {
+export const logAudit = (action, resource, userId, result, metadata = {}) => {
   logInfo('Audit event', {
     audit: {
       action,
@@ -252,7 +276,7 @@ export const logAudit = (_action, _resource, _userId, _result, metadata = _{}) =
 };
 
 // Express middleware for correlation ID
-export const correlationIdMiddleware = (req, res, _next) => {
+export const correlationIdMiddleware = (req, res, next) => {
   const correlationId = req.headers['x-correlation-id'] || 
                         req.headers['x-request-id'] || 
                         generateCorrelationId();
@@ -260,38 +284,41 @@ export const correlationIdMiddleware = (req, res, _next) => {
   req.correlationId = correlationId;
   res.setHeader('X-Correlation-ID', correlationId);
   
-  withCorrelationId(correlationId, _() => {
+  withCorrelationId(correlationId, () => {
     next();
   });
 };
 
 // Express middleware for request logging
-export const requestLoggingMiddleware = (req, res, _next) => {
+export const requestLoggingMiddleware = (req, res, next) => {
   const start = Date.now();
-  
-  // Log request start
-  logInfo(`Request started: ${req.method} ${req.path}`, {
-    method: req.method,
-    path: req.path,
-    query: req.query
-  });
-  
-  // Capture response
+  const skipLogging = shouldSkipRequestLogging(req);
+
+  if (!skipLogging) {
+    logInfo(`Request started: ${req.method} ${req.path}`, {
+      method: req.method,
+      path: req.path,
+      query: req.query
+    });
+  }
+
   const originalSend = res.send;
-  res.send = function(data) {
+  res.send = function sendWithLogging(data) {
     res.send = originalSend;
-    const duration = Date.now() - start;
-    
-    logHttpRequest(req, res, duration);
-    
+
+    if (!skipLogging) {
+      const duration = Date.now() - start;
+      logHttpRequest(req, res, duration);
+    }
+
     return res.send(data);
   };
-  
+
   next();
 };
 
 // Error logging middleware
-export const errorLoggingMiddleware = (_err, req, res, _next) => {
+export const errorLoggingMiddleware = (err, req, res, next) => {
   logError('Unhandled error in request', err, {
     method: req.method,
     path: req.path,

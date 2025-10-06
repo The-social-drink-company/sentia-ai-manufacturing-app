@@ -63,7 +63,7 @@ class EnterpriseDeploymentErrorHandler {
       fix: async _() => {
         await this.log('info', 'Reinitializing git repository');
         execSync('git init', { cwd: rootDir, stdio: 'inherit' });
-        execSync('git remote add origin https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git', { cwd: rootDir, stdio: 'ignore' });
+        execSync('git remote add origin https://github.com/The-social-drink-company/sentia-ai-manufacturing-app.git', { cwd: rootDir, stdio: 'ignore' });
         execSync('git fetch origin', { cwd: rootDir, stdio: 'inherit' });
         execSync('git checkout development', { cwd: rootDir, stdio: 'inherit' });
         await this.log('info', 'Git repository reinitialized');

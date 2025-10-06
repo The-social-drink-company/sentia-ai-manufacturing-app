@@ -22,7 +22,7 @@ export const ENVIRONMENT_TEMPLATES = {
     // Security Configuration
     JWT_SECRET: '${GENERATE_SECURE_JWT_SECRET}',
     SESSION_SECRET: '${GENERATE_SECURE_SESSION_SECRET}',
-    CORS_ORIGINS: 'https://sentia-manufacturing-production.onrender.com',
+    CORS_ORIGINS: 'https://sentia-manufacturing-dashboard-production.onrender.com',
 
     // Clerk Authentication (Production Keys Required)
     CLERK_ENVIRONMENT: 'production',
@@ -39,12 +39,13 @@ export const ENVIRONMENT_TEMPLATES = {
     VITE_FORCE_CLERK_AUTH: 'true',
 
     // Frontend Configuration
-    VITE_API_BASE_URL: 'https://sentia-manufacturing-production.onrender.com/api',
+    VITE_API_BASE_URL: 'https://sentia-manufacturing-dashboard-production.onrender.com',
     VITE_APP_TITLE: 'Sentia Manufacturing Dashboard',
     VITE_APP_VERSION: '1.0.10',
 
     // MCP Server Configuration
-    MCP_SERVER_URL: 'https://mcp-server-production.onrender.com',
+    MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
+    VITE_MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
     MCP_JWT_SECRET: '${GENERATE_MCP_JWT_SECRET}',
     MCP_ENABLE_WEBSOCKET: 'true',
     MCP_SERVER_HEALTH_CHECK_INTERVAL: '30000',
@@ -52,7 +53,7 @@ export const ENVIRONMENT_TEMPLATES = {
     // External API Integrations - Production Credentials Required
     XERO_CLIENT_ID: '${PROD_XERO_CLIENT_ID}',
     XERO_CLIENT_SECRET: '${PROD_XERO_CLIENT_SECRET}',
-    XERO_REDIRECT_URI: 'https://sentia-manufacturing-production.onrender.com/api/xero/callback',
+    XERO_REDIRECT_URI: 'https://sentia-manufacturing-dashboard-production.onrender.com/api/xero/callback',
     XERO_SYNC_INTERVAL: '*/30 * * * *',
 
     SHOPIFY_UK_ACCESS_TOKEN: '${PROD_SHOPIFY_UK_ACCESS_TOKEN}',
@@ -119,7 +120,7 @@ export const ENVIRONMENT_TEMPLATES = {
     // Security Configuration
     JWT_SECRET: '${GENERATE_SECURE_JWT_SECRET}',
     SESSION_SECRET: '${GENERATE_SECURE_SESSION_SECRET}',
-    CORS_ORIGINS: 'https://sentia-manufacturing-testing.onrender.com',
+    CORS_ORIGINS: 'https://sentia-manufacturing-dashboard-test.onrender.com',
 
     // Clerk Authentication (Can use development keys for testing)
     CLERK_ENVIRONMENT: 'production',
@@ -136,12 +137,13 @@ export const ENVIRONMENT_TEMPLATES = {
     VITE_FORCE_CLERK_AUTH: 'true',
 
     // Frontend Configuration
-    VITE_API_BASE_URL: 'https://sentia-manufacturing-testing.onrender.com/api',
+    VITE_API_BASE_URL: 'https://sentia-manufacturing-dashboard-test.onrender.com',
     VITE_APP_TITLE: 'Sentia Manufacturing Dashboard (Testing)',
     VITE_APP_VERSION: '1.0.10-testing',
 
     // MCP Server Configuration
-    MCP_SERVER_URL: 'https://mcp-server-testing.onrender.com',
+    MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
+    VITE_MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
     MCP_JWT_SECRET: '${GENERATE_MCP_JWT_SECRET}',
     MCP_ENABLE_WEBSOCKET: 'true',
     MCP_SERVER_HEALTH_CHECK_INTERVAL: '15000',
@@ -149,7 +151,7 @@ export const ENVIRONMENT_TEMPLATES = {
     // External API Integrations - Testing/Development Credentials
     XERO_CLIENT_ID: '${TEST_XERO_CLIENT_ID}',
     XERO_CLIENT_SECRET: '${TEST_XERO_CLIENT_SECRET}',
-    XERO_REDIRECT_URI: 'https://sentia-manufacturing-testing.onrender.com/api/xero/callback',
+    XERO_REDIRECT_URI: 'https://sentia-manufacturing-dashboard-test.onrender.com/api/xero/callback',
     XERO_SYNC_INTERVAL: '*/30 * * * *',
 
     SHOPIFY_UK_ACCESS_TOKEN: '${TEST_SHOPIFY_UK_ACCESS_TOKEN}',
@@ -192,7 +194,7 @@ export const ENVIRONMENT_TEMPLATES = {
     // Security Configuration
     JWT_SECRET: '${GENERATE_SECURE_JWT_SECRET}',
     SESSION_SECRET: '${GENERATE_SECURE_SESSION_SECRET}',
-    CORS_ORIGINS: 'https://sentia-manufacturing-development.onrender.com',
+    CORS_ORIGINS: 'https://sentia-manufacturing-dashboard-621h.onrender.com',
 
     // Clerk Authentication (Development keys)
     CLERK_ENVIRONMENT: 'production',
@@ -209,12 +211,13 @@ export const ENVIRONMENT_TEMPLATES = {
     VITE_FORCE_CLERK_AUTH: 'true',
 
     // Frontend Configuration
-    VITE_API_BASE_URL: 'https://sentia-manufacturing-development.onrender.com/api',
+    VITE_API_BASE_URL: 'https://sentia-manufacturing-dashboard-621h.onrender.com',
     VITE_APP_TITLE: 'Sentia Manufacturing Dashboard (Development)',
     VITE_APP_VERSION: '1.0.10-development',
 
     // MCP Server Configuration
-    MCP_SERVER_URL: 'https://mcp-server-development.onrender.com',
+    MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
+    VITE_MCP_SERVER_URL: 'https://sentia-mcp-production.onrender.com',
     MCP_JWT_SECRET: '${GENERATE_MCP_JWT_SECRET}',
     MCP_ENABLE_WEBSOCKET: 'true',
     MCP_SERVER_HEALTH_CHECK_INTERVAL: '10000',
@@ -222,7 +225,7 @@ export const ENVIRONMENT_TEMPLATES = {
     // External API Integrations - Development Credentials
     XERO_CLIENT_ID: '${DEV_XERO_CLIENT_ID}',
     XERO_CLIENT_SECRET: '${DEV_XERO_CLIENT_SECRET}',
-    XERO_REDIRECT_URI: 'https://sentia-manufacturing-development.onrender.com/api/xero/callback',
+    XERO_REDIRECT_URI: 'https://sentia-manufacturing-dashboard-621h.onrender.com/api/xero/callback',
 
     SHOPIFY_UK_ACCESS_TOKEN: '${DEV_SHOPIFY_UK_ACCESS_TOKEN}',
     SHOPIFY_UK_API_KEY: '${DEV_SHOPIFY_UK_API_KEY}',

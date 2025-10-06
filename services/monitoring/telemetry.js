@@ -51,10 +51,10 @@ const sdk = new NodeSDK({
   instrumentations: [
     getNodeAutoInstrumentations({
       '@opentelemetry/instrumentation-fs': {
-        enabled: _false, // Disable file system instrumentation to reduce noise
+        enabled: false, // Disable file system instrumentation to reduce noise
       },
       '@opentelemetry/instrumentation-http': {
-        requestHook: _(span, request) => {
+        requestHook: (span, request) => {
           // Add custom attributes to HTTP spans
           span.setAttribute('http.request.body.size', request.headers['content-length'] || 0);
           span.setAttribute('http.user_agent', request.headers['user-agent'] || 'unknown');
@@ -129,16 +129,16 @@ export const shutdownTelemetry = async () => {
 };
 
 // Custom span creation helper
-export const createSpan = (tracer, _name, attributes = _{}) => {
+export const createSpan = (tracer, name, attributes = {}) => {
   const span = tracer.startSpan(name);
-  Object.entries(attributes).forEach(_([key, _value]) => {
+  Object.entries(attributes).forEach(([key, value]) => {
     span.setAttribute(key, value);
   });
   return span;
 };
 
 // Trace async operations
-export const traceAsync = async (tracer, _name, _fn, attributes = _{}) => {
+export const traceAsync = async (tracer, name, fn, attributes = {}) => {
   const span = createSpan(tracer, name, attributes);
   
   try {
@@ -158,13 +158,13 @@ export const traceAsync = async (tracer, _name, _fn, attributes = _{}) => {
 };
 
 // Add custom metrics
-export const recordCustomMetric = (meter, _name, _value, attributes = _{}) => {
+export const recordCustomMetric = (meter, name, value, attributes = {}) => {
   const metric = meter.createUpDownCounter(name);
   metric.add(value, attributes);
 };
 
 // Add custom events to spans
-export const addSpanEvent = (span, _name, attributes = _{}) => {
+export const addSpanEvent = (span, name, attributes = {}) => {
   span.addEvent(name, attributes, Date.now());
 };
 
@@ -179,7 +179,7 @@ export const injectContext = (headers) => {
 };
 
 // Error reporting helper
-export const reportError = (error, context = _{}) => {
+export const reportError = (error, context = {}) => {
   const span = trace.getActiveSpan();
   
   if (span) {
@@ -187,7 +187,7 @@ export const reportError = (error, context = _{}) => {
     span.setStatus({ code: 2, message: error.message });
     
     // Add error context as span attributes
-    Object.entries(context).forEach(_([key, _value]) => {
+    Object.entries(context).forEach(([key, value]) => {
       span.setAttribute(`error.context.${key}`, value);
     });
   }
@@ -200,7 +200,7 @@ export const reportError = (error, context = _{}) => {
 };
 
 // Performance measurement helper
-export const measurePerformance = async (_name, _fn, attributes = _{}) => {
+export const measurePerformance = async (name, fn, attributes = {}) => {
   const tracer = trace.getTracer(serviceName);
   const meter = metrics.getMeter(serviceName);
   
@@ -211,7 +211,7 @@ export const measurePerformance = async (_name, _fn, attributes = _{}) => {
   
   const startTime = Date.now();
   
-  return traceAsync(tracer, _name, async _(span) => {
+  return traceAsync(tracer, name, async (span) => {
     try {
       const result = await fn();
       const duration = Date.now() - startTime;

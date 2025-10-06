@@ -10,6 +10,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import fs from 'fs';
+import workingCapitalRouter from './api/working-capital.js';
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +18,8 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 10000;
+const isClerkConfigured = Boolean(process.env.VITE_CLERK_PUBLISHABLE_KEY);
+const isDevelopmentMode = process.env.VITE_DEVELOPMENT_MODE === 'true';
 
 // Logging middleware
 const logger = (req, res, next) => {
@@ -49,7 +52,7 @@ app.use(helmet({
         "https://clerk.financeflo.ai",
         "https://*.clerk.accounts.dev",
         "https://*.clerk.com",
-        "https://mcp-server-tkyu.onrender.com"
+        "https://mcp-server-yacx.onrender.com"
       ]
     }
   }
@@ -76,9 +79,27 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     clerk: {
-      configured: !!process.env.VITE_CLERK_PUBLISHABLE_KEY,
+      configured: isClerkConfigured,
       publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET'
+    },
+    authentication: {
+      mode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
+      developmentMode: isDevelopmentMode
     }
+  });
+});
+
+app.get('/ready', (req, res) => {
+  res.json({
+    status: 'ready',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/alive', (req, res) => {
+  res.json({
+    status: 'alive',
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -94,7 +115,11 @@ app.get('/api/status', (req, res) => {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       clerk: {
-        configured: !!process.env.VITE_CLERK_PUBLISHABLE_KEY
+        configured: isClerkConfigured
+      },
+      authentication: {
+        mode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
+        developmentMode: isDevelopmentMode
       }
     },
     meta: {
@@ -164,6 +189,9 @@ app.get('/api/financial/working-capital', (req, res) => {
   });
 });
 
+// Mount working capital router for MCP integration
+app.use('/api/working-capital', workingCapitalRouter);
+
 // Cash Flow endpoint
 app.get('/api/financial/cash-flow', (req, res) => {
   res.json({
@@ -182,10 +210,33 @@ app.get('/api/financial/cash-flow', (req, res) => {
   });
 });
 
+// Enhanced Forecasting endpoint
+app.get('/api/forecasting/enhanced', (req, res) => {
+  res.json({
+    forecast: {
+      horizon: 365,
+      accuracy: 88.5,
+      confidence: 0.92,
+      model: 'ensemble-ai',
+      dataPoints: Array.from({length: 12}, (_, i) => ({
+        month: new Date(Date.now() + i * 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7),
+        revenue: 2500000 + (Math.random() * 500000),
+        growth: 8.5 + (Math.random() * 5),
+        confidence: 0.85 + (Math.random() * 0.1)
+      }))
+    },
+    aiModels: {
+      gpt4: { status: 'active', accuracy: 87.2 },
+      claude: { status: 'active', accuracy: 89.8 }
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // MCP Status endpoint
 app.get('/api/mcp/status', async (req, res) => {
   try {
-    const response = await fetch('https://mcp-server-tkyu.onrender.com/health', {
+    const response = await fetch('https://mcp-server-yacx.onrender.com/health', {
       signal: AbortSignal.timeout(5000)
     });
 
@@ -199,14 +250,14 @@ app.get('/api/mcp/status', async (req, res) => {
       res.json({
         connected: false,
         error: `MCP Server returned ${response.status}`,
-        url: 'https://mcp-server-tkyu.onrender.com'
+        url: 'https://mcp-server-yacx.onrender.com'
       });
     }
   } catch (error) {
     res.json({
       connected: false,
       error: error.message,
-      url: 'https://mcp-server-tkyu.onrender.com'
+      url: 'https://mcp-server-yacx.onrender.com'
     });
   }
 });
@@ -273,7 +324,7 @@ app.get('*', (req, res) => {
         </style>
       </head>
       <body>
-        <h1>🚀 Sentia Manufacturing Dashboard</h1>
+        <h1>ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ Sentia Manufacturing Dashboard</h1>
         <p class="status">Server is running successfully</p>
         <p class="error">Frontend build not found - please run build process</p>
 
@@ -298,7 +349,7 @@ app.get('*', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error('Server error:', err);
 
   if (req.path.startsWith('/api/')) {
@@ -315,15 +366,16 @@ app.use((err, req, res, next) => {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n========================================');
-  console.log('🚀 SENTIA MANUFACTURING DASHBOARD');
-  console.log('   BULLETPROOF CONFIGURATION');
+  console.log('SENTIA MANUFACTURING DASHBOARD');
+  console.log('BULLETPROOF CONFIGURATION');
   console.log('========================================');
   console.log(`Server: http://localhost:${PORT}`);
   console.log(`Health: http://localhost:${PORT}/health`);
   console.log(`API: http://localhost:${PORT}/api/status`);
   console.log(`Dashboard: http://localhost:${PORT}/api/dashboard/summary`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Clerk: ${!!process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'Configured' : 'Not configured'}`);
+  console.log(`Authentication: ${isDevelopmentMode ? 'Development Bypass' : 'Production Clerk'}`);
+  console.log(`Clerk: ${isClerkConfigured ? 'Configured' : 'Not configured'}`);
   console.log('========================================\n');
 });
 

@@ -1,12 +1,10 @@
 // API Service for Real Data Integration
-// Connects to MCP Server and external APIs
+// Connects to local API endpoints
 
-const MCP_SERVER_URL = 'https://mcp-server-tkyu.onrender.com';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 class APIService {
   constructor() {
-    this.mcpServerUrl = MCP_SERVER_URL;
     this.apiBaseUrl = API_BASE_URL;
   }
 
@@ -32,95 +30,54 @@ class APIService {
     }
   }
 
-  // MCP Server Methods
-  async getMCPStatus() {
-    return this.fetchWithAuth(`${this.mcpServerUrl}/health`);
-  }
-
+  // AI Service Methods
   async getAIInsights(query) {
-    return this.fetchWithAuth(`${this.mcpServerUrl}/api/ai/insights`, {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/ai/analyze`, {
       method: 'POST',
       body: JSON.stringify({ query }),
     });
   }
 
   async getDemandForecast(params) {
-    return this.fetchWithAuth(`${this.mcpServerUrl}/api/ai/forecast`, {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/forecasting/demand`, {
       method: 'POST',
       body: JSON.stringify(params),
     });
   }
 
   async getInventoryOptimization() {
-    return this.fetchWithAuth(`${this.mcpServerUrl}/api/ai/inventory-optimization`);
+    return this.fetchWithAuth(`${this.apiBaseUrl}/inventory/optimization`);
   }
 
   // Financial Data Methods
   async getWorkingCapital() {
-    try {
-      // Try MCP server first
-      const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/working-capital`);
-      return data;
-    } catch (error) {
-      // Fallback to local API
-      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/working-capital`);
-    }
+    return this.fetchWithAuth(`${this.apiBaseUrl}/working-capital`);
   }
 
   async getCashFlow() {
-    try {
-      const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/cash-flow`);
-      return data;
-    } catch (error) {
-      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/cash-flow`);
-    }
+    return this.fetchWithAuth(`${this.apiBaseUrl}/working-capital/xero/cashflow`);
   }
 
   async getFinancialMetrics() {
-    try {
-      const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/financial/metrics`);
-      return data;
-    } catch (error) {
-      return this.fetchWithAuth(`${this.apiBaseUrl}/financial/metrics`);
-    }
+    return this.fetchWithAuth(`${this.apiBaseUrl}/working-capital/metrics`);
   }
 
   // Production Data Methods
   async getProductionMetrics() {
-    try {
-      const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/production/metrics`);
-      return data;
-    } catch (error) {
-      return this.fetchWithAuth(`${this.apiBaseUrl}/production/metrics`);
-    }
+    return this.fetchWithAuth(`${this.apiBaseUrl}/production/metrics`);
   }
 
   async getInventoryData() {
-    try {
-      const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/inventory/current`);
-      return data;
-    } catch (error) {
-      return this.fetchWithAuth(`${this.apiBaseUrl}/inventory/current`);
-    }
+    return this.fetchWithAuth(`${this.apiBaseUrl}/inventory/current`);
   }
 
   async getQualityMetrics() {
-    try {
-      const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/quality/metrics`);
-      return data;
-    } catch (error) {
-      return this.fetchWithAuth(`${this.apiBaseUrl}/quality/metrics`);
-    }
+    return this.fetchWithAuth(`${this.apiBaseUrl}/quality/metrics`);
   }
 
   // Dashboard Data
   async getDashboardSummary() {
-    try {
-      const data = await this.fetchWithAuth(`${this.mcpServerUrl}/api/dashboard/summary`);
-      return data;
-    } catch (error) {
-      return this.fetchWithAuth(`${this.apiBaseUrl}/dashboard/summary`);
-    }
+    return this.fetchWithAuth(`${this.apiBaseUrl}/dashboard/summary`);
   }
 
   // External API Integrations
@@ -138,7 +95,7 @@ class APIService {
 
   // What-If Analysis
   async runWhatIfScenario(scenario) {
-    return this.fetchWithAuth(`${this.mcpServerUrl}/api/ai/what-if`, {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/what-if/scenario`, {
       method: 'POST',
       body: JSON.stringify(scenario),
     });
@@ -146,7 +103,7 @@ class APIService {
 
   // Real-time SSE connection for live data
   connectToLiveData(onMessage, onError) {
-    const eventSource = new EventSource(`${this.mcpServerUrl}/api/sse/stream`);
+    const eventSource = new EventSource(`${this.apiBaseUrl}/events`);
 
     eventSource.onmessage = (event) => {
       try {
@@ -171,3 +128,9 @@ const apiService = new APIService();
 
 export default apiService;
 export { APIService };
+
+
+
+
+
+

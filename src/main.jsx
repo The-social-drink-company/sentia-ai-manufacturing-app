@@ -2,7 +2,7 @@ import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ClerkProvider } from '@clerk/clerk-react'
 import './index.css'
-import App from './App-enterprise.jsx'
+import App from './App-simple-environment.jsx'
 import LandingPageMarketing from './components/LandingPageMarketing.jsx'
 
 // Global error handler
@@ -32,7 +32,12 @@ function showErrorFallback(title, message) {
   }
 }
 
+// Environment detection
+const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+console.log('[Environment] Development Mode:', isDevelopmentMode)
+console.log('[Environment] Node Environment:', import.meta.env.NODE_ENV)
 
 const rootElement = document.getElementById('root')
 if (!rootElement) {
@@ -47,6 +52,12 @@ export const RootApp = () => {
       window.history.replaceState({}, '', bootConfig.targetPath)
     }
   }, [bootConfig])
+
+  // In development mode, skip landing page
+  if (isDevelopmentMode) {
+    console.log('[Authentication] Using Development Mode - Authentication Bypassed')
+    return <App />
+  }
 
   if (!bootConfig) {
     return (

@@ -202,7 +202,7 @@ services:
         value: 100
       # Production performance optimization
       - key: NODE_OPTIONS
-        value: --max-old-space-size=4096 --optimize-for-size
+        value: --max-old-space-size=4096
       - key: UV_THREADPOOL_SIZE
         value: 32
       - key: MALLOC_ARENA_MAX

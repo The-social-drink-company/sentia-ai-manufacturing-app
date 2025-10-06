@@ -1061,34 +1061,77 @@ export class SentiaMCPServer {
    */
   async start() {
     try {
-      // Start HTTP server
-      const httpServer = this.app.listen(SERVER_CONFIG.server.port, async () => {
-        logger.info('MCP Server started', {
-          port: SERVER_CONFIG.server.port,
-          environment: SERVER_CONFIG.server.environment,
-          version: SERVER_CONFIG.server.version,
-          toolsLoaded: this.tools.size
+      logger.info('Starting MCP Server...', {
+        port: SERVER_CONFIG.server.port,
+        host: SERVER_CONFIG.server.host,
+        environment: SERVER_CONFIG.server.environment,
+        version: SERVER_CONFIG.server.version,
+        toolsLoaded: this.tools.size
+      });
+
+      // Create HTTP server with proper promise handling
+      const httpServer = await new Promise((resolve, reject) => {
+        const server = this.app.listen(SERVER_CONFIG.server.port, SERVER_CONFIG.server.host, () => {
+          logger.info('HTTP server listening', {
+            port: SERVER_CONFIG.server.port,
+            host: SERVER_CONFIG.server.host,
+            pid: process.pid
+          });
+          resolve(server);
         });
 
-        // Log system startup event (with error handling)
-        try {
-          await auditLogger.logEvent(AUDIT_EVENTS.SYSTEM_START, {
-            port: SERVER_CONFIG.server.port,
-            environment: SERVER_CONFIG.server.environment,
-            version: SERVER_CONFIG.server.version,
-            toolsLoaded: this.tools.size,
-            authenticationEnabled: SERVER_CONFIG.security.authentication.enabled,
-            developmentBypass: SERVER_CONFIG.security.authentication.developmentBypass
-          }, {
-            severity: AUDIT_SEVERITY.MEDIUM,
-            outcome: 'success'
-          });
-        } catch (auditError) {
-          logger.warn('Failed to log system startup audit event', { 
-            error: auditError.message 
-          });
-        }
+        server.on('error', (error) => {
+          logger.error('HTTP server error', { error: error.message });
+          reject(error);
+        });
+
+        // Set server timeout to prevent hanging connections
+        server.timeout = 30000; // 30 seconds
+        server.keepAliveTimeout = 5000; // 5 seconds
+        server.headersTimeout = 10000; // 10 seconds
       });
+
+      logger.info('MCP Server started successfully', {
+        port: SERVER_CONFIG.server.port,
+        host: SERVER_CONFIG.server.host,
+        environment: SERVER_CONFIG.server.environment,
+        version: SERVER_CONFIG.server.version,
+        toolsLoaded: this.tools.size,
+        pid: process.pid,
+        nodeVersion: process.version
+      });
+
+      // Log system startup event (with error handling)
+      try {
+        await auditLogger.logEvent(AUDIT_EVENTS.SYSTEM_START, {
+          port: SERVER_CONFIG.server.port,
+          host: SERVER_CONFIG.server.host,
+          environment: SERVER_CONFIG.server.environment,
+          version: SERVER_CONFIG.server.version,
+          toolsLoaded: this.tools.size,
+          authenticationEnabled: SERVER_CONFIG.security.authentication.enabled,
+          developmentBypass: SERVER_CONFIG.security.authentication.developmentBypass
+        }, {
+          severity: AUDIT_SEVERITY.MEDIUM,
+          outcome: 'success'
+        });
+      } catch (auditError) {
+        logger.warn('Failed to log system startup audit event', { 
+          error: auditError.message 
+        });
+      }
+
+      // Keep the event loop alive
+      const keepAliveInterval = setInterval(() => {
+        logger.debug('Server heartbeat', { 
+          uptime: process.uptime(),
+          memory: process.memoryUsage(),
+          connections: this.connections.size
+        });
+      }, 30000); // Every 30 seconds
+
+      // Store interval for cleanup
+      this.keepAliveInterval = keepAliveInterval;
 
       // Handle graceful shutdown
       this.setupGracefulShutdown(httpServer);
@@ -1124,7 +1167,10 @@ export class SentiaMCPServer {
       return httpServer;
 
     } catch (error) {
-      logger.error('Failed to start MCP server', { error: error.message });
+      logger.error('Failed to start MCP server', { 
+        error: error.message,
+        stack: error.stack 
+      });
       throw error;
     }
   }
@@ -1135,6 +1181,12 @@ export class SentiaMCPServer {
   setupGracefulShutdown(httpServer) {
     const shutdown = async (signal) => {
       logger.info('Graceful shutdown initiated', { signal });
+
+      // Clear keep-alive interval
+      if (this.keepAliveInterval) {
+        clearInterval(this.keepAliveInterval);
+        logger.info('Keep-alive interval cleared');
+      }
 
       // Close HTTP server
       httpServer.close(() => {

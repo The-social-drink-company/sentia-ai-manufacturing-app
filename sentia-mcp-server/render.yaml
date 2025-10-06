@@ -54,9 +54,11 @@ services:
         value: 300000
       - key: CACHE_MAX_SIZE
         value: 1000
-      # Database connection - shared with main dashboard
+      # Database connection - set via Render dashboard
       - key: DATABASE_URL
-        value: postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require
+        fromDatabase:
+          name: sentia-manufacturing-dev
+          property: connectionString
       # CORS origins - allow dashboard connections
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-dashboard-621h.onrender.com,http://localhost:3000,http://localhost:5173
@@ -127,9 +129,11 @@ services:
         value: 300000
       - key: CACHE_MAX_SIZE
         value: 1000
-      # Database connection - shared with main dashboard
+      # Database connection - set via Render dashboard
       - key: DATABASE_URL
-        value: postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require
+        fromDatabase:
+          name: sentia-manufacturing-test
+          property: connectionString
       # CORS origins - allow dashboard connections
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-dashboard-test.onrender.com,http://localhost:3000
@@ -212,20 +216,37 @@ services:
         value: 10000
       - key: ENABLE_CACHE_COMPRESSION
         value: true
-      # Database connection - shared with main dashboard
+      # Primary database connection (production)
       - key: DATABASE_URL
-        value: postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require
+        fromDatabase:
+          name: sentia-manufacturing-production
+          property: connectionString
+      # Multi-environment database access (MCP server serves all environments)
+      - key: DEV_DATABASE_URL
+        fromDatabase:
+          name: sentia-manufacturing-dev
+          property: connectionString
+      - key: TEST_DATABASE_URL
+        fromDatabase:
+          name: sentia-manufacturing-test
+          property: connectionString
+      - key: PROD_DATABASE_URL
+        fromDatabase:
+          name: sentia-manufacturing-production
+          property: connectionString
       - key: DATABASE_POOL_MAX
-        value: 20
+        value: 50
       - key: DATABASE_POOL_MIN
-        value: 5
+        value: 10
       # CORS origins - allow dashboard connections
       - key: CORS_ORIGINS
         value: https://sentia-manufacturing-dashboard-production.onrender.com
       # JWT secret for inter-service communication
-      # TODO: Set this via Render dashboard with a secure value
+      # SECURITY: Set via Render dashboard with 64-character secure random string
       - key: JWT_SECRET
-        value: CHANGE_THIS_IN_PRODUCTION_VIA_RENDER_DASHBOARD
+        sync: false  # Must be set manually in Render dashboard
+      - key: MCP_JWT_SECRET
+        sync: false  # Must be set manually in Render dashboard
       # Production monitoring and observability
       - key: MONITORING_ENABLED
         value: true

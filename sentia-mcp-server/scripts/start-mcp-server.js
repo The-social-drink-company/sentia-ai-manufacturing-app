@@ -238,42 +238,25 @@ function setupErrorHandlers() {
 }
 
 /**
- * Health check endpoint for load balancers
+ * Setup health monitoring (using main server's health endpoint)
  */
 async function setupHealthChecks(server) {
-  // Simple HTTP health check on different port
-  const healthPort = SERVER_CONFIG.server.port + 100;
+  // Health checks are handled by the main server's /health endpoint
+  // No need for separate health check server
+  logger.info('Health checks configured', { 
+    endpoint: `http://localhost:${SERVER_CONFIG.server.port}/health`,
+    port: SERVER_CONFIG.server.port 
+  });
   
+  // Validate server health endpoint is working
   try {
-    const express = await import('express');
-    const healthApp = express.default();
-    
-    healthApp.get('/health', async (req, res) => {
-      try {
-        const status = await server.getSystemStatus({
-          includeMetrics: false,
-          includeConnections: false
-        });
-        
-        if (status.status === 'healthy') {
-          res.json({ status: 'healthy', timestamp: new Date().toISOString() });
-        } else {
-          res.status(503).json({ status: 'unhealthy', timestamp: new Date().toISOString() });
-        }
-      } catch (error) {
-        res.status(503).json({ 
-          status: 'error', 
-          error: error.message,
-          timestamp: new Date().toISOString()
-        });
-      }
+    const status = await server.getSystemStatus({
+      includeMetrics: false,
+      includeConnections: false
     });
-    
-    healthApp.listen(healthPort, () => {
-      logger.info('Health check endpoint started', { port: healthPort });
-    });
+    logger.info('Health check validation passed', { status: status.status });
   } catch (error) {
-    logger.warn('Failed to start health check endpoint', { error: error.message });
+    logger.warn('Health check validation failed', { error: error.message });
   }
 }
 

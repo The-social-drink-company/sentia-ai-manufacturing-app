@@ -211,16 +211,16 @@ export class DatabaseConfig {
    * Build connection string from configuration
    */
   buildConnectionString() {
-    // Use environment-specific DATABASE_URL if provided
+    // Primary database connection from DATABASE_URL
     if (process.env.DATABASE_URL) {
       return process.env.DATABASE_URL;
     }
 
-    // Use environment-specific connection strings based on actual Render database configurations
+    // Multi-environment database support (Production MCP server serves all environments)
     const environmentConnections = {
-      development: 'postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require&connect_timeout=10',
-      testing: 'postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require&connect_timeout=10',
-      production: 'postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require&connect_timeout=10'
+      development: process.env.DEV_DATABASE_URL,
+      testing: process.env.TEST_DATABASE_URL,
+      production: process.env.PROD_DATABASE_URL
     };
 
     // Use environment-specific connection string
@@ -529,6 +529,26 @@ export class DatabaseConfig {
    */
   getConnectionString() {
     return this.config.connectionString;
+  }
+
+  /**
+   * Get connection strings for all environments (for multi-environment MCP server)
+   */
+  getAllEnvironmentConnections() {
+    return {
+      development: process.env.DEV_DATABASE_URL,
+      testing: process.env.TEST_DATABASE_URL,
+      production: process.env.PROD_DATABASE_URL,
+      current: this.config.connectionString
+    };
+  }
+
+  /**
+   * Get connection string for specific environment
+   */
+  getConnectionStringForEnvironment(environment) {
+    const connections = this.getAllEnvironmentConnections();
+    return connections[environment] || connections.current;
   }
 
   /**

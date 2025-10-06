@@ -211,12 +211,27 @@ export class DatabaseConfig {
    * Build connection string from configuration
    */
   buildConnectionString() {
+    // Use environment-specific DATABASE_URL if provided
     if (process.env.DATABASE_URL) {
       return process.env.DATABASE_URL;
     }
 
+    // Use environment-specific connection strings based on actual Render database configurations
+    const environmentConnections = {
+      development: 'postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require&connect_timeout=10',
+      testing: 'postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require&connect_timeout=10',
+      production: 'postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require&connect_timeout=10'
+    };
+
+    // Use environment-specific connection string
+    const connectionString = environmentConnections[this.environment];
+    if (connectionString) {
+      return connectionString;
+    }
+
+    // Fallback to building from individual components
     const config = this.config;
-    let connectionString = `postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.database}`;
+    let fallbackConnectionString = `postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.database}`;
     
     const params = [];
     
@@ -232,11 +247,13 @@ export class DatabaseConfig {
       params.push(`application_name=${encodeURIComponent(config.applicationName)}`);
     }
     
+    params.push('connect_timeout=10');
+    
     if (params.length > 0) {
-      connectionString += '?' + params.join('&');
+      fallbackConnectionString += '?' + params.join('&');
     }
     
-    return connectionString;
+    return fallbackConnectionString;
   }
 
   /**

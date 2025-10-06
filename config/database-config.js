@@ -10,13 +10,14 @@ const BRANCH = process.env.BRANCH || process.env.RENDER_GIT_BRANCH || NODE_ENV;
 
 // MCP Server Configuration (shared across all branches)
 export const MCP_CONFIG = {
-  url: 'https://mcp-server-tkyu.onrender.com',
-  websocketUrl: 'wss://mcp-server-tkyu.onrender.com',
+  url: process.env.MCP_SERVER_URL || 'https://sentia-ai-manufacturing-app.onrender.com',
+  websocketUrl: process.env.MCP_WEBSOCKET_URL || 'wss://sentia-ai-manufacturing-app.onrender.com',
   healthCheckEndpoint: '/health',
   apiVersion: 'v1',
-  timeout: 30000,
-  retryAttempts: 3,
-  retryDelay: 1000
+  timeout: parseInt(process.env.MCP_TIMEOUT) || 30000,
+  retryAttempts: parseInt(process.env.MCP_RETRY_ATTEMPTS) || 3,
+  retryDelay: parseInt(process.env.MCP_RETRY_DELAY) || 1000,
+  jwtSecret: process.env.MCP_JWT_SECRET || 'sentia-mcp-secret-key'
 };
 
 // Database configurations using environment variables

@@ -45,15 +45,15 @@ export const SERVER_CONFIG = {
   // CORS configuration
   cors: {
     origins: process.env.CORS_ORIGINS?.split(',') || [
-      'https://sentia-manufacturing-development.onrender.com',
-      'https://sentia-manufacturing-testing.onrender.com',
-      'https://sentia-manufacturing-production.onrender.com',
+      'https://sentia-manufacturing-dashboard-621h.onrender.com', // Development
+      'https://sentia-manufacturing-dashboard-test.onrender.com', // Testing
+      'https://sentia-manufacturing-dashboard-production.onrender.com', // Production
       'http://localhost:3000',
       'http://localhost:5173'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-ID']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-ID', 'X-MCP-Token']
   },
 
   // Security configuration (Enhanced with new authentication system)
@@ -371,24 +371,70 @@ export const SERVER_CONFIG = {
       clientId: process.env.XERO_CLIENT_ID,
       clientSecret: process.env.XERO_CLIENT_SECRET,
       redirectUri: process.env.XERO_REDIRECT_URI,
-      scopes: process.env.XERO_SCOPES?.split(',') || ['accounting.read', 'accounting.transactions']
+      scopes: process.env.XERO_SCOPES?.split(',') || ['accounting.read', 'accounting.transactions'],
+      syncInterval: process.env.XERO_SYNC_INTERVAL || '*/30 * * * *' // Every 30 minutes
     },
     shopify: {
-      shopDomain: process.env.SHOPIFY_SHOP_DOMAIN,
-      accessToken: process.env.SHOPIFY_ACCESS_TOKEN,
-      apiVersion: process.env.SHOPIFY_API_VERSION || '2024-01'
+      uk: {
+        shopUrl: process.env.SHOPIFY_UK_SHOP_URL || 'sentiaspirits.myshopify.com',
+        accessToken: process.env.SHOPIFY_UK_ACCESS_TOKEN,
+        apiKey: process.env.SHOPIFY_UK_API_KEY,
+        secret: process.env.SHOPIFY_UK_SECRET,
+        apiVersion: process.env.SHOPIFY_API_VERSION || '2024-01'
+      },
+      usa: {
+        shopUrl: process.env.SHOPIFY_USA_SHOP_URL || 'us-sentiaspirits.myshopify.com',
+        accessToken: process.env.SHOPIFY_USA_ACCESS_TOKEN,
+        apiKey: process.env.SHOPIFY_USA_API_KEY,
+        secret: process.env.SHOPIFY_USA_SECRET,
+        apiVersion: process.env.SHOPIFY_API_VERSION || '2024-01'
+      },
+      syncInterval: process.env.SHOPIFY_SYNC_INTERVAL || '*/15 * * * *' // Every 15 minutes
     },
     unleashed: {
-      apiId: process.env.UNLEASHED_API_ID,
       apiKey: process.env.UNLEASHED_API_KEY,
-      baseUrl: process.env.UNLEASHED_BASE_URL || 'https://api.unleashedsoftware.com'
+      apiUrl: process.env.UNLEASHED_API_URL || 'https://api.unleashedsoftware.com',
+      apiId: process.env.UNLEASHED_API_ID
     },
     amazon: {
-      sellerId: process.env.AMAZON_SELLER_ID,
-      clientId: process.env.AMAZON_CLIENT_ID,
-      clientSecret: process.env.AMAZON_CLIENT_SECRET,
-      refreshToken: process.env.AMAZON_REFRESH_TOKEN,
-      region: process.env.AMAZON_REGION || 'us-east-1'
+      uk: {
+        marketplaceId: process.env.AMAZON_UK_MARKETPLACE_ID || 'A1F83G8C2ARO7P',
+        sellerId: process.env.AMAZON_UK_SELLER_ID,
+        clientId: process.env.AMAZON_UK_CLIENT_ID,
+        clientSecret: process.env.AMAZON_UK_CLIENT_SECRET,
+        refreshToken: process.env.AMAZON_UK_REFRESH_TOKEN
+      },
+      usa: {
+        marketplaceId: process.env.AMAZON_USA_MARKETPLACE_ID || 'ATVPDKIKX0DER',
+        sellerId: process.env.AMAZON_USA_SELLER_ID,
+        clientId: process.env.AMAZON_USA_CLIENT_ID,
+        clientSecret: process.env.AMAZON_USA_CLIENT_SECRET,
+        refreshToken: process.env.AMAZON_USA_REFRESH_TOKEN
+      },
+      region: process.env.AMAZON_REGION || 'us-east-1',
+      syncInterval: process.env.AMAZON_SYNC_INTERVAL || '*/60 * * * *' // Every hour
+    },
+    microsoft: {
+      clientId: process.env.MICROSOFT_CLIENT_ID,
+      clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+      tenantId: process.env.MICROSOFT_TENANT_ID || 'common',
+      adminEmail: process.env.MICROSOFT_ADMIN_EMAIL,
+      dataEmail: process.env.MICROSOFT_DATA_EMAIL
+    },
+    dashboard: {
+      // Environment-specific dashboard URLs for inter-service communication
+      development: {
+        url: 'https://sentia-manufacturing-dashboard-621h.onrender.com',
+        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET
+      },
+      testing: {
+        url: 'https://sentia-manufacturing-dashboard-test.onrender.com',
+        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET
+      },
+      production: {
+        url: 'https://sentia-manufacturing-dashboard-production.onrender.com',
+        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET
+      }
     }
   }
 };

@@ -1,4 +1,4 @@
-﻿import { Suspense, lazy } from 'react'
+﻿import { Suspense, lazy, useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
@@ -16,45 +16,111 @@ const capitalKpis = [
 ]
 
 const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
+const PLAnalysisChart = lazy(() => import('@/components/dashboard/PLAnalysisChart'))
 
-const DashboardEnterprise = () => (
-  <section className="space-y-6">
-    <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Enterprise dashboard</h1>
-        <p className="text-sm text-muted-foreground">Consolidated liquidity and performance outlook across all regions.</p>
-      </div>
-      <Badge variant="outline">Global view</Badge>
-    </header>
+// Import P&L API service
+import plAnalysisApi from '@/services/api/plAnalysisApi'
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Capital position</CardTitle>
-        <CardDescription>Key metrics reviewed in the weekly treasury meeting.</CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {capitalKpis.map((item) => (
-          <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.label}</p>
-            <p className="text-lg font-semibold text-foreground">{item.value}</p>
-            <p className="text-xs text-muted-foreground">{item.helper}</p>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+const DashboardEnterprise = () => {
+  const [plData, setPLData] = useState([])
+  const [plLoading, setPLLoading] = useState(true)
+  const [plError, setPLError] = useState(null)
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Regional contribution</CardTitle>
-        <CardDescription>Revenue and EBITDA by operating region for the current quarter.</CardDescription>
-      </CardHeader>
-      <CardContent className="h-80">
-        <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
-          <RegionalContributionChart data={regionalPerformance} />
-        </Suspense>
-      </CardContent>
-    </Card>
-  </section>
-)
+  // Fetch P&L analysis data
+  useEffect(() => {
+    const fetchPLData = async () => {
+      try {
+        setPLLoading(true)
+        setPLError(null)
+        
+        const response = await plAnalysisApi.getPLAnalysis()
+        if (response.success) {
+          setPLData(response.data)
+        } else {
+          throw new Error('Failed to fetch P&L data')
+        }
+      } catch (error) {
+        console.error('Error fetching P&L data:', error)
+        setPLError(error.message)
+        
+        // Use mock data as fallback
+        const mockResponse = plAnalysisApi.getMockData()
+        setPLData(mockResponse.data)
+      } finally {
+        setPLLoading(false)
+      }
+    }
+
+    fetchPLData()
+  }, [])
+
+  return (
+    <section className="space-y-6">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Enterprise dashboard</h1>
+          <p className="text-sm text-muted-foreground">Consolidated liquidity and performance outlook across all regions.</p>
+        </div>
+        <Badge variant="outline">Global view</Badge>
+      </header>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Capital position</CardTitle>
+          <CardDescription>Key metrics reviewed in the weekly treasury meeting.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {capitalKpis.map((item) => (
+            <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.label}</p>
+              <p className="text-lg font-semibold text-foreground">{item.value}</p>
+              <p className="text-xs text-muted-foreground">{item.helper}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>P&L Analysis</CardTitle>
+          <CardDescription>Monthly profit and loss analysis showing revenue, gross profit, EBITDA, and margin trends.</CardDescription>
+        </CardHeader>
+        <CardContent className="h-80">
+          {plLoading ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <p className="text-sm text-muted-foreground">Loading P&L data...</p>
+              </div>
+            </div>
+          ) : plError ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                <p className="text-sm text-destructive mb-2">Error loading P&L data</p>
+                <p className="text-xs text-muted-foreground">Using sample data for demonstration</p>
+              </div>
+            </div>
+          ) : (
+            <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+              <PLAnalysisChart data={plData} />
+            </Suspense>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Regional contribution</CardTitle>
+          <CardDescription>Revenue and EBITDA by operating region for the current quarter.</CardDescription>
+        </CardHeader>
+        <CardContent className="h-80">
+          <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+            <RegionalContributionChart data={regionalPerformance} />
+          </Suspense>
+        </CardContent>
+      </Card>
+    </section>
+  )
+}
 
 export default DashboardEnterprise

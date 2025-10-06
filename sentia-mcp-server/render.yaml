@@ -157,17 +157,17 @@ services:
       - key: AUDIT_LOGGING_ENABLED
         value: true
 
-  # Production Environment MCP Server
+  # Production Environment MCP Server (TEMP: Deploying from development during active development)
   - type: web
     name: sentia-mcp-server-production
     env: docker
     plan: pro
     region: oregon
-    branch: production
+    branch: development  # TEMPORARY: Changed from production to development for active development
     rootDir: sentia-mcp-server
     dockerfile: Dockerfile
     healthCheckPath: /health
-    autoDeploy: false  # Manual deployment for production
+    autoDeploy: true  # TEMPORARY: Enable auto-deploy for development iterations
     # Production auto-scaling
     scaling:
       minInstances: 2

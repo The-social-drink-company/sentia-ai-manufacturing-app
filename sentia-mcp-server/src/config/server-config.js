@@ -14,6 +14,37 @@ import addFormats from 'ajv-formats';
 config();
 
 /**
+ * Detect if running in a container environment
+ */
+export function isContainerEnvironment() {
+  return !!(
+    process.env.RENDER ||           // Render.com
+    process.env.DOCKER ||           // Docker
+    process.env.KUBERNETES_SERVICE_HOST || // Kubernetes
+    process.env.HEROKU ||           // Heroku
+    process.env.AWS_LAMBDA_FUNCTION_NAME || // AWS Lambda
+    process.env.VERCEL ||           // Vercel
+    process.env.NETLIFY ||          // Netlify
+    process.env.RAILWAY_ENVIRONMENT // Railway
+  );
+}
+
+/**
+ * Get container platform name
+ */
+export function getContainerPlatform() {
+  if (process.env.RENDER) return 'render';
+  if (process.env.DOCKER) return 'docker';
+  if (process.env.KUBERNETES_SERVICE_HOST) return 'kubernetes';
+  if (process.env.HEROKU) return 'heroku';
+  if (process.env.AWS_LAMBDA_FUNCTION_NAME) return 'aws-lambda';
+  if (process.env.VERCEL) return 'vercel';
+  if (process.env.NETLIFY) return 'netlify';
+  if (process.env.RAILWAY_ENVIRONMENT) return 'railway';
+  return null;
+}
+
+/**
  * Server configuration object with environment-aware defaults
  */
 export const SERVER_CONFIG = {

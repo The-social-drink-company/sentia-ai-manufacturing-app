@@ -33,7 +33,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Pool } from 'pg';
 
 // Import local modules
-import { SERVER_CONFIG } from './config/server-config.js';
+import { SERVER_CONFIG, isContainerEnvironment, getContainerPlatform } from './config/server-config.js';
 import { createLogger } from './utils/logger.js';
 import { globalErrorHandler } from './utils/error-handler.js';
 import dashboardRoutes from './routes/dashboard-integration.js';
@@ -1070,28 +1070,55 @@ export class SentiaMCPServer {
           toolsLoaded: this.tools.size
         });
 
-        // Log system startup event
-        await auditLogger.logEvent(AUDIT_EVENTS.SYSTEM_START, {
-          port: SERVER_CONFIG.server.port,
-          environment: SERVER_CONFIG.server.environment,
-          version: SERVER_CONFIG.server.version,
-          toolsLoaded: this.tools.size,
-          authenticationEnabled: SERVER_CONFIG.security.authentication.enabled,
-          developmentBypass: SERVER_CONFIG.security.authentication.developmentBypass
-        }, {
-          severity: AUDIT_SEVERITY.MEDIUM,
-          outcome: 'success'
-        });
+        // Log system startup event (with error handling)
+        try {
+          await auditLogger.logEvent(AUDIT_EVENTS.SYSTEM_START, {
+            port: SERVER_CONFIG.server.port,
+            environment: SERVER_CONFIG.server.environment,
+            version: SERVER_CONFIG.server.version,
+            toolsLoaded: this.tools.size,
+            authenticationEnabled: SERVER_CONFIG.security.authentication.enabled,
+            developmentBypass: SERVER_CONFIG.security.authentication.developmentBypass
+          }, {
+            severity: AUDIT_SEVERITY.MEDIUM,
+            outcome: 'success'
+          });
+        } catch (auditError) {
+          logger.warn('Failed to log system startup audit event', { 
+            error: auditError.message 
+          });
+        }
       });
 
       // Handle graceful shutdown
       this.setupGracefulShutdown(httpServer);
 
-      // Setup stdio transport for Claude Desktop
-      if (process.env.MCP_TRANSPORT === 'stdio' || !process.env.MCP_TRANSPORT) {
-        const transport = new StdioServerTransport();
-        await this.server.connect(transport);
-        logger.info('MCP stdio transport connected');
+      // Setup stdio transport only for Claude Desktop (not in container environments)
+      // Container platforms should only use HTTP transport
+      const inContainer = isContainerEnvironment();
+      const containerPlatform = getContainerPlatform();
+      const shouldUseStdio = process.env.MCP_TRANSPORT === 'stdio' && !inContainer;
+      
+      if (shouldUseStdio) {
+        try {
+          const transport = new StdioServerTransport();
+          await this.server.connect(transport);
+          logger.info('MCP stdio transport connected for Claude Desktop');
+        } catch (error) {
+          logger.warn('Failed to connect stdio transport, continuing with HTTP only', { 
+            error: error.message 
+          });
+        }
+      } else if (inContainer) {
+        logger.info('Container environment detected - using HTTP transport only', {
+          transport: process.env.MCP_TRANSPORT,
+          platform: containerPlatform,
+          containerEnvironment: inContainer
+        });
+      } else {
+        logger.info('Local environment detected - HTTP transport ready', {
+          transport: process.env.MCP_TRANSPORT || 'http'
+        });
       }
 
       return httpServer;

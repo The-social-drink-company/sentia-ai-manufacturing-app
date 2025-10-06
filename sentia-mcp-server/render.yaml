@@ -33,7 +33,9 @@ services:
       - key: MCP_SERVER_PORT
         value: 3001
       - key: MCP_TRANSPORT
-        value: dual
+        value: http
+      - key: RENDER
+        value: true
       - key: LOG_LEVEL
         value: debug
       - key: AUTH_REQUIRED
@@ -104,7 +106,9 @@ services:
       - key: MCP_SERVER_PORT
         value: 3001
       - key: MCP_TRANSPORT
-        value: dual
+        value: http
+      - key: RENDER
+        value: true
       - key: LOG_LEVEL
         value: info
       - key: AUTH_REQUIRED
@@ -183,7 +187,9 @@ services:
       - key: MCP_SERVER_PORT
         value: 3001
       - key: MCP_TRANSPORT
-        value: dual
+        value: http
+      - key: RENDER
+        value: true
       - key: LOG_LEVEL
         value: warn
       - key: AUTH_REQUIRED

@@ -1,668 +1,225 @@
-# Sentia Manufacturing MCP Server
+# Sentia Manufacturing MCP Server - Documentation Index
 
-## 🏭 Overview
+## 📋 **Overview**
 
-The **Sentia Manufacturing MCP Server** is a standalone, enterprise-grade Model Context Protocol server designed specifically for manufacturing operations. This server provides comprehensive business intelligence capabilities and seamless integration with Claude Desktop and other MCP-compatible clients.
+Welcome to the Sentia Manufacturing MCP Server documentation. This enterprise-grade Model Context Protocol server provides comprehensive business intelligence capabilities for manufacturing operations with 36 production-ready MCP tools across 6 major business system integrations.
 
-Built with the official `@modelcontextprotocol/sdk`, this standalone server can operate independently while maintaining integration capabilities with the main Sentia Manufacturing Dashboard.
+**Version**: 4.0.0  
+**Status**: Enterprise Production Ready  
+**Last Updated**: October 2025
 
-## 🚀 Features
+## 📚 **Documentation Structure**
 
-### Core Capabilities
-- **Dual Transport Support**: Both stdio (Claude Desktop) and HTTP (web dashboard) transports
-- **Dynamic Tool Loading**: Automatic discovery and registration of tools from the tools/ directory
-- **Enterprise Security**: JWT authentication, rate limiting, and input validation
-- **Production Monitoring**: Health checks, metrics collection, and comprehensive logging
-- **Database Integration**: PostgreSQL with pgvector support for AI/ML workloads
-- **Error Handling**: Advanced error classification, retry mechanisms, and circuit breakers
+### **Core Documentation**
 
-### Manufacturing Intelligence
-- **Inventory Optimization**: AI-powered stock level recommendations
-- **Demand Forecasting**: ML-based demand prediction with multiple models
-- **Quality Prediction**: Real-time quality assessment and risk analysis
-- **Working Capital Optimization**: Financial metrics optimization (DSO/DPO/DIO)
-- **Cash Runway Analysis**: Scenario-based cash flow projections
-- **Anomaly Detection**: Statistical anomaly detection across operational metrics
+#### **[🏗️ MCP Server Overview](MCP_SERVER_OVERVIEW.md)**
+Complete architecture overview, technology stack, and enterprise infrastructure summary. Start here for a high-level understanding of the system.
 
-### Integration Capabilities
-- **Unified API Gateway**: Single interface for Xero, Shopify, Amazon, Unleashed
-- **Real-time Updates**: Server-Sent Events (SSE) for live data streaming
-- **External AI Services**: Anthropic Claude, OpenAI GPT, Google Gemini integration
-- **Database Analytics**: Read-only SQL query execution for business intelligence
+- System architecture and core components
+- Technology stack and infrastructure overview
+- Integration status and capabilities summary
+- Enterprise features and production readiness
 
-## 🛠 Installation & Setup
+#### **[🔌 Integrations Guide](INTEGRATIONS_GUIDE.md)**
+Comprehensive guide to all 6 business system integrations providing 36 MCP tools for manufacturing intelligence.
 
-### Prerequisites
-- Node.js 18+ with ES Module support
-- PostgreSQL database with pgvector extension
-- Environment variables configured (see Configuration section)
+- Detailed implementation for all 6 integrations
+- Tool registration patterns and architecture
+- Authentication flows and API patterns
+- Integration lifecycle management
+- Future integration opportunities
 
-### Installation
+### **Enterprise Infrastructure (Phase 3)**
 
-#### Standalone Installation
+#### **[🔐 Authentication & Security](AUTHENTICATION_SECURITY.md)**
+Enterprise security implementation with JWT authentication, RBAC, encryption, and threat detection.
+
+- JWT-based authentication with refresh tokens
+- Role-based access control (RBAC) system
+- AES-256-GCM data encryption
+- Multi-factor authentication (MFA)
+- Real-time security monitoring and threat detection
+- Compliance frameworks (SOC2, GDPR, ISO27001)
+
+#### **[📊 Monitoring & Logging](MONITORING_LOGGING.md)**
+Comprehensive monitoring infrastructure with real-time analytics, performance monitoring, and business intelligence.
+
+- Real-time performance monitoring (P95/P99 analysis)
+- Business intelligence and ROI tracking
+- Enterprise alerting with escalation policies
+- Structured logging with correlation IDs
+- Metrics API endpoints and streaming
+- Advanced monitoring dashboards
+
+#### **[⚙️ Configuration Management](CONFIGURATION_MANAGEMENT.md)**
+Multi-environment configuration system with secure credential management and dynamic updates.
+
+- Multi-environment support (dev/test/prod)
+- Secure credential management with encryption
+- Dynamic configuration updates without restart
+- Configuration templates and profiles
+- Environment-specific validation
+- Configuration API and management interface
+
+### **Deployment & Production Infrastructure (Phase 4)**
+
+#### **[🚀 Deployment Infrastructure](DEPLOYMENT_INFRASTRUCTURE.md)**
+Complete deployment automation with Docker security, auto-scaling, CI/CD pipelines, and production optimization.
+
+- Docker security and optimization
+- Render auto-scaling and Redis integration
+- Enterprise monitoring and observability
+- Security hardening and compliance
+- Backup and disaster recovery
+- CI/CD pipeline automation
+- Testing infrastructure and quality assurance
+- Local production testing environment
+- Performance optimization strategies
+
+### **Development & Operations**
+
+#### **[💻 Development Guide](DEVELOPMENT_GUIDE.md)**
+Comprehensive developer guide with setup instructions, workflow, coding standards, and best practices.
+
+- Development environment setup
+- Git workflow and branch strategy
+- Code standards and best practices
+- Testing guidelines and infrastructure
+- Debugging and troubleshooting
+- Performance and security guidelines
+
+#### **[🌐 API & Operations](API_OPERATIONS.md)**
+Complete operational guide with API documentation, deployment procedures, and maintenance instructions.
+
+- Complete API endpoint documentation
+- Deployment procedures and checklists
+- Monitoring and health check procedures
+- Incident response and troubleshooting
+- Production environment configuration
+- Support and maintenance procedures
+
+## 🚀 **Quick Start Guide**
+
+### **For Developers**
+1. **Start Here**: [MCP Server Overview](MCP_SERVER_OVERVIEW.md) - Understanding the architecture
+2. **Setup**: [Development Guide](DEVELOPMENT_GUIDE.md) - Environment setup and development workflow
+3. **Integrations**: [Integrations Guide](INTEGRATIONS_GUIDE.md) - Working with business system integrations
+
+### **For Operations Teams**
+1. **Architecture**: [MCP Server Overview](MCP_SERVER_OVERVIEW.md) - System overview and capabilities
+2. **Deployment**: [Deployment Infrastructure](DEPLOYMENT_INFRASTRUCTURE.md) - Production deployment procedures
+3. **Operations**: [API & Operations](API_OPERATIONS.md) - Day-to-day operations and monitoring
+
+### **For Security Teams**
+1. **Security Overview**: [Authentication & Security](AUTHENTICATION_SECURITY.md) - Enterprise security implementation
+2. **Monitoring**: [Monitoring & Logging](MONITORING_LOGGING.md) - Security monitoring and incident response
+3. **Configuration**: [Configuration Management](CONFIGURATION_MANAGEMENT.md) - Secure configuration management
+
+## 🏗️ **System Architecture Overview**
+
+### **Core Platform**
+- **Node.js 18+** with ES Modules and V8 optimization
+- **@modelcontextprotocol/sdk v1.0.0** for MCP compliance
+- **Express.js** with security middleware and HTTP/2 support
+- **PostgreSQL** with pgvector extension for AI/ML capabilities
+- **Redis** clusters for high-performance caching
+
+### **Enterprise Infrastructure**
+- **JWT Authentication** with refresh tokens and MFA
+- **Real-time Monitoring** with Prometheus metrics and business intelligence
+- **Multi-environment Configuration** with secure credential management
+- **Auto-scaling Deployment** with Docker security and CI/CD automation
+
+### **Business System Integrations**
+| Integration | Tools | Purpose |
+|-------------|-------|---------|
+| **Xero** | 5 tools | Financial reporting and accounting |
+| **Shopify** | 6 tools | E-commerce operations and analytics |
+| **Amazon** | 6 tools | Marketplace management and advertising |
+| **Anthropic** | 6 tools | AI-powered business intelligence |
+| **OpenAI** | 6 tools | Advanced analytics and content generation |
+| **Unleashed** | 7 tools | Manufacturing ERP and operations |
+
+**Total**: 36 production-ready MCP tools
+
+## 🎯 **Production Readiness**
+
+### **Enterprise Features**
+- ✅ **99.9% Uptime Target**: Comprehensive monitoring and alerting
+- ✅ **Auto-scaling**: 1-10 instances based on CPU/memory thresholds
+- ✅ **Security Compliance**: SOC2, GDPR, ISO27001 ready
+- ✅ **Disaster Recovery**: <4 hour RTO with multi-region failover
+- ✅ **Business Intelligence**: ROI tracking and performance analytics
+- ✅ **Zero-downtime Deployments**: Blue-green strategy with health validation
+
+### **Quality Assurance**
+- **60+ Tests**: Comprehensive test coverage across all components
+- **Quality Gates**: 90% line coverage requirement with automated validation
+- **Security Testing**: Vulnerability scanning and threat detection validation
+- **Performance Testing**: Memory leak detection and benchmark validation
+- **Integration Testing**: End-to-end workflow testing with real data
+
+### **Deployment Environments**
+- **Development**: https://sentia-mcp-server-development.onrender.com
+- **Testing**: https://sentia-mcp-server-testing.onrender.com  
+- **Production**: https://sentia-mcp-server-production.onrender.com
+
+## 🔧 **Legacy Documentation**
+
+### **Archive Files**
+- **[MCP_SERVER_SETUP_ARCHIVE.md](MCP_SERVER_SETUP_ARCHIVE.md)**: Original comprehensive setup document (archived)
+- **[AMAZON_INTEGRATION.md](AMAZON_INTEGRATION.md)**: Legacy Amazon integration documentation
+- **[SHOPIFY_INTEGRATION.md](SHOPIFY_INTEGRATION.md)**: Legacy Shopify integration documentation
+
+*Note: These legacy files are maintained for reference but may contain outdated information. Please refer to the current documentation structure above.*
+
+## 📞 **Support & Maintenance**
+
+### **Getting Help**
+- **Documentation Issues**: Review the specific documentation file for your area of interest
+- **Technical Issues**: Check the [Development Guide](DEVELOPMENT_GUIDE.md) troubleshooting section
+- **Operational Issues**: Refer to the [API & Operations](API_OPERATIONS.md) support procedures
+- **Security Concerns**: Review [Authentication & Security](AUTHENTICATION_SECURITY.md) guidelines
+
+### **Health Monitoring**
 ```bash
-# Clone the repository
-git clone https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
-cd sentia-manufacturing-dashboard/sentia-mcp-server
+# Check system health
+curl https://sentia-mcp-server-production.onrender.com/health
 
-# Install dependencies
+# View comprehensive metrics
+curl https://sentia-mcp-server-production.onrender.com/api/metrics/prometheus
+```
+
+### **Quick Commands**
+```bash
+# Development setup
 npm install
+npm run dev
 
-# Or with pnpm (recommended)
-pnpm install
-
-# Copy environment template
-cp .env.example .env
-
-# Configure your environment variables
-nano .env
-```
-
-#### Docker Installation
-```bash
-# Build the Docker image
-docker build -t sentia-mcp-server .
-
-# Run with Docker
-docker run -p 3001:3001 -p 3002:3002 --env-file .env sentia-mcp-server
-
-# Or use Docker Compose (see docker-compose.yml)
-docker-compose up -d
-```
-
-### Database Setup
-```sql
--- Enable pgvector extension
-CREATE EXTENSION IF NOT EXISTS vector;
-
--- Create MCP requests table for vector storage
-CREATE TABLE IF NOT EXISTS mcp_requests (
-  id SERIAL PRIMARY KEY,
-  query TEXT NOT NULL,
-  response TEXT NOT NULL,
-  provider VARCHAR(50),
-  embedding vector(1536),
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Create index for vector similarity search
-CREATE INDEX IF NOT EXISTS mcp_requests_embedding_idx 
-ON mcp_requests USING ivfflat (embedding vector_cosine_ops);
-```
-
-## ⚙️ Configuration
-
-### Environment Variables
-
-#### Core Server Settings
-```env
-# Server Configuration
-MCP_SERVER_NAME=sentia-manufacturing-mcp
-MCP_SERVER_PORT=3001
-MCP_SERVER_HOST=0.0.0.0
-NODE_ENV=development|testing|production
-
-# Transport Configuration
-MCP_TRANSPORT=dual                    # stdio, http, or dual
-MCP_STDIO_ENABLED=true
-MCP_HTTP_ENABLED=true
-MCP_SSE_ENABLED=true
-
-# Database Configuration
-DATABASE_URL=postgresql://user:pass@host:5432/database
-DB_MAX_CONNECTIONS=10
-DB_IDLE_TIMEOUT=30000
-DB_CONNECTION_TIMEOUT=10000
-DB_QUERY_LOGGING=false
-DB_SLOW_QUERY_THRESHOLD=1000
-
-# Security Configuration
-JWT_SECRET=your-super-secret-jwt-key
-JWT_EXPIRES_IN=24h
-AUTH_REQUIRED=false                   # Set to true in production
-RATE_LIMITING_ENABLED=true
-RATE_LIMIT_WINDOW=900000             # 15 minutes in ms
-RATE_LIMIT_MAX=100                   # Requests per window
-
-# CORS Configuration
-CORS_ORIGINS=http://localhost:3000,https://your-domain.com
-
-# Logging Configuration
-LOG_LEVEL=info                       # debug, info, warn, error
-LOG_FORMAT=json
-LOG_FILE_ENABLED=true
-LOG_FILE_MAX_SIZE=5m
-LOG_FILE_MAX_FILES=5
-LOG_DIRECTORY=logs
-
-# Tool Configuration
-TOOLS_DIRECTORY=tools
-ENABLED_TOOL_CATEGORIES=system,manufacturing,financial,database,integration
-TOOL_TIMEOUT=30000
-MAX_CONCURRENT_TOOLS=10
-TOOL_CACHING_ENABLED=true
-TOOL_CACHE_TTL=300
-
-# Cache Configuration
-CACHE_TYPE=memory                    # memory or redis
-REDIS_URL=redis://localhost:6379
-REDIS_KEY_PREFIX=sentia-mcp:
-MEMORY_CACHE_MAX_SIZE=1000
-
-# Monitoring Configuration
-MONITORING_ENABLED=true
-METRICS_ENDPOINT=/metrics
-HEALTH_ENDPOINT=/health
-COLLECT_SYSTEM_METRICS=true
-COLLECT_TOOL_METRICS=true
-```
-
-#### External Service Integration
-```env
-# Anthropic Claude
-ANTHROPIC_API_KEY=your-anthropic-api-key
-ANTHROPIC_MODEL=claude-3-sonnet-20240229
-ANTHROPIC_MAX_TOKENS=4096
-ANTHROPIC_TEMPERATURE=0.7
-
-# OpenAI
-OPENAI_API_KEY=your-openai-api-key
-OPENAI_MODEL=gpt-4-turbo-preview
-OPENAI_MAX_TOKENS=4096
-OPENAI_TEMPERATURE=0.7
-
-# Xero Integration
-XERO_CLIENT_ID=your-xero-client-id
-XERO_CLIENT_SECRET=your-xero-client-secret
-XERO_REDIRECT_URI=https://your-app.com/auth/xero/callback
-XERO_SCOPES=accounting.read,accounting.transactions
-
-# Shopify Integration
-SHOPIFY_SHOP_DOMAIN=your-shop.myshopify.com
-SHOPIFY_ACCESS_TOKEN=your-shopify-access-token
-SHOPIFY_API_VERSION=2024-01
-
-# Unleashed ERP
-UNLEASHED_API_ID=your-unleashed-api-id
-UNLEASHED_API_KEY=your-unleashed-api-key
-UNLEASHED_BASE_URL=https://api.unleashedsoftware.com
-
-# Amazon SP-API
-AMAZON_SELLER_ID=your-amazon-seller-id
-AMAZON_CLIENT_ID=your-amazon-client-id
-AMAZON_CLIENT_SECRET=your-amazon-client-secret
-AMAZON_REFRESH_TOKEN=your-amazon-refresh-token
-AMAZON_REGION=us-east-1
-```
-
-## 🚀 Starting the Server
-
-### Development Mode
-```bash
-# Start with auto-reload
-npm run mcp:dev
-
-# Or with pnpm
-pnpm run mcp:dev
-```
-
-### Production Mode
-```bash
-# Start in production mode
-npm run mcp:prod
-
-# Or with custom configuration
-NODE_ENV=production \
-DATABASE_URL=your-production-db-url \
-JWT_SECRET=your-production-secret \
-npm run mcp:start
-```
-
-### Command Line Options
-```bash
-# Available CLI options
-node scripts/start-mcp-server.js --help
-
-# Examples
-node scripts/start-mcp-server.js --port 3001 --env production
-node scripts/start-mcp-server.js --log-level debug
-```
-
-## 🔧 Tool Development
-
-### Creating Custom Tools
-
-Tools are automatically discovered from the `tools/` directory. Each tool should export an object with the following structure:
-
-```javascript
-// tools/example-tool.js
-export default {
-  name: 'example-tool',
-  description: 'Description of what this tool does',
-  category: 'manufacturing',
-  version: '1.0.0',
-  
-  // Optional JSON schema for input validation
-  inputSchema: {
-    type: 'object',
-    properties: {
-      param1: { type: 'string', description: 'First parameter' },
-      param2: { type: 'number', minimum: 0 }
-    },
-    required: ['param1']
-  },
-  
-  // Tool execution function
-  async execute(params) {
-    const { param1, param2, correlationId, timestamp } = params;
-    
-    try {
-      // Your tool logic here
-      const result = await someOperation(param1, param2);
-      
-      return {
-        success: true,
-        data: result,
-        processingTime: Date.now() - new Date(timestamp).getTime()
-      };
-    } catch (error) {
-      throw new Error(`Tool execution failed: ${error.message}`);
-    }
-  }
-};
-```
-
-### Tool Categories
-- **system**: Server management and monitoring tools
-- **manufacturing**: Production, inventory, and quality tools
-- **financial**: Working capital, cash flow, and financial analysis tools
-- **database**: Database queries and analytics tools
-- **integration**: External API integrations and data synchronization
-
-### Built-in Tools
-
-#### System Tools
-- `system-status`: Get comprehensive system health and metrics
-- `list-tools`: List all available tools with filtering
-- `database-query`: Execute read-only SQL queries
-
-#### Manufacturing Tools
-- `inventory-optimization`: AI-powered inventory level optimization
-- `demand-forecast`: ML-based demand forecasting
-- `quality-prediction`: Real-time quality assessment
-- `maintenance-scheduling`: Predictive maintenance planning
-
-#### Financial Tools
-- `working-capital-optimization`: DSO/DPO/DIO optimization
-- `cash-runway-analysis`: Multi-scenario cash flow analysis
-
-#### Integration Tools
-- `unified-api-call`: Proxy calls to external APIs
-- `anomaly-detection`: Statistical anomaly detection
-
-## 🔌 Claude Desktop Integration
-
-### Configuration
-1. Copy the configuration to your Claude Desktop settings:
-
-```json
-{
-  "mcpServers": {
-    "sentia-manufacturing": {
-      "command": "node",
-      "args": ["scripts/start-mcp-server.js"],
-      "cwd": "/path/to/sentia-manufacturing-dashboard",
-      "env": {
-        "NODE_ENV": "development",
-        "MCP_TRANSPORT": "stdio",
-        "DATABASE_URL": "your-database-url"
-      }
-    }
-  }
-}
-```
-
-2. Restart Claude Desktop to load the server
-
-### Usage Examples
-```
-# Get system status
-What's the current status of the manufacturing system?
-
-# Analyze inventory
-Can you optimize our inventory levels for SKUs ABC-123 and XYZ-789?
-
-# Financial analysis
-Analyze our working capital metrics and suggest improvements
-
-# Quality prediction
-Predict quality issues based on current production parameters: 
-temperature=75°C, pressure=2.5bar, humidity=45%
-
-# Database query
-Query our production database to show top 10 products by volume this month
-```
-
-## 🌐 HTTP API Usage
-
-### Authentication
-```bash
-# Get JWT token (implement your own auth endpoint)
-curl -X POST http://localhost:3001/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "password"}'
-```
-
-### Tool Execution
-```bash
-# Execute a tool via HTTP
-curl -X POST http://localhost:3001/api/tools/system-status \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-jwt-token" \
-  -d '{"includeMetrics": true}'
-```
-
-### Real-time Events
-```javascript
-// Subscribe to server events via SSE
-const eventSource = new EventSource('http://localhost:3001/api/events');
-
-eventSource.onmessage = function(event) {
-  const data = JSON.parse(event.data);
-  console.log('Received event:', data);
-};
-```
-
-### Health Monitoring
-```bash
-# Check server health
-curl http://localhost:3001/health
-
-# Get metrics
-curl http://localhost:3001/metrics
-```
-
-## 📊 Monitoring & Observability
-
-### Health Checks
-The server provides comprehensive health endpoints:
-
-- **`/health`**: Basic health status with system metrics
-- **`/metrics`**: Detailed performance metrics
-- **`/api/tools`**: Available tools and capabilities
-
-### Logging
-Structured logging with correlation IDs:
-
-```javascript
-// All operations include correlation IDs for request tracking
-{
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "level": "info",
-  "message": "Tool execution completed",
-  "correlationId": "123e4567-e89b-12d3-a456-426614174000",
-  "toolName": "inventory-optimization",
-  "executionTime": 1250,
-  "success": true
-}
-```
-
-### Error Handling
-Advanced error classification and metrics:
-
-- **Error Types**: Validation, Authentication, Database, External API, etc.
-- **Severity Levels**: Low, Medium, High, Critical
-- **Retry Logic**: Automatic retry with exponential backoff
-- **Circuit Breakers**: Prevent cascading failures
-
-### Performance Metrics
-- Request/response times
-- Tool execution statistics
-- Database query performance
-- Memory and CPU usage
-- Error rates and classifications
-
-## 🔒 Security
-
-### Authentication & Authorization
-- JWT-based authentication with configurable expiration
-- Role-based access control (RBAC) support
-- Rate limiting with configurable windows and thresholds
-
-### Input Validation
-- JSON schema validation for all tool parameters
-- SQL injection prevention for database queries
-- XSS protection with helmet.js middleware
-
-### Production Security
-- HTTPS enforcement in production
-- CORS configuration for cross-origin requests
-- Security headers with Content Security Policy
-- Environment-based security settings
-
-## 🚀 Deployment
-
-### Render Deployment
-Add MCP server to your render.yaml:
-
-```yaml
-services:
-  - type: web
-    name: sentia-mcp-server
-    env: node
-    plan: starter
-    buildCommand: npm ci && npm run build
-    startCommand: npm run mcp:prod
-    healthCheckPath: /health
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: MCP_SERVER_PORT
-        value: 3001
-      - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-manufacturing-db
-          property: connectionString
-```
-
-### Docker Deployment
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY . .
-EXPOSE 3001
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3001/health || exit 1
-
-CMD ["npm", "run", "mcp:prod"]
-```
-
-### Environment-Specific Configuration
-- **Development**: Relaxed security, detailed logging, auto-reload
-- **Testing**: Moderate security, comprehensive monitoring
-- **Production**: Maximum security, minimal logging, performance optimization
-
-## 🧪 Testing
-
-### Unit Tests
-```bash
-# Run unit tests
+# Testing
 npm test
+npm run validate:all
 
-# Run with coverage
-npm run test:coverage
+# Production deployment
+git push origin production
 ```
 
-### Integration Tests
-```bash
-# Test tool execution
-npm run test:integration
+## 🌟 **Key Achievements**
 
-# Test database connectivity
-npm run test:db
-```
+### **Technical Excellence**
+- **Complete MCP Compliance**: Full Model Context Protocol specification support
+- **Enterprise Architecture**: Modular, scalable, and maintainable design
+- **Production Infrastructure**: Comprehensive deployment automation and monitoring
+- **Security Excellence**: Enterprise-grade security with compliance readiness
 
-### Load Testing
-```bash
-# Test server performance
-npm run test:load
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### Server Won't Start
-1. Check environment variables are set correctly
-2. Verify database connectivity
-3. Ensure required directories exist (logs/, tmp/)
-4. Check for port conflicts
-
-#### Tool Execution Failures
-1. Verify tool schema validation
-2. Check database connections
-3. Review error logs for specific failures
-4. Test external API connectivity
-
-#### Performance Issues
-1. Monitor memory usage and heap size
-2. Check database query performance
-3. Review tool execution times
-4. Analyze error rates and patterns
-
-### Debug Mode
-```bash
-# Start with debug logging
-LOG_LEVEL=debug npm run mcp:dev
-
-# Or with specific debug flags
-DEBUG=sentia:* npm run mcp:dev
-```
-
-### Log Analysis
-```bash
-# View error logs
-tail -f logs/error.log
-
-# View all logs with correlation ID
-grep "correlation-id-here" logs/combined.log
-
-# Monitor real-time logs
-tail -f logs/combined.log | jq '.'
-```
-
-## 📈 Performance Optimization
-
-### Database Optimization
-- Connection pooling with configurable limits
-- Query timeout and slow query logging
-- Read-only query restrictions for security
-- Vector similarity search optimization
-
-### Caching Strategies
-- In-memory LRU cache for frequently accessed data
-- Redis support for distributed caching
-- Tool response caching with configurable TTL
-- Database query result caching
-
-### Resource Management
-- Memory monitoring with automatic cleanup
-- CPU usage tracking and alerting
-- Connection limiting and cleanup
-- File system cleanup for temporary resources
-
-## 🔄 Maintenance
-
-### Regular Tasks
-- Log rotation and cleanup
-- Database maintenance and optimization
-- Cache cleanup and optimization
-- Security updates and patches
-
-### Monitoring Checklist
-- [ ] System health status
-- [ ] Database connectivity
-- [ ] External API availability
-- [ ] Memory and CPU usage
-- [ ] Error rates and classifications
-- [ ] Tool execution performance
-
-### Backup Procedures
-- Database backups with point-in-time recovery
-- Configuration backup and versioning
-- Log archival and retention policies
-- Disaster recovery procedures
-
-## 📚 API Reference
-
-### Tool Execution API
-```
-POST /api/tools/{toolName}
-Content-Type: application/json
-Authorization: Bearer {jwt-token}
-
-{
-  "param1": "value1",
-  "param2": 42
-}
-```
-
-### System Status API
-```
-GET /health
-GET /metrics
-GET /api/tools
-GET /api/tools?category=manufacturing
-```
-
-### Real-time Events API
-```
-GET /api/events
-Accept: text/event-stream
-```
-
-For complete API documentation, see the OpenAPI specification in `docs/api/`.
-
-## 🤝 Contributing
-
-### Development Setup
-1. Fork the repository
-2. Create a feature branch
-3. Install dependencies: `npm install`
-4. Start development server: `npm run mcp:dev`
-5. Run tests: `npm test`
-6. Submit pull request
-
-### Code Style
-- ES6+ modules with import/export
-- Async/await for asynchronous operations
-- Comprehensive error handling
-- JSDoc documentation for all functions
-- ESLint and Prettier for code formatting
-
-### Pull Request Guidelines
-- Include tests for new features
-- Update documentation as needed
-- Follow semantic versioning
-- Include performance benchmarks for changes
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue on GitHub
-- Check the troubleshooting guide
-- Review the API documentation
-- Contact the development team
+### **Business Value**
+- **Manufacturing Intelligence**: AI-powered insights across all business operations
+- **Real-time Data**: Live synchronization across all integrated platforms  
+- **Cost Optimization**: ROI tracking and performance analytics
+- **Scalable Growth**: Ready for expansion with additional integrations
 
 ---
 
-**Built with ❤️ for Manufacturing Excellence**
+**The Sentia Manufacturing MCP Server is enterprise-ready with complete deployment automation and production infrastructure, providing 36 MCP tools across 6 major business system integrations for comprehensive manufacturing intelligence.**
+
+*For technical support, operational guidance, or development questions, please refer to the appropriate documentation section above.*

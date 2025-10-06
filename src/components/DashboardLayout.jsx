@@ -26,8 +26,6 @@ const NAV_SECTIONS = [
     items: [
       { to: '/app/forecasting', label: 'Demand Forecasting', icon: LineChartIcon },
       { to: '/app/inventory', label: 'Inventory Management', icon: Package2Icon },
-      { to: '/app/production', label: 'Production Tracking', icon: FactoryIcon },
-      { to: '/app/quality', label: 'Quality Control', icon: FlaskConicalIcon },
       { to: '/app/analytics', label: 'AI Analytics', icon: BrainIcon }
     ]
   },

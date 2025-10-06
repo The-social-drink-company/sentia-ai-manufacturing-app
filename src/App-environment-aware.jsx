@@ -10,10 +10,8 @@ import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
 const WorkingCapital = lazy(() => import('@/components/WorkingCapital/RealWorkingCapital'))
 const Forecasting = lazy(() => import('@/pages/Forecasting'))
-const Production = lazy(() => import('@/pages/Production'))
 const Analytics = lazy(() => import('@/pages/Analytics'))
 const Inventory = lazy(() => import('@/components/inventory/InventoryDashboard'))
-const Quality = lazy(() => import('@/components/quality/QualityDashboard'))
 const DataImport = lazy(() => import('@/components/data/DataImportWidget'))
 const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
@@ -236,14 +234,6 @@ const App = () => (
             </ProtectedRoute>
           } />
           
-          <Route path="/app/production" element={
-            <ProtectedRoute>
-              <Suspense fallback={<Loader />}>
-                <Production />
-              </Suspense>
-            </ProtectedRoute>
-          } />
-          
           <Route path="/app/analytics" element={
             <ProtectedRoute>
               <Suspense fallback={<Loader />}>
@@ -256,14 +246,6 @@ const App = () => (
             <ProtectedRoute>
               <Suspense fallback={<Loader />}>
                 <Inventory />
-              </Suspense>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/app/quality" element={
-            <ProtectedRoute>
-              <Suspense fallback={<Loader />}>
-                <Quality />
               </Suspense>
             </ProtectedRoute>
           } />

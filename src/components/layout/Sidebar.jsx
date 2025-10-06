@@ -42,8 +42,6 @@ const navigation = [
     items: [
       { name: 'Demand Forecasting', href: '/forecasting', icon: PresentationChartLineIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
       { name: 'Inventory Management', href: '/inventory', icon: CubeIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
-      { name: 'Production Tracking', href: '/production', icon: TruckIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
-      { name: 'Quality Control', href: '/quality', icon: ClipboardDocumentCheckIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
       { name: 'AI Analytics', href: '/ai-analytics', icon: SparklesIcon, badge: 'AI', roles: ['manager', 'admin', 'master_admin'] }
     ]
   },

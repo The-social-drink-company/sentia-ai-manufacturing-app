@@ -1,13 +1,13 @@
 import { memo } from 'react'
 import {
   ResponsiveContainer,
-  BarChart,
+  ComposedChart,
   Bar,
+  Line,
   CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
-  ReferenceLine,
   Cell
 } from 'recharts'
 
@@ -99,11 +99,90 @@ const StockLevelsChart = ({ data }) => {
     )
   }
 
+  // Custom reorder level marker component
+  const ReorderLevelMarker = (props) => {
+    const { payload, x, y, width } = props
+    if (!payload) return null
+    
+    const markerY = y + (payload.currentStock - payload.reorderLevel) * (props.height / props.maxValue)
+    
+    return (
+      <g>
+        {/* Reorder level line across the bar width */}
+        <line
+          x1={x}
+          y1={markerY}
+          x2={x + width}
+          y2={markerY}
+          stroke="#f59e0b"
+          strokeWidth={2}
+          strokeDasharray="4 4"
+        />
+        {/* Small label */}
+        <text
+          x={x + width + 5}
+          y={markerY + 4}
+          fill="#f59e0b"
+          fontSize={10}
+          textAnchor="start"
+        >
+          {payload.reorderLevel}
+        </text>
+      </g>
+    )
+  }
+
+  // Custom bar shape with reorder level indicator
+  const CustomBar = (props) => {
+    const { fill, payload, x, y, width, height } = props
+    if (!payload) return null
+
+    // Calculate reorder level position as percentage of bar height
+    const reorderPercent = payload.reorderLevel / payload.currentStock
+    const reorderY = y + height - (height * reorderPercent)
+
+    return (
+      <g>
+        {/* Main bar */}
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          fill={fill}
+          rx={4}
+          ry={4}
+        />
+        {/* Reorder level indicator line */}
+        <line
+          x1={x}
+          y1={reorderY}
+          x2={x + width}
+          y2={reorderY}
+          stroke="#f59e0b"
+          strokeWidth={3}
+          strokeDasharray="6 3"
+        />
+        {/* Reorder level value label */}
+        <text
+          x={x + width + 8}
+          y={reorderY + 4}
+          fill="#f59e0b"
+          fontSize={11}
+          fontWeight="600"
+          textAnchor="start"
+        >
+          Reorder: {payload.reorderLevel}
+        </text>
+      </g>
+    )
+  }
+
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart
+      <ComposedChart
         data={data}
-        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+        margin={{ top: 20, right: 80, left: 20, bottom: 5 }}
         barCategoryGap="20%"
       >
         <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
@@ -121,8 +200,8 @@ const StockLevelsChart = ({ data }) => {
         />
         <Tooltip content={<CustomTooltip />} />
         
-        {/* Current Stock Bars */}
-        <Bar dataKey="currentStock" radius={[4, 4, 0, 0]}>
+        {/* Current Stock Bars with custom shape */}
+        <Bar dataKey="currentStock" shape={<CustomBar />}>
           {data.map((entry, index) => (
             <Cell 
               key={`cell-${index}`} 
@@ -130,24 +209,7 @@ const StockLevelsChart = ({ data }) => {
             />
           ))}
         </Bar>
-
-        {/* Reference lines for reorder levels */}
-        {data.map((item, index) => (
-          <ReferenceLine
-            key={`reorder-${index}`}
-            y={item.reorderLevel}
-            stroke="#f59e0b"
-            strokeDasharray="4 4"
-            strokeWidth={2}
-            label={{
-              value: `Reorder: ${item.reorderLevel}`,
-              position: 'topRight',
-              fontSize: 10,
-              fill: '#f59e0b'
-            }}
-          />
-        ))}
-      </BarChart>
+      </ComposedChart>
     </ResponsiveContainer>
   )
 }

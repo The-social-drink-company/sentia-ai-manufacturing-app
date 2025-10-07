@@ -199,7 +199,7 @@ const DashboardEnterprise = () => {
                 <p className="text-xs text-muted-foreground">{capitalError}</p>
               </div>
             </div>
-          ) : capitalKpis.length === 0 ? (
+          ) : (!capitalKpis || capitalKpis.length === 0) ? (
             <div className="col-span-full flex items-center justify-center p-8">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">No capital metrics available</p>
@@ -207,7 +207,7 @@ const DashboardEnterprise = () => {
               </div>
             </div>
           ) : (
-            capitalKpis.map((item) => (
+            (capitalKpis || []).map((item) => (
               <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.label}</p>
                 <p className="text-lg font-semibold text-foreground">{item.value}</p>
@@ -239,7 +239,7 @@ const DashboardEnterprise = () => {
                 <p className="text-xs text-muted-foreground">{kpiError}</p>
               </div>
             </div>
-          ) : performanceKpis.length === 0 ? (
+          ) : (!performanceKpis || performanceKpis.length === 0) ? (
             <div className="col-span-full flex items-center justify-center p-8">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">No performance metrics available</p>
@@ -247,7 +247,7 @@ const DashboardEnterprise = () => {
               </div>
             </div>
           ) : (
-            performanceKpis.map((item) => (
+            (performanceKpis || []).map((item) => (
               <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.label}</p>
                 <p className="text-lg font-semibold text-foreground">{item.value}</p>
@@ -336,7 +336,7 @@ const DashboardEnterprise = () => {
                   <p className="text-xs text-muted-foreground">{regionalError}</p>
                 </div>
               </div>
-            ) : regionalData.length === 0 ? (
+            ) : (!regionalData || regionalData.length === 0) ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">No regional data available</p>

@@ -23,9 +23,11 @@ const defaultPerformanceKpis = [
 
 const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
 const PLAnalysisChart = lazy(() => import('@/components/dashboard/PLAnalysisChart'))
+const ProductSalesChart = lazy(() => import('@/components/dashboard/ProductSalesChart'))
 
-// Import P&L API service
+// Import API services
 import plAnalysisApi from '@/services/api/plAnalysisApi'
+import productSalesApi from '@/services/api/productSalesApi'
 
 const DashboardEnterprise = () => {
   const [plData, setPLData] = useState([])
@@ -34,6 +36,9 @@ const DashboardEnterprise = () => {
   const [performanceKpis, setPerformanceKpis] = useState(defaultPerformanceKpis)
   const [kpiLoading, setKpiLoading] = useState(true)
   const [kpiError, setKpiError] = useState(null)
+  const [productSalesData, setProductSalesData] = useState([])
+  const [salesLoading, setSalesLoading] = useState(true)
+  const [salesError, setSalesError] = useState(null)
 
   // Fetch P&L analysis data
   useEffect(() => {
@@ -95,6 +100,34 @@ const DashboardEnterprise = () => {
     fetchKPIData()
   }, [])
 
+  // Fetch product sales data
+  useEffect(() => {
+    const fetchProductSalesData = async () => {
+      try {
+        setSalesLoading(true)
+        setSalesError(null)
+        
+        const response = await productSalesApi.getProductSalesData()
+        if (response.success) {
+          setProductSalesData(response.data)
+        } else {
+          throw new Error('Failed to fetch product sales data')
+        }
+      } catch (error) {
+        console.error('Error fetching product sales data:', error)
+        setSalesError(error.message)
+        
+        // Use mock data as fallback
+        const mockResponse = productSalesApi.getMockData()
+        setProductSalesData(mockResponse.data)
+      } finally {
+        setSalesLoading(false)
+      }
+    }
+
+    fetchProductSalesData()
+  }, [])
+
   return (
     <section className="space-y-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -134,6 +167,34 @@ const DashboardEnterprise = () => {
               <p className="text-xs text-muted-foreground">{item.helper}</p>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Product Sales Performance</CardTitle>
+          <CardDescription>Revenue performance by product line for last year showing GABA Red, Black, and Gold sales.</CardDescription>
+        </CardHeader>
+        <CardContent className="h-80">
+          {salesLoading ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <p className="text-sm text-muted-foreground">Loading product sales data...</p>
+              </div>
+            </div>
+          ) : salesError ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                <p className="text-sm text-destructive mb-2">Error loading product sales data</p>
+                <p className="text-xs text-muted-foreground">Using sample data for demonstration</p>
+              </div>
+            </div>
+          ) : (
+            <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+              <ProductSalesChart data={productSalesData} />
+            </Suspense>
+          )}
         </CardContent>
       </Card>
 

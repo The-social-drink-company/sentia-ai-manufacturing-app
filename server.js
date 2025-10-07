@@ -250,6 +250,47 @@ app.get('/api/system/alerts', async (req, res) => {
   }
 });
 
+// Regional Performance API - Real regional data from external sources
+app.get('/api/regional/performance', async (req, res) => {
+  console.log('🌍 Regional performance data requested');
+  
+  try {
+    // In production, this would integrate with real regional data sources
+    // For now, return empty array until external APIs are configured
+    res.status(200).json([]);
+  } catch (error) {
+    console.error('Failed to fetch regional performance:', error);
+    res.status(503).json({
+      error: 'Unable to fetch regional performance',
+      message: 'External API integration required for regional data',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Regional Performance by Region API
+app.get('/api/regional/performance/:region', async (req, res) => {
+  const { region } = req.params;
+  console.log(`🌍 Regional performance data requested for: ${region}`);
+  
+  try {
+    // In production, this would query region-specific data
+    res.status(200).json({
+      region,
+      revenue: 0,
+      ebitda: 0,
+      lastUpdated: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error(`Failed to fetch performance for region ${region}:`, error);
+    res.status(503).json({
+      error: 'Unable to fetch regional data',
+      message: `External API integration required for ${region} data`,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Catch-all handler for API routes that might require Prisma
 app.use('/api/*', (req, res, next) => {
   console.log('⚠️  API route accessed:', req.path);

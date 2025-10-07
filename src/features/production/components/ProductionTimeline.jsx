@@ -11,27 +11,9 @@ import { useState, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle , Badge } from '../../../components/ui'
 import { cn } from '../../../utils/cn'
 
-const generateMockJobs = () => {
-  const statuses = ['scheduled', 'in-progress', 'completed', 'delayed', 'failed']
-  const products = ['SNTG-001', 'SNTG-002', 'SNTB-001', 'SNTB-002', 'SNTR-001']
-
-  return Array.from({ length: 10 }, (_, _i) => ({
-    id: `JOB-${1000 + i}`,
-    product: products[Math.floor(Math.random() * products.length)],
-    quantity: Math.floor(Math.random() * 5000) + 1000,
-    status: statuses[Math.floor(Math.random() * statuses.length)],
-    startTime: new Date(Date.now() - Math.random() * 86400000).toISOString(),
-    endTime: new Date(Date.now() + Math.random() * 86400000).toISOString(),
-    progress: Math.floor(Math.random() * 100),
-    machine: `Line ${Math.floor(Math.random() * 4) + 1}`,
-    operator: `Operator ${Math.floor(Math.random() * 10) + 1}`,
-    efficiency: Math.floor(Math.random() * 30) + 70
-  }))
-}
-
-export function ProductionTimeline({ jobs, onJobClick, view = 'timeline' }) {
+export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loading = false, error = null }) {
   const [selectedJob, setSelectedJob] = useState(null)
-  const productionJobs = useMemo(() => jobs || generateMockJobs(), [jobs])
+  const productionJobs = useMemo(() => Array.isArray(jobs) ? jobs : [], [jobs])
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -284,7 +266,30 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline' }) {
         </div>
       </CardHeader>
       <CardContent>
-        {view === 'timeline' ? renderTimelineView() : renderListView()}
+        {loading ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <p className="text-sm text-muted-foreground">Loading production jobs...</p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-center">
+              <p className="text-sm text-destructive mb-2">Failed to load production data</p>
+              <p className="text-xs text-muted-foreground">{error}</p>
+            </div>
+          </div>
+        ) : productionJobs.length === 0 ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">No production jobs available</p>
+              <p className="text-xs text-muted-foreground">Check API configuration</p>
+            </div>
+          </div>
+        ) : (
+          view === 'timeline' ? renderTimelineView() : renderListView()
+        )}
       </CardContent>
     </Card>
   )

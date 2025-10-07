@@ -39,24 +39,15 @@ export const generatePDF = async (reportData) => {
 
     // Add each selected section
     for (const [, sectionData] of Object.entries(reportData.sections)) {
-      // Check if we need a new page (more conservative spacing)
-      if (currentY > pageHeight - 80) {
+      // Check if we need a new page before starting section
+      const estimatedSectionHeight = 80 // Estimate section header + some content
+      if (currentY + estimatedSectionHeight > pageHeight - 40) {
         pdf.addPage()
         addHeader(pdf, pageWidth, margin)
         currentY = margin + 30
       }
 
-      const newY = addSection(pdf, sectionData, margin, currentY, contentWidth, pageHeight)
-      
-      // If section couldn't fit, try on new page
-      if (newY > pageHeight - 20) {
-        pdf.addPage()
-        addHeader(pdf, pageWidth, margin)
-        currentY = margin + 30
-        currentY = addSection(pdf, sectionData, margin, currentY, contentWidth, pageHeight)
-      } else {
-        currentY = newY
-      }
+      currentY = addSection(pdf, sectionData, margin, currentY, contentWidth, pageHeight)
       currentY += 15
     }
 
@@ -208,6 +199,20 @@ const addSection = (pdf, sectionData, margin, startY, contentWidth, pageHeight) 
 
   // Add section data based on type
   if (sectionData.data && Array.isArray(sectionData.data)) {
+    // Check if we have enough space for the table, if not break to new page
+    if (currentY > pageHeight - 120) {
+      pdf.addPage()
+      addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
+      currentY = margin + 30
+      
+      // Re-add section header on new page
+      pdf.setFontSize(16)
+      pdf.setFont(undefined, 'bold')
+      pdf.setTextColor(0, 0, 0)
+      pdf.text(sectionData.title, margin, currentY)
+      currentY += 15
+    }
+    
     if (sectionData.title === 'Capital Position' || sectionData.title === 'Performance Metrics') {
       // KPI format
       currentY = addKPITable(pdf, sectionData.data, margin, currentY, contentWidth)
@@ -225,6 +230,12 @@ const addSection = (pdf, sectionData, margin, startY, contentWidth, pageHeight) 
 
   // Add summary if available
   if (sectionData.summary && typeof sectionData.summary === 'object') {
+    // Check if summary box fits, if not move to new page
+    if (currentY > pageHeight - 60) {
+      pdf.addPage()
+      addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
+      currentY = margin + 30
+    }
     currentY += 10
     currentY = addSummaryBox(pdf, sectionData.summary, margin, currentY, contentWidth)
   }
@@ -260,6 +271,25 @@ const addKPITable = (pdf, data, margin, startY, contentWidth) => {
     const metricText = pdf.splitTextToSize(item.label, col1Width - 10)
     const helperText = pdf.splitTextToSize(item.helper || '', col3Width - 10)
     const rowHeight = Math.max(baseRowHeight, Math.max(metricText.length, helperText.length) * 6 + 6)
+    
+    // Check if row fits on current page
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    if (currentY + rowHeight > pageHeight - 30) {
+      pdf.addPage()
+      addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
+      currentY = margin + 30
+      
+      // Re-add table header
+      pdf.setFillColor(245, 245, 245)
+      pdf.rect(margin, currentY, contentWidth, headerHeight, 'F')
+      pdf.setFontSize(11)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('Metric', margin + 5, currentY + 10)
+      pdf.text('Value', margin + col1Width + 5, currentY + 10)
+      pdf.text('Description', margin + col1Width + col2Width + 5, currentY + 10)
+      currentY += headerHeight
+      pdf.setFont(undefined, 'normal')
+    }
     
     if (index % 2 === 0) {
       pdf.setFillColor(250, 250, 250)
@@ -387,13 +417,51 @@ const addGenericTable = (pdf, data, margin, startY, contentWidth) => {
  * Add summary box
  */
 const addSummaryBox = (pdf, summary, margin, startY, contentWidth) => {
+  // Check if summary exists and has content
+  if (!summary || typeof summary !== 'object') {
+    return startY
+  }
+  
   let currentY = startY
+  let contentHeight = 0
+  
+  // Calculate required height based on content
+  pdf.setFontSize(10)
+  let summaryLines = []
+  
+  if (summary.status) {
+    summaryLines.push(`Status: ${summary.status}`)
+  }
+  if (summary.keyInsight) {
+    const insightLines = pdf.splitTextToSize(summary.keyInsight, contentWidth - 10)
+    summaryLines = summaryLines.concat(insightLines)
+  }
+  
+  // Additional summary fields
+  if (summary.totalRevenue) {
+    summaryLines.push(`Total Revenue: ${summary.totalRevenue}`)
+  }
+  if (summary.avgGrossMargin) {
+    summaryLines.push(`Average Gross Margin: ${summary.avgGrossMargin}`)
+  }
+  if (summary.bestMonth) {
+    summaryLines.push(`Best performing month: ${summary.bestMonth}`)
+  }
+  if (summary.topRegion) {
+    summaryLines.push(`Top performing region: ${summary.topRegion}`)
+  }
+  
+  // If no content, don't draw the box
+  if (summaryLines.length === 0) {
+    return startY
+  }
+  
+  contentHeight = summaryLines.length * 5 + 15 // 5px per line + padding
   
   // Summary box background
   pdf.setFillColor(249, 250, 251)
   pdf.setDrawColor(200, 200, 200)
-  const boxHeight = 25
-  pdf.roundedRect(margin, currentY, contentWidth, boxHeight, 2, 2, 'FD')
+  pdf.roundedRect(margin, currentY, contentWidth, contentHeight, 2, 2, 'FD')
   
   currentY += 8
   pdf.setFontSize(10)
@@ -401,20 +469,14 @@ const addSummaryBox = (pdf, summary, margin, startY, contentWidth) => {
   pdf.text('Summary:', margin + 5, currentY)
   currentY += 6
   
+  // Add summary content
   pdf.setFont(undefined, 'normal')
-  if (summary.status) {
-    pdf.text(`Status: ${summary.status}`, margin + 5, currentY)
+  summaryLines.forEach(line => {
+    pdf.text(line, margin + 5, currentY)
     currentY += 5
-  }
-  if (summary.keyInsight) {
-    const insightLines = pdf.splitTextToSize(summary.keyInsight, contentWidth - 10)
-    insightLines.forEach(line => {
-      pdf.text(line, margin + 5, currentY)
-      currentY += 5
-    })
-  }
+  })
   
-  return startY + boxHeight + 5
+  return startY + contentHeight + 5
 }
 
 /**

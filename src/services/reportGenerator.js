@@ -73,7 +73,7 @@ export const generateReport = async (selectedSections, dateRange) => {
         title: 'P&L Analysis',
         description: 'Monthly profit and loss trends',
         data: plResponse.success ? plResponse.data : [],
-        summary: plSummaryResponse.success ? plSummaryResponse.data : null,
+        summary: generatePLSummary(plResponse.success ? plResponse.data : [], plSummaryResponse.success ? plSummaryResponse.data : null),
         chartData: plResponse.success ? plResponse.data : []
       }
     }
@@ -264,6 +264,37 @@ const generateExecutiveSummary = (sections, dateRange) => {
     keyInsights: insights,
     recommendation: 'Continue monitoring key metrics while focusing on inventory optimization and regional growth opportunities',
     dataQuality: 'High - All critical systems operational and providing real-time data'
+  }
+}
+
+/**
+ * Generate summary for P&L analysis
+ */
+const generatePLSummary = (plData, summaryData) => {
+  if (!plData || !Array.isArray(plData) || plData.length === 0) {
+    return { status: 'Data unavailable', message: 'P&L analysis data not accessible' }
+  }
+  
+  const totalRevenue = plData.reduce((sum, item) => sum + (item.revenue || 0), 0)
+  const totalGrossProfit = plData.reduce((sum, item) => sum + (item.grossProfit || 0), 0)
+  const totalEbitda = plData.reduce((sum, item) => sum + (item.ebitda || 0), 0)
+  
+  const avgGrossMargin = totalRevenue > 0 ? ((totalGrossProfit / totalRevenue) * 100).toFixed(1) : '0'
+  const avgEbitdaMargin = totalRevenue > 0 ? ((totalEbitda / totalRevenue) * 100).toFixed(1) : '0'
+  
+  const bestMonth = plData.reduce((prev, current) => 
+    (prev.revenue || 0) > (current.revenue || 0) ? prev : current
+  )
+  
+  return {
+    totalRevenue: `$${(totalRevenue / 1000).toFixed(0)}K`,
+    totalGrossProfit: `$${(totalGrossProfit / 1000).toFixed(0)}K`,
+    totalEbitda: `$${(totalEbitda / 1000).toFixed(0)}K`,
+    avgGrossMargin: `${avgGrossMargin}%`,
+    avgEbitdaMargin: `${avgEbitdaMargin}%`,
+    bestMonth: bestMonth.month || 'N/A',
+    status: 'P&L trends analyzed',
+    keyInsight: `${bestMonth.month} showed strongest performance with $${bestMonth.revenue}K revenue`
   }
 }
 

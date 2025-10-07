@@ -19,16 +19,16 @@ const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
 
-// TEMP: Testing with minimal component to isolate routing issues
+// Enhanced lazy loading with debug logging for Financial Reports - FIXED IMPORT ISSUE
 const FinancialReports = lazy(() => {
-  console.log('[DEBUG] Loading MinimalFinancialReports component...')
-  return import('@/components/debug/MinimalFinancialReports')
+  console.log('[DEBUG] Loading FinancialReports component...')
+  return import('@/pages/Financial/FinancialReports')
     .then((module) => {
-      console.log('[DEBUG] MinimalFinancialReports component loaded successfully:', module)
+      console.log('[DEBUG] FinancialReports component loaded successfully:', module)
       return module
     })
     .catch((error) => {
-      console.error('[DEBUG] Failed to load MinimalFinancialReports component:', error)
+      console.error('[DEBUG] Failed to load FinancialReports component:', error)
       throw error
     })
 })

@@ -11,7 +11,7 @@ import FinancialKPIStrip from '@/components/financial/FinancialKPIStrip'
 import FinancialCharts from '@/components/financial/FinancialCharts'
 import FinancialInsights from '@/components/financial/FinancialInsights'
 import ProductPerformanceTable from '@/components/financial/ProductPerformanceTable'
-import useFinancialReportsData from '@/hooks/useFinancialData'
+import { useFinancialReportsData } from '@/hooks/useFinancialData'
 import { cn } from '@/utils/cn'
 
 const TimeRangeSelector = ({ value, onChange, className }) => {

@@ -11,7 +11,8 @@ import {
   DollarSignIcon,
   LayersIcon,
   DatabaseIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  FileBarChartIcon
 } from 'lucide-react'
 import EnterpriseAIChatbot from '@/components/EnterpriseAIChatbot'
 import CommandPalette from '@/components/dashboard/CommandPalette'
@@ -26,8 +27,6 @@ const NAV_SECTIONS = [
     items: [
       { to: '/app/forecasting', label: 'Demand Forecasting', icon: LineChartIcon },
       { to: '/app/inventory', label: 'Inventory Management', icon: Package2Icon },
-      { to: '/app/production', label: 'Production Tracking', icon: FactoryIcon },
-      { to: '/app/quality', label: 'Quality Control', icon: FlaskConicalIcon },
       { to: '/app/analytics', label: 'AI Analytics', icon: BrainIcon }
     ]
   },
@@ -35,7 +34,8 @@ const NAV_SECTIONS = [
     title: 'Financial',
     items: [
       { to: '/app/working-capital', label: 'Working Capital', icon: DollarSignIcon },
-      { to: '/app/what-if', label: 'What-If Analysis', icon: LayersIcon }
+      { to: '/app/what-if', label: 'What-If Analysis', icon: LayersIcon },
+      { to: '/app/reports', label: 'Financial Reports', icon: FileBarChartIcon }
     ]
   },
   {
@@ -55,19 +55,19 @@ const DashboardLayout = ({ children }) => {
   const activePath = useMemo(() => location.pathname, [location.pathname])
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100">
-      <aside className="relative hidden w-72 flex-col border-r border-white/5 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-6 lg:flex">
+    <div className="flex min-h-screen bg-white text-gray-900">
+      <aside className="relative hidden w-72 flex-col border-r border-gray-200 bg-white px-4 py-6 lg:flex shadow-sm">
         <div className="mb-8 flex items-center gap-3 pl-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-400 text-2xl font-bold text-white">S</div>
           <div>
-            <p className="text-sm uppercase tracking-widest text-slate-400">Sentia</p>
-            <p className="text-lg font-semibold text-white">Manufacturing</p>
+            <p className="text-sm uppercase tracking-widest text-gray-500">Sentia</p>
+            <p className="text-lg font-semibold text-gray-900">Manufacturing</p>
           </div>
         </div>
         <nav className="space-y-8 overflow-y-auto pr-2">
           {NAV_SECTIONS.map((section) => (
             <div key={section.title}>
-              <p className="mb-3 pl-2 text-xs uppercase tracking-[0.3em] text-slate-500">{section.title}</p>
+              <p className="mb-3 pl-2 text-xs uppercase tracking-[0.3em] text-gray-500">{section.title}</p>
               <div className="space-y-1">
                 {section.items.map((item) => {
                   const Icon = item.icon
@@ -79,11 +79,11 @@ const DashboardLayout = ({ children }) => {
                       onClick={() => navigate(item.to)}
                       className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                         active
-                          ? 'bg-gradient-to-r from-sky-500/20 to-cyan-400/20 text-white ring-1 ring-cyan-400/40 shadow-lg'
-                          : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                          ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200 shadow-sm'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }`}
                     >
-                      <span className={`flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 ${active ? 'bg-white/10 text-cyan-300' : 'bg-white/5 text-sky-200'}`}>
+                      <span className={`flex h-9 w-9 items-center justify-center rounded-lg border ${active ? 'border-blue-200 bg-blue-100 text-blue-600' : 'border-gray-200 bg-gray-50 text-gray-500'}`}>
                         <Icon className="h-4 w-4" />
                       </span>
                       <span>{item.label}</span>
@@ -97,25 +97,25 @@ const DashboardLayout = ({ children }) => {
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-slate-950/70 px-6 py-4 backdrop-blur">
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 bg-white/95 px-6 py-4 backdrop-blur">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Dashboard</p>
-            <p className="text-lg font-semibold text-white">Manufacturing Intelligence</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Dashboard</p>
+            <p className="text-lg font-semibold text-gray-900">Manufacturing Intelligence</p>
           </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setCommandOpen(true)}
-              className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-200 hover:bg-white/10 sm:flex"
+              className="hidden items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600 hover:bg-gray-100 sm:flex"
             >
               <span>Search</span>
-              <span className="rounded border border-white/10 bg-white/10 px-1">⌘K</span>
+              <span className="rounded border border-gray-200 bg-gray-100 px-1">⌘K</span>
             </button>
             <UserButtonEnvironmentAware />
           </div>
         </header>
 
-        <main className="flex-1 bg-slate-950 px-6 py-8">
+        <main className="flex-1 bg-gray-50 px-6 py-8">
           <div className="mx-auto max-w-6xl space-y-8">
             {children ?? <Outlet />}
           </div>

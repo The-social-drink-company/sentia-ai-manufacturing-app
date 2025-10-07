@@ -10,20 +10,20 @@ import {
 } from '@heroicons/react/24/outline'
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui'
 
-const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
+const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h', loading = false, error = null }) {
   const [selectedLine] = useState('all')
 
-  // Mock data fallback
+  // Real data processing
   const oeeData = useMemo(() => data || {
-    overall: 75.5,
-    availability: 87.2,
-    performance: 82.1,
-    quality: 95.8,
+    overall: 0,
+    availability: 0,
+    performance: 0,
+    quality: 0,
     target: 85,
     worldClass: 90,
-    availabilityChange: 2.3,
-    performanceChange: -1.2,
-    qualityChange: 0.8,
+    availabilityChange: 0,
+    performanceChange: 0,
+    qualityChange: 0,
     lineBreakdown: []
   }, [data])
 
@@ -167,6 +167,28 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
       </CardHeader>
 
       <CardContent>
+        {loading ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <p className="text-sm text-muted-foreground">Loading OEE data...</p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-center">
+              <p className="text-sm text-destructive mb-2">Failed to load OEE data</p>
+              <p className="text-xs text-muted-foreground">{error}</p>
+            </div>
+          </div>
+        ) : !data || Object.keys(data).length === 0 ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">No OEE data available</p>
+              <p className="text-xs text-muted-foreground">Check API configuration</p>
+            </div>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Overall OEE Circle */}
           <div className="flex flex-col items-center justify-center p-6">
@@ -327,6 +349,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h' }) {
             )}
           </div>
         </div>
+        )}
       </CardContent>
     </Card>
   )

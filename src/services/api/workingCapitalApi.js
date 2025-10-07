@@ -28,6 +28,10 @@ class WorkingCapitalApi {
   async requestAiInsights(payload) {
     return api.post('/ai/insights', payload)
   }
+
+  async getWorkingCapitalSummary(params) {
+    return api.get('/financial/working-capital-summary', params)
+  }
 }
 
-export const workingCapitalApi = new WorkingCapitalApi()
+export default new WorkingCapitalApi()

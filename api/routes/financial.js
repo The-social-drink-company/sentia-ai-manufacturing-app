@@ -1000,4 +1000,119 @@ router.get('/overview',
   })
 );
 
+/**
+ * GET /api/financial/pl-analysis
+ * Get P&L analysis data by month
+ */
+router.get('/pl-analysis',
+  requireAuth,
+  rateLimiters.read,
+  asyncHandler(async (req, res) => {
+    const cacheKey = 'pl_analysis_data';
+    
+    // Check cache first
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
+    try {
+      // Generate mock P&L data for demonstration
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      
+      const plData = months.map((month, index) => {
+        // Generate realistic but varied data with seasonal patterns
+        const baseRevenue = 1200 + (Math.sin(index * 0.5) * 200) + (Math.random() * 100);
+        const seasonalFactor = 1 + (Math.sin(index * 0.5) * 0.15);
+        
+        const revenue = Math.round(baseRevenue * seasonalFactor);
+        const grossProfit = Math.round(revenue * (0.55 + Math.random() * 0.15)); // 55-70% gross margin
+        const ebitda = Math.round(revenue * (0.18 + Math.random() * 0.08)); // 18-26% EBITDA margin
+        const grossMarginPercent = Number(((grossProfit / revenue) * 100).toFixed(1));
+        
+        return {
+          month,
+          revenue,
+          grossProfit,
+          ebitda,
+          grossMarginPercent
+        };
+      });
+
+      const result = {
+        success: true,
+        data: plData,
+        timestamp: new Date().toISOString()
+      };
+
+      // Cache for 5 minutes
+      cache.set(cacheKey, result, 300);
+      
+      res.json(result);
+
+    } catch (error) {
+      logError('[P&L Analysis API] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch P&L analysis data',
+        message: error.message
+      });
+    }
+  })
+);
+
+/**
+ * GET /api/financial/pl-summary
+ * Get P&L summary metrics
+ */
+router.get('/pl-summary',
+  requireAuth,
+  rateLimiters.read,
+  asyncHandler(async (req, res) => {
+    const { period = 'year' } = req.query;
+    const cacheKey = `pl_summary_${period}`;
+    
+    // Check cache first
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
+    try {
+      // Mock summary calculations
+      const mockTotalRevenue = 15840;
+      const mockTotalGrossProfit = 9860;
+      const mockTotalEbitda = 3420;
+      
+      const summaryData = {
+        totalRevenue: mockTotalRevenue,
+        totalGrossProfit: mockTotalGrossProfit,
+        totalEbitda: mockTotalEbitda,
+        avgGrossMargin: Number(((mockTotalGrossProfit / mockTotalRevenue) * 100).toFixed(1)),
+        avgEbitdaMargin: Number(((mockTotalEbitda / mockTotalRevenue) * 100).toFixed(1)),
+        period
+      };
+
+      const result = {
+        success: true,
+        data: summaryData,
+        timestamp: new Date().toISOString()
+      };
+
+      // Cache for 10 minutes
+      cache.set(cacheKey, result, 600);
+      
+      res.json(result);
+
+    } catch (error) {
+      logError('[P&L Summary API] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch P&L summary data',
+        message: error.message
+      });
+    }
+  })
+);
+
 export default router;

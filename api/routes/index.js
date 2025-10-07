@@ -9,8 +9,6 @@ import financialRoutes from './financial.js';
 import inventoryRoutes from './inventory.js';
 import maintenanceRoutes from './maintenance.js';
 import performanceRoutes from './performance.js';
-import productionRoutes from './production.js';
-import qualityRoutes from './quality.js';
 import shopifyRoutes from './shopify.js';
 import strategicPlanningRoutes from './strategic-planning.js';
 import supplyChainRoutes from './supply-chain.js';
@@ -26,8 +24,6 @@ const ROUTE_REGISTRY = [
   { path: '/api/inventory', name: 'Inventory', router: inventoryRoutes },
   { path: '/api/maintenance', name: 'Maintenance', router: maintenanceRoutes },
   { path: '/api/performance', name: 'Performance', router: performanceRoutes },
-  { path: '/api/production', name: 'Production', router: productionRoutes },
-  { path: '/api/quality', name: 'Quality', router: qualityRoutes },
   { path: '/api/shopify', name: 'Shopify', router: shopifyRoutes },
   { path: '/api/strategic-planning', name: 'Strategic Planning', router: strategicPlanningRoutes },
   { path: '/api/supply-chain', name: 'Supply Chain', router: supplyChainRoutes },

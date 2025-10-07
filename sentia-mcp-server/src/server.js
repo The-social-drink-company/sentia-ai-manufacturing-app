@@ -31,6 +31,8 @@ import { readdirSync, statSync } from 'fs';
 import winston from 'winston';
 import { v4 as uuidv4 } from 'uuid';
 import { Pool } from 'pg';
+import { WebSocketServer } from 'ws';
+import http from 'http';
 
 // Import local modules
 import { SERVER_CONFIG, isContainerEnvironment, getContainerPlatform } from './config/server-config.js';
@@ -816,6 +818,16 @@ export class SentiaMCPServer {
         clearInterval(keepAlive);
       });
     });
+
+    // WebSocket upgrade endpoint for real-time connections
+    this.app.get('/ws', (req, res) => {
+      // This endpoint will be upgraded to WebSocket by the WebSocket server
+      res.status(426).json({
+        error: 'Upgrade Required',
+        message: 'This endpoint requires WebSocket protocol upgrade',
+        upgrade: 'websocket'
+      });
+    });
   }
 
   /**
@@ -1071,7 +1083,9 @@ export class SentiaMCPServer {
 
       // Create HTTP server with proper promise handling
       const httpServer = await new Promise((resolve, reject) => {
-        const server = this.app.listen(SERVER_CONFIG.server.port, SERVER_CONFIG.server.host, () => {
+        const server = http.createServer(this.app);
+        
+        server.listen(SERVER_CONFIG.server.port, SERVER_CONFIG.server.host, () => {
           logger.info('HTTP server listening', {
             port: SERVER_CONFIG.server.port,
             host: SERVER_CONFIG.server.host,
@@ -1089,6 +1103,96 @@ export class SentiaMCPServer {
         server.timeout = 30000; // 30 seconds
         server.keepAliveTimeout = 5000; // 5 seconds
         server.headersTimeout = 10000; // 10 seconds
+      });
+
+      // Set up WebSocket server
+      const wss = new WebSocketServer({ 
+        server: httpServer,
+        path: '/ws',
+        perMessageDeflate: false
+      });
+
+      // WebSocket connection handling
+      wss.on('connection', (ws, request) => {
+        const connectionId = uuidv4();
+        logger.info('WebSocket connection established', { 
+          connectionId,
+          origin: request.headers.origin,
+          userAgent: request.headers['user-agent']
+        });
+
+        // Store WebSocket connection
+        this.connections.set(connectionId, ws);
+
+        // Send welcome message
+        ws.send(JSON.stringify({
+          type: 'connection',
+          connectionId,
+          message: 'Connected to MCP Server WebSocket',
+          timestamp: new Date().toISOString()
+        }));
+
+        // Handle incoming messages
+        ws.on('message', (data) => {
+          try {
+            const message = JSON.parse(data.toString());
+            logger.info('WebSocket message received', { connectionId, type: message.type });
+            
+            // Echo back for now - can be extended for real-time tool execution
+            ws.send(JSON.stringify({
+              type: 'response',
+              data: message,
+              timestamp: new Date().toISOString()
+            }));
+          } catch (error) {
+            logger.error('WebSocket message parse error', { 
+              connectionId, 
+              error: error.message 
+            });
+            ws.send(JSON.stringify({
+              type: 'error',
+              error: 'Invalid message format',
+              timestamp: new Date().toISOString()
+            }));
+          }
+        });
+
+        // Handle connection close
+        ws.on('close', (code, reason) => {
+          this.connections.delete(connectionId);
+          logger.info('WebSocket connection closed', { 
+            connectionId, 
+            code, 
+            reason: reason.toString() 
+          });
+        });
+
+        // Handle errors
+        ws.on('error', (error) => {
+          logger.error('WebSocket error', { 
+            connectionId, 
+            error: error.message 
+          });
+          this.connections.delete(connectionId);
+        });
+
+        // Keep-alive ping
+        const pingInterval = setInterval(() => {
+          if (ws.readyState === ws.OPEN) {
+            ws.ping();
+          } else {
+            clearInterval(pingInterval);
+          }
+        }, 30000);
+
+        ws.on('close', () => {
+          clearInterval(pingInterval);
+        });
+      });
+
+      logger.info('WebSocket server initialized', {
+        path: '/ws',
+        perMessageDeflate: false
       });
 
       logger.info('MCP Server started successfully', {

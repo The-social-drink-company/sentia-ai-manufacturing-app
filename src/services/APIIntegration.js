@@ -33,15 +33,45 @@ class APIIntegration {
    */
   initializeWebSockets() {
     try {
-      // MCP Server WebSocket
-      const mcpWS = new WebSocket(`${this.baseURLs.mcp.replace('https', 'wss')}/ws`)
+      // MCP Server WebSocket with proper error handling and reconnection
+      const mcpWSUrl = `${this.baseURLs.mcp.replace('https', 'wss')}/ws`;
+      console.log('Attempting WebSocket connection to:', mcpWSUrl);
+      
+      const mcpWS = new WebSocket(mcpWSUrl);
+      
+      mcpWS.onopen = (event) => {
+        console.log('MCP WebSocket connected successfully');
+        this.websockets.set('mcp', mcpWS);
+      };
+      
       mcpWS.onmessage = (event) => {
-        const data = JSON.parse(event.data)
-        this.handleRealTimeUpdate('mcp', data)
-      }
-      this.websockets.set('mcp', mcpWS)
+        try {
+          const data = JSON.parse(event.data);
+          console.log('MCP WebSocket message received:', data.type);
+          this.handleRealTimeUpdate('mcp', data);
+        } catch (error) {
+          console.error('Failed to parse WebSocket message:', error);
+        }
+      };
+      
+      mcpWS.onerror = (error) => {
+        console.error('MCP WebSocket error:', error);
+        this.websockets.delete('mcp');
+      };
+      
+      mcpWS.onclose = (event) => {
+        console.log('MCP WebSocket closed:', event.code, event.reason);
+        this.websockets.delete('mcp');
+        
+        // Attempt reconnection after 5 seconds
+        setTimeout(() => {
+          console.log('Attempting WebSocket reconnection...');
+          this.initializeWebSockets();
+        }, 5000);
+      };
+      
     } catch (error) {
-      console.warn('WebSocket connection failed, falling back to polling:', error)
+      console.warn('WebSocket connection failed, falling back to polling:', error);
     }
   }
 

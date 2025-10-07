@@ -3,23 +3,11 @@ import { MagnifyingGlassIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/
 import { cn } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-const SAMPLE_COLUMNS = [
-  { key: 'name', label: 'SKU' },
-  { key: 'revenue', label: 'Revenue' },
-  { key: 'margin', label: 'Margin' },
-  { key: 'risk', label: 'Risk' }
-]
-
-const SAMPLE_ROWS = [
-  { name: 'SKU-145', revenue: '$182K', margin: '38%', risk: 'Low' },
-  { name: 'SKU-278', revenue: '$156K', margin: '42%', risk: 'Medium' },
-  { name: 'SKU-412', revenue: '$211K', margin: '35%', risk: 'Low' }
-]
 
 const DataTableWidget = ({
   title = 'Key Items',
-  columns = SAMPLE_COLUMNS,
-  data = SAMPLE_ROWS,
+  columns = [],
+  data = [],
   searchable = true,
   sortable = true,
   pagination = true,
@@ -27,8 +15,8 @@ const DataTableWidget = ({
   loading = false,
   className = ''
 }) => {
-  const activeColumns = columns.length ? columns : SAMPLE_COLUMNS
-  const activeData = data.length ? data : SAMPLE_ROWS
+  const activeColumns = columns
+  const activeData = data
 
   const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState(null)
@@ -174,13 +162,13 @@ const DataTableWidget = ({
                   ))}
                 </tr>
               ))}
-              {paginatedData.length === 0 && (
+              {paginatedData.length === 0 && !loading && (
                 <tr>
                   <td
-                    colSpan={activeColumns.length}
+                    colSpan={activeColumns.length || 1}
                     className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                   >
-                    No data available
+                    {activeColumns.length === 0 ? 'No columns configured' : 'No data available'}
                   </td>
                 </tr>
               )}

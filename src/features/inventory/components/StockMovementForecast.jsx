@@ -1,71 +1,13 @@
 import React, { useState } from 'react'
 import { ChartBarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/solid'
 
-export default function StockMovementForecast({ data, period = 'current' }) {
+export default function StockMovementForecast({ data, period = 'current', loading = false, error = null }) {
   const [forecastPeriod, setForecastPeriod] = useState('30')
 
-  // Mock stock movement forecast data if not provided
-  const generateForecastData = (days) => {
-    const forecast = []
-    const today = new Date()
+  const forecastData = Array.isArray(data) ? data : []
 
-    // Mock SKUs with different movement patterns
-    const skus = [
-      { sku: 'SNTG-001', baseDaily: 45, pattern: 'steady', seasonal: 1.0 },
-      { sku: 'SNTB-001', baseDaily: 32, pattern: 'growing', seasonal: 1.1 },
-      { sku: 'SNTR-001', baseDaily: 28, pattern: 'declining', seasonal: 0.9 },
-      { sku: 'SNTG-002', baseDaily: 38, pattern: 'volatile', seasonal: 1.2 }
-    ]
-
-    for (let day = 0; day < parseInt(days); day++) {
-      const date = new Date(today)
-      date.setDate(date.getDate() + day)
-
-      skus.forEach(sku => {
-        // Calculate daily movement with pattern and seasonality
-        let movement = sku.baseDaily * sku.seasonal
-
-        // Apply pattern
-        switch (sku.pattern) {
-          case 'growing':
-            movement *= 1 + (day * 0.005) // 0.5% daily growth
-            break
-          case 'declining':
-            movement *= 1 - (day * 0.003) // 0.3% daily decline
-            break
-          case 'volatile':
-            movement *= 1 + (Math.sin(day / 7) * 0.3) // Weekly volatility
-            break
-          case 'steady':
-          default:
-            movement *= 1 + ((Math.random() - 0.5) * 0.1) // ±5% variance
-            break
-        }
-
-        // Weekend effect (reduced movement)
-        const dayOfWeek = date.getDay()
-        if (dayOfWeek === 0 || dayOfWeek === 6) {
-          movement *= 0.3
-        }
-
-        forecast.push({
-          date: date.toISOString().split('T')[0],
-          dateFormatted: date.toLocaleDateString(),
-          sku: sku.sku,
-          predictedMovement: Math.round(Math.max(0, movement)),
-          confidence: Math.random() * 0.2 + 0.8, // 80-100% confidence
-          pattern: sku.pattern
-        })
-      })
-    }
-
-    return forecast
-  }
-
-  const forecastData = data || generateForecastData(forecastPeriod)
-
-  // Aggregate by date for summary view
-  const dailyTotals = forecastData.reduce((acc, item) => {
+  // Aggregate by date for summary view (only if data exists)
+  const dailyTotals = forecastData.length > 0 ? forecastData.reduce((acc, item) => {
     if (!acc[item.date]) {
       acc[item.date] = {
         date: item.date,
@@ -75,11 +17,11 @@ export default function StockMovementForecast({ data, period = 'current' }) {
         itemCount: 0
       }
     }
-    acc[item.date].totalMovement += item.predictedMovement
-    acc[item.date].avgConfidence += item.confidence
+    acc[item.date].totalMovement += item.predictedMovement || 0
+    acc[item.date].avgConfidence += item.confidence || 0
     acc[item.date].itemCount += 1
     return acc
-  }, {})
+  }, {}) : {}
 
   // Calculate average confidence
   Object.values(dailyTotals).forEach(day => {
@@ -90,22 +32,22 @@ export default function StockMovementForecast({ data, period = 'current' }) {
     new Date(a.date) - new Date(b.date)
   )
 
-  // Calculate trend
-  const totalMovement = sortedDailyTotals.reduce((sum, day) => sum + day.totalMovement, 0)
-  const avgDailyMovement = totalMovement / sortedDailyTotals.length
+  // Calculate trend (only if data exists)
+  const totalMovement = sortedDailyTotals.length > 0 ? sortedDailyTotals.reduce((sum, day) => sum + day.totalMovement, 0) : 0
+  const avgDailyMovement = sortedDailyTotals.length > 0 ? totalMovement / sortedDailyTotals.length : 0
 
-  const firstWeekAvg = sortedDailyTotals.slice(0, 7).reduce((sum, day) => sum + day.totalMovement, 0) / 7
-  const lastWeekAvg = sortedDailyTotals.slice(-7).reduce((sum, day) => sum + day.totalMovement, 0) / 7
-  const trend = ((lastWeekAvg - firstWeekAvg) / firstWeekAvg) * 100
+  const firstWeekAvg = sortedDailyTotals.length >= 7 ? sortedDailyTotals.slice(0, 7).reduce((sum, day) => sum + day.totalMovement, 0) / 7 : 0
+  const lastWeekAvg = sortedDailyTotals.length >= 7 ? sortedDailyTotals.slice(-7).reduce((sum, day) => sum + day.totalMovement, 0) / 7 : 0
+  const trend = firstWeekAvg > 0 ? ((lastWeekAvg - firstWeekAvg) / firstWeekAvg) * 100 : 0
 
-  // Get top moving SKUs
-  const skuTotals = forecastData.reduce((acc, item) => {
+  // Get top moving SKUs (only if data exists)
+  const skuTotals = forecastData.length > 0 ? forecastData.reduce((acc, item) => {
     if (!acc[item.sku]) {
       acc[item.sku] = { sku: item.sku, totalMovement: 0, pattern: item.pattern }
     }
-    acc[item.sku].totalMovement += item.predictedMovement
+    acc[item.sku].totalMovement += item.predictedMovement || 0
     return acc
-  }, {})
+  }, {}) : {}
 
   const topSkus = Object.values(skuTotals)
     .sort((a, b) => b.totalMovement - a.totalMovement)
@@ -157,7 +99,30 @@ export default function StockMovementForecast({ data, period = 'current' }) {
         </select>
       </div>
 
-      {/* Summary Metrics */}
+      {loading ? (
+        <div className="flex items-center justify-center p-8">
+          <div className="flex flex-col items-center gap-2">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground">Loading forecast data...</p>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <p className="text-sm text-destructive mb-2">Failed to load forecast data</p>
+            <p className="text-xs text-muted-foreground">{error}</p>
+          </div>
+        </div>
+      ) : forecastData.length === 0 ? (
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">No forecast data available</p>
+            <p className="text-xs text-muted-foreground">Check API configuration</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Summary Metrics */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
           <p className="text-xs text-blue-600 dark:text-blue-400">Avg Daily Movement</p>
@@ -282,6 +247,8 @@ export default function StockMovementForecast({ data, period = 'current' }) {
       <button className="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
         View Detailed Forecast
       </button>
+        </>
+      )}
     </div>
   )
 }

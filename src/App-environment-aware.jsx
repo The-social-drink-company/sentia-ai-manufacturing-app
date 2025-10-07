@@ -30,10 +30,10 @@ const queryClient = new QueryClient({
 })
 
 const Loader = () => (
-  <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+  <div className="flex min-h-screen items-center justify-center bg-white">
     <div className="text-center">
       <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-      <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Loading Enterprise Dashboard...</p>
+      <p className="text-xs uppercase tracking-[0.3em] text-gray-600">Loading Enterprise Dashboard...</p>
     </div>
   </div>
 )

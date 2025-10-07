@@ -171,74 +171,78 @@ const DashboardEnterprise = () => {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Product Sales Performance</CardTitle>
-          <CardDescription>Revenue performance by product line for last year showing GABA Red, Black, and Gold sales.</CardDescription>
-        </CardHeader>
-        <CardContent className="h-80">
-          {salesLoading ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="flex flex-col items-center gap-2">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                <p className="text-sm text-muted-foreground">Loading product sales data...</p>
+      {/* First row - 3 charts */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Product Sales Performance</CardTitle>
+            <CardDescription>Revenue by product line</CardDescription>
+          </CardHeader>
+          <CardContent className="h-64">
+            {salesLoading ? (
+              <div className="flex h-full items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <p className="text-sm text-muted-foreground">Loading...</p>
+                </div>
               </div>
-            </div>
-          ) : salesError ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="text-center">
-                <p className="text-sm text-destructive mb-2">Error loading product sales data</p>
-                <p className="text-xs text-muted-foreground">Using sample data for demonstration</p>
+            ) : salesError ? (
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center">
+                  <p className="text-sm text-destructive mb-2">Error loading data</p>
+                  <p className="text-xs text-muted-foreground">Using sample data</p>
+                </div>
               </div>
-            </div>
-          ) : (
+            ) : (
+              <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+                <ProductSalesChart data={productSalesData} />
+              </Suspense>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>P&L Analysis</CardTitle>
+            <CardDescription>Monthly profit and loss trends</CardDescription>
+          </CardHeader>
+          <CardContent className="h-64">
+            {plLoading ? (
+              <div className="flex h-full items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <p className="text-sm text-muted-foreground">Loading...</p>
+                </div>
+              </div>
+            ) : plError ? (
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center">
+                  <p className="text-sm text-destructive mb-2">Error loading data</p>
+                  <p className="text-xs text-muted-foreground">Using sample data</p>
+                </div>
+              </div>
+            ) : (
+              <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+                <PLAnalysisChart data={plData} />
+              </Suspense>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Regional Contribution</CardTitle>
+            <CardDescription>Revenue and EBITDA by region</CardDescription>
+          </CardHeader>
+          <CardContent className="h-64">
             <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
-              <ProductSalesChart data={productSalesData} />
+              <RegionalContributionChart data={regionalPerformance} />
             </Suspense>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>P&L Analysis</CardTitle>
-          <CardDescription>Monthly profit and loss analysis showing revenue, gross profit, EBITDA, and margin trends.</CardDescription>
-        </CardHeader>
-        <CardContent className="h-80">
-          {plLoading ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="flex flex-col items-center gap-2">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                <p className="text-sm text-muted-foreground">Loading P&L data...</p>
-              </div>
-            </div>
-          ) : plError ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="text-center">
-                <p className="text-sm text-destructive mb-2">Error loading P&L data</p>
-                <p className="text-xs text-muted-foreground">Using sample data for demonstration</p>
-              </div>
-            </div>
-          ) : (
-            <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
-              <PLAnalysisChart data={plData} />
-            </Suspense>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Regional contribution</CardTitle>
-          <CardDescription>Revenue and EBITDA by operating region for the current quarter.</CardDescription>
-        </CardHeader>
-        <CardContent className="h-80">
-          <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
-            <RegionalContributionChart data={regionalPerformance} />
-          </Suspense>
-        </CardContent>
-      </Card>
-
+      {/* Second row - Stock Levels (single chart) */}
       <Suspense fallback={
         <Card>
           <CardHeader>

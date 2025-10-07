@@ -58,10 +58,7 @@ const DashboardEnterprise = () => {
       } catch (error) {
         console.error('Error fetching P&L data:', error)
         setPLError(error.message)
-        
-        // Use mock data as fallback
-        const mockResponse = plAnalysisApi.getMockData()
-        setPLData(mockResponse.data)
+        setPLData([]) // Set empty array on error
       } finally {
         setPLLoading(false)
       }
@@ -118,10 +115,7 @@ const DashboardEnterprise = () => {
       } catch (error) {
         console.error('Error fetching product sales data:', error)
         setSalesError(error.message)
-        
-        // Use mock data as fallback
-        const mockResponse = productSalesApi.getMockData()
-        setProductSalesData(mockResponse.data)
+        setProductSalesData([]) // Set empty array on error
       } finally {
         setSalesLoading(false)
       }

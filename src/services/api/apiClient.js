@@ -44,7 +44,9 @@ class APIClient {
 
   // Convenience methods
   async get(endpoint, params = {}) {
-    const url = new URL(`${this.baseURL}${endpoint}`, window.location.origin)
+    // Handle endpoint that may already include /api prefix
+    const cleanEndpoint = endpoint.startsWith('/api') ? endpoint : `${this.baseURL}${endpoint}`
+    const url = new URL(cleanEndpoint, window.location.origin)
     Object.keys(params).forEach(key => {
       if (params[key] !== undefined && params[key] !== null) {
         url.searchParams.append(key, params[key])

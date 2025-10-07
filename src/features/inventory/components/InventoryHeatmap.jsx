@@ -3,25 +3,9 @@ import { useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle , Badge } from '../../../components/ui'
 import { cn } from '../../../utils/cn'
 
-const generateMockInventory = () => {
-  const skus = ['SNTG-001', 'SNTG-002', 'SNTB-001', 'SNTB-002', 'SNTR-001', 'SNTR-002', 'SNTG-003', 'SNTB-003', 'SNTR-003']
-  const locations = ['UK-London', 'UK-Manchester', 'EU-Amsterdam', 'EU-Berlin', 'US-NYC', 'US-LA', 'US-Chicago']
-
-  return skus.map(sku => ({
-    sku,
-    name: `Sentia ${sku.includes('G') ? 'Ginger' : sku.includes('B') ? 'Black' : 'Red'} ${sku.slice(-3)}`,
-    locations: locations.map(location => ({
-      location,
-      quantity: Math.floor(Math.random() * 5000),
-      daysOfSupply: Math.floor(Math.random() * 90),
-      status: Math.random() > 0.7 ? 'critical' : Math.random() > 0.4 ? 'warning' : 'healthy'
-    }))
-  }))
-}
-
-export function InventoryHeatmap({ data, onCellClick }) {
+export function InventoryHeatmap({ data, onCellClick, loading = false, error = null }) {
   const inventoryData = useMemo(() => {
-    return data || generateMockInventory()
+    return Array.isArray(data) ? data : []
   }, [data])
 
   const locations = useMemo(() => {
@@ -67,8 +51,30 @@ export function InventoryHeatmap({ data, onCellClick }) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <div className="min-w-[800px]">
+        {loading ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <p className="text-sm text-muted-foreground">Loading inventory data...</p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-center">
+              <p className="text-sm text-destructive mb-2">Failed to load inventory data</p>
+              <p className="text-xs text-muted-foreground">{error}</p>
+            </div>
+          </div>
+        ) : inventoryData.length === 0 ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">No inventory data available</p>
+              <p className="text-xs text-muted-foreground">Check API configuration</p>
+            </div>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px]">
             {/* Header Row */}
             <div className="grid grid-cols-10 gap-1 mb-2">
               <div className="col-span-2 px-2 py-1 text-sm font-semibold">SKU</div>
@@ -140,6 +146,7 @@ export function InventoryHeatmap({ data, onCellClick }) {
             </div>
           </div>
         </div>
+        )}
       </CardContent>
     </Card>
   )

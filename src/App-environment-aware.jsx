@@ -17,6 +17,7 @@ const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
+const FinancialReports = lazy(() => import('@/pages/Financial/FinancialReports'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -286,6 +287,14 @@ const App = () => (
             <ProtectedRoute>
               <Suspense fallback={<Loader />}>
                 <AssistantPanel />
+              </Suspense>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/app/reports" element={
+            <ProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <FinancialReports />
               </Suspense>
             </ProtectedRoute>
           } />

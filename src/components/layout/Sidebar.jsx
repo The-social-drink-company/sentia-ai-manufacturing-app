@@ -34,39 +34,39 @@ const navigation = [
   {
     title: 'Overview',
     items: [
-      { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, badge: 'Live', roles: ['viewer', 'operator', 'manager', 'admin', 'master_admin'] }
+      { name: 'Dashboard', href: '/app/dashboard', icon: HomeIcon, badge: 'Live', roles: ['viewer', 'operator', 'manager', 'admin', 'master_admin'] }
     ]
   },
   {
     title: 'Planning & Analytics',
     items: [
-      { name: 'Demand Forecasting', href: '/forecasting', icon: PresentationChartLineIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
-      { name: 'Inventory Management', href: '/inventory', icon: CubeIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
-      { name: 'AI Analytics', href: '/ai-analytics', icon: SparklesIcon, badge: 'AI', roles: ['manager', 'admin', 'master_admin'] }
+      { name: 'Demand Forecasting', href: '/app/forecasting', icon: PresentationChartLineIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
+      { name: 'Inventory Management', href: '/app/inventory', icon: CubeIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] },
+      { name: 'AI Analytics', href: '/app/ai-analytics', icon: SparklesIcon, badge: 'AI', roles: ['manager', 'admin', 'master_admin'] }
     ]
   },
   {
     title: 'Financial Management',
     items: [
-      { name: 'Working Capital', href: '/working-capital', icon: BanknotesIcon, roles: ['manager', 'admin', 'master_admin'] },
-      { name: 'What-If Analysis', href: '/what-if', icon: BeakerIcon, roles: ['manager', 'admin', 'master_admin'] },
-      { name: 'Financial Reports', href: '/reports', icon: DocumentChartBarIcon, roles: ['viewer', 'manager', 'admin', 'master_admin'] }
+      { name: 'Working Capital', href: '/app/working-capital', icon: BanknotesIcon, roles: ['manager', 'admin', 'master_admin'] },
+      { name: 'What-If Analysis', href: '/app/what-if', icon: BeakerIcon, roles: ['manager', 'admin', 'master_admin'] },
+      { name: 'Financial Reports', href: '/app/reports', icon: DocumentChartBarIcon, roles: ['viewer', 'manager', 'admin', 'master_admin'] }
     ]
   },
   {
     title: 'Data Management',
     items: [
-      { name: 'Data Import', href: '/import', icon: CircleStackIcon, roles: ['manager', 'admin', 'master_admin'] },
-      { name: 'Import Templates', href: '/templates', icon: DocumentTextIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] }
+      { name: 'Data Import', href: '/app/data-import', icon: CircleStackIcon, roles: ['manager', 'admin', 'master_admin'] },
+      { name: 'Import Templates', href: '/app/templates', icon: DocumentTextIcon, roles: ['operator', 'manager', 'admin', 'master_admin'] }
     ]
   },
   {
     title: 'Administration',
     items: [
-      { name: 'Admin Panel', href: '/admin', icon: ShieldCheckIcon, roles: ['admin', 'master_admin'] },
-      { name: 'User Management', href: '/users', icon: UsersIcon, roles: ['admin', 'master_admin'] },
-      { name: 'System Configuration', href: '/config', icon: Cog6ToothIcon, roles: ['admin', 'master_admin'] },
-      { name: 'Monitoring', href: '/monitoring', icon: ServerStackIcon, roles: ['manager', 'admin', 'master_admin'] }
+      { name: 'Admin Panel', href: '/app/admin', icon: ShieldCheckIcon, roles: ['admin', 'master_admin'] },
+      { name: 'User Management', href: '/app/users', icon: UsersIcon, roles: ['admin', 'master_admin'] },
+      { name: 'System Configuration', href: '/app/config', icon: Cog6ToothIcon, roles: ['admin', 'master_admin'] },
+      { name: 'Monitoring', href: '/app/monitoring', icon: ServerStackIcon, roles: ['manager', 'admin', 'master_admin'] }
     ]
   }
 ];

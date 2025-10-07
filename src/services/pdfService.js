@@ -39,14 +39,24 @@ export const generatePDF = async (reportData) => {
 
     // Add each selected section
     for (const [, sectionData] of Object.entries(reportData.sections)) {
-      // Check if we need a new page
-      if (currentY > pageHeight - 50) {
+      // Check if we need a new page (more conservative spacing)
+      if (currentY > pageHeight - 80) {
         pdf.addPage()
         addHeader(pdf, pageWidth, margin)
         currentY = margin + 30
       }
 
-      currentY = addSection(pdf, sectionData, margin, currentY, contentWidth, pageHeight)
+      const newY = addSection(pdf, sectionData, margin, currentY, contentWidth, pageHeight)
+      
+      // If section couldn't fit, try on new page
+      if (newY > pageHeight - 20) {
+        pdf.addPage()
+        addHeader(pdf, pageWidth, margin)
+        currentY = margin + 30
+        currentY = addSection(pdf, sectionData, margin, currentY, contentWidth, pageHeight)
+      } else {
+        currentY = newY
+      }
       currentY += 15
     }
 
@@ -132,7 +142,7 @@ const addExecutiveSummary = (pdf, summary, margin, startY, contentWidth, pageHei
     currentY += 8
 
     pdf.setFont(undefined, 'normal')
-    summary.keyInsights.forEach((insight, index) => {
+    summary.keyInsights.forEach((insight) => {
       const lines = pdf.splitTextToSize(`• ${insight}`, contentWidth - 10)
       lines.forEach(line => {
         if (currentY > pageHeight - 30) {
@@ -227,8 +237,11 @@ const addSection = (pdf, sectionData, margin, startY, contentWidth, pageHeight) 
  */
 const addKPITable = (pdf, data, margin, startY, contentWidth) => {
   let currentY = startY
-  const rowHeight = 12
+  const baseRowHeight = 12
   const headerHeight = 15
+  const col1Width = contentWidth * 0.4  // 40% for metric name
+  const col2Width = contentWidth * 0.25 // 25% for value  
+  const col3Width = contentWidth * 0.35 // 35% for description
 
   // Table header
   pdf.setFillColor(245, 245, 245)
@@ -236,24 +249,29 @@ const addKPITable = (pdf, data, margin, startY, contentWidth) => {
   pdf.setFontSize(11)
   pdf.setFont(undefined, 'bold')
   pdf.text('Metric', margin + 5, currentY + 10)
-  pdf.text('Value', margin + contentWidth/2, currentY + 10)
-  pdf.text('Description', margin + contentWidth*0.75, currentY + 10)
+  pdf.text('Value', margin + col1Width + 5, currentY + 10)
+  pdf.text('Description', margin + col1Width + col2Width + 5, currentY + 10)
   currentY += headerHeight
 
   // Table rows
   pdf.setFont(undefined, 'normal')
   data.forEach((item, index) => {
+    // Calculate required height for this row
+    const metricText = pdf.splitTextToSize(item.label, col1Width - 10)
+    const helperText = pdf.splitTextToSize(item.helper || '', col3Width - 10)
+    const rowHeight = Math.max(baseRowHeight, Math.max(metricText.length, helperText.length) * 6 + 6)
+    
     if (index % 2 === 0) {
       pdf.setFillColor(250, 250, 250)
       pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
     }
     
-    pdf.text(item.label, margin + 5, currentY + 8)
+    // Draw text with proper wrapping
+    pdf.text(metricText, margin + 5, currentY + 8)
     pdf.setFont(undefined, 'bold')
-    pdf.text(item.value, margin + contentWidth/2, currentY + 8)
+    pdf.text(item.value, margin + col1Width + 5, currentY + 8)
     pdf.setFont(undefined, 'normal')
-    const helperText = pdf.splitTextToSize(item.helper || '', contentWidth * 0.23)
-    pdf.text(helperText[0] || '', margin + contentWidth*0.75, currentY + 8)
+    pdf.text(helperText, margin + col1Width + col2Width + 5, currentY + 8)
     currentY += rowHeight
   })
 
@@ -267,6 +285,9 @@ const addRegionalTable = (pdf, data, margin, startY, contentWidth) => {
   let currentY = startY
   const rowHeight = 12
   const headerHeight = 15
+  const col1Width = contentWidth * 0.33  // 33% for region
+  const col2Width = contentWidth * 0.33  // 33% for revenue
+  const col3Width = contentWidth * 0.34  // 34% for EBITDA
 
   // Table header
   pdf.setFillColor(245, 245, 245)
@@ -274,8 +295,8 @@ const addRegionalTable = (pdf, data, margin, startY, contentWidth) => {
   pdf.setFontSize(11)
   pdf.setFont(undefined, 'bold')
   pdf.text('Region', margin + 5, currentY + 10)
-  pdf.text('Revenue', margin + contentWidth/3, currentY + 10)
-  pdf.text('EBITDA', margin + contentWidth*0.66, currentY + 10)
+  pdf.text('Revenue', margin + col1Width + 5, currentY + 10)
+  pdf.text('EBITDA', margin + col1Width + col2Width + 5, currentY + 10)
   currentY += headerHeight
 
   // Table rows
@@ -287,8 +308,8 @@ const addRegionalTable = (pdf, data, margin, startY, contentWidth) => {
     }
     
     pdf.text(item.region, margin + 5, currentY + 8)
-    pdf.text(`$${(item.revenue / 1000000).toFixed(1)}M`, margin + contentWidth/3, currentY + 8)
-    pdf.text(`$${(item.ebitda / 1000000).toFixed(1)}M`, margin + contentWidth*0.66, currentY + 8)
+    pdf.text(`$${(item.revenue / 1000000).toFixed(1)}M`, margin + col1Width + 5, currentY + 8)
+    pdf.text(`$${(item.ebitda / 1000000).toFixed(1)}M`, margin + col1Width + col2Width + 5, currentY + 8)
     currentY += rowHeight
   })
 
@@ -302,6 +323,10 @@ const addPLTable = (pdf, data, margin, startY, contentWidth) => {
   let currentY = startY
   const rowHeight = 10
   const headerHeight = 12
+  const col1Width = contentWidth * 0.25  // 25% for month
+  const col2Width = contentWidth * 0.25  // 25% for revenue
+  const col3Width = contentWidth * 0.25  // 25% for gross profit
+  const col4Width = contentWidth * 0.25  // 25% for EBITDA
 
   // Show only last 6 months for space
   const recentData = data.slice(-6)
@@ -312,9 +337,9 @@ const addPLTable = (pdf, data, margin, startY, contentWidth) => {
   pdf.setFontSize(10)
   pdf.setFont(undefined, 'bold')
   pdf.text('Month', margin + 5, currentY + 8)
-  pdf.text('Revenue', margin + contentWidth*0.25, currentY + 8)
-  pdf.text('Gross Profit', margin + contentWidth*0.5, currentY + 8)
-  pdf.text('EBITDA', margin + contentWidth*0.75, currentY + 8)
+  pdf.text('Revenue', margin + col1Width + 5, currentY + 8)
+  pdf.text('Gross Profit', margin + col1Width + col2Width + 5, currentY + 8)
+  pdf.text('EBITDA', margin + col1Width + col2Width + col3Width + 5, currentY + 8)
   currentY += headerHeight
 
   // Table rows
@@ -326,9 +351,9 @@ const addPLTable = (pdf, data, margin, startY, contentWidth) => {
     }
     
     pdf.text(item.month, margin + 5, currentY + 7)
-    pdf.text(`$${item.revenue}K`, margin + contentWidth*0.25, currentY + 7)
-    pdf.text(`$${item.grossProfit}K`, margin + contentWidth*0.5, currentY + 7)
-    pdf.text(`$${item.ebitda}K`, margin + contentWidth*0.75, currentY + 7)
+    pdf.text(`$${item.revenue}K`, margin + col1Width + 5, currentY + 7)
+    pdf.text(`$${item.grossProfit}K`, margin + col1Width + col2Width + 5, currentY + 7)
+    pdf.text(`$${item.ebitda}K`, margin + col1Width + col2Width + col3Width + 5, currentY + 7)
     currentY += rowHeight
   })
 

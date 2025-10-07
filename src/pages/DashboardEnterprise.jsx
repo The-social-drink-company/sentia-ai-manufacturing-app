@@ -3,9 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 
 const regionalPerformance = [
-  { region: 'APAC', revenue: 3200000, ebitda: 780000 },
-  { region: 'EMEA', revenue: 2760000, ebitda: 640000 },
-  { region: 'Americas', revenue: 2140000, ebitda: 520000 }
+  { region: 'UK', revenue: 4200000, ebitda: 980000 },
+  { region: 'US', revenue: 3850000, ebitda: 820000 },
+  { region: 'EU', revenue: 6150000, ebitda: 1140000 }
 ]
 
 const capitalKpis = [

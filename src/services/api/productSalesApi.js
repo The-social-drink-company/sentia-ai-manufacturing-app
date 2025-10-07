@@ -24,7 +24,6 @@ export const productSalesApi = {
       params: { limit } 
     })
     return response.data
-    }
   }
 }
 

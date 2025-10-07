@@ -15,6 +15,12 @@ const capitalKpis = [
   { label: 'FX sensitivity', value: '$380K', helper: '±1% USD/EUR/JPY' }
 ]
 
+const defaultPerformanceKpis = [
+  { label: 'Annual revenue', value: '$14.2M', helper: 'Year to date' },
+  { label: 'Units sold', value: '568K', helper: 'Current quarter' },
+  { label: 'Gross margin', value: '62.3%', helper: 'Average margin' }
+]
+
 const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
 const PLAnalysisChart = lazy(() => import('@/components/dashboard/PLAnalysisChart'))
 
@@ -25,6 +31,9 @@ const DashboardEnterprise = () => {
   const [plData, setPLData] = useState([])
   const [plLoading, setPLLoading] = useState(true)
   const [plError, setPLError] = useState(null)
+  const [performanceKpis, setPerformanceKpis] = useState(defaultPerformanceKpis)
+  const [kpiLoading, setKpiLoading] = useState(true)
+  const [kpiError, setKpiError] = useState(null)
 
   // Fetch P&L analysis data
   useEffect(() => {
@@ -54,6 +63,38 @@ const DashboardEnterprise = () => {
     fetchPLData()
   }, [])
 
+  // Fetch KPI summary data
+  useEffect(() => {
+    const fetchKPIData = async () => {
+      try {
+        setKpiLoading(true)
+        setKpiError(null)
+        
+        const response = await plAnalysisApi.getKPISummary()
+        if (response.success && response.data) {
+          const kpiData = response.data
+          setPerformanceKpis([
+            { label: 'Annual revenue', value: kpiData.annualRevenue.value, helper: kpiData.annualRevenue.helper },
+            { label: 'Units sold', value: kpiData.unitsSold.value, helper: kpiData.unitsSold.helper },
+            { label: 'Gross margin', value: kpiData.grossMargin.value, helper: kpiData.grossMargin.helper }
+          ])
+        } else {
+          throw new Error('Failed to fetch KPI data')
+        }
+      } catch (error) {
+        console.error('Error fetching KPI data:', error)
+        setKpiError(error.message)
+        
+        // Keep default KPIs as fallback
+        setPerformanceKpis(defaultPerformanceKpis)
+      } finally {
+        setKpiLoading(false)
+      }
+    }
+
+    fetchKPIData()
+  }, [])
+
   return (
     <section className="space-y-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -71,6 +112,22 @@ const DashboardEnterprise = () => {
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {capitalKpis.map((item) => (
+            <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.label}</p>
+              <p className="text-lg font-semibold text-foreground">{item.value}</p>
+              <p className="text-xs text-muted-foreground">{item.helper}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Performance metrics</CardTitle>
+          <CardDescription>Key business performance indicators tracked for operational excellence.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {performanceKpis.map((item) => (
             <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
               <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.label}</p>
               <p className="text-lg font-semibold text-foreground">{item.value}</p>

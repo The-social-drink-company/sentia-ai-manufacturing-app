@@ -388,6 +388,19 @@ const App = () => (
             </ProtectedRoute>
           } />
           
+          {/* DEBUG ROUTE TO TEST ROUTING */}
+          <Route path="/app/test-reports" element={
+            <div className="p-8 bg-green-50 min-h-screen">
+              <h1 className="text-2xl font-bold text-green-800">✅ TEST ROUTE WORKING</h1>
+              <p className="text-green-700">This proves routing is functional - the issue is specific to /app/reports</p>
+              <pre className="mt-4 p-4 bg-green-100 rounded text-sm">
+                URL: {window.location.href}{'\n'}
+                Pathname: {window.location.pathname}{'\n'}
+                Timestamp: {new Date().toISOString()}
+              </pre>
+            </div>
+          } />
+          
           <Route path="/app/reports" element={
             <ProtectedRoute>
               <FinancialReportsErrorBoundary>
@@ -398,14 +411,14 @@ const App = () => (
             </ProtectedRoute>
           } />
           
-          {/* Default redirects */}
-          <Route path="/app/*" element={
+          {/* Default redirects - TEMPORARILY DISABLED FOR DEBUGGING */}
+          {/* <Route path="/app/*" element={
             <DebugNavigate 
               to="/app/dashboard" 
               replace 
               debugMessage="FALLBACK ROUTE TRIGGERED: /app/* -> /app/dashboard"
             />
-          } />
+          } /> */}
           <Route path="*" element={
             <DebugNavigate 
               to="/" 

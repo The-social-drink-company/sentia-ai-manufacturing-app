@@ -9,6 +9,7 @@ services:
     env: docker
     plan: standard
     region: oregon
+    repo: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
     branch: development
     rootDir: sentia-mcp-server
     dockerfile: Dockerfile
@@ -84,6 +85,7 @@ services:
     env: docker
     plan: standard
     region: oregon
+    repo: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
     branch: testing
     rootDir: sentia-mcp-server
     dockerfile: Dockerfile
@@ -157,17 +159,18 @@ services:
       - key: AUDIT_LOGGING_ENABLED
         value: true
 
-  # Production Environment MCP Server (TEMP: Deploying from development during active development)
+  # Production Environment MCP Server
   - type: web
     name: sentia-mcp-server-production
     env: docker
     plan: pro
     region: oregon
-    branch: development  # TEMPORARY: Changed from production to development for active development
+    repo: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
+    branch: production
     rootDir: sentia-mcp-server
     dockerfile: Dockerfile
     healthCheckPath: /health
-    autoDeploy: true  # TEMPORARY: Enable auto-deploy for development iterations
+    autoDeploy: false  # Manual deployment for production
     # Production auto-scaling
     scaling:
       minInstances: 2

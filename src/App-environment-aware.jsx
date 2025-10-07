@@ -94,6 +94,17 @@ const RouterDebugger = () => {
   return null
 }
 
+// Debug wrapper for Navigate component
+const DebugNavigate = ({ to, replace, debugMessage }) => {
+  React.useEffect(() => {
+    console.error(`[Navigation Debug] ${debugMessage}`)
+    console.error('[Navigation Debug] Original path:', window.location.pathname)
+    console.error('[Navigation Debug] Redirecting to:', to)
+  }, [to, debugMessage])
+  
+  return <Navigate to={to} replace={replace} />
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -212,13 +223,18 @@ const AuthenticationProvider = ({ children }) => {
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
+  console.log('[Navigation Debug] ProtectedRoute rendering')
+  
   const [authComponents, setAuthComponents] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log('[Navigation Debug] ProtectedRoute useEffect - loading auth components')
+    
     const loadAuthComponents = async () => {
       try {
         if (isDevelopmentMode) {
+          console.log('[Navigation Debug] Loading development auth components')
           const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
           setAuthComponents({
             SignedIn: devAuth.SignedIn,
@@ -226,6 +242,7 @@ const ProtectedRoute = ({ children }) => {
             RedirectToSignIn: devAuth.RedirectToSignIn
           })
         } else {
+          console.log('[Navigation Debug] Loading production Clerk auth components')
           const clerkAuth = await import('@clerk/clerk-react')
           setAuthComponents({
             SignedIn: clerkAuth.SignedIn,
@@ -234,7 +251,7 @@ const ProtectedRoute = ({ children }) => {
           })
         }
       } catch (error) {
-        console.error('[ProtectedRoute] Failed to load auth components:', error)
+        console.error('[Navigation Debug] [ProtectedRoute] Failed to load auth components:', error)
         // Fallback to development mode
         const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
         setAuthComponents({
@@ -244,6 +261,7 @@ const ProtectedRoute = ({ children }) => {
         })
       } finally {
         setLoading(false)
+        console.log('[Navigation Debug] ProtectedRoute auth components loaded')
       }
     }
 
@@ -251,10 +269,13 @@ const ProtectedRoute = ({ children }) => {
   }, [])
 
   if (loading || !authComponents) {
+    console.log('[Navigation Debug] ProtectedRoute showing loader')
     return <Loader />
   }
 
   const { SignedIn, SignedOut, RedirectToSignIn } = authComponents
+
+  console.log('[Navigation Debug] ProtectedRoute rendering auth wrapper')
 
   return (
     <>
@@ -378,8 +399,20 @@ const App = () => (
           } />
           
           {/* Default redirects */}
-          <Route path="/app/*" element={<Navigate to="/app/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/app/*" element={
+            <DebugNavigate 
+              to="/app/dashboard" 
+              replace 
+              debugMessage="FALLBACK ROUTE TRIGGERED: /app/* -> /app/dashboard"
+            />
+          } />
+          <Route path="*" element={
+            <DebugNavigate 
+              to="/" 
+              replace 
+              debugMessage="ROOT FALLBACK TRIGGERED: * -> /"
+            />
+          } />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

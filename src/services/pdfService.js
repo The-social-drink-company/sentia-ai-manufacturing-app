@@ -222,6 +222,9 @@ const addSection = (pdf, sectionData, margin, startY, contentWidth, pageHeight) 
     } else if (sectionData.title === 'P&L Analysis') {
       // P&L table format
       currentY = addPLTable(pdf, sectionData.data, margin, currentY, contentWidth)
+    } else if (sectionData.title === 'Product Sales Performance') {
+      // Product Sales table format
+      currentY = addProductSalesTable(pdf, sectionData.data, margin, currentY, contentWidth)
     } else {
       // Generic data format
       currentY = addGenericTable(pdf, sectionData.data, margin, currentY, contentWidth)
@@ -384,6 +387,100 @@ const addPLTable = (pdf, data, margin, startY, contentWidth) => {
     pdf.text(`$${item.revenue}K`, margin + col1Width + 5, currentY + 7)
     pdf.text(`$${item.grossProfit}K`, margin + col1Width + col2Width + 5, currentY + 7)
     pdf.text(`$${item.ebitda}K`, margin + col1Width + col2Width + col3Width + 5, currentY + 7)
+    currentY += rowHeight
+  })
+
+  return currentY
+}
+
+/**
+ * Add product sales performance table
+ */
+const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
+  let currentY = startY
+  const rowHeight = 12
+  const headerHeight = 15
+  const col1Width = contentWidth * 0.25  // 25% for product name
+  const col2Width = contentWidth * 0.25  // 25% for revenue
+  const col3Width = contentWidth * 0.25  // 25% for units
+  const col4Width = contentWidth * 0.25  // 25% for growth/market share
+
+  // Table header
+  pdf.setFillColor(245, 245, 245)
+  pdf.rect(margin, currentY, contentWidth, headerHeight, 'F')
+  pdf.setFontSize(11)
+  pdf.setFont(undefined, 'bold')
+  pdf.text('Product', margin + 5, currentY + 10)
+  pdf.text('Revenue', margin + col1Width + 5, currentY + 10)
+  pdf.text('Units Sold', margin + col1Width + col2Width + 5, currentY + 10)
+  pdf.text('Growth Rate', margin + col1Width + col2Width + col3Width + 5, currentY + 10)
+  currentY += headerHeight
+
+  // Table rows
+  pdf.setFont(undefined, 'normal')
+  data.forEach((item, index) => {
+    // Check if row fits on current page
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    if (currentY + rowHeight > pageHeight - 30) {
+      pdf.addPage()
+      addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
+      currentY = margin + 30
+      
+      // Re-add table header
+      pdf.setFillColor(245, 245, 245)
+      pdf.rect(margin, currentY, contentWidth, headerHeight, 'F')
+      pdf.setFontSize(11)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('Product', margin + 5, currentY + 10)
+      pdf.text('Revenue', margin + col1Width + 5, currentY + 10)
+      pdf.text('Units Sold', margin + col1Width + col2Width + 5, currentY + 10)
+      pdf.text('Growth Rate', margin + col1Width + col2Width + col3Width + 5, currentY + 10)
+      currentY += headerHeight
+      pdf.setFont(undefined, 'normal')
+    }
+    
+    if (index % 2 === 0) {
+      pdf.setFillColor(250, 250, 250)
+      pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
+    }
+    
+    // Extract data from item (handle both object and JSON string formats)
+    let product, revenue, units, growthRate
+    
+    if (typeof item === 'string') {
+      try {
+        const parsedItem = JSON.parse(item)
+        product = parsedItem.product || 'N/A'
+        revenue = parsedItem.revenue || 0
+        units = parsedItem.units || 0
+        growthRate = parsedItem.growthRate || 0
+      } catch (e) {
+        product = 'Invalid Data'
+        revenue = 0
+        units = 0
+        growthRate = 0
+      }
+    } else if (typeof item === 'object') {
+      product = item.product || item.name || 'N/A'
+      revenue = item.revenue || item.sales || 0
+      units = item.units || item.unitsSold || 0
+      growthRate = item.growthRate || item.growth || 0
+    } else {
+      product = String(item)
+      revenue = 0
+      units = 0
+      growthRate = 0
+    }
+    
+    // Format the data
+    const formattedRevenue = revenue >= 1000000 ? `$${(revenue / 1000000).toFixed(1)}M` : `$${Math.round(revenue / 1000)}K`
+    const formattedUnits = units >= 1000 ? `${Math.round(units / 1000)}K` : `${units}`
+    const formattedGrowth = `${Number(growthRate).toFixed(1)}%`
+    
+    pdf.text(product, margin + 5, currentY + 8)
+    pdf.text(formattedRevenue, margin + col1Width + 5, currentY + 8)
+    pdf.text(formattedUnits, margin + col1Width + col2Width + 5, currentY + 8)
+    pdf.text(formattedGrowth, margin + col1Width + col2Width + col3Width + 5, currentY + 8)
     currentY += rowHeight
   })
 

@@ -214,6 +214,42 @@ app.get('/api/working-capital', async (req, res) => {
   res.status(200).json(response);
 });
 
+// System Activity API - Real audit logs from database
+app.get('/api/system/activity', async (req, res) => {
+  console.log('📋 System activity requested');
+  
+  try {
+    // This would query real audit logs when Prisma is available
+    // For now, return empty array until database is connected
+    res.status(200).json([]);
+  } catch (error) {
+    console.error('Failed to fetch system activity:', error);
+    res.status(503).json({
+      error: 'Unable to fetch system activity',
+      message: 'Database connection required for activity logs',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// System Alerts API - Real alerts from SystemAlert table
+app.get('/api/system/alerts', async (req, res) => {
+  console.log('🚨 System alerts requested');
+  
+  try {
+    // This would query real SystemAlert table when Prisma is available
+    // For now, return empty array until database is connected
+    res.status(200).json([]);
+  } catch (error) {
+    console.error('Failed to fetch system alerts:', error);
+    res.status(503).json({
+      error: 'Unable to fetch system alerts',
+      message: 'Database connection required for alerts',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Catch-all handler for API routes that might require Prisma
 app.use('/api/*', (req, res, next) => {
   console.log('⚠️  API route accessed:', req.path);

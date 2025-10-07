@@ -13,16 +13,7 @@ class DashboardApi {
       return await api.get('/dashboard/summary')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch summary:', error)
-      // Return fallback data structure
-      return {
-        revenue: { monthly: 0, quarterly: 0, yearly: 0, growth: 0 },
-        workingCapital: { current: 0, ratio: 0, cashFlow: 0, daysReceivable: 0 },
-        production: { efficiency: 0, unitsProduced: 0, defectRate: 0, oeeScore: 0 },
-        inventory: { value: 0, turnover: 0, skuCount: 0, lowStock: 0 },
-        financial: { grossMargin: 0, netMargin: 0, ebitda: 0, roi: 0 },
-        timestamp: new Date().toISOString(),
-        dataSource: 'fallback-offline'
-      }
+      throw error
     }
   }
 
@@ -34,11 +25,7 @@ class DashboardApi {
       return await api.get('/financial/working-capital')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch working capital:', error)
-      return {
-        data: [],
-        latest: { currentAssets: 0, currentLiabilities: 0, workingCapital: 0, ratio: 0 },
-        dataSource: 'fallback-offline'
-      }
+      throw error
     }
   }
 
@@ -50,11 +37,7 @@ class DashboardApi {
       return await api.get('/financial/cash-flow')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch cash flow:', error)
-      return {
-        data: [],
-        latest: { operatingCashFlow: 0, netCashFlow: 0 },
-        dataSource: 'fallback-offline'
-      }
+      throw error
     }
   }
 
@@ -66,11 +49,7 @@ class DashboardApi {
       return await api.get('/forecasting/enhanced')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch forecasting:', error)
-      return {
-        forecast: { horizon: 365, accuracy: 0, confidence: 0, model: 'offline', dataPoints: [] },
-        aiModels: { gpt4: { status: 'offline', accuracy: 0 }, claude: { status: 'offline', accuracy: 0 } },
-        timestamp: new Date().toISOString()
-      }
+      throw error
     }
   }
 
@@ -82,12 +61,7 @@ class DashboardApi {
       return await api.get('/working-capital/overview')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch working capital overview:', error)
-      return {
-        cashFlow: { current: 0, projected: 0, change: 0 },
-        receivables: { current: 0, dso: 0, overdue: 0 },
-        payables: { current: 0, dpo: 0, upcoming: 0 },
-        inventory: { value: 0, turnover: 0, daysOnHand: 0 }
-      }
+      throw error
     }
   }
 
@@ -99,7 +73,7 @@ class DashboardApi {
       return await api.get('/production/jobs')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch production jobs:', error)
-      return []
+      throw error
     }
   }
 
@@ -111,13 +85,7 @@ class DashboardApi {
       return await api.get('/quality/metrics')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch quality metrics:', error)
-      return {
-        defectRate: 0,
-        firstPassYield: 0,
-        customerComplaints: 0,
-        inspectionsPassed: 0,
-        inspectionsFailed: 0
-      }
+      throw error
     }
   }
 
@@ -129,12 +97,7 @@ class DashboardApi {
       return await api.get('/inventory/levels')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch inventory levels:', error)
-      return {
-        totalValue: 0,
-        items: [],
-        lowStock: 0,
-        outOfStock: 0
-      }
+      throw error
     }
   }
 
@@ -146,13 +109,7 @@ class DashboardApi {
       return await api.get('/forecasting/demand')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch demand forecast:', error)
-      return {
-        nextMonth: 0,
-        nextQuarter: 0,
-        accuracy: 0,
-        trend: 'stable',
-        seasonalFactors: {}
-      }
+      throw error
     }
   }
 
@@ -164,11 +121,7 @@ class DashboardApi {
       return await api.get('/analytics/kpis')
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch analytics KPIs:', error)
-      return {
-        revenue: { value: 0, target: 0, achievement: 0 },
-        efficiency: { oee: 0, utilization: 0, productivity: 0 },
-        quality: { defectRate: 0, customerSatisfaction: 0, onTimeDelivery: 0 }
-      }
+      throw error
     }
   }
 
@@ -180,23 +133,7 @@ class DashboardApi {
       return await api.get(`/production/units-sold`, { params: { timeRange } })
     } catch (error) {
       console.error('[DashboardAPI] Failed to fetch units sold:', error)
-      
-      // Return mock units sold data
-      const baseUnits = 150000 // Base quarterly units
-      const variance = Math.random() * 0.3 + 0.85 // 85-115% variance
-      const totalUnits = Math.round(baseUnits * variance)
-      
-      return {
-        totalUnits,
-        timeRange,
-        breakdown: {
-          month1: Math.round(totalUnits * 0.32),
-          month2: Math.round(totalUnits * 0.35),
-          month3: Math.round(totalUnits * 0.33)
-        },
-        trend: totalUnits > 140000 ? 'increasing' : 'stable',
-        dataSource: 'fallback-offline'
-      }
+      throw error
     }
   }
 

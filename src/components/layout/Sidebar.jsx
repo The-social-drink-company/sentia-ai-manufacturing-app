@@ -277,6 +277,17 @@ const Sidebar = ({ isOpen, onToggle }) => {
                         <li key={item.name} role="listitem">
                           <NavLink
                             to={item.href}
+                            onClick={(e) => {
+                              console.log(`[Navigation Debug] Sidebar link clicked: ${item.name} -> ${item.href}`)
+                              console.log('[Navigation Debug] Current pathname before navigation:', window.location.pathname)
+                              console.log('[Navigation Debug] Event:', e)
+                              if (item.name === 'Financial Reports') {
+                                console.log('[Navigation Debug] FINANCIAL REPORTS NAVIGATION INITIATED')
+                                console.log('[Navigation Debug] Target URL:', item.href)
+                                console.log('[Navigation Debug] User role:', role)
+                                console.log('[Navigation Debug] Has access:', hasAccess(item))
+                              }
+                            }}
                             className={cn(
                               "flex items-center justify-between px-3 py-2 rounded-lg transition-colors group",
                               "hover:bg-gray-100 dark:hover:bg-gray-700",

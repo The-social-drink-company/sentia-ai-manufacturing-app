@@ -145,8 +145,12 @@ const LoadingState = () => (
 )
 
 const FinancialReports = () => {
+  console.log('[Navigation Debug] FinancialReports component rendering')
+  
   const [timeRange, setTimeRange] = useState('year')
   const [filters, setFilters] = useState({})
+  
+  console.log('[Navigation Debug] FinancialReports state initialized:', { timeRange, filters })
   
   const {
     kpiData,
@@ -161,6 +165,13 @@ const FinancialReports = () => {
     timeRange,
     filters
   })
+  
+  console.log('[Navigation Debug] Hook data:', { 
+    kpiData: !!kpiData, 
+    revenueData: !!revenueData, 
+    isLoading, 
+    error: error?.message 
+  })
 
   const handleRefresh = () => {
     refetch()
@@ -171,6 +182,7 @@ const FinancialReports = () => {
   }
 
   if (error) {
+    console.log('[Navigation Debug] FinancialReports rendering error state:', error)
     return (
       <div className="p-6">
         <PageHeader 
@@ -184,6 +196,8 @@ const FinancialReports = () => {
     )
   }
 
+  console.log('[Navigation Debug] FinancialReports rendering main content')
+  
   return (
     <div className="p-6 space-y-6">
       <PageHeader 

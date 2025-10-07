@@ -1,11 +1,13 @@
-import { Suspense, lazy, useState, useEffect } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import React, { Suspense, lazy, useState, useEffect } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import LandingPage from '@/components/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'
 import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
 import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
+import FinancialReportsErrorBoundary from '@/components/debug/FinancialReportsErrorBoundary'
+import MinimalFinancialReportsTest from '@/components/debug/MinimalFinancialReportsTest'
 
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
 const WorkingCapital = lazy(() => import('@/components/WorkingCapital/RealWorkingCapital'))
@@ -18,7 +20,79 @@ const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
 
-const FinancialReports = lazy(() => import('@/pages/Financial/FinancialReports'))
+const FinancialReports = lazy(() => {
+  console.log('[Navigation Debug] Loading Financial Reports component')
+  return import('@/pages/Financial/FinancialReports').then(module => {
+    console.log('[Navigation Debug] Financial Reports component loaded successfully:', module)
+    return module
+  }).catch(error => {
+    console.error('[Navigation Debug] Failed to load Financial Reports:', error)
+    throw error
+  })
+})
+
+// Wrapper component with comprehensive debugging
+const FinancialReportsWrapper = () => {
+  console.log('[Navigation Debug] FinancialReportsWrapper component mounting')
+  
+  React.useEffect(() => {
+    console.log('[Navigation Debug] FinancialReportsWrapper useEffect - component mounted')
+    console.log('[Navigation Debug] Current location:', window.location.pathname)
+    console.log('[Navigation Debug] Development mode:', import.meta.env.VITE_DEVELOPMENT_MODE)
+    
+    return () => {
+      console.log('[Navigation Debug] FinancialReportsWrapper unmounting')
+    }
+  }, [])
+
+  // TEMPORARY: Use minimal test component to isolate routing issues
+  const useMinimalTest = true
+  
+  if (useMinimalTest) {
+    console.log('[Navigation Debug] Using MinimalFinancialReportsTest for diagnosis')
+    return React.createElement(MinimalFinancialReportsTest)
+  }
+
+  try {
+    console.log('[Navigation Debug] Attempting to render FinancialReports component')
+    return React.createElement(FinancialReports)
+  } catch (error) {
+    console.error('[Navigation Debug] Error rendering FinancialReports:', error)
+    return (
+      <div className="p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-red-800 font-medium">Component Error</h3>
+          <p className="text-red-600 text-sm mt-1">{error.message}</p>
+          <pre className="text-red-500 text-xs mt-2 overflow-auto">
+            {error.stack}
+          </pre>
+        </div>
+      </div>
+    )
+  }
+}
+
+// Component to monitor route changes
+const RouterDebugger = () => {
+  const location = useLocation()
+  const navigationType = useNavigationType()
+  
+  React.useEffect(() => {
+    console.log('[Navigation Debug] Route changed:', {
+      pathname: location.pathname,
+      search: location.search,
+      hash: location.hash,
+      state: location.state,
+      navigationType
+    })
+    
+    if (location.pathname !== '/app/reports' && location.state?.from === '/app/reports') {
+      console.error('[Navigation Debug] REDIRECT DETECTED! User was redirected away from /app/reports')
+    }
+  }, [location, navigationType])
+  
+  return null
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -202,6 +276,7 @@ const App = () => (
   <AuthenticationProvider>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <RouterDebugger />
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
@@ -294,9 +369,11 @@ const App = () => (
           
           <Route path="/app/reports" element={
             <ProtectedRoute>
-              <Suspense fallback={<Loader />}>
-                <FinancialReports />
-              </Suspense>
+              <FinancialReportsErrorBoundary>
+                <Suspense fallback={<Loader />}>
+                  <FinancialReportsWrapper />
+                </Suspense>
+              </FinancialReportsErrorBoundary>
             </ProtectedRoute>
           } />
           

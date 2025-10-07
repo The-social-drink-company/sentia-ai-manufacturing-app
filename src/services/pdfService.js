@@ -1,0 +1,418 @@
+import jsPDF from 'jspdf'
+import { format } from 'date-fns'
+
+/**
+ * Generate and download a PDF report
+ * @param {Object} reportData - Complete report data
+ */
+export const generatePDF = async (reportData) => {
+  try {
+    const pdf = new jsPDF('p', 'mm', 'a4')
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    const margin = 20
+    const contentWidth = pageWidth - (margin * 2)
+    let currentY = margin
+
+    // Company branding and header
+    addHeader(pdf, pageWidth, margin)
+    currentY += 30
+
+    // Report title and metadata
+    pdf.setFontSize(24)
+    pdf.setFont(undefined, 'bold')
+    pdf.text('Manufacturing Dashboard Report', margin, currentY)
+    currentY += 15
+
+    pdf.setFontSize(12)
+    pdf.setFont(undefined, 'normal')
+    pdf.setTextColor(100, 100, 100)
+    pdf.text(`Generated: ${format(new Date(), 'MMMM d, yyyy \'at\' h:mm a')}`, margin, currentY)
+    currentY += 8
+    pdf.text(`Report Period: ${reportData.metadata.reportPeriod.formatted}`, margin, currentY)
+    currentY += 20
+
+    // Executive Summary
+    if (reportData.executiveSummary) {
+      currentY = addExecutiveSummary(pdf, reportData.executiveSummary, margin, currentY, contentWidth, pageHeight)
+    }
+
+    // Add each selected section
+    for (const [, sectionData] of Object.entries(reportData.sections)) {
+      // Check if we need a new page
+      if (currentY > pageHeight - 50) {
+        pdf.addPage()
+        addHeader(pdf, pageWidth, margin)
+        currentY = margin + 30
+      }
+
+      currentY = addSection(pdf, sectionData, margin, currentY, contentWidth, pageHeight)
+      currentY += 15
+    }
+
+    // Footer
+    addFooter(pdf, pageWidth, pageHeight, margin)
+
+    // Generate filename with timestamp
+    const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm')
+    const filename = `Sentia_Manufacturing_Report_${timestamp}.pdf`
+
+    // Save the PDF
+    pdf.save(filename)
+    
+    return { success: true, filename }
+  } catch (error) {
+    console.error('Error generating PDF:', error)
+    throw new Error(`Failed to generate PDF: ${error.message}`)
+  }
+}
+
+/**
+ * Add company header to PDF
+ */
+const addHeader = (pdf, pageWidth, margin) => {
+  // Company logo area (placeholder)
+  pdf.setFillColor(59, 130, 246) // Blue color
+  pdf.roundedRect(margin, margin, 30, 15, 2, 2, 'F')
+  
+  // Company logo text
+  pdf.setFontSize(14)
+  pdf.setFont(undefined, 'bold')
+  pdf.setTextColor(255, 255, 255)
+  pdf.text('S', margin + 12, margin + 10)
+  
+  // Company name
+  pdf.setFontSize(16)
+  pdf.setFont(undefined, 'bold')
+  pdf.setTextColor(0, 0, 0)
+  pdf.text('Sentia Manufacturing', margin + 35, margin + 8)
+  
+  pdf.setFontSize(12)
+  pdf.setFont(undefined, 'normal')
+  pdf.setTextColor(100, 100, 100)
+  pdf.text('Enterprise Manufacturing Intelligence', margin + 35, margin + 16)
+  
+  // Horizontal line
+  pdf.setDrawColor(200, 200, 200)
+  pdf.line(margin, margin + 25, pageWidth - margin, margin + 25)
+}
+
+/**
+ * Add executive summary section
+ */
+const addExecutiveSummary = (pdf, summary, margin, startY, contentWidth, pageHeight) => {
+  let currentY = startY
+  
+  // Section header
+  pdf.setFontSize(18)
+  pdf.setFont(undefined, 'bold')
+  pdf.setTextColor(0, 0, 0)
+  pdf.text('Executive Summary', margin, currentY)
+  currentY += 12
+
+  // Status
+  pdf.setFontSize(12)
+  pdf.setFont(undefined, 'bold')
+  pdf.text('Status:', margin, currentY)
+  pdf.setFont(undefined, 'normal')
+  pdf.text(summary.status, margin + 20, currentY)
+  currentY += 10
+
+  // Report Period
+  pdf.setFont(undefined, 'bold')
+  pdf.text('Period:', margin, currentY)
+  pdf.setFont(undefined, 'normal')
+  pdf.text(summary.reportPeriod, margin + 20, currentY)
+  currentY += 15
+
+  // Key Insights
+  if (summary.keyInsights && summary.keyInsights.length > 0) {
+    pdf.setFont(undefined, 'bold')
+    pdf.text('Key Insights:', margin, currentY)
+    currentY += 8
+
+    pdf.setFont(undefined, 'normal')
+    summary.keyInsights.forEach((insight, index) => {
+      const lines = pdf.splitTextToSize(`• ${insight}`, contentWidth - 10)
+      lines.forEach(line => {
+        if (currentY > pageHeight - 30) {
+          pdf.addPage()
+          addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
+          currentY = margin + 40
+        }
+        pdf.text(line, margin + 5, currentY)
+        currentY += 6
+      })
+      currentY += 2
+    })
+  }
+
+  // Recommendation
+  if (summary.recommendation) {
+    currentY += 5
+    pdf.setFont(undefined, 'bold')
+    pdf.text('Recommendation:', margin, currentY)
+    currentY += 8
+    
+    pdf.setFont(undefined, 'normal')
+    const recLines = pdf.splitTextToSize(summary.recommendation, contentWidth)
+    recLines.forEach(line => {
+      if (currentY > pageHeight - 30) {
+        pdf.addPage()
+        addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
+        currentY = margin + 40
+      }
+      pdf.text(line, margin, currentY)
+      currentY += 6
+    })
+  }
+
+  return currentY + 20
+}
+
+/**
+ * Add a data section to the PDF
+ */
+const addSection = (pdf, sectionData, margin, startY, contentWidth, pageHeight) => {
+  let currentY = startY
+  
+  // Section header
+  pdf.setFontSize(16)
+  pdf.setFont(undefined, 'bold')
+  pdf.setTextColor(0, 0, 0)
+  pdf.text(sectionData.title, margin, currentY)
+  currentY += 10
+
+  // Section description
+  if (sectionData.description) {
+    pdf.setFontSize(11)
+    pdf.setFont(undefined, 'normal')
+    pdf.setTextColor(100, 100, 100)
+    const descLines = pdf.splitTextToSize(sectionData.description, contentWidth)
+    descLines.forEach(line => {
+      pdf.text(line, margin, currentY)
+      currentY += 6
+    })
+    currentY += 10
+  }
+
+  // Add section data based on type
+  if (sectionData.data && Array.isArray(sectionData.data)) {
+    if (sectionData.title === 'Capital Position' || sectionData.title === 'Performance Metrics') {
+      // KPI format
+      currentY = addKPITable(pdf, sectionData.data, margin, currentY, contentWidth)
+    } else if (sectionData.title === 'Regional Performance') {
+      // Regional table format
+      currentY = addRegionalTable(pdf, sectionData.data, margin, currentY, contentWidth)
+    } else if (sectionData.title === 'P&L Analysis') {
+      // P&L table format
+      currentY = addPLTable(pdf, sectionData.data, margin, currentY, contentWidth)
+    } else {
+      // Generic data format
+      currentY = addGenericTable(pdf, sectionData.data, margin, currentY, contentWidth)
+    }
+  }
+
+  // Add summary if available
+  if (sectionData.summary && typeof sectionData.summary === 'object') {
+    currentY += 10
+    currentY = addSummaryBox(pdf, sectionData.summary, margin, currentY, contentWidth)
+  }
+
+  return currentY
+}
+
+/**
+ * Add KPI table
+ */
+const addKPITable = (pdf, data, margin, startY, contentWidth) => {
+  let currentY = startY
+  const rowHeight = 12
+  const headerHeight = 15
+
+  // Table header
+  pdf.setFillColor(245, 245, 245)
+  pdf.rect(margin, currentY, contentWidth, headerHeight, 'F')
+  pdf.setFontSize(11)
+  pdf.setFont(undefined, 'bold')
+  pdf.text('Metric', margin + 5, currentY + 10)
+  pdf.text('Value', margin + contentWidth/2, currentY + 10)
+  pdf.text('Description', margin + contentWidth*0.75, currentY + 10)
+  currentY += headerHeight
+
+  // Table rows
+  pdf.setFont(undefined, 'normal')
+  data.forEach((item, index) => {
+    if (index % 2 === 0) {
+      pdf.setFillColor(250, 250, 250)
+      pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
+    }
+    
+    pdf.text(item.label, margin + 5, currentY + 8)
+    pdf.setFont(undefined, 'bold')
+    pdf.text(item.value, margin + contentWidth/2, currentY + 8)
+    pdf.setFont(undefined, 'normal')
+    const helperText = pdf.splitTextToSize(item.helper || '', contentWidth * 0.23)
+    pdf.text(helperText[0] || '', margin + contentWidth*0.75, currentY + 8)
+    currentY += rowHeight
+  })
+
+  return currentY
+}
+
+/**
+ * Add regional performance table
+ */
+const addRegionalTable = (pdf, data, margin, startY, contentWidth) => {
+  let currentY = startY
+  const rowHeight = 12
+  const headerHeight = 15
+
+  // Table header
+  pdf.setFillColor(245, 245, 245)
+  pdf.rect(margin, currentY, contentWidth, headerHeight, 'F')
+  pdf.setFontSize(11)
+  pdf.setFont(undefined, 'bold')
+  pdf.text('Region', margin + 5, currentY + 10)
+  pdf.text('Revenue', margin + contentWidth/3, currentY + 10)
+  pdf.text('EBITDA', margin + contentWidth*0.66, currentY + 10)
+  currentY += headerHeight
+
+  // Table rows
+  pdf.setFont(undefined, 'normal')
+  data.forEach((item, index) => {
+    if (index % 2 === 0) {
+      pdf.setFillColor(250, 250, 250)
+      pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
+    }
+    
+    pdf.text(item.region, margin + 5, currentY + 8)
+    pdf.text(`$${(item.revenue / 1000000).toFixed(1)}M`, margin + contentWidth/3, currentY + 8)
+    pdf.text(`$${(item.ebitda / 1000000).toFixed(1)}M`, margin + contentWidth*0.66, currentY + 8)
+    currentY += rowHeight
+  })
+
+  return currentY
+}
+
+/**
+ * Add P&L table
+ */
+const addPLTable = (pdf, data, margin, startY, contentWidth) => {
+  let currentY = startY
+  const rowHeight = 10
+  const headerHeight = 12
+
+  // Show only last 6 months for space
+  const recentData = data.slice(-6)
+
+  // Table header
+  pdf.setFillColor(245, 245, 245)
+  pdf.rect(margin, currentY, contentWidth, headerHeight, 'F')
+  pdf.setFontSize(10)
+  pdf.setFont(undefined, 'bold')
+  pdf.text('Month', margin + 5, currentY + 8)
+  pdf.text('Revenue', margin + contentWidth*0.25, currentY + 8)
+  pdf.text('Gross Profit', margin + contentWidth*0.5, currentY + 8)
+  pdf.text('EBITDA', margin + contentWidth*0.75, currentY + 8)
+  currentY += headerHeight
+
+  // Table rows
+  pdf.setFont(undefined, 'normal')
+  recentData.forEach((item, index) => {
+    if (index % 2 === 0) {
+      pdf.setFillColor(250, 250, 250)
+      pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
+    }
+    
+    pdf.text(item.month, margin + 5, currentY + 7)
+    pdf.text(`$${item.revenue}K`, margin + contentWidth*0.25, currentY + 7)
+    pdf.text(`$${item.grossProfit}K`, margin + contentWidth*0.5, currentY + 7)
+    pdf.text(`$${item.ebitda}K`, margin + contentWidth*0.75, currentY + 7)
+    currentY += rowHeight
+  })
+
+  return currentY
+}
+
+/**
+ * Add generic table for other data types
+ */
+const addGenericTable = (pdf, data, margin, startY, contentWidth) => {
+  let currentY = startY
+  
+  // Simple list format for generic data
+  pdf.setFontSize(11)
+  pdf.setFont(undefined, 'normal')
+  
+  data.forEach(item => {
+    const text = typeof item === 'object' ? JSON.stringify(item) : String(item)
+    const lines = pdf.splitTextToSize(`• ${text}`, contentWidth)
+    lines.forEach(line => {
+      pdf.text(line, margin + 5, currentY)
+      currentY += 6
+    })
+    currentY += 2
+  })
+
+  return currentY
+}
+
+/**
+ * Add summary box
+ */
+const addSummaryBox = (pdf, summary, margin, startY, contentWidth) => {
+  let currentY = startY
+  
+  // Summary box background
+  pdf.setFillColor(249, 250, 251)
+  pdf.setDrawColor(200, 200, 200)
+  const boxHeight = 25
+  pdf.roundedRect(margin, currentY, contentWidth, boxHeight, 2, 2, 'FD')
+  
+  currentY += 8
+  pdf.setFontSize(10)
+  pdf.setFont(undefined, 'bold')
+  pdf.text('Summary:', margin + 5, currentY)
+  currentY += 6
+  
+  pdf.setFont(undefined, 'normal')
+  if (summary.status) {
+    pdf.text(`Status: ${summary.status}`, margin + 5, currentY)
+    currentY += 5
+  }
+  if (summary.keyInsight) {
+    const insightLines = pdf.splitTextToSize(summary.keyInsight, contentWidth - 10)
+    insightLines.forEach(line => {
+      pdf.text(line, margin + 5, currentY)
+      currentY += 5
+    })
+  }
+  
+  return startY + boxHeight + 5
+}
+
+/**
+ * Add footer to PDF
+ */
+const addFooter = (pdf, pageWidth, pageHeight, margin) => {
+  const footerY = pageHeight - 15
+  
+  // Footer line
+  pdf.setDrawColor(200, 200, 200)
+  pdf.line(margin, footerY - 5, pageWidth - margin, footerY - 5)
+  
+  // Footer text
+  pdf.setFontSize(9)
+  pdf.setTextColor(100, 100, 100)
+  pdf.text('Sentia Manufacturing Dashboard Report', margin, footerY)
+  
+  // Page number
+  const pageNum = pdf.internal.getCurrentPageInfo().pageNumber
+  pdf.text(`Page ${pageNum}`, pageWidth - margin - 20, footerY)
+  
+  // Generation timestamp
+  pdf.text(`Generated: ${format(new Date(), 'yyyy-MM-dd HH:mm')}`, pageWidth - margin - 70, footerY + 5)
+}
+
+export default generatePDF

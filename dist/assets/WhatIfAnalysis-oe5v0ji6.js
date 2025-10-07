@@ -1,1 +1,0 @@
-import{ab as e}from"./vendor-9Il8YjTy.js";const s=()=>e.jsxs("div",{className:"rounded-xl border border-border bg-card p-6",children:[e.jsx("h2",{className:"text-lg font-semibold",children:"What-if analysis"}),e.jsx("p",{className:"text-sm text-muted-foreground",children:"Scenario modelling will be available once financial models are configured."})]});export{s as default};

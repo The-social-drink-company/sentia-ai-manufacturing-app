@@ -25,6 +25,7 @@ const RegionalContributionChart = lazy(() => import('@/components/dashboard/Regi
 const PLAnalysisChart = lazy(() => import('@/components/dashboard/PLAnalysisChart'))
 const ProductSalesChart = lazy(() => import('@/components/dashboard/ProductSalesChart'))
 const StockLevelsWidget = lazy(() => import('@/components/widgets/StockLevelsWidget'))
+const QuickActions = lazy(() => import('@/components/dashboard/QuickActions'))
 
 // Import API services
 import plAnalysisApi from '@/services/api/plAnalysisApi'
@@ -257,6 +258,23 @@ const DashboardEnterprise = () => {
         </Card>
       }>
         <StockLevelsWidget />
+      </Suspense>
+
+      {/* Quick Actions Section */}
+      <Suspense fallback={
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Loading quick actions...</CardDescription>
+          </CardHeader>
+          <CardContent className="h-32">
+            <div className="flex h-full items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          </CardContent>
+        </Card>
+      }>
+        <QuickActions />
       </Suspense>
     </section>
   )

@@ -11,7 +11,8 @@ import {
   DollarSignIcon,
   LayersIcon,
   DatabaseIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  FileBarChartIcon
 } from 'lucide-react'
 import EnterpriseAIChatbot from '@/components/EnterpriseAIChatbot'
 import CommandPalette from '@/components/dashboard/CommandPalette'
@@ -33,7 +34,8 @@ const NAV_SECTIONS = [
     title: 'Financial',
     items: [
       { to: '/app/working-capital', label: 'Working Capital', icon: DollarSignIcon },
-      { to: '/app/what-if', label: 'What-If Analysis', icon: LayersIcon }
+      { to: '/app/what-if', label: 'What-If Analysis', icon: LayersIcon },
+      { to: '/app/reports', label: 'Financial Reports', icon: FileBarChartIcon }
     ]
   },
   {

@@ -13,7 +13,7 @@ services:
     region: oregon
     branch: development
     buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma generate && pnpm run build"
-    startCommand: "node server-enterprise-complete.js"
+    startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -40,7 +40,7 @@ services:
     region: oregon
     branch: testing
     buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
-    startCommand: "node server-enterprise-complete.js"
+    startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -67,7 +67,7 @@ services:
     region: oregon
     branch: production
     buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
-    startCommand: "node server-enterprise-complete.js"
+    startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:

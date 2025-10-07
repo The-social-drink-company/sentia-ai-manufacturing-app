@@ -24,6 +24,7 @@ const defaultPerformanceKpis = [
 const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
 const PLAnalysisChart = lazy(() => import('@/components/dashboard/PLAnalysisChart'))
 const ProductSalesChart = lazy(() => import('@/components/dashboard/ProductSalesChart'))
+const StockLevelsWidget = lazy(() => import('@/components/widgets/StockLevelsWidget'))
 
 // Import API services
 import plAnalysisApi from '@/services/api/plAnalysisApi'
@@ -237,6 +238,22 @@ const DashboardEnterprise = () => {
           </Suspense>
         </CardContent>
       </Card>
+
+      <Suspense fallback={
+        <Card>
+          <CardHeader>
+            <CardTitle>Current Stock Levels</CardTitle>
+            <CardDescription>Loading inventory data...</CardDescription>
+          </CardHeader>
+          <CardContent className="h-64">
+            <div className="flex h-full items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          </CardContent>
+        </Card>
+      }>
+        <StockLevelsWidget />
+      </Suspense>
     </section>
   )
 }

@@ -26,7 +26,7 @@ import {
   ShieldCheckIcon,
   ArrowTrendingUpIcon
 } from '@heroicons/react/24/outline';
-import { useAuthRole } from '@/hooks/useAuthRole';
+import useAuthRole from '@/hooks/useAuthRole';
 import { cn } from '@/utils/cn';
 
 // Navigation configuration with role-based access control

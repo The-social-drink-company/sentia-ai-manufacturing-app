@@ -141,6 +141,17 @@ const StockLevelsChart = ({ data }) => {
     const reorderPercent = payload.reorderLevel / payload.currentStock
     const reorderY = y + height - (height * reorderPercent)
 
+    // Get contrasting color for reorder line based on bar color
+    const getReorderLineColor = (productName) => {
+      // Use white line with dark outline for better visibility on all colors
+      return '#ffffff'
+    }
+
+    const getReorderLineStroke = (productName) => {
+      // Use dark stroke for contrast
+      return '#1f2937'
+    }
+
     return (
       <g>
         {/* Main bar */}
@@ -153,21 +164,41 @@ const StockLevelsChart = ({ data }) => {
           rx={4}
           ry={4}
         />
-        {/* Reorder level indicator line */}
+        {/* Reorder level indicator line with double stroke for visibility */}
         <line
           x1={x}
           y1={reorderY}
           x2={x + width}
           y2={reorderY}
-          stroke="#f59e0b"
-          strokeWidth={3}
-          strokeDasharray="6 3"
+          stroke={getReorderLineStroke(payload.product)}
+          strokeWidth={5}
+          strokeDasharray="8 4"
         />
-        {/* Reorder level value label */}
+        <line
+          x1={x}
+          y1={reorderY}
+          x2={x + width}
+          y2={reorderY}
+          stroke={getReorderLineColor(payload.product)}
+          strokeWidth={3}
+          strokeDasharray="8 4"
+        />
+        {/* Reorder level value label with background */}
+        <rect
+          x={x + width + 4}
+          y={reorderY - 8}
+          width={80}
+          height={16}
+          fill="rgba(255, 255, 255, 0.9)"
+          stroke="#1f2937"
+          strokeWidth={1}
+          rx={2}
+          ry={2}
+        />
         <text
           x={x + width + 8}
           y={reorderY + 4}
-          fill="#f59e0b"
+          fill="#1f2937"
           fontSize={11}
           fontWeight="600"
           textAnchor="start"

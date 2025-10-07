@@ -6,7 +6,6 @@ import LandingPage from '@/components/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'
 import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
 import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
-import ErrorBoundary from '@/components/debug/ErrorBoundary'
 
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
 const WorkingCapital = lazy(() => import('@/components/WorkingCapital/RealWorkingCapital'))
@@ -19,19 +18,7 @@ const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
 
-// Enhanced lazy loading with debug logging for Financial Reports - FIXED IMPORT ISSUE
-const FinancialReports = lazy(() => {
-  console.log('[DEBUG] Loading FinancialReports component...')
-  return import('@/pages/Financial/FinancialReports')
-    .then((module) => {
-      console.log('[DEBUG] FinancialReports component loaded successfully:', module)
-      return module
-    })
-    .catch((error) => {
-      console.error('[DEBUG] Failed to load FinancialReports component:', error)
-      throw error
-    })
-})
+const FinancialReports = lazy(() => import('@/pages/Financial/FinancialReports'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -307,11 +294,9 @@ const App = () => (
           
           <Route path="/app/reports" element={
             <ProtectedRoute>
-              <ErrorBoundary name="Financial Reports" showDetails={true}>
-                <Suspense fallback={<Loader />}>
-                  <FinancialReports />
-                </Suspense>
-              </ErrorBoundary>
+              <Suspense fallback={<Loader />}>
+                <FinancialReports />
+              </Suspense>
             </ProtectedRoute>
           } />
           

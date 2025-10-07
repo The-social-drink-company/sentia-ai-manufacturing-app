@@ -6,6 +6,7 @@ import LandingPage from '@/components/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'
 import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
 import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
+import ErrorBoundary from '@/components/debug/ErrorBoundary'
 
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
 const WorkingCapital = lazy(() => import('@/components/WorkingCapital/RealWorkingCapital'))
@@ -17,7 +18,20 @@ const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
-const FinancialReports = lazy(() => import('@/pages/Financial/FinancialReports'))
+
+// TEMP: Testing with minimal component to isolate routing issues
+const FinancialReports = lazy(() => {
+  console.log('[DEBUG] Loading MinimalFinancialReports component...')
+  return import('@/components/debug/MinimalFinancialReports')
+    .then((module) => {
+      console.log('[DEBUG] MinimalFinancialReports component loaded successfully:', module)
+      return module
+    })
+    .catch((error) => {
+      console.error('[DEBUG] Failed to load MinimalFinancialReports component:', error)
+      throw error
+    })
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -293,9 +307,11 @@ const App = () => (
           
           <Route path="/app/reports" element={
             <ProtectedRoute>
-              <Suspense fallback={<Loader />}>
-                <FinancialReports />
-              </Suspense>
+              <ErrorBoundary name="Financial Reports" showDetails={true}>
+                <Suspense fallback={<Loader />}>
+                  <FinancialReports />
+                </Suspense>
+              </ErrorBoundary>
             </ProtectedRoute>
           } />
           

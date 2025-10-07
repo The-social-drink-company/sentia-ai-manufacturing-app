@@ -76,7 +76,14 @@ const DashboardLayout = ({ children }) => {
                     <button
                       key={item.to}
                       type="button"
-                      onClick={() => navigate(item.to)}
+                      onClick={() => {
+                        console.log('[DEBUG] Navigation clicked:', {
+                          from: location.pathname,
+                          to: item.to,
+                          label: item.label
+                        })
+                        navigate(item.to)
+                      }}
                       className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                         active
                           ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200 shadow-sm'

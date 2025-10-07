@@ -30,4 +30,4 @@ class WorkingCapitalApi {
   }
 }
 
-export const workingCapitalApi = new WorkingCapitalApi()
+export default new WorkingCapitalApi()

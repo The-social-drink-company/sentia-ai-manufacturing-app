@@ -25,6 +25,10 @@ class APIIntegration {
     
     // WebSocket connections for real-time updates
     this.websockets = new Map()
+    this.reconnectAttempts = 0
+    this.maxReconnectAttempts = 5
+    this.baseReconnectDelay = 1000 // Start with 1 second
+    
     this.initializeWebSockets()
   }
 
@@ -42,6 +46,8 @@ class APIIntegration {
       mcpWS.onopen = (event) => {
         console.log('MCP WebSocket connected successfully');
         this.websockets.set('mcp', mcpWS);
+        // Reset reconnection attempts on successful connection
+        this.reconnectAttempts = 0;
       };
       
       mcpWS.onmessage = (event) => {
@@ -60,14 +66,21 @@ class APIIntegration {
       };
       
       mcpWS.onclose = (event) => {
-        console.log('MCP WebSocket closed:', event.code, event.reason);
+        console.log('MCP WebSocket closed:', event.code);
         this.websockets.delete('mcp');
         
-        // Attempt reconnection after 5 seconds
-        setTimeout(() => {
-          console.log('Attempting WebSocket reconnection...');
-          this.initializeWebSockets();
-        }, 5000);
+        // Only attempt reconnection if we haven't exceeded max attempts
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+          this.reconnectAttempts++;
+          const delay = this.baseReconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+          
+          console.log(`Attempting WebSocket reconnection... (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+          setTimeout(() => {
+            this.initializeWebSockets();
+          }, delay);
+        } else {
+          console.warn('Max WebSocket reconnection attempts reached. Switching to polling mode.');
+        }
       };
       
     } catch (error) {

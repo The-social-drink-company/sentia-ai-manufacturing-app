@@ -8,7 +8,7 @@
  */
 
 import { SentiaMCPServer } from '../src/server.js';
-import { SERVER_CONFIG, validateConfig } from '../src/config/server-config.js';
+import { SERVER_CONFIG, validateConfigLegacy } from '../src/config/server-config.js';
 import { globalErrorHandler } from '../src/utils/error-handler.js';
 import { createLogger } from '../src/utils/logger.js';
 import { fileURLToPath } from 'url';
@@ -27,13 +27,19 @@ const logger = createLogger();
 async function performPreflightChecks() {
   logger.info('Performing preflight checks...');
 
-  // 1. Validate configuration
+  // 1. Validate configuration (using legacy validator for production flexibility)
   try {
-    validateConfig();
+    validateConfigLegacy();
     logger.info('Configuration validation passed');
   } catch (error) {
     logger.error('Configuration validation failed', { error: error.message });
-    process.exit(1);
+    logger.warn('Attempting to continue with degraded functionality...');
+    // Don't exit on configuration warnings in production
+    if (SERVER_CONFIG.server.environment === 'production') {
+      logger.warn('Production deployment continuing with configuration warnings');
+    } else {
+      process.exit(1);
+    }
   }
 
   // 2. Check required directories

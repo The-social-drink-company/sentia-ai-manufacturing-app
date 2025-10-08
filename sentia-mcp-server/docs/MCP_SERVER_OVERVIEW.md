@@ -128,7 +128,24 @@ sentia-mcp-server/
 | **OpenAI** | ✅ Complete | 6 tools | Data analysis, content generation, customer insights, operational optimization, forecasting, automated reporting |
 | **Unleashed** | ✅ Complete | 7 tools | Products, inventory, production orders, purchase orders, sales orders, suppliers, customers |
 
-**Total Tools Available**: 36 production-ready MCP tools
+**Total Tools Available**: 36 production-ready MCP tools + Advanced Analytics & Reporting Platform
+
+### **📊 Advanced Analytics & Reporting Platform (Phase 5.2)**
+
+Enterprise-grade analytics platform with real-time processing, predictive capabilities, and interactive visualizations:
+
+| Component | Status | Features |
+|-----------|--------|----------|
+| **Advanced Analytics Engine** | ✅ Complete | Real-time stream processing, ML-based anomaly detection, predictive analytics |
+| **Financial Analytics** | ✅ Complete | Revenue analysis, profitability tracking, cash flow forecasting, CLV calculation |
+| **Operational Analytics** | ✅ Complete | OEE calculations, inventory optimization, supply chain analytics, quality control |
+| **Customer Analytics** | ✅ Complete | RFM segmentation, churn prediction, behavior analysis, cohort tracking |
+| **Visualization Engine** | ✅ Complete | 8+ interactive chart types, real-time updates, multi-format export |
+| **Advanced Alert System** | ✅ Complete | ML-based anomaly detection, predictive alerts, multi-channel notifications |
+| **Automated Reporting** | ✅ Complete | Scheduled reports, custom dashboards, PDF/Excel/CSV export |
+| **Dashboard API** | ✅ Complete | 8 REST endpoints with JWT authentication and real-time streaming |
+
+**Analytics Capabilities**: Real-time processing, predictive forecasting, anomaly detection, automated insights
 
 ## 🏛️ **Enterprise Infrastructure Overview**
 

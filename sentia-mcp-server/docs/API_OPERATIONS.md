@@ -68,6 +68,28 @@ This document provides comprehensive operational guidance for deploying, monitor
 - `GET /api/performance/batching` - API batching performance data
 - `GET /api/performance/memory` - Memory usage and optimization status
 
+#### **Advanced Analytics & Reporting** (Phase 5.2)
+- `POST /api/dashboard/analytics/analyze` - Run comprehensive data analysis with ML capabilities
+- `POST /api/dashboard/analytics/visualize` - Generate interactive charts and visualizations
+- `GET /api/dashboard/analytics/insights` - Get AI-generated insights and recommendations
+- `POST /api/dashboard/analytics/forecast` - Generate predictive forecasts using ML models
+- `GET /api/dashboard/analytics/alerts` - List active alerts and notifications
+- `POST /api/dashboard/analytics/alerts` - Create custom analytics alerts
+- `GET /api/dashboard/analytics/performance` - Analytics system performance metrics
+- `POST /api/dashboard/analytics/export` - Export analytics data in multiple formats
+
+**Analytics Features:**
+- Real-time stream processing with anomaly detection
+- Multi-model forecasting (ARIMA, LSTM, Prophet, Linear)
+- Financial analytics: Revenue analysis, profitability tracking, CLV calculation
+- Operational analytics: OEE calculations, inventory optimization, quality control
+- Customer analytics: RFM segmentation, churn prediction, behavior analysis
+- Interactive visualizations with 8+ chart types and real-time updates
+- ML-based alert system with multi-channel notifications
+- Automated reporting with scheduled generation and multi-format export
+
+**Authentication:** All analytics endpoints require JWT Bearer token authentication
+
 #### **Log Management**
 - `GET /api/logs/search` - Advanced log search with queries
 - `GET /api/logs/aggregate` - Log aggregation and analysis
